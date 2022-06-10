@@ -24,29 +24,33 @@ const _ = grpc.SupportPackageIsVersion7
 type QueryClient interface {
 	// AnchorByIRI queries for an anchor entry by IRI.
 	AnchorByIRI(ctx context.Context, in *QueryAnchorByIRIRequest, opts ...grpc.CallOption) (*QueryAnchorByIRIResponse, error)
-	// AnchorByHash queries for an anchor entry by content hash.
+	// AnchorByHash queries for an anchor entry by ContentHash.
 	AnchorByHash(ctx context.Context, in *QueryAnchorByHashRequest, opts ...grpc.CallOption) (*QueryAnchorByHashResponse, error)
-	// AnchorsByAttestor queries for all anchor entries attested to by a given attestor.
+	// AnchorsByAttestor queries for all anchor entries attested to by an
+	// attestor.
 	AnchorsByAttestor(ctx context.Context, in *QueryAnchorsByAttestorRequest, opts ...grpc.CallOption) (*QueryAnchorsByAttestorResponse, error)
 	// AttestorsByIRI queries for all attestor entries for an anchor entry by IRI.
 	AttestorsByIRI(ctx context.Context, in *QueryAttestorsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestorsByIRIResponse, error)
-	// AttestorsByHash queries for all attestor entries for an anchor entry by content hash.
+	// AttestorsByHash queries for all attestor entries for an anchor entry by
+	// ContentHash.
 	AttestorsByHash(ctx context.Context, in *QueryAttestorsByHashRequest, opts ...grpc.CallOption) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries for a resolver by resolver ID.
+	// Resolver queries for a resolver by ID.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
-	// ResolversByIRI queries for all resolvers that have registered an anchor entry by IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchor
+	// entry by IRI.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries for all resolvers that have registered an anchor entry by content hash.
+	// ResolversByHash queries for all resolvers that have registered an anchor
+	// entry by ContentHash.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries resolvers based on URL.
+	// ResolversByURL queries all resolvers by URL.
 	ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error)
-	// ConvertIRIToHash converts an IRI to a content hash.
+	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(ctx context.Context, in *ConvertIRIToHashRequest, opts ...grpc.CallOption) (*ConvertIRIToHashResponse, error)
-	// ConvertHashToIRI converts a content hash to an IRI.
+	// ConvertHashToIRI converts a ContentHash to an IRI.
 	ConvertHashToIRI(ctx context.Context, in *ConvertHashToIRIRequest, opts ...grpc.CallOption) (*ConvertHashToIRIResponse, error)
-	// ConvertRawHashToIRI converts raw content hash properties to an IRI.
+	// ConvertRawHashToIRI converts ContentHash_Raw properties to an IRI.
 	ConvertRawHashToIRI(ctx context.Context, in *ConvertRawHashToIRIRequest, opts ...grpc.CallOption) (*ConvertRawHashToIRIResponse, error)
-	// ConvertGraphHashToIRI converts graph content hash properties to an IRI.
+	// ConvertGraphHashToIRI converts ContentHash_Graph properties to an IRI.
 	ConvertGraphHashToIRI(ctx context.Context, in *ConvertGraphHashToIRIRequest, opts ...grpc.CallOption) (*ConvertGraphHashToIRIResponse, error)
 }
 
@@ -181,29 +185,33 @@ func (c *queryClient) ConvertGraphHashToIRI(ctx context.Context, in *ConvertGrap
 type QueryServer interface {
 	// AnchorByIRI queries for an anchor entry by IRI.
 	AnchorByIRI(context.Context, *QueryAnchorByIRIRequest) (*QueryAnchorByIRIResponse, error)
-	// AnchorByHash queries for an anchor entry by content hash.
+	// AnchorByHash queries for an anchor entry by ContentHash.
 	AnchorByHash(context.Context, *QueryAnchorByHashRequest) (*QueryAnchorByHashResponse, error)
-	// AnchorsByAttestor queries for all anchor entries attested to by a given attestor.
+	// AnchorsByAttestor queries for all anchor entries attested to by an
+	// attestor.
 	AnchorsByAttestor(context.Context, *QueryAnchorsByAttestorRequest) (*QueryAnchorsByAttestorResponse, error)
 	// AttestorsByIRI queries for all attestor entries for an anchor entry by IRI.
 	AttestorsByIRI(context.Context, *QueryAttestorsByIRIRequest) (*QueryAttestorsByIRIResponse, error)
-	// AttestorsByHash queries for all attestor entries for an anchor entry by content hash.
+	// AttestorsByHash queries for all attestor entries for an anchor entry by
+	// ContentHash.
 	AttestorsByHash(context.Context, *QueryAttestorsByHashRequest) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries for a resolver by resolver ID.
+	// Resolver queries for a resolver by ID.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
-	// ResolversByIRI queries for all resolvers that have registered an anchor entry by IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchor
+	// entry by IRI.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries for all resolvers that have registered an anchor entry by content hash.
+	// ResolversByHash queries for all resolvers that have registered an anchor
+	// entry by ContentHash.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries resolvers based on URL.
+	// ResolversByURL queries all resolvers by URL.
 	ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error)
-	// ConvertIRIToHash converts an IRI to a content hash.
+	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(context.Context, *ConvertIRIToHashRequest) (*ConvertIRIToHashResponse, error)
-	// ConvertHashToIRI converts a content hash to an IRI.
+	// ConvertHashToIRI converts a ContentHash to an IRI.
 	ConvertHashToIRI(context.Context, *ConvertHashToIRIRequest) (*ConvertHashToIRIResponse, error)
-	// ConvertRawHashToIRI converts raw content hash properties to an IRI.
+	// ConvertRawHashToIRI converts ContentHash_Raw properties to an IRI.
 	ConvertRawHashToIRI(context.Context, *ConvertRawHashToIRIRequest) (*ConvertRawHashToIRIResponse, error)
-	// ConvertGraphHashToIRI converts graph content hash properties to an IRI.
+	// ConvertGraphHashToIRI converts ContentHash_Graph properties to an IRI.
 	ConvertGraphHashToIRI(context.Context, *ConvertGraphHashToIRIRequest) (*ConvertGraphHashToIRIResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

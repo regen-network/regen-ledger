@@ -123,12 +123,6 @@ enum RawMediaType {
 
   // OGG
   RAW_MEDIA_TYPE_OGG = 35;
-
-  // geospatial raster formats
-  // TODO
-
-  // geospatial vector formats
-  // TODO
 }
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
@@ -142,33 +136,31 @@ enum GraphCanonicalizationAlgorithm {
 
 // GraphMerkleTree is the graph merkle tree type used for hashing, if any
 enum GraphMerkleTree {
-  // no merkle tree
+  // unspecified and valid
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
 }
 
-// ContentEntry describes data referenced and possibly stored on chain
-message ContentEntry {
-  // content_hash is the content hash of the anchored data.
-  ContentHash content_hash = 1;
-
+// AnchorEntry is an anchor entry.
+message AnchorEntry {
   // iri is the IRI of the anchored data.
-  string iri = 2;
+  string iri = 1;
 
-  // timestamp is the timestamp of the anchored data.
+  // content_hash is the content hash of the anchored data.
+  ContentHash content_hash = 2;
+
+  // timestamp is the time at which the data was anchored.
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// AttestorEntry is an attestor entry including the attestor, the IRI, and the
-// timestamp.
+// AttestorEntry is an attestor entry.
 message AttestorEntry {
-  // iri is the IRI of the data attested to.
+  // iri is the IRI of the anchored data.
   string iri = 1;
 
-  // attestor is the address of the account that has attested to the veracity of
-  // the data.
+  // attestor is the address of the account that attested to the anchored data.
   string attestor = 2;
 
-  // timestamp is the timestamp at which the data was attested to.
+  // timestamp is the time at which the data was attested to.
   google.protobuf.Timestamp timestamp = 3;
 }
 

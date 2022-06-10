@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/client"
 )
 
-func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
+func (s *IntegrationTestSuite) TestQueryContentByIRICmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -49,7 +49,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryAnchorByIRICmd()
+			cmd := client.QueryContentByIRICmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -60,15 +60,15 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 				var res data.QueryAnchorByIRIResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
-				s.Require().Equal(tc.expIRI, res.Entry.Iri)
-				s.Require().NotNil(res.Entry.ContentHash)
-				s.Require().NotNil(res.Entry.Timestamp)
+				s.Require().Equal(tc.expIRI, res.Anchor.Iri)
+				s.Require().NotNil(res.Anchor.ContentHash)
+				s.Require().NotNil(res.Anchor.Timestamp)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAnchorsByAttestorCmd() {
+func (s *IntegrationTestSuite) TestQueryContentByAttestorCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -113,7 +113,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorsByAttestorCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryAnchorsByAttestorCmd()
+			cmd := client.QueryContentByAttestorCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -124,7 +124,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorsByAttestorCmd() {
 				var res data.QueryAnchorsByAttestorResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
-				for i, entry := range res.Entries {
+				for i, entry := range res.Anchors {
 					s.Require().Equal(tc.expIRIs[i], entry.Iri)
 					s.Require().NotNil(entry.ContentHash)
 					s.Require().NotNil(entry.Timestamp)
@@ -323,8 +323,13 @@ func (s *IntegrationTestSuite) TestQueryAttestorsByIRICmd() {
 				var res data.QueryAttestorsByIRIResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
-				for _, attestor := range tc.expAttestors {
-					s.Require().Contains(res.Attestors, attestor)
+				// order may vary from query response
+				if res.Attestors[0].Attestor == tc.expAttestors[0] {
+					s.Require().Equal(res.Attestors[0].Attestor, tc.expAttestors[0])
+					s.Require().Equal(res.Attestors[1].Attestor, tc.expAttestors[1])
+				} else {
+					s.Require().Equal(res.Attestors[0].Attestor, tc.expAttestors[1])
+					s.Require().Equal(res.Attestors[1].Attestor, tc.expAttestors[0])
 				}
 			}
 		})

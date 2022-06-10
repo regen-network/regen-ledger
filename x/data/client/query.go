@@ -16,7 +16,7 @@ import (
 
 // QueryCmd returns the parent command for all x/data CLI query commands
 func QueryCmd(name string) *cobra.Command {
-	queryAnchorByIRICmd := QueryAnchorByIRICmd()
+	queryContentByIRICmd := QueryContentByIRICmd()
 
 	cmd := &cobra.Command{
 		Args:  cobra.ExactArgs(1),
@@ -40,13 +40,13 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 			}
 
 			// Or else, we call QueryByIRICmd.
-			return queryAnchorByIRICmd.RunE(cmd, args)
+			return queryContentByIRICmd.RunE(cmd, args)
 		},
 	}
 
 	cmd.AddCommand(
-		queryAnchorByIRICmd,
-		QueryAnchorsByAttestorCmd(),
+		queryContentByIRICmd,
+		QueryContentByAttestorCmd(),
 		QueryAttestorsByIRICmd(),
 		QueryResolverCmd(),
 		QueryResolversByIriCmd(),
@@ -60,8 +60,8 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 	return cmd
 }
 
-// QueryAnchorByIRICmd creates a CLI command for Query/AnchorByIRI.
-func QueryAnchorByIRICmd() *cobra.Command {
+// QueryContentByIRICmd creates a CLI command for Query/ContentByIRI.
+func QueryContentByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anchor-by-iri [iri]",
 		Short: "Query for anchored data based on IRI",
@@ -85,10 +85,10 @@ func QueryAnchorByIRICmd() *cobra.Command {
 	return cmd
 }
 
-// QueryAnchorsByAttestorCmd creates a CLI command for Query/AnchorsByAttestor.
-func QueryAnchorsByAttestorCmd() *cobra.Command {
+// QueryContentByAttestorCmd creates a CLI command for Query/ContentByAttestor.
+func QueryContentByAttestorCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "anchors-by-attestor [attestor]",
+		Use:   "content-by-attestor [attestor]",
 		Short: "Query for anchored data based on an attestor",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

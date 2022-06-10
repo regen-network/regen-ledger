@@ -29,9 +29,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryAnchorByIRIRequest is the Query/ByIRI request type.
+// QueryAnchorByIRIRequest is the Query/AnchorByIRI request type.
 type QueryAnchorByIRIRequest struct {
-	// iri is the IRI for the anchored data.
+	// iri is the IRI of the anchored data.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
@@ -75,10 +75,10 @@ func (m *QueryAnchorByIRIRequest) GetIri() string {
 	return ""
 }
 
-// QueryAnchorByIRIResponse is the Query/ByHash response type.
+// QueryAnchorByIRIResponse is the Query/AnchorByIRI response type.
 type QueryAnchorByIRIResponse struct {
-	// entry is the ContentEntry for the anchored data.
-	Entry *ContentEntry `protobuf:"bytes,1,opt,name=entry,proto3" json:"entry,omitempty"`
+	// anchor is the anchored data entry.
+	Anchor *AnchorEntry `protobuf:"bytes,1,opt,name=anchor,proto3" json:"anchor,omitempty"`
 }
 
 func (m *QueryAnchorByIRIResponse) Reset()         { *m = QueryAnchorByIRIResponse{} }
@@ -114,16 +114,16 @@ func (m *QueryAnchorByIRIResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAnchorByIRIResponse proto.InternalMessageInfo
 
-func (m *QueryAnchorByIRIResponse) GetEntry() *ContentEntry {
+func (m *QueryAnchorByIRIResponse) GetAnchor() *AnchorEntry {
 	if m != nil {
-		return m.Entry
+		return m.Anchor
 	}
 	return nil
 }
 
-// QueryAnchorByHashRequest is the Query/ByHash request type.
+// QueryAnchorByHashRequest is the Query/AnchorByHash request type.
 type QueryAnchorByHashRequest struct {
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the content hash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
@@ -167,10 +167,10 @@ func (m *QueryAnchorByHashRequest) GetContentHash() *ContentHash {
 	return nil
 }
 
-// QueryAnchorByHashResponse is the Query/ByHash response type.
+// QueryAnchorByHashResponse is the Query/AnchorByHash response type.
 type QueryAnchorByHashResponse struct {
-	// entry is the ContentEntry for the anchored data.
-	Entry *ContentEntry `protobuf:"bytes,1,opt,name=entry,proto3" json:"entry,omitempty"`
+	// anchor is the anchored data entry.
+	Anchor *AnchorEntry `protobuf:"bytes,1,opt,name=anchor,proto3" json:"anchor,omitempty"`
 }
 
 func (m *QueryAnchorByHashResponse) Reset()         { *m = QueryAnchorByHashResponse{} }
@@ -206,9 +206,9 @@ func (m *QueryAnchorByHashResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAnchorByHashResponse proto.InternalMessageInfo
 
-func (m *QueryAnchorByHashResponse) GetEntry() *ContentEntry {
+func (m *QueryAnchorByHashResponse) GetAnchor() *AnchorEntry {
 	if m != nil {
-		return m.Entry
+		return m.Anchor
 	}
 	return nil
 }
@@ -270,8 +270,8 @@ func (m *QueryAnchorsByAttestorRequest) GetPagination() *query.PageRequest {
 
 // QueryAnchorsByAttestorResponse is the Query/AnchorsByAttestor response type.
 type QueryAnchorsByAttestorResponse struct {
-	// entries are the ContentEntries attested to by the attestor.
-	Entries []*ContentEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
+	// anchors are the anchored data entries.
+	Anchors []*AnchorEntry `protobuf:"bytes,1,rep,name=anchors,proto3" json:"anchors,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -309,9 +309,9 @@ func (m *QueryAnchorsByAttestorResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAnchorsByAttestorResponse proto.InternalMessageInfo
 
-func (m *QueryAnchorsByAttestorResponse) GetEntries() []*ContentEntry {
+func (m *QueryAnchorsByAttestorResponse) GetAnchors() []*AnchorEntry {
 	if m != nil {
-		return m.Entries
+		return m.Anchors
 	}
 	return nil
 }
@@ -325,7 +325,7 @@ func (m *QueryAnchorsByAttestorResponse) GetPagination() *query.PageResponse {
 
 // QueryAttestorsByIRIRequest is the Query/AttestorsByIRI request type.
 type QueryAttestorsByIRIRequest struct {
-	// iri is the IRI for the anchored data.
+	// iri is the IRI of the anchored data.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -380,8 +380,8 @@ func (m *QueryAttestorsByIRIRequest) GetPagination() *query.PageRequest {
 
 // QueryAttestorsByIRIResponse is the Query/AttestorsByIRI response type.
 type QueryAttestorsByIRIResponse struct {
-	// attestors are the addresses of the attestors.
-	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
+	// attestors are the attestor entries.
+	Attestors []*AttestorEntry `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -419,7 +419,7 @@ func (m *QueryAttestorsByIRIResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAttestorsByIRIResponse proto.InternalMessageInfo
 
-func (m *QueryAttestorsByIRIResponse) GetAttestors() []string {
+func (m *QueryAttestorsByIRIResponse) GetAttestors() []*AttestorEntry {
 	if m != nil {
 		return m.Attestors
 	}
@@ -435,7 +435,7 @@ func (m *QueryAttestorsByIRIResponse) GetPagination() *query.PageResponse {
 
 // QueryAttestorsByHashRequest is the Query/AttestorsByHash request type.
 type QueryAttestorsByHashRequest struct {
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the content hash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -490,8 +490,8 @@ func (m *QueryAttestorsByHashRequest) GetPagination() *query.PageRequest {
 
 // QueryAttestorsByHashResponse is the Query/AttestorsByHash response type.
 type QueryAttestorsByHashResponse struct {
-	// attestors are the addresses of the attestors.
-	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
+	// attestors are the attestor entries.
+	Attestors []*AttestorEntry `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -529,7 +529,7 @@ func (m *QueryAttestorsByHashResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAttestorsByHashResponse proto.InternalMessageInfo
 
-func (m *QueryAttestorsByHashResponse) GetAttestors() []string {
+func (m *QueryAttestorsByHashResponse) GetAttestors() []*AttestorEntry {
 	if m != nil {
 		return m.Attestors
 	}
@@ -537,61 +537,6 @@ func (m *QueryAttestorsByHashResponse) GetAttestors() []string {
 }
 
 func (m *QueryAttestorsByHashResponse) GetPagination() *query.PageResponse {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-// QueryResolversByIRIRequest is the Query/ResolversByIRI request type.
-type QueryResolversByIRIRequest struct {
-	// iri is the IRI for the anchored data.
-	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// pagination is the PageRequest to use for pagination.
-	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryResolversByIRIRequest) Reset()         { *m = QueryResolversByIRIRequest{} }
-func (m *QueryResolversByIRIRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryResolversByIRIRequest) ProtoMessage()    {}
-func (*QueryResolversByIRIRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{10}
-}
-func (m *QueryResolversByIRIRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryResolversByIRIRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryResolversByIRIRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryResolversByIRIRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryResolversByIRIRequest.Merge(m, src)
-}
-func (m *QueryResolversByIRIRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryResolversByIRIRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryResolversByIRIRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryResolversByIRIRequest proto.InternalMessageInfo
-
-func (m *QueryResolversByIRIRequest) GetIri() string {
-	if m != nil {
-		return m.Iri
-	}
-	return ""
-}
-
-func (m *QueryResolversByIRIRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
@@ -608,7 +553,7 @@ func (m *QueryResolverRequest) Reset()         { *m = QueryResolverRequest{} }
 func (m *QueryResolverRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryResolverRequest) ProtoMessage()    {}
 func (*QueryResolverRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{11}
+	return fileDescriptor_38d540b97ef3e368, []int{10}
 }
 func (m *QueryResolverRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -654,7 +599,7 @@ func (m *QueryResolverResponse) Reset()         { *m = QueryResolverResponse{} }
 func (m *QueryResolverResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryResolverResponse) ProtoMessage()    {}
 func (*QueryResolverResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{12}
+	return fileDescriptor_38d540b97ef3e368, []int{11}
 }
 func (m *QueryResolverResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -690,9 +635,64 @@ func (m *QueryResolverResponse) GetResolver() *ResolverInfo {
 	return nil
 }
 
+// QueryResolversByIRIRequest is the Query/ResolversByIRI request type.
+type QueryResolversByIRIRequest struct {
+	// iri is the IRI of the anchored data.
+	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
+	// pagination is the PageRequest to use for pagination.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryResolversByIRIRequest) Reset()         { *m = QueryResolversByIRIRequest{} }
+func (m *QueryResolversByIRIRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryResolversByIRIRequest) ProtoMessage()    {}
+func (*QueryResolversByIRIRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38d540b97ef3e368, []int{12}
+}
+func (m *QueryResolversByIRIRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryResolversByIRIRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryResolversByIRIRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryResolversByIRIRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryResolversByIRIRequest.Merge(m, src)
+}
+func (m *QueryResolversByIRIRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryResolversByIRIRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryResolversByIRIRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryResolversByIRIRequest proto.InternalMessageInfo
+
+func (m *QueryResolversByIRIRequest) GetIri() string {
+	if m != nil {
+		return m.Iri
+	}
+	return ""
+}
+
+func (m *QueryResolversByIRIRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 // QueryResolversByIRIResponse is the Query/ResolversByIRI response type.
 type QueryResolversByIRIResponse struct {
-	// resolvers are the resolvers that have registered the data.
+	// resolvers are the resolvers that have registered the anchored data.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -747,7 +747,7 @@ func (m *QueryResolversByIRIResponse) GetPagination() *query.PageResponse {
 
 // QueryResolversByHashRequest is the Query/ResolversByHash request type.
 type QueryResolversByHashRequest struct {
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the content hash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -857,7 +857,7 @@ func (m *QueryResolversByHashResponse) GetPagination() *query.PageResponse {
 
 // QueryResolversByURLRequest is the Query/Resolver request type.
 type QueryResolversByURLRequest struct {
-	// url is the resolver URL that has been registered.
+	// url is the URL of the resolver.
 	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -965,9 +965,101 @@ func (m *QueryResolversByURLResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+// ConvertIRIToHashRequest is the Query/ConvertIRIToHash request type.
+type ConvertIRIToHashRequest struct {
+	// iri is the IRI to convert to a ContentHash.
+	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
+}
+
+func (m *ConvertIRIToHashRequest) Reset()         { *m = ConvertIRIToHashRequest{} }
+func (m *ConvertIRIToHashRequest) String() string { return proto.CompactTextString(m) }
+func (*ConvertIRIToHashRequest) ProtoMessage()    {}
+func (*ConvertIRIToHashRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38d540b97ef3e368, []int{18}
+}
+func (m *ConvertIRIToHashRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ConvertIRIToHashRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ConvertIRIToHashRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ConvertIRIToHashRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ConvertIRIToHashRequest.Merge(m, src)
+}
+func (m *ConvertIRIToHashRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *ConvertIRIToHashRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ConvertIRIToHashRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ConvertIRIToHashRequest proto.InternalMessageInfo
+
+func (m *ConvertIRIToHashRequest) GetIri() string {
+	if m != nil {
+		return m.Iri
+	}
+	return ""
+}
+
+// ConvertIRIToHashResponse is the Query/ConvertIRIToHash response type.
+type ConvertIRIToHashResponse struct {
+	// content_hash is the ContentHash converted from the IRI.
+	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
+}
+
+func (m *ConvertIRIToHashResponse) Reset()         { *m = ConvertIRIToHashResponse{} }
+func (m *ConvertIRIToHashResponse) String() string { return proto.CompactTextString(m) }
+func (*ConvertIRIToHashResponse) ProtoMessage()    {}
+func (*ConvertIRIToHashResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38d540b97ef3e368, []int{19}
+}
+func (m *ConvertIRIToHashResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ConvertIRIToHashResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ConvertIRIToHashResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ConvertIRIToHashResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ConvertIRIToHashResponse.Merge(m, src)
+}
+func (m *ConvertIRIToHashResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *ConvertIRIToHashResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ConvertIRIToHashResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ConvertIRIToHashResponse proto.InternalMessageInfo
+
+func (m *ConvertIRIToHashResponse) GetContentHash() *ContentHash {
+	if m != nil {
+		return m.ContentHash
+	}
+	return nil
+}
+
 // ConvertHashToIRIRequest is the Query/ConvertHashToIRI request type.
 type ConvertHashToIRIRequest struct {
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the ContentHash to convert to an IRI.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
@@ -975,7 +1067,7 @@ func (m *ConvertHashToIRIRequest) Reset()         { *m = ConvertHashToIRIRequest
 func (m *ConvertHashToIRIRequest) String() string { return proto.CompactTextString(m) }
 func (*ConvertHashToIRIRequest) ProtoMessage()    {}
 func (*ConvertHashToIRIRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{18}
+	return fileDescriptor_38d540b97ef3e368, []int{20}
 }
 func (m *ConvertHashToIRIRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1013,7 +1105,7 @@ func (m *ConvertHashToIRIRequest) GetContentHash() *ContentHash {
 
 // ConvertHashToIRIResponse is the Query/ConvertHashToIRI response type.
 type ConvertHashToIRIResponse struct {
-	// iri is the IRI for the content hash.
+	// iri is the IRI converted from the ContentHash.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
@@ -1021,7 +1113,7 @@ func (m *ConvertHashToIRIResponse) Reset()         { *m = ConvertHashToIRIRespon
 func (m *ConvertHashToIRIResponse) String() string { return proto.CompactTextString(m) }
 func (*ConvertHashToIRIResponse) ProtoMessage()    {}
 func (*ConvertHashToIRIResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{19}
+	return fileDescriptor_38d540b97ef3e368, []int{21}
 }
 func (m *ConvertHashToIRIResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1073,7 +1165,7 @@ func (m *ConvertRawHashToIRIRequest) Reset()         { *m = ConvertRawHashToIRIR
 func (m *ConvertRawHashToIRIRequest) String() string { return proto.CompactTextString(m) }
 func (*ConvertRawHashToIRIRequest) ProtoMessage()    {}
 func (*ConvertRawHashToIRIRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{20}
+	return fileDescriptor_38d540b97ef3e368, []int{22}
 }
 func (m *ConvertRawHashToIRIRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1125,7 +1217,7 @@ func (m *ConvertRawHashToIRIRequest) GetMediaType() RawMediaType {
 
 // ConvertRawHashToIRIResponse is the Query/ConvertRawHashToIRI response type.
 type ConvertRawHashToIRIResponse struct {
-	// iri is the IRI for the content hash.
+	// iri is the IRI converted from ContentHash_Raw.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
@@ -1133,7 +1225,7 @@ func (m *ConvertRawHashToIRIResponse) Reset()         { *m = ConvertRawHashToIRI
 func (m *ConvertRawHashToIRIResponse) String() string { return proto.CompactTextString(m) }
 func (*ConvertRawHashToIRIResponse) ProtoMessage()    {}
 func (*ConvertRawHashToIRIResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{21}
+	return fileDescriptor_38d540b97ef3e368, []int{23}
 }
 func (m *ConvertRawHashToIRIResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1188,7 +1280,7 @@ func (m *ConvertGraphHashToIRIRequest) Reset()         { *m = ConvertGraphHashTo
 func (m *ConvertGraphHashToIRIRequest) String() string { return proto.CompactTextString(m) }
 func (*ConvertGraphHashToIRIRequest) ProtoMessage()    {}
 func (*ConvertGraphHashToIRIRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{22}
+	return fileDescriptor_38d540b97ef3e368, []int{24}
 }
 func (m *ConvertGraphHashToIRIRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1245,9 +1337,10 @@ func (m *ConvertGraphHashToIRIRequest) GetMerkleTree() GraphMerkleTree {
 	return GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
 }
 
-// ConvertGraphHashToIRIResponse is the Query/ConvertGraphHashToIRI response type.
+// ConvertGraphHashToIRIResponse is the Query/ConvertGraphHashToIRI response
+// type.
 type ConvertGraphHashToIRIResponse struct {
-	// iri is the IRI for the content hash.
+	// iri is the IRI converted from ContentHash_Graph.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
@@ -1255,7 +1348,7 @@ func (m *ConvertGraphHashToIRIResponse) Reset()         { *m = ConvertGraphHashT
 func (m *ConvertGraphHashToIRIResponse) String() string { return proto.CompactTextString(m) }
 func (*ConvertGraphHashToIRIResponse) ProtoMessage()    {}
 func (*ConvertGraphHashToIRIResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{23}
+	return fileDescriptor_38d540b97ef3e368, []int{25}
 }
 func (m *ConvertGraphHashToIRIResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1289,98 +1382,6 @@ func (m *ConvertGraphHashToIRIResponse) GetIri() string {
 		return m.Iri
 	}
 	return ""
-}
-
-// ConvertIRIToHashRequest is the Query/ConvertIRIToHash request type.
-type ConvertIRIToHashRequest struct {
-	// iri is the IRI for the content hash.
-	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-}
-
-func (m *ConvertIRIToHashRequest) Reset()         { *m = ConvertIRIToHashRequest{} }
-func (m *ConvertIRIToHashRequest) String() string { return proto.CompactTextString(m) }
-func (*ConvertIRIToHashRequest) ProtoMessage()    {}
-func (*ConvertIRIToHashRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{24}
-}
-func (m *ConvertIRIToHashRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ConvertIRIToHashRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ConvertIRIToHashRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ConvertIRIToHashRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ConvertIRIToHashRequest.Merge(m, src)
-}
-func (m *ConvertIRIToHashRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *ConvertIRIToHashRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ConvertIRIToHashRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ConvertIRIToHashRequest proto.InternalMessageInfo
-
-func (m *ConvertIRIToHashRequest) GetIri() string {
-	if m != nil {
-		return m.Iri
-	}
-	return ""
-}
-
-// ConvertIRIToHashResponse is the Query/ConvertIRIToHash response type.
-type ConvertIRIToHashResponse struct {
-	// content_hash is the ContentHash for the IRI.
-	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
-}
-
-func (m *ConvertIRIToHashResponse) Reset()         { *m = ConvertIRIToHashResponse{} }
-func (m *ConvertIRIToHashResponse) String() string { return proto.CompactTextString(m) }
-func (*ConvertIRIToHashResponse) ProtoMessage()    {}
-func (*ConvertIRIToHashResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38d540b97ef3e368, []int{25}
-}
-func (m *ConvertIRIToHashResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ConvertIRIToHashResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ConvertIRIToHashResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ConvertIRIToHashResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ConvertIRIToHashResponse.Merge(m, src)
-}
-func (m *ConvertIRIToHashResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *ConvertIRIToHashResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ConvertIRIToHashResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ConvertIRIToHashResponse proto.InternalMessageInfo
-
-func (m *ConvertIRIToHashResponse) GetContentHash() *ContentHash {
-	if m != nil {
-		return m.ContentHash
-	}
-	return nil
 }
 
 // ResolverInfo is the human-readable resolver information.
@@ -1458,105 +1459,105 @@ func init() {
 	proto.RegisterType((*QueryAttestorsByIRIResponse)(nil), "regen.data.v1.QueryAttestorsByIRIResponse")
 	proto.RegisterType((*QueryAttestorsByHashRequest)(nil), "regen.data.v1.QueryAttestorsByHashRequest")
 	proto.RegisterType((*QueryAttestorsByHashResponse)(nil), "regen.data.v1.QueryAttestorsByHashResponse")
-	proto.RegisterType((*QueryResolversByIRIRequest)(nil), "regen.data.v1.QueryResolversByIRIRequest")
 	proto.RegisterType((*QueryResolverRequest)(nil), "regen.data.v1.QueryResolverRequest")
 	proto.RegisterType((*QueryResolverResponse)(nil), "regen.data.v1.QueryResolverResponse")
+	proto.RegisterType((*QueryResolversByIRIRequest)(nil), "regen.data.v1.QueryResolversByIRIRequest")
 	proto.RegisterType((*QueryResolversByIRIResponse)(nil), "regen.data.v1.QueryResolversByIRIResponse")
 	proto.RegisterType((*QueryResolversByHashRequest)(nil), "regen.data.v1.QueryResolversByHashRequest")
 	proto.RegisterType((*QueryResolversByHashResponse)(nil), "regen.data.v1.QueryResolversByHashResponse")
 	proto.RegisterType((*QueryResolversByURLRequest)(nil), "regen.data.v1.QueryResolversByURLRequest")
 	proto.RegisterType((*QueryResolversByURLResponse)(nil), "regen.data.v1.QueryResolversByURLResponse")
+	proto.RegisterType((*ConvertIRIToHashRequest)(nil), "regen.data.v1.ConvertIRIToHashRequest")
+	proto.RegisterType((*ConvertIRIToHashResponse)(nil), "regen.data.v1.ConvertIRIToHashResponse")
 	proto.RegisterType((*ConvertHashToIRIRequest)(nil), "regen.data.v1.ConvertHashToIRIRequest")
 	proto.RegisterType((*ConvertHashToIRIResponse)(nil), "regen.data.v1.ConvertHashToIRIResponse")
 	proto.RegisterType((*ConvertRawHashToIRIRequest)(nil), "regen.data.v1.ConvertRawHashToIRIRequest")
 	proto.RegisterType((*ConvertRawHashToIRIResponse)(nil), "regen.data.v1.ConvertRawHashToIRIResponse")
 	proto.RegisterType((*ConvertGraphHashToIRIRequest)(nil), "regen.data.v1.ConvertGraphHashToIRIRequest")
 	proto.RegisterType((*ConvertGraphHashToIRIResponse)(nil), "regen.data.v1.ConvertGraphHashToIRIResponse")
-	proto.RegisterType((*ConvertIRIToHashRequest)(nil), "regen.data.v1.ConvertIRIToHashRequest")
-	proto.RegisterType((*ConvertIRIToHashResponse)(nil), "regen.data.v1.ConvertIRIToHashResponse")
 	proto.RegisterType((*ResolverInfo)(nil), "regen.data.v1.ResolverInfo")
 }
 
 func init() { proto.RegisterFile("regen/data/v1/query.proto", fileDescriptor_38d540b97ef3e368) }
 
 var fileDescriptor_38d540b97ef3e368 = []byte{
-	// 1202 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xcf, 0x6f, 0xe3, 0x44,
-	0x14, 0x8e, 0xd3, 0x2e, 0xdb, 0xbc, 0x76, 0xbb, 0x65, 0x60, 0xb5, 0xa9, 0xdb, 0x0d, 0xc5, 0x94,
-	0xb6, 0xb4, 0x4d, 0xac, 0x14, 0xad, 0x10, 0x48, 0x08, 0xb5, 0x85, 0x5d, 0x82, 0xb6, 0x68, 0xb1,
-	0xba, 0x12, 0xcb, 0xa5, 0x9a, 0x26, 0x83, 0x33, 0xda, 0xc4, 0x93, 0x1d, 0xbb, 0x29, 0xa1, 0xda,
-	0x0b, 0x3f, 0x2e, 0x48, 0x48, 0x2b, 0x81, 0x38, 0x71, 0x00, 0x84, 0xc4, 0x85, 0x3b, 0xff, 0x02,
-	0xc7, 0x95, 0xb8, 0x70, 0x44, 0x2d, 0x67, 0xfe, 0x06, 0xe4, 0xf1, 0x38, 0x71, 0xec, 0x71, 0x5d,
-	0xb1, 0xa1, 0xea, 0xcd, 0x76, 0xbe, 0x79, 0xef, 0x7b, 0xdf, 0xf7, 0x3c, 0xf3, 0x1c, 0x98, 0xe5,
-	0xc4, 0x26, 0x8e, 0xd9, 0xc0, 0x1e, 0x36, 0xbb, 0x55, 0xf3, 0xe1, 0x01, 0xe1, 0xbd, 0x4a, 0x87,
-	0x33, 0x8f, 0xa1, 0x2b, 0xe2, 0xa7, 0x8a, 0xff, 0x53, 0xa5, 0x5b, 0xd5, 0xe7, 0x6d, 0xc6, 0xec,
-	0x16, 0x31, 0x71, 0x87, 0x9a, 0xd8, 0x71, 0x98, 0x87, 0x3d, 0xca, 0x1c, 0x37, 0x00, 0xeb, 0xab,
-	0x75, 0xe6, 0xb6, 0x99, 0x6b, 0xee, 0x63, 0x97, 0x04, 0x51, 0xcc, 0x6e, 0x75, 0x9f, 0x78, 0xb8,
-	0x6a, 0x76, 0xb0, 0x4d, 0x1d, 0x01, 0x96, 0xd8, 0x58, 0x4e, 0xaf, 0xd7, 0x21, 0x32, 0x8c, 0xb1,
-	0x06, 0xd7, 0x3f, 0xf0, 0x17, 0x6f, 0x3a, 0xf5, 0x26, 0xe3, 0x5b, 0xbd, 0x9a, 0x55, 0xb3, 0xc8,
-	0xc3, 0x03, 0xe2, 0x7a, 0x68, 0x06, 0xc6, 0x28, 0xa7, 0x45, 0x6d, 0x41, 0x5b, 0x29, 0x58, 0xfe,
-	0xa5, 0xb1, 0x03, 0xc5, 0x24, 0xd8, 0xed, 0x30, 0xc7, 0x25, 0xa8, 0x0a, 0x97, 0x88, 0xe3, 0xf1,
-	0x9e, 0xc0, 0x4f, 0x6e, 0xcc, 0x55, 0x86, 0x8a, 0xa9, 0x6c, 0x33, 0xc7, 0x23, 0x8e, 0xf7, 0x8e,
-	0x0f, 0xb1, 0x02, 0xa4, 0x71, 0x3f, 0x16, 0xee, 0x5d, 0xec, 0x36, 0xc3, 0xe4, 0x6f, 0xc2, 0x54,
-	0x3d, 0x58, 0xb2, 0xd7, 0xc4, 0x6e, 0x53, 0x46, 0xd5, 0xd5, 0x51, 0xc5, 0xc2, 0xc9, 0xfa, 0xe0,
-	0xc6, 0x78, 0x1f, 0x66, 0x15, 0xa1, 0xff, 0x3b, 0xd5, 0xcf, 0x35, 0xb8, 0x11, 0x09, 0xe8, 0x6e,
-	0xf5, 0x36, 0x3d, 0x8f, 0xb8, 0x1e, 0xe3, 0x21, 0x61, 0x1d, 0x26, 0xb0, 0x7c, 0x24, 0x25, 0xeb,
-	0xdf, 0xa3, 0x5b, 0x00, 0x03, 0x4f, 0x8a, 0x79, 0x91, 0x75, 0xa9, 0x12, 0x18, 0x58, 0xf1, 0x0d,
-	0xac, 0x04, 0x6d, 0x20, 0x0d, 0xac, 0xdc, 0xc5, 0x36, 0x91, 0x71, 0xad, 0xc8, 0x4a, 0xe3, 0x07,
-	0x0d, 0x4a, 0x69, 0x2c, 0x64, 0x6d, 0x37, 0xe1, 0xb2, 0xcf, 0x98, 0x12, 0xb7, 0xa8, 0x2d, 0x8c,
-	0x65, 0x55, 0x17, 0x62, 0xd1, 0x6d, 0x05, 0xc3, 0xe5, 0x4c, 0x86, 0x41, 0xce, 0x21, 0x8a, 0x5d,
-	0xd0, 0x03, 0x86, 0x92, 0x98, 0x7b, 0x7a, 0x4b, 0x8d, 0x4c, 0x9a, 0x2f, 0x34, 0x98, 0x53, 0x26,
-	0x96, 0xba, 0xcc, 0x43, 0x21, 0xb4, 0x23, 0x50, 0xa6, 0x60, 0x0d, 0x1e, 0x8c, 0xae, 0xfc, 0x9f,
-	0x15, 0x34, 0x46, 0xd7, 0xd6, 0x23, 0x53, 0xeb, 0x4b, 0x0d, 0xe6, 0xd5, 0x34, 0xcf, 0x57, 0xae,
-	0xb0, 0x5b, 0x2c, 0xe2, 0xb2, 0x56, 0x97, 0x9c, 0x5b, 0xb7, 0x2c, 0xc1, 0xf3, 0x43, 0x79, 0xc3,
-	0x8c, 0xd3, 0x90, 0xa7, 0x0d, 0x91, 0x70, 0xdc, 0xca, 0xd3, 0x86, 0x71, 0x17, 0xae, 0xc5, 0x70,
-	0x52, 0x9f, 0xd7, 0x60, 0x82, 0xcb, 0x67, 0x29, 0xbb, 0x48, 0xb8, 0xa4, 0xe6, 0x7c, 0xcc, 0xac,
-	0x3e, 0xd8, 0xf8, 0x31, 0x6c, 0x90, 0x78, 0xc9, 0x32, 0xf0, 0xeb, 0x50, 0x08, 0xb1, 0x69, 0x6f,
-	0xf0, 0x50, 0xe4, 0x01, 0xfa, 0x7f, 0x68, 0xe2, 0x08, 0xc7, 0x0b, 0xd8, 0xc4, 0x3f, 0x85, 0x4d,
-	0x9c, 0xa0, 0x79, 0x81, 0xb4, 0x54, 0x74, 0xf8, 0x3d, 0xeb, 0x4e, 0xa4, 0xc3, 0x0f, 0x78, 0x2b,
-	0xec, 0xf0, 0x03, 0xde, 0x1a, 0x99, 0x38, 0xaa, 0x3e, 0x13, 0x89, 0x2f, 0x90, 0x36, 0x1f, 0xc2,
-	0xf5, 0x6d, 0xe6, 0x74, 0x09, 0x17, 0x7d, 0xb1, 0xcb, 0x22, 0xaf, 0xfe, 0x53, 0x1e, 0xff, 0xeb,
-	0x50, 0x4c, 0x46, 0x96, 0x95, 0x27, 0xc7, 0x9a, 0xdf, 0x34, 0xd0, 0x25, 0xdc, 0xc2, 0x87, 0x09,
-	0x2e, 0x08, 0xc6, 0xfb, 0x1c, 0x0a, 0x96, 0xb8, 0x46, 0x35, 0x98, 0x69, 0x50, 0x9b, 0xb8, 0xde,
-	0x1e, 0x6e, 0xd9, 0x8c, 0x53, 0xaf, 0xd9, 0x16, 0x4a, 0x4c, 0x6f, 0x94, 0x62, 0x1c, 0xdf, 0x16,
-	0xb0, 0xcd, 0x10, 0x65, 0x5d, 0x6d, 0x0c, 0x3f, 0x40, 0x6f, 0x00, 0xb4, 0x49, 0x83, 0xe2, 0x3d,
-	0x7f, 0x2c, 0x2b, 0x8e, 0x89, 0x20, 0x09, 0x2b, 0xf0, 0xe1, 0x8e, 0x8f, 0xd9, 0xed, 0x75, 0x88,
-	0x55, 0x68, 0x87, 0x97, 0x86, 0x09, 0x73, 0x4a, 0xe2, 0xa9, 0xa5, 0xfe, 0x9a, 0x87, 0x79, 0xb9,
-	0xe2, 0x36, 0xc7, 0x9d, 0xe6, 0x79, 0x17, 0xdb, 0x02, 0xbd, 0x8e, 0x1d, 0xe6, 0xd0, 0x3a, 0x6e,
-	0xd1, 0x4f, 0x45, 0x1b, 0x44, 0x82, 0x06, 0xc5, 0x97, 0x63, 0x41, 0x05, 0xd1, 0xed, 0xd8, 0xaa,
-	0x41, 0x8e, 0xd9, 0x7a, 0xda, 0x4f, 0xe8, 0x2d, 0x98, 0x6c, 0x13, 0xfe, 0xa0, 0x45, 0xf6, 0x3c,
-	0x4e, 0x48, 0x71, 0x5c, 0xc9, 0x59, 0x84, 0xdf, 0x11, 0xb0, 0x5d, 0x4e, 0x88, 0x05, 0xed, 0xfe,
-	0xb5, 0x51, 0x85, 0x1b, 0x29, 0x6a, 0xa5, 0x2a, 0xbc, 0xd6, 0x6f, 0xea, 0x9a, 0x55, 0xdb, 0x65,
-	0xd1, 0x7d, 0x33, 0x09, 0xbe, 0xdf, 0xef, 0xd3, 0x08, 0x58, 0x86, 0x7e, 0xca, 0x57, 0xe0, 0x3d,
-	0x98, 0x8a, 0xbe, 0xc0, 0xf1, 0xa3, 0x2d, 0xdc, 0x7a, 0xf2, 0x83, 0xad, 0xa7, 0x08, 0x97, 0xdb,
-	0xd8, 0xc1, 0x36, 0xe1, 0xc2, 0x88, 0x82, 0x15, 0xde, 0x6e, 0xfc, 0x73, 0x05, 0x2e, 0x89, 0xcd,
-	0x04, 0x7d, 0xa5, 0xc1, 0x64, 0x64, 0xfa, 0x47, 0x4b, 0x31, 0x3a, 0x29, 0xdf, 0x12, 0xfa, 0x72,
-	0x26, 0x2e, 0xa8, 0xda, 0x58, 0xfd, 0xec, 0x8f, 0xbf, 0xbf, 0xc9, 0x2f, 0x22, 0xc3, 0x1c, 0xfe,
-	0x66, 0xc1, 0x02, 0x5b, 0xde, 0xef, 0x95, 0x29, 0xa7, 0xe6, 0x11, 0xe5, 0xf4, 0x11, 0xaa, 0xc3,
-	0x54, 0x74, 0xbe, 0x47, 0xa7, 0x26, 0x89, 0x18, 0xa1, 0xaf, 0x64, 0x03, 0x25, 0x9d, 0x1c, 0xfa,
-	0x45, 0x83, 0x67, 0x13, 0xe3, 0x36, 0x5a, 0x4f, 0x8f, 0x90, 0xfc, 0x36, 0xd0, 0xcb, 0x67, 0x44,
-	0xcb, 0xa4, 0x37, 0x85, 0x06, 0x26, 0x2a, 0x2b, 0x35, 0x70, 0x7d, 0x11, 0xc2, 0x59, 0xcc, 0x3c,
-	0x0a, 0xaf, 0x1e, 0xa1, 0xef, 0x34, 0x98, 0x1e, 0x9e, 0x7e, 0xd1, 0x2b, 0xca, 0xc4, 0xaa, 0xd1,
-	0x5c, 0x5f, 0x3d, 0x0b, 0x54, 0x12, 0x2c, 0x0b, 0x82, 0xcb, 0xe8, 0xe5, 0x38, 0xc1, 0x10, 0x3e,
-	0xec, 0x53, 0x0b, 0xae, 0xc6, 0xe6, 0x4c, 0x94, 0x95, 0x2d, 0xea, 0xd6, 0xda, 0x99, 0xb0, 0x7d,
-	0xc3, 0x8e, 0x60, 0x22, 0x6c, 0x7c, 0xf4, 0x92, 0x6a, 0x69, 0x6c, 0xe8, 0xd3, 0x17, 0x4f, 0x07,
-	0xc9, 0xc0, 0x8b, 0xa2, 0xe6, 0x12, 0x9a, 0x8f, 0xd5, 0x1c, 0x9e, 0x8b, 0xe6, 0x11, 0x6d, 0x04,
-	0x1e, 0x0c, 0x4f, 0x76, 0x6a, 0x0f, 0x94, 0x03, 0xaf, 0xda, 0x03, 0xf5, 0xa0, 0x98, 0xea, 0x41,
-	0xff, 0x9c, 0x4e, 0x78, 0x10, 0x1b, 0x93, 0x50, 0x56, 0xb6, 0x4c, 0x0f, 0x52, 0xe6, 0x2e, 0x23,
-	0x87, 0x1e, 0x0f, 0xcb, 0x70, 0xcf, 0xba, 0x93, 0x29, 0xc3, 0x60, 0x2a, 0xca, 0x94, 0x21, 0x32,
-	0xc7, 0x18, 0xcb, 0x42, 0x86, 0x17, 0xd1, 0x0b, 0xa7, 0xc9, 0xe0, 0xef, 0x6e, 0x5f, 0x6b, 0x30,
-	0x13, 0xdf, 0x6b, 0x13, 0xdb, 0x57, 0xca, 0xce, 0x9d, 0xd8, 0xbe, 0xd2, 0x36, 0x6d, 0x63, 0x45,
-	0xd0, 0x31, 0xd0, 0x42, 0x8c, 0x0e, 0xe5, 0xb4, 0xec, 0xb1, 0xb2, 0xbf, 0x91, 0x4b, 0x43, 0x48,
-	0x9f, 0x4e, 0xff, 0x54, 0x49, 0xa3, 0x13, 0x3f, 0xa4, 0xd3, 0xe8, 0x24, 0x8e, 0x27, 0x23, 0x87,
-	0xbe, 0xd5, 0xe0, 0x39, 0xc5, 0x88, 0x90, 0xb0, 0x23, 0x7d, 0xfe, 0x49, 0xd8, 0x71, 0xca, 0xc4,
-	0x61, 0x2c, 0x89, 0xfa, 0x17, 0x50, 0x29, 0x6e, 0x07, 0x3e, 0x14, 0xc5, 0xfb, 0x22, 0xf8, 0x1f,
-	0x72, 0xdf, 0x6b, 0x70, 0x4d, 0x79, 0xb2, 0xa2, 0x35, 0x75, 0x36, 0xe5, 0xb4, 0xa2, 0xaf, 0x9f,
-	0x0d, 0x9c, 0x61, 0x8e, 0xed, 0xc3, 0xa3, 0xf4, 0xb6, 0x6e, 0xfd, 0x7e, 0x5c, 0xd2, 0x9e, 0x1c,
-	0x97, 0xb4, 0xbf, 0x8e, 0x4b, 0xda, 0xe3, 0x93, 0x52, 0xee, 0xc9, 0x49, 0x29, 0xf7, 0xe7, 0x49,
-	0x29, 0xf7, 0xd1, 0xba, 0x4d, 0xbd, 0xe6, 0xc1, 0x7e, 0xa5, 0xce, 0xda, 0x41, 0x94, 0xb2, 0x43,
-	0xbc, 0x43, 0xc6, 0x1f, 0xc8, 0xbb, 0x16, 0x69, 0xd8, 0x84, 0x9b, 0x9f, 0x88, 0xe0, 0xfb, 0xcf,
-	0x88, 0x3f, 0xd9, 0x5e, 0xfd, 0x37, 0x00, 0x00, 0xff, 0xff, 0xb8, 0xfd, 0xc8, 0x2c, 0xf5, 0x13,
-	0x00, 0x00,
+	// 1207 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xcf, 0x6f, 0x1b, 0x45,
+	0x14, 0xf6, 0x3a, 0xa1, 0x8d, 0x5f, 0xd2, 0x34, 0x0c, 0x54, 0x75, 0x36, 0xa9, 0x09, 0x4b, 0x48,
+	0x42, 0x12, 0x7b, 0x95, 0x00, 0x42, 0x54, 0x42, 0x28, 0x09, 0xb4, 0x18, 0xb5, 0x50, 0x56, 0xa9,
+	0x44, 0xb9, 0x44, 0x13, 0x7b, 0x58, 0xaf, 0x6a, 0xef, 0xb8, 0xb3, 0x6b, 0x07, 0x13, 0xf5, 0x02,
+	0x37, 0x24, 0xa4, 0x4a, 0x20, 0x4e, 0x48, 0x88, 0x82, 0xc4, 0x85, 0x3b, 0xff, 0x02, 0xc7, 0x4a,
+	0x5c, 0x38, 0xa2, 0x84, 0x33, 0x7f, 0x03, 0xda, 0xd9, 0x99, 0xf5, 0x7a, 0x77, 0xd6, 0x8e, 0x94,
+	0xb4, 0xca, 0x6d, 0x7f, 0x7c, 0xf3, 0xde, 0xf7, 0xbe, 0xf7, 0x3c, 0xf3, 0xad, 0x61, 0x96, 0x11,
+	0x9b, 0xb8, 0x66, 0x1d, 0xfb, 0xd8, 0xec, 0x6e, 0x98, 0x0f, 0x3a, 0x84, 0xf5, 0x2a, 0x6d, 0x46,
+	0x7d, 0x8a, 0x2e, 0xf1, 0x57, 0x95, 0xe0, 0x55, 0xa5, 0xbb, 0xa1, 0xcf, 0xdb, 0x94, 0xda, 0x4d,
+	0x62, 0xe2, 0xb6, 0x63, 0x62, 0xd7, 0xa5, 0x3e, 0xf6, 0x1d, 0xea, 0x7a, 0x21, 0x58, 0x5f, 0xad,
+	0x51, 0xaf, 0x45, 0x3d, 0x73, 0x1f, 0x7b, 0x24, 0x8c, 0x62, 0x76, 0x37, 0xf6, 0x89, 0x8f, 0x37,
+	0xcc, 0x36, 0xb6, 0x1d, 0x97, 0x83, 0x05, 0x36, 0x91, 0xd3, 0xef, 0xb5, 0x89, 0x08, 0x63, 0xac,
+	0xc1, 0xd5, 0x4f, 0x82, 0xc5, 0x5b, 0x6e, 0xad, 0x41, 0xd9, 0x76, 0xaf, 0x6a, 0x55, 0x2d, 0xf2,
+	0xa0, 0x43, 0x3c, 0x1f, 0xcd, 0xc0, 0x98, 0xc3, 0x9c, 0xa2, 0xb6, 0xa0, 0xad, 0x14, 0xac, 0xe0,
+	0xd2, 0xf8, 0x08, 0x8a, 0x69, 0xb0, 0xd7, 0xa6, 0xae, 0x47, 0xd0, 0x26, 0x5c, 0xc0, 0xfc, 0x31,
+	0x5f, 0x30, 0xb9, 0xa9, 0x57, 0x06, 0xaa, 0xa9, 0x84, 0x6b, 0xde, 0x77, 0x7d, 0xd6, 0xb3, 0x04,
+	0xd2, 0xb8, 0x97, 0x88, 0xf7, 0x01, 0xf6, 0x1a, 0x32, 0xfb, 0x3b, 0x30, 0x55, 0xa3, 0xae, 0x4f,
+	0x5c, 0x7f, 0xaf, 0x81, 0xbd, 0x46, 0x46, 0xd4, 0x9d, 0x10, 0xc2, 0x17, 0x4e, 0xd6, 0xfa, 0x37,
+	0xc6, 0xc7, 0x30, 0xab, 0x08, 0x7d, 0x0a, 0xae, 0x5f, 0x6b, 0x70, 0x2d, 0x16, 0xd1, 0xdb, 0xee,
+	0x6d, 0xf9, 0x3e, 0xf1, 0x7c, 0xca, 0x24, 0x63, 0x1d, 0x26, 0xb0, 0x78, 0x24, 0x44, 0x8b, 0xee,
+	0xd1, 0x0d, 0x80, 0x7e, 0x57, 0x8a, 0x79, 0x9e, 0x75, 0xa9, 0x12, 0xb6, 0xb0, 0x12, 0xb4, 0xb0,
+	0x12, 0x0e, 0x82, 0x68, 0x61, 0xe5, 0x0e, 0xb6, 0x89, 0x88, 0x6b, 0xc5, 0x56, 0x1a, 0x3f, 0x69,
+	0x50, 0xca, 0x62, 0x21, 0x8a, 0x7b, 0x03, 0x2e, 0x86, 0x94, 0xbd, 0xa2, 0xb6, 0x30, 0x36, 0xa2,
+	0x3a, 0x09, 0x45, 0x37, 0x15, 0x04, 0x97, 0x47, 0x12, 0x0c, 0x53, 0x0e, 0x30, 0xec, 0x82, 0x1e,
+	0x12, 0x14, 0xbc, 0xbc, 0xe1, 0x33, 0x75, 0x66, 0xca, 0x3c, 0xd6, 0x60, 0x4e, 0x99, 0x58, 0xc8,
+	0x72, 0x1d, 0x0a, 0xb2, 0x1b, 0x52, 0x98, 0xf9, 0xa4, 0x30, 0xe2, 0x7d, 0x28, 0x4d, 0x1f, 0x7e,
+	0x76, 0xe2, 0xfc, 0xaa, 0x20, 0x79, 0x76, 0x43, 0x7f, 0x66, 0x5a, 0xfe, 0xa2, 0xc1, 0xbc, 0x9a,
+	0xe6, 0x79, 0x12, 0x73, 0x09, 0x5e, 0xe4, 0x24, 0x2d, 0xe2, 0xd1, 0x66, 0x97, 0x44, 0xbf, 0xc3,
+	0x69, 0xc8, 0x3b, 0x75, 0x2e, 0xdd, 0xb8, 0x95, 0x77, 0xea, 0xc6, 0x1d, 0xb8, 0x92, 0xc0, 0x89,
+	0x2a, 0xde, 0x82, 0x09, 0x26, 0x9e, 0x09, 0xa5, 0xe7, 0x12, 0x45, 0xc8, 0x25, 0x55, 0xf7, 0x73,
+	0x6a, 0x45, 0xe0, 0x68, 0xc6, 0xe5, 0xeb, 0x67, 0x35, 0xe3, 0x3f, 0xcb, 0xf1, 0x49, 0x26, 0x16,
+	0x05, 0xbd, 0x0d, 0x05, 0xc9, 0x51, 0xb6, 0x65, 0x68, 0x45, 0x7d, 0xf4, 0x53, 0x18, 0xf1, 0x18,
+	0xc7, 0x73, 0x38, 0xe2, 0x8f, 0xe5, 0x88, 0xa7, 0x68, 0x9e, 0x23, 0x2d, 0x15, 0x73, 0x76, 0xd7,
+	0xba, 0x15, 0x9b, 0xb3, 0x0e, 0x6b, 0xca, 0x39, 0xeb, 0xb0, 0xe6, 0x53, 0x9d, 0x33, 0x9e, 0xf8,
+	0x1c, 0x69, 0xb3, 0x06, 0x57, 0x77, 0xa8, 0xdb, 0x25, 0xcc, 0xaf, 0x5a, 0xd5, 0x5d, 0x1a, 0x1f,
+	0xb1, 0xb4, 0x71, 0xb9, 0x07, 0xc5, 0x34, 0x58, 0x14, 0x73, 0x4a, 0xa3, 0xf1, 0x69, 0xc4, 0x23,
+	0xb8, 0xdd, 0xa5, 0xb1, 0x8d, 0xe0, 0x94, 0x91, 0xd7, 0x23, 0xd2, 0xb1, 0xc8, 0x82, 0x74, 0xba,
+	0xc4, 0x3f, 0x34, 0xd0, 0x05, 0xdc, 0xc2, 0x07, 0x29, 0x2e, 0x08, 0xc6, 0x23, 0x0e, 0x05, 0x8b,
+	0x5f, 0xa3, 0x2a, 0xcc, 0xd4, 0x1d, 0x9b, 0x78, 0xfe, 0x1e, 0x6e, 0xda, 0x94, 0x39, 0x7e, 0xa3,
+	0xc5, 0x3b, 0x32, 0xbd, 0x59, 0x4a, 0x70, 0x7c, 0x8f, 0xc3, 0xb6, 0x24, 0xca, 0xba, 0x5c, 0x1f,
+	0x7c, 0x80, 0xae, 0x03, 0xb4, 0x48, 0xdd, 0xc1, 0x7b, 0x81, 0xb7, 0x2c, 0x8e, 0xf1, 0x20, 0xa9,
+	0x91, 0xc0, 0x07, 0xb7, 0x03, 0xcc, 0x6e, 0xaf, 0x4d, 0xac, 0x42, 0x4b, 0x5e, 0x1a, 0x26, 0xcc,
+	0x29, 0x89, 0x67, 0x96, 0xfa, 0x7b, 0x1e, 0xe6, 0xc5, 0x8a, 0x9b, 0x0c, 0xb7, 0x1b, 0xcf, 0xba,
+	0xd8, 0x26, 0xe8, 0x35, 0xec, 0x52, 0xd7, 0xa9, 0xe1, 0xa6, 0xf3, 0x25, 0x1f, 0xc7, 0x58, 0xd0,
+	0xb0, 0xf8, 0x72, 0x22, 0x28, 0x27, 0xba, 0x93, 0x58, 0xd5, 0xcf, 0x31, 0x5b, 0xcb, 0x7a, 0x85,
+	0xde, 0x85, 0xc9, 0x16, 0x61, 0xf7, 0x9b, 0x64, 0xcf, 0x67, 0x84, 0x14, 0xc7, 0x95, 0x9c, 0x79,
+	0xf8, 0xdb, 0x1c, 0xb6, 0xcb, 0x08, 0xb1, 0xa0, 0x15, 0x5d, 0x1b, 0x1b, 0x70, 0x2d, 0x43, 0xad,
+	0x4c, 0x85, 0x3f, 0x84, 0xa9, 0xf8, 0x0f, 0x38, 0x79, 0xa4, 0xca, 0xad, 0x27, 0xdf, 0xdf, 0x7a,
+	0x8a, 0x70, 0xb1, 0x85, 0x5d, 0x6c, 0x13, 0xc6, 0x05, 0x28, 0x58, 0xf2, 0x76, 0xf3, 0xbf, 0x4b,
+	0xf0, 0x1c, 0xdf, 0x4c, 0xd0, 0x37, 0x1a, 0x4c, 0xc6, 0x3e, 0x1d, 0xd0, 0x52, 0xa2, 0x88, 0x8c,
+	0x0f, 0x11, 0x7d, 0x79, 0x24, 0x2e, 0x2c, 0xc4, 0x58, 0xfd, 0xea, 0xaf, 0x7f, 0xbf, 0xcb, 0x2f,
+	0x22, 0xc3, 0x1c, 0xfc, 0xe0, 0x09, 0x4d, 0x6e, 0x79, 0xbf, 0x57, 0x76, 0x98, 0x63, 0x1e, 0x3a,
+	0xcc, 0x79, 0x88, 0x6a, 0x30, 0x15, 0xff, 0x36, 0x40, 0x43, 0x93, 0xc4, 0x76, 0x17, 0x7d, 0x65,
+	0x34, 0x50, 0xd0, 0xc9, 0xa1, 0xdf, 0x34, 0x78, 0x3e, 0xe5, 0xd4, 0xd1, 0x7a, 0x76, 0x84, 0xf4,
+	0x67, 0x85, 0x5e, 0x3e, 0x21, 0x5a, 0x24, 0x7d, 0x93, 0x6b, 0x60, 0xa2, 0xb2, 0x52, 0x03, 0x2f,
+	0x10, 0x41, 0x7a, 0x31, 0xf3, 0x50, 0x5e, 0x3d, 0x44, 0x3f, 0x68, 0x30, 0x3d, 0xe8, 0x9c, 0xd1,
+	0x6b, 0xca, 0xc4, 0x2a, 0x5b, 0xaf, 0xaf, 0x9e, 0x04, 0x2a, 0x08, 0x96, 0x39, 0xc1, 0x65, 0xf4,
+	0x6a, 0x92, 0xa0, 0x84, 0x0f, 0xf6, 0xa9, 0x09, 0x97, 0x13, 0x2e, 0x14, 0x8d, 0xca, 0x16, 0xef,
+	0xd6, 0xda, 0x89, 0xb0, 0x51, 0xc3, 0x0e, 0x61, 0x42, 0x0e, 0x3e, 0x7a, 0x45, 0xb5, 0x34, 0x61,
+	0x36, 0xf5, 0xc5, 0xe1, 0x20, 0x11, 0x78, 0x91, 0xd7, 0x5c, 0x42, 0xf3, 0x89, 0x9a, 0xe5, 0xb9,
+	0x68, 0x1e, 0x3a, 0xf5, 0xb0, 0x07, 0x83, 0xce, 0x4e, 0xdd, 0x03, 0xa5, 0xed, 0x54, 0xf7, 0x40,
+	0x6d, 0x14, 0x33, 0x7b, 0x10, 0x9d, 0xd3, 0xa9, 0x1e, 0x24, 0x6c, 0x12, 0x1a, 0x95, 0x6d, 0x64,
+	0x0f, 0x32, 0x7c, 0x97, 0x91, 0x43, 0x8f, 0x06, 0x65, 0xb8, 0x6b, 0xdd, 0x1a, 0x29, 0x43, 0xdf,
+	0x15, 0x8d, 0x94, 0x21, 0xe6, 0x63, 0x8c, 0x65, 0x2e, 0xc3, 0xcb, 0xe8, 0xa5, 0x61, 0x32, 0x04,
+	0xbb, 0xdb, 0xb7, 0x1a, 0xcc, 0x24, 0x0d, 0x44, 0x6a, 0xfb, 0xca, 0xb0, 0x23, 0xa9, 0xed, 0x2b,
+	0xcb, 0x89, 0x18, 0x2b, 0x9c, 0x8e, 0x81, 0x16, 0x12, 0x74, 0x1c, 0xe6, 0x94, 0x7d, 0x5a, 0x0e,
+	0x8e, 0x31, 0xd1, 0x10, 0x12, 0xd1, 0x89, 0x76, 0xf3, 0x2c, 0x3a, 0xc9, 0xc3, 0x31, 0x8b, 0x4e,
+	0xea, 0x58, 0x30, 0x72, 0xe8, 0x7b, 0x0d, 0x5e, 0x50, 0x1c, 0xcd, 0xa9, 0x76, 0x64, 0xfb, 0x8e,
+	0x54, 0x3b, 0x86, 0x9c, 0xf4, 0xc6, 0x12, 0xaf, 0x7f, 0x01, 0x95, 0x92, 0xed, 0xc0, 0x07, 0xbc,
+	0xf8, 0x40, 0x84, 0xe0, 0x73, 0xea, 0x47, 0x0d, 0xae, 0x28, 0x4f, 0x34, 0xb4, 0xa6, 0xce, 0xa6,
+	0x74, 0x09, 0xfa, 0xfa, 0xc9, 0xc0, 0x23, 0x9a, 0x63, 0x07, 0xf0, 0x38, 0xbd, 0xed, 0x1b, 0x7f,
+	0x1e, 0x95, 0xb4, 0x27, 0x47, 0x25, 0xed, 0x9f, 0xa3, 0x92, 0xf6, 0xe8, 0xb8, 0x94, 0x7b, 0x72,
+	0x5c, 0xca, 0xfd, 0x7d, 0x5c, 0xca, 0x7d, 0xb6, 0x6e, 0x3b, 0x7e, 0xa3, 0xb3, 0x5f, 0xa9, 0xd1,
+	0x56, 0x18, 0xa5, 0xec, 0x12, 0xff, 0x80, 0xb2, 0xfb, 0xe2, 0xae, 0x49, 0xea, 0x36, 0x61, 0xe6,
+	0x17, 0x3c, 0xf8, 0xfe, 0x05, 0xfe, 0x0f, 0xdd, 0xeb, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff, 0x74,
+	0x3b, 0x3c, 0xf4, 0x32, 0x14, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1573,29 +1574,33 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// AnchorByIRI queries for an anchor entry by IRI.
 	AnchorByIRI(ctx context.Context, in *QueryAnchorByIRIRequest, opts ...grpc.CallOption) (*QueryAnchorByIRIResponse, error)
-	// AnchorByHash queries for an anchor entry by content hash.
+	// AnchorByHash queries for an anchor entry by ContentHash.
 	AnchorByHash(ctx context.Context, in *QueryAnchorByHashRequest, opts ...grpc.CallOption) (*QueryAnchorByHashResponse, error)
-	// AnchorsByAttestor queries for all anchor entries attested to by a given attestor.
+	// AnchorsByAttestor queries for all anchor entries attested to by an
+	// attestor.
 	AnchorsByAttestor(ctx context.Context, in *QueryAnchorsByAttestorRequest, opts ...grpc.CallOption) (*QueryAnchorsByAttestorResponse, error)
 	// AttestorsByIRI queries for all attestor entries for an anchor entry by IRI.
 	AttestorsByIRI(ctx context.Context, in *QueryAttestorsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestorsByIRIResponse, error)
-	// AttestorsByHash queries for all attestor entries for an anchor entry by content hash.
+	// AttestorsByHash queries for all attestor entries for an anchor entry by
+	// ContentHash.
 	AttestorsByHash(ctx context.Context, in *QueryAttestorsByHashRequest, opts ...grpc.CallOption) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries for a resolver by resolver ID.
+	// Resolver queries for a resolver by ID.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
-	// ResolversByIRI queries for all resolvers that have registered an anchor entry by IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchor
+	// entry by IRI.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries for all resolvers that have registered an anchor entry by content hash.
+	// ResolversByHash queries for all resolvers that have registered an anchor
+	// entry by ContentHash.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries resolvers based on URL.
+	// ResolversByURL queries all resolvers by URL.
 	ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error)
-	// ConvertIRIToHash converts an IRI to a content hash.
+	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(ctx context.Context, in *ConvertIRIToHashRequest, opts ...grpc.CallOption) (*ConvertIRIToHashResponse, error)
-	// ConvertHashToIRI converts a content hash to an IRI.
+	// ConvertHashToIRI converts a ContentHash to an IRI.
 	ConvertHashToIRI(ctx context.Context, in *ConvertHashToIRIRequest, opts ...grpc.CallOption) (*ConvertHashToIRIResponse, error)
-	// ConvertRawHashToIRI converts raw content hash properties to an IRI.
+	// ConvertRawHashToIRI converts ContentHash_Raw properties to an IRI.
 	ConvertRawHashToIRI(ctx context.Context, in *ConvertRawHashToIRIRequest, opts ...grpc.CallOption) (*ConvertRawHashToIRIResponse, error)
-	// ConvertGraphHashToIRI converts graph content hash properties to an IRI.
+	// ConvertGraphHashToIRI converts ContentHash_Graph properties to an IRI.
 	ConvertGraphHashToIRI(ctx context.Context, in *ConvertGraphHashToIRIRequest, opts ...grpc.CallOption) (*ConvertGraphHashToIRIResponse, error)
 }
 
@@ -1728,29 +1733,33 @@ func (c *queryClient) ConvertGraphHashToIRI(ctx context.Context, in *ConvertGrap
 type QueryServer interface {
 	// AnchorByIRI queries for an anchor entry by IRI.
 	AnchorByIRI(context.Context, *QueryAnchorByIRIRequest) (*QueryAnchorByIRIResponse, error)
-	// AnchorByHash queries for an anchor entry by content hash.
+	// AnchorByHash queries for an anchor entry by ContentHash.
 	AnchorByHash(context.Context, *QueryAnchorByHashRequest) (*QueryAnchorByHashResponse, error)
-	// AnchorsByAttestor queries for all anchor entries attested to by a given attestor.
+	// AnchorsByAttestor queries for all anchor entries attested to by an
+	// attestor.
 	AnchorsByAttestor(context.Context, *QueryAnchorsByAttestorRequest) (*QueryAnchorsByAttestorResponse, error)
 	// AttestorsByIRI queries for all attestor entries for an anchor entry by IRI.
 	AttestorsByIRI(context.Context, *QueryAttestorsByIRIRequest) (*QueryAttestorsByIRIResponse, error)
-	// AttestorsByHash queries for all attestor entries for an anchor entry by content hash.
+	// AttestorsByHash queries for all attestor entries for an anchor entry by
+	// ContentHash.
 	AttestorsByHash(context.Context, *QueryAttestorsByHashRequest) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries for a resolver by resolver ID.
+	// Resolver queries for a resolver by ID.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
-	// ResolversByIRI queries for all resolvers that have registered an anchor entry by IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchor
+	// entry by IRI.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries for all resolvers that have registered an anchor entry by content hash.
+	// ResolversByHash queries for all resolvers that have registered an anchor
+	// entry by ContentHash.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries resolvers based on URL.
+	// ResolversByURL queries all resolvers by URL.
 	ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error)
-	// ConvertIRIToHash converts an IRI to a content hash.
+	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(context.Context, *ConvertIRIToHashRequest) (*ConvertIRIToHashResponse, error)
-	// ConvertHashToIRI converts a content hash to an IRI.
+	// ConvertHashToIRI converts a ContentHash to an IRI.
 	ConvertHashToIRI(context.Context, *ConvertHashToIRIRequest) (*ConvertHashToIRIResponse, error)
-	// ConvertRawHashToIRI converts raw content hash properties to an IRI.
+	// ConvertRawHashToIRI converts ContentHash_Raw properties to an IRI.
 	ConvertRawHashToIRI(context.Context, *ConvertRawHashToIRIRequest) (*ConvertRawHashToIRIResponse, error)
-	// ConvertGraphHashToIRI converts graph content hash properties to an IRI.
+	// ConvertGraphHashToIRI converts ContentHash_Graph properties to an IRI.
 	ConvertGraphHashToIRI(context.Context, *ConvertGraphHashToIRIRequest) (*ConvertGraphHashToIRIResponse, error)
 }
 
@@ -2147,9 +2156,9 @@ func (m *QueryAnchorByIRIResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	_ = i
 	var l int
 	_ = l
-	if m.Entry != nil {
+	if m.Anchor != nil {
 		{
-			size, err := m.Entry.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Anchor.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -2217,9 +2226,9 @@ func (m *QueryAnchorByHashResponse) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	_ = i
 	var l int
 	_ = l
-	if m.Entry != nil {
+	if m.Anchor != nil {
 		{
-			size, err := m.Entry.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Anchor.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -2306,10 +2315,10 @@ func (m *QueryAnchorsByAttestorResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Entries) > 0 {
-		for iNdEx := len(m.Entries) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Anchors) > 0 {
+		for iNdEx := len(m.Anchors) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Entries[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Anchors[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -2399,9 +2408,14 @@ func (m *QueryAttestorsByIRIResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	}
 	if len(m.Attestors) > 0 {
 		for iNdEx := len(m.Attestors) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.Attestors[iNdEx])
-			copy(dAtA[i:], m.Attestors[iNdEx])
-			i = encodeVarintQuery(dAtA, i, uint64(len(m.Attestors[iNdEx])))
+			{
+				size, err := m.Attestors[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
 			i--
 			dAtA[i] = 0xa
 		}
@@ -2490,54 +2504,17 @@ func (m *QueryAttestorsByHashResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	}
 	if len(m.Attestors) > 0 {
 		for iNdEx := len(m.Attestors) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.Attestors[iNdEx])
-			copy(dAtA[i:], m.Attestors[iNdEx])
-			i = encodeVarintQuery(dAtA, i, uint64(len(m.Attestors[iNdEx])))
+			{
+				size, err := m.Attestors[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
 			i--
 			dAtA[i] = 0xa
 		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryResolversByIRIRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryResolversByIRIRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryResolversByIRIRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Iri) > 0 {
-		i -= len(m.Iri)
-		copy(dAtA[i:], m.Iri)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Iri)))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -2599,6 +2576,48 @@ func (m *QueryResolverResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i -= size
 			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryResolversByIRIRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryResolversByIRIRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryResolversByIRIRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Iri) > 0 {
+		i -= len(m.Iri)
+		copy(dAtA[i:], m.Iri)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Iri)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2841,6 +2860,71 @@ func (m *QueryResolversByURLResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
+func (m *ConvertIRIToHashRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ConvertIRIToHashRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ConvertIRIToHashRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Iri) > 0 {
+		i -= len(m.Iri)
+		copy(dAtA[i:], m.Iri)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Iri)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ConvertIRIToHashResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ConvertIRIToHashResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ConvertIRIToHashResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ContentHash != nil {
+		{
+			size, err := m.ContentHash.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *ConvertHashToIRIRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -3051,71 +3135,6 @@ func (m *ConvertGraphHashToIRIResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *ConvertIRIToHashRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ConvertIRIToHashRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ConvertIRIToHashRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Iri) > 0 {
-		i -= len(m.Iri)
-		copy(dAtA[i:], m.Iri)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Iri)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ConvertIRIToHashResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ConvertIRIToHashResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ConvertIRIToHashResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.ContentHash != nil {
-		{
-			size, err := m.ContentHash.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *ResolverInfo) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -3188,8 +3207,8 @@ func (m *QueryAnchorByIRIResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Entry != nil {
-		l = m.Entry.Size()
+	if m.Anchor != nil {
+		l = m.Anchor.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3214,8 +3233,8 @@ func (m *QueryAnchorByHashResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Entry != nil {
-		l = m.Entry.Size()
+	if m.Anchor != nil {
+		l = m.Anchor.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3244,8 +3263,8 @@ func (m *QueryAnchorsByAttestorResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if len(m.Entries) > 0 {
-		for _, e := range m.Entries {
+	if len(m.Anchors) > 0 {
+		for _, e := range m.Anchors {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -3281,8 +3300,8 @@ func (m *QueryAttestorsByIRIResponse) Size() (n int) {
 	var l int
 	_ = l
 	if len(m.Attestors) > 0 {
-		for _, s := range m.Attestors {
-			l = len(s)
+		for _, e := range m.Attestors {
+			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
 	}
@@ -3317,27 +3336,10 @@ func (m *QueryAttestorsByHashResponse) Size() (n int) {
 	var l int
 	_ = l
 	if len(m.Attestors) > 0 {
-		for _, s := range m.Attestors {
-			l = len(s)
+		for _, e := range m.Attestors {
+			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
-	}
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryResolversByIRIRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Iri)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
@@ -3366,6 +3368,23 @@ func (m *QueryResolverResponse) Size() (n int) {
 	_ = l
 	if m.Resolver != nil {
 		l = m.Resolver.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryResolversByIRIRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Iri)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3462,6 +3481,32 @@ func (m *QueryResolversByURLResponse) Size() (n int) {
 	return n
 }
 
+func (m *ConvertIRIToHashRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Iri)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *ConvertIRIToHashResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ContentHash != nil {
+		l = m.ContentHash.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *ConvertHashToIRIRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3550,32 +3595,6 @@ func (m *ConvertGraphHashToIRIResponse) Size() (n int) {
 	_ = l
 	l = len(m.Iri)
 	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *ConvertIRIToHashRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Iri)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *ConvertIRIToHashResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.ContentHash != nil {
-		l = m.ContentHash.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3720,7 +3739,7 @@ func (m *QueryAnchorByIRIResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Entry", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Anchor", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3747,10 +3766,10 @@ func (m *QueryAnchorByIRIResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Entry == nil {
-				m.Entry = &ContentEntry{}
+			if m.Anchor == nil {
+				m.Anchor = &AnchorEntry{}
 			}
-			if err := m.Entry.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Anchor.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3892,7 +3911,7 @@ func (m *QueryAnchorByHashResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Entry", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Anchor", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3919,10 +3938,10 @@ func (m *QueryAnchorByHashResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Entry == nil {
-				m.Entry = &ContentEntry{}
+			if m.Anchor == nil {
+				m.Anchor = &AnchorEntry{}
 			}
-			if err := m.Entry.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Anchor.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4096,7 +4115,7 @@ func (m *QueryAnchorsByAttestorResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Entries", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Anchors", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4123,8 +4142,8 @@ func (m *QueryAnchorsByAttestorResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Entries = append(m.Entries, &ContentEntry{})
-			if err := m.Entries[len(m.Entries)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Anchors = append(m.Anchors, &AnchorEntry{})
+			if err := m.Anchors[len(m.Anchors)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4336,7 +4355,7 @@ func (m *QueryAttestorsByIRIResponse) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -4346,23 +4365,25 @@ func (m *QueryAttestorsByIRIResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthQuery
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Attestors = append(m.Attestors, string(dAtA[iNdEx:postIndex]))
+			m.Attestors = append(m.Attestors, &AttestorEntry{})
+			if err := m.Attestors[len(m.Attestors)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -4576,7 +4597,7 @@ func (m *QueryAttestorsByHashResponse) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -4586,23 +4607,25 @@ func (m *QueryAttestorsByHashResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthQuery
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Attestors = append(m.Attestors, string(dAtA[iNdEx:postIndex]))
+			m.Attestors = append(m.Attestors, &AttestorEntry{})
+			if err := m.Attestors[len(m.Attestors)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -4635,124 +4658,6 @@ func (m *QueryAttestorsByHashResponse) Unmarshal(dAtA []byte) error {
 			}
 			if m.Pagination == nil {
 				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryResolversByIRIRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryResolversByIRIRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryResolversByIRIRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Iri = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageRequest{}
 			}
 			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -4910,6 +4815,124 @@ func (m *QueryResolverResponse) Unmarshal(dAtA []byte) error {
 				m.Resolver = &ResolverInfo{}
 			}
 			if err := m.Resolver.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryResolversByIRIRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryResolversByIRIRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryResolversByIRIRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Iri = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5534,6 +5557,174 @@ func (m *QueryResolversByURLResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *ConvertIRIToHashRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ConvertIRIToHashRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ConvertIRIToHashRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Iri = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ConvertIRIToHashResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ConvertIRIToHashResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ConvertIRIToHashResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentHash", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ContentHash == nil {
+				m.ContentHash = &ContentHash{}
+			}
+			if err := m.ContentHash.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *ConvertHashToIRIRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -6103,174 +6294,6 @@ func (m *ConvertGraphHashToIRIResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Iri = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ConvertIRIToHashRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ConvertIRIToHashRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ConvertIRIToHashRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Iri = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ConvertIRIToHashResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ConvertIRIToHashResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ConvertIRIToHashResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ContentHash", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.ContentHash == nil {
-				m.ContentHash = &ContentHash{}
-			}
-			if err := m.ContentHash.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

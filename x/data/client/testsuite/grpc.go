@@ -39,17 +39,17 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRI() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var entry data.QueryAnchorByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &entry)
+			var res data.QueryAnchorByIRIResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
 
 			if tc.expErr {
 				require.Error(err)
 			} else {
 				require.NoError(err)
-				require.NotNil(entry.Entry)
+				require.NotNil(res.Anchor)
 			}
 		})
 	}
@@ -97,19 +97,19 @@ func (s *IntegrationTestSuite) TestQueryAnchorsByAttestor() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var entries data.QueryAnchorsByAttestorResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &entries)
+			var res data.QueryAnchorsByAttestorResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
 
 			if tc.expErr {
 				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+				require.Contains(string(bz), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(entries.Entries)
-				require.Len(entries.Entries, tc.expItems)
+				require.NotNil(res.Anchors)
+				require.Len(res.Anchors, tc.expItems)
 			}
 		})
 	}
@@ -144,18 +144,18 @@ func (s *IntegrationTestSuite) TestConvertIRIToHash() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var contentHash data.ConvertIRIToHashResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &contentHash)
+			var res data.ConvertIRIToHashResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
 
 			if tc.expErr {
 				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+				require.Contains(string(bz), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(contentHash.ContentHash)
+				require.NotNil(res.ContentHash)
 			}
 		})
 	}
@@ -443,19 +443,19 @@ func (s *IntegrationTestSuite) TestQueryAttestorsByIRI() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var attestors data.QueryAttestorsByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &attestors)
+			var res data.QueryAttestorsByIRIResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
 
 			if tc.expErr {
 				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+				require.Contains(string(bz), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(attestors.Attestors)
-				require.Len(attestors.Attestors, tc.expItems)
+				require.NotNil(res.Attestors)
+				require.Len(res.Attestors, tc.expItems)
 			}
 		})
 	}

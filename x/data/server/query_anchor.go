@@ -20,13 +20,13 @@ func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorBy
 		return nil, err
 	}
 
-	entry, err := s.getEntry(ctx, contentHash, request.Iri)
+	anchor, err := s.getAnchorEntry(ctx, contentHash, request.Iri)
 	if err != nil {
 		return nil, err
 	}
 
 	return &data.QueryAnchorByIRIResponse{
-		Entry: entry,
+		Anchor: anchor,
 	}, nil
 }
 
@@ -41,13 +41,13 @@ func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorB
 		return nil, err
 	}
 
-	entry, err := s.getEntry(ctx, request.ContentHash, iri)
+	anchor, err := s.getAnchorEntry(ctx, request.ContentHash, iri)
 	if err != nil {
 		return nil, err
 	}
 
 	return &data.QueryAnchorByHashResponse{
-		Entry: entry,
+		Anchor: anchor,
 	}, nil
 }
 
@@ -72,7 +72,7 @@ func (s serverImpl) AnchorsByAttestor(ctx context.Context, request *data.QueryAn
 		return nil, err
 	}
 
-	var entries []*data.ContentEntry
+	var anchors []*data.AnchorEntry
 	for it.Next() {
 		dataAttestor, err := it.Value()
 		if err != nil {
@@ -94,7 +94,7 @@ func (s serverImpl) AnchorsByAttestor(ctx context.Context, request *data.QueryAn
 			return nil, err
 		}
 
-		entries = append(entries, &data.ContentEntry{
+		anchors = append(anchors, &data.AnchorEntry{
 			ContentHash: contentHash,
 			Iri:         dataId.Iri,
 			Timestamp:   types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
@@ -107,12 +107,12 @@ func (s serverImpl) AnchorsByAttestor(ctx context.Context, request *data.QueryAn
 	}
 
 	return &data.QueryAnchorsByAttestorResponse{
-		Entries:    entries,
+		Anchors:    anchors,
 		Pagination: pageRes,
 	}, nil
 }
 
-func (s serverImpl) getEntry(ctx context.Context, ch *data.ContentHash, iri string) (*data.ContentEntry, error) {
+func (s serverImpl) getAnchorEntry(ctx context.Context, ch *data.ContentHash, iri string) (*data.AnchorEntry, error) {
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func (s serverImpl) getEntry(ctx context.Context, ch *data.ContentHash, iri stri
 		return nil, err
 	}
 
-	return &data.ContentEntry{
+	return &data.AnchorEntry{
 		ContentHash: ch,
 		Iri:         iri,
 		Timestamp:   types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),

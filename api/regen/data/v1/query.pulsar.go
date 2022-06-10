@@ -435,14 +435,14 @@ func (x *fastReflection_QueryAnchorByIRIRequest) ProtoMethods() *protoiface.Meth
 }
 
 var (
-	md_QueryAnchorByIRIResponse       protoreflect.MessageDescriptor
-	fd_QueryAnchorByIRIResponse_entry protoreflect.FieldDescriptor
+	md_QueryAnchorByIRIResponse        protoreflect.MessageDescriptor
+	fd_QueryAnchorByIRIResponse_anchor protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
 	md_QueryAnchorByIRIResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryAnchorByIRIResponse")
-	fd_QueryAnchorByIRIResponse_entry = md_QueryAnchorByIRIResponse.Fields().ByName("entry")
+	fd_QueryAnchorByIRIResponse_anchor = md_QueryAnchorByIRIResponse.Fields().ByName("anchor")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryAnchorByIRIResponse)(nil)
@@ -510,9 +510,9 @@ func (x *fastReflection_QueryAnchorByIRIResponse) Interface() protoreflect.Proto
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryAnchorByIRIResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Entry != nil {
-		value := protoreflect.ValueOfMessage(x.Entry.ProtoReflect())
-		if !f(fd_QueryAnchorByIRIResponse_entry, value) {
+	if x.Anchor != nil {
+		value := protoreflect.ValueOfMessage(x.Anchor.ProtoReflect())
+		if !f(fd_QueryAnchorByIRIResponse_anchor, value) {
 			return
 		}
 	}
@@ -531,8 +531,8 @@ func (x *fastReflection_QueryAnchorByIRIResponse) Range(f func(protoreflect.Fiel
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAnchorByIRIResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByIRIResponse.entry":
-		return x.Entry != nil
+	case "regen.data.v1.QueryAnchorByIRIResponse.anchor":
+		return x.Anchor != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByIRIResponse"))
@@ -549,8 +549,8 @@ func (x *fastReflection_QueryAnchorByIRIResponse) Has(fd protoreflect.FieldDescr
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorByIRIResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByIRIResponse.entry":
-		x.Entry = nil
+	case "regen.data.v1.QueryAnchorByIRIResponse.anchor":
+		x.Anchor = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByIRIResponse"))
@@ -567,8 +567,8 @@ func (x *fastReflection_QueryAnchorByIRIResponse) Clear(fd protoreflect.FieldDes
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAnchorByIRIResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QueryAnchorByIRIResponse.entry":
-		value := x.Entry
+	case "regen.data.v1.QueryAnchorByIRIResponse.anchor":
+		value := x.Anchor
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
@@ -590,8 +590,8 @@ func (x *fastReflection_QueryAnchorByIRIResponse) Get(descriptor protoreflect.Fi
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorByIRIResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByIRIResponse.entry":
-		x.Entry = value.Message().Interface().(*ContentEntry)
+	case "regen.data.v1.QueryAnchorByIRIResponse.anchor":
+		x.Anchor = value.Message().Interface().(*AnchorEntry)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByIRIResponse"))
@@ -612,11 +612,11 @@ func (x *fastReflection_QueryAnchorByIRIResponse) Set(fd protoreflect.FieldDescr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorByIRIResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByIRIResponse.entry":
-		if x.Entry == nil {
-			x.Entry = new(ContentEntry)
+	case "regen.data.v1.QueryAnchorByIRIResponse.anchor":
+		if x.Anchor == nil {
+			x.Anchor = new(AnchorEntry)
 		}
-		return protoreflect.ValueOfMessage(x.Entry.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.Anchor.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByIRIResponse"))
@@ -630,8 +630,8 @@ func (x *fastReflection_QueryAnchorByIRIResponse) Mutable(fd protoreflect.FieldD
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAnchorByIRIResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByIRIResponse.entry":
-		m := new(ContentEntry)
+	case "regen.data.v1.QueryAnchorByIRIResponse.anchor":
+		m := new(AnchorEntry)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
@@ -702,8 +702,8 @@ func (x *fastReflection_QueryAnchorByIRIResponse) ProtoMethods() *protoiface.Met
 		var n int
 		var l int
 		_ = l
-		if x.Entry != nil {
-			l = options.Size(x.Entry)
+		if x.Anchor != nil {
+			l = options.Size(x.Anchor)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
@@ -735,8 +735,8 @@ func (x *fastReflection_QueryAnchorByIRIResponse) ProtoMethods() *protoiface.Met
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Entry != nil {
-			encoded, err := options.Marshal(x.Entry)
+		if x.Anchor != nil {
+			encoded, err := options.Marshal(x.Anchor)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -800,7 +800,7 @@ func (x *fastReflection_QueryAnchorByIRIResponse) ProtoMethods() *protoiface.Met
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Entry", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Anchor", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -827,10 +827,10 @@ func (x *fastReflection_QueryAnchorByIRIResponse) ProtoMethods() *protoiface.Met
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.Entry == nil {
-					x.Entry = &ContentEntry{}
+				if x.Anchor == nil {
+					x.Anchor = &AnchorEntry{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Entry); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Anchor); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -1305,14 +1305,14 @@ func (x *fastReflection_QueryAnchorByHashRequest) ProtoMethods() *protoiface.Met
 }
 
 var (
-	md_QueryAnchorByHashResponse       protoreflect.MessageDescriptor
-	fd_QueryAnchorByHashResponse_entry protoreflect.FieldDescriptor
+	md_QueryAnchorByHashResponse        protoreflect.MessageDescriptor
+	fd_QueryAnchorByHashResponse_anchor protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
 	md_QueryAnchorByHashResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryAnchorByHashResponse")
-	fd_QueryAnchorByHashResponse_entry = md_QueryAnchorByHashResponse.Fields().ByName("entry")
+	fd_QueryAnchorByHashResponse_anchor = md_QueryAnchorByHashResponse.Fields().ByName("anchor")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryAnchorByHashResponse)(nil)
@@ -1380,9 +1380,9 @@ func (x *fastReflection_QueryAnchorByHashResponse) Interface() protoreflect.Prot
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryAnchorByHashResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Entry != nil {
-		value := protoreflect.ValueOfMessage(x.Entry.ProtoReflect())
-		if !f(fd_QueryAnchorByHashResponse_entry, value) {
+	if x.Anchor != nil {
+		value := protoreflect.ValueOfMessage(x.Anchor.ProtoReflect())
+		if !f(fd_QueryAnchorByHashResponse_anchor, value) {
 			return
 		}
 	}
@@ -1401,8 +1401,8 @@ func (x *fastReflection_QueryAnchorByHashResponse) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAnchorByHashResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByHashResponse.entry":
-		return x.Entry != nil
+	case "regen.data.v1.QueryAnchorByHashResponse.anchor":
+		return x.Anchor != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByHashResponse"))
@@ -1419,8 +1419,8 @@ func (x *fastReflection_QueryAnchorByHashResponse) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorByHashResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByHashResponse.entry":
-		x.Entry = nil
+	case "regen.data.v1.QueryAnchorByHashResponse.anchor":
+		x.Anchor = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByHashResponse"))
@@ -1437,8 +1437,8 @@ func (x *fastReflection_QueryAnchorByHashResponse) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAnchorByHashResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QueryAnchorByHashResponse.entry":
-		value := x.Entry
+	case "regen.data.v1.QueryAnchorByHashResponse.anchor":
+		value := x.Anchor
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
@@ -1460,8 +1460,8 @@ func (x *fastReflection_QueryAnchorByHashResponse) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorByHashResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByHashResponse.entry":
-		x.Entry = value.Message().Interface().(*ContentEntry)
+	case "regen.data.v1.QueryAnchorByHashResponse.anchor":
+		x.Anchor = value.Message().Interface().(*AnchorEntry)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByHashResponse"))
@@ -1482,11 +1482,11 @@ func (x *fastReflection_QueryAnchorByHashResponse) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorByHashResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByHashResponse.entry":
-		if x.Entry == nil {
-			x.Entry = new(ContentEntry)
+	case "regen.data.v1.QueryAnchorByHashResponse.anchor":
+		if x.Anchor == nil {
+			x.Anchor = new(AnchorEntry)
 		}
-		return protoreflect.ValueOfMessage(x.Entry.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.Anchor.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAnchorByHashResponse"))
@@ -1500,8 +1500,8 @@ func (x *fastReflection_QueryAnchorByHashResponse) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAnchorByHashResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorByHashResponse.entry":
-		m := new(ContentEntry)
+	case "regen.data.v1.QueryAnchorByHashResponse.anchor":
+		m := new(AnchorEntry)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
@@ -1572,8 +1572,8 @@ func (x *fastReflection_QueryAnchorByHashResponse) ProtoMethods() *protoiface.Me
 		var n int
 		var l int
 		_ = l
-		if x.Entry != nil {
-			l = options.Size(x.Entry)
+		if x.Anchor != nil {
+			l = options.Size(x.Anchor)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
@@ -1605,8 +1605,8 @@ func (x *fastReflection_QueryAnchorByHashResponse) ProtoMethods() *protoiface.Me
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Entry != nil {
-			encoded, err := options.Marshal(x.Entry)
+		if x.Anchor != nil {
+			encoded, err := options.Marshal(x.Anchor)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1670,7 +1670,7 @@ func (x *fastReflection_QueryAnchorByHashResponse) ProtoMethods() *protoiface.Me
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Entry", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Anchor", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -1697,10 +1697,10 @@ func (x *fastReflection_QueryAnchorByHashResponse) ProtoMethods() *protoiface.Me
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.Entry == nil {
-					x.Entry = &ContentEntry{}
+				if x.Anchor == nil {
+					x.Anchor = &AnchorEntry{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Entry); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Anchor); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -2241,7 +2241,7 @@ func (x *fastReflection_QueryAnchorsByAttestorRequest) ProtoMethods() *protoifac
 var _ protoreflect.List = (*_QueryAnchorsByAttestorResponse_1_list)(nil)
 
 type _QueryAnchorsByAttestorResponse_1_list struct {
-	list *[]*ContentEntry
+	list *[]*AnchorEntry
 }
 
 func (x *_QueryAnchorsByAttestorResponse_1_list) Len() int {
@@ -2257,18 +2257,18 @@ func (x *_QueryAnchorsByAttestorResponse_1_list) Get(i int) protoreflect.Value {
 
 func (x *_QueryAnchorsByAttestorResponse_1_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ContentEntry)
+	concreteValue := valueUnwrapped.Interface().(*AnchorEntry)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_QueryAnchorsByAttestorResponse_1_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ContentEntry)
+	concreteValue := valueUnwrapped.Interface().(*AnchorEntry)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_QueryAnchorsByAttestorResponse_1_list) AppendMutable() protoreflect.Value {
-	v := new(ContentEntry)
+	v := new(AnchorEntry)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -2281,7 +2281,7 @@ func (x *_QueryAnchorsByAttestorResponse_1_list) Truncate(n int) {
 }
 
 func (x *_QueryAnchorsByAttestorResponse_1_list) NewElement() protoreflect.Value {
-	v := new(ContentEntry)
+	v := new(AnchorEntry)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -2291,14 +2291,14 @@ func (x *_QueryAnchorsByAttestorResponse_1_list) IsValid() bool {
 
 var (
 	md_QueryAnchorsByAttestorResponse            protoreflect.MessageDescriptor
-	fd_QueryAnchorsByAttestorResponse_entries    protoreflect.FieldDescriptor
+	fd_QueryAnchorsByAttestorResponse_anchors    protoreflect.FieldDescriptor
 	fd_QueryAnchorsByAttestorResponse_pagination protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
 	md_QueryAnchorsByAttestorResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryAnchorsByAttestorResponse")
-	fd_QueryAnchorsByAttestorResponse_entries = md_QueryAnchorsByAttestorResponse.Fields().ByName("entries")
+	fd_QueryAnchorsByAttestorResponse_anchors = md_QueryAnchorsByAttestorResponse.Fields().ByName("anchors")
 	fd_QueryAnchorsByAttestorResponse_pagination = md_QueryAnchorsByAttestorResponse.Fields().ByName("pagination")
 }
 
@@ -2367,9 +2367,9 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) Interface() protoreflect
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryAnchorsByAttestorResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Entries) != 0 {
-		value := protoreflect.ValueOfList(&_QueryAnchorsByAttestorResponse_1_list{list: &x.Entries})
-		if !f(fd_QueryAnchorsByAttestorResponse_entries, value) {
+	if len(x.Anchors) != 0 {
+		value := protoreflect.ValueOfList(&_QueryAnchorsByAttestorResponse_1_list{list: &x.Anchors})
+		if !f(fd_QueryAnchorsByAttestorResponse_anchors, value) {
 			return
 		}
 	}
@@ -2394,8 +2394,8 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) Range(f func(protoreflec
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAnchorsByAttestorResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorsByAttestorResponse.entries":
-		return len(x.Entries) != 0
+	case "regen.data.v1.QueryAnchorsByAttestorResponse.anchors":
+		return len(x.Anchors) != 0
 	case "regen.data.v1.QueryAnchorsByAttestorResponse.pagination":
 		return x.Pagination != nil
 	default:
@@ -2414,8 +2414,8 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) Has(fd protoreflect.Fiel
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorsByAttestorResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorsByAttestorResponse.entries":
-		x.Entries = nil
+	case "regen.data.v1.QueryAnchorsByAttestorResponse.anchors":
+		x.Anchors = nil
 	case "regen.data.v1.QueryAnchorsByAttestorResponse.pagination":
 		x.Pagination = nil
 	default:
@@ -2434,11 +2434,11 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) Clear(fd protoreflect.Fi
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAnchorsByAttestorResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QueryAnchorsByAttestorResponse.entries":
-		if len(x.Entries) == 0 {
+	case "regen.data.v1.QueryAnchorsByAttestorResponse.anchors":
+		if len(x.Anchors) == 0 {
 			return protoreflect.ValueOfList(&_QueryAnchorsByAttestorResponse_1_list{})
 		}
-		listValue := &_QueryAnchorsByAttestorResponse_1_list{list: &x.Entries}
+		listValue := &_QueryAnchorsByAttestorResponse_1_list{list: &x.Anchors}
 		return protoreflect.ValueOfList(listValue)
 	case "regen.data.v1.QueryAnchorsByAttestorResponse.pagination":
 		value := x.Pagination
@@ -2463,10 +2463,10 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) Get(descriptor protorefl
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorsByAttestorResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorsByAttestorResponse.entries":
+	case "regen.data.v1.QueryAnchorsByAttestorResponse.anchors":
 		lv := value.List()
 		clv := lv.(*_QueryAnchorsByAttestorResponse_1_list)
-		x.Entries = *clv.list
+		x.Anchors = *clv.list
 	case "regen.data.v1.QueryAnchorsByAttestorResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
@@ -2489,11 +2489,11 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) Set(fd protoreflect.Fiel
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAnchorsByAttestorResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorsByAttestorResponse.entries":
-		if x.Entries == nil {
-			x.Entries = []*ContentEntry{}
+	case "regen.data.v1.QueryAnchorsByAttestorResponse.anchors":
+		if x.Anchors == nil {
+			x.Anchors = []*AnchorEntry{}
 		}
-		value := &_QueryAnchorsByAttestorResponse_1_list{list: &x.Entries}
+		value := &_QueryAnchorsByAttestorResponse_1_list{list: &x.Anchors}
 		return protoreflect.ValueOfList(value)
 	case "regen.data.v1.QueryAnchorsByAttestorResponse.pagination":
 		if x.Pagination == nil {
@@ -2513,8 +2513,8 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) Mutable(fd protoreflect.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAnchorsByAttestorResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryAnchorsByAttestorResponse.entries":
-		list := []*ContentEntry{}
+	case "regen.data.v1.QueryAnchorsByAttestorResponse.anchors":
+		list := []*AnchorEntry{}
 		return protoreflect.ValueOfList(&_QueryAnchorsByAttestorResponse_1_list{list: &list})
 	case "regen.data.v1.QueryAnchorsByAttestorResponse.pagination":
 		m := new(v1beta1.PageResponse)
@@ -2588,8 +2588,8 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) ProtoMethods() *protoifa
 		var n int
 		var l int
 		_ = l
-		if len(x.Entries) > 0 {
-			for _, e := range x.Entries {
+		if len(x.Anchors) > 0 {
+			for _, e := range x.Anchors {
 				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -2641,9 +2641,9 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) ProtoMethods() *protoifa
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.Entries) > 0 {
-			for iNdEx := len(x.Entries) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Entries[iNdEx])
+		if len(x.Anchors) > 0 {
+			for iNdEx := len(x.Anchors) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Anchors[iNdEx])
 				if err != nil {
 					return protoiface.MarshalOutput{
 						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2708,7 +2708,7 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) ProtoMethods() *protoifa
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Entries", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Anchors", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -2735,8 +2735,8 @@ func (x *fastReflection_QueryAnchorsByAttestorResponse) ProtoMethods() *protoifa
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Entries = append(x.Entries, &ContentEntry{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Entries[len(x.Entries)-1]); err != nil {
+				x.Anchors = append(x.Anchors, &AnchorEntry{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Anchors[len(x.Anchors)-1]); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -3313,7 +3313,7 @@ func (x *fastReflection_QueryAttestorsByIRIRequest) ProtoMethods() *protoiface.M
 var _ protoreflect.List = (*_QueryAttestorsByIRIResponse_1_list)(nil)
 
 type _QueryAttestorsByIRIResponse_1_list struct {
-	list *[]string
+	list *[]*AttestorEntry
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) Len() int {
@@ -3324,32 +3324,37 @@ func (x *_QueryAttestorsByIRIResponse_1_list) Len() int {
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AttestorEntry)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AttestorEntry)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message QueryAttestorsByIRIResponse at list field Attestors as it is not of Message kind"))
+	v := new(AttestorEntry)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
 	*x.list = (*x.list)[:n]
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
+	v := new(AttestorEntry)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
 func (x *_QueryAttestorsByIRIResponse_1_list) IsValid() bool {
@@ -3558,7 +3563,7 @@ func (x *fastReflection_QueryAttestorsByIRIResponse) Mutable(fd protoreflect.Fie
 	switch fd.FullName() {
 	case "regen.data.v1.QueryAttestorsByIRIResponse.attestors":
 		if x.Attestors == nil {
-			x.Attestors = []string{}
+			x.Attestors = []*AttestorEntry{}
 		}
 		value := &_QueryAttestorsByIRIResponse_1_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(value)
@@ -3581,7 +3586,7 @@ func (x *fastReflection_QueryAttestorsByIRIResponse) Mutable(fd protoreflect.Fie
 func (x *fastReflection_QueryAttestorsByIRIResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.data.v1.QueryAttestorsByIRIResponse.attestors":
-		list := []string{}
+		list := []*AttestorEntry{}
 		return protoreflect.ValueOfList(&_QueryAttestorsByIRIResponse_1_list{list: &list})
 	case "regen.data.v1.QueryAttestorsByIRIResponse.pagination":
 		m := new(v1beta1.PageResponse)
@@ -3656,8 +3661,8 @@ func (x *fastReflection_QueryAttestorsByIRIResponse) ProtoMethods() *protoiface.
 		var l int
 		_ = l
 		if len(x.Attestors) > 0 {
-			for _, s := range x.Attestors {
-				l = len(s)
+			for _, e := range x.Attestors {
+				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
@@ -3710,9 +3715,16 @@ func (x *fastReflection_QueryAttestorsByIRIResponse) ProtoMethods() *protoiface.
 		}
 		if len(x.Attestors) > 0 {
 			for iNdEx := len(x.Attestors) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.Attestors[iNdEx])
-				copy(dAtA[i:], x.Attestors[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestors[iNdEx])))
+				encoded, err := options.Marshal(x.Attestors[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
 				dAtA[i] = 0xa
 			}
@@ -3770,7 +3782,7 @@ func (x *fastReflection_QueryAttestorsByIRIResponse) ProtoMethods() *protoiface.
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 				}
-				var stringLen uint64
+				var msglen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -3780,23 +3792,25 @@ func (x *fastReflection_QueryAttestorsByIRIResponse) ProtoMethods() *protoiface.
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					msglen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if msglen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + msglen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Attestors = append(x.Attestors, string(dAtA[iNdEx:postIndex]))
+				x.Attestors = append(x.Attestors, &AttestorEntry{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Attestors[len(x.Attestors)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -4386,7 +4400,7 @@ func (x *fastReflection_QueryAttestorsByHashRequest) ProtoMethods() *protoiface.
 var _ protoreflect.List = (*_QueryAttestorsByHashResponse_1_list)(nil)
 
 type _QueryAttestorsByHashResponse_1_list struct {
-	list *[]string
+	list *[]*AttestorEntry
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) Len() int {
@@ -4397,32 +4411,37 @@ func (x *_QueryAttestorsByHashResponse_1_list) Len() int {
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AttestorEntry)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AttestorEntry)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message QueryAttestorsByHashResponse at list field Attestors as it is not of Message kind"))
+	v := new(AttestorEntry)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
 	*x.list = (*x.list)[:n]
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
+	v := new(AttestorEntry)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
 func (x *_QueryAttestorsByHashResponse_1_list) IsValid() bool {
@@ -4631,7 +4650,7 @@ func (x *fastReflection_QueryAttestorsByHashResponse) Mutable(fd protoreflect.Fi
 	switch fd.FullName() {
 	case "regen.data.v1.QueryAttestorsByHashResponse.attestors":
 		if x.Attestors == nil {
-			x.Attestors = []string{}
+			x.Attestors = []*AttestorEntry{}
 		}
 		value := &_QueryAttestorsByHashResponse_1_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(value)
@@ -4654,7 +4673,7 @@ func (x *fastReflection_QueryAttestorsByHashResponse) Mutable(fd protoreflect.Fi
 func (x *fastReflection_QueryAttestorsByHashResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.data.v1.QueryAttestorsByHashResponse.attestors":
-		list := []string{}
+		list := []*AttestorEntry{}
 		return protoreflect.ValueOfList(&_QueryAttestorsByHashResponse_1_list{list: &list})
 	case "regen.data.v1.QueryAttestorsByHashResponse.pagination":
 		m := new(v1beta1.PageResponse)
@@ -4729,8 +4748,8 @@ func (x *fastReflection_QueryAttestorsByHashResponse) ProtoMethods() *protoiface
 		var l int
 		_ = l
 		if len(x.Attestors) > 0 {
-			for _, s := range x.Attestors {
-				l = len(s)
+			for _, e := range x.Attestors {
+				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
@@ -4783,9 +4802,16 @@ func (x *fastReflection_QueryAttestorsByHashResponse) ProtoMethods() *protoiface
 		}
 		if len(x.Attestors) > 0 {
 			for iNdEx := len(x.Attestors) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.Attestors[iNdEx])
-				copy(dAtA[i:], x.Attestors[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestors[iNdEx])))
+				encoded, err := options.Marshal(x.Attestors[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
 				dAtA[i] = 0xa
 			}
@@ -4843,7 +4869,7 @@ func (x *fastReflection_QueryAttestorsByHashResponse) ProtoMethods() *protoiface
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 				}
-				var stringLen uint64
+				var msglen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -4853,23 +4879,25 @@ func (x *fastReflection_QueryAttestorsByHashResponse) ProtoMethods() *protoiface
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					msglen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if msglen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + msglen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Attestors = append(x.Attestors, string(dAtA[iNdEx:postIndex]))
+				x.Attestors = append(x.Attestors, &AttestorEntry{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Attestors[len(x.Attestors)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -4943,6 +4971,845 @@ func (x *fastReflection_QueryAttestorsByHashResponse) ProtoMethods() *protoiface
 }
 
 var (
+	md_QueryResolverRequest    protoreflect.MessageDescriptor
+	fd_QueryResolverRequest_id protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_data_v1_query_proto_init()
+	md_QueryResolverRequest = File_regen_data_v1_query_proto.Messages().ByName("QueryResolverRequest")
+	fd_QueryResolverRequest_id = md_QueryResolverRequest.Fields().ByName("id")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryResolverRequest)(nil)
+
+type fastReflection_QueryResolverRequest QueryResolverRequest
+
+func (x *QueryResolverRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryResolverRequest)(x)
+}
+
+func (x *QueryResolverRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_data_v1_query_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryResolverRequest_messageType fastReflection_QueryResolverRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryResolverRequest_messageType{}
+
+type fastReflection_QueryResolverRequest_messageType struct{}
+
+func (x fastReflection_QueryResolverRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryResolverRequest)(nil)
+}
+func (x fastReflection_QueryResolverRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryResolverRequest)
+}
+func (x fastReflection_QueryResolverRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryResolverRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryResolverRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryResolverRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryResolverRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryResolverRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryResolverRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryResolverRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryResolverRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryResolverRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryResolverRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Id != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Id)
+		if !f(fd_QueryResolverRequest_id, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryResolverRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverRequest.id":
+		return x.Id != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverRequest.id":
+		x.Id = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryResolverRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.data.v1.QueryResolverRequest.id":
+		value := x.Id
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverRequest.id":
+		x.Id = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverRequest.id":
+		panic(fmt.Errorf("field id of message regen.data.v1.QueryResolverRequest is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryResolverRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverRequest.id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryResolverRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryResolverRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryResolverRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryResolverRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryResolverRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryResolverRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Id != 0 {
+			n += 1 + runtime.Sov(uint64(x.Id))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryResolverRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Id != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryResolverRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				}
+				x.Id = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Id |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryResolverResponse          protoreflect.MessageDescriptor
+	fd_QueryResolverResponse_resolver protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_data_v1_query_proto_init()
+	md_QueryResolverResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryResolverResponse")
+	fd_QueryResolverResponse_resolver = md_QueryResolverResponse.Fields().ByName("resolver")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryResolverResponse)(nil)
+
+type fastReflection_QueryResolverResponse QueryResolverResponse
+
+func (x *QueryResolverResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryResolverResponse)(x)
+}
+
+func (x *QueryResolverResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_data_v1_query_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryResolverResponse_messageType fastReflection_QueryResolverResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryResolverResponse_messageType{}
+
+type fastReflection_QueryResolverResponse_messageType struct{}
+
+func (x fastReflection_QueryResolverResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryResolverResponse)(nil)
+}
+func (x fastReflection_QueryResolverResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryResolverResponse)
+}
+func (x fastReflection_QueryResolverResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryResolverResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryResolverResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryResolverResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryResolverResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryResolverResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryResolverResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryResolverResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryResolverResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryResolverResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryResolverResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Resolver != nil {
+		value := protoreflect.ValueOfMessage(x.Resolver.ProtoReflect())
+		if !f(fd_QueryResolverResponse_resolver, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryResolverResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverResponse.resolver":
+		return x.Resolver != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverResponse.resolver":
+		x.Resolver = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryResolverResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.data.v1.QueryResolverResponse.resolver":
+		value := x.Resolver
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverResponse.resolver":
+		x.Resolver = value.Message().Interface().(*ResolverInfo)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverResponse.resolver":
+		if x.Resolver == nil {
+			x.Resolver = new(ResolverInfo)
+		}
+		return protoreflect.ValueOfMessage(x.Resolver.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryResolverResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.QueryResolverResponse.resolver":
+		m := new(ResolverInfo)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryResolverResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryResolverResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryResolverResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryResolverResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryResolverResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryResolverResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryResolverResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Resolver != nil {
+			l = options.Size(x.Resolver)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryResolverResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Resolver != nil {
+			encoded, err := options.Marshal(x.Resolver)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryResolverResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Resolver", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Resolver == nil {
+					x.Resolver = &ResolverInfo{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Resolver); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_QueryResolversByIRIRequest            protoreflect.MessageDescriptor
 	fd_QueryResolversByIRIRequest_iri        protoreflect.FieldDescriptor
 	fd_QueryResolversByIRIRequest_pagination protoreflect.FieldDescriptor
@@ -4964,7 +5831,7 @@ func (x *QueryResolversByIRIRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryResolversByIRIRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[10]
+	mi := &file_regen_data_v1_query_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5403,845 +6270,6 @@ func (x *fastReflection_QueryResolversByIRIRequest) ProtoMethods() *protoiface.M
 					x.Pagination = &v1beta1.PageRequest{}
 				}
 				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_QueryResolverRequest    protoreflect.MessageDescriptor
-	fd_QueryResolverRequest_id protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_regen_data_v1_query_proto_init()
-	md_QueryResolverRequest = File_regen_data_v1_query_proto.Messages().ByName("QueryResolverRequest")
-	fd_QueryResolverRequest_id = md_QueryResolverRequest.Fields().ByName("id")
-}
-
-var _ protoreflect.Message = (*fastReflection_QueryResolverRequest)(nil)
-
-type fastReflection_QueryResolverRequest QueryResolverRequest
-
-func (x *QueryResolverRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryResolverRequest)(x)
-}
-
-func (x *QueryResolverRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_QueryResolverRequest_messageType fastReflection_QueryResolverRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryResolverRequest_messageType{}
-
-type fastReflection_QueryResolverRequest_messageType struct{}
-
-func (x fastReflection_QueryResolverRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryResolverRequest)(nil)
-}
-func (x fastReflection_QueryResolverRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryResolverRequest)
-}
-func (x fastReflection_QueryResolverRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryResolverRequest
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_QueryResolverRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryResolverRequest
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryResolverRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryResolverRequest_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryResolverRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryResolverRequest)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryResolverRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryResolverRequest)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_QueryResolverRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Id != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Id)
-		if !f(fd_QueryResolverRequest_id, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryResolverRequest) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverRequest.id":
-		return x.Id != uint64(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverRequest) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverRequest.id":
-		x.Id = uint64(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryResolverRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "regen.data.v1.QueryResolverRequest.id":
-		value := x.Id
-		return protoreflect.ValueOfUint64(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverRequest.id":
-		x.Id = value.Uint()
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverRequest.id":
-		panic(fmt.Errorf("field id of message regen.data.v1.QueryResolverRequest is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryResolverRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverRequest.id":
-		return protoreflect.ValueOfUint64(uint64(0))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryResolverRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryResolverRequest", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryResolverRequest) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverRequest) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_QueryResolverRequest) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryResolverRequest) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryResolverRequest)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.Id != 0 {
-			n += 1 + runtime.Sov(uint64(x.Id))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryResolverRequest)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.Id != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
-			i--
-			dAtA[i] = 0x8
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryResolverRequest)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverRequest: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-				}
-				x.Id = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Id |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_QueryResolverResponse          protoreflect.MessageDescriptor
-	fd_QueryResolverResponse_resolver protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_regen_data_v1_query_proto_init()
-	md_QueryResolverResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryResolverResponse")
-	fd_QueryResolverResponse_resolver = md_QueryResolverResponse.Fields().ByName("resolver")
-}
-
-var _ protoreflect.Message = (*fastReflection_QueryResolverResponse)(nil)
-
-type fastReflection_QueryResolverResponse QueryResolverResponse
-
-func (x *QueryResolverResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryResolverResponse)(x)
-}
-
-func (x *QueryResolverResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[12]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_QueryResolverResponse_messageType fastReflection_QueryResolverResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryResolverResponse_messageType{}
-
-type fastReflection_QueryResolverResponse_messageType struct{}
-
-func (x fastReflection_QueryResolverResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryResolverResponse)(nil)
-}
-func (x fastReflection_QueryResolverResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryResolverResponse)
-}
-func (x fastReflection_QueryResolverResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryResolverResponse
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_QueryResolverResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryResolverResponse
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryResolverResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryResolverResponse_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryResolverResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryResolverResponse)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryResolverResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryResolverResponse)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_QueryResolverResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Resolver != nil {
-		value := protoreflect.ValueOfMessage(x.Resolver.ProtoReflect())
-		if !f(fd_QueryResolverResponse_resolver, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryResolverResponse) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverResponse.resolver":
-		return x.Resolver != nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverResponse) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverResponse.resolver":
-		x.Resolver = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryResolverResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "regen.data.v1.QueryResolverResponse.resolver":
-		value := x.Resolver
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverResponse.resolver":
-		x.Resolver = value.Message().Interface().(*ResolverInfo)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverResponse.resolver":
-		if x.Resolver == nil {
-			x.Resolver = new(ResolverInfo)
-		}
-		return protoreflect.ValueOfMessage(x.Resolver.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryResolverResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverResponse.resolver":
-		m := new(ResolverInfo)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.QueryResolverResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryResolverResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryResolverResponse", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryResolverResponse) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryResolverResponse) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_QueryResolverResponse) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryResolverResponse) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryResolverResponse)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.Resolver != nil {
-			l = options.Size(x.Resolver)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryResolverResponse)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.Resolver != nil {
-			encoded, err := options.Marshal(x.Resolver)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryResolverResponse)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverResponse: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryResolverResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Resolver", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Resolver == nil {
-					x.Resolver = &ResolverInfo{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Resolver); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -9013,6 +9041,861 @@ func (x *fastReflection_QueryResolversByURLResponse) ProtoMethods() *protoiface.
 }
 
 var (
+	md_ConvertIRIToHashRequest     protoreflect.MessageDescriptor
+	fd_ConvertIRIToHashRequest_iri protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_data_v1_query_proto_init()
+	md_ConvertIRIToHashRequest = File_regen_data_v1_query_proto.Messages().ByName("ConvertIRIToHashRequest")
+	fd_ConvertIRIToHashRequest_iri = md_ConvertIRIToHashRequest.Fields().ByName("iri")
+}
+
+var _ protoreflect.Message = (*fastReflection_ConvertIRIToHashRequest)(nil)
+
+type fastReflection_ConvertIRIToHashRequest ConvertIRIToHashRequest
+
+func (x *ConvertIRIToHashRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ConvertIRIToHashRequest)(x)
+}
+
+func (x *ConvertIRIToHashRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_data_v1_query_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ConvertIRIToHashRequest_messageType fastReflection_ConvertIRIToHashRequest_messageType
+var _ protoreflect.MessageType = fastReflection_ConvertIRIToHashRequest_messageType{}
+
+type fastReflection_ConvertIRIToHashRequest_messageType struct{}
+
+func (x fastReflection_ConvertIRIToHashRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ConvertIRIToHashRequest)(nil)
+}
+func (x fastReflection_ConvertIRIToHashRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_ConvertIRIToHashRequest)
+}
+func (x fastReflection_ConvertIRIToHashRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ConvertIRIToHashRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ConvertIRIToHashRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_ConvertIRIToHashRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ConvertIRIToHashRequest) Type() protoreflect.MessageType {
+	return _fastReflection_ConvertIRIToHashRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ConvertIRIToHashRequest) New() protoreflect.Message {
+	return new(fastReflection_ConvertIRIToHashRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ConvertIRIToHashRequest) Interface() protoreflect.ProtoMessage {
+	return (*ConvertIRIToHashRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ConvertIRIToHashRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Iri != "" {
+		value := protoreflect.ValueOfString(x.Iri)
+		if !f(fd_ConvertIRIToHashRequest_iri, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ConvertIRIToHashRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashRequest.iri":
+		return x.Iri != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashRequest.iri":
+		x.Iri = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ConvertIRIToHashRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.data.v1.ConvertIRIToHashRequest.iri":
+		value := x.Iri
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashRequest.iri":
+		x.Iri = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashRequest.iri":
+		panic(fmt.Errorf("field iri of message regen.data.v1.ConvertIRIToHashRequest is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ConvertIRIToHashRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashRequest.iri":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ConvertIRIToHashRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ConvertIRIToHashRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ConvertIRIToHashRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ConvertIRIToHashRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ConvertIRIToHashRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ConvertIRIToHashRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Iri)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ConvertIRIToHashRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Iri) > 0 {
+			i -= len(x.Iri)
+			copy(dAtA[i:], x.Iri)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Iri)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ConvertIRIToHashRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Iri = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_ConvertIRIToHashResponse              protoreflect.MessageDescriptor
+	fd_ConvertIRIToHashResponse_content_hash protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_data_v1_query_proto_init()
+	md_ConvertIRIToHashResponse = File_regen_data_v1_query_proto.Messages().ByName("ConvertIRIToHashResponse")
+	fd_ConvertIRIToHashResponse_content_hash = md_ConvertIRIToHashResponse.Fields().ByName("content_hash")
+}
+
+var _ protoreflect.Message = (*fastReflection_ConvertIRIToHashResponse)(nil)
+
+type fastReflection_ConvertIRIToHashResponse ConvertIRIToHashResponse
+
+func (x *ConvertIRIToHashResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ConvertIRIToHashResponse)(x)
+}
+
+func (x *ConvertIRIToHashResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_data_v1_query_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ConvertIRIToHashResponse_messageType fastReflection_ConvertIRIToHashResponse_messageType
+var _ protoreflect.MessageType = fastReflection_ConvertIRIToHashResponse_messageType{}
+
+type fastReflection_ConvertIRIToHashResponse_messageType struct{}
+
+func (x fastReflection_ConvertIRIToHashResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ConvertIRIToHashResponse)(nil)
+}
+func (x fastReflection_ConvertIRIToHashResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_ConvertIRIToHashResponse)
+}
+func (x fastReflection_ConvertIRIToHashResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ConvertIRIToHashResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ConvertIRIToHashResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_ConvertIRIToHashResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ConvertIRIToHashResponse) Type() protoreflect.MessageType {
+	return _fastReflection_ConvertIRIToHashResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ConvertIRIToHashResponse) New() protoreflect.Message {
+	return new(fastReflection_ConvertIRIToHashResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ConvertIRIToHashResponse) Interface() protoreflect.ProtoMessage {
+	return (*ConvertIRIToHashResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ConvertIRIToHashResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.ContentHash != nil {
+		value := protoreflect.ValueOfMessage(x.ContentHash.ProtoReflect())
+		if !f(fd_ConvertIRIToHashResponse_content_hash, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ConvertIRIToHashResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
+		return x.ContentHash != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
+		x.ContentHash = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ConvertIRIToHashResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
+		value := x.ContentHash
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
+		x.ContentHash = value.Message().Interface().(*ContentHash)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
+		if x.ContentHash == nil {
+			x.ContentHash = new(ContentHash)
+		}
+		return protoreflect.ValueOfMessage(x.ContentHash.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ConvertIRIToHashResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
+		m := new(ContentHash)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ConvertIRIToHashResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ConvertIRIToHashResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ConvertIRIToHashResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ConvertIRIToHashResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ConvertIRIToHashResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ConvertIRIToHashResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ConvertIRIToHashResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.ContentHash != nil {
+			l = options.Size(x.ContentHash)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ConvertIRIToHashResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ContentHash != nil {
+			encoded, err := options.Marshal(x.ContentHash)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ConvertIRIToHashResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ContentHash", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ContentHash == nil {
+					x.ContentHash = &ContentHash{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ContentHash); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_ConvertHashToIRIRequest              protoreflect.MessageDescriptor
 	fd_ConvertHashToIRIRequest_content_hash protoreflect.FieldDescriptor
 )
@@ -9032,7 +9915,7 @@ func (x *ConvertHashToIRIRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ConvertHashToIRIRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[18]
+	mi := &file_regen_data_v1_query_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9467,7 +10350,7 @@ func (x *ConvertHashToIRIResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ConvertHashToIRIResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[19]
+	mi := &file_regen_data_v1_query_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9891,7 +10774,7 @@ func (x *ConvertRawHashToIRIRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ConvertRawHashToIRIRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[20]
+	mi := &file_regen_data_v1_query_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10403,7 +11286,7 @@ func (x *ConvertRawHashToIRIResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ConvertRawHashToIRIResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[21]
+	mi := &file_regen_data_v1_query_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10829,7 +11712,7 @@ func (x *ConvertGraphHashToIRIRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ConvertGraphHashToIRIRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[22]
+	mi := &file_regen_data_v1_query_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11387,7 +12270,7 @@ func (x *ConvertGraphHashToIRIResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ConvertGraphHashToIRIResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[23]
+	mi := &file_regen_data_v1_query_proto_msgTypes[25]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11751,861 +12634,6 @@ func (x *fastReflection_ConvertGraphHashToIRIResponse) ProtoMethods() *protoifac
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				x.Iri = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_ConvertIRIToHashRequest     protoreflect.MessageDescriptor
-	fd_ConvertIRIToHashRequest_iri protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_regen_data_v1_query_proto_init()
-	md_ConvertIRIToHashRequest = File_regen_data_v1_query_proto.Messages().ByName("ConvertIRIToHashRequest")
-	fd_ConvertIRIToHashRequest_iri = md_ConvertIRIToHashRequest.Fields().ByName("iri")
-}
-
-var _ protoreflect.Message = (*fastReflection_ConvertIRIToHashRequest)(nil)
-
-type fastReflection_ConvertIRIToHashRequest ConvertIRIToHashRequest
-
-func (x *ConvertIRIToHashRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_ConvertIRIToHashRequest)(x)
-}
-
-func (x *ConvertIRIToHashRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[24]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_ConvertIRIToHashRequest_messageType fastReflection_ConvertIRIToHashRequest_messageType
-var _ protoreflect.MessageType = fastReflection_ConvertIRIToHashRequest_messageType{}
-
-type fastReflection_ConvertIRIToHashRequest_messageType struct{}
-
-func (x fastReflection_ConvertIRIToHashRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_ConvertIRIToHashRequest)(nil)
-}
-func (x fastReflection_ConvertIRIToHashRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_ConvertIRIToHashRequest)
-}
-func (x fastReflection_ConvertIRIToHashRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_ConvertIRIToHashRequest
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_ConvertIRIToHashRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_ConvertIRIToHashRequest
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_ConvertIRIToHashRequest) Type() protoreflect.MessageType {
-	return _fastReflection_ConvertIRIToHashRequest_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_ConvertIRIToHashRequest) New() protoreflect.Message {
-	return new(fastReflection_ConvertIRIToHashRequest)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_ConvertIRIToHashRequest) Interface() protoreflect.ProtoMessage {
-	return (*ConvertIRIToHashRequest)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_ConvertIRIToHashRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Iri != "" {
-		value := protoreflect.ValueOfString(x.Iri)
-		if !f(fd_ConvertIRIToHashRequest_iri, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_ConvertIRIToHashRequest) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashRequest.iri":
-		return x.Iri != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashRequest) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashRequest.iri":
-		x.Iri = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_ConvertIRIToHashRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "regen.data.v1.ConvertIRIToHashRequest.iri":
-		value := x.Iri
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashRequest.iri":
-		x.Iri = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashRequest.iri":
-		panic(fmt.Errorf("field iri of message regen.data.v1.ConvertIRIToHashRequest is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_ConvertIRIToHashRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashRequest.iri":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashRequest"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_ConvertIRIToHashRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ConvertIRIToHashRequest", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_ConvertIRIToHashRequest) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashRequest) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_ConvertIRIToHashRequest) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_ConvertIRIToHashRequest) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*ConvertIRIToHashRequest)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Iri)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*ConvertIRIToHashRequest)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Iri) > 0 {
-			i -= len(x.Iri)
-			copy(dAtA[i:], x.Iri)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Iri)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*ConvertIRIToHashRequest)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashRequest: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Iri = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_ConvertIRIToHashResponse              protoreflect.MessageDescriptor
-	fd_ConvertIRIToHashResponse_content_hash protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_regen_data_v1_query_proto_init()
-	md_ConvertIRIToHashResponse = File_regen_data_v1_query_proto.Messages().ByName("ConvertIRIToHashResponse")
-	fd_ConvertIRIToHashResponse_content_hash = md_ConvertIRIToHashResponse.Fields().ByName("content_hash")
-}
-
-var _ protoreflect.Message = (*fastReflection_ConvertIRIToHashResponse)(nil)
-
-type fastReflection_ConvertIRIToHashResponse ConvertIRIToHashResponse
-
-func (x *ConvertIRIToHashResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_ConvertIRIToHashResponse)(x)
-}
-
-func (x *ConvertIRIToHashResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_query_proto_msgTypes[25]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_ConvertIRIToHashResponse_messageType fastReflection_ConvertIRIToHashResponse_messageType
-var _ protoreflect.MessageType = fastReflection_ConvertIRIToHashResponse_messageType{}
-
-type fastReflection_ConvertIRIToHashResponse_messageType struct{}
-
-func (x fastReflection_ConvertIRIToHashResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_ConvertIRIToHashResponse)(nil)
-}
-func (x fastReflection_ConvertIRIToHashResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_ConvertIRIToHashResponse)
-}
-func (x fastReflection_ConvertIRIToHashResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_ConvertIRIToHashResponse
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_ConvertIRIToHashResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_ConvertIRIToHashResponse
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_ConvertIRIToHashResponse) Type() protoreflect.MessageType {
-	return _fastReflection_ConvertIRIToHashResponse_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_ConvertIRIToHashResponse) New() protoreflect.Message {
-	return new(fastReflection_ConvertIRIToHashResponse)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_ConvertIRIToHashResponse) Interface() protoreflect.ProtoMessage {
-	return (*ConvertIRIToHashResponse)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_ConvertIRIToHashResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ContentHash != nil {
-		value := protoreflect.ValueOfMessage(x.ContentHash.ProtoReflect())
-		if !f(fd_ConvertIRIToHashResponse_content_hash, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_ConvertIRIToHashResponse) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
-		return x.ContentHash != nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashResponse) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
-		x.ContentHash = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_ConvertIRIToHashResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
-		value := x.ContentHash
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
-		x.ContentHash = value.Message().Interface().(*ContentHash)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
-		if x.ContentHash == nil {
-			x.ContentHash = new(ContentHash)
-		}
-		return protoreflect.ValueOfMessage(x.ContentHash.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_ConvertIRIToHashResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ConvertIRIToHashResponse.content_hash":
-		m := new(ContentHash)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ConvertIRIToHashResponse"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ConvertIRIToHashResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_ConvertIRIToHashResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ConvertIRIToHashResponse", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_ConvertIRIToHashResponse) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ConvertIRIToHashResponse) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_ConvertIRIToHashResponse) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_ConvertIRIToHashResponse) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*ConvertIRIToHashResponse)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.ContentHash != nil {
-			l = options.Size(x.ContentHash)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*ConvertIRIToHashResponse)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.ContentHash != nil {
-			encoded, err := options.Marshal(x.ContentHash)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*ConvertIRIToHashResponse)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashResponse: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ConvertIRIToHashResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ContentHash", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.ContentHash == nil {
-					x.ContentHash = &ContentHash{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ContentHash); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -13187,13 +13215,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// QueryAnchorByIRIRequest is the Query/ByIRI request type.
+// QueryAnchorByIRIRequest is the Query/AnchorByIRI request type.
 type QueryAnchorByIRIRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the IRI for the anchored data.
+	// iri is the IRI of the anchored data.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
@@ -13224,14 +13252,14 @@ func (x *QueryAnchorByIRIRequest) GetIri() string {
 	return ""
 }
 
-// QueryAnchorByIRIResponse is the Query/ByHash response type.
+// QueryAnchorByIRIResponse is the Query/AnchorByIRI response type.
 type QueryAnchorByIRIResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// entry is the ContentEntry for the anchored data.
-	Entry *ContentEntry `protobuf:"bytes,1,opt,name=entry,proto3" json:"entry,omitempty"` // TODO: AnchorEntry?
+	// anchor is the anchored data entry.
+	Anchor *AnchorEntry `protobuf:"bytes,1,opt,name=anchor,proto3" json:"anchor,omitempty"`
 }
 
 func (x *QueryAnchorByIRIResponse) Reset() {
@@ -13254,20 +13282,20 @@ func (*QueryAnchorByIRIResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *QueryAnchorByIRIResponse) GetEntry() *ContentEntry {
+func (x *QueryAnchorByIRIResponse) GetAnchor() *AnchorEntry {
 	if x != nil {
-		return x.Entry
+		return x.Anchor
 	}
 	return nil
 }
 
-// QueryAnchorByHashRequest is the Query/ByHash request type.
+// QueryAnchorByHashRequest is the Query/AnchorByHash request type.
 type QueryAnchorByHashRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the content hash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
@@ -13298,14 +13326,14 @@ func (x *QueryAnchorByHashRequest) GetContentHash() *ContentHash {
 	return nil
 }
 
-// QueryAnchorByHashResponse is the Query/ByHash response type.
+// QueryAnchorByHashResponse is the Query/AnchorByHash response type.
 type QueryAnchorByHashResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// entry is the ContentEntry for the anchored data.
-	Entry *ContentEntry `protobuf:"bytes,1,opt,name=entry,proto3" json:"entry,omitempty"`
+	// anchor is the anchored data entry.
+	Anchor *AnchorEntry `protobuf:"bytes,1,opt,name=anchor,proto3" json:"anchor,omitempty"`
 }
 
 func (x *QueryAnchorByHashResponse) Reset() {
@@ -13328,9 +13356,9 @@ func (*QueryAnchorByHashResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *QueryAnchorByHashResponse) GetEntry() *ContentEntry {
+func (x *QueryAnchorByHashResponse) GetAnchor() *AnchorEntry {
 	if x != nil {
-		return x.Entry
+		return x.Anchor
 	}
 	return nil
 }
@@ -13387,8 +13415,8 @@ type QueryAnchorsByAttestorResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// entries are the ContentEntries attested to by the attestor.
-	Entries []*ContentEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"` // TODO: AnchorEntry?
+	// anchors are the anchored data entries.
+	Anchors []*AnchorEntry `protobuf:"bytes,1,rep,name=anchors,proto3" json:"anchors,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -13413,9 +13441,9 @@ func (*QueryAnchorsByAttestorResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *QueryAnchorsByAttestorResponse) GetEntries() []*ContentEntry {
+func (x *QueryAnchorsByAttestorResponse) GetAnchors() []*AnchorEntry {
 	if x != nil {
-		return x.Entries
+		return x.Anchors
 	}
 	return nil
 }
@@ -13433,7 +13461,7 @@ type QueryAttestorsByIRIRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the IRI for the anchored data.
+	// iri is the IRI of the anchored data.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -13479,8 +13507,8 @@ type QueryAttestorsByIRIResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// attestors are the addresses of the attestors.
-	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
+	// attestors are the attestor entries.
+	Attestors []*AttestorEntry `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -13505,7 +13533,7 @@ func (*QueryAttestorsByIRIResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *QueryAttestorsByIRIResponse) GetAttestors() []string {
+func (x *QueryAttestorsByIRIResponse) GetAttestors() []*AttestorEntry {
 	if x != nil {
 		return x.Attestors
 	}
@@ -13525,7 +13553,7 @@ type QueryAttestorsByHashRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the content hash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -13571,8 +13599,8 @@ type QueryAttestorsByHashResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// attestors are the addresses of the attestors.
-	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
+	// attestors are the attestor entries.
+	Attestors []*AttestorEntry `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -13597,7 +13625,7 @@ func (*QueryAttestorsByHashResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *QueryAttestorsByHashResponse) GetAttestors() []string {
+func (x *QueryAttestorsByHashResponse) GetAttestors() []*AttestorEntry {
 	if x != nil {
 		return x.Attestors
 	}
@@ -13605,52 +13633,6 @@ func (x *QueryAttestorsByHashResponse) GetAttestors() []string {
 }
 
 func (x *QueryAttestorsByHashResponse) GetPagination() *v1beta1.PageResponse {
-	if x != nil {
-		return x.Pagination
-	}
-	return nil
-}
-
-// QueryResolversByIRIRequest is the Query/ResolversByIRI request type.
-type QueryResolversByIRIRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// iri is the IRI for the anchored data.
-	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// pagination is the PageRequest to use for pagination.
-	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (x *QueryResolversByIRIRequest) Reset() {
-	*x = QueryResolversByIRIRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[10]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *QueryResolversByIRIRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueryResolversByIRIRequest) ProtoMessage() {}
-
-// Deprecated: Use QueryResolversByIRIRequest.ProtoReflect.Descriptor instead.
-func (*QueryResolversByIRIRequest) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *QueryResolversByIRIRequest) GetIri() string {
-	if x != nil {
-		return x.Iri
-	}
-	return ""
-}
-
-func (x *QueryResolversByIRIRequest) GetPagination() *v1beta1.PageRequest {
 	if x != nil {
 		return x.Pagination
 	}
@@ -13670,7 +13652,7 @@ type QueryResolverRequest struct {
 func (x *QueryResolverRequest) Reset() {
 	*x = QueryResolverRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[11]
+		mi := &file_regen_data_v1_query_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13684,7 +13666,7 @@ func (*QueryResolverRequest) ProtoMessage() {}
 
 // Deprecated: Use QueryResolverRequest.ProtoReflect.Descriptor instead.
 func (*QueryResolverRequest) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{11}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *QueryResolverRequest) GetId() uint64 {
@@ -13707,7 +13689,7 @@ type QueryResolverResponse struct {
 func (x *QueryResolverResponse) Reset() {
 	*x = QueryResolverResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[12]
+		mi := &file_regen_data_v1_query_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13721,12 +13703,58 @@ func (*QueryResolverResponse) ProtoMessage() {}
 
 // Deprecated: Use QueryResolverResponse.ProtoReflect.Descriptor instead.
 func (*QueryResolverResponse) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{12}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *QueryResolverResponse) GetResolver() *ResolverInfo {
 	if x != nil {
 		return x.Resolver
+	}
+	return nil
+}
+
+// QueryResolversByIRIRequest is the Query/ResolversByIRI request type.
+type QueryResolversByIRIRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// iri is the IRI of the anchored data.
+	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
+	// pagination is the PageRequest to use for pagination.
+	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (x *QueryResolversByIRIRequest) Reset() {
+	*x = QueryResolversByIRIRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_data_v1_query_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryResolversByIRIRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryResolversByIRIRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryResolversByIRIRequest.ProtoReflect.Descriptor instead.
+func (*QueryResolversByIRIRequest) Descriptor() ([]byte, []int) {
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *QueryResolversByIRIRequest) GetIri() string {
+	if x != nil {
+		return x.Iri
+	}
+	return ""
+}
+
+func (x *QueryResolversByIRIRequest) GetPagination() *v1beta1.PageRequest {
+	if x != nil {
+		return x.Pagination
 	}
 	return nil
 }
@@ -13737,7 +13765,7 @@ type QueryResolversByIRIResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// resolvers are the resolvers that have registered the data.
+	// resolvers are the resolvers that have registered the anchored data.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -13783,7 +13811,7 @@ type QueryResolversByHashRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the content hash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -13875,7 +13903,7 @@ type QueryResolversByURLRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// url is the resolver URL that has been registered.
+	// url is the URL of the resolver.
 	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -13961,20 +13989,94 @@ func (x *QueryResolversByURLResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
+// ConvertIRIToHashRequest is the Query/ConvertIRIToHash request type.
+type ConvertIRIToHashRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// iri is the IRI to convert to a ContentHash.
+	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
+}
+
+func (x *ConvertIRIToHashRequest) Reset() {
+	*x = ConvertIRIToHashRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_data_v1_query_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ConvertIRIToHashRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConvertIRIToHashRequest) ProtoMessage() {}
+
+// Deprecated: Use ConvertIRIToHashRequest.ProtoReflect.Descriptor instead.
+func (*ConvertIRIToHashRequest) Descriptor() ([]byte, []int) {
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ConvertIRIToHashRequest) GetIri() string {
+	if x != nil {
+		return x.Iri
+	}
+	return ""
+}
+
+// ConvertIRIToHashResponse is the Query/ConvertIRIToHash response type.
+type ConvertIRIToHashResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// content_hash is the ContentHash converted from the IRI.
+	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
+}
+
+func (x *ConvertIRIToHashResponse) Reset() {
+	*x = ConvertIRIToHashResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_data_v1_query_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ConvertIRIToHashResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConvertIRIToHashResponse) ProtoMessage() {}
+
+// Deprecated: Use ConvertIRIToHashResponse.ProtoReflect.Descriptor instead.
+func (*ConvertIRIToHashResponse) Descriptor() ([]byte, []int) {
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ConvertIRIToHashResponse) GetContentHash() *ContentHash {
+	if x != nil {
+		return x.ContentHash
+	}
+	return nil
+}
+
 // ConvertHashToIRIRequest is the Query/ConvertHashToIRI request type.
 type ConvertHashToIRIRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the ContentHash for the anchored data.
+	// content_hash is the ContentHash to convert to an IRI.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
 func (x *ConvertHashToIRIRequest) Reset() {
 	*x = ConvertHashToIRIRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[18]
+		mi := &file_regen_data_v1_query_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13988,7 +14090,7 @@ func (*ConvertHashToIRIRequest) ProtoMessage() {}
 
 // Deprecated: Use ConvertHashToIRIRequest.ProtoReflect.Descriptor instead.
 func (*ConvertHashToIRIRequest) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{18}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ConvertHashToIRIRequest) GetContentHash() *ContentHash {
@@ -14004,14 +14106,14 @@ type ConvertHashToIRIResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the IRI for the content hash.
+	// iri is the IRI converted from the ContentHash.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
 func (x *ConvertHashToIRIResponse) Reset() {
 	*x = ConvertHashToIRIResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[19]
+		mi := &file_regen_data_v1_query_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14025,7 +14127,7 @@ func (*ConvertHashToIRIResponse) ProtoMessage() {}
 
 // Deprecated: Use ConvertHashToIRIResponse.ProtoReflect.Descriptor instead.
 func (*ConvertHashToIRIResponse) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{19}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ConvertHashToIRIResponse) GetIri() string {
@@ -14054,7 +14156,7 @@ type ConvertRawHashToIRIRequest struct {
 func (x *ConvertRawHashToIRIRequest) Reset() {
 	*x = ConvertRawHashToIRIRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[20]
+		mi := &file_regen_data_v1_query_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14068,7 +14170,7 @@ func (*ConvertRawHashToIRIRequest) ProtoMessage() {}
 
 // Deprecated: Use ConvertRawHashToIRIRequest.ProtoReflect.Descriptor instead.
 func (*ConvertRawHashToIRIRequest) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{20}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ConvertRawHashToIRIRequest) GetHash() string {
@@ -14098,14 +14200,14 @@ type ConvertRawHashToIRIResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the IRI for the content hash.
+	// iri is the IRI converted from ContentHash_Raw.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
 func (x *ConvertRawHashToIRIResponse) Reset() {
 	*x = ConvertRawHashToIRIResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[21]
+		mi := &file_regen_data_v1_query_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14119,7 +14221,7 @@ func (*ConvertRawHashToIRIResponse) ProtoMessage() {}
 
 // Deprecated: Use ConvertRawHashToIRIResponse.ProtoReflect.Descriptor instead.
 func (*ConvertRawHashToIRIResponse) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{21}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ConvertRawHashToIRIResponse) GetIri() string {
@@ -14151,7 +14253,7 @@ type ConvertGraphHashToIRIRequest struct {
 func (x *ConvertGraphHashToIRIRequest) Reset() {
 	*x = ConvertGraphHashToIRIRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[22]
+		mi := &file_regen_data_v1_query_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14165,7 +14267,7 @@ func (*ConvertGraphHashToIRIRequest) ProtoMessage() {}
 
 // Deprecated: Use ConvertGraphHashToIRIRequest.ProtoReflect.Descriptor instead.
 func (*ConvertGraphHashToIRIRequest) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{22}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ConvertGraphHashToIRIRequest) GetHash() string {
@@ -14196,20 +14298,21 @@ func (x *ConvertGraphHashToIRIRequest) GetMerkleTree() GraphMerkleTree {
 	return GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
 }
 
-// ConvertGraphHashToIRIResponse is the Query/ConvertGraphHashToIRI response type.
+// ConvertGraphHashToIRIResponse is the Query/ConvertGraphHashToIRI response
+// type.
 type ConvertGraphHashToIRIResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the IRI for the content hash.
+	// iri is the IRI converted from ContentHash_Graph.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
 func (x *ConvertGraphHashToIRIResponse) Reset() {
 	*x = ConvertGraphHashToIRIResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[23]
+		mi := &file_regen_data_v1_query_proto_msgTypes[25]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14223,7 +14326,7 @@ func (*ConvertGraphHashToIRIResponse) ProtoMessage() {}
 
 // Deprecated: Use ConvertGraphHashToIRIResponse.ProtoReflect.Descriptor instead.
 func (*ConvertGraphHashToIRIResponse) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{23}
+	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ConvertGraphHashToIRIResponse) GetIri() string {
@@ -14231,80 +14334,6 @@ func (x *ConvertGraphHashToIRIResponse) GetIri() string {
 		return x.Iri
 	}
 	return ""
-}
-
-// ConvertIRIToHashRequest is the Query/ConvertIRIToHash request type.
-type ConvertIRIToHashRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// iri is the IRI for the content hash.
-	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-}
-
-func (x *ConvertIRIToHashRequest) Reset() {
-	*x = ConvertIRIToHashRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[24]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ConvertIRIToHashRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ConvertIRIToHashRequest) ProtoMessage() {}
-
-// Deprecated: Use ConvertIRIToHashRequest.ProtoReflect.Descriptor instead.
-func (*ConvertIRIToHashRequest) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{24}
-}
-
-func (x *ConvertIRIToHashRequest) GetIri() string {
-	if x != nil {
-		return x.Iri
-	}
-	return ""
-}
-
-// ConvertIRIToHashResponse is the Query/ConvertIRIToHash response type.
-type ConvertIRIToHashResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// content_hash is the ContentHash for the IRI.
-	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
-}
-
-func (x *ConvertIRIToHashResponse) Reset() {
-	*x = ConvertIRIToHashResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_query_proto_msgTypes[25]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ConvertIRIToHashResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ConvertIRIToHashResponse) ProtoMessage() {}
-
-// Deprecated: Use ConvertIRIToHashResponse.ProtoReflect.Descriptor instead.
-func (*ConvertIRIToHashResponse) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{25}
-}
-
-func (x *ConvertIRIToHashResponse) GetContentHash() *ContentHash {
-	if x != nil {
-		return x.ContentHash
-	}
-	return nil
 }
 
 // ResolverInfo is the human-readable resolver information.
@@ -14376,322 +14405,326 @@ var file_regen_data_v1_query_proto_rawDesc = []byte{
 	0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
 	0x2b, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79,
 	0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72,
-	0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x4d, 0x0a, 0x18,
+	0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x4e, 0x0a, 0x18,
 	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x49, 0x52, 0x49,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x31, 0x0a, 0x05, 0x65, 0x6e, 0x74, 0x72,
-	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45,
-	0x6e, 0x74, 0x72, 0x79, 0x52, 0x05, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x22, 0x59, 0x0a, 0x18, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65,
-	0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f,
-	0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65,
-	0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x22, 0x4e, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41,
-	0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x31, 0x0a, 0x05, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52,
-	0x05, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x22, 0x83, 0x01, 0x0a, 0x1d, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f,
-	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x74, 0x74, 0x65,
-	0x73, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x61, 0x74, 0x74, 0x65,
-	0x73, 0x74, 0x6f, 0x72, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa0, 0x01, 0x0a,
-	0x1e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x41,
-	0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x35, 0x0a, 0x07, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x65,
-	0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
-	0x76, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72,
-	0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a,
-	0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12,
-	0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
-	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
-	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x84, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73,
-	0x74, 0x6f, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x09, 0x61, 0x74, 0x74, 0x65,
-	0x73, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31,
-	0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa4,
-	0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72,
-	0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3d,
-	0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x06, 0x61, 0x6e, 0x63, 0x68,
+	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x45,
+	0x6e, 0x74, 0x72, 0x79, 0x52, 0x06, 0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x22, 0x59, 0x0a, 0x18,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73,
+	0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74,
+	0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43,
+	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74,
+	0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x22, 0x4f, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x06, 0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68,
-	0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12, 0x46, 0x0a,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
-	0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61,
-	0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x85, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41,
-	0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74,
-	0x6f, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73,
+	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79,
+	0x52, 0x06, 0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x22, 0x83, 0x01, 0x0a, 0x1d, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73,
+	0x74, 0x6f, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x61, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9f,
+	0x01, 0x0a, 0x1e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x42,
+	0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x34, 0x0a, 0x07, 0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
+	0x76, 0x31, 0x2e, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07,
+	0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e,
+	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x22, 0x76, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f,
+	0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10,
+	0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69,
+	0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
+	0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa2, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3a, 0x0a, 0x09, 0x61, 0x74, 0x74, 0x65,
+	0x73, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x74, 0x74, 0x65,
+	0x73, 0x74, 0x6f, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73,
 	0x74, 0x6f, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
 	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
 	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x76, 0x0a,
-	0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42,
-	0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69,
-	0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x46, 0x0a,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
-	0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61,
-	0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x26, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65,
-	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a,
-	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x22, 0x50, 0x0a,
-	0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76,
-	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65,
-	0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x22,
-	0xa1, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65,
-	0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x39, 0x0a, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52,
-	0x09, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61,
-	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27,
-	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65,
-	0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x22, 0xa4, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73,
-	0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68,
-	0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
-	0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61,
-	0x73, 0x68, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a,
-	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa2, 0x01, 0x0a, 0x1c, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x48,
-	0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x09, 0x72,
-	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52,
-	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x72, 0x65, 0x73,
-	0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
-	0x76, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
-	0x73, 0x42, 0x79, 0x55, 0x52, 0x4c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a,
-	0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12,
+	0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa4, 0x01,
+	0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73,
+	0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3d, 0x0a,
+	0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
+	0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52,
+	0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12, 0x46, 0x0a, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa3, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3a, 0x0a, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f,
+	0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f,
+	0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72,
+	0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62,
+	0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x26, 0x0a, 0x14, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
+	0x69, 0x64, 0x22, 0x50, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c,
+	0x76, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x08, 0x72,
+	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65,
+	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f,
+	0x6c, 0x76, 0x65, 0x72, 0x22, 0x76, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73,
+	0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x03, 0x69, 0x72, 0x69, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa1, 0x01, 0x0a,
+	0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42,
+	0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x09,
+	0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
+	0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x72, 0x65,
+	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e,
+	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x22, 0xa4, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76,
+	0x65, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
+	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61,
+	0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12,
 	0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
 	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
 	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa1, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x55, 0x52, 0x4c, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x6c,
-	0x76, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x6c,
-	0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65,
-	0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x58, 0x0a, 0x17, 0x43,
-	0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
-	0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e,
-	0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
-	0x74, 0x48, 0x61, 0x73, 0x68, 0x22, 0x2c, 0x0a, 0x18, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa2, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x09, 0x72, 0x65, 0x73, 0x6f,
+	0x6c, 0x76, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x73, 0x6f,
+	0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76,
+	0x65, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x76, 0x0a, 0x1a,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79,
+	0x55, 0x52, 0x4c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72,
+	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x46, 0x0a, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa1, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65,
+	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x55, 0x52, 0x4c, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x12,
+	0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
+	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2b, 0x0a, 0x17, 0x43, 0x6f, 0x6e, 0x76,
+	0x65, 0x72, 0x74, 0x49, 0x52, 0x49, 0x54, 0x6f, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x59, 0x0a, 0x18, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74,
+	0x49, 0x52, 0x49, 0x54, 0x6f, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73,
+	0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48,
+	0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68,
+	0x22, 0x58, 0x0a, 0x17, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x48, 0x61, 0x73, 0x68, 0x54,
+	0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x3d, 0x0a, 0x0c, 0x63,
+	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
+	0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0b, 0x63,
+	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x22, 0x2c, 0x0a, 0x18, 0x43, 0x6f,
+	0x6e, 0x76, 0x65, 0x72, 0x74, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0xb7, 0x01, 0x0a, 0x1a, 0x43, 0x6f, 0x6e,
+	0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x61, 0x73, 0x68, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x68, 0x61, 0x73, 0x68, 0x12, 0x49, 0x0a, 0x10, 0x64,
+	0x69, 0x67, 0x65, 0x73, 0x74, 0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61,
+	0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f,
+	0x72, 0x69, 0x74, 0x68, 0x6d, 0x52, 0x0f, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67,
+	0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x3a, 0x0a, 0x0a, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f,
+	0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x61, 0x77, 0x4d, 0x65,
+	0x64, 0x69, 0x61, 0x54, 0x79, 0x70, 0x65, 0x52, 0x09, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x54, 0x79,
+	0x70, 0x65, 0x22, 0x2f, 0x0a, 0x1b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77,
 	0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x69, 0x72, 0x69, 0x22, 0xb7, 0x01, 0x0a, 0x1a, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52,
-	0x61, 0x77, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x04, 0x68, 0x61, 0x73, 0x68, 0x12, 0x49, 0x0a, 0x10, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74,
-	0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d,
-	0x52, 0x0f, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68,
-	0x6d, 0x12, 0x3a, 0x0a, 0x0a, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61,
-	0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x61, 0x77, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x54, 0x79,
-	0x70, 0x65, 0x52, 0x09, 0x6d, 0x65, 0x64, 0x69, 0x61, 0x54, 0x79, 0x70, 0x65, 0x22, 0x2f, 0x0a,
-	0x1b, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77, 0x48, 0x61, 0x73, 0x68, 0x54,
-	0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03,
-	0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0xac,
-	0x02, 0x0a, 0x1c, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x47, 0x72, 0x61, 0x70, 0x68, 0x48,
-	0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x12, 0x0a, 0x04, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x68,
-	0x61, 0x73, 0x68, 0x12, 0x49, 0x0a, 0x10, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x5f, 0x61, 0x6c,
-	0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x69,
-	0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x52, 0x0f, 0x64,
-	0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x6c,
-	0x0a, 0x1a, 0x63, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x0e, 0x32, 0x2d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x43, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61,
+	0x69, 0x72, 0x69, 0x22, 0xac, 0x02, 0x0a, 0x1c, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x47,
+	0x72, 0x61, 0x70, 0x68, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x68, 0x61, 0x73, 0x68, 0x12, 0x49, 0x0a, 0x10, 0x64, 0x69, 0x67, 0x65,
+	0x73, 0x74, 0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
+	0x76, 0x31, 0x2e, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74,
+	0x68, 0x6d, 0x52, 0x0f, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69,
+	0x74, 0x68, 0x6d, 0x12, 0x6c, 0x0a, 0x1a, 0x63, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c,
+	0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68,
+	0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x2d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x43, 0x61, 0x6e,
+	0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x67,
+	0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x52, 0x19, 0x63, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61,
 	0x6c, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68,
-	0x6d, 0x52, 0x19, 0x63, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x3f, 0x0a, 0x0b,
-	0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x5f, 0x74, 0x72, 0x65, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x0e, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
-	0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65,
-	0x65, 0x52, 0x0a, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65, 0x65, 0x22, 0x31, 0x0a,
-	0x1d, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x47, 0x72, 0x61, 0x70, 0x68, 0x48, 0x61, 0x73,
-	0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10,
-	0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69,
-	0x22, 0x2b, 0x0a, 0x17, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x49, 0x52, 0x49, 0x54, 0x6f,
-	0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69,
-	0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x59, 0x0a,
-	0x18, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x49, 0x52, 0x49, 0x54, 0x6f, 0x48, 0x61, 0x73,
-	0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e,
-	0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
-	0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e,
-	0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x22, 0x4a, 0x0a, 0x0c, 0x52, 0x65, 0x73, 0x6f,
-	0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61,
-	0x6e, 0x61, 0x67, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x61, 0x6e,
-	0x61, 0x67, 0x65, 0x72, 0x32, 0xee, 0x0d, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x8a,
-	0x01, 0x0a, 0x0b, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x49, 0x52, 0x49, 0x12, 0x26,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
-	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68,
-	0x6f, 0x72, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x2a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x24, 0x12, 0x22, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x2d, 0x62,
-	0x79, 0x2d, 0x69, 0x72, 0x69, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x63, 0x0a, 0x0c, 0x41,
-	0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x12, 0x27, 0x2e, 0x72, 0x65,
+	0x6d, 0x12, 0x3f, 0x0a, 0x0b, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x5f, 0x74, 0x72, 0x65, 0x65,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
+	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b,
+	0x6c, 0x65, 0x54, 0x72, 0x65, 0x65, 0x52, 0x0a, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72,
+	0x65, 0x65, 0x22, 0x31, 0x0a, 0x1d, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x47, 0x72, 0x61,
+	0x70, 0x68, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x4a, 0x0a, 0x0c, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65,
+	0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67,
+	0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65,
+	0x72, 0x32, 0xee, 0x0d, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x8a, 0x01, 0x0a, 0x0b,
+	0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x49, 0x52, 0x49, 0x12, 0x26, 0x2e, 0x72, 0x65,
 	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72,
-	0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
-	0x12, 0xa7, 0x01, 0x0a, 0x11, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x41, 0x74,
-	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
-	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68,
-	0x6f, 0x72, 0x73, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72,
-	0x73, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x35, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x2f, 0x12, 0x2d, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x6e, 0x63, 0x68,
-	0x6f, 0x72, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x2f,
-	0x7b, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x7d, 0x12, 0x96, 0x01, 0x0a, 0x0e, 0x41,
-	0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x12, 0x29, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52,
-	0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74,
-	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27, 0x12, 0x25, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x74, 0x74,
-	0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x69, 0x72, 0x69, 0x2f, 0x7b, 0x69,
-	0x72, 0x69, 0x7d, 0x12, 0x6c, 0x0a, 0x0f, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73,
-	0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
-	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65,
-	0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72,
-	0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x00, 0x12, 0x7b, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x12, 0x23, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x24, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e,
-	0x12, 0x1c, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31,
-	0x2f, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x96,
-	0x01, 0x0a, 0x0e, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52,
-	0x49, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
-	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73,
-	0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27,
-	0x12, 0x25, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31,
-	0x2f, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x69, 0x72,
-	0x69, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x6c, 0x0a, 0x0f, 0x52, 0x65, 0x73, 0x6f, 0x6c,
-	0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67,
+	0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42,
+	0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x82, 0xd3,
+	0xe4, 0x93, 0x02, 0x24, 0x12, 0x22, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74,
+	0x61, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x2d, 0x62, 0x79, 0x2d, 0x69,
+	0x72, 0x69, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x63, 0x0a, 0x0c, 0x41, 0x6e, 0x63, 0x68,
+	0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e,
+	0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
+	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x42, 0x79, 0x48,
+	0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0xa7, 0x01,
+	0x0a, 0x11, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73,
+	0x74, 0x6f, 0x72, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73,
+	0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x2d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
+	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73, 0x42, 0x79,
+	0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x35, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x2f, 0x12, 0x2d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x73,
+	0x2d, 0x62, 0x79, 0x2d, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x2f, 0x7b, 0x61, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x7d, 0x12, 0x96, 0x01, 0x0a, 0x0e, 0x41, 0x74, 0x74, 0x65,
+	0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67,
 	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
-	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f,
-	0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x90, 0x01, 0x0a, 0x0e, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76,
-	0x65, 0x72, 0x73, 0x42, 0x79, 0x55, 0x52, 0x4c, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65,
-	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x55, 0x52, 0x4c, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
+	0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61,
+	0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73,
+	0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27, 0x12, 0x25, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74,
+	0x6f, 0x72, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x69, 0x72, 0x69, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d,
+	0x12, 0x6c, 0x0a, 0x0f, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79, 0x48,
+	0x61, 0x73, 0x68, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f,
+	0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0x79,
+	0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x7b,
+	0x0a, 0x08, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x12, 0x23, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x24, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e, 0x12, 0x1c, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65,
+	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x96, 0x01, 0x0a, 0x0e,
+	0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x12, 0x29,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x49,
+	0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52,
+	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27, 0x12, 0x25, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65,
+	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x69, 0x72, 0x69, 0x2f, 0x7b,
+	0x69, 0x72, 0x69, 0x7d, 0x12, 0x6c, 0x0a, 0x0f, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
+	0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73,
+	0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
 	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65,
-	0x72, 0x73, 0x42, 0x79, 0x55, 0x52, 0x4c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x27, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x21, 0x12, 0x1f, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
-	0x73, 0x2d, 0x62, 0x79, 0x2d, 0x75, 0x72, 0x6c, 0x12, 0x8d, 0x01, 0x0a, 0x10, 0x43, 0x6f, 0x6e,
-	0x76, 0x65, 0x72, 0x74, 0x49, 0x52, 0x49, 0x54, 0x6f, 0x48, 0x61, 0x73, 0x68, 0x12, 0x26, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f,
-	0x6e, 0x76, 0x65, 0x72, 0x74, 0x49, 0x52, 0x49, 0x54, 0x6f, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61,
-	0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x49, 0x52, 0x49,
-	0x54, 0x6f, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x28,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x22, 0x12, 0x20, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64,
-	0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x69, 0x72, 0x69, 0x2d, 0x74, 0x6f, 0x2d, 0x68, 0x61,
-	0x73, 0x68, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x65, 0x0a, 0x10, 0x43, 0x6f, 0x6e, 0x76,
-	0x65, 0x72, 0x74, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x12, 0x26, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e,
-	0x76, 0x65, 0x72, 0x74, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x48, 0x61, 0x73, 0x68,
-	0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12,
-	0x94, 0x01, 0x0a, 0x13, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77, 0x48, 0x61,
-	0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52,
-	0x61, 0x77, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77, 0x48, 0x61, 0x73,
-	0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x26,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64,
-	0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x61, 0x77, 0x2d, 0x68, 0x61, 0x73, 0x68, 0x2d,
-	0x74, 0x6f, 0x2d, 0x69, 0x72, 0x69, 0x12, 0x9c, 0x01, 0x0a, 0x15, 0x43, 0x6f, 0x6e, 0x76, 0x65,
-	0x72, 0x74, 0x47, 0x72, 0x61, 0x70, 0x68, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49,
-	0x12, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31,
-	0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x47, 0x72, 0x61, 0x70, 0x68, 0x48, 0x61, 0x73,
-	0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e,
+	0x72, 0x73, 0x42, 0x79, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x12, 0x90, 0x01, 0x0a, 0x0e, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73,
+	0x42, 0x79, 0x55, 0x52, 0x4c, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61,
+	0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c,
+	0x76, 0x65, 0x72, 0x73, 0x42, 0x79, 0x55, 0x52, 0x4c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x42,
+	0x79, 0x55, 0x52, 0x4c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x27, 0x82, 0xd3,
+	0xe4, 0x93, 0x02, 0x21, 0x12, 0x1f, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74,
+	0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x2d, 0x62,
+	0x79, 0x2d, 0x75, 0x72, 0x6c, 0x12, 0x8d, 0x01, 0x0a, 0x10, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72,
+	0x74, 0x49, 0x52, 0x49, 0x54, 0x6f, 0x48, 0x61, 0x73, 0x68, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65,
+	0x72, 0x74, 0x49, 0x52, 0x49, 0x54, 0x6f, 0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
+	0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x49, 0x52, 0x49, 0x54, 0x6f, 0x48,
+	0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x28, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x22, 0x12, 0x20, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61,
+	0x2f, 0x76, 0x31, 0x2f, 0x69, 0x72, 0x69, 0x2d, 0x74, 0x6f, 0x2d, 0x68, 0x61, 0x73, 0x68, 0x2f,
+	0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x65, 0x0a, 0x10, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74,
+	0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72,
+	0x74, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
+	0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49,
+	0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x94, 0x01, 0x0a,
+	0x13, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77, 0x48, 0x61, 0x73, 0x68, 0x54,
+	0x6f, 0x49, 0x52, 0x49, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
+	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77, 0x48,
+	0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
+	0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x52, 0x61, 0x77, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f,
+	0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x26, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61,
+	0x2f, 0x76, 0x31, 0x2f, 0x72, 0x61, 0x77, 0x2d, 0x68, 0x61, 0x73, 0x68, 0x2d, 0x74, 0x6f, 0x2d,
+	0x69, 0x72, 0x69, 0x12, 0x9c, 0x01, 0x0a, 0x15, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x47,
+	0x72, 0x61, 0x70, 0x68, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49, 0x12, 0x2b, 0x2e,
 	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f,
 	0x6e, 0x76, 0x65, 0x72, 0x74, 0x47, 0x72, 0x61, 0x70, 0x68, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f,
-	0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x28, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x22, 0x12, 0x20, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61,
-	0x2f, 0x76, 0x31, 0x2f, 0x67, 0x72, 0x61, 0x70, 0x68, 0x2d, 0x68, 0x61, 0x73, 0x68, 0x2d, 0x74,
-	0x6f, 0x2d, 0x69, 0x72, 0x69, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75,
-	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77,
-	0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f,
-	0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa,
-	0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca,
-	0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2,
-	0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65,
-	0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x76, 0x65,
+	0x72, 0x74, 0x47, 0x72, 0x61, 0x70, 0x68, 0x48, 0x61, 0x73, 0x68, 0x54, 0x6f, 0x49, 0x52, 0x49,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x28, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x22,
+	0x12, 0x20, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31,
+	0x2f, 0x67, 0x72, 0x61, 0x70, 0x68, 0x2d, 0x68, 0x61, 0x73, 0x68, 0x2d, 0x74, 0x6f, 0x2d, 0x69,
+	0x72, 0x69, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b,
+	0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -14718,93 +14751,96 @@ var file_regen_data_v1_query_proto_goTypes = []interface{}{
 	(*QueryAttestorsByIRIResponse)(nil),    // 7: regen.data.v1.QueryAttestorsByIRIResponse
 	(*QueryAttestorsByHashRequest)(nil),    // 8: regen.data.v1.QueryAttestorsByHashRequest
 	(*QueryAttestorsByHashResponse)(nil),   // 9: regen.data.v1.QueryAttestorsByHashResponse
-	(*QueryResolversByIRIRequest)(nil),     // 10: regen.data.v1.QueryResolversByIRIRequest
-	(*QueryResolverRequest)(nil),           // 11: regen.data.v1.QueryResolverRequest
-	(*QueryResolverResponse)(nil),          // 12: regen.data.v1.QueryResolverResponse
+	(*QueryResolverRequest)(nil),           // 10: regen.data.v1.QueryResolverRequest
+	(*QueryResolverResponse)(nil),          // 11: regen.data.v1.QueryResolverResponse
+	(*QueryResolversByIRIRequest)(nil),     // 12: regen.data.v1.QueryResolversByIRIRequest
 	(*QueryResolversByIRIResponse)(nil),    // 13: regen.data.v1.QueryResolversByIRIResponse
 	(*QueryResolversByHashRequest)(nil),    // 14: regen.data.v1.QueryResolversByHashRequest
 	(*QueryResolversByHashResponse)(nil),   // 15: regen.data.v1.QueryResolversByHashResponse
 	(*QueryResolversByURLRequest)(nil),     // 16: regen.data.v1.QueryResolversByURLRequest
 	(*QueryResolversByURLResponse)(nil),    // 17: regen.data.v1.QueryResolversByURLResponse
-	(*ConvertHashToIRIRequest)(nil),        // 18: regen.data.v1.ConvertHashToIRIRequest
-	(*ConvertHashToIRIResponse)(nil),       // 19: regen.data.v1.ConvertHashToIRIResponse
-	(*ConvertRawHashToIRIRequest)(nil),     // 20: regen.data.v1.ConvertRawHashToIRIRequest
-	(*ConvertRawHashToIRIResponse)(nil),    // 21: regen.data.v1.ConvertRawHashToIRIResponse
-	(*ConvertGraphHashToIRIRequest)(nil),   // 22: regen.data.v1.ConvertGraphHashToIRIRequest
-	(*ConvertGraphHashToIRIResponse)(nil),  // 23: regen.data.v1.ConvertGraphHashToIRIResponse
-	(*ConvertIRIToHashRequest)(nil),        // 24: regen.data.v1.ConvertIRIToHashRequest
-	(*ConvertIRIToHashResponse)(nil),       // 25: regen.data.v1.ConvertIRIToHashResponse
+	(*ConvertIRIToHashRequest)(nil),        // 18: regen.data.v1.ConvertIRIToHashRequest
+	(*ConvertIRIToHashResponse)(nil),       // 19: regen.data.v1.ConvertIRIToHashResponse
+	(*ConvertHashToIRIRequest)(nil),        // 20: regen.data.v1.ConvertHashToIRIRequest
+	(*ConvertHashToIRIResponse)(nil),       // 21: regen.data.v1.ConvertHashToIRIResponse
+	(*ConvertRawHashToIRIRequest)(nil),     // 22: regen.data.v1.ConvertRawHashToIRIRequest
+	(*ConvertRawHashToIRIResponse)(nil),    // 23: regen.data.v1.ConvertRawHashToIRIResponse
+	(*ConvertGraphHashToIRIRequest)(nil),   // 24: regen.data.v1.ConvertGraphHashToIRIRequest
+	(*ConvertGraphHashToIRIResponse)(nil),  // 25: regen.data.v1.ConvertGraphHashToIRIResponse
 	(*ResolverInfo)(nil),                   // 26: regen.data.v1.ResolverInfo
-	(*ContentEntry)(nil),                   // 27: regen.data.v1.ContentEntry
+	(*AnchorEntry)(nil),                    // 27: regen.data.v1.AnchorEntry
 	(*ContentHash)(nil),                    // 28: regen.data.v1.ContentHash
 	(*v1beta1.PageRequest)(nil),            // 29: cosmos.base.query.v1beta1.PageRequest
 	(*v1beta1.PageResponse)(nil),           // 30: cosmos.base.query.v1beta1.PageResponse
-	(DigestAlgorithm)(0),                   // 31: regen.data.v1.DigestAlgorithm
-	(RawMediaType)(0),                      // 32: regen.data.v1.RawMediaType
-	(GraphCanonicalizationAlgorithm)(0),    // 33: regen.data.v1.GraphCanonicalizationAlgorithm
-	(GraphMerkleTree)(0),                   // 34: regen.data.v1.GraphMerkleTree
+	(*AttestorEntry)(nil),                  // 31: regen.data.v1.AttestorEntry
+	(DigestAlgorithm)(0),                   // 32: regen.data.v1.DigestAlgorithm
+	(RawMediaType)(0),                      // 33: regen.data.v1.RawMediaType
+	(GraphCanonicalizationAlgorithm)(0),    // 34: regen.data.v1.GraphCanonicalizationAlgorithm
+	(GraphMerkleTree)(0),                   // 35: regen.data.v1.GraphMerkleTree
 }
 var file_regen_data_v1_query_proto_depIdxs = []int32{
-	27, // 0: regen.data.v1.QueryAnchorByIRIResponse.entry:type_name -> regen.data.v1.ContentEntry
+	27, // 0: regen.data.v1.QueryAnchorByIRIResponse.anchor:type_name -> regen.data.v1.AnchorEntry
 	28, // 1: regen.data.v1.QueryAnchorByHashRequest.content_hash:type_name -> regen.data.v1.ContentHash
-	27, // 2: regen.data.v1.QueryAnchorByHashResponse.entry:type_name -> regen.data.v1.ContentEntry
+	27, // 2: regen.data.v1.QueryAnchorByHashResponse.anchor:type_name -> regen.data.v1.AnchorEntry
 	29, // 3: regen.data.v1.QueryAnchorsByAttestorRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	27, // 4: regen.data.v1.QueryAnchorsByAttestorResponse.entries:type_name -> regen.data.v1.ContentEntry
+	27, // 4: regen.data.v1.QueryAnchorsByAttestorResponse.anchors:type_name -> regen.data.v1.AnchorEntry
 	30, // 5: regen.data.v1.QueryAnchorsByAttestorResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
 	29, // 6: regen.data.v1.QueryAttestorsByIRIRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	30, // 7: regen.data.v1.QueryAttestorsByIRIResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	28, // 8: regen.data.v1.QueryAttestorsByHashRequest.content_hash:type_name -> regen.data.v1.ContentHash
-	29, // 9: regen.data.v1.QueryAttestorsByHashRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	30, // 10: regen.data.v1.QueryAttestorsByHashResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	29, // 11: regen.data.v1.QueryResolversByIRIRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	26, // 12: regen.data.v1.QueryResolverResponse.resolver:type_name -> regen.data.v1.ResolverInfo
-	26, // 13: regen.data.v1.QueryResolversByIRIResponse.resolvers:type_name -> regen.data.v1.ResolverInfo
-	30, // 14: regen.data.v1.QueryResolversByIRIResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	28, // 15: regen.data.v1.QueryResolversByHashRequest.content_hash:type_name -> regen.data.v1.ContentHash
-	29, // 16: regen.data.v1.QueryResolversByHashRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	26, // 17: regen.data.v1.QueryResolversByHashResponse.resolvers:type_name -> regen.data.v1.ResolverInfo
-	30, // 18: regen.data.v1.QueryResolversByHashResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	29, // 19: regen.data.v1.QueryResolversByURLRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	26, // 20: regen.data.v1.QueryResolversByURLResponse.resolvers:type_name -> regen.data.v1.ResolverInfo
-	30, // 21: regen.data.v1.QueryResolversByURLResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	28, // 22: regen.data.v1.ConvertHashToIRIRequest.content_hash:type_name -> regen.data.v1.ContentHash
-	31, // 23: regen.data.v1.ConvertRawHashToIRIRequest.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
-	32, // 24: regen.data.v1.ConvertRawHashToIRIRequest.media_type:type_name -> regen.data.v1.RawMediaType
-	31, // 25: regen.data.v1.ConvertGraphHashToIRIRequest.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
-	33, // 26: regen.data.v1.ConvertGraphHashToIRIRequest.canonicalization_algorithm:type_name -> regen.data.v1.GraphCanonicalizationAlgorithm
-	34, // 27: regen.data.v1.ConvertGraphHashToIRIRequest.merkle_tree:type_name -> regen.data.v1.GraphMerkleTree
-	28, // 28: regen.data.v1.ConvertIRIToHashResponse.content_hash:type_name -> regen.data.v1.ContentHash
-	0,  // 29: regen.data.v1.Query.AnchorByIRI:input_type -> regen.data.v1.QueryAnchorByIRIRequest
-	2,  // 30: regen.data.v1.Query.AnchorByHash:input_type -> regen.data.v1.QueryAnchorByHashRequest
-	4,  // 31: regen.data.v1.Query.AnchorsByAttestor:input_type -> regen.data.v1.QueryAnchorsByAttestorRequest
-	6,  // 32: regen.data.v1.Query.AttestorsByIRI:input_type -> regen.data.v1.QueryAttestorsByIRIRequest
-	8,  // 33: regen.data.v1.Query.AttestorsByHash:input_type -> regen.data.v1.QueryAttestorsByHashRequest
-	11, // 34: regen.data.v1.Query.Resolver:input_type -> regen.data.v1.QueryResolverRequest
-	10, // 35: regen.data.v1.Query.ResolversByIRI:input_type -> regen.data.v1.QueryResolversByIRIRequest
-	14, // 36: regen.data.v1.Query.ResolversByHash:input_type -> regen.data.v1.QueryResolversByHashRequest
-	16, // 37: regen.data.v1.Query.ResolversByURL:input_type -> regen.data.v1.QueryResolversByURLRequest
-	24, // 38: regen.data.v1.Query.ConvertIRIToHash:input_type -> regen.data.v1.ConvertIRIToHashRequest
-	18, // 39: regen.data.v1.Query.ConvertHashToIRI:input_type -> regen.data.v1.ConvertHashToIRIRequest
-	20, // 40: regen.data.v1.Query.ConvertRawHashToIRI:input_type -> regen.data.v1.ConvertRawHashToIRIRequest
-	22, // 41: regen.data.v1.Query.ConvertGraphHashToIRI:input_type -> regen.data.v1.ConvertGraphHashToIRIRequest
-	1,  // 42: regen.data.v1.Query.AnchorByIRI:output_type -> regen.data.v1.QueryAnchorByIRIResponse
-	3,  // 43: regen.data.v1.Query.AnchorByHash:output_type -> regen.data.v1.QueryAnchorByHashResponse
-	5,  // 44: regen.data.v1.Query.AnchorsByAttestor:output_type -> regen.data.v1.QueryAnchorsByAttestorResponse
-	7,  // 45: regen.data.v1.Query.AttestorsByIRI:output_type -> regen.data.v1.QueryAttestorsByIRIResponse
-	9,  // 46: regen.data.v1.Query.AttestorsByHash:output_type -> regen.data.v1.QueryAttestorsByHashResponse
-	12, // 47: regen.data.v1.Query.Resolver:output_type -> regen.data.v1.QueryResolverResponse
-	13, // 48: regen.data.v1.Query.ResolversByIRI:output_type -> regen.data.v1.QueryResolversByIRIResponse
-	15, // 49: regen.data.v1.Query.ResolversByHash:output_type -> regen.data.v1.QueryResolversByHashResponse
-	17, // 50: regen.data.v1.Query.ResolversByURL:output_type -> regen.data.v1.QueryResolversByURLResponse
-	25, // 51: regen.data.v1.Query.ConvertIRIToHash:output_type -> regen.data.v1.ConvertIRIToHashResponse
-	19, // 52: regen.data.v1.Query.ConvertHashToIRI:output_type -> regen.data.v1.ConvertHashToIRIResponse
-	21, // 53: regen.data.v1.Query.ConvertRawHashToIRI:output_type -> regen.data.v1.ConvertRawHashToIRIResponse
-	23, // 54: regen.data.v1.Query.ConvertGraphHashToIRI:output_type -> regen.data.v1.ConvertGraphHashToIRIResponse
-	42, // [42:55] is the sub-list for method output_type
-	29, // [29:42] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	31, // 7: regen.data.v1.QueryAttestorsByIRIResponse.attestors:type_name -> regen.data.v1.AttestorEntry
+	30, // 8: regen.data.v1.QueryAttestorsByIRIResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	28, // 9: regen.data.v1.QueryAttestorsByHashRequest.content_hash:type_name -> regen.data.v1.ContentHash
+	29, // 10: regen.data.v1.QueryAttestorsByHashRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	31, // 11: regen.data.v1.QueryAttestorsByHashResponse.attestors:type_name -> regen.data.v1.AttestorEntry
+	30, // 12: regen.data.v1.QueryAttestorsByHashResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	26, // 13: regen.data.v1.QueryResolverResponse.resolver:type_name -> regen.data.v1.ResolverInfo
+	29, // 14: regen.data.v1.QueryResolversByIRIRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	26, // 15: regen.data.v1.QueryResolversByIRIResponse.resolvers:type_name -> regen.data.v1.ResolverInfo
+	30, // 16: regen.data.v1.QueryResolversByIRIResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	28, // 17: regen.data.v1.QueryResolversByHashRequest.content_hash:type_name -> regen.data.v1.ContentHash
+	29, // 18: regen.data.v1.QueryResolversByHashRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	26, // 19: regen.data.v1.QueryResolversByHashResponse.resolvers:type_name -> regen.data.v1.ResolverInfo
+	30, // 20: regen.data.v1.QueryResolversByHashResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	29, // 21: regen.data.v1.QueryResolversByURLRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	26, // 22: regen.data.v1.QueryResolversByURLResponse.resolvers:type_name -> regen.data.v1.ResolverInfo
+	30, // 23: regen.data.v1.QueryResolversByURLResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	28, // 24: regen.data.v1.ConvertIRIToHashResponse.content_hash:type_name -> regen.data.v1.ContentHash
+	28, // 25: regen.data.v1.ConvertHashToIRIRequest.content_hash:type_name -> regen.data.v1.ContentHash
+	32, // 26: regen.data.v1.ConvertRawHashToIRIRequest.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
+	33, // 27: regen.data.v1.ConvertRawHashToIRIRequest.media_type:type_name -> regen.data.v1.RawMediaType
+	32, // 28: regen.data.v1.ConvertGraphHashToIRIRequest.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
+	34, // 29: regen.data.v1.ConvertGraphHashToIRIRequest.canonicalization_algorithm:type_name -> regen.data.v1.GraphCanonicalizationAlgorithm
+	35, // 30: regen.data.v1.ConvertGraphHashToIRIRequest.merkle_tree:type_name -> regen.data.v1.GraphMerkleTree
+	0,  // 31: regen.data.v1.Query.AnchorByIRI:input_type -> regen.data.v1.QueryAnchorByIRIRequest
+	2,  // 32: regen.data.v1.Query.AnchorByHash:input_type -> regen.data.v1.QueryAnchorByHashRequest
+	4,  // 33: regen.data.v1.Query.AnchorsByAttestor:input_type -> regen.data.v1.QueryAnchorsByAttestorRequest
+	6,  // 34: regen.data.v1.Query.AttestorsByIRI:input_type -> regen.data.v1.QueryAttestorsByIRIRequest
+	8,  // 35: regen.data.v1.Query.AttestorsByHash:input_type -> regen.data.v1.QueryAttestorsByHashRequest
+	10, // 36: regen.data.v1.Query.Resolver:input_type -> regen.data.v1.QueryResolverRequest
+	12, // 37: regen.data.v1.Query.ResolversByIRI:input_type -> regen.data.v1.QueryResolversByIRIRequest
+	14, // 38: regen.data.v1.Query.ResolversByHash:input_type -> regen.data.v1.QueryResolversByHashRequest
+	16, // 39: regen.data.v1.Query.ResolversByURL:input_type -> regen.data.v1.QueryResolversByURLRequest
+	18, // 40: regen.data.v1.Query.ConvertIRIToHash:input_type -> regen.data.v1.ConvertIRIToHashRequest
+	20, // 41: regen.data.v1.Query.ConvertHashToIRI:input_type -> regen.data.v1.ConvertHashToIRIRequest
+	22, // 42: regen.data.v1.Query.ConvertRawHashToIRI:input_type -> regen.data.v1.ConvertRawHashToIRIRequest
+	24, // 43: regen.data.v1.Query.ConvertGraphHashToIRI:input_type -> regen.data.v1.ConvertGraphHashToIRIRequest
+	1,  // 44: regen.data.v1.Query.AnchorByIRI:output_type -> regen.data.v1.QueryAnchorByIRIResponse
+	3,  // 45: regen.data.v1.Query.AnchorByHash:output_type -> regen.data.v1.QueryAnchorByHashResponse
+	5,  // 46: regen.data.v1.Query.AnchorsByAttestor:output_type -> regen.data.v1.QueryAnchorsByAttestorResponse
+	7,  // 47: regen.data.v1.Query.AttestorsByIRI:output_type -> regen.data.v1.QueryAttestorsByIRIResponse
+	9,  // 48: regen.data.v1.Query.AttestorsByHash:output_type -> regen.data.v1.QueryAttestorsByHashResponse
+	11, // 49: regen.data.v1.Query.Resolver:output_type -> regen.data.v1.QueryResolverResponse
+	13, // 50: regen.data.v1.Query.ResolversByIRI:output_type -> regen.data.v1.QueryResolversByIRIResponse
+	15, // 51: regen.data.v1.Query.ResolversByHash:output_type -> regen.data.v1.QueryResolversByHashResponse
+	17, // 52: regen.data.v1.Query.ResolversByURL:output_type -> regen.data.v1.QueryResolversByURLResponse
+	19, // 53: regen.data.v1.Query.ConvertIRIToHash:output_type -> regen.data.v1.ConvertIRIToHashResponse
+	21, // 54: regen.data.v1.Query.ConvertHashToIRI:output_type -> regen.data.v1.ConvertHashToIRIResponse
+	23, // 55: regen.data.v1.Query.ConvertRawHashToIRI:output_type -> regen.data.v1.ConvertRawHashToIRIResponse
+	25, // 56: regen.data.v1.Query.ConvertGraphHashToIRI:output_type -> regen.data.v1.ConvertGraphHashToIRIResponse
+	44, // [44:57] is the sub-list for method output_type
+	31, // [31:44] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_regen_data_v1_query_proto_init() }
@@ -14935,18 +14971,6 @@ func file_regen_data_v1_query_proto_init() {
 			}
 		}
 		file_regen_data_v1_query_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryResolversByIRIRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_query_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryResolverRequest); i {
 			case 0:
 				return &v.state
@@ -14958,8 +14982,20 @@ func file_regen_data_v1_query_proto_init() {
 				return nil
 			}
 		}
-		file_regen_data_v1_query_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_regen_data_v1_query_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryResolverResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_query_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryResolversByIRIRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -15031,78 +15067,6 @@ func file_regen_data_v1_query_proto_init() {
 			}
 		}
 		file_regen_data_v1_query_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ConvertHashToIRIRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_query_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ConvertHashToIRIResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_query_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ConvertRawHashToIRIRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_query_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ConvertRawHashToIRIResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_query_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ConvertGraphHashToIRIRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_query_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ConvertGraphHashToIRIResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_query_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ConvertIRIToHashRequest); i {
 			case 0:
 				return &v.state
@@ -15114,8 +15078,80 @@ func file_regen_data_v1_query_proto_init() {
 				return nil
 			}
 		}
-		file_regen_data_v1_query_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
+		file_regen_data_v1_query_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ConvertIRIToHashResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_query_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConvertHashToIRIRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_query_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConvertHashToIRIResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_query_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConvertRawHashToIRIRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_query_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConvertRawHashToIRIResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_query_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConvertGraphHashToIRIRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_query_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConvertGraphHashToIRIResponse); i {
 			case 0:
 				return &v.state
 			case 1:

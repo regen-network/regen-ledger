@@ -67,7 +67,7 @@ message MsgAnchorResponse {
   // iri is the IRI of the data that was anchored.
   string iri = 1;
 
-  // timestamp is the timestamp at which the data was anchored.
+  // timestamp is the time at which the data was anchored.
   google.protobuf.Timestamp timestamp = 2;
 }
 

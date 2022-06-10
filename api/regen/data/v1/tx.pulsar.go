@@ -3982,7 +3982,7 @@ type MsgAnchorResponse struct {
 
 	// iri is the IRI of the data that was anchored.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// timestamp is the timestamp at which the data was anchored.
+	// timestamp is the time at which the data was anchored.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
