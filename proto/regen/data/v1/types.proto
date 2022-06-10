@@ -140,30 +140,6 @@ enum GraphMerkleTree {
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
 }
 
-// AnchorEntry is an anchor entry.
-message AnchorEntry {
-  // iri is the IRI of the anchored data.
-  string iri = 1;
-
-  // content_hash is the ContentHash of the anchored data.
-  ContentHash content_hash = 2;
-
-  // timestamp is the time at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 3;
-}
-
-// AttestorEntry is an attestor entry.
-message AttestorEntry {
-  // iri is the IRI of the anchored data.
-  string iri = 1;
-
-  // attestor is the address of the account that attested to the anchored data.
-  string attestor = 2;
-
-  // timestamp is the time at which the data was attested to.
-  google.protobuf.Timestamp timestamp = 3;
-}
-
 // ContentHashes contains list of content ContentHash.
 message ContentHashes {
   // data is a list of content hashes which the resolver claims to serve.

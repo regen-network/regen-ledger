@@ -7,6 +7,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -83,6 +84,14 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	graphHash := s.hash1.GetGraph()
 
+	// set block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	// convert block time to expected format for anchor response
+	anchorBlockTime, err := gogotypes.TimestampProto(s.sdkCtx.BlockTime())
+	require.NoError(err)
+
 	// anchor some data
 	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.addr1.String(),
@@ -91,9 +100,10 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
+	require.Equal(anchorBlockTime, anchorRes1.Timestamp)
 
 	// update block time
-	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op
@@ -113,6 +123,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(anchorByIRI)
 	require.NotNil(anchorByIRI.Anchor)
+	require.NotNil(iri, anchorByIRI.Anchor.Iri)
 	require.Equal(anchorRes1.Timestamp, anchorByIRI.Anchor.Timestamp)
 
 	// can query anchored data entry by hash
@@ -151,50 +162,53 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(iriToHash)
 	require.Equal(s.hash1, iriToHash.ContentHash)
 
-	// can query attestor entries by iri
+	// can query attestor entries by iri (no attestors)
 	attestorsByIri, err := s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
-		Iri: anchorByIRI.Anchor.Iri,
+		Iri: iri,
 	})
 	require.NoError(err)
 	require.Empty(attestorsByIri.Attestors)
 
-	// can query attestor entries by hash
+	// can query attestor entries by hash (no attestors)
 	attestorsByHash, err := s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
-		ContentHash: anchorByIRI.Anchor.ContentHash,
+		ContentHash: s.hash1,
 	})
 	require.NoError(err)
 	require.Empty(attestorsByHash.Attestors)
 
 	// can attest to data
-	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
+	attestRes1, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.addr1.String(),
 		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 
 	// attesting to the same data twice is a no-op
-	attestRes, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
+	attestRes2, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.addr1.String(),
 		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
-	require.Nil(attestRes.NewEntries)
+	require.Nil(attestRes2.Iris)
+	require.Equal(attestRes1.Timestamp, attestRes2.Timestamp)
 
-	// can query attestor entries by iri
+	// can query attestor entries by iri (one attestor)
 	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
 	require.Len(attestorsByIri.Attestors, 1)
 	require.Equal(s.addr1.String(), attestorsByIri.Attestors[0].Attestor)
+	require.Equal(attestRes1.Timestamp, attestorsByIri.Attestors[0].Timestamp)
 
-	// can query attestor entries by hash
+	// can query attestor entries by hash (one attestor)
 	attestorsByHash, err = s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
 	require.Len(attestorsByHash.Attestors, 1)
 	require.Equal(s.addr1.String(), attestorsByHash.Attestors[0].Attestor)
+	require.Equal(attestRes1.Timestamp, attestorsByHash.Attestors[0].Timestamp)
 
 	// can query anchored data entries by attestor
 	anchorsByAttestor, err := s.queryClient.AnchorsByAttestor(s.ctx, &data.QueryAnchorsByAttestorRequest{
@@ -203,16 +217,24 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(anchorsByAttestor)
 	require.Len(anchorsByAttestor.Anchors, 1)
-	require.Equal(anchorByIRI.Anchor, anchorsByAttestor.Anchors[0])
+	require.Equal(iri, anchorsByAttestor.Anchors[0].Iri)
+	require.Equal(anchorRes1.Timestamp, anchorsByAttestor.Anchors[0].Timestamp)
 
-	// another attestor can attest
-	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	// another attestor can attest to the same anchored data entry
+	attestRes3, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.addr2.String(),
 		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
+	require.Len(attestRes3.Iris, 1)
+	require.Equal(iri, attestRes3.Iris[0])
+	require.NotEqual(attestRes2.Timestamp, attestRes3.Timestamp)
 
-	// can query attestor entries and get both attestations
+	// can query attestor entries by IRI (two attestors)
 	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
 		Iri: iri,
 	})
@@ -220,13 +242,36 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Len(attestorsByIri.Attestors, 2)
 
 	// order may vary from query response
-	if attestorsByIri.Attestors[0].Attestor == s.addr1.String() {
-		require.Equal(attestorsByIri.Attestors[0].Attestor, s.addr1.String())
-		require.Equal(attestorsByIri.Attestors[1].Attestor, s.addr2.String())
+	if s.addr1.String() == attestorsByIri.Attestors[0].Attestor {
+		require.Equal(attestRes1.Timestamp, attestorsByIri.Attestors[0].Timestamp)
+		require.Equal(s.addr2.String(), attestorsByIri.Attestors[1].Attestor)
+		require.Equal(attestRes3.Timestamp, attestorsByIri.Attestors[1].Timestamp)
 	} else {
-		require.Equal(attestorsByIri.Attestors[0].Attestor, s.addr2.String())
-		require.Equal(attestorsByIri.Attestors[1].Attestor, s.addr1.String())
+		require.Equal(s.addr2.String(), attestorsByIri.Attestors[0].Attestor)
+		require.Equal(attestRes3.Timestamp, attestorsByIri.Attestors[0].Timestamp)
+		require.Equal(s.addr1.String(), attestorsByIri.Attestors[1].Attestor)
+		require.Equal(attestRes1.Timestamp, attestorsByIri.Attestors[1].Timestamp)
 	}
+
+	// can query attestor entries by hash (two attestors)
+	attestorsByHash, err = s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
+		ContentHash: s.hash1,
+	})
+	require.NoError(err)
+	require.Len(attestorsByHash.Attestors, 2)
+
+	// order may vary from query response
+	if s.addr1.String() == attestorsByHash.Attestors[0].Attestor {
+		require.Equal(attestRes1.Timestamp, attestorsByHash.Attestors[0].Timestamp)
+		require.Equal(s.addr2.String(), attestorsByHash.Attestors[1].Attestor)
+		require.Equal(attestRes3.Timestamp, attestorsByHash.Attestors[1].Timestamp)
+	} else {
+		require.Equal(s.addr2.String(), attestorsByHash.Attestors[0].Attestor)
+		require.Equal(attestRes3.Timestamp, attestorsByHash.Attestors[0].Timestamp)
+		require.Equal(s.addr1.String(), attestorsByHash.Attestors[1].Attestor)
+		require.Equal(attestRes1.Timestamp, attestorsByHash.Attestors[1].Timestamp)
+	}
+
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
@@ -246,7 +291,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.Equal(iri, anchorRes1.Iri)
 
 	// update block time
-	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op

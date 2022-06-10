@@ -34,10 +34,10 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid iri",
+			name:      "not found",
 			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "invalid IRI",
+			expErrMsg: "not found",
 		},
 		{
 			name:   "valid",
@@ -61,7 +61,6 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				s.Require().Equal(tc.expIRI, res.Anchor.Iri)
-				s.Require().NotNil(res.Anchor.ContentHash)
 				s.Require().NotNil(res.Anchor.Timestamp)
 			}
 		})
@@ -126,7 +125,6 @@ func (s *IntegrationTestSuite) TestQueryAnchorsByAttestorCmd() {
 
 				for i, anchor := range res.Anchors {
 					s.Require().Equal(tc.expIRIs[i], anchor.Iri)
-					s.Require().NotNil(anchor.ContentHash)
 					s.Require().NotNil(anchor.Timestamp)
 				}
 			}

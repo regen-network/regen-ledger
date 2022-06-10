@@ -15,12 +15,7 @@ import (
 
 // AnchorByIRI queries anchored data based IRI.
 func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorByIRIRequest) (*data.QueryAnchorByIRIResponse, error) {
-	contentHash, err := data.ParseIRI(request.Iri)
-	if err != nil {
-		return nil, err
-	}
-
-	anchor, err := s.getAnchorEntry(ctx, contentHash, request.Iri)
+	anchor, err := s.getAnchorEntry(ctx, request.Iri)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +36,7 @@ func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorB
 		return nil, err
 	}
 
-	anchor, err := s.getAnchorEntry(ctx, request.ContentHash, iri)
+	anchor, err := s.getAnchorEntry(ctx, iri)
 	if err != nil {
 		return nil, err
 	}
@@ -84,20 +79,14 @@ func (s serverImpl) AnchorsByAttestor(ctx context.Context, request *data.QueryAn
 			return nil, err
 		}
 
-		contentHash, err := data.ParseIRI(dataId.Iri)
-		if err != nil {
-			return nil, err
-		}
-
 		dataAnchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataAttestor.Id)
 		if err != nil {
 			return nil, err
 		}
 
 		anchors = append(anchors, &data.AnchorEntry{
-			ContentHash: contentHash,
-			Iri:         dataId.Iri,
-			Timestamp:   types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
+			Iri:       dataId.Iri,
+			Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
 		})
 	}
 
@@ -112,7 +101,7 @@ func (s serverImpl) AnchorsByAttestor(ctx context.Context, request *data.QueryAn
 	}, nil
 }
 
-func (s serverImpl) getAnchorEntry(ctx context.Context, ch *data.ContentHash, iri string) (*data.AnchorEntry, error) {
+func (s serverImpl) getAnchorEntry(ctx context.Context, iri string) (*data.AnchorEntry, error) {
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
 		return nil, err
@@ -124,8 +113,7 @@ func (s serverImpl) getAnchorEntry(ctx context.Context, ch *data.ContentHash, ir
 	}
 
 	return &data.AnchorEntry{
-		ContentHash: ch,
-		Iri:         iri,
-		Timestamp:   types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
+		Iri:       iri,
+		Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
 	}, nil
 }

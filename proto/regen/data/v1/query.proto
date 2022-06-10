@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.data.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/data/v1/types.proto";
 
@@ -47,15 +48,15 @@ service Query {
     option (google.api.http).get = "/regen/data/v1/resolver/{id}";
   }
 
-  // ResolversByIRI queries for all resolvers that have registered an anchor
-  // entry by IRI.
+  // ResolversByIRI queries for all resolvers that have registered an anchored
+  // data entry by the IRI of the anchored data.
   rpc ResolversByIRI(QueryResolversByIRIRequest)
       returns (QueryResolversByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/resolvers-by-iri/{iri}";
   }
 
   // ResolversByHash queries for all resolvers that have registered an anchor
-  // entry by ContentHash.
+  // data entry by the ContentHash of the anchored data.
   rpc ResolversByHash(QueryResolversByHashRequest)
       returns (QueryResolversByHashResponse) {
     // HTTP REST endpoint not supported with ContentHash
@@ -303,6 +304,24 @@ message ConvertGraphHashToIRIRequest {
 message ConvertGraphHashToIRIResponse {
   // iri is the IRI converted from ContentHash_Graph.
   string iri = 1;
+}
+
+// AnchorEntry is an anchor entry.
+message AnchorEntry {
+  // iri is the IRI of the anchored data.
+  string iri = 1;
+
+  // timestamp is the time at which the data was anchored.
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+// AttestorEntry is an attestor entry.
+message AttestorEntry {
+  // attestor is the address of the account that attested to the anchored data.
+  string attestor = 1;
+
+  // timestamp is the time at which the data was attested to.
+  google.protobuf.Timestamp timestamp = 2;
 }
 
 // ResolverInfo is the human-readable resolver information.

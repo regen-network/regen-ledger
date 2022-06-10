@@ -42,7 +42,6 @@ func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttes
 		}
 
 		attestors = append(attestors, &data.AttestorEntry{
-			Iri:       request.Iri,
 			Attestor:  sdk.AccAddress(dataAttestor.Attestor).String(),
 			Timestamp: types.ProtobufToGogoTimestamp(dataAttestor.Timestamp),
 		})
@@ -97,7 +96,6 @@ func (s serverImpl) AttestorsByHash(ctx context.Context, request *data.QueryAtte
 		}
 
 		attestors = append(attestors, &data.AttestorEntry{
-			Iri:       iri,
 			Attestor:  sdk.AccAddress(dataAttestor.Attestor).String(),
 			Timestamp: types.ProtobufToGogoTimestamp(dataAttestor.Timestamp),
 		})

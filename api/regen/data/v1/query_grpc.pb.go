@@ -36,11 +36,11 @@ type QueryClient interface {
 	AttestorsByHash(ctx context.Context, in *QueryAttestorsByHashRequest, opts ...grpc.CallOption) (*QueryAttestorsByHashResponse, error)
 	// Resolver queries for a resolver by ID.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
-	// ResolversByIRI queries for all resolvers that have registered an anchor
-	// entry by IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchored
+	// data entry by the IRI of the anchored data.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
 	// ResolversByHash queries for all resolvers that have registered an anchor
-	// entry by ContentHash.
+	// data entry by the ContentHash of the anchored data.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
 	// ResolversByURL queries all resolvers by URL.
 	ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error)
@@ -197,11 +197,11 @@ type QueryServer interface {
 	AttestorsByHash(context.Context, *QueryAttestorsByHashRequest) (*QueryAttestorsByHashResponse, error)
 	// Resolver queries for a resolver by ID.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
-	// ResolversByIRI queries for all resolvers that have registered an anchor
-	// entry by IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchored
+	// data entry by the IRI of the anchored data.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
 	// ResolversByHash queries for all resolvers that have registered an anchor
-	// entry by ContentHash.
+	// data entry by the ContentHash of the anchored data.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
 	// ResolversByURL queries all resolvers by URL.
 	ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error)

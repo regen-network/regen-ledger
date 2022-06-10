@@ -87,10 +87,13 @@ message MsgAttest {
 
 // MsgAttestResponse is the Msg/Attest response type.
 message MsgAttestResponse {
-  // new_entries are the new attestor entries including the attestor, the IRI,
-  // and the timestamp. If the attestor attests to the same piece of data, the
-  // entry will not be updated and not included in the response.
-  repeated AttestorEntry new_entries = 1;
+  // iris are the list of IRIs that were attested to. If the attestor attests to
+  // the same piece of data, the previous attestor entry will not be updated and
+  // not included in this list.
+  repeated string iris = 1;
+
+  // timestamp is the time at which the data was attested to.
+  google.protobuf.Timestamp timestamp = 2;
 }
 
 // MsgDefineResolver is the Msg/DefineResolver request type.

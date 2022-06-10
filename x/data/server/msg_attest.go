@@ -3,20 +3,21 @@ package server
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 // Attest allows for digital signing of an arbitrary piece of data on the blockchain.
 func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.MsgAttestResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	timestamp := timestamppb.New(sdkCtx.BlockTime())
 
-	var newEntries []*data.AttestorEntry
+	var iris []string // only the IRIs for new attestor entries
 
 	for _, ch := range request.ContentHashes {
 		iri, id, _, err := s.anchorAndGetIRI(ctx, ch)
@@ -37,8 +38,6 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			continue
 		}
 
-		timestamp := timestamppb.New(sdkCtx.BlockTime())
-
 		err = s.stateStore.DataAttestorTable().Insert(ctx, &api.DataAttestor{
 			Id:        id,
 			Attestor:  addr,
@@ -56,14 +55,13 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			return nil, err
 		}
 
-		newEntries = append(newEntries, &data.AttestorEntry{
-			Iri:       iri,
-			Attestor:  addr.String(),
-			Timestamp: types.ProtobufToGogoTimestamp(timestamp),
-		})
+		iris = append(iris, iri)
 
 		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest content hash iteration")
 	}
 
-	return &data.MsgAttestResponse{NewEntries: newEntries}, nil
+	return &data.MsgAttestResponse{
+		Iris:      iris,
+		Timestamp: types.ProtobufToGogoTimestamp(timestamp),
+	}, nil
 }
