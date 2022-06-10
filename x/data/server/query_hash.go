@@ -6,7 +6,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ConvertIRIToHash queries ContentHash based on IRI.
+// ConvertIRIToHash converts an IRI to a ContentHash.
 func (s serverImpl) ConvertIRIToHash(ctx context.Context, request *data.ConvertIRIToHashRequest) (*data.ConvertIRIToHashResponse, error) {
 	hash, err := data.ParseIRI(request.Iri)
 	if err != nil {

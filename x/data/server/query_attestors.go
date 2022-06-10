@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AttestorsByIRI queries attestor entries based on IRI.
+// AttestorsByIRI queries attestors based on IRI.
 func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttestorsByIRIRequest) (*data.QueryAttestorsByIRIResponse, error) {
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
@@ -59,7 +59,7 @@ func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttes
 	}, nil
 }
 
-// AttestorsByHash queries attestor entries based on ContentHash.
+// AttestorsByHash queries attestors based on ContentHash.
 func (s serverImpl) AttestorsByHash(ctx context.Context, request *data.QueryAttestorsByHashRequest) (*data.QueryAttestorsByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")

@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/client"
 )
 
-func (s *IntegrationTestSuite) TestQueryContentByIRICmd() {
+func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -49,7 +49,7 @@ func (s *IntegrationTestSuite) TestQueryContentByIRICmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryContentByIRICmd()
+			cmd := client.QueryAnchorByIRICmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -68,7 +68,7 @@ func (s *IntegrationTestSuite) TestQueryContentByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryContentByAttestorCmd() {
+func (s *IntegrationTestSuite) TestQueryAnchorsByAttestorCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -113,7 +113,7 @@ func (s *IntegrationTestSuite) TestQueryContentByAttestorCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryContentByAttestorCmd()
+			cmd := client.QueryAnchorsByAttestorCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -124,10 +124,10 @@ func (s *IntegrationTestSuite) TestQueryContentByAttestorCmd() {
 				var res data.QueryAnchorsByAttestorResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
-				for i, entry := range res.Anchors {
-					s.Require().Equal(tc.expIRIs[i], entry.Iri)
-					s.Require().NotNil(entry.ContentHash)
-					s.Require().NotNil(entry.Timestamp)
+				for i, anchor := range res.Anchors {
+					s.Require().Equal(tc.expIRIs[i], anchor.Iri)
+					s.Require().NotNil(anchor.ContentHash)
+					s.Require().NotNil(anchor.Timestamp)
 				}
 			}
 		})

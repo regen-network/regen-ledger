@@ -10,7 +10,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ConvertHashToIRI queries IRI based on ContentHash.
+// ConvertHashToIRI converts a ContentHash to an IRI.
 func (s serverImpl) ConvertHashToIRI(ctx context.Context, request *data.ConvertHashToIRIRequest) (*data.ConvertHashToIRIResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
@@ -26,7 +26,7 @@ func (s serverImpl) ConvertHashToIRI(ctx context.Context, request *data.ConvertH
 	}, nil
 }
 
-// ConvertRawHashToIRI queries IRI based on ContentHash_Raw properties.
+// ConvertRawHashToIRI converts ContentHash_Raw properties to an IRI.
 func (s serverImpl) ConvertRawHashToIRI(ctx context.Context, request *data.ConvertRawHashToIRIRequest) (*data.ConvertRawHashToIRIResponse, error) {
 	if len(request.Hash) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
@@ -57,7 +57,7 @@ func (s serverImpl) ConvertRawHashToIRI(ctx context.Context, request *data.Conve
 	}, nil
 }
 
-// ConvertGraphHashToIRI queries IRI based on ContentHash_Graph properties.
+// ConvertGraphHashToIRI converts ContentHash_Graph properties to an IRI.
 func (s serverImpl) ConvertGraphHashToIRI(ctx context.Context, request *data.ConvertGraphHashToIRIRequest) (*data.ConvertGraphHashToIRIResponse, error) {
 	if len(request.Hash) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")

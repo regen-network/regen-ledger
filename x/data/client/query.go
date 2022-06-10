@@ -16,7 +16,7 @@ import (
 
 // QueryCmd returns the parent command for all x/data CLI query commands
 func QueryCmd(name string) *cobra.Command {
-	queryContentByIRICmd := QueryContentByIRICmd()
+	queryAnchorByIRICmd := QueryAnchorByIRICmd()
 
 	cmd := &cobra.Command{
 		Args:  cobra.ExactArgs(1),
@@ -39,14 +39,14 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 				return client.ValidateCmd(cmd, args)
 			}
 
-			// Or else, we call QueryByIRICmd.
-			return queryContentByIRICmd.RunE(cmd, args)
+			// Or else, we call QueryAnchorByIRICmd.
+			return queryAnchorByIRICmd.RunE(cmd, args)
 		},
 	}
 
 	cmd.AddCommand(
-		queryContentByIRICmd,
-		QueryContentByAttestorCmd(),
+		queryAnchorByIRICmd,
+		QueryAnchorsByAttestorCmd(),
 		QueryAttestorsByIRICmd(),
 		QueryResolverCmd(),
 		QueryResolversByIriCmd(),
@@ -60,8 +60,8 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 	return cmd
 }
 
-// QueryContentByIRICmd creates a CLI command for Query/ContentByIRI.
-func QueryContentByIRICmd() *cobra.Command {
+// QueryAnchorByIRICmd creates a CLI command for Query/ContentByIRI.
+func QueryAnchorByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anchor-by-iri [iri]",
 		Short: "Query for anchored data based on IRI",
@@ -85,10 +85,10 @@ func QueryContentByIRICmd() *cobra.Command {
 	return cmd
 }
 
-// QueryContentByAttestorCmd creates a CLI command for Query/ContentByAttestor.
-func QueryContentByAttestorCmd() *cobra.Command {
+// QueryAnchorsByAttestorCmd creates a CLI command for Query/ContentByAttestor.
+func QueryAnchorsByAttestorCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "content-by-attestor [attestor]",
+		Use:   "anchors-by-attestor [attestor]",
 		Short: "Query for anchored data based on an attestor",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -116,7 +116,7 @@ func QueryContentByAttestorCmd() *cobra.Command {
 	return cmd
 }
 
-// ConvertIRIToHashCmd creates a CLI command for QConvertIRIToHash.
+// ConvertIRIToHashCmd creates a CLI command for Query/ConvertIRIToHash.
 func ConvertIRIToHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "iri-to-hash [iri]",
@@ -141,7 +141,7 @@ func ConvertIRIToHashCmd() *cobra.Command {
 	return cmd
 }
 
-// ConvertHashToIRICmd creates a CLI command for Query/HashToIRI.
+// ConvertHashToIRICmd creates a CLI command for Query/ConvertHashToIRI.
 func ConvertHashToIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "hash-to-iri [content-hash-json]",
@@ -286,7 +286,7 @@ regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHd
 	return cmd
 }
 
-// QueryResolversByURLCmd creates a CLI command for Query/Resolvers.
+// QueryResolversByURLCmd creates a CLI command for Query/ResolversByURL.
 func QueryResolversByURLCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolvers-by-url [url]",

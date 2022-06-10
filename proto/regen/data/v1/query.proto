@@ -106,7 +106,7 @@ message QueryAnchorByIRIResponse {
 
 // QueryAnchorByHashRequest is the Query/AnchorByHash request type.
 message QueryAnchorByHashRequest {
-  // content_hash is the content hash of the anchored data.
+  // content_hash is the ContentHash of the anchored data.
   ContentHash content_hash = 1;
 }
 
@@ -154,7 +154,7 @@ message QueryAttestorsByIRIResponse {
 
 // QueryAttestorsByHashRequest is the Query/AttestorsByHash request type.
 message QueryAttestorsByHashRequest {
-  // content_hash is the content hash of the anchored data.
+  // content_hash is the ContentHash of the anchored data.
   ContentHash content_hash = 1;
 
   // pagination is the PageRequest to use for pagination.
@@ -202,7 +202,7 @@ message QueryResolversByIRIResponse {
 
 // QueryResolversByHashRequest is the Query/ResolversByHash request type.
 message QueryResolversByHashRequest {
-  // content_hash is the content hash of the anchored data.
+  // content_hash is the ContentHash of the anchored data.
   ContentHash content_hash = 1;
 
   // pagination is the PageRequest to use for pagination.

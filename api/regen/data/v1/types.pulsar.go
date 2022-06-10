@@ -3577,7 +3577,7 @@ type AnchorEntry struct {
 
 	// iri is the IRI of the anchored data.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// content_hash is the content hash of the anchored data.
+	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,2,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// timestamp is the time at which the data was anchored.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`

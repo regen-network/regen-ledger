@@ -123,7 +123,7 @@ func (m *QueryAnchorByIRIResponse) GetAnchor() *AnchorEntry {
 
 // QueryAnchorByHashRequest is the Query/AnchorByHash request type.
 type QueryAnchorByHashRequest struct {
-	// content_hash is the content hash of the anchored data.
+	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
@@ -435,7 +435,7 @@ func (m *QueryAttestorsByIRIResponse) GetPagination() *query.PageResponse {
 
 // QueryAttestorsByHashRequest is the Query/AttestorsByHash request type.
 type QueryAttestorsByHashRequest struct {
-	// content_hash is the content hash of the anchored data.
+	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -747,7 +747,7 @@ func (m *QueryResolversByIRIResponse) GetPagination() *query.PageResponse {
 
 // QueryResolversByHashRequest is the Query/ResolversByHash request type.
 type QueryResolversByHashRequest struct {
-	// content_hash is the content hash of the anchored data.
+	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`

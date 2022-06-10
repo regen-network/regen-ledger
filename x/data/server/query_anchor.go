@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AnchorByIRI queries data based on its ContentHash.
+// AnchorByIRI queries anchored data based IRI.
 func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorByIRIRequest) (*data.QueryAnchorByIRIResponse, error) {
 	contentHash, err := data.ParseIRI(request.Iri)
 	if err != nil {
@@ -30,7 +30,7 @@ func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorBy
 	}, nil
 }
 
-// AnchorByHash queries data based on ContentHash.
+// AnchorByHash queries anchored data based on ContentHash.
 func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorByHashRequest) (*data.QueryAnchorByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
@@ -51,7 +51,7 @@ func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorB
 	}, nil
 }
 
-// AnchorsByAttestor queries data based on attestor.
+// AnchorsByAttestor queries anchored data based on attestor.
 func (s serverImpl) AnchorsByAttestor(ctx context.Context, request *data.QueryAnchorsByAttestorRequest) (*data.QueryAnchorsByAttestorResponse, error) {
 	addr, err := sdk.AccAddressFromBech32(request.Attestor)
 	if err != nil {

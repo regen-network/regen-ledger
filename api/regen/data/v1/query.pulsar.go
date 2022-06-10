@@ -13295,7 +13295,7 @@ type QueryAnchorByHashRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the content hash of the anchored data.
+	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
@@ -13553,7 +13553,7 @@ type QueryAttestorsByHashRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the content hash of the anchored data.
+	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -13811,7 +13811,7 @@ type QueryResolversByHashRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the content hash of the anchored data.
+	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`

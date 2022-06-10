@@ -145,7 +145,7 @@ message AnchorEntry {
   // iri is the IRI of the anchored data.
   string iri = 1;
 
-  // content_hash is the content hash of the anchored data.
+  // content_hash is the ContentHash of the anchored data.
   ContentHash content_hash = 2;
 
   // timestamp is the time at which the data was anchored.
