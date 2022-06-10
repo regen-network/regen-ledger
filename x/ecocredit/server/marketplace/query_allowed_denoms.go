@@ -17,6 +17,9 @@ func (k Keeper) AllowedDenoms(ctx context.Context, req *marketplace.QueryAllowed
 	}
 
 	it, err := k.stateStore.AllowedDenomTable().List(ctx, &marketplacev1.AllowedDenomPrimaryKey{}, ormlist.Paginate(pg))
+	if err != nil {
+		return nil, err
+	}
 	defer it.Close()
 
 	allowedDenoms := make([]*marketplace.AllowedDenom, 0)
