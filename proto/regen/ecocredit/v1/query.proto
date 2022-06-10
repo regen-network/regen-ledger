@@ -40,6 +40,12 @@ service Query {
   // Projects queries for all projects within a class with pagination.
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
     option (google.api.http).get =
+        "/regen/ecocredit/v1/projects";
+  }
+
+  // ProjectsByClass queries for all projects within a class with pagination.
+  rpc ProjectsByClass(QueryProjectsByClassRequest) returns (QueryProjectsByClassResponse) {
+    option (google.api.http).get =
         "/regen/ecocredit/v1/classes/{class_id}/projects";
   }
 
@@ -209,6 +215,26 @@ message QueryProjectsRequest {
 
 // QueryProjectsResponse is the Query/Projects response type.
 message QueryProjectsResponse {
+
+  // projects are the fetched projects.
+  repeated ProjectInfo projects = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProjectsByClassRequest is the Query/Projects request type.
+message QueryProjectsByClassRequest {
+
+  // class_id is the unique identifier of the credit class to query.
+  string class_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectsByClassResponse is the Query/ProjectsByClass response type.
+message QueryProjectsByClassResponse {
 
   // projects are the fetched projects.
   repeated ProjectInfo projects = 1;
