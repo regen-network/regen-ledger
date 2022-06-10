@@ -269,7 +269,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var credits []*basket.BasketCredit
 		for _, classInfo := range classInfoList {
 
-			resProjects, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{ClassId: classInfo.Id})
+			resProjects, err := qryClient.ProjectsByClass(ctx, &core.QueryProjectsByClassRequest{ClassId: classInfo.Id})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 			}

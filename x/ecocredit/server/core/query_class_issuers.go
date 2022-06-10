@@ -27,6 +27,7 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *core.QueryClassIssuer
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	issuers := make([]string, 0)
 	for it.Next() {

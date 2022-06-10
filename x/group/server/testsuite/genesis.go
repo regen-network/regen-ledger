@@ -79,7 +79,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
 	require.NoError(err)
 
-	ecocreditmodule := module.NewModule(s.paramSpace, s.accountKeeper, s.bankKeeper, nil)
+	ecocreditmodule := module.NewModule(s.paramSpace, s.accountKeeper, s.bankKeeper)
 	ecocreditGenesisBytes := ecocreditmodule.DefaultGenesis(cdc)
 
 	genesisData := map[string]json.RawMessage{

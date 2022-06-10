@@ -1193,7 +1193,7 @@ func getClassIssuers(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, 
 }
 
 func getRandomProjectFromClass(ctx context.Context, r *rand.Rand, qryClient core.QueryClient, msgType, classID string) (*core.ProjectInfo, simtypes.OperationMsg, error) {
-	res, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{
+	res, err := qryClient.ProjectsByClass(ctx, &core.QueryProjectsByClassRequest{
 		ClassId: classID,
 	})
 	if err != nil {
