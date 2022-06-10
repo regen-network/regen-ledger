@@ -829,7 +829,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
+func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -885,7 +885,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryProjectsCmd()
+			cmd := coreclient.QueryProjectsByClassCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -893,7 +893,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryProjectsResponse
+				var res core.QueryProjectsByClassResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Len(res.Projects, tc.expLen)
 				s.Require().Equal(res.Pagination.Total, uint64(2))
