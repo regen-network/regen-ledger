@@ -329,6 +329,9 @@ func (s *IntegrationTestSuite) TestQueryAttestorsByIRICmd() {
 					s.Require().Equal(res.Attestors[0].Attestor, tc.expAttestors[1])
 					s.Require().Equal(res.Attestors[1].Attestor, tc.expAttestors[0])
 				}
+
+				s.Require().NotNil(res.Attestors[0].Timestamp)
+				s.Require().NotNil(res.Attestors[1].Timestamp)
 			}
 		})
 	}
