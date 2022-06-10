@@ -4142,9 +4142,9 @@ type MsgAttestResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iris are the list of IRIs that were attested to. If the attestor attests to
-	// the same piece of data, the previous attestor entry will not be updated and
-	// not included in this list.
+	// iris are the IRIs for the anchored data entries that were attested to. If
+	// the attestor attests to the same piece of data, the previous attestor entry
+	// will not be updated and the IRI will not be included.
 	Iris []string `protobuf:"bytes,1,rep,name=iris,proto3" json:"iris,omitempty"`
 	// timestamp is the time at which the data was attested to.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
