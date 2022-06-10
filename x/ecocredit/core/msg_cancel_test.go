@@ -19,7 +19,7 @@ func TestMsgCancel(t *testing.T) {
 		"valid msg": {
 			src: MsgCancel{
 				Owner: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -31,7 +31,7 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg without holder": {
 			src: MsgCancel{
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -43,7 +43,7 @@ func TestMsgCancel(t *testing.T) {
 		"invalid msg with wrong holder address": {
 			src: MsgCancel{
 				Owner: "wrong owner",
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -61,7 +61,7 @@ func TestMsgCancel(t *testing.T) {
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgCancel{
 				Owner: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						Amount: "10",
 					},
@@ -72,7 +72,7 @@ func TestMsgCancel(t *testing.T) {
 		"invalid msg without Credits.Amount": {
 			src: MsgCancel{
 				Owner: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 					},
@@ -83,7 +83,7 @@ func TestMsgCancel(t *testing.T) {
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgCancel{
 				Owner: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "abc",
@@ -95,7 +95,7 @@ func TestMsgCancel(t *testing.T) {
 		"invalid msg reason is required": {
 			src: MsgCancel{
 				Owner: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "1",

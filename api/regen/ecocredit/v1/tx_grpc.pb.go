@@ -36,10 +36,10 @@ type MsgClient interface {
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
 	// be issued with each issuance specifying a recipient, the amount of tradable
-	// and retired credits, and the retirement jurisdiction (if credits are being
-	// issued in a retired state), and optional metadata. The credit batch creator
-	// must be listed as an approved issuer within the credit class of the project
-	// that the credits are being issued under.
+	// and retired credits, and the retirement jurisdiction (if credits are to be
+	// retired upon receipt), and optional metadata. The credit batch creator must
+	// be listed as an approved issuer within the credit class of the project that
+	// the credits are being issued under.
 	//
 	// The default behavior is for a new credit batch to be "sealed" as opposed to
 	// being "open". When a credit batch is "open", new credits can be dynamically
@@ -246,10 +246,10 @@ type MsgServer interface {
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
 	// be issued with each issuance specifying a recipient, the amount of tradable
-	// and retired credits, and the retirement jurisdiction (if credits are being
-	// issued in a retired state), and optional metadata. The credit batch creator
-	// must be listed as an approved issuer within the credit class of the project
-	// that the credits are being issued under.
+	// and retired credits, and the retirement jurisdiction (if credits are to be
+	// retired upon receipt), and optional metadata. The credit batch creator must
+	// be listed as an approved issuer within the credit class of the project that
+	// the credits are being issued under.
 	//
 	// The default behavior is for a new credit batch to be "sealed" as opposed to
 	// being "open". When a credit batch is "open", new credits can be dynamically

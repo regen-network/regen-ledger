@@ -349,7 +349,7 @@ Parameters:
                        eg: 'AA-BB 12345'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*core.MsgRetire_RetireCredits{}
+			var credits []*core.Credits
 			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}

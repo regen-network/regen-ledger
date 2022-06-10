@@ -20,7 +20,7 @@ func TestCancel_Valid(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: batchDenom,
 				Amount:     "10.5",
@@ -49,7 +49,7 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "100000",
@@ -67,7 +67,7 @@ func TestCancel_BadPrecision(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "10.5290385029385820935",
@@ -84,7 +84,7 @@ func TestCancel_InvalidBatch(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: "C00-00000000-00000000-01",
 				Amount:     "100000",
