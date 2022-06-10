@@ -27,7 +27,7 @@ func (m MsgCreateProject) GetSignBytes() []byte {
 func (m *MsgCreateProject) ValidateBasic() error {
 
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.ErrInvalidAddress.Wrap("issuer")
 	}
 
 	if err := ValidateClassId(m.ClassId); err != nil {

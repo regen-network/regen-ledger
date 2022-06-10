@@ -80,6 +80,7 @@ func (k Keeper) computeBasketBalances(ctx context.Context) (map[uint64]math.Dec,
 	if err != nil {
 		return nil, fmt.Errorf("can't create basket balance iterator, %w", err)
 	}
+	defer it.Close()
 	balances := map[uint64]math.Dec{}
 	for it.Next() {
 		b, err := it.Value()

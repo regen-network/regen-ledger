@@ -28,6 +28,7 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdmi
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	adminString := admin.String()
 	classes := make([]*core.ClassInfo, 0)
