@@ -22134,7 +22134,7 @@ func (x *QueryProjectsResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
-// QueryProjectsByClassRequest is the Query/Projects request type.
+// QueryProjectsByClassRequest is the Query/ProjectsByClass request type.
 type QueryProjectsByClassRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

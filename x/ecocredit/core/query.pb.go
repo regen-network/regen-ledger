@@ -544,7 +544,7 @@ func (m *QueryProjectsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryProjectsByClassRequest is the Query/Projects request type.
+// QueryProjectsByClassRequest is the Query/ProjectsByClass request type.
 type QueryProjectsByClassRequest struct {
 	// class_id is the unique identifier of the credit class to query.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
@@ -2543,7 +2543,7 @@ type QueryClient interface {
 	Class(ctx context.Context, in *QueryClassRequest, opts ...grpc.CallOption) (*QueryClassResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
 	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
-	// Projects queries for all projects within a class with pagination.
+	// Projects queries for all projects with pagination.
 	Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error)
 	// ProjectsByClass queries for all projects within a class with pagination.
 	ProjectsByClass(ctx context.Context, in *QueryProjectsByClassRequest, opts ...grpc.CallOption) (*QueryProjectsByClassResponse, error)
@@ -2770,7 +2770,7 @@ type QueryServer interface {
 	Class(context.Context, *QueryClassRequest) (*QueryClassResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
 	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
-	// Projects queries for all projects within a class with pagination.
+	// Projects queries for all projects with pagination.
 	Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error)
 	// ProjectsByClass queries for all projects within a class with pagination.
 	ProjectsByClass(context.Context, *QueryProjectsByClassRequest) (*QueryProjectsByClassResponse, error)

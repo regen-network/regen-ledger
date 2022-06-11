@@ -11,7 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// Projects queries all projects from a given credit class.
+// Projects queries all projects.
 func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest) (*core.QueryProjectsResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {

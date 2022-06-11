@@ -169,7 +169,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 			name: "valid with pagination",
 			url: fmt.Sprintf(
 				"%s/%s/projects-by-class/%s?pagination.countTotal=true",
-				//"%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true", TODO: #1113
+				// TODO: #1113
+				// "%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
 				s.classId,
@@ -192,7 +193,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
 			if strings.Contains(tc.name, "pagination") {
-				// require.Len(res.Projects, 1) TODO: #1113
+				// TODO: #1113
+				// require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
 			} else {

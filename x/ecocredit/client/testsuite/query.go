@@ -914,7 +914,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 			args: []string{
 				s.classId,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
-				//fmt.Sprintf("--%s=%d", flags.FlagLimit, 1), TODO: #1113
+				// TODO: #1113
+				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 			},
 		},
 	}
@@ -934,7 +935,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Projects)
 				if strings.Contains(tc.name, "pagination") {
-					//require.Len(res.Projects, 1) TODO: #1113
+					// TODO: #1113
+					// require.Len(res.Projects, 1)
 					require.NotEmpty(res.Pagination)
 					require.NotEmpty(res.Pagination.Total)
 				}
