@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -838,7 +839,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		paginated bool
 	}{
 		{
 			name:      "too many args",
@@ -854,9 +854,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 			name: "valid within pagination",
 			args: []string{
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
-				fmt.Sprintf("--%s=%s", flags.FlagLimit, "2"),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 			},
-			paginated: true,
 		},
 	}
 
@@ -874,7 +873,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 				var res core.QueryProjectsResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Projects)
-				if tc.paginated {
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Projects, 1)
 					require.NotEmpty(res.Pagination)
 					require.NotEmpty(res.Pagination.Total)
 				}
@@ -892,7 +892,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		paginated bool
 	}{
 		{
 			name:      "missing args",
@@ -915,9 +914,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 			args: []string{
 				s.classId,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
-				fmt.Sprintf("--%s=%s", flags.FlagLimit, "2"),
+				//fmt.Sprintf("--%s=%d", flags.FlagLimit, 1), TODO: #1113
 			},
-			paginated: true,
 		},
 	}
 
@@ -935,7 +933,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 				var res core.QueryProjectsByClassResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Projects)
-				if tc.paginated {
+				if strings.Contains(tc.name, "pagination") {
+					//require.Len(res.Projects, 1) TODO: #1113
 					require.NotEmpty(res.Pagination)
 					require.NotEmpty(res.Pagination.Total)
 				}

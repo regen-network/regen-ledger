@@ -159,7 +159,8 @@ regen q ecocredit class-issuers C01 --limit 10
 func QueryProjectsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects",
-		Short: "List all projects with pagination flags",
+		Short: "Query all projects",
+		Long:  "Query all projects with optional pagination flags.",
 		Example: `
 regen q ecocredit projects
 regen q ecocredit projects --limit 10 --count-total
@@ -189,11 +190,12 @@ regen q ecocredit projects --limit 10 --count-total
 	return qflags(cmd)
 }
 
-// QueryProjectsByClassCmd returns a query command that retrieves projects.
+// QueryProjectsByClassCmd returns a query command that retrieves projects by credit class.
 func QueryProjectsByClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects-by-class [class_id]",
-		Short: "List all projects in the given class with pagination flags",
+		Short: "Query projects by credit class",
+		Long:  "Query projects by credit class with optional pagination flags.",
 		Example: `
 regen q ecocredit projects-by-class C01
 regen q ecocredit projects-by-class C01 --limit 10 --count-total

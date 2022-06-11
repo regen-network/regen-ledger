@@ -127,7 +127,11 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 		},
 		{
 			name: "valid with pagination",
-			url:  fmt.Sprintf("%s/%s/projects?pagination.countTotal=true", s.val.APIAddress, coreRoute),
+			url: fmt.Sprintf(
+				"%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
+				s.val.APIAddress,
+				coreRoute,
+			),
 		},
 	}
 
@@ -141,9 +145,12 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 			var res core.QueryProjectsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
-			if strings.Contains(tc.url, "pagination") {
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -162,6 +169,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 			name: "valid with pagination",
 			url: fmt.Sprintf(
 				"%s/%s/projects-by-class/%s?pagination.countTotal=true",
+				//"%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true", TODO: #1113
 				s.val.APIAddress,
 				coreRoute,
 				s.classId,
@@ -183,9 +191,12 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 			var res core.QueryProjectsByClassResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
-			if strings.Contains(tc.url, "pagination") {
+			if strings.Contains(tc.name, "pagination") {
+				// require.Len(res.Projects, 1) TODO: #1113
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -208,7 +219,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 		{
 			name: "valid with pagination",
 			url: fmt.Sprintf(
-				"%s/%s/projects-by-reference-id/%s?pagination.countTotal=true",
+				"%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
 				s.projectReferenceId,
@@ -234,9 +245,12 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 			var res core.QueryProjectsByReferenceIdResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
-			if strings.Contains(tc.url, "pagination") {
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}

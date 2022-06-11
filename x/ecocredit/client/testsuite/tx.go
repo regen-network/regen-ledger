@@ -1682,12 +1682,10 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 		return append(args, flags...)
 	}
 
-	flags := append(
-		s.commonTxFlags(),
-		makeFlagFrom(msg.Issuer),
-		fmt.Sprintf("--reference-id=%s", msg.ReferenceId),
-	)
+	referenceIdFlag := fmt.Sprintf("--reference-id=%s", msg.ReferenceId)
+	flags := append(s.commonTxFlags(), makeFlagFrom(msg.Issuer), referenceIdFlag)
 	args := makeCreateProjectArgs(msg, flags...)
+
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	s.Require().NoError(err)
 	var res sdk.TxResponse

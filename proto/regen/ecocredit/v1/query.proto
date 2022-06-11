@@ -276,7 +276,7 @@ message QueryProjectsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryProjectsByClassRequest is the Query/Projects request type.
+// QueryProjectsByClassRequest is the Query/ProjectsByClass request type.
 message QueryProjectsByClassRequest {
 
   // class_id is the unique identifier of the credit class to query.
