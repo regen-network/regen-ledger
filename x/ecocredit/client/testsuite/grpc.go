@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
@@ -80,7 +81,163 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Class)
-			require.Contains(res.Class.Id, s.classId)
+			require.Equal(res.Class.Id, s.classId)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProject() {
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, coreRoute, s.projectId),
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryProjectResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Project)
+			require.Equal(res.Project.Id, s.projectId)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjects() {
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			name: "valid",
+			url:  fmt.Sprintf("%s/%s/projects", s.val.APIAddress, coreRoute),
+		},
+		{
+			name: "valid with pagination",
+			url:  fmt.Sprintf("%s/%s/projects?pagination.countTotal=true", s.val.APIAddress, coreRoute),
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryProjectsResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Projects)
+			if strings.Contains(tc.url, "pagination") {
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			name: "valid",
+			url:  fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+		},
+		{
+			name: "valid with pagination",
+			url: fmt.Sprintf(
+				"%s/%s/projects-by-class/%s?pagination.countTotal=true",
+				s.val.APIAddress,
+				coreRoute,
+				s.classId,
+			),
+		},
+		{
+			name: "valid alternative",
+			url:  fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classId),
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryProjectsByClassResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Projects)
+			if strings.Contains(tc.url, "pagination") {
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			name: "valid",
+			url: fmt.Sprintf(
+				"%s/%s/projects-by-reference-id/%s",
+				s.val.APIAddress,
+				coreRoute,
+				s.projectReferenceId,
+			),
+		},
+		{
+			name: "valid with pagination",
+			url: fmt.Sprintf(
+				"%s/%s/projects-by-reference-id/%s?pagination.countTotal=true",
+				s.val.APIAddress,
+				coreRoute,
+				s.projectReferenceId,
+			),
+		},
+		{
+			name: "valid alternative",
+			url: fmt.Sprintf("%s/%s/projects/reference-id/%s",
+				s.val.APIAddress,
+				coreRoute,
+				s.projectReferenceId,
+			),
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryProjectsByReferenceIdResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Projects)
+			if strings.Contains(tc.url, "pagination") {
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			}
 		})
 	}
 }

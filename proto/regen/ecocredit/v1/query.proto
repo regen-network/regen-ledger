@@ -259,18 +259,15 @@ message QueryClassIssuersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryProjectsByClassRequest is the Query/ProjectsByClass request type.
-message QueryProjectsByClassRequest {
-
-  // class_id is the unique identifier of the credit class to query.
-  string class_id = 1;
+// QueryProjectsRequest is the Query/Projects request type.
+message QueryProjectsRequest {
 
   // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryProjectsByClassResponse is the Query/ProjectsByClass response type.
-message QueryProjectsByClassResponse {
+// QueryProjectsResponse is the Query/Projects response type.
+message QueryProjectsResponse {
 
   // projects are the fetched projects.
   repeated ProjectInfo projects = 1;
