@@ -13122,7 +13122,7 @@ func (x *QueryResolversByHashResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
-// QueryResolversByURLRequest is the Query/Resolver request type.
+// QueryResolversByURLRequest is the Query/ResolversByURL request type.
 type QueryResolversByURLRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -13168,7 +13168,7 @@ func (x *QueryResolversByURLRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
-// QueryResolversByURLResponse is the Query/Resolver response type.
+// QueryResolversByURLResponse is the Query/ResolversByURL response type.
 type QueryResolversByURLResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -13362,7 +13362,7 @@ func (x *ConvertHashToIRIResponse) GetIri() string {
 	return ""
 }
 
-// AnchorInfo is the human-readable anchor information.
+// AnchorInfo is the information for anchored data.
 type AnchorInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -13417,7 +13417,7 @@ func (x *AnchorInfo) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// AttestationInfo is the human-readable attestation information.
+// AttestationInfo is the information for an attestation.
 type AttestationInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -13472,7 +13472,7 @@ func (x *AttestationInfo) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// ResolverInfo is the human-readable resolver information.
+// ResolverInfo is the information for a resolver.
 type ResolverInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
