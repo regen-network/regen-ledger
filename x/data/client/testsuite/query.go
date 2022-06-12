@@ -58,6 +58,64 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestQueryAnchorByHashCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+	require.NoError(err)
+
+	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid file path",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name: "valid",
+			args: []string{filePath},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryAnchorByHashCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.QueryAnchorByHashResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Anchor)
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestQueryAttestationsByAttestorCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
@@ -181,6 +239,64 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRICmd() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+	require.NoError(err)
+
+	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid file path",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name: "valid",
+			args: []string{filePath},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryAttestationsByHashCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.QueryAttestationsByHashResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Attestations)
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestQueryResolverCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
@@ -284,6 +400,64 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRICmd() {
 					require.NotEmpty(res.Pagination)
 					require.NotEmpty(res.Pagination.Total)
 				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+	require.NoError(err)
+
+	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid file path",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name: "valid",
+			args: []string{filePath},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryResolversByHashCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.QueryResolversByHashResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Resolvers)
 			}
 		})
 	}
@@ -427,7 +601,7 @@ func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
 		},
 		{
 			name:      "invalid file path",
-			args:      []string{"foo.json"},
+			args:      []string{"foo"},
 			expErr:    true,
 			expErrMsg: "no such file or directory",
 		},

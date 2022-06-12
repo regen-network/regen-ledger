@@ -12731,7 +12731,7 @@ type QueryAttestationsByIRIResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// attestations are the attestations to the anchored data.
+	// attestations are the attestations that have been made to the anchored data.
 	Attestations []*AttestationInfo `protobuf:"bytes,1,rep,name=attestations,proto3" json:"attestations,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -12824,7 +12824,7 @@ type QueryAttestationsByHashResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// attestations are the attestations to the anchored data.
+	// attestations are the attestations that have been made to the anchored data.
 	Attestations []*AttestationInfo `protobuf:"bytes,1,rep,name=attestations,proto3" json:"attestations,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -12907,7 +12907,7 @@ type QueryResolverResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// resolver is the fetched resolver.
+	// resolver is information about the resolver.
 	Resolver *ResolverInfo `protobuf:"bytes,1,opt,name=resolver,proto3" json:"resolver,omitempty"`
 }
 
@@ -13174,7 +13174,7 @@ type QueryResolversByURLResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// resolvers are the fetched resolvers.
+	// resolvers are the resolvers that have a matching URL.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -13482,7 +13482,7 @@ type ResolverInfo struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// url is the URL of the resolver.
 	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	// manager is the address of the resolver manager.
+	// manager is the address of the account that manages the resolver.
 	Manager string `protobuf:"bytes,3,opt,name=manager,proto3" json:"manager,omitempty"`
 }
 

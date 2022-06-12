@@ -383,7 +383,7 @@ func (m *QueryAttestationsByIRIRequest) GetPagination() *query.PageRequest {
 
 // QueryAttestationsByIRIResponse is the Query/AttestationsByIRI response type.
 type QueryAttestationsByIRIResponse struct {
-	// attestations are the attestations to the anchored data.
+	// attestations are the attestations that have been made to the anchored data.
 	Attestations []*AttestationInfo `protobuf:"bytes,1,rep,name=attestations,proto3" json:"attestations,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -494,7 +494,7 @@ func (m *QueryAttestationsByHashRequest) GetPagination() *query.PageRequest {
 // QueryAttestationsByHashResponse is the Query/AttestationsByHash response
 // type.
 type QueryAttestationsByHashResponse struct {
-	// attestations are the attestations to the anchored data.
+	// attestations are the attestations that have been made to the anchored data.
 	Attestations []*AttestationInfo `protobuf:"bytes,1,rep,name=attestations,proto3" json:"attestations,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -595,7 +595,7 @@ func (m *QueryResolverRequest) GetId() uint64 {
 
 // QueryResolverResponse is the Query/Resolver response type.
 type QueryResolverResponse struct {
-	// resolver is the fetched resolver.
+	// resolver is information about the resolver.
 	Resolver *ResolverInfo `protobuf:"bytes,1,opt,name=resolver,proto3" json:"resolver,omitempty"`
 }
 
@@ -916,7 +916,7 @@ func (m *QueryResolversByURLRequest) GetPagination() *query.PageRequest {
 
 // QueryResolversByURLResponse is the Query/ResolversByURL response type.
 type QueryResolversByURLResponse struct {
-	// resolvers are the fetched resolvers.
+	// resolvers are the resolvers that have a matching URL.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1287,7 +1287,7 @@ type ResolverInfo struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// url is the URL of the resolver.
 	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	// manager is the address of the resolver manager.
+	// manager is the address of the account that manages the resolver.
 	Manager string `protobuf:"bytes,3,opt,name=manager,proto3" json:"manager,omitempty"`
 }
 
@@ -1469,25 +1469,24 @@ type QueryClient interface {
 	AnchorByIRI(ctx context.Context, in *QueryAnchorByIRIRequest, opts ...grpc.CallOption) (*QueryAnchorByIRIResponse, error)
 	// AnchorByHash queries anchored data by ContentHash.
 	AnchorByHash(ctx context.Context, in *QueryAnchorByHashRequest, opts ...grpc.CallOption) (*QueryAnchorByHashResponse, error)
-	// AttestationsByAttestor queries all attestations made by an attestor.
+	// AttestationsByAttestor queries attestations by attestor.
 	AttestationsByAttestor(ctx context.Context, in *QueryAttestationsByAttestorRequest, opts ...grpc.CallOption) (*QueryAttestationsByAttestorResponse, error)
-	// AttestationsByIRI queries all attestations made to a piece of data by the
-	// IRI of the anchored data.
+	// AttestationsByIRI queries attestations that have been made to a piece of
+	// data by the IRI of the anchored data.
 	AttestationsByIRI(ctx context.Context, in *QueryAttestationsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestationsByIRIResponse, error)
-	// AttestationsByHash queries all attestations made to a piece of data by the
-	// ContentHash of the anchored data.
+	// AttestationsByHash queries attestations that have been made to a piece of
+	// data by the ContentHash of the anchored data.
 	AttestationsByHash(ctx context.Context, in *QueryAttestationsByHashRequest, opts ...grpc.CallOption) (*QueryAttestationsByHashResponse, error)
 	// Resolver queries a resolver by its unique identifier.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
-	// ResolversByIRI queries all resolvers that have registered a piece of data
-	// by the IRI of the anchored data.
+	// ResolversByIRI queries resolvers that have registered a piece of data by
+	// the IRI of the anchored data.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries all resolvers that have registered a piece of data
-	// by the ContentHash of the anchored data.
+	// ResolversByHash queries resolvers that have registered a piece of data by
+	// the ContentHash of the anchored data.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries all resolvers with a matching URL. There are no
-	// unique constraints on URL and therefore more than one resolver might have
-	// the same URL.
+	// ResolversByURL queries resolvers by URL. A resolver URL has no unique
+	// constraints and therefore multiple resolvers may have the same URL.
 	ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error)
 	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(ctx context.Context, in *ConvertIRIToHashRequest, opts ...grpc.CallOption) (*ConvertIRIToHashResponse, error)
@@ -1608,25 +1607,24 @@ type QueryServer interface {
 	AnchorByIRI(context.Context, *QueryAnchorByIRIRequest) (*QueryAnchorByIRIResponse, error)
 	// AnchorByHash queries anchored data by ContentHash.
 	AnchorByHash(context.Context, *QueryAnchorByHashRequest) (*QueryAnchorByHashResponse, error)
-	// AttestationsByAttestor queries all attestations made by an attestor.
+	// AttestationsByAttestor queries attestations by attestor.
 	AttestationsByAttestor(context.Context, *QueryAttestationsByAttestorRequest) (*QueryAttestationsByAttestorResponse, error)
-	// AttestationsByIRI queries all attestations made to a piece of data by the
-	// IRI of the anchored data.
+	// AttestationsByIRI queries attestations that have been made to a piece of
+	// data by the IRI of the anchored data.
 	AttestationsByIRI(context.Context, *QueryAttestationsByIRIRequest) (*QueryAttestationsByIRIResponse, error)
-	// AttestationsByHash queries all attestations made to a piece of data by the
-	// ContentHash of the anchored data.
+	// AttestationsByHash queries attestations that have been made to a piece of
+	// data by the ContentHash of the anchored data.
 	AttestationsByHash(context.Context, *QueryAttestationsByHashRequest) (*QueryAttestationsByHashResponse, error)
 	// Resolver queries a resolver by its unique identifier.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
-	// ResolversByIRI queries all resolvers that have registered a piece of data
-	// by the IRI of the anchored data.
+	// ResolversByIRI queries resolvers that have registered a piece of data by
+	// the IRI of the anchored data.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries all resolvers that have registered a piece of data
-	// by the ContentHash of the anchored data.
+	// ResolversByHash queries resolvers that have registered a piece of data by
+	// the ContentHash of the anchored data.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries all resolvers with a matching URL. There are no
-	// unique constraints on URL and therefore more than one resolver might have
-	// the same URL.
+	// ResolversByURL queries resolvers by URL. A resolver URL has no unique
+	// constraints and therefore multiple resolvers may have the same URL.
 	ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error)
 	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(context.Context, *ConvertIRIToHashRequest) (*ConvertIRIToHashResponse, error)

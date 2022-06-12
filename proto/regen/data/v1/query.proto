@@ -32,7 +32,7 @@ service Query {
     };
   }
 
-  // AttestationsByAttestor queries all attestations made by an attestor.
+  // AttestationsByAttestor queries attestations by attestor.
   rpc AttestationsByAttestor(QueryAttestationsByAttestorRequest)
       returns (QueryAttestationsByAttestorResponse) {
     option (google.api.http) = {
@@ -43,8 +43,8 @@ service Query {
     };
   }
 
-  // AttestationsByIRI queries all attestations made to a piece of data by the
-  // IRI of the anchored data.
+  // AttestationsByIRI queries attestations that have been made to a piece of
+  // data by the IRI of the anchored data.
   rpc AttestationsByIRI(QueryAttestationsByIRIRequest)
       returns (QueryAttestationsByIRIResponse) {
     option (google.api.http) = {
@@ -53,8 +53,8 @@ service Query {
     };
   }
 
-  // AttestationsByHash queries all attestations made to a piece of data by the
-  // ContentHash of the anchored data.
+  // AttestationsByHash queries attestations that have been made to a piece of
+  // data by the ContentHash of the anchored data.
   rpc AttestationsByHash(QueryAttestationsByHashRequest)
       returns (QueryAttestationsByHashResponse) {
     option (google.api.http) = {
@@ -74,8 +74,8 @@ service Query {
     };
   }
 
-  // ResolversByIRI queries all resolvers that have registered a piece of data
-  // by the IRI of the anchored data.
+  // ResolversByIRI queries resolvers that have registered a piece of data by
+  // the IRI of the anchored data.
   rpc ResolversByIRI(QueryResolversByIRIRequest)
       returns (QueryResolversByIRIResponse) {
     option (google.api.http) = {
@@ -84,8 +84,8 @@ service Query {
     };
   }
 
-  // ResolversByHash queries all resolvers that have registered a piece of data
-  // by the ContentHash of the anchored data.
+  // ResolversByHash queries resolvers that have registered a piece of data by
+  // the ContentHash of the anchored data.
   rpc ResolversByHash(QueryResolversByHashRequest)
       returns (QueryResolversByHashResponse) {
     option (google.api.http) = {
@@ -97,9 +97,8 @@ service Query {
     };
   }
 
-  // ResolversByURL queries all resolvers with a matching URL. There are no
-  // unique constraints on URL and therefore more than one resolver might have
-  // the same URL.
+  // ResolversByURL queries resolvers by URL. A resolver URL has no unique
+  // constraints and therefore multiple resolvers may have the same URL.
   rpc ResolversByURL(QueryResolversByURLRequest)
       returns (QueryResolversByURLResponse) {
     option (google.api.http) = {
@@ -190,7 +189,7 @@ message QueryAttestationsByIRIRequest {
 // QueryAttestationsByIRIResponse is the Query/AttestationsByIRI response type.
 message QueryAttestationsByIRIResponse {
 
-  // attestations are the attestations to the anchored data.
+  // attestations are the attestations that have been made to the anchored data.
   repeated AttestationInfo attestations = 1;
 
   // pagination is the pagination PageResponse.
@@ -211,7 +210,7 @@ message QueryAttestationsByHashRequest {
 // type.
 message QueryAttestationsByHashResponse {
 
-  // attestations are the attestations to the anchored data.
+  // attestations are the attestations that have been made to the anchored data.
   repeated AttestationInfo attestations = 1;
 
   // pagination is the pagination PageResponse.
@@ -228,7 +227,7 @@ message QueryResolverRequest {
 // QueryResolverResponse is the Query/Resolver response type.
 message QueryResolverResponse {
 
-  // resolver is the fetched resolver.
+  // resolver is information about the resolver.
   ResolverInfo resolver = 1;
 }
 
@@ -285,7 +284,7 @@ message QueryResolversByURLRequest {
 // QueryResolversByURLResponse is the Query/ResolversByURL response type.
 message QueryResolversByURLResponse {
 
-  // resolvers are the fetched resolvers.
+  // resolvers are the resolvers that have a matching URL.
   repeated ResolverInfo resolvers = 1;
 
   // pagination is the PageResponse to use for pagination.
@@ -355,6 +354,6 @@ message ResolverInfo {
   // url is the URL of the resolver.
   string url = 2;
 
-  // manager is the address of the resolver manager.
+  // manager is the address of the account that manages the resolver.
   string manager = 3;
 }

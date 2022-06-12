@@ -9,10 +9,10 @@ import (
 )
 
 // ConvertIRIToHash converts an IRI to a ContentHash.
-func (s serverImpl) ConvertIRIToHash(ctx context.Context, request *data.ConvertIRIToHashRequest) (*data.ConvertIRIToHashResponse, error) {
+func (s serverImpl) ConvertIRIToHash(_ context.Context, request *data.ConvertIRIToHashRequest) (*data.ConvertIRIToHashResponse, error) {
 	hash, err := data.ParseIRI(request.Iri)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to IRI to content hash: %s", err)
 	}
 
 	return &data.ConvertIRIToHashResponse{
@@ -21,7 +21,7 @@ func (s serverImpl) ConvertIRIToHash(ctx context.Context, request *data.ConvertI
 }
 
 // ConvertHashToIRI converts a ContentHash to an IRI.
-func (s serverImpl) ConvertHashToIRI(ctx context.Context, request *data.ConvertHashToIRIRequest) (*data.ConvertHashToIRIResponse, error) {
+func (s serverImpl) ConvertHashToIRI(_ context.Context, request *data.ConvertHashToIRIRequest) (*data.ConvertHashToIRIResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
 	}
