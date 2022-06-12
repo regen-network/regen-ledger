@@ -155,7 +155,7 @@ regen q ecocredit class-issuers C01 --limit 10
 	return qflags(cmd)
 }
 
-// QueryProjectsCmd returns a query command that retrieves projects.
+// QueryProjectsCmd returns a query command that retrieves all projects.
 func QueryProjectsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects",

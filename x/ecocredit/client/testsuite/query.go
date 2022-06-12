@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -831,6 +830,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 }
 
 func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
+	require := s.Require()
 	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
@@ -859,7 +859,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := coreclient.QueryProjectsCmd()
@@ -873,6 +872,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 				var res core.QueryProjectsResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Projects)
+
 				if strings.Contains(tc.name, "pagination") {
 					require.Len(res.Projects, 1)
 					require.NotEmpty(res.Pagination)
@@ -884,6 +884,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 }
 
 func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
+	require := s.Require()
 	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
@@ -920,7 +921,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := coreclient.QueryProjectsByClassCmd()
@@ -934,9 +934,9 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 				var res core.QueryProjectsByClassResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Projects)
+
 				if strings.Contains(tc.name, "pagination") {
-					// TODO: #1113
-					// require.Len(res.Projects, 1)
+					require.Len(res.Projects, 1)
 					require.NotEmpty(res.Pagination)
 					require.NotEmpty(res.Pagination.Total)
 				}
@@ -946,6 +946,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 }
 
 func (s *IntegrationTestSuite) TestQueryProjectCmd() {
+	require := s.Require()
 	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
@@ -973,7 +974,6 @@ func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := coreclient.QueryProjectCmd()
@@ -987,7 +987,6 @@ func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 				var res core.QueryProjectResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Project)
-				require.Equal(s.projectId, res.Project.Id)
 			}
 		})
 	}

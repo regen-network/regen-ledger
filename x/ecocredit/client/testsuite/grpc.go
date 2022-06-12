@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-
 	types2 "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -87,6 +86,8 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 }
 
 func (s *IntegrationTestSuite) TestQueryProject() {
+	require := s.Require()
+
 	testCases := []struct {
 		name string
 		url  string
@@ -101,33 +102,34 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
 			var res core.QueryProjectResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Project)
-			require.Equal(res.Project.Id, s.projectId)
 		})
 	}
 }
 
 func (s *IntegrationTestSuite) TestQueryProjects() {
+	require := s.Require()
+
 	testCases := []struct {
 		name string
 		url  string
 	}{
 		{
-			name: "valid",
-			url:  fmt.Sprintf("%s/%s/projects", s.val.APIAddress, coreRoute),
+			"valid",
+			fmt.Sprintf("%s/%s/projects", s.val.APIAddress, coreRoute),
 		},
 		{
-			name: "valid with pagination",
-			url: fmt.Sprintf(
+			"valid with pagination",
+			fmt.Sprintf(
 				"%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
@@ -135,16 +137,17 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
 			var res core.QueryProjectsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
+
 			if strings.Contains(tc.name, "pagination") {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
@@ -157,17 +160,19 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 }
 
 func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
+	require := s.Require()
+
 	testCases := []struct {
 		name string
 		url  string
 	}{
 		{
-			name: "valid",
-			url:  fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+			"valid",
+			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
 		},
 		{
-			name: "valid with pagination",
-			url: fmt.Sprintf(
+			"valid with pagination",
+			fmt.Sprintf(
 				"%s/%s/projects-by-class/%s?pagination.countTotal=true",
 				// TODO: #1113
 				// "%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
@@ -177,24 +182,28 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 			),
 		},
 		{
-			name: "valid alternative",
-			url:  fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classId),
+			"valid alternative",
+			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, coreRoute, s.classId),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classId),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
 			var res core.QueryProjectsByClassResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
+
 			if strings.Contains(tc.name, "pagination") {
-				// TODO: #1113
-				// require.Len(res.Projects, 1)
+				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
 			} else {
@@ -205,13 +214,15 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 }
 
 func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
+	require := s.Require()
+
 	testCases := []struct {
 		name string
 		url  string
 	}{
 		{
-			name: "valid",
-			url: fmt.Sprintf(
+			"valid",
+			fmt.Sprintf(
 				"%s/%s/projects-by-reference-id/%s",
 				s.val.APIAddress,
 				coreRoute,
@@ -219,8 +230,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 			),
 		},
 		{
-			name: "valid with pagination",
-			url: fmt.Sprintf(
+			"valid with pagination",
+			fmt.Sprintf(
 				"%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
@@ -228,8 +239,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 			),
 		},
 		{
-			name: "valid alternative",
-			url: fmt.Sprintf("%s/%s/projects/reference-id/%s",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/projects/reference-id/%s",
 				s.val.APIAddress,
 				coreRoute,
 				s.projectReferenceId,
@@ -237,16 +248,17 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
 			var res core.QueryProjectsByReferenceIdResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
+
 			if strings.Contains(tc.name, "pagination") {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
