@@ -28,22 +28,17 @@ type QueryClient interface {
 	AnchorByHash(ctx context.Context, in *QueryAnchorByHashRequest, opts ...grpc.CallOption) (*QueryAnchorByHashResponse, error)
 	// AttestationsByAttestor queries attestations by attestor.
 	AttestationsByAttestor(ctx context.Context, in *QueryAttestationsByAttestorRequest, opts ...grpc.CallOption) (*QueryAttestationsByAttestorResponse, error)
-	// AttestationsByIRI queries attestations that have been made to a piece of
-	// data by the IRI of the anchored data.
+	// AttestationsByIRI queries attestations to data by IRI.
 	AttestationsByIRI(ctx context.Context, in *QueryAttestationsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestationsByIRIResponse, error)
-	// AttestationsByHash queries attestations that have been made to a piece of
-	// data by the ContentHash of the anchored data.
+	// AttestationsByHash queries attestations to data by ContentHash.
 	AttestationsByHash(ctx context.Context, in *QueryAttestationsByHashRequest, opts ...grpc.CallOption) (*QueryAttestationsByHashResponse, error)
-	// Resolver queries a resolver by its unique identifier.
+	// Resolver queries a resolver by ID.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
-	// ResolversByIRI queries resolvers that have registered a piece of data by
-	// the IRI of the anchored data.
+	// ResolversByIRI queries resolvers with registered data by IRI.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries resolvers that have registered a piece of data by
-	// the ContentHash of the anchored data.
+	// ResolversByHash queries resolvers with registered data by ContentHash.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries resolvers by URL. A resolver URL has no unique
-	// constraints and therefore multiple resolvers may have the same URL.
+	// ResolversByURL queries resolvers by URL.
 	ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error)
 	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(ctx context.Context, in *ConvertIRIToHashRequest, opts ...grpc.CallOption) (*ConvertIRIToHashResponse, error)
@@ -168,22 +163,17 @@ type QueryServer interface {
 	AnchorByHash(context.Context, *QueryAnchorByHashRequest) (*QueryAnchorByHashResponse, error)
 	// AttestationsByAttestor queries attestations by attestor.
 	AttestationsByAttestor(context.Context, *QueryAttestationsByAttestorRequest) (*QueryAttestationsByAttestorResponse, error)
-	// AttestationsByIRI queries attestations that have been made to a piece of
-	// data by the IRI of the anchored data.
+	// AttestationsByIRI queries attestations to data by IRI.
 	AttestationsByIRI(context.Context, *QueryAttestationsByIRIRequest) (*QueryAttestationsByIRIResponse, error)
-	// AttestationsByHash queries attestations that have been made to a piece of
-	// data by the ContentHash of the anchored data.
+	// AttestationsByHash queries attestations to data by ContentHash.
 	AttestationsByHash(context.Context, *QueryAttestationsByHashRequest) (*QueryAttestationsByHashResponse, error)
-	// Resolver queries a resolver by its unique identifier.
+	// Resolver queries a resolver by ID.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
-	// ResolversByIRI queries resolvers that have registered a piece of data by
-	// the IRI of the anchored data.
+	// ResolversByIRI queries resolvers with registered data by IRI.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries resolvers that have registered a piece of data by
-	// the ContentHash of the anchored data.
+	// ResolversByHash queries resolvers with registered data by ContentHash.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
-	// ResolversByURL queries resolvers by URL. A resolver URL has no unique
-	// constraints and therefore multiple resolvers may have the same URL.
+	// ResolversByURL queries resolvers by URL.
 	ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error)
 	// ConvertIRIToHash converts an IRI to a ContentHash.
 	ConvertIRIToHash(context.Context, *ConvertIRIToHashRequest) (*ConvertIRIToHashResponse, error)

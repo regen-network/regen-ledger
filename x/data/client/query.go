@@ -75,7 +75,7 @@ func QueryAnchorByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anchor-by-hash [hash-json]",
 		Short: "Query anchored data by ContentHash",
-		Long:  "Query anchored data by ContentHash using a JSON file.",
+		Long:  "Query anchored data by ContentHash.",
 		Example: formatExample(`
   regen q data anchor-by-hash hash.json
 
@@ -155,8 +155,8 @@ func QueryAttestationsByAttestorCmd() *cobra.Command {
 func QueryAttestationsByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestations-by-iri [iri]",
-		Short: "Query attestations by IRI",
-		Long:  "Query attestations by IRI with optional pagination flags.",
+		Short: "Query attestations to data by IRI",
+		Long:  "Query attestations to data by IRI with optional pagination flags.",
 		Example: formatExample(`
   regen q data attestations-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
   regen q data attestations-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf --limit 10 --count-total
@@ -192,10 +192,11 @@ func QueryAttestationsByIRICmd() *cobra.Command {
 func QueryAttestationsByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestations-by-hash [hash-json]",
-		Short: "Query attestations by ContentHash",
-		Long:  "Query attestations by ContentHash using a JSON file.",
+		Short: "Query attestations to data by ContentHash",
+		Long:  "Query attestations to data by ContentHash with optional pagination flags.",
 		Example: formatExample(`
   regen q data attestations-by-hash hash.json
+  regen q data attestations-by-hash hash.json --limit 10 --count-total
 
   where hash.json contains:
   {
@@ -236,8 +237,8 @@ func QueryAttestationsByHashCmd() *cobra.Command {
 func QueryResolverCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolver [id]",
-		Short: "Query a resolver by its unique identifier",
-		Long:  "Query a resolver by its unique identifier.",
+		Short: "Query a resolver by ID",
+		Long:  "Query a resolver by ID.",
 		Example: formatExample(`
   regen q data resolver 1
 		`),
@@ -270,8 +271,8 @@ func QueryResolverCmd() *cobra.Command {
 func QueryResolversByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolvers-by-iri [iri]",
-		Short: "Query resolvers that have registered a piece of data by the IRI of the anchored data",
-		Long:  "Query resolvers that have registered a piece of data by the IRI of the anchored data with optional pagination flags.",
+		Short: "Query resolvers with registered data by IRI",
+		Long:  "Query resolvers with registered data by IRI with optional pagination flags.",
 		Example: formatExample(`
   regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
   regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf --limit 10 --count-total
@@ -307,10 +308,11 @@ func QueryResolversByIRICmd() *cobra.Command {
 func QueryResolversByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolvers-by-hash [hash-json]",
-		Short: "Query resolvers by ContentHash",
-		Long:  "Query resolvers by ContentHash using a JSON file.",
+		Short: "Query resolvers with registered data by ContentHash",
+		Long:  "Query resolvers with registered data by ContentHash with optional pagination flags.",
 		Example: formatExample(`
   regen q data resolvers-by-hash hash.json
+  regen q data resolvers-by-hash hash.json --limit 10 --count-total
 
   where hash.json contains:
   {
@@ -387,11 +389,11 @@ func QueryResolversByURLCmd() *cobra.Command {
 // ConvertIRIToHashCmd creates a CLI command for Query/ConvertIRIToHash.
 func ConvertIRIToHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iri-to-hash [iri]",
+		Use:   "convert-iri-to-hash [iri]",
 		Short: "Convert an IRI to a ContentHash",
 		Long:  "Convert an IRI to a ContentHash.",
 		Example: formatExample(`
-  regen q data iri-to-hash regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
+  regen q data convert-iri-to-hash regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -416,11 +418,11 @@ func ConvertIRIToHashCmd() *cobra.Command {
 // ConvertHashToIRICmd creates a CLI command for Query/ConvertHashToIRI.
 func ConvertHashToIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "hash-to-iri [hash-json]",
+		Use:   "convert-hash-to-iri [hash-json]",
 		Short: "Convert a ContentHash to an IRI",
-		Long:  "Convert a ContentHash to an IRI using a JSON file.",
+		Long:  "Convert a ContentHash to an IRI.",
 		Example: formatExample(`
-  regen q data hash-to-iri hash.json
+  regen q data convert-hash-to-iri hash.json
 
   where hash.json contains:
   {

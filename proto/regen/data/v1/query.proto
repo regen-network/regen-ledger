@@ -43,8 +43,7 @@ service Query {
     };
   }
 
-  // AttestationsByIRI queries attestations that have been made to a piece of
-  // data by the IRI of the anchored data.
+  // AttestationsByIRI queries attestations to data by IRI.
   rpc AttestationsByIRI(QueryAttestationsByIRIRequest)
       returns (QueryAttestationsByIRIResponse) {
     option (google.api.http) = {
@@ -53,8 +52,7 @@ service Query {
     };
   }
 
-  // AttestationsByHash queries attestations that have been made to a piece of
-  // data by the ContentHash of the anchored data.
+  // AttestationsByHash queries attestations to data by ContentHash.
   rpc AttestationsByHash(QueryAttestationsByHashRequest)
       returns (QueryAttestationsByHashResponse) {
     option (google.api.http) = {
@@ -66,7 +64,7 @@ service Query {
     };
   }
 
-  // Resolver queries a resolver by its unique identifier.
+  // Resolver queries a resolver by ID.
   rpc Resolver(QueryResolverRequest) returns (QueryResolverResponse) {
     option (google.api.http) = {
       get : "/regen/data/v1/resolver/{id}"
@@ -74,8 +72,7 @@ service Query {
     };
   }
 
-  // ResolversByIRI queries resolvers that have registered a piece of data by
-  // the IRI of the anchored data.
+  // ResolversByIRI queries resolvers with registered data by IRI.
   rpc ResolversByIRI(QueryResolversByIRIRequest)
       returns (QueryResolversByIRIResponse) {
     option (google.api.http) = {
@@ -84,8 +81,7 @@ service Query {
     };
   }
 
-  // ResolversByHash queries resolvers that have registered a piece of data by
-  // the ContentHash of the anchored data.
+  // ResolversByHash queries resolvers with registered data by ContentHash.
   rpc ResolversByHash(QueryResolversByHashRequest)
       returns (QueryResolversByHashResponse) {
     option (google.api.http) = {
@@ -97,8 +93,7 @@ service Query {
     };
   }
 
-  // ResolversByURL queries resolvers by URL. A resolver URL has no unique
-  // constraints and therefore multiple resolvers may have the same URL.
+  // ResolversByURL queries resolvers by URL.
   rpc ResolversByURL(QueryResolversByURLRequest)
       returns (QueryResolversByURLResponse) {
     option (google.api.http) = {

@@ -8,18 +8,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ConvertIRIToHash converts an IRI to a ContentHash.
-func (s serverImpl) ConvertIRIToHash(_ context.Context, request *data.ConvertIRIToHashRequest) (*data.ConvertIRIToHashResponse, error) {
-	hash, err := data.ParseIRI(request.Iri)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to IRI to content hash: %s", err)
-	}
-
-	return &data.ConvertIRIToHashResponse{
-		ContentHash: hash,
-	}, nil
-}
-
 // ConvertHashToIRI converts a ContentHash to an IRI.
 func (s serverImpl) ConvertHashToIRI(_ context.Context, request *data.ConvertHashToIRIRequest) (*data.ConvertHashToIRIResponse, error) {
 	if request.ContentHash == nil {
@@ -28,7 +16,7 @@ func (s serverImpl) ConvertHashToIRI(_ context.Context, request *data.ConvertHas
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to convert content hash to IRI: %s", err)
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	return &data.ConvertHashToIRIResponse{

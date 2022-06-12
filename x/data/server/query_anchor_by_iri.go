@@ -1,0 +1,40 @@
+package server
+
+import (
+	"context"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/data"
+)
+
+// AnchorByIRI queries anchored data by IRI.
+func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorByIRIRequest) (*data.QueryAnchorByIRIResponse, error) {
+	if len(request.Iri) == 0 {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("iri cannot be empty")
+	}
+
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
+	if err != nil {
+		return nil, sdkerrors.ErrNotFound.Wrapf("data entry with iri: %s", request.Iri)
+	}
+
+	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataId.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	contentHash, err := data.ParseIRI(request.Iri)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QueryAnchorByIRIResponse{
+		Anchor: &data.AnchorInfo{
+			Iri:         request.Iri,
+			ContentHash: contentHash,
+			Timestamp:   types.ProtobufToGogoTimestamp(anchor.Timestamp),
+		},
+	}, nil
+}
