@@ -79,7 +79,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	iri, err := s.hash1.ToIRI()
 	require.NoError(err)
-	require.NotNil(iri)
+	require.NotEmpty(iri)
 
 	graphHash := s.hash1.GetGraph()
 
@@ -97,7 +97,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes1)
+	require.NotEmpty(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
 	require.Equal(anchorBlockTime, anchorRes1.Timestamp)
 
@@ -111,27 +111,30 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes2)
+	require.NotEmpty(anchorRes2)
 	require.Equal(iri, anchorRes2.Iri)
 	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
-	// can query anchored data entry by iri
+	// can query anchored data by iri
 	anchorByIRI, err := s.queryClient.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(anchorByIRI)
-	require.NotNil(anchorByIRI.Anchor)
-	require.NotNil(iri, anchorByIRI.Anchor.Iri)
+	require.NotEmpty(anchorByIRI)
+	require.NotEmpty(anchorByIRI.Anchor)
+	require.Equal(iri, anchorByIRI.Anchor.Iri)
+	require.Equal(s.hash1, anchorByIRI.Anchor.ContentHash)
 	require.Equal(anchorRes1.Timestamp, anchorByIRI.Anchor.Timestamp)
 
-	// can query anchored data entry by hash
+	// can query anchored data by hash
 	anchorByHash, err := s.queryClient.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(anchorByHash)
-	require.NotNil(anchorByHash.Anchor)
+	require.NotEmpty(anchorByHash)
+	require.NotEmpty(anchorByHash.Anchor)
+	require.Equal(iri, anchorByHash.Anchor.Iri)
+	require.Equal(s.hash1, anchorByHash.Anchor.ContentHash)
 	require.Equal(anchorRes1.Timestamp, anchorByHash.Anchor.Timestamp)
 
 	// can convert hash to iri
@@ -139,7 +142,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(hashToIri)
+	require.NotEmpty(hashToIri)
 	require.Equal(iri, hashToIri.Iri)
 
 	// can convert iri to hash
@@ -147,22 +150,22 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(iriToHash)
+	require.NotEmpty(iriToHash)
 	require.Equal(s.hash1, iriToHash.ContentHash)
 
-	// can query attestor entries by iri (no attestors)
+	// can query attestations by iri (no attestors)
 	attestationsByIri, err := s.queryClient.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.Empty(attestationsByIri.Attestations)
+	require.Empty(attestationsByIri)
 
-	// can query attestor entries by hash (no attestors)
+	// can query attestations by hash (no attestors)
 	attestationsByHash, err := s.queryClient.AttestationsByHash(s.ctx, &data.QueryAttestationsByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.Empty(attestationsByHash.Attestations)
+	require.Empty(attestationsByHash)
 
 	// can attest to data
 	attestRes1, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -170,6 +173,13 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
+	require.NotEmpty(attestRes1)
+	require.Contains(attestRes1.Iris, iri)
+	require.NotEqual(anchorRes1.Timestamp, attestRes1.Timestamp)
+
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// attesting to the same data twice is a no-op
 	attestRes2, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -177,57 +187,62 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
-	require.Nil(attestRes2.Iris)
-	require.Equal(attestRes1.Timestamp, attestRes2.Timestamp)
+	require.Empty(attestRes2.Iris)
+	require.NotContains(attestRes2.Iris, iri)
+	require.NotEqual(attestRes1.Timestamp, attestRes2.Timestamp)
 
-	// can query attestor entries by iri (one attestor)
+	// can query attestations by attestor
+	attestationsByAttestor, err := s.queryClient.AttestationsByAttestor(s.ctx, &data.QueryAttestationsByAttestorRequest{
+		Attestor: s.addr1.String(),
+	})
+	require.NoError(err)
+	require.Len(attestationsByAttestor.Attestations, 1)
+	require.Equal(iri, attestationsByAttestor.Attestations[0].Iri)
+	require.Equal(s.addr1.String(), attestationsByAttestor.Attestations[0].Attestor)
+	require.Equal(anchorRes1.Timestamp, attestationsByAttestor.Attestations[0].Timestamp)
+
+	// can query attestations by iri (one attestor)
 	attestationsByIri, err = s.queryClient.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
 	require.Len(attestationsByIri.Attestations, 1)
+	require.Equal(iri, attestationsByIri.Attestations[0].Iri)
 	require.Equal(s.addr1.String(), attestationsByIri.Attestations[0].Attestor)
 	require.Equal(attestRes1.Timestamp, attestationsByIri.Attestations[0].Timestamp)
 
-	// can query attestor entries by hash (one attestor)
+	// can query attestations by hash (one attestor)
 	attestationsByHash, err = s.queryClient.AttestationsByHash(s.ctx, &data.QueryAttestationsByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
 	require.Len(attestationsByHash.Attestations, 1)
+	require.Equal(iri, attestationsByHash.Attestations[0].Iri)
 	require.Equal(s.addr1.String(), attestationsByHash.Attestations[0].Attestor)
 	require.Equal(attestRes1.Timestamp, attestationsByHash.Attestations[0].Timestamp)
-
-	// can query anchored data entries by attestor
-	attestationsByAttestor, err := s.queryClient.AttestationsByAttestor(s.ctx, &data.QueryAttestationsByAttestorRequest{
-		Attestor: s.addr1.String(),
-	})
-	require.NoError(err)
-	require.NotNil(attestationsByAttestor)
-	require.Len(attestationsByAttestor.Attestations, 1)
-	require.Equal(iri, attestationsByAttestor.Attestations[0].Iri)
-	require.Equal(anchorRes1.Timestamp, attestationsByAttestor.Attestations[0].Timestamp)
 
 	// update block time
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
-	// another attestor can attest to the same anchored data entry
+	// another attestor can attest to the same anchored data
 	attestRes3, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.addr2.String(),
 		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 	require.Len(attestRes3.Iris, 1)
-	require.Equal(iri, attestRes3.Iris[0])
+	require.Contains(attestRes3.Iris, iri)
 	require.NotEqual(attestRes2.Timestamp, attestRes3.Timestamp)
 
-	// can query attestor entries by IRI (two attestors)
+	// can query attestations by IRI (two attestors)
 	attestationsByIri, err = s.queryClient.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
 	require.Len(attestationsByIri.Attestations, 2)
+	require.Equal(iri, attestationsByIri.Attestations[0].Iri)
+	require.Equal(iri, attestationsByIri.Attestations[0].Iri)
 
 	// order may vary from query response
 	if s.addr1.String() == attestationsByIri.Attestations[0].Attestor {
@@ -241,12 +256,14 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		require.Equal(attestRes1.Timestamp, attestationsByIri.Attestations[1].Timestamp)
 	}
 
-	// can query attestor entries by hash (two attestors)
+	// can query attestations by hash (two attestors)
 	attestationsByHash, err = s.queryClient.AttestationsByHash(s.ctx, &data.QueryAttestationsByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
 	require.Len(attestationsByHash.Attestations, 2)
+	require.Equal(iri, attestationsByHash.Attestations[0].Iri)
+	require.Equal(iri, attestationsByHash.Attestations[0].Iri)
 
 	// order may vary from query response
 	if s.addr1.String() == attestationsByHash.Attestations[0].Attestor {
@@ -259,7 +276,6 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		require.Equal(s.addr1.String(), attestationsByHash.Attestations[1].Attestor)
 		require.Equal(attestRes1.Timestamp, attestationsByHash.Attestations[1].Timestamp)
 	}
-
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
@@ -267,7 +283,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 
 	iri, err := s.hash2.ToIRI()
 	require.NoError(err)
-	require.NotNil(iri)
+	require.NotEmpty(iri)
 
 	// anchor some data
 	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
@@ -275,7 +291,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 		ContentHash: s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes1)
+	require.NotEmpty(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
 
 	// update block time
@@ -288,26 +304,26 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 		ContentHash: s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes2)
+	require.NotEmpty(anchorRes2)
 	require.Equal(iri, anchorRes2.Iri)
 	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
-	// can query anchored data entry by iri
+	// can query anchored data by iri
 	anchorByIRI, err := s.queryClient.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(anchorByIRI)
-	require.NotNil(anchorByIRI.Anchor)
+	require.NotEmpty(anchorByIRI)
+	require.NotEmpty(anchorByIRI.Anchor)
 	require.Equal(anchorRes1.Timestamp, anchorByIRI.Anchor.Timestamp)
 
-	// can query anchored data entry by hash
+	// can query anchored data by hash
 	anchorByHash, err := s.queryClient.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(anchorByHash)
-	require.NotNil(anchorByHash.Anchor)
+	require.NotEmpty(anchorByHash)
+	require.NotEmpty(anchorByHash.Anchor)
 	require.Equal(anchorRes1.Timestamp, anchorByHash.Anchor.Timestamp)
 
 	// can convert hash to iri
@@ -315,7 +331,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 		ContentHash: s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(hashToIri)
+	require.NotEmpty(hashToIri)
 	require.Equal(iri, hashToIri.Iri)
 
 	// can convert iri to hash
@@ -323,7 +339,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(iriToHash)
+	require.NotEmpty(iriToHash)
 	require.Equal(s.hash2, iriToHash.ContentHash)
 }
 
@@ -334,7 +350,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 
 	iri, err := s.hash1.ToIRI()
 	require.NoError(err)
-	require.NotNil(iri)
+	require.NotEmpty(iri)
 
 	// can define a resolver
 	res1, err := s.msgClient.DefineResolver(s.ctx, &data.MsgDefineResolver{
@@ -342,7 +358,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 		ResolverUrl: testUrl,
 	})
 	require.NoError(err)
-	require.NotNil(res1)
+	require.NotEmpty(res1)
 
 	// can register content to a resolver
 	res2, err := s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
@@ -351,14 +367,14 @@ func (s *IntegrationTestSuite) TestResolver() {
 		ContentHashes: hashes,
 	})
 	require.NoError(err)
-	require.NotNil(res2)
+	require.Empty(res2) // no response
 
 	// can query resolver
 	res3, err := s.queryClient.Resolver(s.ctx, &data.QueryResolverRequest{
 		Id: res1.ResolverId,
 	})
 	require.NoError(err)
-	require.NotNil(res3)
+	require.NotEmpty(res3)
 	require.Equal(s.addr1.String(), res3.Resolver.Manager)
 	require.Equal(testUrl, res3.Resolver.Url)
 
@@ -367,7 +383,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(res4)
+	require.NotEmpty(res4)
 	require.Equal(s.addr1.String(), res4.Resolvers[0].Manager)
 	require.Equal(testUrl, res4.Resolvers[0].Url)
 
@@ -376,7 +392,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(res5)
+	require.NotEmpty(res5)
 	require.Equal(s.addr1.String(), res5.Resolvers[0].Manager)
 	require.Equal(testUrl, res5.Resolvers[0].Url)
 
@@ -385,7 +401,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 		Url: testUrl,
 	})
 	require.NoError(err)
-	require.NotNil(res6)
+	require.NotEmpty(res6)
 	require.Equal(s.addr1.String(), res6.Resolvers[0].Manager)
 	require.Equal(testUrl, res6.Resolvers[0].Url)
 }

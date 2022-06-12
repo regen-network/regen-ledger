@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AttestationsByAttestor queries anchored data based on attestor.
+// AttestationsByAttestor queries all attestations made by an attestor.
 func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.QueryAttestationsByAttestorRequest) (*data.QueryAttestationsByAttestorResponse, error) {
 	addr, err := sdk.AccAddressFromBech32(request.Attestor)
 	if err != nil {
@@ -69,11 +69,11 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 	}, nil
 }
 
-// AttestationsByIRI queries attestations based on IRI.
+// AttestationsByIRI queries all attestations made to a piece of data by the IRI of the anchored data.
 func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAttestationsByIRIRequest) (*data.QueryAttestationsByIRIResponse, error) {
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrap("content not anchored")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
@@ -115,7 +115,7 @@ func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAt
 	}, nil
 }
 
-// AttestationsByHash queries attestations based on ContentHash.
+// AttestationsByHash queries all attestations made to a piece of data by the ContentHash of the anchored data.
 func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryAttestationsByHashRequest) (*data.QueryAttestationsByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
@@ -128,7 +128,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrap("content not anchored")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

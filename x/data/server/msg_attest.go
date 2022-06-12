@@ -17,7 +17,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	timestamp := timestamppb.New(sdkCtx.BlockTime())
 
-	var iris []string // only the IRIs for new attestor entries
+	var iris []string // only the IRIs for new attestations
 
 	for _, ch := range request.ContentHashes {
 		iri, id, _, err := s.anchorAndGetIRI(ctx, ch)

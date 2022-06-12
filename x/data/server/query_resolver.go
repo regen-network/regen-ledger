@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// Resolver queries information about a resolved based on url.
+// Resolver queries for a resolver by the resolver identifier.
 func (s serverImpl) Resolver(ctx context.Context, request *data.QueryResolverRequest) (*data.QueryResolverResponse, error) {
 	res, err := s.stateStore.ResolverTable().Get(ctx, request.Id)
 	if err != nil {

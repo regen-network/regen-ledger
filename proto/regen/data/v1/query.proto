@@ -12,7 +12,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // Query is the regen.data.v1 Query service
 service Query {
 
-  // AnchorByIRI queries for anchored data by IRI.
+  // AnchorByIRI queries anchored data by IRI.
   rpc AnchorByIRI(QueryAnchorByIRIRequest) returns (QueryAnchorByIRIResponse) {
     option (google.api.http) = {
       get : "/regen/data/v1/anchor-by-iri/{iri}"
@@ -20,7 +20,7 @@ service Query {
     };
   }
 
-  // AnchorByHash queries for anchored data by ContentHash.
+  // AnchorByHash queries anchored data by ContentHash.
   rpc AnchorByHash(QueryAnchorByHashRequest)
       returns (QueryAnchorByHashResponse) {
     option (google.api.http) = {
@@ -32,7 +32,7 @@ service Query {
     };
   }
 
-  // AttestationsByAttestor queries for all attestations by attestor.
+  // AttestationsByAttestor queries all attestations made by an attestor.
   rpc AttestationsByAttestor(QueryAttestationsByAttestorRequest)
       returns (QueryAttestationsByAttestorResponse) {
     option (google.api.http) = {
@@ -43,8 +43,7 @@ service Query {
     };
   }
 
-  // AttestationsByIRI queries for all attestations that have been made to
-  // anchored data by the IRI of the anchored data.
+  // AttestationsByIRI queries all attestations made to a piece of data by the IRI of the anchored data.
   rpc AttestationsByIRI(QueryAttestationsByIRIRequest)
       returns (QueryAttestationsByIRIResponse) {
     option (google.api.http) = {
@@ -53,8 +52,7 @@ service Query {
     };
   }
 
-  // AttestationsByHash queries for all attestations that have been made to
-  // anchored data by the ContentHash of the anchored data.
+  // AttestationsByHash queries all attestations made to a piece of data by the ContentHash of the anchored data.
   rpc AttestationsByHash(QueryAttestationsByHashRequest)
       returns (QueryAttestationsByHashResponse) {
     option (google.api.http) = {
@@ -66,7 +64,7 @@ service Query {
     };
   }
 
-  // Resolver queries for a resolver by the resolver identifier.
+  // Resolver queries a resolver by its unique identifier.
   rpc Resolver(QueryResolverRequest) returns (QueryResolverResponse) {
     option (google.api.http) = {
       get : "/regen/data/v1/resolver/{id}"
@@ -74,8 +72,7 @@ service Query {
     };
   }
 
-  // ResolversByIRI queries for all resolvers that have registered anchored data
-  // by the IRI of the anchored data.
+  // ResolversByIRI queries all resolvers that have registered a piece of data by the IRI of the anchored data.
   rpc ResolversByIRI(QueryResolversByIRIRequest)
       returns (QueryResolversByIRIResponse) {
     option (google.api.http) = {
@@ -84,8 +81,7 @@ service Query {
     };
   }
 
-  // ResolversByHash queries for all resolvers that have registered anchored
-  // data by the ContentHash of the anchored data.
+  // ResolversByHash queries all resolvers that have registered a piece of data by the ContentHash of the anchored data.
   rpc ResolversByHash(QueryResolversByHashRequest)
       returns (QueryResolversByHashResponse) {
     option (google.api.http) = {
@@ -97,7 +93,7 @@ service Query {
     };
   }
 
-  // ResolversByURL queries all resolvers by the resolver URL.
+  // ResolversByURL queries all resolvers with a matching URL. There are no unique constraints on URL and therefore more than one resolver might have the same URL.
   rpc ResolversByURL(QueryResolversByURLRequest)
       returns (QueryResolversByURLResponse) {
     option (google.api.http) = {
@@ -270,7 +266,7 @@ message QueryResolversByHashResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryResolversByURLRequest is the Query/Resolver request type.
+// QueryResolversByURLRequest is the Query/ResolversByURL request type.
 message QueryResolversByURLRequest {
 
   // url is the URL of the resolver.
@@ -280,7 +276,7 @@ message QueryResolversByURLRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryResolversByURLResponse is the Query/Resolver response type.
+// QueryResolversByURLResponse is the Query/ResolversByURL response type.
 message QueryResolversByURLResponse {
 
   // resolvers are the fetched resolvers.
@@ -318,7 +314,7 @@ message ConvertHashToIRIResponse {
   string iri = 1;
 }
 
-// AnchorInfo is the human-readable anchor information.
+// AnchorInfo is the information for anchored data.
 message AnchorInfo {
 
   // iri is the IRI of the anchored data.
@@ -331,7 +327,7 @@ message AnchorInfo {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// AttestationInfo is the human-readable attestation information.
+// AttestationInfo is the information for an attestation.
 message AttestationInfo {
 
   // iri is the IRI of the anchored data.
@@ -344,7 +340,7 @@ message AttestationInfo {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// ResolverInfo is the human-readable resolver information.
+// ResolverInfo is the information for a resolver.
 message ResolverInfo {
 
   // id is the ID of the resolver.

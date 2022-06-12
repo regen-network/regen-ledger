@@ -13,11 +13,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ResolversByIRI queries resolvers based on IRI.
+// ResolversByIRI queries all resolvers that have registered a piece of data by the IRI of the anchored data.
 func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResolversByIRIRequest) (*data.QueryResolversByIRIResponse, error) {
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrap("content not anchored")
 	}
 
 	if request.Pagination == nil {
@@ -67,7 +67,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 	return res, nil
 }
 
-// ResolversByHash queries resolvers based on ContentHash.
+// ResolversByHash queries all resolvers that have registered a piece of data by the ContentHash of the anchored data.
 func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryResolversByHashRequest) (*data.QueryResolversByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
@@ -80,7 +80,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrap("content not anchored")
 	}
 
 	if request.Pagination == nil {
@@ -130,7 +130,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 	return res, nil
 }
 
-// ResolversByURL queries resolvers based on URL.
+// ResolversByURL queries all resolvers with a matching URL.
 func (s serverImpl) ResolversByURL(ctx context.Context, request *data.QueryResolversByURLRequest) (*data.QueryResolversByURLResponse, error) {
 	if len(request.Url) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("url cannot be empty")
