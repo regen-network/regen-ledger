@@ -18,6 +18,7 @@ func (s serverImpl) Resolver(ctx context.Context, request *data.QueryResolverReq
 
 	return &data.QueryResolverResponse{
 		Resolver: &data.ResolverInfo{
+			Id:      request.Id,
 			Url:     res.Url,
 			Manager: manager,
 		},

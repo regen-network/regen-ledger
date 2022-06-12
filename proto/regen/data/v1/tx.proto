@@ -89,7 +89,7 @@ message MsgAttest {
 message MsgAttestResponse {
   // iris are the IRIs for the anchored data entries that were attested to. If
   // the attestor attests to the same piece of data, the previous attestor entry
-  // will not be updated and the IRI will not be included.
+  // will not be updated and the IRI will not be included in this list.
   repeated string iris = 1;
 
   // timestamp is the time at which the data was attested to.

@@ -3,7 +3,6 @@ package testsuite
 import (
 	"context"
 	"crypto"
-	"encoding/base64"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -143,17 +142,6 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(hashToIri)
 	require.Equal(iri, hashToIri.Iri)
 
-	// can convert graph hash properties to iri
-	graphHashToIri, err := s.queryClient.ConvertGraphHashToIRI(s.ctx, &data.ConvertGraphHashToIRIRequest{
-		Hash:                      base64.StdEncoding.EncodeToString(s.hash1.Graph.Hash),
-		DigestAlgorithm:           s.hash1.Graph.DigestAlgorithm,
-		CanonicalizationAlgorithm: s.hash1.Graph.CanonicalizationAlgorithm,
-		MerkleTree:                s.hash1.Graph.MerkleTree,
-	})
-	require.NoError(err)
-	require.NotNil(graphHashToIri)
-	require.Equal(iri, graphHashToIri.Iri)
-
 	// can convert iri to hash
 	iriToHash, err := s.queryClient.ConvertIRIToHash(s.ctx, &data.ConvertIRIToHashRequest{
 		Iri: iri,
@@ -163,18 +151,18 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Equal(s.hash1, iriToHash.ContentHash)
 
 	// can query attestor entries by iri (no attestors)
-	attestorsByIri, err := s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
+	attestationsByIri, err := s.queryClient.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.Empty(attestorsByIri.Attestors)
+	require.Empty(attestationsByIri.Attestations)
 
 	// can query attestor entries by hash (no attestors)
-	attestorsByHash, err := s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
+	attestationsByHash, err := s.queryClient.AttestationsByHash(s.ctx, &data.QueryAttestationsByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.Empty(attestorsByHash.Attestors)
+	require.Empty(attestationsByHash.Attestations)
 
 	// can attest to data
 	attestRes1, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -193,32 +181,32 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Equal(attestRes1.Timestamp, attestRes2.Timestamp)
 
 	// can query attestor entries by iri (one attestor)
-	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
+	attestationsByIri, err = s.queryClient.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.Len(attestorsByIri.Attestors, 1)
-	require.Equal(s.addr1.String(), attestorsByIri.Attestors[0].Attestor)
-	require.Equal(attestRes1.Timestamp, attestorsByIri.Attestors[0].Timestamp)
+	require.Len(attestationsByIri.Attestations, 1)
+	require.Equal(s.addr1.String(), attestationsByIri.Attestations[0].Attestor)
+	require.Equal(attestRes1.Timestamp, attestationsByIri.Attestations[0].Timestamp)
 
 	// can query attestor entries by hash (one attestor)
-	attestorsByHash, err = s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
+	attestationsByHash, err = s.queryClient.AttestationsByHash(s.ctx, &data.QueryAttestationsByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.Len(attestorsByHash.Attestors, 1)
-	require.Equal(s.addr1.String(), attestorsByHash.Attestors[0].Attestor)
-	require.Equal(attestRes1.Timestamp, attestorsByHash.Attestors[0].Timestamp)
+	require.Len(attestationsByHash.Attestations, 1)
+	require.Equal(s.addr1.String(), attestationsByHash.Attestations[0].Attestor)
+	require.Equal(attestRes1.Timestamp, attestationsByHash.Attestations[0].Timestamp)
 
 	// can query anchored data entries by attestor
-	anchorsByAttestor, err := s.queryClient.AnchorsByAttestor(s.ctx, &data.QueryAnchorsByAttestorRequest{
+	attestationsByAttestor, err := s.queryClient.AttestationsByAttestor(s.ctx, &data.QueryAttestationsByAttestorRequest{
 		Attestor: s.addr1.String(),
 	})
 	require.NoError(err)
-	require.NotNil(anchorsByAttestor)
-	require.Len(anchorsByAttestor.Anchors, 1)
-	require.Equal(iri, anchorsByAttestor.Anchors[0].Iri)
-	require.Equal(anchorRes1.Timestamp, anchorsByAttestor.Anchors[0].Timestamp)
+	require.NotNil(attestationsByAttestor)
+	require.Len(attestationsByAttestor.Attestations, 1)
+	require.Equal(iri, attestationsByAttestor.Attestations[0].Iri)
+	require.Equal(anchorRes1.Timestamp, attestationsByAttestor.Attestations[0].Timestamp)
 
 	// update block time
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
@@ -235,41 +223,41 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotEqual(attestRes2.Timestamp, attestRes3.Timestamp)
 
 	// can query attestor entries by IRI (two attestors)
-	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
+	attestationsByIri, err = s.queryClient.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.Len(attestorsByIri.Attestors, 2)
+	require.Len(attestationsByIri.Attestations, 2)
 
 	// order may vary from query response
-	if s.addr1.String() == attestorsByIri.Attestors[0].Attestor {
-		require.Equal(attestRes1.Timestamp, attestorsByIri.Attestors[0].Timestamp)
-		require.Equal(s.addr2.String(), attestorsByIri.Attestors[1].Attestor)
-		require.Equal(attestRes3.Timestamp, attestorsByIri.Attestors[1].Timestamp)
+	if s.addr1.String() == attestationsByIri.Attestations[0].Attestor {
+		require.Equal(attestRes1.Timestamp, attestationsByIri.Attestations[0].Timestamp)
+		require.Equal(s.addr2.String(), attestationsByIri.Attestations[1].Attestor)
+		require.Equal(attestRes3.Timestamp, attestationsByIri.Attestations[1].Timestamp)
 	} else {
-		require.Equal(s.addr2.String(), attestorsByIri.Attestors[0].Attestor)
-		require.Equal(attestRes3.Timestamp, attestorsByIri.Attestors[0].Timestamp)
-		require.Equal(s.addr1.String(), attestorsByIri.Attestors[1].Attestor)
-		require.Equal(attestRes1.Timestamp, attestorsByIri.Attestors[1].Timestamp)
+		require.Equal(s.addr2.String(), attestationsByIri.Attestations[0].Attestor)
+		require.Equal(attestRes3.Timestamp, attestationsByIri.Attestations[0].Timestamp)
+		require.Equal(s.addr1.String(), attestationsByIri.Attestations[1].Attestor)
+		require.Equal(attestRes1.Timestamp, attestationsByIri.Attestations[1].Timestamp)
 	}
 
 	// can query attestor entries by hash (two attestors)
-	attestorsByHash, err = s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
+	attestationsByHash, err = s.queryClient.AttestationsByHash(s.ctx, &data.QueryAttestationsByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.Len(attestorsByHash.Attestors, 2)
+	require.Len(attestationsByHash.Attestations, 2)
 
 	// order may vary from query response
-	if s.addr1.String() == attestorsByHash.Attestors[0].Attestor {
-		require.Equal(attestRes1.Timestamp, attestorsByHash.Attestors[0].Timestamp)
-		require.Equal(s.addr2.String(), attestorsByHash.Attestors[1].Attestor)
-		require.Equal(attestRes3.Timestamp, attestorsByHash.Attestors[1].Timestamp)
+	if s.addr1.String() == attestationsByHash.Attestations[0].Attestor {
+		require.Equal(attestRes1.Timestamp, attestationsByHash.Attestations[0].Timestamp)
+		require.Equal(s.addr2.String(), attestationsByHash.Attestations[1].Attestor)
+		require.Equal(attestRes3.Timestamp, attestationsByHash.Attestations[1].Timestamp)
 	} else {
-		require.Equal(s.addr2.String(), attestorsByHash.Attestors[0].Attestor)
-		require.Equal(attestRes3.Timestamp, attestorsByHash.Attestors[0].Timestamp)
-		require.Equal(s.addr1.String(), attestorsByHash.Attestors[1].Attestor)
-		require.Equal(attestRes1.Timestamp, attestorsByHash.Attestors[1].Timestamp)
+		require.Equal(s.addr2.String(), attestationsByHash.Attestations[0].Attestor)
+		require.Equal(attestRes3.Timestamp, attestationsByHash.Attestations[0].Timestamp)
+		require.Equal(s.addr1.String(), attestationsByHash.Attestations[1].Attestor)
+		require.Equal(attestRes1.Timestamp, attestationsByHash.Attestations[1].Timestamp)
 	}
 
 }
@@ -329,16 +317,6 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(hashToIri)
 	require.Equal(iri, hashToIri.Iri)
-
-	// can convert raw hash properties to iri
-	rawHashToIri, err := s.queryClient.ConvertRawHashToIRI(s.ctx, &data.ConvertRawHashToIRIRequest{
-		Hash:            base64.StdEncoding.EncodeToString(s.hash2.Raw.Hash),
-		DigestAlgorithm: s.hash2.Raw.DigestAlgorithm,
-		MediaType:       s.hash2.Raw.MediaType,
-	})
-	require.NoError(err)
-	require.NotNil(rawHashToIri)
-	require.Equal(iri, rawHashToIri.Iri)
 
 	// can convert iri to hash
 	iriToHash, err := s.queryClient.ConvertIRIToHash(s.ctx, &data.ConvertIRIToHashRequest{

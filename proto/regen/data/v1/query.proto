@@ -11,61 +11,102 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Query is the regen.data.v1 Query service
 service Query {
-  // AnchorByIRI queries for an anchor entry by IRI.
+
+  // AnchorByIRI queries for anchored data by IRI.
   rpc AnchorByIRI(QueryAnchorByIRIRequest) returns (QueryAnchorByIRIResponse) {
-    option (google.api.http).get = "/regen/data/v1/anchor-by-iri/{iri}";
+    option (google.api.http) = {
+      get : "/regen/data/v1/anchor-by-iri/{iri}"
+      additional_bindings : [ {get : "/regen/data/v1/anchors/iri/{iri}"} ]
+    };
   }
 
-  // AnchorByHash queries for an anchor entry by ContentHash.
+  // AnchorByHash queries for anchored data by ContentHash.
   rpc AnchorByHash(QueryAnchorByHashRequest)
       returns (QueryAnchorByHashResponse) {
-    // HTTP REST endpoint not supported with ContentHash
+    option (google.api.http) = {
+      post : "/regen/data/v1/anchor-by-hash"
+      body : "*"
+      additional_bindings : [
+        {post : "/regen/data/v1/anchors/hash" body : "*"}
+      ]
+    };
   }
 
-  // AnchorsByAttestor queries for all anchor entries attested to by an
-  // attestor.
-  rpc AnchorsByAttestor(QueryAnchorsByAttestorRequest)
-      returns (QueryAnchorsByAttestorResponse) {
-    option (google.api.http).get =
-        "/regen/data/v1/anchors-by-attestor/{attestor}";
+  // AttestationsByAttestor queries for all attestations by attestor.
+  rpc AttestationsByAttestor(QueryAttestationsByAttestorRequest)
+      returns (QueryAttestationsByAttestorResponse) {
+    option (google.api.http) = {
+      get : "/regen/data/v1/attestations-by-attestor/{attestor}"
+      additional_bindings : [
+        {get : "/regen/data/v1/attestations/attestor/{attestor}"}
+      ]
+    };
   }
 
-  // AttestorsByIRI queries for all attestor entries for an anchor entry by IRI.
-  rpc AttestorsByIRI(QueryAttestorsByIRIRequest)
-      returns (QueryAttestorsByIRIResponse) {
-    option (google.api.http).get = "/regen/data/v1/attestors-by-iri/{iri}";
+  // AttestationsByIRI queries for all attestations that have been made to
+  // anchored data by the IRI of the anchored data.
+  rpc AttestationsByIRI(QueryAttestationsByIRIRequest)
+      returns (QueryAttestationsByIRIResponse) {
+    option (google.api.http) = {
+      get : "/regen/data/v1/attestations-by-iri/{iri}"
+      additional_bindings : [ {get : "/regen/data/v1/attestations/iri/{iri}"} ]
+    };
   }
 
-  // AttestorsByHash queries for all attestor entries for an anchor entry by
-  // ContentHash.
-  rpc AttestorsByHash(QueryAttestorsByHashRequest)
-      returns (QueryAttestorsByHashResponse) {
-    // HTTP REST endpoint not supported with ContentHash
+  // AttestationsByHash queries for all attestations that have been made to
+  // anchored data by the ContentHash of the anchored data.
+  rpc AttestationsByHash(QueryAttestationsByHashRequest)
+      returns (QueryAttestationsByHashResponse) {
+    option (google.api.http) = {
+      post : "/regen/data/v1/attestations-by-hash"
+      body : "*"
+      additional_bindings : [
+        {post : "/regen/data/v1/attestations/hash" body : "*"}
+      ]
+    };
   }
 
-  // Resolver queries for a resolver by ID.
+  // Resolver queries for a resolver by the resolver identifier.
   rpc Resolver(QueryResolverRequest) returns (QueryResolverResponse) {
-    option (google.api.http).get = "/regen/data/v1/resolver/{id}";
+    option (google.api.http) = {
+      get : "/regen/data/v1/resolver/{id}"
+      additional_bindings : [ {get : "/regen/data/v1/resolvers/{id}"} ]
+    };
   }
 
-  // ResolversByIRI queries for all resolvers that have registered an anchored
-  // data entry by the IRI of the anchored data.
+  // ResolversByIRI queries for all resolvers that have registered anchored data
+  // by the IRI of the anchored data.
   rpc ResolversByIRI(QueryResolversByIRIRequest)
       returns (QueryResolversByIRIResponse) {
-    option (google.api.http).get = "/regen/data/v1/resolvers-by-iri/{iri}";
+    option (google.api.http) = {
+      get : "/regen/data/v1/resolvers-by-iri/{iri}"
+      additional_bindings : [ {get : "/regen/data/v1/resolvers/iri/{iri}"} ]
+    };
   }
 
-  // ResolversByHash queries for all resolvers that have registered an anchor
-  // data entry by the ContentHash of the anchored data.
+  // ResolversByHash queries for all resolvers that have registered anchored
+  // data by the ContentHash of the anchored data.
   rpc ResolversByHash(QueryResolversByHashRequest)
       returns (QueryResolversByHashResponse) {
-    // HTTP REST endpoint not supported with ContentHash
+    option (google.api.http) = {
+      post : "/regen/data/v1/resolvers-by-hash"
+      body : "*"
+      additional_bindings : [
+        {post : "/regen/data/v1/resolvers/hash" body : "*"}
+      ]
+    };
   }
 
-  // ResolversByURL queries all resolvers by URL.
+  // ResolversByURL queries all resolvers by the resolver URL.
   rpc ResolversByURL(QueryResolversByURLRequest)
       returns (QueryResolversByURLResponse) {
-    option (google.api.http).get = "/regen/data/v1/resolvers-by-url";
+    option (google.api.http) = {
+      post : "/regen/data/v1/resolvers-by-url"
+      body : "*"
+      additional_bindings : [
+        {post : "/regen/data/v1/resolvers/url" body : "*"}
+      ]
+    };
   }
 
   // ConvertIRIToHash converts an IRI to a ContentHash.
@@ -77,48 +118,45 @@ service Query {
   // ConvertHashToIRI converts a ContentHash to an IRI.
   rpc ConvertHashToIRI(ConvertHashToIRIRequest)
       returns (ConvertHashToIRIResponse) {
-    // HTTP REST endpoint not supported with ContentHash
-  }
-
-  // ConvertRawHashToIRI converts ContentHash_Raw properties to an IRI.
-  rpc ConvertRawHashToIRI(ConvertRawHashToIRIRequest)
-      returns (ConvertRawHashToIRIResponse) {
-    option (google.api.http).get = "/regen/data/v1/raw-hash-to-iri";
-  }
-
-  // ConvertGraphHashToIRI converts ContentHash_Graph properties to an IRI.
-  rpc ConvertGraphHashToIRI(ConvertGraphHashToIRIRequest)
-      returns (ConvertGraphHashToIRIResponse) {
-    option (google.api.http).get = "/regen/data/v1/graph-hash-to-iri";
+    option (google.api.http) = {
+      post : "/regen/data/v1/hash-to-iri"
+      body : "*"
+    };
   }
 }
 
 // QueryAnchorByIRIRequest is the Query/AnchorByIRI request type.
 message QueryAnchorByIRIRequest {
+
   // iri is the IRI of the anchored data.
   string iri = 1;
 }
 
 // QueryAnchorByIRIResponse is the Query/AnchorByIRI response type.
 message QueryAnchorByIRIResponse {
-  // anchor is the anchored data entry.
-  AnchorEntry anchor = 1;
+
+  // anchor is information about the anchored data.
+  AnchorInfo anchor = 1;
 }
 
 // QueryAnchorByHashRequest is the Query/AnchorByHash request type.
 message QueryAnchorByHashRequest {
+
   // content_hash is the ContentHash of the anchored data.
   ContentHash content_hash = 1;
 }
 
 // QueryAnchorByHashResponse is the Query/AnchorByHash response type.
 message QueryAnchorByHashResponse {
-  // anchor is the anchored data entry.
-  AnchorEntry anchor = 1;
+
+  // anchor is information about the anchored data.
+  AnchorInfo anchor = 1;
 }
 
-// QueryAnchorsByAttestorRequest is the Query/AnchorsByAttestor request type.
-message QueryAnchorsByAttestorRequest {
+// QueryAttestationsByAttestorRequest is the Query/AttestationsByAttestor
+// request type.
+message QueryAttestationsByAttestorRequest {
+
   // attestor is the address of the attestor.
   string attestor = 1;
 
@@ -126,17 +164,20 @@ message QueryAnchorsByAttestorRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryAnchorsByAttestorResponse is the Query/AnchorsByAttestor response type.
-message QueryAnchorsByAttestorResponse {
-  // anchors are the anchored data entries.
-  repeated AnchorEntry anchors = 1;
+// QueryAttestationsByAttestorResponse is the Query/AttestationsByAttestor
+// response type.
+message QueryAttestationsByAttestorResponse {
+
+  // attestations are the attestations by the attestor.
+  repeated AttestationInfo attestations = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryAttestorsByIRIRequest is the Query/AttestorsByIRI request type.
-message QueryAttestorsByIRIRequest {
+// QueryAttestationsByIRIRequest is the Query/AttestationsByIRI request type.
+message QueryAttestationsByIRIRequest {
+
   // iri is the IRI of the anchored data.
   string iri = 1;
 
@@ -144,17 +185,19 @@ message QueryAttestorsByIRIRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryAttestorsByIRIResponse is the Query/AttestorsByIRI response type.
-message QueryAttestorsByIRIResponse {
-  // attestors are the attestor entries.
-  repeated AttestorEntry attestors = 1;
+// QueryAttestationsByIRIResponse is the Query/AttestationsByIRI response type.
+message QueryAttestationsByIRIResponse {
+
+  // attestations are the attestations to the anchored data.
+  repeated AttestationInfo attestations = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryAttestorsByHashRequest is the Query/AttestorsByHash request type.
-message QueryAttestorsByHashRequest {
+// QueryAttestationsByHashRequest is the Query/AttestationsByHash request type.
+message QueryAttestationsByHashRequest {
+
   // content_hash is the ContentHash of the anchored data.
   ContentHash content_hash = 1;
 
@@ -162,10 +205,12 @@ message QueryAttestorsByHashRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryAttestorsByHashResponse is the Query/AttestorsByHash response type.
-message QueryAttestorsByHashResponse {
-  // attestors are the attestor entries.
-  repeated AttestorEntry attestors = 1;
+// QueryAttestationsByHashResponse is the Query/AttestationsByHash response
+// type.
+message QueryAttestationsByHashResponse {
+
+  // attestations are the attestations to the anchored data.
+  repeated AttestationInfo attestations = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -173,18 +218,21 @@ message QueryAttestorsByHashResponse {
 
 // QueryResolverRequest is the Query/Resolver request type.
 message QueryResolverRequest {
+
   // id is the ID of the resolver.
   uint64 id = 1;
 }
 
 // QueryResolverResponse is the Query/Resolver response type.
 message QueryResolverResponse {
+
   // resolver is the fetched resolver.
   ResolverInfo resolver = 1;
 }
 
 // QueryResolversByIRIRequest is the Query/ResolversByIRI request type.
 message QueryResolversByIRIRequest {
+
   // iri is the IRI of the anchored data.
   string iri = 1;
 
@@ -194,6 +242,7 @@ message QueryResolversByIRIRequest {
 
 // QueryResolversByIRIResponse is the Query/ResolversByIRI response type.
 message QueryResolversByIRIResponse {
+
   // resolvers are the resolvers that have registered the anchored data.
   repeated ResolverInfo resolvers = 1;
 
@@ -203,6 +252,7 @@ message QueryResolversByIRIResponse {
 
 // QueryResolversByHashRequest is the Query/ResolversByHash request type.
 message QueryResolversByHashRequest {
+
   // content_hash is the ContentHash of the anchored data.
   ContentHash content_hash = 1;
 
@@ -212,6 +262,7 @@ message QueryResolversByHashRequest {
 
 // QueryResolversByHashResponse is the Query/ResolversByHash response type.
 message QueryResolversByHashResponse {
+
   // resolvers are the resolvers that have registered the data.
   repeated ResolverInfo resolvers = 1;
 
@@ -221,6 +272,7 @@ message QueryResolversByHashResponse {
 
 // QueryResolversByURLRequest is the Query/Resolver request type.
 message QueryResolversByURLRequest {
+
   // url is the URL of the resolver.
   string url = 1;
 
@@ -230,6 +282,7 @@ message QueryResolversByURLRequest {
 
 // QueryResolversByURLResponse is the Query/Resolver response type.
 message QueryResolversByURLResponse {
+
   // resolvers are the fetched resolvers.
   repeated ResolverInfo resolvers = 1;
 
@@ -239,93 +292,61 @@ message QueryResolversByURLResponse {
 
 // ConvertIRIToHashRequest is the Query/ConvertIRIToHash request type.
 message ConvertIRIToHashRequest {
+
   // iri is the IRI to convert to a ContentHash.
   string iri = 1;
 }
 
 // ConvertIRIToHashResponse is the Query/ConvertIRIToHash response type.
 message ConvertIRIToHashResponse {
+
   // content_hash is the ContentHash converted from the IRI.
   ContentHash content_hash = 1;
 }
 
 // ConvertHashToIRIRequest is the Query/ConvertHashToIRI request type.
 message ConvertHashToIRIRequest {
+
   // content_hash is the ContentHash to convert to an IRI.
   ContentHash content_hash = 1;
 }
 
 // ConvertHashToIRIResponse is the Query/ConvertHashToIRI response type.
 message ConvertHashToIRIResponse {
+
   // iri is the IRI converted from the ContentHash.
   string iri = 1;
 }
 
-// ConvertRawHashToIRIRequest is the Query/ConvertRawHashToIRI request type.
-message ConvertRawHashToIRIRequest {
-  // hash represents the hash of the data based on the digest_algorithm and must
-  // be encoded as a base64 string. When hash is provided as a URL parameter,
-  // all instances of "+" should also be replaced with "%2b".
-  string hash = 1;
+// AnchorInfo is the human-readable anchor information.
+message AnchorInfo {
 
-  // digest_algorithm represents the hash digest algorithm.
-  DigestAlgorithm digest_algorithm = 2;
-
-  // media_type represents the media type for raw data.
-  RawMediaType media_type = 3;
-}
-
-// ConvertRawHashToIRIResponse is the Query/ConvertRawHashToIRI response type.
-message ConvertRawHashToIRIResponse {
-  // iri is the IRI converted from ContentHash_Raw.
-  string iri = 1;
-}
-
-// ConvertGraphHashToIRIRequest is the Query/ConvertGraphHashToIRI request type.
-message ConvertGraphHashToIRIRequest {
-  // hash represents the hash of the data based on the digest_algorithm and must
-  // be encoded as a base64 string. When hash is provided as a URL parameter,
-  // all instances of "+" should also be replaced with "%2b".
-  string hash = 1;
-
-  // digest_algorithm represents the hash digest algorithm.
-  DigestAlgorithm digest_algorithm = 2;
-
-  // graph_canonicalization_algorithm represents the RDF graph
-  // canonicalization algorithm.
-  GraphCanonicalizationAlgorithm canonicalization_algorithm = 3;
-
-  // merkle_tree is the merkle tree type used for the graph hash, if any.
-  GraphMerkleTree merkle_tree = 4;
-}
-
-// ConvertGraphHashToIRIResponse is the Query/ConvertGraphHashToIRI response
-// type.
-message ConvertGraphHashToIRIResponse {
-  // iri is the IRI converted from ContentHash_Graph.
-  string iri = 1;
-}
-
-// AnchorEntry is an anchor entry.
-message AnchorEntry {
   // iri is the IRI of the anchored data.
   string iri = 1;
 
+  // content_hash is the ContentHash of the anchored data.
+  ContentHash content_hash = 2;
+
   // timestamp is the time at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 2;
+  google.protobuf.Timestamp timestamp = 3;
 }
 
-// AttestorEntry is an attestor entry.
-message AttestorEntry {
+// AttestationInfo is the human-readable attestation information.
+message AttestationInfo {
+
+  // iri is the IRI of the anchored data.
+  string iri = 1;
+
   // attestor is the address of the account that attested to the anchored data.
-  string attestor = 1;
+  string attestor = 2;
 
   // timestamp is the time at which the data was attested to.
-  google.protobuf.Timestamp timestamp = 2;
+  google.protobuf.Timestamp timestamp = 3;
 }
 
 // ResolverInfo is the human-readable resolver information.
 message ResolverInfo {
+
   // id is the ID of the resolver.
   uint64 id = 1;
 
