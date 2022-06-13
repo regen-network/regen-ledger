@@ -516,4 +516,8 @@ message MsgBridgeReceiveResponse {
   // batch_denom is the denom of the batch that was created in the event that
   // the credits being bridged had no prior batch to mint into.
   string batch_denom = 1;
+
+  // project_id is the id of the project that was created in the event that
+  // the credits being bridged had no prior project to mint from.
+  string project_id = 2;
 }

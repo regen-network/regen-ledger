@@ -572,6 +572,24 @@ func (this ProjectReferenceIdIndexKey) WithReferenceId(reference_id string) Proj
 	return this
 }
 
+type ProjectAdminReferenceIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x ProjectAdminReferenceIdIndexKey) id() uint32            { return 5 }
+func (x ProjectAdminReferenceIdIndexKey) values() []interface{} { return x.vs }
+func (x ProjectAdminReferenceIdIndexKey) projectIndexKey()      {}
+
+func (this ProjectAdminReferenceIdIndexKey) WithAdmin(admin []byte) ProjectAdminReferenceIdIndexKey {
+	this.vs = []interface{}{admin}
+	return this
+}
+
+func (this ProjectAdminReferenceIdIndexKey) WithAdminReferenceId(admin []byte, reference_id string) ProjectAdminReferenceIdIndexKey {
+	this.vs = []interface{}{admin, reference_id}
+	return this
+}
+
 type projectTable struct {
 	table ormtable.AutoIncrementTable
 }
