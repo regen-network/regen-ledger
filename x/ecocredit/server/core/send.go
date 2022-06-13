@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -45,7 +47,7 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 	if err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", credit.BatchDenom, err.Error())
 	}
 	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
 	if err != nil {

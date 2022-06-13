@@ -89,7 +89,7 @@ func TestSellOrdersByDenom(t *testing.T) {
 	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// bad denom should error
-	res, err = s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
+	_, err = s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
 		BatchDenom: "yikes!",
 		Pagination: nil,
 	})
@@ -135,7 +135,7 @@ func TestSellOrdersBySeller(t *testing.T) {
 	assert.Equal(t, uint64(0), res.Pagination.Total)
 
 	// bad address should fail
-	res, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
+	_, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
 		Seller:     "foobar1vlk23jrkl",
 		Pagination: nil,
 	})

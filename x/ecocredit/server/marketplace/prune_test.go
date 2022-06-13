@@ -97,6 +97,6 @@ func TestPrune_NilExpiration(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, "5", order.Quantity)
 
-	order, err = s.marketStore.SellOrderTable().Get(s.ctx, shouldNotExistOrder)
+	_, err = s.marketStore.SellOrderTable().Get(s.ctx, shouldNotExistOrder)
 	assert.ErrorIs(t, err, ormerrors.NotFound)
 }

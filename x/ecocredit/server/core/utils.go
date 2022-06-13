@@ -12,10 +12,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// assertClassIssuer makes sure that the issuer is part of issuers of given class key.
 // Returns ErrUnauthorized otherwise.
-func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, addr sdk.AccAddress) error {
-	found, err := k.stateStore.ClassIssuerTable().Has(goCtx, classID, addr)
+func (k Keeper) assertClassIssuer(goCtx context.Context, classKey uint64, addr sdk.AccAddress) error {
+	found, err := k.stateStore.ClassIssuerTable().Has(goCtx, classKey, addr)
 	if err != nil {
 		return err
 	}
