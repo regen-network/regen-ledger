@@ -44,7 +44,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	if len(projects) == 0 {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
 			Issuer:       req.ServiceAddress,
-			ClassId:      req.ClassId, // TODO(Tyler): should this come from the bridge?
+			ClassId:      req.ClassId,
 			Metadata:     req.ProjectMetadata,
 			Jurisdiction: req.ProjectJurisdiction,
 			ReferenceId:  req.ProjectRefId,
@@ -71,9 +71,10 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return &core.MsgBridgeReceiveResponse{BatchDenom: batchRes.BatchDenom, ProjectId: projectRes.ProjectId}, nil
 	}
 
-	// TODO(Tyler): not sure if this is the best way to match a batch.
-	// TODO(Tyler): multiple batches could have same start/end in a project..
 	project := projects[0]
+
+	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
+	// any batches in that iterator that have matching metadata, are added to the slice.
 	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
 	batchIdx := fmt.Sprintf("%s-%s-%s-", project.Id, req.StartDate.Format("20060102"), req.EndDate.Format("20060102"))
 	bIt, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(batchIdx))
@@ -93,6 +94,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		}
 	}
 
+	// TODO(Tyler): potentially select a batch by oldest issuance date?
 	amtBatches := len(batches)
 	if amtBatches > 1 { // change this to pick by issuance date
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d batches issued "+
