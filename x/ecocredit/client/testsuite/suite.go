@@ -30,10 +30,11 @@ type IntegrationTestSuite struct {
 	addr  sdk.AccAddress // TODO: addr2 (#922 / #1042)
 
 	// test values
-	allowedDenoms []string
-	classId       string
-	projectId     string
-	batchDenom    string
+	allowedDenoms      []string
+	classId            string
+	projectId          string
+	projectReferenceId string
+	batchDenom         string
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -57,6 +58,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// set test accounts
 	s.setupTestAccounts()
+
+	// set reference id used when creating a project
+	s.projectReferenceId = "VCS-001"
 
 	// create a class, project, and batch with first test account and set test values
 	s.classId, s.projectId, s.batchDenom = s.createClassProjectBatch(s.val.ClientCtx, s.addr1.String())
