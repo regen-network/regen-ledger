@@ -80,12 +80,15 @@ by the %s parameter, so should make sure they have enough funds to cover that.
 
 Parameters:
   issuer:    	               comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  credit type abbreviation:    the name of the credit class type (e.g. carbon, biodiversity, etc)
+  credit type abbreviation:    the abbreviation of a credit type (e.g. "C", "BIO")
   metadata:  	               arbitrary data attached to the credit class info
   fee:                         fee to pay for the creation of the credit class (e.g. 10uatom, 10uregen)`,
 			core.KeyAllowedClassCreators,
 			core.KeyCreditClassFee,
 		),
+		Example: `
+regen tx ecocredit create-class regen1el...xmgqelsw,regen2tl...xsgqdlhy C "metadata" 10uregen
+		`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -141,13 +144,15 @@ const (
 	FlagAddIssuers          string = "add-issuers"
 	FlagRemoveIssuers       string = "remove-issuers"
 	FlagReferenceId         string = "reference-id"
+	FlagIssuer              string = "issuer"
 )
 
 // TxGenBatchJSONCmd returns a transaction command that generates JSON to
 // represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --metadata [metadata]",
+		Use: `gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] 
+		--metadata [metadata] --issuer [issuer]`,
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
@@ -159,7 +164,8 @@ Required Flags:
   end-date:   The end of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   metadata:   issuance metadata
-  `,
+  issuer:     account address of the batch issuer
+			  `,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectId, err := cmd.Flags().GetString(FlagProjectId)
@@ -207,12 +213,18 @@ Required Flags:
 				return err
 			}
 
+			issuer, err := cmd.Flags().GetString(FlagIssuer)
+			if err != nil {
+				return err
+			}
+
 			msg := &core.MsgCreateBatch{
 				ProjectId: projectId,
 				Issuance:  issuances,
 				Metadata:  metadata,
 				StartDate: &startDate,
 				EndDate:   &endDate,
+				Issuer:    issuer,
 			}
 
 			// Marshal and output JSON of message
@@ -237,7 +249,9 @@ Required Flags:
 	cmd.MarkFlagRequired(FlagStartDate)
 	cmd.Flags().String(FlagEndDate, "", "The end of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
 	cmd.MarkFlagRequired(FlagEndDate)
-	cmd.Flags().String(FlagMetadata, "", "base64 encoded issuance metadata")
+	cmd.Flags().String(FlagMetadata, "", "arbitrary string attached to the credit batch")
+	cmd.Flags().String(FlagIssuer, "", "account address of the batch issuer")
+	cmd.MarkFlagRequired(FlagIssuer)
 	return cmd
 }
 
@@ -247,7 +261,7 @@ func TxCreateBatchCmd() *cobra.Command {
 	return txFlags(&cobra.Command{
 		Use:   "create-batch [msg-create-batch-json-file]",
 		Short: "Issues a new credit batch",
-		Long: fmt.Sprintf(`Issues a new credit batch.
+		Long: `Issues a new credit batch.
 
 Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
@@ -266,8 +280,9 @@ Parameters:
                                 "start_date":       "1990-01-01",
                                 "end_date":         "1995-10-31",
                                 "project_jurisdiction": "AB-CDE FG1 345",
+                                "issuer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
                               }
-                              `),
+                              `,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -379,6 +394,9 @@ Parameters:
             eg: '10 C01-001-20200101-20210101-001, 0.1 C01-001-20200101-20210101-001'
   reason:   reason is any arbitrary string that specifies the reason for cancelling credits.
 `,
+		Example: `
+regen tx ecocredit cancel '10 C01-001-20200101-20210101-001,0.1 C01-001-20200101-20210101-001' "bridging assets to another chain"
+		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			credits, err := parseCancelCreditsList(args[0])
@@ -409,6 +427,9 @@ Parameters:
   class-id:  the class id that corresponds with the credit class you want to update
   metadata:  credit class metadata`,
 		Args: cobra.ExactArgs(2),
+		Example: `
+regen tx ecocredit update-class-metadata C01 "some metadata"
+		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			if args[0] == "" {
@@ -447,6 +468,9 @@ func TxUpdateClassAdminCmd() *cobra.Command {
 Parameters:
   class-id:  the class id that corresponds with the credit class you want to update
   new-admin: the address to overwrite the current admin address`,
+		Example: `
+regen tx ecocredit update-class-admin C01 regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw 
+  `,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -487,10 +511,11 @@ Parameters:
   class-id:  the class id that corresponds with the credit class you want to update
 Flags:  
   add-issuers:    the new list of issuers to add to the class issuers list
-  remove-issuers: the new list of issuers to remove from the class issuers list
-Example:
-	$'regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2,addr3
-	$'regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2 --remove-issuers addr3,addr4`,
+  remove-issuers: the new list of issuers to remove from the class issuers list`,
+		Example: `
+regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2,addr3
+regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2 --remove-issuers addr3,addr4
+	`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -549,7 +574,11 @@ func TxCreateProject() *cobra.Command {
 		project-jurisdiction: the jurisdiction of the project (see documentation for proper project-jurisdiction formats).
 		metadata: any arbitrary metadata attached to the project.
 		Flags:
-		reference-id: proect reference id
+		reference-id: project reference id
+		`,
+		Example: `
+regen tx ecocredit create-project C01 "AA-BB 12345" metadata
+regen tx ecocredit create-project C01 "AA-BB 12345" metadata --reference-id R01
 		`,
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {

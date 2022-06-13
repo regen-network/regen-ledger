@@ -182,22 +182,23 @@ Parameters:
 		basket_denom: basket identifier
 Flags:
 		from: account address of the owner
-Example:
-		$regen tx ecocredit put-in-basket [basket_denom] [credits_json_file]
-		
-		Where credits_json_file contains:
-		
-		[
-			{
-				"batch_denom": "C01-001-20210101-20220101-001",
-				"amount": "10"
-			},
-			{
-				"batch_denom": "C01-001-20210101-20220101-001",
-				"amount": "10.5"
-			}
-		]
 		`),
+		Example: `
+regen tx ecocredit put-in-basket eco.uC.NCT credits.json
+
+Where the credits.json file contains:
+
+[
+	{
+		"batch_denom": "C01-001-20210101-20220101-001",
+		"amount": "10"
+	},
+	{
+		"batch_denom": "C01-001-20210101-20220101-001",
+		"amount": "10.5"
+	}
+]
+		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -251,6 +252,10 @@ Flags:
 		                retired or tradable credits.
 		
 		`),
+		Example: `
+regen tx ecocredit take-from-basket eco.uC.NCT 1000
+regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take true --retirement-jurisdiction AQ
+		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
