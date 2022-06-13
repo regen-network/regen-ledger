@@ -89,7 +89,8 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		if err != nil {
 			return nil, err
 		}
-		if batch.Metadata == req.BatchMetadata {
+		// the timestamp stored in the batch is more granular than the date in the denom representation, so we match here.
+		if batch.StartDate.AsTime().Equal(*req.StartDate) && batch.EndDate.AsTime().Equal(*req.EndDate) && batch.Metadata == req.BatchMetadata {
 			batches = append(batches, batch)
 		}
 	}
