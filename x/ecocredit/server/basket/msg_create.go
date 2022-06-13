@@ -29,21 +29,26 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	for _, coin := range fee {
-		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, coin.Denom)
-		if curatorBalance.IsNil() || curatorBalance.IsLT(coin) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", coin.Denom)
+	// In the next version of the basket package, this field will be updated to
+	// a single Coin rather than a list of Coins. In the meantime, the message
+	// will fail basic validation if more than one fee is provided and only the
+	// single fee provided is checked against the balance of the curator account
+	// sent to the basket submodule, and then burned.
+	if len(fee) == 1 {
+		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, fee[0].Denom)
+		if curatorBalance.IsNil() || curatorBalance.IsLT(fee[0]) {
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", fee[0].Denom)
 		}
-	}
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, fee)
-	if err != nil {
-		return nil, err
-	}
+		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, fee)
+		if err != nil {
+			return nil, err
+		}
 
-	err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, fee)
-	if err != nil {
-		return nil, err
+		err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, fee)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, msg.CreditTypeAbbrev)

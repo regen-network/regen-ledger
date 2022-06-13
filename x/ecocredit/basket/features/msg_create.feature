@@ -360,3 +360,28 @@ Feature: MsgCreate
     """
     When the message is validated
     Then expect the error "coin -1uregen amount is not positive"
+
+  Scenario: an error is returned if fee length is greater than 1
+    Given the message
+    """
+    {
+      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "name": "NCT",
+      "credit_type_abbrev": "C",
+      "allowed_classes": [
+        "C01"
+      ],
+      "fee": [
+        {
+          "denom": "uregen",
+          "amount": "20000000"
+        },
+        {
+          "denom": "uatom",
+          "amount": "20000000"
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect the error "more than one fee is not allowed: invalid request"
