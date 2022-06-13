@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -1213,7 +1214,7 @@ func getRandomBatchFromProject(ctx context.Context, r *rand.Rand, qryClient core
 		ProjectId: projectID,
 	})
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
+		if strings.Contains(err.Error(), ormerrors.NotFound.Error()) {
 			return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, fmt.Sprintf("no credit batches for %s project", projectID)), nil
 		}
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
