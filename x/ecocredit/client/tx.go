@@ -577,8 +577,8 @@ func TxCreateProject() *cobra.Command {
 		reference-id: project reference id
 		`,
 		Example: `
-regen tx ecocredit create-project C01 AA-BB 12345 metadata
-regen tx ecocredit create-project C01 AA-BB 12345 metadata --reference-id R01
+regen tx ecocredit create-project C01 "AA-BB 12345" metadata
+regen tx ecocredit create-project C01 "AA-BB 12345" metadata --reference-id R01
 		`,
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {

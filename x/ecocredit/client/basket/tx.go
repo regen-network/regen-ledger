@@ -206,9 +206,9 @@ Flags:
 		from: account address of the owner
 		`),
 		Example: `
-regen tx ecocredit put-in-basket eco.uC.NCT credits_json_file
+regen tx ecocredit put-in-basket eco.uC.NCT credits.json
 
-Where credits_json_file contains:
+Where the credits.json file contains:
 
 [
 	{
