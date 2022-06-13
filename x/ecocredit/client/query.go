@@ -34,6 +34,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
+		QueryProjectsCmd(),
 		QueryProjectsByClassCmd(),
 		QueryProjectsByReferenceIdCmd(),
 		QueryProjectsByAdminCmd(),
@@ -154,14 +155,50 @@ regen q ecocredit class-issuers C01 --limit 10
 	return qflags(cmd)
 }
 
-// QueryProjectsByClassCmd returns a query command that retrieves projects.
+// QueryProjectsCmd returns a query command that retrieves all projects.
+func QueryProjectsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "projects",
+		Short: "Query all projects",
+		Long:  "Query all projects with optional pagination flags.",
+		Example: `
+regen q ecocredit projects
+regen q ecocredit projects --limit 10 --count-total
+		`,
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Projects(cmd.Context(), &core.QueryProjectsRequest{
+				Pagination: pagination,
+			})
+
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "projects")
+
+	return qflags(cmd)
+}
+
+// QueryProjectsByClassCmd returns a query command that retrieves projects by credit class.
 func QueryProjectsByClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects-by-class [class_id]",
-		Short: "List all projects in the given class with pagination flags",
+		Short: "Query projects by credit class",
+		Long:  "Query projects by credit class with optional pagination flags.",
 		Example: `
-regen q ecocredit projects C01
-regen q ecocredit projects C01 --limit 10
+regen q ecocredit projects-by-class C01
+regen q ecocredit projects-by-class C01 --limit 10 --count-total
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
