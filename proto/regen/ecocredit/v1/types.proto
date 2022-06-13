@@ -59,3 +59,12 @@ message CreditTypeProposal {
   // passes.
   CreditType credit_type = 3;
 }
+
+// Credits represents a simple structure for credits.
+message Credits {
+  // batch_denom is the denom of the credit batch
+  string batch_denom = 1;
+
+  // amount is the amount of credits
+  string amount = 2;
+}
