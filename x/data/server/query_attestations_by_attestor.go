@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AttestationsByAttestor queries attestations by attestor.
+// AttestationsByAttestor queries data attestations by an attestor.
 func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.QueryAttestationsByAttestorRequest) (*data.QueryAttestationsByAttestorResponse, error) {
 	if len(request.Attestor) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("attestor cannot be empty")

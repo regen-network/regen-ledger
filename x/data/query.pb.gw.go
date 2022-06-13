@@ -1988,9 +1988,9 @@ var (
 
 	pattern_Query_ResolversByURL_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"regen", "data", "v1", "resolvers", "url"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ConvertIRIToHash_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1", "iri-to-hash", "iri"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_ConvertIRIToHash_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1", "convert-iri-to-hash", "iri"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ConvertHashToIRI_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "data", "v1", "hash-to-iri"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_ConvertHashToIRI_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "data", "v1", "convert-hash-to-iri"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

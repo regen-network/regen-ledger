@@ -41,7 +41,7 @@ func TestQuery_AnchorByHash(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// query anchored data with valid content hash
+	// query data anchor with valid content hash
 	res, err := s.server.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: ch,
 	})
@@ -51,17 +51,17 @@ func TestQuery_AnchorByHash(t *testing.T) {
 	require.Equal(t, timestamp.Seconds, res.Anchor.Timestamp.Seconds)
 	require.Equal(t, timestamp.Nanos, res.Anchor.Timestamp.Nanos)
 
-	// query anchored data with empty content hash
+	// query data anchor with empty content hash
 	_, err = s.server.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{})
 	require.EqualError(t, err, "content hash cannot be empty: invalid request")
 
-	// query anchored data with invalid content hash
+	// query data anchor with invalid content hash
 	_, err = s.server.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: &data.ContentHash{},
 	})
 	require.EqualError(t, err, "invalid data.ContentHash: invalid request")
 
-	// query anchored data with content hash that has not been anchored
+	// query data anchor with content hash that has not been anchored
 	_, err = s.server.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: &data.ContentHash{Graph: &data.ContentHash_Graph{
 			Hash:                      bytes.Repeat([]byte{1}, 32),

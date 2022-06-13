@@ -46,7 +46,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRI() {
 func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
 	require := s.Require()
 
-	jsonHash, err := json.Marshal(s.hash1)
+	hash, err := json.Marshal(s.hash1)
 	require.NoError(err)
 
 	testCases := []struct {
@@ -57,12 +57,12 @@ func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
 		{
 			"valid",
 			fmt.Sprintf("%s/%s/anchor-by-hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s}`, jsonHash)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 		{
 			"valid alternative",
 			fmt.Sprintf("%s/%s/anchors/hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s}`, jsonHash)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 
@@ -207,10 +207,10 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
 func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
 	require := s.Require()
 
-	jsonHash, err := json.Marshal(s.hash1)
+	hash, err := json.Marshal(s.hash1)
 	require.NoError(err)
 
-	jsonPgn, err := json.Marshal(query.PageRequest{
+	pgn, err := json.Marshal(query.PageRequest{
 		Limit:      1,
 		CountTotal: true,
 	})
@@ -224,17 +224,17 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
 		{
 			"valid",
 			fmt.Sprintf("%s/%s/attestations-by-hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s}`, jsonHash)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf("%s/%s/attestations-by-hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, jsonHash, jsonPgn)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, hash, pgn)),
 		},
 		{
 			"valid alternative",
 			fmt.Sprintf("%s/%s/attestations/hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s}`, jsonHash)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 
@@ -339,10 +339,10 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
 func (s *IntegrationTestSuite) TestQueryResolversByHash() {
 	require := s.Require()
 
-	jsonHash, err := json.Marshal(s.hash1)
+	hash, err := json.Marshal(s.hash1)
 	require.NoError(err)
 
-	jsonPgn, err := json.Marshal(query.PageRequest{
+	pgn, err := json.Marshal(query.PageRequest{
 		Limit:      1,
 		CountTotal: true,
 	})
@@ -356,17 +356,17 @@ func (s *IntegrationTestSuite) TestQueryResolversByHash() {
 		{
 			"valid",
 			fmt.Sprintf("%s/%s/resolvers-by-hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s}`, jsonHash)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf("%s/%s/resolvers-by-hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, jsonHash, jsonPgn)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, hash, pgn)),
 		},
 		{
 			"valid alternative",
 			fmt.Sprintf("%s/%s/resolvers/hash", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s}`, jsonHash)),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 
@@ -395,7 +395,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByHash() {
 func (s *IntegrationTestSuite) TestQueryResolversByURL() {
 	require := s.Require()
 
-	jsonPgn, err := json.Marshal(query.PageRequest{
+	pgn, err := json.Marshal(query.PageRequest{
 		Limit:      1,
 		CountTotal: true,
 	})
@@ -414,7 +414,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByURL() {
 		{
 			"valid with pagination",
 			fmt.Sprintf("%s/%s/resolvers-by-url", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"url": "%s", "pagination": %s}`, s.url, jsonPgn)),
+			[]byte(fmt.Sprintf(`{"url": "%s", "pagination": %s}`, s.url, pgn)),
 		},
 		{
 			"valid alternative",
@@ -454,7 +454,7 @@ func (s *IntegrationTestSuite) TestConvertIRIToHash() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/iri-to-hash/%s", s.val.APIAddress, dataRoute, s.iri1),
+			fmt.Sprintf("%s/%s/convert-iri-to-hash/%s", s.val.APIAddress, dataRoute, s.iri1),
 		},
 	}
 
@@ -475,7 +475,7 @@ func (s *IntegrationTestSuite) TestConvertIRIToHash() {
 func (s *IntegrationTestSuite) TestConvertHashToIRI() {
 	require := s.Require()
 
-	jsonHash, err := json.Marshal(s.hash1)
+	hash, err := json.Marshal(s.hash1)
 	require.NoError(err)
 
 	testCases := []struct {
@@ -485,8 +485,8 @@ func (s *IntegrationTestSuite) TestConvertHashToIRI() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/hash-to-iri", s.val.APIAddress, dataRoute),
-			[]byte(fmt.Sprintf(`{"content_hash": %s}`, jsonHash)),
+			fmt.Sprintf("%s/%s/convert-hash-to-iri", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 

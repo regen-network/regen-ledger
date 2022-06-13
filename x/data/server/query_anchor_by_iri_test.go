@@ -42,7 +42,7 @@ func TestQuery_AnchorByIRI(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// query anchored data with valid iri
+	// query data anchor with valid iri
 	res, err := s.server.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: iri,
 	})
@@ -52,17 +52,17 @@ func TestQuery_AnchorByIRI(t *testing.T) {
 	require.Equal(t, timestamp.Seconds, res.Anchor.Timestamp.Seconds)
 	require.Equal(t, timestamp.Nanos, res.Anchor.Timestamp.Nanos)
 
-	// query anchored data with empty iri
+	// query data anchor with empty iri
 	_, err = s.server.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{})
 	require.EqualError(t, err, "IRI cannot be empty: invalid request")
 
-	// query anchored data with invalid iri
+	// query data anchor with invalid iri
 	_, err = s.server.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: "foo",
 	})
 	require.EqualError(t, err, "failed to parse IRI foo: regen: prefix required: invalid IRI")
 
-	// query anchored data with iri that has not been anchored
+	// query data anchor with iri that has not been anchored
 	_, err = s.server.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: "regen:13toVfvdftodu8c1Jc4TXxCnq7XLRAe4p9MgDKF2VeFKMx9eZXMgGnB.rdf",
 	})

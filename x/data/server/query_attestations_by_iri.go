@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AttestationsByIRI queries attestations to data by IRI.
+// AttestationsByIRI queries data attestations by the IRI of the data.
 func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAttestationsByIRIRequest) (*data.QueryAttestationsByIRIResponse, error) {
 	if len(request.Iri) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")

@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AnchorByIRI queries anchored data by IRI.
+// AnchorByIRI queries a data anchor by the IRI of the data.
 func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorByIRIRequest) (*data.QueryAnchorByIRIResponse, error) {
 	if len(request.Iri) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")

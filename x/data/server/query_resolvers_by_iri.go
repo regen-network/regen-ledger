@@ -12,7 +12,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ResolversByIRI queries resolvers with registered data by IRI.
+// ResolversByIRI queries resolvers with registered data by the IRI of the data.
 func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResolversByIRIRequest) (*data.QueryResolversByIRIResponse, error) {
 	if len(request.Iri) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")

@@ -12,7 +12,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ResolversByHash queries resolvers with registered data by ContentHash.
+// ResolversByHash queries resolvers with registered data by the ContentHash of the data.
 func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryResolversByHashRequest) (*data.QueryResolversByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")

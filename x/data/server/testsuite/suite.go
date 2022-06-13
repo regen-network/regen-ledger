@@ -130,7 +130,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
-	// another attestor can attest to the same anchored data
+	// another attestor can attest to the same data
 	attestRes3, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.addr2.String(),
 		ContentHashes: []*data.ContentHash_Graph{s.graphHash},

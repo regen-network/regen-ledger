@@ -45,8 +45,8 @@ func QueryCmd(name string) *cobra.Command {
 func QueryAnchorByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anchor-by-iri [iri]",
-		Short: "Query anchored data by IRI",
-		Long:  "Query anchored data by IRI.",
+		Short: "Query a data anchor by the IRI of the data",
+		Long:  "Query a data anchor by the IRI of the data.",
 		Example: formatExample(`
   regen q data anchor-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
 		`),
@@ -74,8 +74,8 @@ func QueryAnchorByIRICmd() *cobra.Command {
 func QueryAnchorByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anchor-by-hash [hash-json]",
-		Short: "Query anchored data by ContentHash",
-		Long:  "Query anchored data by ContentHash.",
+		Short: "Query a data anchor by the ContentHash of the data",
+		Long:  "Query a data anchor by the ContentHash of the data.",
 		Example: formatExample(`
   regen q data anchor-by-hash hash.json
 
@@ -118,8 +118,8 @@ func QueryAnchorByHashCmd() *cobra.Command {
 func QueryAttestationsByAttestorCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestations-by-attestor [attestor]",
-		Short: "Query attestations by attestor",
-		Long:  "Query attestations by attestor with optional pagination flags.",
+		Short: "Query data attestations by an attestor",
+		Long:  "Query data attestations by an attestor with optional pagination flags.",
 		Example: formatExample(`
   regen q data attestations-by-attestor regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza
   regen q data attestations-by-attestor regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza --limit 10 --count-total
@@ -155,8 +155,8 @@ func QueryAttestationsByAttestorCmd() *cobra.Command {
 func QueryAttestationsByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestations-by-iri [iri]",
-		Short: "Query attestations to data by IRI",
-		Long:  "Query attestations to data by IRI with optional pagination flags.",
+		Short: "Query data attestations by the IRI of the data",
+		Long:  "Query data attestations by the IRI of the data with optional pagination flags.",
 		Example: formatExample(`
   regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
   regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
@@ -192,8 +192,8 @@ func QueryAttestationsByIRICmd() *cobra.Command {
 func QueryAttestationsByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestations-by-hash [hash-json]",
-		Short: "Query attestations to data by ContentHash",
-		Long:  "Query attestations to data by ContentHash with optional pagination flags.",
+		Short: "Query data attestations by the ContentHash of the data",
+		Long:  "Query data attestations by the ContentHash of the data with optional pagination flags.",
 		Example: formatExample(`
   regen q data attestations-by-hash hash.json
   regen q data attestations-by-hash hash.json --limit 10 --count-total
@@ -237,8 +237,8 @@ func QueryAttestationsByHashCmd() *cobra.Command {
 func QueryResolverCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolver [id]",
-		Short: "Query a resolver by ID",
-		Long:  "Query a resolver by ID.",
+		Short: "Query a resolver by its unique identifier",
+		Long:  "Query a resolver by its unique identifier.",
 		Example: formatExample(`
   regen q data resolver 1
 		`),
@@ -271,8 +271,8 @@ func QueryResolverCmd() *cobra.Command {
 func QueryResolversByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolvers-by-iri [iri]",
-		Short: "Query resolvers with registered data by IRI",
-		Long:  "Query resolvers with registered data by IRI with optional pagination flags.",
+		Short: "Query resolvers with registered data by the IRI of the data",
+		Long:  "Query resolvers with registered data by the IRI of the data with optional pagination flags.",
 		Example: formatExample(`
   regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
   regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
@@ -308,8 +308,8 @@ func QueryResolversByIRICmd() *cobra.Command {
 func QueryResolversByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolvers-by-hash [hash-json]",
-		Short: "Query resolvers with registered data by ContentHash",
-		Long:  "Query resolvers with registered data by ContentHash with optional pagination flags.",
+		Short: "Query resolvers with registered data by the ContentHash of the data",
+		Long:  "Query resolvers with registered data by the ContentHash of the data with optional pagination flags.",
 		Example: formatExample(`
   regen q data resolvers-by-hash hash.json
   regen q data resolvers-by-hash hash.json --limit 10 --count-total

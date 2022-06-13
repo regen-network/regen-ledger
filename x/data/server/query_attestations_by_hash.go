@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AttestationsByHash queries attestations to data by ContentHash.
+// AttestationsByHash queries data attestations by the ContentHash of the data.
 func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryAttestationsByHashRequest) (*data.QueryAttestationsByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")

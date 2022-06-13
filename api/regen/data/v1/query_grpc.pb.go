@@ -22,21 +22,24 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// AnchorByIRI queries anchored data by IRI.
+	// AnchorByIRI queries a data anchor by the IRI of the data.
 	AnchorByIRI(ctx context.Context, in *QueryAnchorByIRIRequest, opts ...grpc.CallOption) (*QueryAnchorByIRIResponse, error)
-	// AnchorByHash queries anchored data by ContentHash.
+	// AnchorByHash queries a data anchor by the ContentHash of the data.
 	AnchorByHash(ctx context.Context, in *QueryAnchorByHashRequest, opts ...grpc.CallOption) (*QueryAnchorByHashResponse, error)
-	// AttestationsByAttestor queries attestations by attestor.
+	// AttestationsByAttestor queries data attestations by an attestor.
 	AttestationsByAttestor(ctx context.Context, in *QueryAttestationsByAttestorRequest, opts ...grpc.CallOption) (*QueryAttestationsByAttestorResponse, error)
-	// AttestationsByIRI queries attestations to data by IRI.
+	// AttestationsByIRI queries data attestations by the IRI of the data.
 	AttestationsByIRI(ctx context.Context, in *QueryAttestationsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestationsByIRIResponse, error)
-	// AttestationsByHash queries attestations to data by ContentHash.
+	// AttestationsByHash queries data attestations by the ContentHash of the
+	// data.
 	AttestationsByHash(ctx context.Context, in *QueryAttestationsByHashRequest, opts ...grpc.CallOption) (*QueryAttestationsByHashResponse, error)
-	// Resolver queries a resolver by ID.
+	// Resolver queries a resolver by its unique identifier.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
-	// ResolversByIRI queries resolvers with registered data by IRI.
+	// ResolversByIRI queries resolvers with registered data by the IRI of the
+	// data.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries resolvers with registered data by ContentHash.
+	// ResolversByHash queries resolvers with registered data by the ContentHash
+	// of the data.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
 	// ResolversByURL queries resolvers by URL.
 	ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error)
@@ -157,21 +160,24 @@ func (c *queryClient) ConvertHashToIRI(ctx context.Context, in *ConvertHashToIRI
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// AnchorByIRI queries anchored data by IRI.
+	// AnchorByIRI queries a data anchor by the IRI of the data.
 	AnchorByIRI(context.Context, *QueryAnchorByIRIRequest) (*QueryAnchorByIRIResponse, error)
-	// AnchorByHash queries anchored data by ContentHash.
+	// AnchorByHash queries a data anchor by the ContentHash of the data.
 	AnchorByHash(context.Context, *QueryAnchorByHashRequest) (*QueryAnchorByHashResponse, error)
-	// AttestationsByAttestor queries attestations by attestor.
+	// AttestationsByAttestor queries data attestations by an attestor.
 	AttestationsByAttestor(context.Context, *QueryAttestationsByAttestorRequest) (*QueryAttestationsByAttestorResponse, error)
-	// AttestationsByIRI queries attestations to data by IRI.
+	// AttestationsByIRI queries data attestations by the IRI of the data.
 	AttestationsByIRI(context.Context, *QueryAttestationsByIRIRequest) (*QueryAttestationsByIRIResponse, error)
-	// AttestationsByHash queries attestations to data by ContentHash.
+	// AttestationsByHash queries data attestations by the ContentHash of the
+	// data.
 	AttestationsByHash(context.Context, *QueryAttestationsByHashRequest) (*QueryAttestationsByHashResponse, error)
-	// Resolver queries a resolver by ID.
+	// Resolver queries a resolver by its unique identifier.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
-	// ResolversByIRI queries resolvers with registered data by IRI.
+	// ResolversByIRI queries resolvers with registered data by the IRI of the
+	// data.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries resolvers with registered data by ContentHash.
+	// ResolversByHash queries resolvers with registered data by the ContentHash
+	// of the data.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
 	// ResolversByURL queries resolvers by URL.
 	ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error)

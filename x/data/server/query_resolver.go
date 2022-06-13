@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// Resolver queries for a resolver by ID.
+// Resolver queries a resolver by its unique identifier.
 func (s serverImpl) Resolver(ctx context.Context, request *data.QueryResolverRequest) (*data.QueryResolverResponse, error) {
 	if request.Id == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("ID cannot be empty")

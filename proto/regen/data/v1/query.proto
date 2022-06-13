@@ -12,7 +12,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // Query is the regen.data.v1 Query service
 service Query {
 
-  // AnchorByIRI queries anchored data by IRI.
+  // AnchorByIRI queries a data anchor by the IRI of the data.
   rpc AnchorByIRI(QueryAnchorByIRIRequest) returns (QueryAnchorByIRIResponse) {
     option (google.api.http) = {
       get : "/regen/data/v1/anchor-by-iri/{iri}"
@@ -20,7 +20,7 @@ service Query {
     };
   }
 
-  // AnchorByHash queries anchored data by ContentHash.
+  // AnchorByHash queries a data anchor by the ContentHash of the data.
   rpc AnchorByHash(QueryAnchorByHashRequest)
       returns (QueryAnchorByHashResponse) {
     option (google.api.http) = {
@@ -32,7 +32,7 @@ service Query {
     };
   }
 
-  // AttestationsByAttestor queries attestations by attestor.
+  // AttestationsByAttestor queries data attestations by an attestor.
   rpc AttestationsByAttestor(QueryAttestationsByAttestorRequest)
       returns (QueryAttestationsByAttestorResponse) {
     option (google.api.http) = {
@@ -43,7 +43,7 @@ service Query {
     };
   }
 
-  // AttestationsByIRI queries attestations to data by IRI.
+  // AttestationsByIRI queries data attestations by the IRI of the data.
   rpc AttestationsByIRI(QueryAttestationsByIRIRequest)
       returns (QueryAttestationsByIRIResponse) {
     option (google.api.http) = {
@@ -52,7 +52,8 @@ service Query {
     };
   }
 
-  // AttestationsByHash queries attestations to data by ContentHash.
+  // AttestationsByHash queries data attestations by the ContentHash of the
+  // data.
   rpc AttestationsByHash(QueryAttestationsByHashRequest)
       returns (QueryAttestationsByHashResponse) {
     option (google.api.http) = {
@@ -64,7 +65,7 @@ service Query {
     };
   }
 
-  // Resolver queries a resolver by ID.
+  // Resolver queries a resolver by its unique identifier.
   rpc Resolver(QueryResolverRequest) returns (QueryResolverResponse) {
     option (google.api.http) = {
       get : "/regen/data/v1/resolver/{id}"
@@ -72,7 +73,8 @@ service Query {
     };
   }
 
-  // ResolversByIRI queries resolvers with registered data by IRI.
+  // ResolversByIRI queries resolvers with registered data by the IRI of the
+  // data.
   rpc ResolversByIRI(QueryResolversByIRIRequest)
       returns (QueryResolversByIRIResponse) {
     option (google.api.http) = {
@@ -81,7 +83,8 @@ service Query {
     };
   }
 
-  // ResolversByHash queries resolvers with registered data by ContentHash.
+  // ResolversByHash queries resolvers with registered data by the ContentHash
+  // of the data.
   rpc ResolversByHash(QueryResolversByHashRequest)
       returns (QueryResolversByHashResponse) {
     option (google.api.http) = {
@@ -108,14 +111,14 @@ service Query {
   // ConvertIRIToHash converts an IRI to a ContentHash.
   rpc ConvertIRIToHash(ConvertIRIToHashRequest)
       returns (ConvertIRIToHashResponse) {
-    option (google.api.http).get = "/regen/data/v1/iri-to-hash/{iri}";
+    option (google.api.http).get = "/regen/data/v1/convert-iri-to-hash/{iri}";
   }
 
   // ConvertHashToIRI converts a ContentHash to an IRI.
   rpc ConvertHashToIRI(ConvertHashToIRIRequest)
       returns (ConvertHashToIRIResponse) {
     option (google.api.http) = {
-      post : "/regen/data/v1/hash-to-iri"
+      post : "/regen/data/v1/convert-hash-to-iri"
       body : "*"
     };
   }
@@ -131,7 +134,7 @@ message QueryAnchorByIRIRequest {
 // QueryAnchorByIRIResponse is the Query/AnchorByIRI response type.
 message QueryAnchorByIRIResponse {
 
-  // anchor is information about the anchored data.
+  // anchor is information about the data anchor.
   AnchorInfo anchor = 1;
 }
 
@@ -145,7 +148,7 @@ message QueryAnchorByHashRequest {
 // QueryAnchorByHashResponse is the Query/AnchorByHash response type.
 message QueryAnchorByHashResponse {
 
-  // anchor is information about the anchored data.
+  // anchor is information about the data anchor.
   AnchorInfo anchor = 1;
 }
 
@@ -314,7 +317,7 @@ message ConvertHashToIRIResponse {
   string iri = 1;
 }
 
-// AnchorInfo is the information for anchored data.
+// AnchorInfo is the information for a data anchor.
 message AnchorInfo {
 
   // iri is the IRI of the anchored data.

@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// AnchorByHash queries anchored data by ContentHash.
+// AnchorByHash queries a data anchor by the ContentHash of the data.
 func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorByHashRequest) (*data.QueryAnchorByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
