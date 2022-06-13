@@ -2,7 +2,6 @@ package basketclient
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -39,14 +38,6 @@ Parameters:
 		name: the name used to create a bank denom for this basket token.
 
 Flags:
-		exponent: the exponent used for converting credits to basket tokens and for bank
-			denom metadata. The exponent also limits the precision of credit amounts
-			when putting credits into a basket. An exponent of 6 will mean that 10^6 units
-			of a basket token will be issued for 1.0 credits and that this should be
-			displayed as one unit in user interfaces. It also means that the maximum
-			precision of credit amounts is 6 decimal places so that the need to round is
-			eliminated. The exponent must be >= the precision of the credit type at the
-			time the basket is created.
 		disable-auto-retire: disables the auto-retirement of credits upon taking credits
 			from the basket. The credits will be auto-retired if disable_auto_retire is
 			false unless the credits were previously put into the basket by the address
@@ -65,7 +56,6 @@ Flags:
 		Example: `
 		$regen tx ecocredit create-basket HEAED
 			--from regen...
-			--exponent=3
 			--credit-type-abbreviation=FOO
 			--allowed_classes="class1,class2"
 			--basket-fee=100regen
@@ -74,15 +64,6 @@ Flags:
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			exponentString, err := cmd.Flags().GetString(FlagExponent)
-			if err != nil {
-				return err
-			}
-			exponent, err := strconv.ParseUint(exponentString, 10, 32)
 			if err != nil {
 				return err
 			}
@@ -159,7 +140,6 @@ Flags:
 				Curator:           clientCtx.FromAddress.String(),
 				Name:              args[0],
 				Description:       denomDescription,
-				Exponent:          uint32(exponent),
 				DisableAutoRetire: disableAutoRetire,
 				CreditTypeAbbrev:  creditTypeName,
 				AllowedClasses:    allowedClasses,
@@ -178,7 +158,6 @@ Flags:
 	flags.AddTxFlagsToCmd(cmd)
 
 	// command flags
-	cmd.Flags().String(FlagExponent, "", "the exponent used for converting credits to basket tokens")
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
 	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type abbreviation (e.g. \"C\")")
 	cmd.Flags().StringSlice(FlagAllowedClasses, []string{}, "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
@@ -188,7 +167,6 @@ Flags:
 	cmd.Flags().String(FlagDenomDescription, "", "the description to be used in the bank denom metadata.")
 
 	// required flags
-	cmd.MarkFlagRequired(FlagExponent)
 	cmd.MarkFlagRequired(FlagCreditTypeAbbreviation)
 	cmd.MarkFlagRequired(FlagAllowedClasses)
 

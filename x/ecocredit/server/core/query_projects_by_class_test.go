@@ -5,13 +5,14 @@ import (
 
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func TestQuery_ProjectsByReferenceId(t *testing.T) {
+func TestQuery_ProjectsByClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
@@ -26,27 +27,19 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "metadata",
-		ReferenceId:  "VCS-001",
 	}
 
-	// insert two projects with "VCS-001" reference id
+	// insert two projects under "C01" credit class
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:          "C01-002",
-		ClassKey:    classKey,
-		ReferenceId: "VCS-001",
-	}))
-
-	// insert one project without a reference id
-	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       "C01-003",
+		Id:       "C01-002",
 		ClassKey: classKey,
 	}))
 
-	// query projects by "VCS-001" reference id
-	res, err := s.k.ProjectsByReferenceId(s.ctx, &core.QueryProjectsByReferenceIdRequest{
-		ReferenceId: "VCS-001",
-		Pagination:  &query.PageRequest{Limit: 1, CountTotal: true},
+	// query projects by "C01" credit class
+	res, err := s.k.ProjectsByClass(s.ctx, &core.QueryProjectsByClassRequest{
+		ClassId:    "C01",
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
 
@@ -57,11 +50,10 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 	// check project properties
 	assert.Equal(t, project.Id, res.Projects[0].Id)
 	assert.Equal(t, "C01", res.Projects[0].ClassId)
-	assert.Equal(t, "VCS-001", res.Projects[0].ReferenceId)
 	assert.Equal(t, project.Jurisdiction, res.Projects[0].Jurisdiction)
+	assert.Equal(t, project.Metadata, res.Projects[0].Metadata)
 
-	// query projects by unknown reference id
-	res, err = s.k.ProjectsByReferenceId(s.ctx, &core.QueryProjectsByReferenceIdRequest{ReferenceId: "RR2"})
-	assert.Equal(t, len(res.Projects), 0)
-	assert.NilError(t, err)
+	// query projects by unknown credit class
+	_, err = s.k.ProjectsByClass(s.ctx, &core.QueryProjectsByClassRequest{ClassId: "F01"})
+	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
