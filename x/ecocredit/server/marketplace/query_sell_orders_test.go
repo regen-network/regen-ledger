@@ -30,12 +30,11 @@ var (
 
 func TestSellOrders(t *testing.T) {
 	t.Parallel()
-	s := setupBase(t)
+	s := setupBase(t, 2)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
-	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	order1 := insertSellOrder(t, s, s.addr, 1)
-	order2 := insertSellOrder(t, s, addr2, 1)
+	order1 := insertSellOrder(t, s, s.addrs[0], 1)
+	order2 := insertSellOrder(t, s, s.addrs[1], 1)
 
 	res, err := s.k.SellOrders(s.ctx, &marketplace.QuerySellOrdersRequest{
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
@@ -52,7 +51,7 @@ func TestSellOrders(t *testing.T) {
 
 func TestSellOrdersByDenom(t *testing.T) {
 	t.Parallel()
-	s := setupBase(t)
+	s := setupBase(t, 2)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make another batch
@@ -65,8 +64,8 @@ func TestSellOrdersByDenom(t *testing.T) {
 		EndDate:    nil,
 	}))
 
-	order1 := insertSellOrder(t, s, s.addr, 1)
-	order2 := insertSellOrder(t, s, s.addr, 2)
+	order1 := insertSellOrder(t, s, s.addrs[0], 1)
+	order2 := insertSellOrder(t, s, s.addrs[0], 2)
 
 	// query the first denom
 	res, err := s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
@@ -98,17 +97,17 @@ func TestSellOrdersByDenom(t *testing.T) {
 
 func TestSellOrdersBySeller(t *testing.T) {
 	t.Parallel()
-	s := setupBase(t)
+	s := setupBase(t, 2)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 	_, _, noOrdersAddr := testdata.KeyTestPubAddr()
 
-	order1 := insertSellOrder(t, s, s.addr, 1)
+	order1 := insertSellOrder(t, s, s.addrs[0], 1)
 	order2 := insertSellOrder(t, s, otherAddr, 1)
 
 	res, err := s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
-		Seller:     s.addr.String(),
+		Seller:     s.addrs[0].String(),
 		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)

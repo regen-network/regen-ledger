@@ -15,7 +15,7 @@ import (
 
 func TestSell_Prune(t *testing.T) {
 	t.Parallel()
-	s := setupBase(t)
+	s := setupBase(t, 1)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	blockTime, err := types.ParseDate("block time", "2020-01-01")
@@ -26,7 +26,7 @@ func TestSell_Prune(t *testing.T) {
 	assert.NilError(t, err)
 
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Seller: s.addr.String(),
+		Seller: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},
@@ -39,14 +39,14 @@ func TestSell_Prune(t *testing.T) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// get the balance before pruning
-	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 
 	// prune the orders
 	err = s.k.PruneSellOrders(s.ctx)
 	assert.NilError(t, err)
 
-	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 
 	// we can reuse this function and pass the negated amount to get our desired behavior.
@@ -66,7 +66,7 @@ func TestSell_Prune(t *testing.T) {
 // TestPrune_NilExpiration tests that sell orders with nil expirations are not deleted when PruneOrders is called.
 func TestPrune_NilExpiration(t *testing.T) {
 	t.Parallel()
-	s := setupBase(t)
+	s := setupBase(t, 1)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	blockTime, err := types.ParseDate("block time", "2020-01-01")
@@ -75,7 +75,7 @@ func TestPrune_NilExpiration(t *testing.T) {
 	assert.NilError(t, err)
 
 	msg := &marketplace.MsgSell{
-		Seller: s.addr.String(),
+		Seller: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5", AskPrice: &ask, Expiration: nil},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
