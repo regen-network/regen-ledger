@@ -15,7 +15,7 @@ func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorBy
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
 	}
 
-	_, err := data.ParseIRI(request.Iri)
+	contentHash, err := data.ParseIRI(request.Iri)
 	if err != nil {
 		return nil, err
 	}
@@ -26,11 +26,6 @@ func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorBy
 	}
 
 	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataId.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	contentHash, err := data.ParseIRI(request.Iri)
 	if err != nil {
 		return nil, err
 	}

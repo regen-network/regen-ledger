@@ -19,6 +19,7 @@ func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAt
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
 	}
 
+	// check for valid IRI
 	_, err := data.ParseIRI(request.Iri)
 	if err != nil {
 		return nil, err

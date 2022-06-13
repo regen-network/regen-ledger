@@ -18,6 +18,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
 	}
 
+	// check for valid IRI
 	_, err := data.ParseIRI(request.Iri)
 	if err != nil {
 		return nil, err
