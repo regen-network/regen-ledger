@@ -74,28 +74,27 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	// TODO(Tyler): not sure if this is the best way to match a batch.
 	// TODO(Tyler): multiple batches could have same start/end in a project..
 	project := projects[0]
-	// idx will be of form C01-001-20210107-" catching all batches with that project Id and start date.
-	batchIdx := fmt.Sprintf("%s-%s-", project.Id, req.StartDate.Format("20060102"))
+	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
+	batchIdx := fmt.Sprintf("%s-%s-%s-", project.Id, req.StartDate.Format("20060102"), req.EndDate.Format("20060102"))
 	bIt, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(batchIdx))
 	if err != nil {
 		return nil, err
 	}
 	defer bIt.Close()
 
-	targetEndDate := *req.EndDate
 	batches := make([]*api.Batch, 0)
 	for bIt.Next() {
 		batch, err := bIt.Value()
 		if err != nil {
 			return nil, err
 		}
-		if batch.EndDate.AsTime().Equal(targetEndDate) {
+		if batch.Metadata == req.BatchMetadata {
 			batches = append(batches, batch)
 		}
 	}
 
 	amtBatches := len(batches)
-	if amtBatches > 1 {
+	if amtBatches > 1 { // change this to pick by issuance date
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d batches issued "+
 			"with start %v and end %v dates in project %s", bridgeServiceAddr.String(), len(batches), req.StartDate, req.EndDate, project.Id)
 	} else if amtBatches == 1 {

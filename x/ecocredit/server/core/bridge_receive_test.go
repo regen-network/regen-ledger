@@ -162,6 +162,8 @@ func TestBridgeReceive_TooManyBatches(t *testing.T) {
 	s := setupBase(t)
 	project, batch := setupBridgeTest(s, refId)
 
+	// create 2 batches with "hi" as metadata.
+	batchMetadata := "hi"
 	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
@@ -169,11 +171,25 @@ func TestBridgeReceive_TooManyBatches(t *testing.T) {
 		Issuance: []*core.BatchIssuance{
 			{Recipient: s.addr.String(), TradableAmount: "10"},
 		},
-		Metadata:  "hi",
+		Metadata:  batchMetadata,
 		StartDate: &start,
 		EndDate:   &end,
 		Open:      true,
 		OriginTx:  &core.OriginTx{Id: "0x12345", Source: "polygon:0x12345"},
+		Note:      "hi",
+	})
+	assert.NilError(t, err)
+	_, err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.addr.String(),
+		ProjectId: project.Id,
+		Issuance: []*core.BatchIssuance{
+			{Recipient: s.addr.String(), TradableAmount: "10"},
+		},
+		Metadata:  batchMetadata,
+		StartDate: &start,
+		EndDate:   &end,
+		Open:      true,
+		OriginTx:  &core.OriginTx{Id: "0x123456", Source: "polygon:0x12345"},
 		Note:      "hi",
 	})
 	assert.NilError(t, err)
@@ -187,7 +203,7 @@ func TestBridgeReceive_TooManyBatches(t *testing.T) {
 		StartDate:           &start,
 		EndDate:             &end,
 		ProjectMetadata:     "hi",
-		BatchMetadata:       "hi",
+		BatchMetadata:       batchMetadata,
 		Note:                "bridged",
 		ClassId:             "C01",
 	}
