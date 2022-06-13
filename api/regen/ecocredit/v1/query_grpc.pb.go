@@ -31,16 +31,16 @@ type QueryClient interface {
 	Class(ctx context.Context, in *QueryClassRequest, opts ...grpc.CallOption) (*QueryClassResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
 	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
-	// Projects queries for all projects within a class with pagination.
-	Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error)
+	// ProjectsByClass queries for all projects within a class with pagination.
+	ProjectsByClass(ctx context.Context, in *QueryProjectsByClassRequest, opts ...grpc.CallOption) (*QueryProjectsByClassResponse, error)
 	// ProjectsByReferenceId queries for all projects by reference-id with
 	// pagination.
 	ProjectsByReferenceId(ctx context.Context, in *QueryProjectsByReferenceIdRequest, opts ...grpc.CallOption) (*QueryProjectsByReferenceIdResponse, error)
-	// Project queries for information on a project.
-	Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error)
 	// ProjectsByAdmin queries for all projects by admin with
 	// pagination.
 	ProjectsByAdmin(ctx context.Context, in *QueryProjectsByAdminRequest, opts ...grpc.CallOption) (*QueryProjectsByAdminResponse, error)
+	// Project queries for information on a project.
+	Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error)
 	// Batches queries for all batches with pagination.
 	Batches(ctx context.Context, in *QueryBatchesRequest, opts ...grpc.CallOption) (*QueryBatchesResponse, error)
 	// BatchesByIssuer queries all batches issued from a given issuer address.
@@ -110,9 +110,9 @@ func (c *queryClient) ClassIssuers(ctx context.Context, in *QueryClassIssuersReq
 	return out, nil
 }
 
-func (c *queryClient) Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error) {
-	out := new(QueryProjectsResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Projects", in, out, opts...)
+func (c *queryClient) ProjectsByClass(ctx context.Context, in *QueryProjectsByClassRequest, opts ...grpc.CallOption) (*QueryProjectsByClassResponse, error) {
+	out := new(QueryProjectsByClassResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectsByClass", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,18 +128,18 @@ func (c *queryClient) ProjectsByReferenceId(ctx context.Context, in *QueryProjec
 	return out, nil
 }
 
-func (c *queryClient) Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error) {
-	out := new(QueryProjectResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Project", in, out, opts...)
+func (c *queryClient) ProjectsByAdmin(ctx context.Context, in *QueryProjectsByAdminRequest, opts ...grpc.CallOption) (*QueryProjectsByAdminResponse, error) {
+	out := new(QueryProjectsByAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectsByAdmin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ProjectsByAdmin(ctx context.Context, in *QueryProjectsByAdminRequest, opts ...grpc.CallOption) (*QueryProjectsByAdminResponse, error) {
-	out := new(QueryProjectsByAdminResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectsByAdmin", in, out, opts...)
+func (c *queryClient) Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error) {
+	out := new(QueryProjectResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Project", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -249,16 +249,16 @@ type QueryServer interface {
 	Class(context.Context, *QueryClassRequest) (*QueryClassResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
 	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
-	// Projects queries for all projects within a class with pagination.
-	Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error)
+	// ProjectsByClass queries for all projects within a class with pagination.
+	ProjectsByClass(context.Context, *QueryProjectsByClassRequest) (*QueryProjectsByClassResponse, error)
 	// ProjectsByReferenceId queries for all projects by reference-id with
 	// pagination.
 	ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error)
-	// Project queries for information on a project.
-	Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error)
 	// ProjectsByAdmin queries for all projects by admin with
 	// pagination.
 	ProjectsByAdmin(context.Context, *QueryProjectsByAdminRequest) (*QueryProjectsByAdminResponse, error)
+	// Project queries for information on a project.
+	Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error)
 	// Batches queries for all batches with pagination.
 	Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error)
 	// BatchesByIssuer queries all batches issued from a given issuer address.
@@ -301,17 +301,17 @@ func (UnimplementedQueryServer) Class(context.Context, *QueryClassRequest) (*Que
 func (UnimplementedQueryServer) ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassIssuers not implemented")
 }
-func (UnimplementedQueryServer) Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Projects not implemented")
+func (UnimplementedQueryServer) ProjectsByClass(context.Context, *QueryProjectsByClassRequest) (*QueryProjectsByClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByClass not implemented")
 }
 func (UnimplementedQueryServer) ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByReferenceId not implemented")
 }
-func (UnimplementedQueryServer) Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Project not implemented")
-}
 func (UnimplementedQueryServer) ProjectsByAdmin(context.Context, *QueryProjectsByAdminRequest) (*QueryProjectsByAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByAdmin not implemented")
+}
+func (UnimplementedQueryServer) Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Project not implemented")
 }
 func (UnimplementedQueryServer) Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Batches not implemented")
@@ -428,20 +428,20 @@ func _Query_ClassIssuers_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Projects_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryProjectsRequest)
+func _Query_ProjectsByClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectsByClassRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Projects(ctx, in)
+		return srv.(QueryServer).ProjectsByClass(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Query/Projects",
+		FullMethod: "/regen.ecocredit.v1.Query/ProjectsByClass",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Projects(ctx, req.(*QueryProjectsRequest))
+		return srv.(QueryServer).ProjectsByClass(ctx, req.(*QueryProjectsByClassRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -464,24 +464,6 @@ func _Query_ProjectsByReferenceId_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Project_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryProjectRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Project(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Query/Project",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Project(ctx, req.(*QueryProjectRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_ProjectsByAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryProjectsByAdminRequest)
 	if err := dec(in); err != nil {
@@ -496,6 +478,24 @@ func _Query_ProjectsByAdmin_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).ProjectsByAdmin(ctx, req.(*QueryProjectsByAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Project_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Project(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/Project",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Project(ctx, req.(*QueryProjectRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -704,20 +704,20 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ClassIssuers_Handler,
 		},
 		{
-			MethodName: "Projects",
-			Handler:    _Query_Projects_Handler,
+			MethodName: "ProjectsByClass",
+			Handler:    _Query_ProjectsByClass_Handler,
 		},
 		{
 			MethodName: "ProjectsByReferenceId",
 			Handler:    _Query_ProjectsByReferenceId_Handler,
 		},
 		{
-			MethodName: "Project",
-			Handler:    _Query_Project_Handler,
-		},
-		{
 			MethodName: "ProjectsByAdmin",
 			Handler:    _Query_ProjectsByAdmin_Handler,
+		},
+		{
+			MethodName: "Project",
+			Handler:    _Query_Project_Handler,
 		},
 		{
 			MethodName: "Batches",

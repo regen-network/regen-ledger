@@ -37,7 +37,7 @@ func TestQuery_Projects(t *testing.T) {
 	}))
 
 	// query projects by "C01" credit class
-	res, err := s.k.Projects(s.ctx, &core.QueryProjectsRequest{
+	res, err := s.k.ProjectsByClass(s.ctx, &core.QueryProjectsByClassRequest{
 		ClassId:    "C01",
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
@@ -49,6 +49,6 @@ func TestQuery_Projects(t *testing.T) {
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	// query projects by unknown credit class
-	_, err = s.k.Projects(s.ctx, &core.QueryProjectsRequest{ClassId: "F01"})
+	_, err = s.k.ProjectsByClass(s.ctx, &core.QueryProjectsByClassRequest{ClassId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
