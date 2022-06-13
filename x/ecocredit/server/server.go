@@ -38,7 +38,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
@@ -68,7 +68,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	s.stateStore = coreStore
 	s.basketStore = basketStore
 	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr)
-	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, distKeeper, s.paramSpace, basketAddr)
+	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr)
 	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
 
 	return s
@@ -95,9 +95,8 @@ func RegisterServices(
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
-	distKeeper ecocredit.DistributionKeeper,
 ) Keeper {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper)
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper)
 
 	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
 	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)

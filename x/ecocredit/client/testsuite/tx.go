@@ -1682,7 +1682,11 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 		return append(args, flags...)
 	}
 
-	out, err := cli.ExecTestCLICmd(clientCtx, cmd, makeCreateProjectArgs(msg, append(s.commonTxFlags(), makeFlagFrom(msg.Issuer))...))
+	referenceIdFlag := fmt.Sprintf("--reference-id=%s", msg.ReferenceId)
+	flags := append(s.commonTxFlags(), makeFlagFrom(msg.Issuer), referenceIdFlag)
+	args := makeCreateProjectArgs(msg, flags...)
+
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	s.Require().NoError(err)
 	var res sdk.TxResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
@@ -1788,13 +1792,16 @@ func (s *IntegrationTestSuite) createClassProject(clientCtx client.Context, addr
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
+
 	projectId, err = s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       addr,
 		ClassId:      classId,
 		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
+		ReferenceId:  s.projectReferenceId,
 	})
 	s.Require().NoError(err)
+
 	return classId, projectId
 }
 
