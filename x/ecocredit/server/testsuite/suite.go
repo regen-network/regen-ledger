@@ -595,7 +595,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Cancel(s.ctx, &core.MsgCancel{
 				Owner: tc.owner,
-				Credits: []*core.MsgCancel_CancelCredits{
+				Credits: []*core.Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toCancel,

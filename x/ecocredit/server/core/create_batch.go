@@ -23,7 +23,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	projectInfo, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}
 
 	classInfo, err := k.stateStore.ClassTable().Get(ctx, projectInfo.ClassKey)
@@ -88,8 +88,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		recipient, _ := sdk.AccAddressFromBech32(issuance.Recipient)
 
 		// get the current batch balance of the recipient account
-		// Note: Get because batch balance may or may not already exist
-		// depending on the length of issuance and if recipient is the same
+		// Note: Issuance could be for an account with no prior balance,
+		// so we must catch the not found case and apply a zero value balance.
 		balance, err := k.stateStore.BatchBalanceTable().Get(ctx, recipient, batchKey)
 		if err != nil {
 			if !ormerrors.IsNotFound(err) {
@@ -111,12 +111,11 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		}
 
 		// add tradable amount and retired amount to existing batch balance
-		newTradableBalance, err := tradableBalance.Add(tradableAmount)
+		tradableBalance, err = tradableBalance.Add(tradableAmount)
 		if err != nil {
 			return nil, err
 		}
-
-		newRetiredBalance, err := retiredBalance.Add(retiredAmount)
+		retiredBalance, err = retiredBalance.Add(retiredAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -127,8 +126,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		if err = k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
 			BatchKey:       batchKey,
 			Address:        recipient,
-			TradableAmount: newTradableBalance.String(),
-			RetiredAmount:  newRetiredBalance.String(),
+			TradableAmount: tradableBalance.String(),
+			RetiredAmount:  retiredBalance.String(),
 			EscrowedAmount: balance.EscrowedAmount,
 		}); err != nil {
 			return nil, err

@@ -322,23 +322,11 @@ message MsgCancel {
   string owner = 1;
 
   // credits are the credits being cancelled.
-  repeated CancelCredits credits = 2;
+  repeated Credits credits = 2;
 
   // reason is any arbitrary string that specifies the reason for cancelling
   // credits.
   string reason = 3;
-
-  // CancelCredits specifies a batch and the number of credits being cancelled.
-  message CancelCredits {
-
-    // batch_denom is the unique identifier of the credit batch.
-    string batch_denom = 1;
-
-    // amount is the number of credits being cancelled.
-    // Decimal values are acceptable within the precision returned by
-    // Query/Precision.
-    string amount = 2;
-  }
 }
 
 // MsgCancelResponse is the Msg/Cancel response type.
@@ -444,19 +432,7 @@ message MsgBridge {
   string owner = 4;
 
   // credits are the credits being cancelled.
-  repeated CancelCredits credits = 5;
-
-  // CancelCredits specifies a batch and the number of credits being cancelled.
-  message CancelCredits {
-
-    // batch_denom is the unique identifier of the credit batch.
-    string batch_denom = 1;
-
-    // amount is the number of credits being cancelled.
-    // Decimal values are acceptable within the precision returned by
-    // Query/Precision.
-    string amount = 2;
-  }
+  repeated Credits credits = 5;
 }
 
 // MsgBridgeResponse is the Msg/MsgBridge response type.
