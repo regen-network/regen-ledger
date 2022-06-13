@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -20,7 +21,7 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 
 	addr, err := sdk.AccAddressFromBech32(request.Attestor)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrap("attestor")
+		return nil, sdkerrors.ErrInvalidAddress.Wrapf("attestor: %s", err)
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
@@ -49,15 +50,10 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 			return nil, err
 		}
 
-		dataAnchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataAttestor.Id)
-		if err != nil {
-			return nil, err
-		}
-
 		attestations = append(attestations, &data.AttestationInfo{
 			Iri:       dataId.Iri,
 			Attestor:  request.Attestor,
-			Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
+			Timestamp: types.ProtobufToGogoTimestamp(dataAttestor.Timestamp),
 		})
 	}
 

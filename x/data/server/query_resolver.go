@@ -5,18 +5,19 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 // Resolver queries for a resolver by ID.
 func (s serverImpl) Resolver(ctx context.Context, request *data.QueryResolverRequest) (*data.QueryResolverResponse, error) {
 	if request.Id == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("id cannot be empty")
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("ID cannot be empty")
 	}
 
 	resolver, err := s.stateStore.ResolverTable().Get(ctx, request.Id)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id: %d", request.Id)
+		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with ID: %d", request.Id)
 	}
 
 	manager := sdk.AccAddress(resolver.Manager).String()

@@ -48,7 +48,7 @@ func QueryAnchorByIRICmd() *cobra.Command {
 		Short: "Query anchored data by IRI",
 		Long:  "Query anchored data by IRI.",
 		Example: formatExample(`
-  regen q data anchor-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
+  regen q data anchor-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -158,8 +158,8 @@ func QueryAttestationsByIRICmd() *cobra.Command {
 		Short: "Query attestations to data by IRI",
 		Long:  "Query attestations to data by IRI with optional pagination flags.",
 		Example: formatExample(`
-  regen q data attestations-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
-  regen q data attestations-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf --limit 10 --count-total
+  regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
+  regen q data attestations-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -274,8 +274,8 @@ func QueryResolversByIRICmd() *cobra.Command {
 		Short: "Query resolvers with registered data by IRI",
 		Long:  "Query resolvers with registered data by IRI with optional pagination flags.",
 		Example: formatExample(`
-  regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
-  regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf --limit 10 --count-total
+  regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
+  regen q data resolvers-by-iri regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf --limit 10 --count-total
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -393,7 +393,7 @@ func ConvertIRIToHashCmd() *cobra.Command {
 		Short: "Convert an IRI to a ContentHash",
 		Long:  "Convert an IRI to a ContentHash.",
 		Example: formatExample(`
-  regen q data convert-iri-to-hash regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
+  regen q data convert-iri-to-hash regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

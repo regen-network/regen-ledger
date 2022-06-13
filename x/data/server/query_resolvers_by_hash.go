@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -24,7 +25,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("data entry with iri: %s", iri)
+		return nil, sdkerrors.ErrNotFound.Wrapf("data record with content hash")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

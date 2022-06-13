@@ -26,7 +26,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("data entry with iri: %s", iri)
+		return nil, sdkerrors.ErrNotFound.Wrap("data record with content hash")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

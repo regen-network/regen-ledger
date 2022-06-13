@@ -11,7 +11,7 @@ import (
 // ConvertIRIToHash converts an IRI to a ContentHash.
 func (s serverImpl) ConvertIRIToHash(_ context.Context, request *data.ConvertIRIToHashRequest) (*data.ConvertIRIToHashResponse, error) {
 	if len(request.Iri) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("iri cannot be empty")
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
 	}
 
 	hash, err := data.ParseIRI(request.Iri)

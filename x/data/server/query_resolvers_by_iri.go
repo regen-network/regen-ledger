@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -14,12 +15,17 @@ import (
 // ResolversByIRI queries resolvers with registered data by IRI.
 func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResolversByIRIRequest) (*data.QueryResolversByIRIResponse, error) {
 	if len(request.Iri) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("iri cannot be empty")
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
+	}
+
+	_, err := data.ParseIRI(request.Iri)
+	if err != nil {
+		return nil, err
 	}
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("data entry with iri: %s", request.Iri)
+		return nil, sdkerrors.ErrNotFound.Wrap("data record with IRI")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

@@ -22,7 +22,7 @@ func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorB
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("data entry with iri: %s", iri)
+		return nil, sdkerrors.ErrNotFound.Wrap("data record with content hash")
 	}
 
 	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataId.Id)

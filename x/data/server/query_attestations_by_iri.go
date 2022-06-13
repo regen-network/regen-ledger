@@ -16,12 +16,17 @@ import (
 // AttestationsByIRI queries attestations to data by IRI.
 func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAttestationsByIRIRequest) (*data.QueryAttestationsByIRIResponse, error) {
 	if len(request.Iri) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("iri cannot be empty")
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
+	}
+
+	_, err := data.ParseIRI(request.Iri)
+	if err != nil {
+		return nil, err
 	}
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("data entry with iri: %s", request.Iri)
+		return nil, sdkerrors.ErrNotFound.Wrap("data record with IRI")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

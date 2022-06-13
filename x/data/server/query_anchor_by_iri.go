@@ -12,12 +12,17 @@ import (
 // AnchorByIRI queries anchored data by IRI.
 func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorByIRIRequest) (*data.QueryAnchorByIRIResponse, error) {
 	if len(request.Iri) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("iri cannot be empty")
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
+	}
+
+	_, err := data.ParseIRI(request.Iri)
+	if err != nil {
+		return nil, err
 	}
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("data entry with iri: %s", request.Iri)
+		return nil, sdkerrors.ErrNotFound.Wrapf("data record with IRI")
 	}
 
 	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataId.Id)
