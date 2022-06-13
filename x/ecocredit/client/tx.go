@@ -280,7 +280,7 @@ Parameters:
                                 "start_date":       "1990-01-01",
                                 "end_date":         "1995-10-31",
                                 "project_jurisdiction": "AB-CDE FG1 345",
-								issuer: "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+                                "issuer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
                               }
                               `,
 		Args: cobra.ExactArgs(1),
