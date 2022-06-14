@@ -448,43 +448,55 @@ message MsgBridgeReceive {
   // service_address is the account address of the service bridging the credits.
   string service_address = 1;
 
-  // recipient is the recipient of the bridged credits.
-  string recipient = 2;
+  Batch batch = 2;
 
-  // amount is the amount of credits being bridged.
-  string amount = 3;
+  Project project = 3;
 
-  // A reference to a transaction or an event referencing the transaction
-  // which caused the transfer from another chain or registry.
-  // If not set (null), it means that the batch originate in Regen Ledger
-  // (doesn't come from external registry).
-  OriginTx origin_tx = 4;
+  // Batch defines the batch information for the bridged credit.
+  // This info will be used in either batch creation, or batch minting.
+  message Batch {
 
-  // project_ref_id is the reference id of the project.
-  string project_ref_id = 5;
+    // recipient is the recipient of the bridged credits.
+    string recipient = 1;
 
-  // project_jurisdiction is the project jurisdiction.
-  string project_jurisdiction = 6;
+    // amount is the amount of credits being bridged.
+    string amount = 2;
 
-  // start_date is the beginning of the period during which this credit batch
-  // was quantified and verified.
-  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+    // origin_tx is a reference to a transaction which caused the transfer from
+    // another chain or registry. If not set (null), it means that the batch
+    // originate in Regen Ledger (doesn't come from external registry).
+    OriginTx origin_tx = 3;
 
-  // end_date is the end of the period during which this credit batch was
-  // quantified and verified.
-  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+    // start_date is the beginning of the period during which this credit batch
+    // was quantified and verified.
+    google.protobuf.Timestamp start_date = 4 [ (gogoproto.stdtime) = true ];
 
-  // project_metadata is the metadata for the project.
-  string project_metadata = 9;
+    // end_date is the end of the period during which this credit batch was
+    // quantified and verified.
+    google.protobuf.Timestamp end_date = 5 [ (gogoproto.stdtime) = true ];
 
-  // batch_metadata is the metadata for the batch.
-  string batch_metadata = 10;
+    // metadata is the metadata for the batch.
+    string metadata = 6;
 
-  // note is an arbitrary note to include in the origin tx.
-  string note = 11;
+    // note is an arbitrary note to include in the origin tx.
+    string note = 7;
+  }
 
-  // class_id is the id of the class the credits being bridged belong to.
-  string class_id = 12;
+  // Project defines the project information for the bridged credits.
+  // This info is used to either identify a project, or create a new one.
+  message Project {
+    // reference_id is the reference id of the project.
+    string reference_id = 5;
+
+    // jurisdiction is the project jurisdiction.
+    string jurisdiction = 6;
+
+    // metadata is the metadata for the project.
+    string metadata = 9;
+
+    // class_id is the id of the class the credits being bridged belong to.
+    string class_id = 12;
+  }
 }
 
 // MsgBridgeReceiveResponse is the Msg/BridgeReceive response type.

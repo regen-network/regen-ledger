@@ -11,7 +11,7 @@ import (
 )
 
 func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
-
+	t.Parallel()
 	validStart, validEnd := time.Now(), time.Date(2022, time.June, 25, 0, 0, 0, 0, time.Local)
 	validOriginTx := OriginTx{
 		Id:     "0x12345",
@@ -20,19 +20,32 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 	_, _, accAddr := testdata.KeyTestPubAddr()
 	addr := accAddr.String()
 
+	validBatch := MsgBridgeReceive_Batch{
+		Recipient: addr,
+		Amount:    "10.5",
+		OriginTx:  &validOriginTx,
+		StartDate: &validStart,
+		EndDate:   &validEnd,
+		Metadata:  "some metadata",
+		Note:      "some note",
+	}
+	validProject := MsgBridgeReceive_Project{
+		ReferenceId:  "VCS-001",
+		Jurisdiction: "US-KY",
+		Metadata:     "some metadata",
+		ClassId:      "C01",
+	}
 	validMsg := MsgBridgeReceive{
-		ServiceAddress:      addr,
-		Recipient:           addr,
-		Amount:              "10.5",
-		OriginTx:            &validOriginTx,
-		ProjectRefId:        "toucan",
-		ProjectJurisdiction: "US",
-		StartDate:           &validStart,
-		EndDate:             &validEnd,
-		ProjectMetadata:     "some metadata",
-		BatchMetadata:       "some metadata",
-		Note:                "some note",
-		ClassId:             "C01",
+		ServiceAddress: addr,
+		Batch:          &validBatch,
+		Project:        &validProject,
+	}
+
+	resetMsg := func() MsgBridgeReceive {
+		msg := validMsg
+		msg.Batch = &validBatch
+		msg.Project = &validProject
+		return msg
 	}
 
 	tests := []struct {
@@ -55,9 +68,17 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 			errMsg: sdkerrors.ErrInvalidAddress.Error(),
 		},
 		{
+			name: "invalid: null batch",
+			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
+				validMsg.Batch = nil
+				return validMsg
+			},
+			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("batch cannot be empty").Error(),
+		},
+		{
 			name: "invalid: recipient",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Recipient = "0xfoobar"
+				validMsg.Batch.Recipient = "0xfoobar"
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidAddress.Error(),
@@ -65,7 +86,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: decimal",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Amount = "-1"
+				validMsg.Batch.Amount = "-1"
 				return validMsg
 			},
 			errMsg: "expected a positive decimal",
@@ -73,7 +94,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: nil origin tx",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.OriginTx = nil
+				validMsg.Batch.OriginTx = nil
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("origin_tx is required").Error(),
@@ -81,15 +102,23 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: empty origin tx",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.OriginTx = &OriginTx{}
+				validMsg.Batch.OriginTx = &OriginTx{}
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("invalid OriginTx: no id").Error(),
 		},
 		{
+			name: "invalid: null project",
+			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
+				validMsg.Project = nil
+				return validMsg
+			},
+			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("project cannot be empty").Error(),
+		},
+		{
 			name: "invalid: no project reference id",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.ProjectRefId = ""
+				validMsg.Project.ReferenceId = ""
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("project_ref_id is required").Error(),
@@ -97,7 +126,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: jurisdiction",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.ProjectJurisdiction = ""
+				validMsg.Project.Jurisdiction = ""
 				return validMsg
 			},
 			errMsg: "invalid jurisdiction",
@@ -105,7 +134,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: no start date",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.StartDate = nil
+				validMsg.Batch.StartDate = nil
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("start_date is required").Error(),
@@ -113,7 +142,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: no end date",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.EndDate = nil
+				validMsg.Batch.EndDate = nil
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("end_date is required").Error(),
@@ -123,8 +152,8 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
 				before := time.Date(2020, 0, 0, 0, 0, 0, 0, time.Local)
 				after := time.Date(2021, 0, 0, 0, 0, 0, 0, time.Local)
-				validMsg.StartDate = &after
-				validMsg.EndDate = &before
+				validMsg.Batch.StartDate = &after
+				validMsg.Batch.EndDate = &before
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("start_date must be a time before end_date").Error(),
@@ -132,7 +161,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: project metadata length",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.ProjectMetadata = strings.Repeat("X", MaxMetadataLength+1)
+				validMsg.Project.Metadata = strings.Repeat("X", MaxMetadataLength+1)
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("project_metadata length (%d) exceeds max metadata length: %d", MaxMetadataLength+1, MaxMetadataLength).Error(),
@@ -140,7 +169,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: batch metadata length",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.BatchMetadata = strings.Repeat("X", MaxMetadataLength+1)
+				validMsg.Batch.Metadata = strings.Repeat("X", MaxMetadataLength+1)
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("batch_metadata length (%d) exceeds max metadata length: %d", MaxMetadataLength+1, MaxMetadataLength).Error(),
@@ -148,7 +177,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: note length",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Note = strings.Repeat("X", MaxMetadataLength+1)
+				validMsg.Batch.Note = strings.Repeat("X", MaxMetadataLength+1)
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", MaxMetadataLength+1, MaxMetadataLength).Error(),
@@ -156,7 +185,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: class Id",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.ClassId = "Foobar12345"
+				validMsg.Project.ClassId = "Foobar12345"
 				return validMsg
 			},
 			errMsg: "class ID didn't match the format",
@@ -164,7 +193,10 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			msg := tt.getMsg(validMsg)
+			t.Parallel()
+			// reset the valid message, cleaning the pointer values
+			vMsg := resetMsg()
+			msg := tt.getMsg(vMsg)
 			err := msg.ValidateBasic()
 
 			if len(tt.errMsg) == 0 {

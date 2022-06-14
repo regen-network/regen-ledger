@@ -27,43 +27,55 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.ServiceAddress); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap("address")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Recipient); err != nil {
+
+	// batch validation
+	if m.Batch == nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("batch cannot be empty")
+	}
+	batch := m.Batch
+	if _, err := sdk.AccAddressFromBech32(batch.Recipient); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap("recipient")
 	}
-	if _, err := math.NewPositiveDecFromString(m.Amount); err != nil {
+	if _, err := math.NewPositiveDecFromString(batch.Amount); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
 	}
-	if m.OriginTx == nil {
+	if batch.OriginTx == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx is required")
 	}
-	if err := m.OriginTx.Validate(); err != nil {
+	if err := batch.OriginTx.Validate(); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	if len(m.ProjectRefId) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("project_ref_id is required")
-	}
-	if err := ValidateJurisdiction(m.ProjectJurisdiction); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-	if m.StartDate == nil {
+	if batch.StartDate == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("start_date is required")
 	}
-	if m.EndDate == nil {
+	if batch.EndDate == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("end_date is required")
 	}
-	if m.StartDate.After(*m.EndDate) {
+	if batch.StartDate.After(*batch.EndDate) {
 		return sdkerrors.ErrInvalidRequest.Wrap("start_date must be a time before end_date")
 	}
-	if len(m.ProjectMetadata) > MaxMetadataLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("project_metadata length (%d) exceeds max metadata length: %d", len(m.ProjectMetadata), MaxMetadataLength)
+	if len(batch.Metadata) > MaxMetadataLength {
+		return sdkerrors.ErrInvalidRequest.Wrapf("batch metadata length (%d) exceeds max metadata length: %d", len(batch.Metadata), MaxMetadataLength)
 	}
-	if len(m.BatchMetadata) > MaxMetadataLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("batch_metadata length (%d) exceeds max metadata length: %d", len(m.BatchMetadata), MaxMetadataLength)
+	if len(batch.Note) > MaxMetadataLength { // do we need to do this?
+		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(batch.Note), MaxMetadataLength)
 	}
-	if len(m.Note) > MaxMetadataLength { // do we need to do this?
-		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(m.Note), MaxMetadataLength)
+
+	// project validation
+	if m.Project == nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("project cannot be empty")
 	}
-	if err := ValidateClassId(m.ClassId); err != nil {
+	project := m.Project
+	if len(project.ReferenceId) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("reference_id is required")
+	}
+	if err := ValidateJurisdiction(project.Jurisdiction); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	if len(project.Metadata) > MaxMetadataLength {
+		return sdkerrors.ErrInvalidRequest.Wrapf("project_metadata length (%d) exceeds max metadata length: %d", len(project.Metadata), MaxMetadataLength)
+	}
+	if err := ValidateClassId(project.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	return nil

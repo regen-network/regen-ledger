@@ -19,7 +19,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return nil, err
 	}
 
-	project, err := k.stateStore.ProjectTable().GetByAdminReferenceId(ctx, bridgeServiceAddr, req.ProjectRefId)
+	project, err := k.stateStore.ProjectTable().GetByAdminReferenceId(ctx, bridgeServiceAddr, req.Project.ReferenceId)
 	if err != nil {
 		if !ormerrors.IsNotFound(err) {
 			return nil, err
@@ -30,10 +30,10 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
 			Issuer:       req.ServiceAddress,
-			ClassId:      req.ClassId,
-			Metadata:     req.ProjectMetadata,
-			Jurisdiction: req.ProjectJurisdiction,
-			ReferenceId:  req.ProjectRefId,
+			ClassId:      req.Project.ClassId,
+			Metadata:     req.Project.Metadata,
+			Jurisdiction: req.Project.Jurisdiction,
+			ReferenceId:  req.Project.ReferenceId,
 		})
 		if err != nil {
 			return nil, err
@@ -42,14 +42,14 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			Issuer:    req.ServiceAddress,
 			ProjectId: projectRes.ProjectId,
 			Issuance: []*core.BatchIssuance{
-				{Recipient: req.Recipient, TradableAmount: req.Amount},
+				{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
 			},
-			Metadata:  req.BatchMetadata,
-			StartDate: req.StartDate,
-			EndDate:   req.EndDate,
+			Metadata:  req.Batch.Metadata,
+			StartDate: req.Batch.StartDate,
+			EndDate:   req.Batch.EndDate,
 			Open:      true,
-			OriginTx:  req.OriginTx,
-			Note:      req.Note,
+			OriginTx:  req.Batch.OriginTx,
+			Note:      req.Batch.Note,
 		})
 		if err != nil {
 			return nil, err
@@ -60,7 +60,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
 	// any batches in that iterator that have matching metadata, are added to the slice.
 	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
-	batchIdx := fmt.Sprintf("%s-%s-%s-", project.Id, req.StartDate.Format("20060102"), req.EndDate.Format("20060102"))
+	batchIdx := fmt.Sprintf("%s-%s-%s-", project.Id, req.Batch.StartDate.Format("20060102"), req.Batch.EndDate.Format("20060102"))
 	bIt, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(batchIdx))
 	if err != nil {
 		return nil, err
@@ -74,9 +74,9 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			return nil, err
 		}
 		// the timestamp stored in the batch is more granular than the date in the denom representation, so we match here.
-		if batch.StartDate.AsTime().Equal(*req.StartDate) &&
-			batch.EndDate.AsTime().Equal(*req.EndDate) &&
-			batch.Metadata == req.BatchMetadata {
+		if batch.StartDate.AsTime().Equal(*req.Batch.StartDate) &&
+			batch.EndDate.AsTime().Equal(*req.Batch.EndDate) &&
+			batch.Metadata == req.Batch.Metadata {
 			batches = append(batches, batch)
 		}
 	}
@@ -85,7 +85,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	amtBatches := len(batches)
 	if amtBatches > 1 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d batches issued "+
-			"with start %v and end %v dates in project %s", bridgeServiceAddr.String(), len(batches), req.StartDate, req.EndDate, project.Id)
+			"with start %v and end %v dates in project %s", bridgeServiceAddr.String(), len(batches), req.Batch.StartDate, req.Batch.EndDate, project.Id)
 	} else if amtBatches == 1 {
 		batch := batches[0]
 		// otherwise, we can simply mint into the batch
@@ -93,10 +93,10 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			Issuer:     req.ServiceAddress,
 			BatchDenom: batch.Denom,
 			Issuance: []*core.BatchIssuance{
-				{Recipient: req.Recipient, TradableAmount: req.Amount},
+				{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
 			},
-			OriginTx: req.OriginTx,
-			Note:     req.Note,
+			OriginTx: req.Batch.OriginTx,
+			Note:     req.Batch.Note,
 		})
 		return &core.MsgBridgeReceiveResponse{BatchDenom: batch.Denom, ProjectId: project.Id}, nil
 	}
@@ -106,14 +106,14 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		Issuer:    req.ServiceAddress,
 		ProjectId: project.Id,
 		Issuance: []*core.BatchIssuance{
-			{Recipient: req.Recipient, TradableAmount: req.Amount},
+			{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
 		},
-		Metadata:  req.BatchMetadata,
-		StartDate: req.StartDate,
-		EndDate:   req.EndDate,
+		Metadata:  req.Batch.Metadata,
+		StartDate: req.Batch.StartDate,
+		EndDate:   req.Batch.EndDate,
 		Open:      true,
-		OriginTx:  req.OriginTx,
-		Note:      req.Note,
+		OriginTx:  req.Batch.OriginTx,
+		Note:      req.Batch.Note,
 	})
 	if err != nil {
 		return nil, err
