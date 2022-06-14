@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -17,7 +18,7 @@ func (k Keeper) Batch(ctx context.Context, request *core.QueryBatchRequest) (*co
 
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, request.BatchDenom)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", request.BatchDenom, err.Error())
 	}
 
 	issuer := sdk.AccAddress(batch.Issuer)

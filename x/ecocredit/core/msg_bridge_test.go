@@ -3,8 +3,9 @@ package core
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
+
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgBridge(t *testing.T) {
@@ -21,7 +22,7 @@ func TestMsgBridge(t *testing.T) {
 		"valid msg": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -35,7 +36,7 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg without owner": {
 			src: MsgBridge{
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -50,7 +51,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid msg with wrong owner address": {
 			src: MsgBridge{
 				Owner: "wrong owner",
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -68,7 +69,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						Amount: "10",
 					},
@@ -79,7 +80,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid msg without Credits.Amount": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 					},
@@ -90,7 +91,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "abc",
@@ -102,7 +103,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid msg without bridge target": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -116,7 +117,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid msg without bridge contract": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -130,7 +131,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid msg without bridge recipient address": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -144,7 +145,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid bridge recipient address": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -159,7 +160,7 @@ func TestMsgBridge(t *testing.T) {
 		"invalid bridge target": {
 			src: MsgBridge{
 				Owner: addr1,
-				Credits: []*MsgBridge_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
