@@ -20,7 +20,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
-	adminAddress, err := sdk.AccAddressFromBech32(req.Issuer)
+	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
 	}

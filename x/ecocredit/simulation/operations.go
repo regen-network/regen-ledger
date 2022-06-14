@@ -423,21 +423,21 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			return op, nil, err
 		}
 
-		issuer := issuers[r.Intn(len(issuers))]
-		issuerAddr, err := sdk.AccAddressFromBech32(issuer)
+		admin := issuers[r.Intn(len(issuers))]
+		adminAddr, err := sdk.AccAddressFromBech32(admin)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateProject, err.Error()), nil, err
 		}
 
-		issuerAcc, found := simtypes.FindAccount(accs, issuerAddr)
+		adminAcc, found := simtypes.FindAccount(accs, adminAddr)
 		if !found {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateProject, "not a simulation account"), nil, nil
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, issuerAddr)
+		spendable := bk.SpendableCoins(sdkCtx, adminAddr)
 
 		msg := &core.MsgCreateProject{
-			Issuer:       issuer,
+			Admin:        admin,
 			ClassId:      class.Id,
 			Metadata:     simtypes.RandStringOfLength(r, 100),
 			Jurisdiction: "AB-CDE FG1 345",
@@ -450,7 +450,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      issuerAcc,
+			SimAccount:      adminAcc,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -701,7 +701,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		msg := &core.MsgRetire{
 			Owner: account.Address.String(),
-			Credits: []*core.MsgRetire_RetireCredits{
+			Credits: []*core.Credits{
 				{
 					BatchDenom: batch.Denom,
 					Amount:     randSub.String(),
@@ -870,9 +870,9 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 		}
 
 		msg := &core.MsgUpdateClassMetadata{
-			Admin:    admin.String(),
-			ClassId:  class.Id,
-			Metadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256)),
+			Admin:       admin.String(),
+			ClassId:     class.Id,
+			NewMetadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256)),
 		}
 
 		txCtx := simulation.OperationInput{

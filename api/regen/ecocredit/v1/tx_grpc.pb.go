@@ -22,48 +22,75 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateClass creates a new credit class with an approved list of issuers and
-	// optional metadata.
+	// CreateClass creates a new credit class under the given credit type with an
+	// approved list of issuers and optional metadata. The fee denom must be one
+	// of the denoms listed in Params.credit_class_fee and greater than or equal
+	// to the fee amount but only the minimum amount is charged. The creator of
+	// the credit class becomes the admin of the credit class upon creation.
 	CreateClass(ctx context.Context, in *MsgCreateClass, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
-	// CreateProject creates a new project within a credit class.
+	// CreateProject creates a new project under the given credit class with a
+	// jurisdiction, optional metadata, and an optional reference ID. The creator
+	// of the project must be an approved credit class issuer for the given credit
+	// class and the creator becomes the admin of the project upon creation.
 	CreateProject(ctx context.Context, in *MsgCreateProject, opts ...grpc.CallOption) (*MsgCreateProjectResponse, error)
-	// CreateBatch creates a new batch of credits for an existing project.
-	// This will create a new batch denom with a fixed supply. Issued credits can
-	// be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits under the given project with a
+	// start and end date representing the monitoring period, a list of credits to
+	// be issued with each issuance specifying a recipient, the amount of tradable
+	// and retired credits, and the retirement jurisdiction (if credits are to be
+	// retired upon receipt), and optional metadata. The credit batch creator must
+	// be listed as an approved issuer within the credit class of the project that
+	// the credits are being issued under.
+	//
+	// The default behavior is for a new credit batch to be "sealed" as opposed to
+	// being "open". When a credit batch is "open", new credits can be dynamically
+	// minted to the credit batch following the creation of the credit batch. This
+	// "open" option should only be set to true when bridging credits from another
+	// chain or registry as a result of a bridge operation and is not intended for
+	// native credit issuance.
 	CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
-	// MintBatchCredits issues new token in a given batch.
-	// The issuer must be the account who created (or delegated using x/authz),
-	// the batch.
-	// The request will fail if the batch is not open (is sealed).
-	// NOTE: this method is only for bridge purpose. It must not be used
-	// for issuing native credits on Regen. More specifically, we
-	// enable minting more credits in an existing batch, when the batch
-	// represents a vintage originally registered in another chain.
+	// MintBatchCredits dynamically mints credits to an "open" credit batch. This
+	// feature is only meant to be used when bridging credits from another chain
+	// or registry and is not intended for native credit issuance. When bridging
+	// credits from the same vintage (or monitoring period) as an existing credit
+	// batch, the credits can be dynamically minted to the existing credit batch
+	// if the credit batch is "open".
 	MintBatchCredits(ctx context.Context, in *MsgMintBatchCredits, opts ...grpc.CallOption) (*MsgMintBatchCreditsResponse, error)
-	// MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
-	// can't issue more credits. Once batch is sealed it can't be toggled any
-	// more. Only batch creator can seal a batch.
+	// MsgSealBatch seals an "open" credit batch. Once a credit batch is sealed
+	// (i.e. once "open" is set to false), credits can no longer be dynamically
+	// minted to the credit batch. A sealed credit batch cannot be unsealed and
+	// only the credit batch issuer can seal a credit batch.
 	SealBatch(ctx context.Context, in *MsgSealBatch, opts ...grpc.CallOption) (*MsgSealBatchResponse, error)
-	// Send sends tradable credits from one account to another account. Sent
-	// credits can either be tradable or retired on receipt.
+	// Send sends a specified amount of tradable credits from the credit owner's
+	// account to another account. Sent credits can either remain tradable or be
+	// retired upon receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
+	// Retire retires a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and adding it to their retired
+	// balance. Retiring credits is permanent and implies the credits are being
+	// consumed as a offset.
 	Retire(ctx context.Context, in *MsgRetire, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// Cancel removes a number of credits from the holder's account and also
-	// deducts them from the tradable supply, effectively cancelling their
-	// issuance on Regen Ledger
+	// Cancel cancels a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and removing the amount from the
+	// credit batch's tradable supply. Cancelling credits is permanent and implies
+	// the credits have been moved to another chain or registry.
 	Cancel(ctx context.Context, in *MsgCancel, opts ...grpc.CallOption) (*MsgCancelResponse, error)
-	// UpdateClassAdmin updates the credit class admin
+	// UpdateClassAdmin updates the credit class admin. Only the admin of the
+	// credit class can update the credit class.
 	UpdateClassAdmin(ctx context.Context, in *MsgUpdateClassAdmin, opts ...grpc.CallOption) (*MsgUpdateClassAdminResponse, error)
-	// UpdateClassIssuers updates the credit class issuer list
+	// UpdateClassIssuers updates the credit class issuer list. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
-	// UpdateClassMetadata updates the credit class metadata
+	// UpdateClassMetadata updates the credit class metadata. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
-	// UpdateProjectAdmin updates the project admin address
+	// UpdateProjectAdmin updates the project admin address. Only the admin of the
+	// project can update the project.
 	UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdminResponse, error)
-	// UpdateProjectMetadata updates the project metadata
+	// UpdateProjectMetadata updates the project metadata. Only the admin of the
+	// project can update the project.
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
-	// Bridge cancels credits and emits a bridge event.
+	// Bridge cancels a specified amount of tradable credits and emits a special
+	// bridge event handled by an external bridge service.
 	Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
 }
 
@@ -205,48 +232,75 @@ func (c *msgClient) Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.Call
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// CreateClass creates a new credit class with an approved list of issuers and
-	// optional metadata.
+	// CreateClass creates a new credit class under the given credit type with an
+	// approved list of issuers and optional metadata. The fee denom must be one
+	// of the denoms listed in Params.credit_class_fee and greater than or equal
+	// to the fee amount but only the minimum amount is charged. The creator of
+	// the credit class becomes the admin of the credit class upon creation.
 	CreateClass(context.Context, *MsgCreateClass) (*MsgCreateClassResponse, error)
-	// CreateProject creates a new project within a credit class.
+	// CreateProject creates a new project under the given credit class with a
+	// jurisdiction, optional metadata, and an optional reference ID. The creator
+	// of the project must be an approved credit class issuer for the given credit
+	// class and the creator becomes the admin of the project upon creation.
 	CreateProject(context.Context, *MsgCreateProject) (*MsgCreateProjectResponse, error)
-	// CreateBatch creates a new batch of credits for an existing project.
-	// This will create a new batch denom with a fixed supply. Issued credits can
-	// be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits under the given project with a
+	// start and end date representing the monitoring period, a list of credits to
+	// be issued with each issuance specifying a recipient, the amount of tradable
+	// and retired credits, and the retirement jurisdiction (if credits are to be
+	// retired upon receipt), and optional metadata. The credit batch creator must
+	// be listed as an approved issuer within the credit class of the project that
+	// the credits are being issued under.
+	//
+	// The default behavior is for a new credit batch to be "sealed" as opposed to
+	// being "open". When a credit batch is "open", new credits can be dynamically
+	// minted to the credit batch following the creation of the credit batch. This
+	// "open" option should only be set to true when bridging credits from another
+	// chain or registry as a result of a bridge operation and is not intended for
+	// native credit issuance.
 	CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error)
-	// MintBatchCredits issues new token in a given batch.
-	// The issuer must be the account who created (or delegated using x/authz),
-	// the batch.
-	// The request will fail if the batch is not open (is sealed).
-	// NOTE: this method is only for bridge purpose. It must not be used
-	// for issuing native credits on Regen. More specifically, we
-	// enable minting more credits in an existing batch, when the batch
-	// represents a vintage originally registered in another chain.
+	// MintBatchCredits dynamically mints credits to an "open" credit batch. This
+	// feature is only meant to be used when bridging credits from another chain
+	// or registry and is not intended for native credit issuance. When bridging
+	// credits from the same vintage (or monitoring period) as an existing credit
+	// batch, the credits can be dynamically minted to the existing credit batch
+	// if the credit batch is "open".
 	MintBatchCredits(context.Context, *MsgMintBatchCredits) (*MsgMintBatchCreditsResponse, error)
-	// MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
-	// can't issue more credits. Once batch is sealed it can't be toggled any
-	// more. Only batch creator can seal a batch.
+	// MsgSealBatch seals an "open" credit batch. Once a credit batch is sealed
+	// (i.e. once "open" is set to false), credits can no longer be dynamically
+	// minted to the credit batch. A sealed credit batch cannot be unsealed and
+	// only the credit batch issuer can seal a credit batch.
 	SealBatch(context.Context, *MsgSealBatch) (*MsgSealBatchResponse, error)
-	// Send sends tradable credits from one account to another account. Sent
-	// credits can either be tradable or retired on receipt.
+	// Send sends a specified amount of tradable credits from the credit owner's
+	// account to another account. Sent credits can either remain tradable or be
+	// retired upon receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
+	// Retire retires a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and adding it to their retired
+	// balance. Retiring credits is permanent and implies the credits are being
+	// consumed as a offset.
 	Retire(context.Context, *MsgRetire) (*MsgRetireResponse, error)
-	// Cancel removes a number of credits from the holder's account and also
-	// deducts them from the tradable supply, effectively cancelling their
-	// issuance on Regen Ledger
+	// Cancel cancels a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and removing the amount from the
+	// credit batch's tradable supply. Cancelling credits is permanent and implies
+	// the credits have been moved to another chain or registry.
 	Cancel(context.Context, *MsgCancel) (*MsgCancelResponse, error)
-	// UpdateClassAdmin updates the credit class admin
+	// UpdateClassAdmin updates the credit class admin. Only the admin of the
+	// credit class can update the credit class.
 	UpdateClassAdmin(context.Context, *MsgUpdateClassAdmin) (*MsgUpdateClassAdminResponse, error)
-	// UpdateClassIssuers updates the credit class issuer list
+	// UpdateClassIssuers updates the credit class issuer list. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
-	// UpdateClassMetadata updates the credit class metadata
+	// UpdateClassMetadata updates the credit class metadata. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
-	// UpdateProjectAdmin updates the project admin address
+	// UpdateProjectAdmin updates the project admin address. Only the admin of the
+	// project can update the project.
 	UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdminResponse, error)
-	// UpdateProjectMetadata updates the project metadata
+	// UpdateProjectMetadata updates the project metadata. Only the admin of the
+	// project can update the project.
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
-	// Bridge cancels credits and emits a bridge event.
+	// Bridge cancels a specified amount of tradable credits and emits a special
+	// bridge event handled by an external bridge service.
 	Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

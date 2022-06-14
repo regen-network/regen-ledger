@@ -352,7 +352,7 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	end, err := types.ParseDate("end date", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       admin.String(),
+		Admin:        admin.String(),
 		ClassId:      classId,
 		Metadata:     "",
 		Jurisdiction: "US-NY",
@@ -415,7 +415,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// create project
 	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		ClassId:      classId,
-		Issuer:       issuer1,
+		Admin:        issuer1,
 		Metadata:     "metadata",
 		Jurisdiction: "AQ",
 	})
@@ -734,7 +734,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &core.MsgRetire{
 				Owner: addr1,
-				Credits: []*core.MsgRetire_RetireCredits{
+				Credits: []*core.Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toRetire,

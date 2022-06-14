@@ -139,7 +139,7 @@ func (s *createBatchSuite) AliceHasCreatedACreditClassWithCreditType(a string) {
 
 func (s *createBatchSuite) AliceHasCreatedAProjectWithCreditClassId(a string) {
 	_, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.alice.String(),
+		Admin:        s.alice.String(),
 		ClassId:      a,
 		Jurisdiction: "US",
 	})

@@ -364,7 +364,7 @@ Parameters:
                        eg: 'AA-BB 12345'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*core.MsgRetire_RetireCredits{}
+			var credits []*core.Credits
 			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}
@@ -448,9 +448,9 @@ regen tx ecocredit update-class-metadata C01 "some metadata"
 			}
 
 			msg := core.MsgUpdateClassMetadata{
-				Admin:    clientCtx.GetFromAddress().String(),
-				ClassId:  classID,
-				Metadata: args[1],
+				Admin:       clientCtx.GetFromAddress().String(),
+				ClassId:     classID,
+				NewMetadata: args[1],
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -607,7 +607,7 @@ regen tx ecocredit create-project C01 "AA-BB 12345" metadata --reference-id R01
 			}
 
 			msg := core.MsgCreateProject{
-				Issuer:       clientCtx.GetFromAddress().String(),
+				Admin:        clientCtx.GetFromAddress().String(),
 				ClassId:      classID,
 				Jurisdiction: projectJurisdiction,
 				Metadata:     args[2],
