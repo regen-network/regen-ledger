@@ -503,7 +503,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// note replicate if you do not need to test core IBC or light clients.
 	app.ScopedIBCMockKeeper = scopedIBCMockKeeper
 
-	app.AddPatch(4033600, func(ctx sdk.Context) error {
+	app.AddPatch(4081850, func(ctx sdk.Context) error {
 		app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 		return nil
 	})
