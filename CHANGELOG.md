@@ -28,11 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
-#### Fixed
+#### Changed
 
 *
 
-#### Changed
+#### Fixed
 
 *
 
@@ -48,13 +48,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#720](https://github.com/regen-network/regen-ledger/pull/720) Add begin and end blocker support to module server
 * 
 
-#### Fixed
-
-* [#685](https://github.com/regen-network/regen-ledger/pull/685) Update swagger-gen to include ibc-go swagger docs.
-
 #### Changed
 
 * 
+
+#### Fixed
+
+* [#685](https://github.com/regen-network/regen-ledger/pull/685) Update swagger-gen to include ibc-go swagger docs.
 
 ### x/data
 
@@ -65,24 +65,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#887](https://github.com/regen-network/regen-ledger/pull/887) Add data module to stable app configuration
 * [#887](https://github.com/regen-network/regen-ledger/pull/887) Add `ByHash` and IRI/ContentHash conversion queries
 * [#953](https://github.com/regen-network/regen-ledger/pull/953) Add legacy Amino signing support
+* [#1051](https://github.com/regen-network/regen-ledger/pull/1051) Add `EventDefineResolver` and `EventRegisterResolver`
 
-#### Fixes
-
-* [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption to consume for each iteration
-* [#946](https://github.com/regen-network/regen-ledger/pull/946) Remove use of `oneof` to support legacy Amino signing
-
-#### Changes
+#### Changed
 
 * [#848](https://github.com/regen-network/regen-ledger/pull/848) Update data protobuf package version to `v1`
 * [#927](https://github.com/regen-network/regen-ledger/pull/927) Update `Msg/Sign` to `Msg/Attest`
 * [#956](https://github.com/regen-network/regen-ledger/pull/956) Update data module to use `cosmos-sdk/orm`
 * [#970](https://github.com/regen-network/regen-ledger/pull/970) Update data module to use `cosmos-sdk/orm`
 * [#969](https://github.com/regen-network/regen-ledger/pull/971) Update `Msg/Attest` to single attestor and multiple pieces of data
+* [#1014](https://github.com/regen-network/regen-ledger/pull/1014) Update api to consistently use `ContentHash` 
+
+#### Fixed
+
+* [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption to consume for each iteration
+* [#946](https://github.com/regen-network/regen-ledger/pull/946) Remove use of `oneof` to support legacy Amino signing
 
 ### x/ecocredit
 
 #### Added
 
+* [#823](https://github.com/regen-network/regen-ledger/pull/823) Add `Msg/CreateProject`
+* [#840](https://github.com/regen-network/regen-ledger/pull/840) Add `Query/Projects`
+* [#841](https://github.com/regen-network/regen-ledger/pull/841) Add `Query/ProjectInfo`
 * [#870](https://github.com/regen-network/regen-ledger/pull/870) Add basket `curator` to `Basket`
 * [#873](https://github.com/regen-network/regen-ledger/pull/847) Add marketplace `Msg/Sell`
 * [#874](https://github.com/regen-network/regen-ledger/pull/874) Add basket `years_in_the_past` data criteria
@@ -98,52 +103,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#918](https://github.com/regen-network/regen-ledger/pull/918) Add marketplace `Query/BuyOrder`
 * [#919](https://github.com/regen-network/regen-ledger/pull/919) Add marketplace `Query/BuyOrders`
 * [#936](https://github.com/regen-network/regen-ledger/pull/936) Add `issuance_date` to `Batch`
-* [#937](https://github.com/regen-network/regen-ledger/pull/937) Add `Msg/MintBatchCredits`
-* [#937](https://github.com/regen-network/regen-ledger/pull/937) Add `Msg/SealBatch`
+* [#937](https://github.com/regen-network/regen-ledger/pull/937) Add `Msg/MintBatchCredits` api
+* [#937](https://github.com/regen-network/regen-ledger/pull/937) Add `Msg/SealBatch` api
 * [#942](https://github.com/regen-network/regen-ledger/pull/942) Add `Query/Balances`
 * [#899](https://github.com/regen-network/regen-ledger/pull/899) Add marketplace `Msg/BuyDirect`
 * [#954](https://github.com/regen-network/regen-ledger/pull/954) Add `Query/ClassesByAdmin`
 * [#955](https://github.com/regen-network/regen-ledger/pull/955) Add `Query/ClassesByIssuer`
+* [#957](https://github.com/regen-network/regen-ledger/pull/957) Add state migrations for `v4.0`
 * [#969](https://github.com/regen-network/regen-ledger/pull/969) Add marketplace `AllowAskDenom`
-* [#991](https://github.com/regen-network/regen-ledger/pull/991) Add `Msg/MintBatchCredits` and `Msg/SealBatch` interfaces
-* 
-
-#### Fixed
-
-* [#875](https://github.com/regen-network/regen-ledger/pull/875) Fix basket `put` command flags and error messages
-* [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption to consume for each iteration
+* [#991](https://github.com/regen-network/regen-ledger/pull/991) Add `Msg/MintBatchCredits` message validation
+* [#991](https://github.com/regen-network/regen-ledger/pull/991) Add `Msg/SealBatch` message validation
+* [#1009](https://github.com/regen-network/regen-ledger/pull/1009) Add `Msg/UpdateProjectAdmin` message validation
+* [#1009](https://github.com/regen-network/regen-ledger/pull/1009) Add `Msg/UpdateProjectMetadata` message validation
+* [#1010](https://github.com/regen-network/regen-ledger/pull/1010) Add `Msg/UpdateProjectAdmin` server implementation
+* [#1010](https://github.com/regen-network/regen-ledger/pull/1010) Add `Msg/UpdateProjectMetadata` server implementation
+* [#1015](https://github.com/regen-network/regen-ledger/pull/1015) Add `Msg/CreditTypeProposal`
+* [#1037](https://github.com/regen-network/regen-ledger/pull/1037) Add `EventUpdateProjectAdmin`
+* [#1037](https://github.com/regen-network/regen-ledger/pull/1037) Add `EventUpdateProjectMetadata`
+* [#1008](https://github.com/regen-network/regen-ledger/pull/1008) Add `buy-direct` and `buy-direct-batch` CLI commands
+* [#1033](https://github.com/regen-network/regen-ledger/pull/1033) Add `class-issuers` CLI command
+* [#1059](https://github.com/regen-network/regen-ledger/pull/1059) Add `Msg/MintBatchCredits` server implementation
+* [#1060](https://github.com/regen-network/regen-ledger/pull/1060) Add `Msg/SealBatch` server implementation
 
 #### Changed
 
-* [#804](https://github.com/regen-network/regen-ledger/pull/804) Upgrade ecocredit module to use `cosmos-sdk/orm`
-* [#816](https://github.com/regen-network/regen-ledger/pull/823) Update `CreateClass` message to use `cosmos-sdk/orm`
-* [#823](https://github.com/regen-network/regen-ledger/pull/823) Update `CreateProject` message to use `cosmos-sdk/orm`
-* [#824](https://github.com/regen-network/regen-ledger/pull/823) Update `CreateBatch` message to use `cosmos-sdk/orm`
-* [#825](https://github.com/regen-network/regen-ledger/pull/825) Update `Send` message to use `cosmos-sdk/orm`
-* [#826](https://github.com/regen-network/regen-ledger/pull/826) Update `Retire` message to use `cosmos-sdk/orm`
-* [#828](https://github.com/regen-network/regen-ledger/pull/828) Update `Cancel` message to use `cosmos-sdk/orm`
-* [#830](https://github.com/regen-network/regen-ledger/pull/830) Update `UpdateClassAdmin`, `UpdateClassIssuers`, and `UpdateClassMetadata` messages to use `cosmos-sdk/orm`
-* [#837](https://github.com/regen-network/regen-ledger/pull/837) Update `Classes` query to use `cosmos-sdk/orm`
-* [#838](https://github.com/regen-network/regen-ledger/pull/838) Update `ClassInfo` query to use `cosmos-sdk/orm`
-* [#839](https://github.com/regen-network/regen-ledger/pull/839) Update `ClassIssuers` query to use `cosmos-sdk/orm`
-* [#840](https://github.com/regen-network/regen-ledger/pull/840) Update `Projects` query to use `cosmos-sdk/orm`
-* [#841](https://github.com/regen-network/regen-ledger/pull/841) Update `ProjectInfo` query to use `cosmos-sdk/orm`
-* [#842](https://github.com/regen-network/regen-ledger/pull/842) Update `Batches` query to use `cosmos-sdk/orm`
-* [#843](https://github.com/regen-network/regen-ledger/pull/843) Update `BatchInfo` query to use `cosmos-sdk/orm`
-* [#844](https://github.com/regen-network/regen-ledger/pull/844) Update `Balance` query to use `cosmos-sdk/orm`
-* [#845](https://github.com/regen-network/regen-ledger/pull/845) Update `Supply` query to use `cosmos-sdk/orm`
-* [#846](https://github.com/regen-network/regen-ledger/pull/846) Update `Params` query to use `cosmos-sdk/orm`
-* [#847](https://github.com/regen-network/regen-ledger/pull/847) Update `CreditTypes` query to use `cosmos-sdk/orm`
-* [#848](https://github.com/regen-network/regen-ledger/pull/848) Update ecocredit protobuf package versions to `v1`
-* [#863](https://github.com/regen-network/regen-ledger/pull/863) Update `metadata` fields to type string
-* [#901](https://github.com/regen-network/regen-ledger/pull/901) Update CLI commands to use new module wiring
-* [#913](https://github.com/regen-network/regen-ledger/pull/913) Update ecocredit module wiring to use submodules
-* [#935](https://github.com/regen-network/regen-ledger/pull/935) Update ecocredit module wiring to use core submodule
-* [#1020](https://github.com/regen-network/regen-ledger/pull/1020) Usage of Location (ProjectLocation, RetirementLocation) changed to Jurisdiction
+* [#804](https://github.com/regen-network/regen-ledger/pull/804) Upgrade module to use `cosmos-sdk/orm`
+* [#816](https://github.com/regen-network/regen-ledger/pull/823) Update `Msg/CreateClass` to use `cosmos-sdk/orm`
+* [#824](https://github.com/regen-network/regen-ledger/pull/823) Update `Msg/CreateBatch` to use `cosmos-sdk/orm`
+* [#825](https://github.com/regen-network/regen-ledger/pull/825) Update `Msg/Send` to use `cosmos-sdk/orm`
+* [#826](https://github.com/regen-network/regen-ledger/pull/826) Update `Msg/Retire` to use `cosmos-sdk/orm`
+* [#828](https://github.com/regen-network/regen-ledger/pull/828) Update `Msg/Cancel` to use `cosmos-sdk/orm`
+* [#830](https://github.com/regen-network/regen-ledger/pull/830) Update `Msg/UpdateClassAdmin` to use `cosmos-sdk/orm`
+* [#830](https://github.com/regen-network/regen-ledger/pull/830) Update `Msg/UpdateClassIssuers` to use `cosmos-sdk/orm`
+* [#830](https://github.com/regen-network/regen-ledger/pull/830) Update `Msg/UpdateClassMetadata` to use `cosmos-sdk/orm`
+* [#837](https://github.com/regen-network/regen-ledger/pull/837) Update `Query/Classes` to use `cosmos-sdk/orm`
+* [#838](https://github.com/regen-network/regen-ledger/pull/838) Update `Query/ClassInfo` to use `cosmos-sdk/orm`
+* [#839](https://github.com/regen-network/regen-ledger/pull/839) Update `Query/ClassIssuers` to use `cosmos-sdk/orm`
+* [#842](https://github.com/regen-network/regen-ledger/pull/842) Update `Query/Batches` to use `cosmos-sdk/orm`
+* [#843](https://github.com/regen-network/regen-ledger/pull/843) Update `Query/BatchInfo` to use `cosmos-sdk/orm`
+* [#844](https://github.com/regen-network/regen-ledger/pull/844) Update `Query/Balance` to use `cosmos-sdk/orm`
+* [#845](https://github.com/regen-network/regen-ledger/pull/845) Update `Query/Supply` to use `cosmos-sdk/orm`
+* [#846](https://github.com/regen-network/regen-ledger/pull/846) Update `Query/Params` to use `cosmos-sdk/orm`
+* [#847](https://github.com/regen-network/regen-ledger/pull/847) Update `Query/CreditTypes` to use `cosmos-sdk/orm`
+* [#848](https://github.com/regen-network/regen-ledger/pull/848) Update protobuf package versions to `v1`
+* [#863](https://github.com/regen-network/regen-ledger/pull/863) Update `metadata` fields from bytes to strings
+* [#901](https://github.com/regen-network/regen-ledger/pull/901) Update client commands to use `v1` api
+* [#913](https://github.com/regen-network/regen-ledger/pull/913) Update module wiring to use submodules
+* [#935](https://github.com/regen-network/regen-ledger/pull/935) Update module wiring to use core submodule
+* [#977](https://github.com/regen-network/regen-ledger/pull/977) Update genesis import/export to use `v1` api
+* [#1017](https://github.com/regen-network/regen-ledger/pull/1017) Update invariants to use `v1` api
+* [#1020](https://github.com/regen-network/regen-ledger/pull/1020) Update project and retirement `location` to `jurisdiction`
+* [#1021](https://github.com/regen-network/regen-ledger/pull/1021) Update `id` to `key` and `<object>_id` to `id`
+* [#1021](https://github.com/regen-network/regen-ledger/pull/1021) Update `credit_type` to `credit_type_abbrev`
+* [#1022](https://github.com/regen-network/regen-ledger/pull/1022) Update query responses to return human-readable values
+* [#1039](https://github.com/regen-network/regen-ledger/pull/1039) Update `BatchDenom` to `Denom`
+* [#1040](https://github.com/regen-network/regen-ledger/pull/1040) Update `ClassInfo` to `Class`
+* [#1040](https://github.com/regen-network/regen-ledger/pull/1040) Update `ProjectInfo` to `Project`
+* [#1040](https://github.com/regen-network/regen-ledger/pull/1040) Update `BatchInfo` to `Batch`
+* [#1043](https://github.com/regen-network/regen-ledger/pull/1043) Remove `credit_types` from `Params`
+* [#1052](https://github.com/regen-network/regen-ledger/pull/1052) Remove `project_` prefix from `Project` fields
+* [#1054](https://github.com/regen-network/regen-ledger/pull/1054) Update marketplace query responses to return human-readable values
+
+#### Fixed
+
+* [#875](https://github.com/regen-network/regen-ledger/pull/875) Fix `put-in-basket` flags and error messages
+* [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption for each iteration
 
 ### orm
 
-* Removed from the regen-ledger codebase. The last supported version of the `orm` module released within regen-ledger is [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1). The data module and ecocredit module are using [cosmos-sdk/orm@v1.0.0-alpha.11](https://github.com/cosmos/cosmos-sdk/tree/orm/v1.0.0-alpha.11/orm) and the alpha version of the group module is using [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1).
+* Removed from the regen-ledger codebase. The last supported version of the `orm` module released within regen-ledger is [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1). The data module and ecocredit module are using [cosmos-sdk/orm@v1.0.0-alpha.11](https://github.com/cosmos/cosmos-sdk/tree/orm/v1.0.0-alpha.11/orm) and the alpha version of the group module available in the experimental build is using [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1).
 
 ## [v3.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v3.0.0) - 2022-02-25
 
