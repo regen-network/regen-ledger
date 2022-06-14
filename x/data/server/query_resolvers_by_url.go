@@ -31,6 +31,7 @@ func (s serverImpl) ResolversByURL(ctx context.Context, request *data.QueryResol
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	res := &data.QueryResolversByURLResponse{}
 	for it.Next() {

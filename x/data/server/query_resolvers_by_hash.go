@@ -41,6 +41,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	res := &data.QueryResolversByHashResponse{}
 	for it.Next() {

@@ -42,6 +42,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	res := &data.QueryResolversByIRIResponse{}
 	for it.Next() {
