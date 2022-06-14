@@ -27,7 +27,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
 	classAdmin := sdk.AccAddress(classInfo.Admin)
@@ -58,7 +58,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 
 	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
 	admin := sdk.AccAddress(class.Admin)
@@ -117,7 +117,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
 	admin := sdk.AccAddress(classInfo.Admin)

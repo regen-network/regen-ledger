@@ -3,8 +3,9 @@ package core
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
+
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgBridge(t *testing.T) {

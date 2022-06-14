@@ -25,34 +25,40 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 		Id:           "C01-001",
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
-		Metadata:     "data",
-		ReferenceId:  "R1",
+		Metadata:     "metadata",
+		ReferenceId:  "VCS-001",
 	}
 
-	// insert two projects with "R1" reference id and one without reference id
+	// insert two projects with "VCS-001" reference id
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:          "C01-002",
 		ClassKey:    classKey,
-		ReferenceId: "R1",
+		ReferenceId: "VCS-001",
 	}))
+
+	// insert one project without a reference id
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:       "C01-003",
 		ClassKey: classKey,
 	}))
 
-	// query projects by "R1" reference id
+	// query projects by "VCS-001" reference id
 	res, err := s.k.ProjectsByReferenceId(s.ctx, &core.QueryProjectsByReferenceIdRequest{
-		ReferenceId: "R1",
+		ReferenceId: "VCS-001",
 		Pagination:  &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
+
+	// check pagination
 	assert.Equal(t, 1, len(res.Projects))
+	assert.Equal(t, uint64(2), res.Pagination.Total)
+
+	// check project properties
 	assert.Equal(t, project.Id, res.Projects[0].Id)
 	assert.Equal(t, "C01", res.Projects[0].ClassId)
-	assert.Equal(t, "R1", res.Projects[0].ReferenceId)
+	assert.Equal(t, "VCS-001", res.Projects[0].ReferenceId)
 	assert.Equal(t, project.Jurisdiction, res.Projects[0].Jurisdiction)
-	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	// query projects by unknown reference id
 	res, err = s.k.ProjectsByReferenceId(s.ctx, &core.QueryProjectsByReferenceIdRequest{ReferenceId: "RR2"})

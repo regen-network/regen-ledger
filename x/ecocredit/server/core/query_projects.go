@@ -5,26 +5,20 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// ProjectsByClass queries all projects from a given credit class.
-func (k Keeper) ProjectsByClass(ctx context.Context, request *core.QueryProjectsByClassRequest) (*core.QueryProjectsByClassResponse, error) {
+// Projects queries all projects.
+func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest) (*core.QueryProjectsResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	cInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
-	}
-
-	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
+	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectIdIndexKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +54,7 @@ func (k Keeper) ProjectsByClass(ctx context.Context, request *core.QueryProjects
 		return nil, err
 	}
 
-	return &core.QueryProjectsByClassResponse{
+	return &core.QueryProjectsResponse{
 		Projects:   projects,
 		Pagination: pr,
 	}, nil
