@@ -42,15 +42,9 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 			}
 		}
 
-		var minimumFee sdk.Coin
-
-		// find the minimum fee
-		for _, coin := range fee {
-			if coin.Denom == msg.Fee[0].Denom {
-				if minimumFee.IsNil() || coin.IsLT(minimumFee) {
-					minimumFee = coin
-				}
-			}
+		minimumFee := sdk.Coin{
+			Denom:  msg.Fee[0].Denom,
+			Amount: fee.AmountOf(msg.Fee[0].Denom),
 		}
 
 		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, minimumFee.Denom)
@@ -58,7 +52,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", minimumFee.Denom)
 		}
 
-		minimumFees := sdk.NewCoins(minimumFee)
+		minimumFees := sdk.Coins{minimumFee}
 
 		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, minimumFees)
 		if err != nil {
