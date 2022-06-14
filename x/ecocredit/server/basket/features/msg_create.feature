@@ -83,10 +83,10 @@ Feature: Msg/Create
 
     Background:
       Given a credit type
-      And a minimum basket fee "20regen"
       And alice has a token balance "20regen"
 
-    Scenario Outline: basket fee is greater than or equal to minimum basket fee
+    Scenario Outline: basket fee is greater than or equal to minimum basket fee (single fee)
+      Given a minimum basket fee "20regen"
       When alice attempts to create a basket with fee "<basket-fee>"
       Then expect no error
 
@@ -95,9 +95,25 @@ Feature: Msg/Create
         | greater than | 30regen    |
         | equal to     | 20regen    |
 
-    Scenario: basket fee is less than minimum basket fee
+    Scenario Outline: basket fee is greater than or equal to minimum basket fee (multiple fees)
+      Given minimum basket fees "20regen,20atom"
+      When alice attempts to create a basket with fee "<basket-fee>"
+      Then expect no error
+
+      Examples:
+        | description  | basket-fee |
+        | greater than | 30regen    |
+        | equal to     | 20regen    |
+
+    Scenario: basket fee is less than minimum basket fee (single fee)
+      Given a minimum basket fee "20regen"
       When alice attempts to create a basket with fee "10regen"
       Then expect the error "minimum fee 20regen, got 10regen: insufficient fee"
+
+    Scenario: basket fee is less than minimum basket fee (multiple fees)
+      Given minimum basket fees "20regen,20atom"
+      When alice attempts to create a basket with fee "10regen"
+      Then expect the error "minimum fee one of 20atom,20regen, got 10regen: insufficient fee"
 
   Rule: The user must have a balance greater than or equal to the basket fee amount
 
