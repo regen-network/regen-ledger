@@ -219,7 +219,7 @@ func (s *createSuite) createExpectCalls() {
 	var coins sdk.Coins
 
 	s.paramsKeeper.EXPECT().
-		Get(s.sdkCtx, core.KeyBasketCreationFee, &coins).
+		Get(s.sdkCtx, core.KeyBasketFee, &coins).
 		Do(func(ctx sdk.Context, key []byte, coins *sdk.Coins) {
 			*coins = s.minBasketFee
 		}).
