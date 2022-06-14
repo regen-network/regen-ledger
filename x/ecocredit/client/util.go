@@ -57,15 +57,15 @@ var (
 	reCredits   = regexp.MustCompile(fmt.Sprintf(`^(%s) (%s)$`, reCreditAmt, core.RegexBatchDenom))
 )
 
-func parseCancelCreditsList(creditsListStr string) ([]*core.MsgCancel_CancelCredits, error) {
+func parseCancelCreditsList(creditsListStr string) ([]*core.Credits, error) {
 	creditsList, err := parseCreditsList(creditsListStr)
 	if err != nil {
 		return nil, err
 	}
 
-	cancelCreditsList := make([]*core.MsgCancel_CancelCredits, len(creditsList))
+	cancelCreditsList := make([]*core.Credits, len(creditsList))
 	for i, credits := range creditsList {
-		cancelCreditsList[i] = &core.MsgCancel_CancelCredits{
+		cancelCreditsList[i] = &core.Credits{
 			BatchDenom: credits.batchDenom,
 			Amount:     credits.amount,
 		}

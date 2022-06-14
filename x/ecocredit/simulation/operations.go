@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -771,7 +772,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		msg := &core.MsgCancel{
 			Owner: admin,
-			Credits: []*core.MsgCancel_CancelCredits{
+			Credits: []*core.Credits{
 				{
 					BatchDenom: batch.Denom,
 					Amount:     balanceRes.Balance.TradableAmount,
@@ -1148,7 +1149,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			Recipient: "0x323b5d4c32345ced77393b3530b1eed0f346429d",
 			Contract:  "0x06012c8cf97bead5deae237070f9587f8e7a266d",
 			Owner:     owner,
-			Credits: []*core.MsgBridge_CancelCredits{
+			Credits: []*core.Credits{
 				{
 					BatchDenom: batch.Denom,
 					Amount:     fmt.Sprintf("%d", amount),
@@ -1213,7 +1214,7 @@ func getRandomBatchFromProject(ctx context.Context, r *rand.Rand, qryClient core
 		ProjectId: projectID,
 	})
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
+		if strings.Contains(err.Error(), ormerrors.NotFound.Error()) {
 			return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, fmt.Sprintf("no credit batches for %s project", projectID)), nil
 		}
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err

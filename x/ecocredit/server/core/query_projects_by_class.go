@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -20,7 +21,7 @@ func (k Keeper) ProjectsByClass(ctx context.Context, request *core.QueryProjects
 
 	cInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
 	}
 
 	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))

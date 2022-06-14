@@ -1,8 +1,6 @@
 package basketclient
 
 import (
-	"strings"
-
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -46,8 +44,10 @@ func QueryBasketsCmd() *cobra.Command {
 		Use:   "baskets",
 		Short: "Retrieves all baskets",
 		Long:  "Retrieves all baskets currently in state, with optional pagination",
-		Example: strings.TrimSpace(`regen q ecocredit baskets
-	regen q ecocredit baskets --pagination.offset 1 --pagination.limit 10`),
+		Example: `
+regen q ecocredit baskets
+regen q ecocredit baskets --offset 1 --limit 10
+		`,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -71,6 +71,7 @@ func QueryBasketsCmd() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "baskets")
 	return cmd
 }
 
@@ -79,10 +80,10 @@ func QueryBasketBalanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "basket-balance [basket-denom] [batch-denom]",
 		Short: "Retrieves the balance of a credit batch in the basket",
-		Long: strings.TrimSpace(`Retrieves the balance of a credit batch in the basket
-Example:
-		$regen q ecocredit basket-balance BASKET C01-20210101-20220101-001
-		`),
+		Long:  "Retrieves the balance of a credit batch in the basket",
+		Example: `
+regen q ecocredit basket-balance BASKET C01-20210101-20220101-001
+		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -113,12 +114,11 @@ func QueryBasketBalancesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "basket-balances [basket-denom]",
 		Short: "Retrieves the balance of each credit batch for the given basket denom",
-		Long: strings.TrimSpace(`Retrieves the balance of each credit batch for the given basket denom
-
-Examples:
-		$regen q ecocredit basket-balances BASKET1
-		$regen q ecocredit basket-balances BASKET1 --pagination.offset 1 --pagination.limit 10
-		`),
+		Long:  "Retrieves the balance of each credit batch for the given basket denom",
+		Example: `
+regen q ecocredit basket-balances BASKET1
+regen q ecocredit basket-balances BASKET1 --offset 1 --limit 10
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
