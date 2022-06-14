@@ -204,7 +204,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:       val.Address.String(),
+		Admin:        val.Address.String(),
 		ClassId:      classId,
 		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
@@ -1132,7 +1132,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
 		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
-		args = append(args, makeFlagFrom(msg.Issuer))
+		args = append(args, makeFlagFrom(msg.Admin))
 		return append(args, s.commonTxFlags()...)
 	}
 
@@ -1157,7 +1157,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx without project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:       val0.Address.String(),
+				Admin:        val0.Address.String(),
 				ClassId:      classId,
 				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
@@ -1168,7 +1168,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx with project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:       val0.Address.String(),
+				Admin:        val0.Address.String(),
 				ClassId:      classId,
 				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
@@ -1683,7 +1683,7 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 	}
 
 	referenceIdFlag := fmt.Sprintf("--reference-id=%s", msg.ReferenceId)
-	flags := append(s.commonTxFlags(), makeFlagFrom(msg.Issuer), referenceIdFlag)
+	flags := append(s.commonTxFlags(), makeFlagFrom(msg.Admin), referenceIdFlag)
 	args := makeCreateProjectArgs(msg, flags...)
 
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
@@ -1794,7 +1794,7 @@ func (s *IntegrationTestSuite) createClassProject(clientCtx client.Context, addr
 	s.Require().NoError(err)
 
 	projectId, err = s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:       addr,
+		Admin:        addr,
 		ClassId:      classId,
 		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",

@@ -3747,7 +3747,7 @@ type MsgCreate struct {
 	DateCriteria *DateCriteria `protobuf:"bytes,8,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
 	// fee is the basket creation fee. A fee is not required if the list of fees
 	// in Params.basket_fee is empty. The provided fee must be one of the fees
-	// listed in Params.credit_class_fee. The provided amount can be greater than
+	// listed in Params.basket_fee. The provided amount can be greater than
 	// or equal to the listed amount but the basket creator will only be charged
 	// the listed amount (i.e. the minimum amount).
 	//

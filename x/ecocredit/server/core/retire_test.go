@@ -25,7 +25,7 @@ func TestRetire_Valid(t *testing.T) {
 
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
+		Credits: []*core.Credits{
 			{BatchDenom: "C01-001-20200101-20210101-01", Amount: "10.0"},
 		},
 		Jurisdiction: "US-NY",
@@ -53,7 +53,7 @@ func TestRetire_Invalid(t *testing.T) {
 	// invalid batch denom
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
+		Credits: []*core.Credits{
 			{BatchDenom: "A00-00000000-00000000-01", Amount: "10.35"},
 		},
 		Jurisdiction: "US-NY",
@@ -63,7 +63,7 @@ func TestRetire_Invalid(t *testing.T) {
 	// out of precision
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
+		Credits: []*core.Credits{
 			{BatchDenom: batchDenom, Amount: "10.35250982359823095"},
 		},
 		Jurisdiction: "US-NY",
@@ -73,7 +73,7 @@ func TestRetire_Invalid(t *testing.T) {
 	// not enough credits
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
+		Credits: []*core.Credits{
 			{BatchDenom: batchDenom, Amount: "150"},
 		},
 		Jurisdiction: "US-NY",

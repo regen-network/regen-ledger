@@ -12,87 +12,123 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 // Msg is the regen.ecocredit.v1 Msg service.
 service Msg {
 
-  // CreateClass creates a new credit class with an approved list of issuers and
-  // optional metadata.
+  // CreateClass creates a new credit class under the given credit type with an
+  // approved list of issuers and optional metadata. The fee denom must be one
+  // of the denoms listed in Params.credit_class_fee and greater than or equal
+  // to the fee amount but only the minimum amount is charged. The creator of
+  // the credit class becomes the admin of the credit class upon creation.
   rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
 
-  // CreateProject creates a new project within a credit class.
+  // CreateProject creates a new project under the given credit class with a
+  // jurisdiction, optional metadata, and an optional reference ID. The creator
+  // of the project must be an approved credit class issuer for the given credit
+  // class and the creator becomes the admin of the project upon creation.
   rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
 
-  // CreateBatch creates a new batch of credits for an existing project.
-  // This will create a new batch denom with a fixed supply. Issued credits can
-  // be distributed to recipients in either tradable or retired form.
+  // CreateBatch creates a new batch of credits under the given project with a
+  // start and end date representing the monitoring period, a list of credits to
+  // be issued with each issuance specifying a recipient, the amount of tradable
+  // and retired credits, and the retirement jurisdiction (if credits are to be
+  // retired upon receipt), and optional metadata. The credit batch creator must
+  // be listed as an approved issuer within the credit class of the project that
+  // the credits are being issued under.
+  //
+  // The default behavior is for a new credit batch to be "sealed" as opposed to
+  // being "open". When a credit batch is "open", new credits can be dynamically
+  // minted to the credit batch following the creation of the credit batch. This
+  // "open" option should only be set to true when bridging credits from another
+  // chain or registry as a result of a bridge operation and is not intended for
+  // native credit issuance.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
-  // MintBatchCredits issues new token in a given batch.
-  // The issuer must be the account who created (or delegated using x/authz),
-  // the batch.
-  // The request will fail if the batch is not open (is sealed).
-  // NOTE: this method is only for bridge purpose. It must not be used
-  // for issuing native credits on Regen. More specifically, we
-  // enable minting more credits in an existing batch, when the batch
-  // represents a vintage originally registered in another chain.
+  // MintBatchCredits dynamically mints credits to an "open" credit batch. This
+  // feature is only meant to be used when bridging credits from another chain
+  // or registry and is not intended for native credit issuance. When bridging
+  // credits from the same vintage (or monitoring period) as an existing credit
+  // batch, the credits can be dynamically minted to the existing credit batch
+  // if the credit batch is "open".
   rpc MintBatchCredits(MsgMintBatchCredits)
       returns (MsgMintBatchCreditsResponse);
 
-  // MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
-  // can't issue more credits. Once batch is sealed it can't be toggled any
-  // more. Only batch creator can seal a batch.
+  // MsgSealBatch seals an "open" credit batch. Once a credit batch is sealed
+  // (i.e. once "open" is set to false), credits can no longer be dynamically
+  // minted to the credit batch. A sealed credit batch cannot be unsealed and
+  // only the credit batch issuer can seal a credit batch.
   rpc SealBatch(MsgSealBatch) returns (MsgSealBatchResponse);
 
-  // Send sends tradable credits from one account to another account. Sent
-  // credits can either be tradable or retired on receipt.
+  // Send sends a specified amount of tradable credits from the credit owner's
+  // account to another account. Sent credits can either remain tradable or be
+  // retired upon receipt.
   rpc Send(MsgSend) returns (MsgSendResponse);
 
-  // Retire retires a specified number of credits in the holder's account.
+  // Retire retires a specified amount of tradable credits, removing the amount
+  // from the credit owner's tradable balance and adding it to their retired
+  // balance. Retiring credits is permanent and implies the credits are being
+  // consumed as a offset.
   rpc Retire(MsgRetire) returns (MsgRetireResponse);
 
-  // Cancel removes a number of credits from the holder's account and also
-  // deducts them from the tradable supply, effectively cancelling their
-  // issuance on Regen Ledger
+  // Cancel cancels a specified amount of tradable credits, removing the amount
+  // from the credit owner's tradable balance and removing the amount from the
+  // credit batch's tradable supply. Cancelling credits is permanent and implies
+  // the credits have been moved to another chain or registry.
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
 
-  // UpdateClassAdmin updates the credit class admin
+  // UpdateClassAdmin updates the credit class admin. Only the admin of the
+  // credit class can update the credit class.
   rpc UpdateClassAdmin(MsgUpdateClassAdmin)
       returns (MsgUpdateClassAdminResponse);
 
-  // UpdateClassIssuers updates the credit class issuer list
+  // UpdateClassIssuers updates the credit class issuer list. Only the admin of
+  // the credit class can update the credit class.
   rpc UpdateClassIssuers(MsgUpdateClassIssuers)
       returns (MsgUpdateClassIssuersResponse);
 
-  // UpdateClassMetadata updates the credit class metadata
+  // UpdateClassMetadata updates the credit class metadata. Only the admin of
+  // the credit class can update the credit class.
   rpc UpdateClassMetadata(MsgUpdateClassMetadata)
       returns (MsgUpdateClassMetadataResponse);
 
-  // UpdateProjectAdmin updates the project admin address
+  // UpdateProjectAdmin updates the project admin address. Only the admin of the
+  // project can update the project.
   rpc UpdateProjectAdmin(MsgUpdateProjectAdmin)
       returns (MsgUpdateProjectAdminResponse);
 
-  // UpdateProjectMetadata updates the project metadata
+  // UpdateProjectMetadata updates the project metadata. Only the admin of the
+  // project can update the project.
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
 
-  // Bridge cancels credits and emits a bridge event.
+  // Bridge cancels a specified amount of tradable credits and emits a special
+  // bridge event handled by an external bridge service.
   rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
 message MsgCreateClass {
-  // admin is the address of the account that created the credit class.
+
+  // admin is the address of the account creating the credit class that will
+  // become the admin of the credit class upon creation. The admin will have
+  // permissions within the credit class to update the credit class including
+  // the list of approved issuers. If Params.allowlist_enabled is set to true,
+  // this address must be included in Params.allowed_class_creators.
   string admin = 1;
 
-  // issuers are the account addresses of the approved issuers.
+  // issuers are the addresses of the accounts that will have permissions within
+  // the credit class to create projects and issue credits.
   repeated string issuers = 2;
 
-  // metadata is any arbitrary metadata to attached to the credit class.
+  // metadata is any arbitrary string with a maximum length of 256 characters
+  // that includes or references metadata to attach to the credit class.
   string metadata = 3;
 
-  // credit_type_abbrev is the abbreviation of a credit type (e.g. "C", "BIO").
+  // credit_type_abbrev is the abbreviation of the credit type under which the
+  // credit class will be created (e.g. "C", "BIO").
   string credit_type_abbrev = 4;
 
-  // fee specifies the fee to pay for the creation of the credit class.
-  // acceptable fees for creating a credit class can be found in the governance
-  // parameters for the ecocredit module.
+  // fee is the credit class creation fee. The specified fee must be one of the
+  // fees listed in Params.credit_class_fee. The specified amount can be greater
+  // than or equal to the listed amount but the credit class creator will only
+  // be charged the listed amount (i.e. the minimum amount).
   cosmos.base.v1beta1.Coin fee = 5;
 }
 
@@ -105,51 +141,61 @@ message MsgCreateClassResponse {
 
 // MsgCreateProjectResponse is the Msg/CreateProject request type.
 message MsgCreateProject {
-  // issuer is the address of an approved issuer for the credit class through
-  // which batches will be issued. It is not required, however, that this same
-  // issuer issue all batches for a project.
-  string issuer = 1;
 
-  // class_id is the unique identifier of the credit class within which the
+  // admin is the address of the account creating the project that will become
+  // the admin of the project upon creation. The creator of the project must be
+  // an approved issuer within the credit class under which the project is being
+  // created. The admin will have permissions to update the project including
+  // the ability to reassign the admin role to another account.
+  string admin = 1;
+
+  // class_id is the unique identifier of the credit class under which the
   // project will be created.
   string class_id = 2;
 
-  // metadata is any arbitrary metadata attached to the project.
+  // metadata is any arbitrary string with a maximum length of 256 characters
+  // that includes or references metadata to attach to the project.
   string metadata = 3;
 
-  // jurisdiction is the jurisdiction of the project backing the credits
-  // in this batch. It is a string of the form
-  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-  // fields conforming to ISO 3166-2, and postal-code being up to 64
-  // alphanumeric characters. country-code is required, while sub-national-code
-  // and postal-code are optional and can be added for increased precision.
+  // jurisdiction is the jurisdiction of the project. A jurisdiction has with
+  // the format: <country-code>[-<sub-national-code>[ <postal-code>]]
+  // The country-code must be 2 alphabetic characters, the sub-national-code
+  // can be 1-3 alphanumeric characters, and the postal-code can be up to 64
+  // alphanumeric characters. Only the country-code is required, while the
+  // sub-national-code and postal-code are optional and can be added for
+  // increased precision.
   string jurisdiction = 4;
 
-  // reference_id is any arbitrary string used to reference the project.
+  // reference_id is any arbitrary string used to reference the project with a
+  // maximum length of 32 characters.
   string reference_id = 5;
 }
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
 
-  // project_id is the unique identifier of the newly created project.
+  // project_id is the unique identifier of the project.
   string project_id = 1;
 }
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
 
-  // issuer is the address of the batch issuer.
+  // issuer is the address of the account issuing the credits and must be an
+  // approved issuer within the credit class of the project.
   string issuer = 1;
 
-  // project_id is the unique identifier of the project within which the credit
+  // project_id is the unique identifier of the project under which the credit
   // batch will be created.
   string project_id = 2;
 
-  // issuance are the credits issued in the batch.
+  // issuance specifies the amount of tradable and retired credits that will be
+  // issued to each recipient and the jurisdiction in which the credits will be
+  // retired if credits are to be retired upon receipt.
   repeated BatchIssuance issuance = 3;
 
-  // metadata is any arbitrary metadata attached to the credit batch.
+  // metadata is any arbitrary string with a maximum length of 256 characters
+  // that includes or references metadata to attach to the credit batch.
   string metadata = 4;
 
   // start_date is the beginning of the period during which this credit batch
@@ -160,83 +206,69 @@ message MsgCreateBatch {
   // quantified and verified.
   google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
 
-  // If open is true we will enable future minting.
-  // Otherwise we will seal the batch and disable the future minting.
+  // open determines whether or not the credits can be dynamically minted to the
+  // credit batch following the creation of the credit batch. This field should
+  // only be set to true when bridging credits from another chain or registry as
+  // a result of a bridge operation and is not intended for native issuance.
   bool open = 7;
 
-  // A reference to a transaction or an event referencing the transaction
-  // which caused the transfer from other chain or registry.
-  // If not set (null), it means that the batch originate in Regen Ledger
-  // (doesn't come from external registry).
+  // origin_tx is the transaction from another chain or registry that triggered
+  // the creation of the credit batch. This field can be ignored when natively
+  // issuing credits and should only be set when bridging assets from another
+  // chain or registry as a result of a bridge operation.
   OriginTx origin_tx = 8;
 
-  // reference note for accounting, will be passed to an event
+  // note is a reference note for accounting that should only be set when
+  // bridging assets from another chain or registry as a result of a bridge
+  // operation and will be stored in state as a field of BatchOriginTx.
   string note = 9;
-}
-
-// BatchIssuance represents the issuance of some credits in a batch to a
-// single recipient.
-message BatchIssuance {
-
-  // recipient is the account of the recipient.
-  string recipient = 1;
-
-  // tradable_amount is the number of credits in this issuance that can be
-  // traded by this recipient. Decimal values are acceptable.
-  string tradable_amount = 2;
-
-  // retired_amount is the number of credits in this issuance that are
-  // effectively retired by the issuer on receipt. Decimal values are
-  // acceptable.
-  string retired_amount = 3;
-
-  // retirement_jurisdiction is the jurisdiction of the beneficiary or buyer of
-  // the retired credits. This must be provided if retired_amount is positive.
-  // It is a string of the form <country-code>[-<sub-national-code>[
-  // <postal-code>]], with the first two fields conforming to ISO 3166-2, and
-  // postal-code being up to 64 alphanumeric characters.
-  string retirement_jurisdiction = 4;
 }
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
 
-  // batch_denom is the unique identifier of the newly created batch.
+  // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 1;
 }
 
-// MsgMintBatchCredits is a request type for MintBatchCredits Msg RPC.
+// MsgMintBatchCredits is the Msg/MintBatchCredits request type.
 message MsgMintBatchCredits {
-  // Issuer must equal to the batch.issuer address.
-  // Signer of the msg.
+
+  // issuer is the address of the account minting the credits and must be the
+  // same issuer who created the credit batch.
   string issuer = 1;
 
   // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 2;
 
-  // issuance are the credits issued in the batch.
+  // issuance specifies the amount of tradable and retired credits that will be
+  // issued to each recipient and the jurisdiction in which the credits will be
+  // retired if credits are to be retired upon receipt.
   repeated BatchIssuance issuance = 3;
 
-  // A reference to a transaction or an event referencing the transaction
-  // which caused the transfer from other chain or registry.
+  // origin_tx is the transaction from another chain or registry that triggered
+  // the minting of credits.
   OriginTx origin_tx = 4;
 
-  // reference note for accounting, will be passed to an event
+  // note is a reference note for accounting that should only be set when
+  // bridging assets from another chain or registry as a result of a bridge
+  // operation and will be stored in state as a field of BatchOriginTx.
   string note = 5;
-}
-
-// MsgSealBatch request type for MsgSealBatch RPC.
-message MsgSealBatch {
-  // Issuer must equal to the batch.issuer address.
-  // Signer of the msg.
-  string issuer = 1;
-
-  // batch_denom is the unique identifier of the credit batch.
-  string batch_denom = 2;
 }
 
 // MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
 message MsgMintBatchCreditsResponse {}
+
+// MsgSealBatch is the Msg/MintBatchCredits request type.
+message MsgSealBatch {
+
+  // issuer is the address of the account that created the credit batch and the
+  // only account with permissions to seal the credit batch.
+  string issuer = 1;
+
+  // batch_denom is the unique identifier of the credit batch.
+  string batch_denom = 2;
+}
 
 // MsgSealBatchResponse is the Msg/SealBatch response type.
 message MsgSealBatchResponse {}
@@ -247,35 +279,37 @@ message MsgSend {
   // sender is the address of the account sending credits.
   string sender = 1;
 
-  // sender is the address of the account receiving credits.
+  // recipient is the address of the account receiving credits.
   string recipient = 2;
 
-  // credits are the credits being sent.
+  // credits are the credits being sent to the recipient.
   repeated SendCredits credits = 3;
 
-  // SendCredits specifies a batch and the number of credits being transferred.
-  // This is split into tradable credits, which will remain tradable on receipt,
-  // and retired credits, which will be retired on receipt.
+  // SendCredits specifies the amount of tradable and retired credits of a
+  // credit batch that will be sent to the recipient and the jurisdiction in
+  // which the credits will be retired upon receipt.
   message SendCredits {
 
     // batch_denom is the unique identifier of the credit batch.
     string batch_denom = 1;
 
-    // tradable_amount is the number of credits in this transfer that can be
-    // traded by the recipient. Decimal values are acceptable within the
-    // precision returned by Query/Precision.
+    // tradable_amount is the amount of credits in this transfer that can be
+    // traded by the recipient. The number of decimal places must be less than
+    // or equal to the credit type precision.
     string tradable_amount = 2;
 
-    // retired_amount is the number of credits in this transfer that are
-    // effectively retired by the issuer on receipt. Decimal values are
-    // acceptable within the precision returned by Query/Precision.
+    // retired_amount is the amount of credits in this transfer that are retired
+    // upon receipt. The number of decimal places must be less than or equal to
+    // the credit type precision.
     string retired_amount = 3;
 
-    // retirement_jurisdiction is the jurisdiction of the beneficiary or buyer
-    // of the retired credits. This must be provided if retired_amount is
-    // positive. It is a string of the form <country-code>[-<sub-national-code>[
-    // <postal-code>]], with the first two fields conforming to ISO 3166-2, and
-    // postal-code being up to 64 alphanumeric characters.
+    // retirement_jurisdiction is the jurisdiction of the recipient and is only
+    // required if retired_amount is positive. A jurisdiction has the format:
+    // <country-code>[-<sub-national-code>[ <postal-code>]]
+    // The country-code and sub-national-code must conform to ISO 3166-2 and the
+    // postal-code can be up to 64 alphanumeric characters. Only the
+    // country-code is required, while the sub-national-code and postal-code are
+    // optional and can be added for increased precision.
     string retirement_jurisdiction = 4;
   }
 }
@@ -289,26 +323,16 @@ message MsgRetire {
   // owner is the address of the account that owns the credits being retired.
   string owner = 1;
 
-  // credits are the credits being retired.
-  repeated RetireCredits credits = 2;
+  // credits specifies a credit batch and the number of credits being retired.
+  repeated Credits credits = 2;
 
-  // RetireCredits specifies a batch and the number of credits being retired.
-  message RetireCredits {
-
-    // batch_denom is the unique identifier of the credit batch.
-    string batch_denom = 1;
-
-    // amount is the number of credits being retired.
-    // Decimal values are acceptable within the precision returned by
-    // Query/Precision.
-    string amount = 2;
-  }
-
-  // jurisdiction is the jurisdiction of the beneficiary or buyer of the retired
-  // credits. It is a string of the form
-  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-  // fields conforming to ISO 3166-2, and postal-code being up to 64
-  // alphanumeric characters.
+  // jurisdiction is the jurisdiction of the credit owner. A jurisdiction has
+  // the format: <country-code>[-<sub-national-code>[ <postal-code>]]
+  // The country-code must be 2 alphabetic characters, the sub-national-code
+  // can be 1-3 alphanumeric characters, and the postal-code can be up to 64
+  // alphanumeric characters. Only the country-code is required, while the
+  // sub-national-code and postal-code are optional and can be added for
+  // increased precision.
   string jurisdiction = 3;
 }
 
@@ -321,7 +345,7 @@ message MsgCancel {
   // owner is the address of the account that owns the credits being cancelled.
   string owner = 1;
 
-  // credits are the credits being cancelled.
+  // credits specifies a credit batch and the number of credits being cancelled.
   repeated Credits credits = 2;
 
   // reason is any arbitrary string that specifies the reason for cancelling
@@ -335,13 +359,15 @@ message MsgCancelResponse {}
 // MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
 message MsgUpdateClassAdmin {
 
-  // admin is the address of the account that is the admin of the credit class.
+  // admin is the address of the account that is currently the admin of the
+  // credit class.
   string admin = 1;
 
   // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
-  // new_admin is the address of the new admin of the credit class.
+  // new_admin is the address of the account that will become the new admin of
+  // the credit class.
   string new_admin = 3;
 }
 
@@ -357,10 +383,12 @@ message MsgUpdateClassIssuers {
   // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
-  // add_issuers are the issuers to add to the class issuers list.
+  // add_issuers are the addresses of the accounts that will be added to the
+  // list of approved credit class issuers.
   repeated string add_issuers = 3;
 
-  // remove_issuers are the issuers to remove from the class issuers list.
+  // remove_issuers are the addresses of the accounts that will be removed from
+  // the list of approved credit class issuers.
   repeated string remove_issuers = 4;
 }
 
@@ -376,9 +404,10 @@ message MsgUpdateClassMetadata {
   // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
-  // metadata is the updated arbitrary metadata to be attached to the credit
-  // class.
-  string metadata = 3;
+  // new_metadata is new metadata that will replace the existing metadata. It
+  // can be any arbitrary string with a maximum length of 256 characters that
+  // includes or references the metadata to attach to the credit class.
+  string new_metadata = 3;
 }
 
 // MsgUpdateClassMetadataResponse is the Msg/UpdateClassMetadata response type.
@@ -387,14 +416,16 @@ message MsgUpdateClassMetadataResponse {}
 // MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin request type.
 message MsgUpdateProjectAdmin {
 
-  // admin is the project's current admin address.
+  // admin is the address of the account that is the currently the admin of the
+  // project.
   string admin = 1;
 
-  // new_admin is the address of the new admin of the project.
-  string new_admin = 2;
+  // project_id is the unique identifier of the project.
+  string project_id = 2;
 
-  // project_id is the unique identifier of the project (e.g. VERRA1).
-  string project_id = 3;
+  // new_admin is the address of the account that will become the new admin of
+  // the project.
+  string new_admin = 3;
 }
 
 // MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin response type.
@@ -403,14 +434,16 @@ message MsgUpdateProjectAdminResponse {}
 // MsgUpdateProjectMetadata is the Msg/UpdateProjectMetadata request type.
 message MsgUpdateProjectMetadata {
 
-  // admin is project admin address.
+  // admin is the address of the account that is the admin of the project.
   string admin = 1;
 
-  // new_metadata is the metadata to update the project with.
-  string new_metadata = 2;
+  // project_id is the unique identifier of the project.
+  string project_id = 2;
 
-  // project_id is the unique identifier of the project (e.g. VERRA1).
-  string project_id = 3;
+  // new_metadata is new metadata that will replace the existing metadata. It
+  // can be any arbitrary string with a maximum length of 256 characters that
+  // includes or references the metadata to attach to the project.
+  string new_metadata = 3;
 }
 
 // MsgUpdateProjectMetadataResponse is the Msg/UpdateProjectMetadataResponse
@@ -419,19 +452,20 @@ message MsgUpdateProjectMetadataResponse {}
 
 // MsgBridge is the Msg/Bridge request type.
 message MsgBridge {
-  // target is the target chain.
-  string target = 1;
-
-  // recipient is the recipient address.
-  string recipient = 2;
-
-  // contract is the contract address.
-  string contract = 3;
 
   // owner is the address of the account that owns the credits being bridged.
-  string owner = 4;
+  string owner = 1;
 
-  // credits are the credits being cancelled.
+  // target is the name of the target chain or registry.
+  string target = 2;
+
+  // recipient is the address of the account receiving the bridged credits.
+  string recipient = 3;
+
+  // recipient is the address of the contract handling the bridged credits.
+  string contract = 4;
+
+  // credits specifies a credit batch and the number of credits being bridged.
   repeated Credits credits = 5;
 }
 
