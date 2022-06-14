@@ -31,8 +31,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 	// In the next version of the basket package, this field will be updated to
 	// a single Coin rather than a list of Coins. In the meantime, the message
-	// will fail basic validation if more than one fee is provided and only the
-	// single fee provided is checked against the balance of the curator account,
+	// will fail basic validation if more than one Coin is provided and only the
+	// single Coin provided is checked against the balance of the curator account,
 	// sent to the basket submodule, and then burned by the basket submodule.
 	if len(fee) == 1 {
 		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, fee[0].Denom)

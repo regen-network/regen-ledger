@@ -86,7 +86,8 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		}
 		toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
 
-		// update x/ecocredit basket fee param
+		// update x/ecocredit basket fee param (the basket fee param key has changed but the
+		// value will be the same value as is on regen-1 at the time of the upgrade)
 		ecocreditSubspace, _ := app.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
 		ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
 

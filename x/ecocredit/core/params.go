@@ -8,12 +8,12 @@ import (
 
 var (
 	// This is a value of 20 REGEN
-	DefaultCreditClassFeeTokens = sdk.NewInt(2e7)
-	DefaultBasketFee            = sdk.NewInt(2e7)
-	KeyCreditClassFee           = []byte("CreditClassFee")
-	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
-	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
-	KeyBasketFee                = []byte("BasketFee")
+	DefaultCreditClassFee   = sdk.NewInt(2e7)
+	DefaultBasketFee        = sdk.NewInt(2e7)
+	KeyCreditClassFee       = []byte("CreditClassFee")
+	KeyAllowedClassCreators = []byte("AllowedClassCreators")
+	KeyAllowlistEnabled     = []byte("AllowlistEnabled")
+	KeyBasketFee            = []byte("BasketFee")
 )
 
 // TODO: remove after we allow standard SI units for precision
@@ -119,7 +119,7 @@ func NewParams(creditClassFee, basketFee sdk.Coins, allowlist []string, allowlis
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFee)),
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketFee)),
 		[]string{},
 		false,

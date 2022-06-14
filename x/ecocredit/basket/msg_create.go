@@ -82,7 +82,7 @@ func (m MsgCreate) ValidateBasic() error {
 
 	// In the next version of the basket package, this field will be updated to
 	// a single Coin rather than a list of Coins. In the meantime, the message
-	// will fail basic validation if more than one fee is provided.
+	// will fail basic validation if more than one Coin is provided.
 	if len(m.Fee) > 1 {
 		return sdkerrors.ErrInvalidRequest.Wrap("more than one fee is not allowed")
 	}
