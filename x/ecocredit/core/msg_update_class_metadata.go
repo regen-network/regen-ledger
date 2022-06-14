@@ -27,7 +27,7 @@ func (m *MsgUpdateClassMetadata) ValidateBasic() error {
 		return err
 	}
 
-	if len(m.Metadata) > MaxMetadataLength {
+	if len(m.NewMetadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
 	}
 

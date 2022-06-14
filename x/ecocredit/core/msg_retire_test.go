@@ -20,7 +20,7 @@ func TestMsgRetire(t *testing.T) {
 		"valid msg": {
 			src: MsgRetire{
 				Owner: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -32,7 +32,7 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without holder": {
 			src: MsgRetire{
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -45,7 +45,7 @@ func TestMsgRetire(t *testing.T) {
 		"invalid msg with wrong holder address": {
 			src: MsgRetire{
 				Owner: "wrong owner",
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -65,7 +65,7 @@ func TestMsgRetire(t *testing.T) {
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgRetire{
 				Owner: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						Amount: "10",
 					},
@@ -77,7 +77,7 @@ func TestMsgRetire(t *testing.T) {
 		"invalid msg without Credits.Amount": {
 			src: MsgRetire{
 				Owner: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 					},
@@ -89,7 +89,7 @@ func TestMsgRetire(t *testing.T) {
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgRetire{
 				Owner: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "abc",
@@ -102,7 +102,7 @@ func TestMsgRetire(t *testing.T) {
 		"invalid msg without jurisdiction": {
 			src: MsgRetire{
 				Owner: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -114,7 +114,7 @@ func TestMsgRetire(t *testing.T) {
 		"invalid msg with wrong jurisdiction": {
 			src: MsgRetire{
 				Owner: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",

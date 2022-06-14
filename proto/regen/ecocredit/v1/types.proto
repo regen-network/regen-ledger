@@ -11,25 +11,70 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 // Params defines the updatable global parameters of the ecocredit module for
 // use with the x/params module.
 message Params {
-  // credit_class_fee is the fixed fee charged on creation of a new credit class
+
+  // credit_class_fee is a list of credit class creation fees accepted when
+  // creating a credit class. Any fee listed is accepted and charged to the
+  // credit class creator when creating a credit class.
   repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
-  // basket_fee is the fixed fee charged on creation of a new basket
+  // basket_fee is a list of basket creation fees accepted when creating a
+  // basket. Any fee listed is accepted and charged to the basket creator when
+  // creating a basket.
   repeated cosmos.base.v1beta1.Coin basket_fee = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
-  // allowed_class_creators is an allowlist defining the addresses with
-  // the required permissions to create credit classes
+  // allowed_class_creators is an allowlist defining the addresses with the
+  // required permissions to create credit classes when allowlist_enabled is set
+  // to true. If allowlist_enabled is set to false, this list has no effect.
   repeated string allowed_class_creators = 3;
 
-  // allowlist_enabled is a param that enables/disables the allowlist for credit
-  // creation
+  // allowlist_enabled determines whether or not the allowlist for creating
+  // credit classes is enabled. When set to true, only the addresses listed in
+  // allowed_class_creators can create credit classes. When set to false, any
+  // address can create credit classes.
   bool allowlist_enabled = 4;
+}
+
+// Credits represents a simple structure for credits.
+message Credits {
+
+  // batch_denom is the denom of the credit batch.
+  string batch_denom = 1;
+
+  // amount is the amount of credits.
+  string amount = 2;
+}
+
+// BatchIssuance represents a simple structure for a credit batch issuance.
+message BatchIssuance {
+
+  // recipient is the address of the account receiving the issued credits.
+  string recipient = 1;
+
+  // tradable_amount is the amount of credits that the recipient will receive in
+  // a tradable state. The number of decimal places must be less than or equal
+  // to the credit type precision.
+  string tradable_amount = 2;
+
+  // retired_amount is the amount of credits that the recipient will receive in
+  // a retired state. The number of decimal places must be less than or equal to
+  // the credit type precision.
+  string retired_amount = 3;
+
+  // retirement_jurisdiction is the jurisdiction of the recipient and is only
+  // required if retired_amount is positive. A jurisdiction has the following
+  // format: <country-code>[-<sub-national-code>[ <postal-code>]]
+  // The country-code must be 2 alphabetic characters, the sub-national-code
+  // can be 1-3 alphanumeric characters, and the postal-code can be up to 64
+  // alphanumeric characters. Only the country-code is required, while the
+  // sub-national-code and postal-code are optional and can be added for
+  // increased precision.
+  string retirement_jurisdiction = 4;
 }
 
 // OriginTx is the transaction from another chain or registry that triggered
@@ -58,13 +103,4 @@ message CreditTypeProposal {
   // credit_type is the credit type to be added to the network if the proposal
   // passes.
   CreditType credit_type = 3;
-}
-
-// Credits represents a simple structure for credits.
-message Credits {
-  // batch_denom is the denom of the credit batch
-  string batch_denom = 1;
-
-  // amount is the amount of credits
-  string amount = 2;
 }
