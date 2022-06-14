@@ -44,11 +44,12 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 		var minimumFee sdk.Coin
 
-		// find the minimum fee assuming that more than one fee with the same
-		// denomination is not listed (otherwise we take the greater amount)
+		// find the minimum fee
 		for _, coin := range fee {
-			if msg.Fee[0].Denom == coin.Denom && msg.Fee[0].IsGTE(coin) {
-				minimumFee = coin
+			if coin.Denom == msg.Fee[0].Denom {
+				if minimumFee.IsNil() || coin.IsLT(minimumFee) {
+					minimumFee = coin
+				}
 			}
 		}
 

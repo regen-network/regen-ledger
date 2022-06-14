@@ -1,0 +1,16 @@
+{
+  "title": "Basket Fee Param Change",
+  "description": "Update basket fee to 1stake",
+  "changes": [
+    {
+      "subspace": "ecocredit",
+      "key": "BasketCreationFee",
+      "value": [
+        {
+          "denom": "stake",
+          "amount": "1"
+        }
+      ]
+    }
+  ]
+}
