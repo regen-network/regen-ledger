@@ -42,6 +42,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	var attestations []*data.AttestationInfo
 	for it.Next() {

@@ -220,8 +220,14 @@ func QueryAttestationsByHashCmd() *cobra.Command {
 				return err
 			}
 
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			res, err := c.AttestationsByHash(cmd.Context(), &data.QueryAttestationsByHashRequest{
 				ContentHash: contentHash,
+				Pagination:  pagination,
 			})
 
 			return printQueryResponse(ctx, res, err)
@@ -229,6 +235,7 @@ func QueryAttestationsByHashCmd() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "attestations-by-hash")
 
 	return cmd
 }
@@ -336,8 +343,14 @@ func QueryResolversByHashCmd() *cobra.Command {
 				return err
 			}
 
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			res, err := c.ResolversByHash(cmd.Context(), &data.QueryResolversByHashRequest{
 				ContentHash: contentHash,
+				Pagination:  pagination,
 			})
 
 			return printQueryResponse(ctx, res, err)
@@ -345,6 +358,7 @@ func QueryResolversByHashCmd() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-hash")
 
 	return cmd
 }

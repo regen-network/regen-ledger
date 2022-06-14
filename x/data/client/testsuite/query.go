@@ -277,6 +277,14 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
 			name: "valid",
 			args: []string{filePath},
 		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				filePath,
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -292,6 +300,12 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
 				var res data.QueryAttestationsByHashResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Attestations)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Attestations, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
 			}
 		})
 	}
@@ -443,6 +457,14 @@ func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
 			name: "valid",
 			args: []string{filePath},
 		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				filePath,
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -458,6 +480,12 @@ func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
 				var res data.QueryResolversByHashResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Resolvers)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Resolvers, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
 			}
 		})
 	}
