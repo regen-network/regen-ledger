@@ -344,6 +344,8 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 			BatchKey:       batchDenomToBatchMap[denom].Id,
 			Address:        addr,
 			TradableAmount: balance,
+			RetiredAmount:  "0",
+			EscrowedAmount: "0",
 		}); err != nil {
 			return true, err
 		}
@@ -367,9 +369,11 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 		if err != nil {
 			if ormerrors.IsNotFound(err) {
 				if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-					BatchKey:      batchDenomToBatchMap[denom].Id,
-					Address:       addr,
-					RetiredAmount: balance,
+					BatchKey:       batchDenomToBatchMap[denom].Id,
+					Address:        addr,
+					RetiredAmount:  balance,
+					TradableAmount: "0",
+					EscrowedAmount: "0",
 				}); err != nil {
 					return true, err
 				}
@@ -384,6 +388,7 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 			Address:        addr,
 			TradableAmount: b.TradableAmount,
 			RetiredAmount:  balance,
+			EscrowedAmount: "0",
 		}); err != nil {
 			return true, err
 		}
@@ -405,6 +410,7 @@ func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Cont
 			BatchKey:        batchDenomToBatchMap[denom].Id,
 			CancelledAmount: batchDenomToBatchMap[denom].AmountCancelled,
 			TradableAmount:  supply,
+			RetiredAmount:   "0",
 		}); err != nil {
 			return false, err
 		}
@@ -426,6 +432,7 @@ func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Cont
 					BatchKey:        batchDenomToBatchMap[denom].Id,
 					CancelledAmount: batchDenomToBatchMap[denom].AmountCancelled,
 					RetiredAmount:   supply,
+					TradableAmount:  "0",
 				}); err != nil {
 					return false, err
 				}
