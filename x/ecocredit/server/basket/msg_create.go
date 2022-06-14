@@ -29,8 +29,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	// In the next version of the basket package, this field will be updated to
 	// a single Coin rather than a list of Coins. In the meantime, the message
 	// will fail basic validation if more than one Coin is provided and only the
-	// single Coin provided is checked against the balance of the curator account,
-	// sent to the basket submodule, and then burned by the basket submodule.
+	// minimum fee is checked against the balance of the curator account, sent
+	// to the basket submodule, and then burned by the basket submodule.
 	if len(fee) > 0 {
 
 		// check if single coin in msg.Fee is greater than or equal to any coin in fee
@@ -44,15 +44,14 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 		var minimumFee sdk.Coin
 
-		// find minimum fee, we already know the single coin in msg.Fee is greater
-		// than or equal to one of the coins in fee
+		// find the minimum fee assuming that more than one fee with the same
+		// denomination is not listed (otherwise we take the greater amount)
 		for _, coin := range fee {
 			if msg.Fee[0].Denom == coin.Denom && msg.Fee[0].IsGTE(coin) {
 				minimumFee = coin
 			}
 		}
 
-		// check curator balance and return error if nil or less than
 		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, minimumFee.Denom)
 		if curatorBalance.IsNil() || curatorBalance.IsLT(minimumFee) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", minimumFee.Denom)
