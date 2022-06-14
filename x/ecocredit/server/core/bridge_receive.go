@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -18,30 +19,15 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return nil, err
 	}
 
-	// first we check if there is an existing project
-	idx := api.ProjectAdminReferenceIdIndexKey{}.WithAdminReferenceId(bridgeServiceAddr, req.ProjectRefId)
-	it, err := k.stateStore.ProjectTable().List(ctx, idx)
+	project, err := k.stateStore.ProjectTable().GetByAdminReferenceId(ctx, bridgeServiceAddr, req.ProjectRefId)
 	if err != nil {
-		return nil, err
-	}
-	defer it.Close()
-
-	projects := make([]*api.Project, 0)
-	for it.Next() {
-		project, err := it.Value()
-		if err != nil {
+		if !ormerrors.IsNotFound(err) {
 			return nil, err
 		}
-		projects = append(projects, project)
-	}
-
-	if len(projects) > 1 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d projects registered "+
-			"with reference id %s", bridgeServiceAddr.String(), len(projects), req.ProjectRefId)
 	}
 
 	// if no project was found, create one + issue batch
-	if len(projects) == 0 {
+	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
 			Issuer:       req.ServiceAddress,
 			ClassId:      req.ClassId,
@@ -71,8 +57,6 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return &core.MsgBridgeReceiveResponse{BatchDenom: batchRes.BatchDenom, ProjectId: projectRes.ProjectId}, nil
 	}
 
-	project := projects[0]
-
 	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
 	// any batches in that iterator that have matching metadata, are added to the slice.
 	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
@@ -83,21 +67,23 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	}
 	defer bIt.Close()
 
-	batches := make([]*api.Batch, 0)
+	batches := make([]*api.Batch, 0, 1)
 	for bIt.Next() {
 		batch, err := bIt.Value()
 		if err != nil {
 			return nil, err
 		}
 		// the timestamp stored in the batch is more granular than the date in the denom representation, so we match here.
-		if batch.StartDate.AsTime().Equal(*req.StartDate) && batch.EndDate.AsTime().Equal(*req.EndDate) && batch.Metadata == req.BatchMetadata {
+		if batch.StartDate.AsTime().Equal(*req.StartDate) &&
+			batch.EndDate.AsTime().Equal(*req.EndDate) &&
+			batch.Metadata == req.BatchMetadata {
 			batches = append(batches, batch)
 		}
 	}
 
 	// TODO(Tyler): potentially select a batch by oldest issuance date?
 	amtBatches := len(batches)
-	if amtBatches > 1 { // change this to pick by issuance date
+	if amtBatches > 1 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d batches issued "+
 			"with start %v and end %v dates in project %s", bridgeServiceAddr.String(), len(batches), req.StartDate, req.EndDate, project.Id)
 	} else if amtBatches == 1 {
@@ -114,6 +100,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		})
 		return &core.MsgBridgeReceiveResponse{BatchDenom: batch.Denom, ProjectId: project.Id}, nil
 	}
+
 	// len(batches) is not greater than or equal to 1, so its empty, meaning no batch exists yet.
 	res, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
 		Issuer:    req.ServiceAddress,

@@ -475,6 +475,9 @@ type ProjectTable interface {
 	HasByClassKeyId(ctx context.Context, class_key uint64, id string) (found bool, err error)
 	// GetByClassKeyId returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByClassKeyId(ctx context.Context, class_key uint64, id string) (*Project, error)
+	HasByAdminReferenceId(ctx context.Context, admin []byte, reference_id string) (found bool, err error)
+	// GetByAdminReferenceId returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByAdminReferenceId(ctx context.Context, admin []byte, reference_id string) (*Project, error)
 	List(ctx context.Context, prefixKey ProjectIndexKey, opts ...ormlist.Option) (ProjectIterator, error)
 	ListRange(ctx context.Context, from, to ProjectIndexKey, opts ...ormlist.Option) (ProjectIterator, error)
 	DeleteBy(ctx context.Context, prefixKey ProjectIndexKey) error
@@ -662,6 +665,28 @@ func (this projectTable) GetByClassKeyId(ctx context.Context, class_key uint64, 
 	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &project,
 		class_key,
 		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &project, nil
+}
+
+func (this projectTable) HasByAdminReferenceId(ctx context.Context, admin []byte, reference_id string) (found bool, err error) {
+	return this.table.GetIndexByID(5).(ormtable.UniqueIndex).Has(ctx,
+		admin,
+		reference_id,
+	)
+}
+
+func (this projectTable) GetByAdminReferenceId(ctx context.Context, admin []byte, reference_id string) (*Project, error) {
+	var project Project
+	found, err := this.table.GetIndexByID(5).(ormtable.UniqueIndex).Get(ctx, &project,
+		admin,
+		reference_id,
 	)
 	if err != nil {
 		return nil, err

@@ -27,13 +27,15 @@ func TestQuery_ProjectsByClass(t *testing.T) {
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "metadata",
+		ReferenceId:  "C01-001",
 	}
 
 	// insert two projects under "C01" credit class
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       "C01-002",
-		ClassKey: classKey,
+		Id:          "C01-002",
+		ClassKey:    classKey,
+		ReferenceId: "C01-002",
 	}))
 
 	// query projects by "C01" credit class

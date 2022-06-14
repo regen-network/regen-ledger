@@ -31,6 +31,7 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 		Admin:        s.addr,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
+		ReferenceId:  "C01-001",
 	}
 
 	err = s.stateStore.ProjectTable().Insert(s.ctx, project1)
@@ -42,6 +43,7 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 		Admin:        s.addr,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
+		ReferenceId:  "C01-002",
 	}
 
 	err = s.stateStore.ProjectTable().Insert(s.ctx, project)
@@ -54,6 +56,7 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 		Admin:        admin2,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
+		ReferenceId:  "C01-003",
 	}
 
 	err = s.stateStore.ProjectTable().Insert(s.ctx, project)

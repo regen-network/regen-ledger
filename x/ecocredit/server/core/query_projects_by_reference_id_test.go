@@ -23,6 +23,7 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 
 	project := &api.Project{
 		Id:           "C01-001",
+		Admin:        []byte("foobar"),
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "metadata",
@@ -33,14 +34,16 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:          "C01-002",
+		Admin:       []byte("barfoo"),
 		ClassKey:    classKey,
 		ReferenceId: "VCS-001",
 	}))
 
 	// insert one project without a reference id
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       "C01-003",
-		ClassKey: classKey,
+		Id:          "C01-003",
+		ClassKey:    classKey,
+		ReferenceId: "VCS-003",
 	}))
 
 	// query projects by "VCS-001" reference id
