@@ -5,31 +5,75 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- TODO: consolidate v4.0.0 pre-releases with official release once official has been tagged -->
 ## [Unreleased]
 
 ### General
+
+#### Added
+
+*
+
+#### Fixed
+
+*
+
+#### Changed
+
+*
+
+### x/ecocredit
+
+#### Added
+
+*
+
+#### Fixed
+
+*
+
+#### Changed
+
+*
+
+<!-- TODO: consolidate v4.0.0 pre-releases with official release once official has been tagged -->
+## [v4.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-beta1) - 2022-06-03
+
+### General
+
+#### Added
+
 * Rocksdb and non-state-breaking version bumps for performance
+* [#783](https://github.com/regen-network/regen-ledger/pull/783) Add Dec to BigInt conversion to math package.
+
+#### Fixed
+
+* [#685](https://github.com/regen-network/regen-ledger/pull/685) Update swagger-gen to include ibc-go swagger docs.
+
+#### Changed
+
+* 
+
+### x/ecocredit
+
+#### Added
+
+*
 
 #### Fixed
 
 * [#591](https://github.com/regen-network/regen-ledger/pull/591) Set credit class fee in upgrade handler
 * [#592](https://github.com/regen-network/regen-ledger/pull/592) fixed `undefined` error msg for creating class
 
-### Changed
+#### Changed
 
 * [#1020](https://github.com/regen-network/regen-ledger/pull/1020) Usage of Location (ProjectLocation, RetirementLocation) changed to Jurisdiction
 
+### orm
+
+* Removed from the regen-ledger codebase. The last supported version of the `orm` module within the regen-ledger codebase is [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1). All modules previously using the `orm` module (except for the alpha version of the group module) are now using [cosmos-sdk/orm@v1.0.0-alpha.11](https://github.com/cosmos/cosmos-sdk/tree/orm/v1.0.0-alpha.11/orm).
+
 ## [v3.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v3.0.0) - 2022-02-25
-
-### General
-
-#### Added
-
-* [#783](https://github.com/regen-network/regen-ledger/pull/783) Add Dec to BigInt conversion to math package.
-
-#### Fixed
-
-* [#685](https://github.com/regen-network/regen-ledger/pull/685) Update swagger-gen to include ibc-go swagger docs.
 
 ### x/ecocredit
 
@@ -103,7 +147,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#580](https://github.com/regen-network/regen-ledger/pull/580) Update SDK fork to v0.44.2-regen-1
 * [#587](https://github.com/regen-network/regen-ledger/pull/587) Update Go to v1.17.
 
-
 #### Fixed
 
 * [#386](https://github.com/regen-network/regen-ledger/pull/386) fix IBC proposal registration
@@ -119,7 +162,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#183](https://github.com/regen-network/regen-ledger/pull/183) add grpc-gateway support for query routes
 * [#539](https://github.com/regen-network/regen-ledger/pull/539) Add methods for updating a credit class
 * [#555](https://github.com/regen-network/regen-ledger/pull/555) Add ecocredit params query
-
 
 #### Changed
 
@@ -148,14 +190,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#333](https://github.com/regen-network/regen-ledger/pull/333) try to execute group proposal on submission or on new vote
 * [#183](https://github.com/regen-network/regen-ledger/pull/183) add grpc-gateway support for query routes
 
-### ORM Package
+### orm
 
 #### Fixed
 
 * [#518](https://github.com/regen-network/regen-ledger/pull/518) Fix bytes key field to have a max length
 * [#525](https://github.com/regen-network/regen-ledger/pull/525) Fix IndexKeyCodec prefixing issue.
 
-## [1.0.0] - 2021-04-13
+## [v1.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v1.0.0) - 2021-04-13
 
 This release is the version of regen-ledger that will be used for the mainnet launch of Regen Network's blockchain (chain-id: `regen-1`).
 
@@ -172,16 +214,18 @@ It enables configurable builds for regen ledger (by building with an `EXPERIMENT
 It is not guaranteed that APIs of features in the experimental build will remain consistent until they are migrated to the stable configuration.
 
 ### Added
+
 * make configurable builds (#256)
 * add remaining group events
 * add group module documentation (#314)
 
 ### Changed
+
 * upgrade to Cosmos SDK v0.42.4
 * update group tx commands
 * remove colon from regen addresses
 
-## [0.6.0] - 2021-02-04
+## [v0.6.0](https://github.com/regen-network/regen-ledger/releases/tag/v0.6.0) - 2021-02-04
 
 This release contains first iterations of the `x/ecocredit` and `x/data` modules which were launched in a Devnet as part of the Open Climate Collabathon in Nov 2020.
 
@@ -197,85 +241,83 @@ It also includes an initial draft of the `x/group` module for on-chain multisig 
 * Add CosmWasm module to regen ledger (#148)
 * Add group module (#154)
 
-
 ### Changed
 
 * Custom protobuf service codegen (#207)
 * Update to SDK v0.40.0 (#219)
 * Remove usage/naming of `gaia` / `XrnApp` / `simd`
 
-## [0.5.0] - 2019-09-21
+## [v0.5.0](https://github.com/regen-network/regen-ledger/releases/tag/v0.5.0) - 2019-09-21
 
 This release provides the amazonas test upgrade the regen-test-1001 testnet. Specifically this release packages the following changes to the upgrade module:
 
 when an upgrade is planned, the new binary which contains code for the planned upgrade will panic if it is started too early
 upgrade scripts are disabled because they were glitchy to setup and not recommended
 
-## [0.4.0] - 2019-06-04
+## [v0.4.0](https://github.com/regen-network/regen-ledger/releases/tag/v0.4.0) - 2019-06-04
 
 ### Changed
-- [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Temporarily disable all custom modules beside `geo` because they need to be integrated with the new app module setup and this can be a good test case for a coordinated tesnet upgrade
-- [\#163156528](https://www.pivotaltracker.com/story/show/163156528) Use stored geo shape for ESP results
-- [\#164056249](https://www.pivotaltracker.com/story/show/164056249) Rename `agent` -> `group` module, align structure of groups with specification document
-- [\#16](https://github.com/regen-network/regen-ledger/issues/16) The on-chain store data command now only works with graphs defined by the graph package
-- [\#15](https://github.com/regen-network/regen-ledger/issues/15) Test and debug upgrade module in Cosmos PR [\#4233](https://github.com/cosmos/cosmos-sdk/pull/4233) against an
+
+* [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Temporarily disable all custom modules beside `geo` because they need to be integrated with the new app module setup and this can be a good test case for a coordinated tesnet upgrade
+* [\#163156528](https://www.pivotaltracker.com/story/show/163156528) Use stored geo shape for ESP results
+* [\#164056249](https://www.pivotaltracker.com/story/show/164056249) Rename `agent` -> `group` module, align structure of groups with specification document
+* [\#16](https://github.com/regen-network/regen-ledger/issues/16) The on-chain store data command now only works with graphs defined by the graph package
+* [\#15](https://github.com/regen-network/regen-ledger/issues/15) Test and debug upgrade module in Cosmos PR [\#4233](https://github.com/cosmos/cosmos-sdk/pull/4233) against an
 internal testnet
 
 ### Added
 
-- [\#163101853](https://www.pivotaltracker.com/story/show/163101853) Proposal index tags support
-- [\#163101852](https://www.pivotaltracker.com/story/show/163101852) ESP version proposal index tags
-- [\#163107520](https://www.pivotaltracker.com/story/show/163107520) Bech32 agent ID's
-- [\#163101848](https://www.pivotaltracker.com/story/show/163101848) ESP version index tags
-- [\#163101847](https://www.pivotaltracker.com/story/show/163101847) ESP result index tags
-- [\#163101851](https://www.pivotaltracker.com/story/show/163101851) ESP result proposal index tags
-- [\#163102182](https://www.pivotaltracker.com/story/show/163102182) Cosmos cli support for printing Tags and string Data after submitting tx's
-- [\#163098168](https://www.pivotaltracker.com/story/show/163098168) Return agent ID after creating from CLI
-- [\#163098166](https://www.pivotaltracker.com/story/show/163098166) Get ESP result ID from CLI after submitting
-- [\#162943157](https://www.pivotaltracker.com/story/show/162943157) Store geo shape support
-- [\#163098169](https://www.pivotaltracker.com/story/show/163098169) Proposal CLI get query support
-- [\#163098032](https://www.pivotaltracker.com/story/show/163098032) Agent CLI query support
-- [\#163987749](https://www.pivotaltracker.com/story/show/163987749) [\#163831108](https://www.pivotaltracker.com/story/show/163831108) Configured Gitlab CI for build and tests
-- [\#163963339](https://www.pivotaltracker.com/story/show/163963339) Upgrade to latest Cosmos SDK
-- [\#164334136](https://www.pivotaltracker.com/story/show/164334136) Implement Postgreql indexer package
-- [\#164380651](https://www.pivotaltracker.com/story/show/164380651) Implement Postgres indexing for geo module
-- [\#17](https://github.com/regen-network/regen-ledger/issues/17) Add define property schema support
-- [\#18](https://github.com/regen-network/regen-ledger/issues/18) Graph package and binary serialization format
-- [\#27](https://github.com/regen-network/regen-ledger/issues/27) Create claim module
-- [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Integrate Cosmos staking modules
+* [\#163101853](https://www.pivotaltracker.com/story/show/163101853) Proposal index tags support
+* [\#163101852](https://www.pivotaltracker.com/story/show/163101852) ESP version proposal index tags
+* [\#163107520](https://www.pivotaltracker.com/story/show/163107520) Bech32 agent ID's
+* [\#163101848](https://www.pivotaltracker.com/story/show/163101848) ESP version index tags
+* [\#163101847](https://www.pivotaltracker.com/story/show/163101847) ESP result index tags
+* [\#163101851](https://www.pivotaltracker.com/story/show/163101851) ESP result proposal index tags
+* [\#163102182](https://www.pivotaltracker.com/story/show/163102182) Cosmos cli support for printing Tags and string Data after submitting tx's
+* [\#163098168](https://www.pivotaltracker.com/story/show/163098168) Return agent ID after creating from CLI
+* [\#163098166](https://www.pivotaltracker.com/story/show/163098166) Get ESP result ID from CLI after submitting
+* [\#162943157](https://www.pivotaltracker.com/story/show/162943157) Store geo shape support
+* [\#163098169](https://www.pivotaltracker.com/story/show/163098169) Proposal CLI get query support
+* [\#163098032](https://www.pivotaltracker.com/story/show/163098032) Agent CLI query support
+* [\#163987749](https://www.pivotaltracker.com/story/show/163987749) [\#163831108](https://www.pivotaltracker.com/story/show/163831108) Configured Gitlab CI for build and tests
+* [\#163963339](https://www.pivotaltracker.com/story/show/163963339) Upgrade to latest Cosmos SDK
+* [\#164334136](https://www.pivotaltracker.com/story/show/164334136) Implement Postgreql indexer package
+* [\#164380651](https://www.pivotaltracker.com/story/show/164380651) Implement Postgres indexing for geo module
+* [\#17](https://github.com/regen-network/regen-ledger/issues/17) Add define property schema support
+* [\#18](https://github.com/regen-network/regen-ledger/issues/18) Graph package and binary serialization format
+* [\#27](https://github.com/regen-network/regen-ledger/issues/27) Create claim module
+* [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Integrate Cosmos staking modules
 
-## [0.3.0] - 2019-01-09
+## [v0.3.0](https://github.com/regen-network/regen-ledger/releases/tag/v0.3.0) * 2019-01-09
 
-- Updated `xrn-test-2` testnet at height `1000`
+* Updated `xrn-test-2` testnet at height `1000`
 
 ### Fixed
-- Storage of ESP results bug
 
-## [0.2.0] - 2019-01-09
+* Storage of ESP results bug
 
-- Launched `xrn-test-2` testnet
+## [v0.2.0](https://github.com/regen-network/regen-ledger/releases/tag/v0.2.0) - 2019-01-09
+
+* Launched `xrn-test-2` testnet
 
 ### Added
 
-- [\#163071770](https://www.pivotaltracker.com/story/show/163071770) Agent genesis.json support
-- [\#162944049](https://www.pivotaltracker.com/story/show/162944049) Planned upgrade module
-- [\#162944050](https://www.pivotaltracker.com/story/show/162944050) Consortium upgrade action support
+* [\#163071770](https://www.pivotaltracker.com/story/show/163071770) Agent genesis.json support
+* [\#162944049](https://www.pivotaltracker.com/story/show/162944049) Planned upgrade module
+* [\#162944050](https://www.pivotaltracker.com/story/show/162944050) Consortium upgrade action support
 
 ### Fixed
-- [\#163040931](https://www.pivotaltracker.com/story/show/163040931) Signature verification failed bug
 
-## [0.1.0] - 2018-12-19
+* [\#163040931](https://www.pivotaltracker.com/story/show/163040931) Signature verification failed bug
 
-- Launched `xrn-1` testnet
+## [v0.1.0](https://github.com/regen-network/regen-ledger/releases/tag/v0.1.0) - 2018-12-19
+
+* Launched `xrn-1` testnet
 
 ### Added
-- [\#162640229](https://www.pivotaltracker.com/story/show/162640229) Create ESP cosmos msg
-- [\#162640226](https://www.pivotaltracker.com/story/show/162640226) Create simple agent cosmos msg
-- [\#162640231](https://www.pivotaltracker.com/story/show/162640231) Report ESP result cosmos msg
-- [\#162640230](https://www.pivotaltracker.com/story/show/162640230) Register ESP version cosmos msg
-- Created `data` module
-
-[Unreleased]: https://github.com/regen-network/regen-ledger/compare/v0.3.0...HEAD
-[0.3.0]: https://github.com/regen-network/regen-ledger/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/regen-network/regen-ledger/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/regen-network/regen-ledger/compare/fcc6887b...v0.1.0
+* 
+* [\#162640229](https://www.pivotaltracker.com/story/show/162640229) Create ESP cosmos msg
+* [\#162640226](https://www.pivotaltracker.com/story/show/162640226) Create simple agent cosmos msg
+* [\#162640231](https://www.pivotaltracker.com/story/show/162640231) Report ESP result cosmos msg
+* [\#162640230](https://www.pivotaltracker.com/story/show/162640230) Register ESP version cosmos msg
+* Created `data` module
