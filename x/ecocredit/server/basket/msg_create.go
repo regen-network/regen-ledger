@@ -20,8 +20,12 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 	var fee sdk.Coins
 	k.paramsKeeper.Get(sdkCtx, core.KeyBasketFee, &fee)
-	if !msg.Fee.IsAllGTE(fee) {
-		return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
+	if len(fee) > 0 && !msg.Fee.IsAnyGTE(fee) { // check any rather than all because we are only concerned with one fee
+		if len(fee) > 1 {
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee one of %s, got %s", fee, msg.Fee)
+		} else {
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
+		}
 	}
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)

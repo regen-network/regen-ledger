@@ -48,6 +48,13 @@ func (s *createSuite) AMinimumBasketFee(a string) {
 	s.minBasketFee = sdk.NewCoins(coin)
 }
 
+func (s *createSuite) MinimumBasketFees(a string) {
+	coins, err := sdk.ParseCoinsNormalized(a)
+	require.NoError(s.t, err)
+
+	s.minBasketFee = coins
+}
+
 func (s *createSuite) ACreditType() {
 	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
