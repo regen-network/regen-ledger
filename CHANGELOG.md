@@ -69,12 +69,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 
-- [#848](https://github.com/regen-network/regen-ledger/pull/848) Update data protobuf package version to `v1`
+- [#848](https://github.com/regen-network/regen-ledger/pull/848) Update protobuf package version to `v1`
 - [#927](https://github.com/regen-network/regen-ledger/pull/927) Update `Msg/Sign` to `Msg/Attest`
 - [#956](https://github.com/regen-network/regen-ledger/pull/956) Update data module to use `cosmos-sdk/orm`
 - [#970](https://github.com/regen-network/regen-ledger/pull/970) Update data module to use `cosmos-sdk/orm`
 - [#969](https://github.com/regen-network/regen-ledger/pull/971) Update `Msg/Attest` to single attestor and multiple pieces of data
-- [#1014](https://github.com/regen-network/regen-ledger/pull/1014) Update api to consistently use `ContentHash` 
+- [#1014](https://github.com/regen-network/regen-ledger/pull/1014) Update `hash` field names to `content_hash` 
 
 #### Fixed
 
@@ -89,9 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#823](https://github.com/regen-network/regen-ledger/pull/823) Add `Msg/CreateProject`
 - [#840](https://github.com/regen-network/regen-ledger/pull/840) Add `Query/Projects`
 - [#841](https://github.com/regen-network/regen-ledger/pull/841) Add `Query/ProjectInfo`
-- [#870](https://github.com/regen-network/regen-ledger/pull/870) Add basket `curator` to `Basket`
+- [#870](https://github.com/regen-network/regen-ledger/pull/870) Add `curator` to `Basket`
 - [#873](https://github.com/regen-network/regen-ledger/pull/847) Add marketplace `Msg/Sell`
-- [#874](https://github.com/regen-network/regen-ledger/pull/874) Add basket `years_in_the_past` data criteria
+- [#874](https://github.com/regen-network/regen-ledger/pull/874) Add `years_in_the_past` basket `DataCriteria`
+- [#878](https://github.com/regen-network/regen-ledger/pull/878) Add `escrowed` to `BatchBalance`
 - [#878](https://github.com/regen-network/regen-ledger/pull/878) Add escrow functionality to sell orders
 - [#885](https://github.com/regen-network/regen-ledger/pull/885) Add `Query/BatchesByClass`
 - [#888](https://github.com/regen-network/regen-ledger/pull/888) Add `admin` to `Project`
@@ -103,8 +104,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#906](https://github.com/regen-network/regen-ledger/pull/906) Add marketplace `Query/SellOrder`
 - [#912](https://github.com/regen-network/regen-ledger/pull/912) Add `fee` to `Msg/CreateClass`
 - [#917](https://github.com/regen-network/regen-ledger/pull/917) Add marketplace `Query/SellOrders`
-- [#918](https://github.com/regen-network/regen-ledger/pull/918) Add marketplace `Query/BuyOrder`
-- [#919](https://github.com/regen-network/regen-ledger/pull/919) Add marketplace `Query/BuyOrders`
 - [#936](https://github.com/regen-network/regen-ledger/pull/936) Add `issuance_date` to `Batch`
 - [#937](https://github.com/regen-network/regen-ledger/pull/937) Add `Msg/MintBatchCredits` api
 - [#937](https://github.com/regen-network/regen-ledger/pull/937) Add `Msg/SealBatch` api
