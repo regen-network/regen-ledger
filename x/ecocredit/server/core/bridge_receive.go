@@ -18,29 +18,12 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return nil, err
 	}
 
-	class, err := k.stateStore.ClassTable().GetById(ctx, req.Project.ClassId)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.Project.ClassId, err.Error())
-	}
-
-	// first we check if there is an existing project
-	idx := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(class.Key, req.Project.ReferenceId)
-	it, err := k.stateStore.ProjectTable().List(ctx, idx)
+	project, err := k.getProjectFromBridgeReq(ctx, req.Project)
 	if err != nil {
 		return nil, err
 	}
 
-	// we only want the first project that matches the reference ID, so we do not loop here.
-	var project *api.Project
-	if it.Next() {
-		var err error
-		project, err = it.Value()
-		if err != nil {
-			return nil, err
-		}
-	}
-	it.Close()
-
+	var response *core.MsgBridgeReceiveResponse
 	// if no project was found, create one + issue batch
 	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
@@ -69,18 +52,64 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		if err != nil {
 			return nil, err
 		}
-		return &core.MsgBridgeReceiveResponse{BatchDenom: batchRes.BatchDenom, ProjectId: projectRes.ProjectId}, nil
-	}
+		response = &core.MsgBridgeReceiveResponse{BatchDenom: batchRes.BatchDenom, ProjectId: projectRes.ProjectId}
+	} else {
+		batch, err := k.getBatchFromBridgeReq(ctx, req.Batch, project.Id, bridgeServiceAddr)
+		if err != nil {
+			return nil, err
+		}
 
+		if batch != nil {
+			_, err = k.MintBatchCredits(ctx, &core.MsgMintBatchCredits{
+				Issuer:     req.Issuer,
+				BatchDenom: batch.Denom,
+				Issuance: []*core.BatchIssuance{
+					{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+				},
+				OriginTx: req.Batch.OriginTx,
+				Note:     req.Batch.Note,
+			})
+			if err != nil {
+				return nil, err
+			}
+			response = &core.MsgBridgeReceiveResponse{BatchDenom: batch.Denom, ProjectId: project.Id}
+		} else {
+			// batch was nil, so we need to create one.
+			res, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
+				Issuer:    req.Issuer,
+				ProjectId: project.Id,
+				Issuance: []*core.BatchIssuance{
+					{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+				},
+				Metadata:  req.Batch.Metadata,
+				StartDate: req.Batch.StartDate,
+				EndDate:   req.Batch.EndDate,
+				Open:      true,
+				OriginTx:  req.Batch.OriginTx,
+				Note:      req.Batch.Note,
+			})
+			if err != nil {
+				return nil, err
+			}
+			response = &core.MsgBridgeReceiveResponse{BatchDenom: res.BatchDenom, ProjectId: project.Id}
+		}
+	}
+	// TODO: emit event?
+	return response, nil
+}
+
+// getBatchFromBridgeReq attempts to retrieve a batch from state given the request.
+// In the event that multiple batches are matched, the batch with the oldest issuance date is selected.
+// When no batches are found, nil is returned for both return values.
+func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Batch, projectId string, bridgeAddr sdk.AccAddress) (*api.Batch, error) {
 	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
 	// any batches in that iterator that have matching metadata, are added to the slice.
 	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
-	batchIdx := fmt.Sprintf("%s-%s-%s-", project.Id, req.Batch.StartDate.Format("20060102"), req.Batch.EndDate.Format("20060102"))
+	batchIdx := fmt.Sprintf("%s-%s-%s-", projectId, req.StartDate.Format("20060102"), req.EndDate.Format("20060102"))
 	bIt, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(batchIdx))
 	if err != nil {
 		return nil, err
 	}
-
 	batches := make([]*api.Batch, 0)
 	for bIt.Next() {
 		batch, err := bIt.Value()
@@ -88,51 +117,54 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			return nil, err
 		}
 		// the timestamp stored in the batch is more granular than the date in the denom representation, so we match here.
-		if batch.StartDate.AsTime().Equal(*req.Batch.StartDate) &&
-			batch.EndDate.AsTime().Equal(*req.Batch.EndDate) &&
-			batch.Metadata == req.Batch.Metadata &&
-			sdk.AccAddress(batch.Issuer).Equals(bridgeServiceAddr) {
+		if batch.StartDate.AsTime().UTC().Equal(req.StartDate.UTC()) &&
+			batch.EndDate.AsTime().UTC().Equal(req.EndDate.UTC()) &&
+			batch.Metadata == req.Metadata &&
+			sdk.AccAddress(batch.Issuer).Equals(bridgeAddr) {
 			batches = append(batches, batch)
 		}
 	}
-	it.Close()
+	bIt.Close()
 
-	// TODO(Tyler): potentially select a batch by oldest issuance date?
-	amtBatches := len(batches)
-	if amtBatches > 1 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d batches issued "+
-			"with start %v and end %v dates in project %s", bridgeServiceAddr.String(), len(batches), req.Batch.StartDate, req.Batch.EndDate, project.Id)
-	} else if amtBatches == 1 {
-		batch := batches[0]
-		// otherwise, we can simply mint into the batch
-		_, err = k.MintBatchCredits(ctx, &core.MsgMintBatchCredits{
-			Issuer:     req.Issuer,
-			BatchDenom: batch.Denom,
-			Issuance: []*core.BatchIssuance{
-				{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
-			},
-			OriginTx: req.Batch.OriginTx,
-			Note:     req.Batch.Note,
-		})
-		return &core.MsgBridgeReceiveResponse{BatchDenom: batch.Denom, ProjectId: project.Id}, nil
+	if len(batches) == 1 {
+		return batches[0], nil
+	} else if len(batches) > 1 {
+		oldestIssuedBatch := batches[0]
+		for i := 1; i < len(batches); i++ {
+			if oldestIssuedBatch.IssuanceDate.AsTime().UTC().After(batches[i].IssuanceDate.AsTime().UTC()) {
+				oldestIssuedBatch = batches[i]
+			}
+		}
+		return oldestIssuedBatch, nil
+	}
+	return nil, nil
+}
+
+// getProjectFromBridgeReq attempts to get a project from state given the request.
+// The first project seen in the iterator is returned.
+// If no projects are found, nil is returned for both values.
+func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project) (*api.Project, error) {
+	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
-	// len(batches) is not greater than or equal to 1, so its empty, meaning no batch exists yet.
-	res, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
-		Issuer:    req.Issuer,
-		ProjectId: project.Id,
-		Issuance: []*core.BatchIssuance{
-			{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
-		},
-		Metadata:  req.Batch.Metadata,
-		StartDate: req.Batch.StartDate,
-		EndDate:   req.Batch.EndDate,
-		Open:      true,
-		OriginTx:  req.Batch.OriginTx,
-		Note:      req.Batch.Note,
-	})
+	// first we check if there is an existing project
+	idx := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(class.Key, req.ReferenceId)
+	it, err := k.stateStore.ProjectTable().List(ctx, idx)
 	if err != nil {
 		return nil, err
 	}
-	return &core.MsgBridgeReceiveResponse{BatchDenom: res.BatchDenom, ProjectId: project.Id}, nil
+
+	// we only want the first project that matches the reference ID, so we do not loop here.
+	var project *api.Project
+	if it.Next() {
+		var err error
+		project, err = it.Value()
+		if err != nil {
+			return nil, err
+		}
+	}
+	it.Close()
+	return project, nil
 }
