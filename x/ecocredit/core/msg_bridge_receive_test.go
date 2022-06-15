@@ -177,10 +177,10 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: note length",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Batch.Note = strings.Repeat("X", MaxMetadataLength+1)
+				validMsg.Batch.Note = strings.Repeat("X", MaxNoteLength+1)
 				return validMsg
 			},
-			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", MaxMetadataLength+1, MaxMetadataLength).Error(),
+			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", MaxNoteLength+1, MaxNoteLength).Error(),
 		},
 		{
 			name: "invalid: class Id",
