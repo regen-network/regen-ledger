@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package regen.data.v1;
 
-import "google/protobuf/timestamp.proto";
-
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // ContentHash specifies a hash-based content identifier for a piece of data.
@@ -123,12 +121,6 @@ enum RawMediaType {
 
   // OGG
   RAW_MEDIA_TYPE_OGG = 35;
-
-  // geospatial raster formats
-  // TODO
-
-  // geospatial vector formats
-  // TODO
 }
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
@@ -142,34 +134,8 @@ enum GraphCanonicalizationAlgorithm {
 
 // GraphMerkleTree is the graph merkle tree type used for hashing, if any
 enum GraphMerkleTree {
-  // no merkle tree
+  // unspecified and valid
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
-}
-
-// ContentEntry describes data referenced and possibly stored on chain
-message ContentEntry {
-  // content_hash is the content hash of the anchored data.
-  ContentHash content_hash = 1;
-
-  // iri is the IRI of the anchored data.
-  string iri = 2;
-
-  // timestamp is the timestamp of the anchored data.
-  google.protobuf.Timestamp timestamp = 3;
-}
-
-// AttestorEntry is an attestor entry including the attestor, the IRI, and the
-// timestamp.
-message AttestorEntry {
-  // iri is the IRI of the data attested to.
-  string iri = 1;
-
-  // attestor is the address of the account that has attested to the veracity of
-  // the data.
-  string attestor = 2;
-
-  // timestamp is the timestamp at which the data was attested to.
-  google.protobuf.Timestamp timestamp = 3;
 }
 
 // ContentHashes contains list of content ContentHash.

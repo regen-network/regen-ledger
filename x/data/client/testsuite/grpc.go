@@ -1,624 +1,505 @@
 package testsuite
 
 import (
-	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-func (s *IntegrationTestSuite) TestQueryByIRI() {
-	val := s.network.Validators[0]
+const dataRoute = "regen/data/v1"
 
-	iri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+func (s *IntegrationTestSuite) TestQueryAnchorByIRI() {
+	require := s.Require()
 
 	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
+		name string
+		url  string
 	}{
 		{
-			"invalid IRI",
-			fmt.Sprintf("%s/regen/data/v1/by-iri/%s", val.APIAddress, "foo"),
-			true,
-			"not found",
+			"valid",
+			fmt.Sprintf("%s/%s/anchor-by-iri/%s", s.val.APIAddress, dataRoute, s.iri1),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/by-iri/%s", val.APIAddress, iri),
-			false,
-			"",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/anchors/iri/%s", s.val.APIAddress, dataRoute, s.iri1),
 		},
 	}
 
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var entry data.QueryByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &entry)
-
-			if tc.expErr {
-				require.Error(err)
-			} else {
-				require.NoError(err)
-				require.NotNil(entry.Entry)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryByAttestor() {
-	val := s.network.Validators[0]
-
-	acc1, err := val.ClientCtx.Keyring.Key("acc1")
-	s.Require().NoError(err)
-
-	addr := acc1.GetAddress().String()
-
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
-	}{
-		{
-			"invalid attestor",
-			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s", val.APIAddress, "foo"),
-			true,
-			"invalid bech32 string",
-			0,
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s", val.APIAddress, addr),
-			false,
-			"",
-			2,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s?pagination.limit=1", val.APIAddress, addr),
-			false,
-			"",
-			1,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var entries data.QueryByAttestorResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &entries)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(entries.Entries)
-				require.Len(entries.Entries, tc.expItems)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryHashByIRI() {
-	val := s.network.Validators[0]
-
-	iri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
-
-	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
-	}{
-		{
-			"invalid IRI",
-			fmt.Sprintf("%s/regen/data/v1/hash/%s", val.APIAddress, "foo"),
-			true,
-			"invalid IRI",
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/hash/%s", val.APIAddress, iri),
-			false,
-			"",
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var contentHash data.QueryHashByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &contentHash)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(contentHash.ContentHash)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestIRIByRawHash() {
-	val := s.network.Validators[0]
-
-	iri, ch := s.createIRIAndRawHash([]byte("xyzabc123"))
-
-	encodedHash := encodeBase64Bytes(ch.Raw.Hash)
-
-	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
-	}{
-		{
-			"empty hash",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-raw?digest_algorithm=%s",
-				val.APIAddress,
-				ch.Raw.DigestAlgorithm, // enum 1
-			),
-			true,
-			"hash cannot be empty",
-		},
-		{
-			"invalid hash",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
-				val.APIAddress,
-				"foo",
-				ch.Raw.DigestAlgorithm, // enum 1
-			),
-			true,
-			"failed to decode base64 string",
-		},
-		{
-			"unspecified digest algorithm",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-raw?hash=%s",
-				val.APIAddress,
-				encodedHash, // base64 encoded string
-			),
-			true,
-			"digest algorithm cannot be unspecified",
-		},
-		{
-			"invalid digest algorithm",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
-				val.APIAddress,
-				encodedHash, // base64 encoded string
-				"foo",
-			),
-			true,
-			"foo is not a valid data.DigestAlgorithm",
-		},
-		{
-			"invalid media type",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%s",
-				val.APIAddress,
-				encodedHash,            // base64 encoded string
-				ch.Raw.DigestAlgorithm, // enum 1
-				"foo",
-			),
-			true,
-			"foo is not a valid data.RawMediaType",
-		},
-		{
-			"valid request",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%d",
-				val.APIAddress,
-				encodedHash,            // base64 encoded string
-				ch.Raw.DigestAlgorithm, // enum 1
-				ch.Raw.MediaType,       // enum 0
-			),
-			false,
-			"",
-		},
-		{
-			"valid request enums as strings",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s&media_type=%s",
-				val.APIAddress,
-				encodedHash,                    // base64 encoded string
-				"DIGEST_ALGORITHM_BLAKE2B_256", // enum 1
-				"RAW_MEDIA_TYPE_UNSPECIFIED",   // enum 1
-			),
-			false,
-			"",
-		},
-	}
-
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var res data.QueryIRIByRawHashResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(bz), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.Equal(iri, res.Iri)
-			}
+			var res data.QueryAnchorByIRIResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Anchor)
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestIRIByGraphHash() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
+	require := s.Require()
 
-	iri, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
-
-	encodedHash := encodeBase64Bytes(ch.Graph.Hash)
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
 
 	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
+		name string
+		url  string
+		body []byte
 	}{
 		{
-			"empty hash",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?digest_algorithm=%d&canonicalization_algorithm=%d",
-				val.APIAddress,
-				ch.Graph.DigestAlgorithm,           // enum 1
-				ch.Graph.CanonicalizationAlgorithm, // enum 1
-			),
-			true,
-			"hash cannot be empty",
+			"valid",
+			fmt.Sprintf("%s/%s/anchor-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 		{
-			"invalid hash",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
-				val.APIAddress,
-				"foo",
-				ch.Graph.DigestAlgorithm,           // enum 1
-				ch.Graph.CanonicalizationAlgorithm, // enum 1
-			),
-			true,
-			"failed to decode base64 string",
-		},
-		{
-			"unspecified digest algorithm",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?hash=%s&canonicalization_algorithm=%d",
-				val.APIAddress,
-				encodedHash,                        // base64 encoded string
-				ch.Graph.CanonicalizationAlgorithm, // enum 1
-			),
-			true,
-			"digest algorithm cannot be unspecified",
-		},
-		{
-			"invalid digest algorithm",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%d",
-				val.APIAddress,
-				encodedHash, // base64 encoded string
-				"foo",
-				ch.Graph.CanonicalizationAlgorithm, // enum 1
-			),
-			true,
-			"foo is not a valid data.DigestAlgorithm",
-		},
-		{
-			"unspecified canonicalization algorithm",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s",
-				val.APIAddress,
-				encodedHash,              // base64 encoded string
-				ch.Graph.DigestAlgorithm, // enum 1
-			),
-			true,
-			"canonicalization algorithm cannot be unspecified",
-		},
-		{
-			"invalid canonicalization algorithm",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
-				val.APIAddress,
-				encodedHash,              // base64 encoded string
-				ch.Graph.DigestAlgorithm, // enum 1
-				"foo",
-			),
-			true,
-			"foo is not a valid data.GraphCanonicalizationAlgorithm",
-		},
-		{
-			"valid request",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
-				val.APIAddress,
-				encodedHash,                        // base64 encoded string
-				ch.Graph.DigestAlgorithm,           // enum 1
-				ch.Graph.CanonicalizationAlgorithm, // enum 1
-			),
-			false,
-			"",
-		},
-		{
-			"valid request enums as strings",
-			fmt.Sprintf(
-				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
-				val.APIAddress,
-				encodedHash,                    // base64 encoded string
-				"DIGEST_ALGORITHM_BLAKE2B_256", // enum 1
-				"GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015", // enum 1
-			),
-			false,
-			"",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/anchors/hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.QueryAnchorByHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Anchor)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 	require := s.Require()
+
+	pgn := "pagination.countTotal=true"
+	// TODO: #1113
+	// pgn := pagination.limit=1&pagination.countTotal=true
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-attestor/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.addr1,
+			),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-attestor/%s?%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.addr1,
+				pgn,
+			),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf(
+				"%s/%s/attestations/attestor/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.addr1,
+			),
+		},
+	}
+
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var res data.QueryIRIByGraphHashResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
+			var res data.QueryAttestationsByAttestorResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Attestations)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(bz), tc.errMsg)
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Attestations, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.Equal(iri, res.Iri)
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAttestors() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
+	require := s.Require()
 
-	iri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+	pgn := "pagination.limit=1&pagination.countTotal=true"
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name string
+		url  string
 	}{
 		{
-			"invalid attestor",
-			fmt.Sprintf("%s/regen/data/v1/attestors/%s", val.APIAddress, "foo"),
-			true,
-			"not found",
-			0,
+			"valid",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-iri/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.iri2,
+			),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/attestors/%s", val.APIAddress, iri),
-			false,
-			"",
-			2,
+			"valid with pagination",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-iri/%s?%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.iri2,
+				pgn,
+			),
 		},
 		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/attestors/%s?pagination.limit=1", val.APIAddress, iri),
-			false,
-			"",
-			1,
+			"valid alternative",
+			fmt.Sprintf(
+				"%s/%s/attestations/iri/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.iri2,
+			),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var attestors data.QueryAttestorsByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &attestors)
+			var res data.QueryAttestationsByIRIResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Attestations)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Attestations, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(attestors.Attestors)
-				require.Len(attestors.Attestors, tc.expItems)
+				require.Empty(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
+	require := s.Require()
+
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
+
+	pgn, err := json.Marshal(query.PageRequest{
+		Limit:      1,
+		CountTotal: true,
+	})
+	require.NoError(err)
+
+	testCases := []struct {
+		name string
+		url  string
+		body []byte
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/attestations-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/attestations-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, hash, pgn)),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/attestations/hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.QueryAttestationsByHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Attestations)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Attestations, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
 func (s *IntegrationTestSuite) TestQueryResolver() {
-	val := s.network.Validators[0]
+	require := s.Require()
 
 	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
+		name string
+		url  string
 	}{
 		{
-			"not found",
-			fmt.Sprintf("%s/regen/data/v1/resolver/%d", val.APIAddress, 404),
-			true,
-			"not found",
+			"valid",
+			fmt.Sprintf("%s/%s/resolver/%d", s.val.APIAddress, dataRoute, s.resolverID),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolver/%d", val.APIAddress, s.resolverID),
-			false,
-			"",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/%d", s.val.APIAddress, dataRoute, s.resolverID),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
 			var res data.QueryResolverResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(bz), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(res.Resolver.Url)
-				require.NotNil(res.Resolver.Manager)
-			}
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolver)
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolversByIri() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
+	require := s.Require()
+
+	pgn := "pagination.limit=1&pagination.countTotal=true"
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name string
+		url  string
 	}{
 		{
-			"not found",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/iri/%s", val.APIAddress, "foo"),
-			true,
-			"not found",
-			0,
+			"valid",
+			fmt.Sprintf("%s/%s/resolvers-by-iri/%s", s.val.APIAddress, dataRoute, s.iri1),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/iri/%s", val.APIAddress, s.iri),
-			false,
-			"",
-			2,
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/resolvers-by-iri/%s?%s", s.val.APIAddress, dataRoute, s.iri1, pgn),
 		},
 		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/iri/%s?pagination.limit=1", val.APIAddress, s.iri),
-			false,
-			"",
-			1,
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/iri/%s", s.val.APIAddress, dataRoute, s.iri1),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
 			var res data.QueryResolversByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolvers)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(bz), tc.errMsg)
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Resolvers, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(res.Resolvers)
-				require.Len(res.Resolvers, tc.expItems)
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolversByUrl() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryResolversByHash() {
+	require := s.Require()
+
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
+
+	pgn, err := json.Marshal(query.PageRequest{
+		Limit:      1,
+		CountTotal: true,
+	})
+	require.NoError(err)
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name string
+		url  string
+		body []byte
 	}{
 		{
-			"empty url",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/url", val.APIAddress),
-			true,
-			"url cannot be empty",
-			0,
+			"valid",
+			fmt.Sprintf("%s/%s/resolvers-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/url?url=%s", val.APIAddress, s.url),
-			false,
-			"",
-			2,
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/resolvers-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, hash, pgn)),
 		},
 		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/url?url=%s&pagination.limit=1", val.APIAddress, s.url),
-			false,
-			"",
-			1,
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.QueryResolversByHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolvers)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Resolvers, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolversByURL() {
 	require := s.Require()
+
+	pgn, err := json.Marshal(query.PageRequest{
+		Limit:      1,
+		CountTotal: true,
+	})
+	require.NoError(err)
+
+	testCases := []struct {
+		name string
+		url  string
+		body []byte
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/resolvers-by-url", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"url": "%s"}`, s.url)),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/resolvers-by-url", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"url": "%s", "pagination": %s}`, s.url, pgn)),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/url", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"url": "%s"}`, s.url)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.QueryResolversByURLResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolvers)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Resolvers, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestConvertIRIToHash() {
+	require := s.Require()
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/convert-iri-to-hash/%s", s.val.APIAddress, dataRoute, s.iri1),
+		},
+	}
+
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
 			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var res data.QueryResolversByUrlResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(bz), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(res.Resolvers)
-				require.Len(res.Resolvers, tc.expItems)
-			}
+			var res data.ConvertIRIToHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.ContentHash)
 		})
 	}
 }
 
-func encodeBase64Bytes(bz []byte) string {
-	// encode base64 bytes to base64 string
-	str := base64.StdEncoding.EncodeToString(bz)
-	// replace all instances of "+" with "%2b"
-	return strings.Replace(str, "+", "%2b", -1)
+func (s *IntegrationTestSuite) TestConvertHashToIRI() {
+	require := s.Require()
+
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
+
+	testCases := []struct {
+		name string
+		url  string
+		body []byte
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/convert-hash-to-iri", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.ConvertHashToIRIResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Iri)
+		})
+	}
 }

@@ -9,11 +9,6 @@ import (
 	"fmt"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -26,14 +21,20 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
@@ -84,6 +85,11 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			return nil, err
 		}
 		toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
+
+		// update x/ecocredit basket fee param (the basket fee param key has changed but the
+		// value will be the same value as is on regen-1 at the time of the upgrade)
+		ecocreditSubspace, _ := app.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
+		ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
 
 		// recover funds for community member (regen-1 governance proposal #11)
 		if ctx.ChainID() == "regen-1" {

@@ -44,7 +44,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	// if no project was found, create one + issue batch
 	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
-			Issuer:       req.ServiceAddress,
+			Admin:        req.ServiceAddress,
 			ClassId:      req.Project.ClassId,
 			Metadata:     req.Project.Metadata,
 			Jurisdiction: req.Project.Jurisdiction,

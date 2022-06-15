@@ -65,11 +65,17 @@ type MsgCreate struct {
 	// date_criteria is the date criteria for batches admitted to the basket.
 	// At most, only one of the fields in the date_criteria should be set.
 	DateCriteria *DateCriteria `protobuf:"bytes,8,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
-	// fee is the fee that the curator will pay to create the basket. It must be
-	// >= the required Params.basket_creation_fee. We include the fee explicitly
-	// here so that the curator explicitly acknowledges paying this fee and
-	// is not surprised to learn that the paid a big fee and didn't know
-	// beforehand.
+	// fee is the basket creation fee. A fee is not required if the list of fees
+	// in Params.basket_fee is empty. The provided fee must be one of the fees
+	// listed in Params.basket_fee. The provided amount can be greater than
+	// or equal to the listed amount but the basket creator will only be charged
+	// the listed amount (i.e. the minimum amount).
+	//
+	// Note (Since Revision 1): Although this field supports a list of fees, the
+	// basket creator must provide no more than one fee (i.e. one Coin in a list
+	// of Coins). Providing more than one fee will fail basic message validation.
+	// This field will be updated to a single fee rather than a list of fees in
+	// the next version to reflect these requirements.
 	Fee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,9,rep,name=fee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"fee"`
 }
 
