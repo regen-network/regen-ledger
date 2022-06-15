@@ -244,6 +244,63 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 	assert.Equal(t, res.ProjectId, project.Id)
 }
 
+func TestBridgeReceive_ChoosesLatestBatch(t *testing.T) {
+	t.Parallel()
+	refId := "VCS-001"
+	s := setupBase(t)
+	project, batch := setupBridgeTest(s, refId)
+
+	// set up a 2nd batch with same data as first, but an older issuance date.
+	// the method should pick this first.
+	oldTime := batch.IssuanceDate.AsTime().Add(time.Hour * -3)
+	denom2 := batch.Denom[:len(batch.Denom)-1] + "2" // the previous batch denom but -002 instead of -001
+	batch2 := &api.Batch{
+		Issuer:       s.addr,
+		ProjectKey:   batch.ProjectKey,
+		Denom:        denom2,
+		Metadata:     batch.Metadata,
+		StartDate:    batch.StartDate,
+		EndDate:      batch.EndDate,
+		IssuanceDate: timestamppb.New(oldTime),
+		Open:         true,
+	}
+	b2key, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, batch2)
+	assert.NilError(t, err)
+	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        b2key,
+		TradableAmount:  "1",
+		RetiredAmount:   "1",
+		CancelledAmount: "1",
+	}))
+
+	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
+	msg := &core.MsgBridgeReceive{
+		Issuer: s.addr.String(),
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.addr.String(),
+			Amount:    "3",
+			OriginTx: &core.OriginTx{
+				Id:     "0x12345",
+				Source: "polygon",
+			},
+			StartDate: &start,
+			EndDate:   &end,
+			Metadata:  batch.Metadata,
+			Note:      "test",
+		},
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  project.ReferenceId,
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
+			ClassId:      "C01",
+		},
+	}
+	res, err := s.k.BridgeReceive(s.ctx, msg)
+	assert.NilError(t, err)
+	// ensure the 2nd batch was picked, since it was manually set to be an older issuance date than the first.
+	assert.Equal(t, res.BatchDenom, batch2.Denom)
+}
+
 func setupBridgeTest(s *baseSuite, refId string) (project *api.Project, batch *api.Batch) {
 	var err error
 	_, projectId, batchDenom := s.setupClassProjectBatch(s.t)
