@@ -37,7 +37,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap("recipient")
 	}
 	if _, err := math.NewPositiveDecFromString(batch.Amount); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	if batch.OriginTx == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx is required")
@@ -63,7 +63,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 
 	// project validation
 	if m.Project == nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("project cannot be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("project cannot be empty")
 	}
 	project := m.Project
 	if len(project.ReferenceId) == 0 {
