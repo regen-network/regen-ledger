@@ -479,8 +479,8 @@ message MsgBridgeResponse {}
 // MsgBridgeReceive is the Msg/BridgeReceive request type.
 message MsgBridgeReceive {
 
-  // service_address is the account address of the service bridging the credits.
-  string service_address = 1;
+  // issuer is the account address of the service bridging the credits.
+  string issuer = 1;
 
   Batch batch = 2;
 
@@ -530,8 +530,8 @@ message MsgBridgeReceive {
     // metadata is the metadata for the project.
     string metadata = 9;
 
-    // id is the unique identifier of the credit class within which the project and
-    // credit batch already exist or will be created.
+    // id is the unique identifier of the credit class within which the project
+    // and credit batch already exist or will be created.
     string class_id = 12;
   }
 }

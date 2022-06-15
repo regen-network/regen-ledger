@@ -22,7 +22,7 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 
 	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
 	msg := core.MsgBridgeReceive{
-		ServiceAddress: s.addr.String(),
+		Issuer: s.addr.String(),
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: recipient,
 			Amount:    "3",
@@ -66,7 +66,7 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 	startDate, endDate := (&timestamppb.Timestamp{Seconds: 500}).AsTime(), (&timestamppb.Timestamp{Seconds: 600}).AsTime()
 
 	msg := core.MsgBridgeReceive{
-		ServiceAddress: s.addr.String(),
+		Issuer: s.addr.String(),
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: recipient,
 			Amount:    "3",
@@ -109,7 +109,7 @@ func TestBridgeReceive_None(t *testing.T) {
 	recipient := testutil.GenAddress()
 	start, end := time.Now(), time.Now()
 	msg := core.MsgBridgeReceive{
-		ServiceAddress: s.addr.String(),
+		Issuer: s.addr.String(),
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: recipient,
 			Amount:    "3",
@@ -181,7 +181,7 @@ func TestBridgeReceive_TooManyBatches(t *testing.T) {
 	assert.NilError(t, err)
 
 	msg := core.MsgBridgeReceive{
-		ServiceAddress: s.addr.String(),
+		Issuer: s.addr.String(),
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: testutil.GenAddress(),
 			Amount:    "3",
@@ -220,7 +220,7 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 
 	start, end := time.Now(), time.Now()
 	msg := core.MsgBridgeReceive{
-		ServiceAddress: s.addr.String(),
+		Issuer: s.addr.String(),
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: s.addr.String(),
 			Amount:    "3",

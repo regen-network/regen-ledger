@@ -13,7 +13,7 @@ import (
 
 // BridgeReceive bridges credits received from another chain.
 func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (*core.MsgBridgeReceiveResponse, error) {
-	bridgeServiceAddr, err := sdk.AccAddressFromBech32(req.ServiceAddress)
+	bridgeServiceAddr, err := sdk.AccAddressFromBech32(req.Issuer)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	// if no project was found, create one + issue batch
 	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
-			Admin:        req.ServiceAddress,
+			Admin:        req.Issuer,
 			ClassId:      req.Project.ClassId,
 			Metadata:     req.Project.Metadata,
 			Jurisdiction: req.Project.Jurisdiction,
@@ -54,7 +54,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			return nil, err
 		}
 		batchRes, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
-			Issuer:    req.ServiceAddress,
+			Issuer:    req.Issuer,
 			ProjectId: projectRes.ProjectId,
 			Issuance: []*core.BatchIssuance{
 				{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
@@ -103,7 +103,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		batch := batches[0]
 		// otherwise, we can simply mint into the batch
 		_, err = k.MintBatchCredits(ctx, &core.MsgMintBatchCredits{
-			Issuer:     req.ServiceAddress,
+			Issuer:     req.Issuer,
 			BatchDenom: batch.Denom,
 			Issuance: []*core.BatchIssuance{
 				{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
@@ -116,7 +116,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 
 	// len(batches) is not greater than or equal to 1, so its empty, meaning no batch exists yet.
 	res, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
-		Issuer:    req.ServiceAddress,
+		Issuer:    req.Issuer,
 		ProjectId: project.Id,
 		Issuance: []*core.BatchIssuance{
 			{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},

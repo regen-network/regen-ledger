@@ -36,9 +36,9 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		ClassId:      "C01",
 	}
 	validMsg := MsgBridgeReceive{
-		ServiceAddress: addr,
-		Batch:          &validBatch,
-		Project:        &validProject,
+		Issuer:  addr,
+		Batch:   &validBatch,
+		Project: &validProject,
 	}
 
 	resetMsg := func() MsgBridgeReceive {
@@ -62,7 +62,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: service address",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.ServiceAddress = "0xfoobar"
+				validMsg.Issuer = "0xfoobar"
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidAddress.Error(),

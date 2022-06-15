@@ -24,7 +24,7 @@ func (m MsgBridgeReceive) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridgeReceive) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.ServiceAddress); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap("address")
 	}
 
@@ -83,6 +83,6 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgCancel.
 func (m *MsgBridgeReceive) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.ServiceAddress)
+	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
 	return []sdk.AccAddress{addr}
 }
