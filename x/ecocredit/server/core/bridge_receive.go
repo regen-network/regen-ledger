@@ -31,7 +31,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	}
 
 	// we only want the first project that matches the reference ID, so we do not loop here.
-	project := new(api.Project)
+	var project *api.Project
 	if it.Next() {
 		var err error
 		project, err = it.Value()
