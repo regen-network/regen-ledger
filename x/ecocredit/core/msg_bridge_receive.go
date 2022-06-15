@@ -25,7 +25,7 @@ func (m MsgBridgeReceive) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridgeReceive) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrap("address")
+		return sdkerrors.ErrInvalidAddress.Wrap("issuer")
 	}
 
 	// batch validation
