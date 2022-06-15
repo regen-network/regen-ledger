@@ -16,17 +16,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 
-*
+* [#1177](https://github.com/regen-network/regen-ledger/pull/1177) Remove exponent from `create-basket` command
+* [#1180](https://github.com/regen-network/regen-ledger/pull/1180) Fix batch dates and project IDs in state migrations
+* [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Add simple `Credits` type to be reused in messages
 
 #### Changed
 
-*
+* [#1167](https://github.com/regen-network/regen-ledger/pull/1167) Update basket fee to be burned
+* [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Update `Query/Projects` to `Query/ProjectsByClass`
+* [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Update `Msg/Bridge` to use `Credits`
+* [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Update `Msg/Cancel` to use `Credits`
+* [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `Issuer` to `Admin` in `Msg/CreateProject`
+* [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Update `Msg/Retire` to use `Credits`
+* [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `Metadata` to `NewMatadata` in `Msg/UpdateClassMetadata`
 
 ### x/ecocredit
 
 #### Added
 
-*
+* [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Add additional bindings for query endpoints
 
 #### Changed
 
@@ -96,7 +104,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#878](https://github.com/regen-network/regen-ledger/pull/878) Add escrow functionality to sell orders
 * [#885](https://github.com/regen-network/regen-ledger/pull/885) Add `Query/BatchesByClass`
 * [#888](https://github.com/regen-network/regen-ledger/pull/888) Add `admin` to `Project`
-* [#855](https://github.com/regen-network/regen-ledger/pull/855) Add `EventUpdateClassAdmin`, `EventUpdateClassIssuers`, and `EventUpdateClassMetadata`
+* [#855](https://github.com/regen-network/regen-ledger/pull/855) Add `EventUpdateClassAdmin`
+* [#855](https://github.com/regen-network/regen-ledger/pull/855) Add `EventUpdateClassIssuers`
+* [#855](https://github.com/regen-network/regen-ledger/pull/855) Add `EventUpdateClassMetadata`
 * [#891](https://github.com/regen-network/regen-ledger/pull/891) Add marketplace `Msg/CancelSellOrder`
 * [#891](https://github.com/regen-network/regen-ledger/pull/891) Add marketplace `Msg/UpdateSellOrders`
 * [#906](https://github.com/regen-network/regen-ledger/pull/906) Add marketplace `Query/SellOrder`
