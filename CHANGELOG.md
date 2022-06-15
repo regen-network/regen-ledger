@@ -43,14 +43,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 
-* Rocksdb and non-state-breaking version bumps for performance
-* [#783](https://github.com/regen-network/regen-ledger/pull/783) Add Dec to BigInt conversion to math package.
 * [#720](https://github.com/regen-network/regen-ledger/pull/720) Add begin and end blocker support to module server
-* 
+* [#783](https://github.com/regen-network/regen-ledger/pull/783) Add Dec to BigInt conversion to math package.
 
 #### Changed
 
-* 
+* [#1088](https://github.com/regen-network/regen-ledger/pull/1088) Update all modules to Go `1.18`
+* [#1131](https://github.com/regen-network/regen-ledger/pull/1131) Update app module version to `v4`
 
 #### Fixed
 
@@ -66,6 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#887](https://github.com/regen-network/regen-ledger/pull/887) Add `ByHash` and IRI/ContentHash conversion queries
 * [#953](https://github.com/regen-network/regen-ledger/pull/953) Add legacy Amino signing support
 * [#1051](https://github.com/regen-network/regen-ledger/pull/1051) Add `EventDefineResolver` and `EventRegisterResolver`
+* [#1107](https://github.com/regen-network/regen-ledger/pull/1107) Add commands and endpoints for IRI/ContentHash conversion
+* [#1132](https://github.com/regen-network/regen-ledger/pull/1132) Add `Query/ResolversByURL`
 
 #### Changed
 
@@ -80,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption to consume for each iteration
 * [#946](https://github.com/regen-network/regen-ledger/pull/946) Remove use of `oneof` to support legacy Amino signing
+* [#1128](https://github.com/regen-network/regen-ledger/pull/1128) Remove unique constrains on resolver URL
 
 ### x/ecocredit
 
@@ -122,8 +124,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#1037](https://github.com/regen-network/regen-ledger/pull/1037) Add `EventUpdateProjectMetadata`
 * [#1008](https://github.com/regen-network/regen-ledger/pull/1008) Add `buy-direct` and `buy-direct-batch` CLI commands
 * [#1033](https://github.com/regen-network/regen-ledger/pull/1033) Add `class-issuers` CLI command
+* [#1054](https://github.com/regen-network/regen-ledger/pull/1054) Add `basket_info` to `Query/BasketResponse`
 * [#1059](https://github.com/regen-network/regen-ledger/pull/1059) Add `Msg/MintBatchCredits` server implementation
 * [#1060](https://github.com/regen-network/regen-ledger/pull/1060) Add `Msg/SealBatch` server implementation
+* [#1061](https://github.com/regen-network/regen-ledger/pull/1061) Add `CreditType` state migration
+* [#1072](https://github.com/regen-network/regen-ledger/pull/1072) Add `Msg/AllowDenomProposal`
+* [#1064](https://github.com/regen-network/regen-ledger/pull/1064) Add `Get` method for a single parameter
+* [#1094](https://github.com/regen-network/regen-ledger/pull/1094) Add `reference_id` to `Project`
+* [#1095](https://github.com/regen-network/regen-ledger/pull/1095) Add batch denom migration to state migrations
+* [#1099](https://github.com/regen-network/regen-ledger/pull/1099) Add marketplace `Query/AllowedDenoms`
+* [#1101](https://github.com/regen-network/regen-ledger/pull/1101) Add `Msg/Bridge`
+* [#1112](https://github.com/regen-network/regen-ledger/pull/1112) Add duplicate `BatchOriginTx` check
+* [#1116](https://github.com/regen-network/regen-ledger/pull/1116) Add `Query/BatchesByProject`
+* [#1116](https://github.com/regen-network/regen-ledger/pull/1116) Add commands for querying batches
+* [#1121](https://github.com/regen-network/regen-ledger/pull/1121) Add `v4.0.0` upgrade handler
+* [#1125](https://github.com/regen-network/regen-ledger/pull/1125) Add `EventMint`
+* [#1148](https://github.com/regen-network/regen-ledger/pull/1148) Add marketplace `EventBuyDirect`
+* [#1148](https://github.com/regen-network/regen-ledger/pull/1148) Add marketplace `EventCancel`
+* [#1141](https://github.com/regen-network/regen-ledger/pull/1141) Add `Query/ProjectsByAdmin`
 
 #### Changed
 
@@ -155,23 +173,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#1020](https://github.com/regen-network/regen-ledger/pull/1020) Update project and retirement `location` to `jurisdiction`
 * [#1021](https://github.com/regen-network/regen-ledger/pull/1021) Update `id` to `key` and `<object>_id` to `id`
 * [#1021](https://github.com/regen-network/regen-ledger/pull/1021) Update `credit_type` to `credit_type_abbrev`
-* [#1022](https://github.com/regen-network/regen-ledger/pull/1022) Update query responses to return human-readable values
+* [#1022](https://github.com/regen-network/regen-ledger/pull/1022) Update `Query/ClassResponse` fields
+* [#1022](https://github.com/regen-network/regen-ledger/pull/1022) Update `Query/BatchResponse` fields
+* [#1022](https://github.com/regen-network/regen-ledger/pull/1022) Update `Query/ProjectResponse` fields
 * [#1039](https://github.com/regen-network/regen-ledger/pull/1039) Update `BatchDenom` to `Denom`
 * [#1040](https://github.com/regen-network/regen-ledger/pull/1040) Update `ClassInfo` to `Class`
 * [#1040](https://github.com/regen-network/regen-ledger/pull/1040) Update `ProjectInfo` to `Project`
 * [#1040](https://github.com/regen-network/regen-ledger/pull/1040) Update `BatchInfo` to `Batch`
 * [#1043](https://github.com/regen-network/regen-ledger/pull/1043) Remove `credit_types` from `Params`
+* [#1044](https://github.com/regen-network/regen-ledger/pull/1044) Remove unnecessary fields in events
 * [#1052](https://github.com/regen-network/regen-ledger/pull/1052) Remove `project_` prefix from `Project` fields
-* [#1054](https://github.com/regen-network/regen-ledger/pull/1054) Update marketplace query responses to return human-readable values
+* [#1054](https://github.com/regen-network/regen-ledger/pull/1054) Update `Query/SellOrdersResponse` fields
+* [#1054](https://github.com/regen-network/regen-ledger/pull/1054) Update `Query/AllowedDenomsResponse` fields
+* [#1046](https://github.com/regen-network/regen-ledger/pull/1046) Update project ID and batch denom format
+* [#1086](https://github.com/regen-network/regen-ledger/pull/1086) Remove unnecessary fields in events
+* [#1090](https://github.com/regen-network/regen-ledger/pull/1090) Remove `Info` suffix from query names
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `AskPrice` to `AskAmount`
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `BatchId` to `BatchKey`
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `CreditType` to `CreditTypeAbbrev`
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `Tradable` to `TradableAmount`
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `Retired` to `RetiredAmount`
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `Escrowed` to `EscrowedAmount`
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `AskPrice` to `AskAmount`
+* [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `AskPrice` to `AskAmount`
+* [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename marketplace `owner` to `seller`
+* [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename `account` to `address`
+* [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename `holder` to `owner`
 
 #### Fixed
 
 * [#875](https://github.com/regen-network/regen-ledger/pull/875) Fix `put-in-basket` flags and error messages
 * [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption for each iteration
+* [#1135](https://github.com/regen-network/regen-ledger/pull/1135) Deprecate basket exponent and use credit type precision
+* [#1144](https://github.com/regen-network/regen-ledger/pull/1144) Fix `MsgCreateBatch` issuance with same recipient
 
 ### orm
 
-* Removed from the regen-ledger codebase. The last supported version of the `orm` module released within regen-ledger is [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1). The data module and ecocredit module are using [cosmos-sdk/orm@v1.0.0-alpha.11](https://github.com/cosmos/cosmos-sdk/tree/orm/v1.0.0-alpha.11/orm) and the alpha version of the group module available in the experimental build is using [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1).
+* [#1076](https://github.com/regen-network/regen-ledger/pull/1076) Remove `orm` module
+
+The final version of the `orm` module released from regen-ledger is [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1). The data module and ecocredit module have migrated to [cosmos-sdk/orm@v1.0.0-alpha.11](https://github.com/cosmos/cosmos-sdk/tree/orm/v1.0.0-alpha.11/orm) while the alpha version of the group module remains unchanged and continues to use [orm/v1.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/orm%2Fv1.0.0-beta1).
 
 ## [v3.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v3.0.0) - 2022-02-25
 
@@ -251,7 +291,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [#386](https://github.com/regen-network/regen-ledger/pull/386) fix IBC proposal registration
 
-### `x/ecocredit`
+### x/ecocredit
 
 #### Added
 
@@ -282,7 +322,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#591](https://github.com/regen-network/regen-ledger/pull/591) Set credit class fee in upgrade handler
 * [#592](https://github.com/regen-network/regen-ledger/pull/592) Fix `undefined` error message when creating a credit class
 
-### `x/group`
+### x/group
 
 #### Added
 
