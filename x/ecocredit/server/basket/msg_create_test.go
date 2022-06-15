@@ -21,7 +21,7 @@ type createSuite struct {
 	*baseSuite
 	alice               sdk.AccAddress
 	aliceBalance        sdk.Coin
-	minBasketFee        sdk.Coins
+	basketFeeParam      sdk.Coins
 	basketName          string
 	creditTypeAbbrev    string
 	creditTypePrecision uint32
@@ -45,7 +45,14 @@ func (s *createSuite) AMinimumBasketFee(a string) {
 	coin, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	s.minBasketFee = sdk.NewCoins(coin)
+	s.basketFeeParam = sdk.NewCoins(coin)
+}
+
+func (s *createSuite) MinimumBasketFees(a string) {
+	coins, err := sdk.ParseCoinsNormalized(a)
+	require.NoError(s.t, err)
+
+	s.basketFeeParam = coins
 }
 
 func (s *createSuite) ACreditType() {
@@ -219,34 +226,73 @@ func (s *createSuite) createExpectCalls() {
 	var coins sdk.Coins
 
 	s.paramsKeeper.EXPECT().
-		Get(s.sdkCtx, core.KeyBasketCreationFee, &coins).
+		Get(s.sdkCtx, core.KeyBasketFee, &coins).
 		Do(func(ctx sdk.Context, key []byte, coins *sdk.Coins) {
-			*coins = s.minBasketFee
+			*coins = s.basketFeeParam
 		}).
 		AnyTimes() // not expected on failed attempt
 
-	if s.minBasketFee != nil {
+	if len(s.basketFeeParam) == 1 {
 		s.bankKeeper.EXPECT().
-			GetBalance(s.sdkCtx, s.alice, s.minBasketFee[0].Denom).
+			GetBalance(s.sdkCtx, s.alice, s.basketFeeParam[0].Denom).
 			Return(s.aliceBalance).
 			AnyTimes() // not expected on failed attempt
 	}
 
-	s.bankKeeper.EXPECT().
-		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, s.minBasketFee).
-		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
-			if s.minBasketFee != nil {
-				// simulate token balance update unavailable with mocks
-				s.aliceBalance = s.aliceBalance.Sub(s.minBasketFee[0])
-			}
-		}).
-		Return(nil).
-		AnyTimes() // not expected on failed attempt
+	if len(s.basketFeeParam) == 2 {
+		s.bankKeeper.EXPECT().
+			GetBalance(s.sdkCtx, s.alice, s.basketFeeParam[1].Denom).
+			Return(s.aliceBalance).
+			AnyTimes() // not expected on failed attempt
+	}
 
-	s.bankKeeper.EXPECT().
-		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, s.minBasketFee).
-		Return(nil).
-		AnyTimes() // not expected on failed attempt
+	if len(s.basketFeeParam) == 1 {
+		sendCoins := sdk.NewCoins(s.basketFeeParam[0])
+
+		s.bankKeeper.EXPECT().
+			SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, sendCoins).
+			Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
+				if s.basketFeeParam != nil {
+					// simulate token balance update unavailable with mocks
+					s.aliceBalance = s.aliceBalance.Sub(s.basketFeeParam[0])
+				}
+			}).
+			Return(nil).
+			AnyTimes() // not expected on failed attempt
+	}
+
+	if len(s.basketFeeParam) == 2 {
+		sendCoins := sdk.NewCoins(s.basketFeeParam[1])
+
+		s.bankKeeper.EXPECT().
+			SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, sendCoins).
+			Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
+				if s.basketFeeParam != nil {
+					// simulate token balance update unavailable with mocks
+					s.aliceBalance = s.aliceBalance.Sub(s.basketFeeParam[1])
+				}
+			}).
+			Return(nil).
+			AnyTimes() // not expected on failed attempt
+	}
+
+	if len(s.basketFeeParam) == 1 {
+		burnCoins := sdk.NewCoins(s.basketFeeParam[0])
+
+		s.bankKeeper.EXPECT().
+			BurnCoins(s.sdkCtx, basket.BasketSubModuleName, burnCoins).
+			Return(nil).
+			AnyTimes() // not expected on failed attempt
+	}
+
+	if len(s.basketFeeParam) == 2 {
+		burnCoins := sdk.NewCoins(s.basketFeeParam[1])
+
+		s.bankKeeper.EXPECT().
+			BurnCoins(s.sdkCtx, basket.BasketSubModuleName, burnCoins).
+			Return(nil).
+			AnyTimes() // not expected on failed attempt
+	}
 
 	s.bankKeeper.EXPECT().
 		SetDenomMetaData(s.sdkCtx, s.getDenomMetadata()).
