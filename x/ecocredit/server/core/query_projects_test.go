@@ -26,15 +26,13 @@ func TestQuery_Projects(t *testing.T) {
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "metadata",
-		ReferenceId:  "VCS-001",
 	}
 
 	// insert two projects
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:          "C01-002",
-		ClassKey:    classKey,
-		ReferenceId: "VCS-002",
+		Id:       "C01-002",
+		ClassKey: classKey,
 	}))
 
 	// query projects with pagination

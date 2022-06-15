@@ -142,6 +142,32 @@ func TestBridgeReceive_None(t *testing.T) {
 	assert.Equal(t, bal.Balance.TradableAmount, msg.Batch.Amount)
 }
 
+func TestBridgeReceive_TooManyProjects(t *testing.T) {
+	t.Parallel()
+	refId := "VCS-001"
+	s := setupBase(t)
+	setupBridgeTest(s, refId)
+	err := s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+		Id:           "C01-002",
+		Admin:        s.addr,
+		ClassKey:     1,
+		Jurisdiction: "US-KY",
+		Metadata:     "hi",
+		ReferenceId:  refId,
+	})
+	assert.NilError(t, err)
+
+	msg := core.MsgBridgeReceive{
+		ServiceAddress: s.addr.String(),
+		Recipient:      testutil.GenAddress(),
+		Amount:         "3",
+		ProjectRefId:   refId,
+	}
+	_, err = s.k.BridgeReceive(s.ctx, &msg)
+	assert.ErrorIs(t, err, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d projects registered "+
+		"with reference id %s", s.addr.String(), 2, refId))
+}
+
 func TestBridgeReceive_TooManyBatches(t *testing.T) {
 	t.Parallel()
 	refId := "VCS-001"
