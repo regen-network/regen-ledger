@@ -11,7 +11,7 @@ import (
 
 func TestMsgCreateProject(t *testing.T) {
 	t.Parallel()
-	issuer := testutil.GenAddress()
+	admin := testutil.GenAddress()
 
 	testCases := []struct {
 		name   string
@@ -21,7 +21,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"valid msg without reference id",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A00",
 				Metadata:     "hello",
 				Jurisdiction: "AB-CDE FG1 345",
@@ -29,9 +29,9 @@ func TestMsgCreateProject(t *testing.T) {
 			false,
 		},
 		{
-			"invalid issuer",
+			"invalid admin",
 			MsgCreateProject{
-				Issuer:       "invalid address",
+				Admin:        "invalid address",
 				ClassId:      "A00",
 				Metadata:     "hello",
 				Jurisdiction: "AB-CDE FG1 345",
@@ -41,7 +41,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid class id",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "ABCD",
 				Metadata:     "hello",
 				Jurisdiction: "AB-CDE FG1 345",
@@ -51,7 +51,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid project jurisdiction",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A01",
 				Metadata:     "hello",
 				Jurisdiction: "abcd",
@@ -61,7 +61,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid: metadata is too large",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A01",
 				Metadata:     strings.Repeat("x", 288),
 				Jurisdiction: "AB-CDE FG1 345",
@@ -71,7 +71,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid: reference id is too large",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A01",
 				Metadata:     "metadata",
 				Jurisdiction: "AB-CDE FG1 345",
@@ -82,7 +82,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"valid: with reference id",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A01",
 				Metadata:     "metadata",
 				Jurisdiction: "AB-CDE FG1 345",

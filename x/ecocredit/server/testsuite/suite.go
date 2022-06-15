@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
@@ -32,7 +31,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
@@ -56,7 +54,6 @@ type IntegrationTestSuite struct {
 	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
-	mockDist      *mocks.MockDistributionKeeper
 
 	genesisCtx types.Context
 	blockTime  time.Time
@@ -73,16 +70,15 @@ type basketServer struct {
 }
 
 var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFeeTokens}
+	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFee}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper, distKeeper *mocks.MockDistributionKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
-		mockDist:       distKeeper,
 	}
 }
 
@@ -186,10 +182,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// fund account to create a basket
 	balanceBefore := sdk.NewInt64Coin(s.basketFee.Denom, 30000)
 	s.fundAccount(user, sdk.NewCoins(balanceBefore))
-	s.mockDist.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(interface{}, interface{}, interface{}) error {
-		err := s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
-		return err
-	})
+
 	// create a basket
 	res, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
 		Curator:           s.signers[0].String(),
@@ -292,12 +285,6 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	endBal := s.getUserBalance(user2, basketDenom)
 	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
 
-	// check retire enabled basket
-
-	s.mockDist.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(interface{}, interface{}, interface{}) error {
-		err := s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
-		return err
-	})
 	// create a retire enabled basket
 	resR, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
 		Curator:           s.signers[0].String(),
@@ -365,7 +352,7 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	end, err := types.ParseDate("end date", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       admin.String(),
+		Admin:        admin.String(),
 		ClassId:      classId,
 		Metadata:     "",
 		Jurisdiction: "US-NY",
@@ -408,7 +395,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*core.DefaultCreditClassFeeTokens.Int64())))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*core.DefaultCreditClassFee.Int64())))
 	adminBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 
 	createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
@@ -428,7 +415,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// create project
 	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		ClassId:      classId,
-		Issuer:       issuer1,
+		Admin:        issuer1,
 		Metadata:     "metadata",
 		Jurisdiction: "AQ",
 	})
@@ -608,7 +595,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Cancel(s.ctx, &core.MsgCancel{
 				Owner: tc.owner,
-				Credits: []*core.MsgCancel_CancelCredits{
+				Credits: []*core.Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toCancel,
@@ -747,7 +734,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &core.MsgRetire{
 				Owner: addr1,
-				Credits: []*core.MsgRetire_RetireCredits{
+				Credits: []*core.Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toRetire,
@@ -1000,7 +987,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the creator account
-			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFeeTokens)))
+			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFee)))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
 				Admin:            tc.creatorAcc.String(),

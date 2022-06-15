@@ -1,4 +1,4 @@
-Feature: MsgSell
+Feature: Msg/Sell
 
   A sell order can be created:
     - when the credit batch exists
@@ -25,7 +25,7 @@ Feature: MsgSell
 
     Scenario: credit batch does not exist
       When alice attempts to create a sell order with batch denom "C01-001-20200101-20210101-001"
-      Then expect the error "order[0]: batch denom C01-001-20200101-20210101-001: not found: invalid request"
+      Then expect the error "orders[0]: batch denom C01-001-20200101-20210101-001: not found: invalid request"
 
   Rule: The seller must own credits from the credit batch
 
@@ -41,7 +41,7 @@ Feature: MsgSell
     Scenario: seller does not own credits
       Given a credit batch with batch denom "C01-001-20200101-20210101-001"
       When alice attempts to create a sell order with batch denom "C01-001-20200101-20210101-001"
-      Then expect the error "order[0]: credit quantity: 100, tradable balance: 0: insufficient credit balance"
+      Then expect the error "orders[0]: credit quantity: 100, tradable balance: 0: insufficient credit balance"
 
   Rule: The seller must own greater than or equal to the quantity of credits
 
@@ -72,12 +72,12 @@ Feature: MsgSell
     Scenario: seller owns less than credit quantity (single sell order)
       Given alice has a tradable batch balance with amount "50"
       When alice attempts to create a sell order with credit quantity "100"
-      Then expect the error "order[0]: credit quantity: 100, tradable balance: 50: insufficient credit balance"
+      Then expect the error "orders[0]: credit quantity: 100, tradable balance: 50: insufficient credit balance"
 
     Scenario: seller owns less than credit quantity (multiple sell orders)
       Given alice has a tradable batch balance with amount "150"
       When alice attempts to create two sell orders each with credit quantity "100"
-      Then expect the error "order[1]: credit quantity: 100, tradable balance: 50: insufficient credit balance"
+      Then expect the error "orders[1]: credit quantity: 100, tradable balance: 50: insufficient credit balance"
 
   Rule: The number of decimal places in quantity must be less than or equal to the credit type precision
 
@@ -113,7 +113,7 @@ Feature: MsgSell
     Scenario: ask denom is not allowed
       Given an allowed denom with bank denom "atom"
       When alice attempts to create a sell order with ask price "100regen"
-      Then expect the error "order[0]: regen is not allowed to be used in sell orders: invalid request"
+      Then expect the error "orders[0]: regen is not allowed to be used in sell orders: invalid request"
 
   Rule: The expiration must be after the block time
 
@@ -129,7 +129,7 @@ Feature: MsgSell
 
     Scenario Outline: expiration is before or equal to block time
       When alice attempts to create a sell order with expiration "<expiration>"
-      Then expect the error "order[0]: expiration must be in the future: <expiration> 00:00:00 +0000 UTC: invalid request"
+      Then expect the error "orders[0]: expiration must be in the future: <expiration> 00:00:00 +0000 UTC: invalid request"
 
     Examples:
       | description | expiration |

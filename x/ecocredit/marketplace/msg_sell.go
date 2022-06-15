@@ -32,7 +32,7 @@ func (m *MsgSell) ValidateBasic() error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Seller); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("seller is not a valid address: %s", err)
+		return sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
 	}
 
 	if len(m.Orders) == 0 {
@@ -40,7 +40,9 @@ func (m *MsgSell) ValidateBasic() error {
 	}
 
 	for i, order := range m.Orders {
-		orderIndex := fmt.Sprintf("order[%d]", i)
+		// orderIndex is used for more granular error messages when
+		// an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("orders[%d]", i)
 
 		if len(order.BatchDenom) == 0 {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom cannot be empty", orderIndex)

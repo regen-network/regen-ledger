@@ -28,15 +28,22 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // Params defines the updatable global parameters of the ecocredit module for
 // use with the x/params module.
 type Params struct {
-	// credit_class_fee is the fixed fee charged on creation of a new credit class
+	// credit_class_fee is a list of credit class creation fees accepted when
+	// creating a credit class. Any fee listed is accepted and charged to the
+	// credit class creator when creating a credit class.
 	CreditClassFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=credit_class_fee,json=creditClassFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"credit_class_fee"`
-	// basket_fee is the fixed fee charged on creation of a new basket
+	// basket_fee is a list of basket creation fees accepted when creating a
+	// basket. Any fee listed is accepted and charged to the basket creator when
+	// creating a basket.
 	BasketFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=basket_fee,json=basketFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"basket_fee"`
-	// allowed_class_creators is an allowlist defining the addresses with
-	// the required permissions to create credit classes
+	// allowed_class_creators is an allowlist defining the addresses with the
+	// required permissions to create credit classes when allowlist_enabled is set
+	// to true. If allowlist_enabled is set to false, this list has no effect.
 	AllowedClassCreators []string `protobuf:"bytes,3,rep,name=allowed_class_creators,json=allowedClassCreators,proto3" json:"allowed_class_creators,omitempty"`
-	// allowlist_enabled is a param that enables/disables the allowlist for credit
-	// creation
+	// allowlist_enabled determines whether or not the allowlist for creating
+	// credit classes is enabled. When set to true, only the addresses listed in
+	// allowed_class_creators can create credit classes. When set to false, any
+	// address can create credit classes.
 	AllowlistEnabled bool `protobuf:"varint,4,opt,name=allowlist_enabled,json=allowlistEnabled,proto3" json:"allowlist_enabled,omitempty"`
 }
 
@@ -101,6 +108,145 @@ func (m *Params) GetAllowlistEnabled() bool {
 	return false
 }
 
+// Credits represents a simple structure for credits.
+type Credits struct {
+	// batch_denom is the denom of the credit batch.
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// amount is the amount of credits.
+	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
+}
+
+func (m *Credits) Reset()         { *m = Credits{} }
+func (m *Credits) String() string { return proto.CompactTextString(m) }
+func (*Credits) ProtoMessage()    {}
+func (*Credits) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7b044b6b740b984f, []int{1}
+}
+func (m *Credits) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Credits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Credits.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Credits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Credits.Merge(m, src)
+}
+func (m *Credits) XXX_Size() int {
+	return m.Size()
+}
+func (m *Credits) XXX_DiscardUnknown() {
+	xxx_messageInfo_Credits.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Credits proto.InternalMessageInfo
+
+func (m *Credits) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *Credits) GetAmount() string {
+	if m != nil {
+		return m.Amount
+	}
+	return ""
+}
+
+// BatchIssuance represents a simple structure for a credit batch issuance.
+type BatchIssuance struct {
+	// recipient is the address of the account receiving the issued credits.
+	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	// tradable_amount is the amount of credits that the recipient will receive in
+	// a tradable state. The number of decimal places must be less than or equal
+	// to the credit type precision.
+	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
+	// retired_amount is the amount of credits that the recipient will receive in
+	// a retired state. The number of decimal places must be less than or equal to
+	// the credit type precision.
+	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
+	// retirement_jurisdiction is the jurisdiction of the recipient and is only
+	// required if retired_amount is positive. A jurisdiction has the following
+	// format: <country-code>[-<sub-national-code>[ <postal-code>]]
+	// The country-code must be 2 alphabetic characters, the sub-national-code
+	// can be 1-3 alphanumeric characters, and the postal-code can be up to 64
+	// alphanumeric characters. Only the country-code is required, while the
+	// sub-national-code and postal-code are optional and can be added for
+	// increased precision.
+	RetirementJurisdiction string `protobuf:"bytes,4,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
+}
+
+func (m *BatchIssuance) Reset()         { *m = BatchIssuance{} }
+func (m *BatchIssuance) String() string { return proto.CompactTextString(m) }
+func (*BatchIssuance) ProtoMessage()    {}
+func (*BatchIssuance) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7b044b6b740b984f, []int{2}
+}
+func (m *BatchIssuance) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BatchIssuance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BatchIssuance.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BatchIssuance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BatchIssuance.Merge(m, src)
+}
+func (m *BatchIssuance) XXX_Size() int {
+	return m.Size()
+}
+func (m *BatchIssuance) XXX_DiscardUnknown() {
+	xxx_messageInfo_BatchIssuance.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BatchIssuance proto.InternalMessageInfo
+
+func (m *BatchIssuance) GetRecipient() string {
+	if m != nil {
+		return m.Recipient
+	}
+	return ""
+}
+
+func (m *BatchIssuance) GetTradableAmount() string {
+	if m != nil {
+		return m.TradableAmount
+	}
+	return ""
+}
+
+func (m *BatchIssuance) GetRetiredAmount() string {
+	if m != nil {
+		return m.RetiredAmount
+	}
+	return ""
+}
+
+func (m *BatchIssuance) GetRetirementJurisdiction() string {
+	if m != nil {
+		return m.RetirementJurisdiction
+	}
+	return ""
+}
+
 // OriginTx is the transaction from another chain or registry that triggered
 // the minting of credits.
 type OriginTx struct {
@@ -116,7 +262,7 @@ func (m *OriginTx) Reset()         { *m = OriginTx{} }
 func (m *OriginTx) String() string { return proto.CompactTextString(m) }
 func (*OriginTx) ProtoMessage()    {}
 func (*OriginTx) Descriptor() ([]byte, []int) {
-	return fileDescriptor_7b044b6b740b984f, []int{1}
+	return fileDescriptor_7b044b6b740b984f, []int{3}
 }
 func (m *OriginTx) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -173,7 +319,7 @@ type CreditTypeProposal struct {
 func (m *CreditTypeProposal) Reset()      { *m = CreditTypeProposal{} }
 func (*CreditTypeProposal) ProtoMessage() {}
 func (*CreditTypeProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_7b044b6b740b984f, []int{2}
+	return fileDescriptor_7b044b6b740b984f, []int{4}
 }
 func (m *CreditTypeProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -225,6 +371,8 @@ func (m *CreditTypeProposal) GetCreditType() *CreditType {
 
 func init() {
 	proto.RegisterType((*Params)(nil), "regen.ecocredit.v1.Params")
+	proto.RegisterType((*Credits)(nil), "regen.ecocredit.v1.Credits")
+	proto.RegisterType((*BatchIssuance)(nil), "regen.ecocredit.v1.BatchIssuance")
 	proto.RegisterType((*OriginTx)(nil), "regen.ecocredit.v1.OriginTx")
 	proto.RegisterType((*CreditTypeProposal)(nil), "regen.ecocredit.v1.CreditTypeProposal")
 }
@@ -232,36 +380,44 @@ func init() {
 func init() { proto.RegisterFile("regen/ecocredit/v1/types.proto", fileDescriptor_7b044b6b740b984f) }
 
 var fileDescriptor_7b044b6b740b984f = []byte{
-	// 461 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x92, 0xb1, 0x8e, 0xd3, 0x4c,
-	0x10, 0xc7, 0xed, 0xe4, 0xbe, 0xe8, 0xb2, 0x91, 0x4e, 0xf7, 0xad, 0xa2, 0x93, 0xb9, 0xc2, 0xb1,
-	0x52, 0x59, 0x42, 0xb7, 0x26, 0x01, 0x51, 0xd0, 0x20, 0x5d, 0x04, 0x2d, 0x91, 0x75, 0x15, 0x4d,
-	0xb4, 0x5e, 0x0f, 0x66, 0x89, 0xe3, 0xb1, 0x76, 0x37, 0xb9, 0xbb, 0xb7, 0x40, 0xa2, 0xa1, 0xa4,
-	0xe6, 0x49, 0xae, 0x42, 0x57, 0x52, 0x01, 0x4a, 0x5e, 0x04, 0xd9, 0xbb, 0x84, 0x48, 0x50, 0x52,
-	0x79, 0x67, 0xfe, 0xeb, 0xff, 0x6f, 0x66, 0x76, 0x48, 0xa8, 0xa0, 0x80, 0x2a, 0x01, 0x81, 0x42,
-	0x41, 0x2e, 0x4d, 0xb2, 0x99, 0x24, 0xe6, 0xb6, 0x06, 0xcd, 0x6a, 0x85, 0x06, 0x29, 0x6d, 0x75,
-	0xb6, 0xd7, 0xd9, 0x66, 0x72, 0x3e, 0x2c, 0xb0, 0xc0, 0x56, 0x4e, 0x9a, 0x93, 0xbd, 0x79, 0x1e,
-	0x0a, 0xd4, 0x2b, 0xd4, 0x49, 0xc6, 0x35, 0x24, 0x9b, 0x49, 0x06, 0x86, 0x4f, 0x12, 0x81, 0xb2,
-	0xfa, 0xa5, 0xff, 0x85, 0xa4, 0x0d, 0x37, 0x60, 0xf5, 0xf1, 0x97, 0x0e, 0xe9, 0xcd, 0xb9, 0xe2,
-	0x2b, 0x4d, 0xd7, 0xe4, 0xd4, 0xde, 0x59, 0x88, 0x92, 0x6b, 0xbd, 0x78, 0x03, 0x10, 0xf8, 0x51,
-	0x37, 0x1e, 0x4c, 0x1f, 0x30, 0x4b, 0x61, 0x0d, 0x85, 0x39, 0x0a, 0x9b, 0xa1, 0xac, 0x2e, 0x1f,
-	0xdd, 0x7d, 0x1b, 0x79, 0x9f, 0xbf, 0x8f, 0xe2, 0x42, 0x9a, 0xb7, 0xeb, 0x8c, 0x09, 0x5c, 0x25,
-	0xae, 0x24, 0xfb, 0xb9, 0xd0, 0xf9, 0xd2, 0xf5, 0xd6, 0xfc, 0xa0, 0xd3, 0x13, 0x0b, 0x99, 0x35,
-	0x8c, 0x97, 0x00, 0xf4, 0x1d, 0x21, 0x19, 0xd7, 0x4b, 0x30, 0x2d, 0xb0, 0xf3, 0xef, 0x81, 0x7d,
-	0x6b, 0xdf, 0xb0, 0x9e, 0x90, 0x33, 0x5e, 0x96, 0x78, 0x0d, 0xb9, 0xeb, 0x51, 0x28, 0xe0, 0x06,
-	0x95, 0x0e, 0xba, 0x51, 0x37, 0xee, 0xa7, 0x43, 0xa7, 0xb6, 0xc5, 0xcd, 0x9c, 0x46, 0x1f, 0x92,
-	0xff, 0xdb, 0x7c, 0x29, 0xb5, 0x59, 0x40, 0xc5, 0xb3, 0x12, 0xf2, 0xe0, 0x28, 0xf2, 0xe3, 0xe3,
-	0xf4, 0x74, 0x2f, 0xbc, 0xb0, 0xf9, 0xf1, 0x94, 0x1c, 0xbf, 0x52, 0xb2, 0x90, 0xd5, 0xd5, 0x0d,
-	0x3d, 0x21, 0x1d, 0x99, 0x07, 0x7e, 0xe4, 0xc7, 0xfd, 0xb4, 0x23, 0x73, 0x7a, 0x46, 0x7a, 0x1a,
-	0xd7, 0x4a, 0x34, 0x6d, 0x36, 0x39, 0x17, 0x8d, 0x3f, 0xf8, 0x84, 0xce, 0xda, 0xa9, 0x5c, 0xdd,
-	0xd6, 0x30, 0x57, 0x58, 0xa3, 0xe6, 0x25, 0x1d, 0x92, 0xff, 0x8c, 0x34, 0x25, 0x38, 0x07, 0x1b,
-	0xd0, 0x88, 0x0c, 0x72, 0xd0, 0x42, 0xc9, 0xda, 0x48, 0xac, 0x9c, 0xd3, 0x61, 0x8a, 0x3e, 0x27,
-	0x03, 0xf7, 0x90, 0xcd, 0x18, 0x82, 0x6e, 0xe4, 0xc7, 0x83, 0x69, 0xc8, 0xfe, 0xdc, 0x29, 0xf6,
-	0x1b, 0x9a, 0x12, 0xb1, 0x3f, 0x3f, 0x3b, 0xfa, 0xf8, 0x69, 0xe4, 0x5d, 0xce, 0xef, 0xb6, 0xa1,
-	0x7f, 0xbf, 0x0d, 0xfd, 0x1f, 0xdb, 0xd0, 0x7f, 0xbf, 0x0b, 0xbd, 0xfb, 0x5d, 0xe8, 0x7d, 0xdd,
-	0x85, 0xde, 0xeb, 0xa7, 0x07, 0xb3, 0x6f, 0x5d, 0x2f, 0x2a, 0x30, 0xd7, 0xa8, 0x96, 0x2e, 0x2a,
-	0x21, 0x2f, 0x40, 0x25, 0x37, 0x07, 0x6b, 0x27, 0x50, 0x41, 0xd6, 0x6b, 0x77, 0xee, 0xf1, 0xcf,
-	0x00, 0x00, 0x00, 0xff, 0xff, 0xf7, 0xb8, 0xc1, 0xf8, 0xff, 0x02, 0x00, 0x00,
+	// 578 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0xcd, 0x6e, 0x13, 0x31,
+	0x18, 0xcc, 0x26, 0xa5, 0x34, 0x8e, 0x1a, 0x8a, 0x55, 0x95, 0x50, 0xa1, 0x4d, 0x14, 0x09, 0x11,
+	0x09, 0x75, 0x97, 0x14, 0x04, 0x12, 0x17, 0x44, 0x02, 0x48, 0x70, 0xa1, 0x8a, 0x7a, 0xe2, 0xb2,
+	0xf2, 0xda, 0x1f, 0x5b, 0xb7, 0xbb, 0xf6, 0xca, 0xf6, 0xf6, 0xe7, 0x2d, 0x90, 0xb8, 0x70, 0xe4,
+	0xcc, 0x03, 0xf0, 0x0c, 0x3d, 0xa1, 0x1e, 0x39, 0x01, 0x6a, 0x5f, 0x04, 0xad, 0xed, 0xb4, 0x41,
+	0x70, 0xe4, 0x14, 0x7f, 0x33, 0x93, 0x99, 0x6f, 0x56, 0x36, 0x0a, 0x15, 0x64, 0x20, 0x62, 0xa0,
+	0x92, 0x2a, 0x60, 0xdc, 0xc4, 0x87, 0xe3, 0xd8, 0x9c, 0x94, 0xa0, 0xa3, 0x52, 0x49, 0x23, 0x31,
+	0xb6, 0x7c, 0x74, 0xc9, 0x47, 0x87, 0xe3, 0xcd, 0xf5, 0x4c, 0x66, 0xd2, 0xd2, 0x71, 0x7d, 0x72,
+	0xca, 0xcd, 0x90, 0x4a, 0x5d, 0x48, 0x1d, 0xa7, 0x44, 0x43, 0x7c, 0x38, 0x4e, 0xc1, 0x90, 0x71,
+	0x4c, 0x25, 0x17, 0x73, 0xfe, 0x1f, 0x49, 0xda, 0x10, 0x03, 0x8e, 0x1f, 0x7e, 0x6b, 0xa2, 0xe5,
+	0x1d, 0xa2, 0x48, 0xa1, 0x71, 0x85, 0xd6, 0x9c, 0x26, 0xa1, 0x39, 0xd1, 0x3a, 0x79, 0x0f, 0xd0,
+	0x0b, 0x06, 0xad, 0x51, 0x67, 0xfb, 0x76, 0xe4, 0x52, 0xa2, 0x3a, 0x25, 0xf2, 0x29, 0xd1, 0x54,
+	0x72, 0x31, 0x79, 0x70, 0xfa, 0xa3, 0xdf, 0xf8, 0xf2, 0xb3, 0x3f, 0xca, 0xb8, 0xd9, 0xab, 0xd2,
+	0x88, 0xca, 0x22, 0xf6, 0x2b, 0xb9, 0x9f, 0x2d, 0xcd, 0x0e, 0x7c, 0xb7, 0xfa, 0x0f, 0x7a, 0xd6,
+	0x75, 0x21, 0xd3, 0x3a, 0xe3, 0x15, 0x00, 0xde, 0x47, 0x28, 0x25, 0xfa, 0x00, 0x8c, 0x0d, 0x6c,
+	0xfe, 0xff, 0xc0, 0xb6, 0xb3, 0xaf, 0xb3, 0x1e, 0xa1, 0x0d, 0x92, 0xe7, 0xf2, 0x08, 0x98, 0xef,
+	0x48, 0x15, 0x10, 0x23, 0x95, 0xee, 0xb5, 0x06, 0xad, 0x51, 0x7b, 0xb6, 0xee, 0x59, 0xbb, 0xdc,
+	0xd4, 0x73, 0xf8, 0x3e, 0xba, 0x69, 0xf1, 0x9c, 0x6b, 0x93, 0x80, 0x20, 0x69, 0x0e, 0xac, 0xb7,
+	0x34, 0x08, 0x46, 0x2b, 0xb3, 0xb5, 0x4b, 0xe2, 0xa5, 0xc3, 0x87, 0x13, 0x74, 0x7d, 0x6a, 0x0b,
+	0x6a, 0xdc, 0x47, 0x9d, 0x94, 0x18, 0xba, 0x97, 0x30, 0x10, 0xb2, 0xe8, 0x05, 0x83, 0x60, 0xd4,
+	0x9e, 0x21, 0x0b, 0xbd, 0xa8, 0x11, 0xbc, 0x81, 0x96, 0x49, 0x21, 0x2b, 0x61, 0x7a, 0x4d, 0xcb,
+	0xf9, 0x69, 0xf8, 0x35, 0x40, 0xab, 0x93, 0x5a, 0xf6, 0x5a, 0xeb, 0x8a, 0x08, 0x0a, 0xf8, 0x0e,
+	0x6a, 0x2b, 0xa0, 0xbc, 0xe4, 0x20, 0x8c, 0x37, 0xba, 0x02, 0xf0, 0x3d, 0x74, 0xc3, 0x28, 0xc2,
+	0xea, 0x05, 0x92, 0x3f, 0x0c, 0xbb, 0x73, 0xf8, 0xb9, 0x45, 0xf1, 0x5d, 0xd4, 0x55, 0x60, 0xb8,
+	0x02, 0x36, 0xd7, 0xb5, 0xac, 0x6e, 0xd5, 0xa3, 0x5e, 0xf6, 0x04, 0xdd, 0x72, 0x40, 0x01, 0xc2,
+	0x24, 0xfb, 0x95, 0xe2, 0x9a, 0x71, 0x6a, 0xb8, 0x14, 0xb6, 0x76, 0x7b, 0xb6, 0x71, 0x45, 0xbf,
+	0x59, 0x60, 0x87, 0xdb, 0x68, 0xe5, 0xad, 0xe2, 0x19, 0x17, 0xbb, 0xc7, 0xb8, 0x8b, 0x9a, 0x9c,
+	0xf9, 0x5d, 0x9b, 0x9c, 0xd5, 0x65, 0xb5, 0xac, 0x14, 0x85, 0x79, 0x59, 0x37, 0x0d, 0x3f, 0x06,
+	0x08, 0xbb, 0x2f, 0xb6, 0x7b, 0x52, 0xc2, 0x8e, 0x92, 0xa5, 0xd4, 0x24, 0xc7, 0xeb, 0xe8, 0x9a,
+	0xe1, 0x26, 0x07, 0xef, 0xe0, 0x06, 0x3c, 0x40, 0x1d, 0x06, 0x9a, 0x2a, 0x5e, 0xda, 0x6d, 0x9c,
+	0xd3, 0x22, 0x84, 0x9f, 0xa1, 0x8e, 0xbf, 0xc5, 0xf5, 0x1d, 0xb0, 0xfd, 0x3a, 0xdb, 0x61, 0xf4,
+	0xf7, 0x83, 0x8a, 0xae, 0x42, 0x67, 0x88, 0x5e, 0x9e, 0x9f, 0x2e, 0x7d, 0xfa, 0xdc, 0x6f, 0x4c,
+	0x76, 0x4e, 0xcf, 0xc3, 0xe0, 0xec, 0x3c, 0x0c, 0x7e, 0x9d, 0x87, 0xc1, 0x87, 0x8b, 0xb0, 0x71,
+	0x76, 0x11, 0x36, 0xbe, 0x5f, 0x84, 0x8d, 0x77, 0x8f, 0x17, 0x2e, 0x9e, 0x75, 0xdd, 0x12, 0x60,
+	0x8e, 0xa4, 0x3a, 0xf0, 0x53, 0x0e, 0x2c, 0x03, 0x15, 0x1f, 0x2f, 0xbc, 0x39, 0x2a, 0x15, 0xa4,
+	0xcb, 0xf6, 0xc1, 0x3d, 0xfc, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x2b, 0x56, 0xe7, 0x5e, 0xfc, 0x03,
+	0x00, 0x00,
 }
 
 func (m *Params) Marshal() (dAtA []byte, err error) {
@@ -330,6 +486,94 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i--
 			dAtA[i] = 0xa
 		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Credits) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Credits) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Credits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Amount)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BatchIssuance) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BatchIssuance) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BatchIssuance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RetirementJurisdiction) > 0 {
+		i -= len(m.RetirementJurisdiction)
+		copy(dAtA[i:], m.RetirementJurisdiction)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.RetirementJurisdiction)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.RetiredAmount) > 0 {
+		i -= len(m.RetiredAmount)
+		copy(dAtA[i:], m.RetiredAmount)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.RetiredAmount)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.TradableAmount) > 0 {
+		i -= len(m.TradableAmount)
+		copy(dAtA[i:], m.TradableAmount)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.TradableAmount)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Recipient) > 0 {
+		i -= len(m.Recipient)
+		copy(dAtA[i:], m.Recipient)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Recipient)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -457,6 +701,48 @@ func (m *Params) Size() (n int) {
 	}
 	if m.AllowlistEnabled {
 		n += 2
+	}
+	return n
+}
+
+func (m *Credits) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.Amount)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *BatchIssuance) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Recipient)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.TradableAmount)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.RetiredAmount)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.RetirementJurisdiction)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
 	}
 	return n
 }
@@ -654,6 +940,298 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.AllowlistEnabled = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Credits) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Credits: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Credits: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BatchIssuance) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BatchIssuance: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BatchIssuance: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Recipient", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Recipient = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TradableAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetirementJurisdiction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetirementJurisdiction = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTypes(dAtA[iNdEx:])

@@ -17,15 +17,15 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 		expErr bool
 	}{
 		"valid": {
-			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", Metadata: "hello world"},
+			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", NewMetadata: "hello world"},
 			expErr: false,
 		},
 		"invalid: bad admin address": {
-			src:    MsgUpdateClassMetadata{Admin: "???a!#)(%", ClassId: "C01", Metadata: "hello world"},
+			src:    MsgUpdateClassMetadata{Admin: "???a!#)(%", ClassId: "C01", NewMetadata: "hello world"},
 			expErr: true,
 		},
 		"invalid: bad class ID": {
-			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "6012949", Metadata: "hello world"},
+			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "6012949", NewMetadata: "hello world"},
 			expErr: true,
 		},
 		"invalid: no class ID": {
@@ -33,7 +33,7 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 			expErr: true,
 		},
 		"invalid: metadata too large": {
-			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", Metadata: strings.Repeat("x", 288)},
+			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", NewMetadata: strings.Repeat("x", 288)},
 			expErr: true,
 		},
 	}

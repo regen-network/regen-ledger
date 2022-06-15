@@ -94,4 +94,8 @@ func TestLostFunds(t *testing.T) {
 	pva, ok := acc.(*vestingtypes.PeriodicVestingAccount)
 	require.True(t, ok)
 	require.Equal(t, pva.GetVestingPeriods().String(), vestingPeriods.String())
+
+	// verify old account is deleted
+	acc = regenApp.AccountKeeper.GetAccount(ctx, lostAddr)
+	require.Nil(t, acc)
 }

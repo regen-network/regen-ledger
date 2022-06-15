@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -12,7 +13,7 @@ import (
 func (k Keeper) Class(ctx context.Context, request *core.QueryClassRequest) (*core.QueryClassResponse, error) {
 	class, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
 	}
 
 	admin := sdk.AccAddress(class.Admin)

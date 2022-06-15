@@ -25,9 +25,17 @@ type IntegrationTestSuite struct {
 
 	cfg     network.Config
 	network *network.Network
+	val     *network.Validator
+
+	addr1 sdk.AccAddress
+	addr2 sdk.AccAddress
+
+	iri1  string
+	iri2  string
+	hash1 *data.ContentHash
+	hash2 *data.ContentHash
 
 	resolverID uint64
-	iri        string
 	url        string
 }
 
@@ -46,12 +54,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 
-	val1 := s.network.Validators[0]
+	s.val = s.network.Validators[0]
 
-	info1, _, err := val1.ClientCtx.Keyring.NewMnemonic("acc1", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	info1, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc1", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
-	info2, _, err := val1.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	info2, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
 	var commonFlags = []string{
@@ -60,59 +68,65 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	account1 := sdk.AccAddress(info1.GetPubKey().Address())
+	s.addr1 = sdk.AccAddress(info1.GetPubKey().Address())
 	_, err = banktestutil.MsgSendExec(
-		val1.ClientCtx,
-		val1.Address,
-		account1,
+		s.val.ClientCtx,
+		s.val.Address,
+		s.addr1,
 		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
 		commonFlags...,
 	)
 	s.Require().NoError(err)
 
-	account2 := sdk.AccAddress(info2.GetPubKey().Address())
+	s.addr2 = sdk.AccAddress(info2.GetPubKey().Address())
 	_, err = banktestutil.MsgSendExec(
-		val1.ClientCtx,
-		val1.Address,
-		account2,
+		s.val.ClientCtx,
+		s.val.Address,
+		s.addr2,
 		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
 		commonFlags...,
 	)
 	s.Require().NoError(err)
 
-	iris := []string{
-		"regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf",
-		"regen:13toVgfX85Ny2ZTVxNzuL7MUquwwF7vcMKSAdVw2bUpEaL7XCFnshuh.rdf",
-	}
+	s.iri1 = "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+	s.iri2 = "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+
+	s.hash1, err = data.ParseIRI(s.iri1)
+	s.Require().NoError(err)
+
+	s.hash2, err = data.ParseIRI(s.iri2)
+	s.Require().NoError(err)
+
+	iris := []string{s.iri1, s.iri2}
 
 	for _, iri := range iris {
-		_, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAnchorCmd(),
+		_, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgAnchorCmd(),
 			append(
 				[]string{
 					iri,
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
 				},
 				commonFlags...,
 			),
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestCmd(),
+		_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
 					iri,
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
 				},
 				commonFlags...,
 			),
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestCmd(),
+		_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
 					iri,
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, account2.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr2.String()),
 				},
 				commonFlags...,
 			),
@@ -122,11 +136,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.url = "https://foo.bar"
 
-	out, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
+	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				s.url,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
 			},
 			commonFlags...,
 		),
@@ -134,37 +148,34 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	var res sdk.TxResponse
-	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 	id := strings.Trim(res.Logs[0].Events[1].Attributes[0].Value, "\"")
 	s.resolverID, err = strconv.ParseUint(id, 10, 64)
 	s.Require().NoError(err)
 
-	_, ch := s.createIRIAndGraphHash([]byte("abcdefg"))
+	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{s.hash1}}
 
-	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{ch}}
-	s.iri, err = chs.ContentHashes[0].GetGraph().ToIRI()
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(chs)
 	s.Require().NoError(err)
 
-	bz, err := val1.ClientCtx.Codec.MarshalJSON(chs)
-	s.Require().NoError(err)
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
-	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgRegisterResolverCmd(), append(
+	_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgRegisterResolverCmd(), append(
 		[]string{
 			fmt.Sprintf("%d", s.resolverID),
 			filePath,
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
 		},
 		commonFlags...,
 	))
 	s.Require().NoError(err)
 
-	out2, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
+	out2, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				"https://bar.baz",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
 			},
 			commonFlags...,
 		),
@@ -172,17 +183,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	var res2 sdk.TxResponse
-	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &res2))
+	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &res2))
 
 	id2 := strings.Trim(res2.Logs[0].Events[1].Attributes[0].Value, "\"")
 	resolverId2, err := strconv.ParseUint(id2, 10, 64)
 	s.Require().NoError(err)
 
-	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgRegisterResolverCmd(), append(
+	_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgRegisterResolverCmd(), append(
 		[]string{
 			fmt.Sprintf("%d", resolverId2),
 			filePath,
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
 		},
 		commonFlags...,
 	))
