@@ -572,21 +572,21 @@ func (this ProjectReferenceIdIndexKey) WithReferenceId(reference_id string) Proj
 	return this
 }
 
-type ProjectAdminReferenceIdIndexKey struct {
+type ProjectClassKeyReferenceIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectAdminReferenceIdIndexKey) id() uint32            { return 5 }
-func (x ProjectAdminReferenceIdIndexKey) values() []interface{} { return x.vs }
-func (x ProjectAdminReferenceIdIndexKey) projectIndexKey()      {}
+func (x ProjectClassKeyReferenceIdIndexKey) id() uint32            { return 5 }
+func (x ProjectClassKeyReferenceIdIndexKey) values() []interface{} { return x.vs }
+func (x ProjectClassKeyReferenceIdIndexKey) projectIndexKey()      {}
 
-func (this ProjectAdminReferenceIdIndexKey) WithAdmin(admin []byte) ProjectAdminReferenceIdIndexKey {
-	this.vs = []interface{}{admin}
+func (this ProjectClassKeyReferenceIdIndexKey) WithClassKey(class_key uint64) ProjectClassKeyReferenceIdIndexKey {
+	this.vs = []interface{}{class_key}
 	return this
 }
 
-func (this ProjectAdminReferenceIdIndexKey) WithAdminReferenceId(admin []byte, reference_id string) ProjectAdminReferenceIdIndexKey {
-	this.vs = []interface{}{admin, reference_id}
+func (this ProjectClassKeyReferenceIdIndexKey) WithClassKeyReferenceId(class_key uint64, reference_id string) ProjectClassKeyReferenceIdIndexKey {
+	this.vs = []interface{}{class_key, reference_id}
 	return this
 }
 

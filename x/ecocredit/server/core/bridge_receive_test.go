@@ -142,36 +142,6 @@ func TestBridgeReceive_None(t *testing.T) {
 	assert.Equal(t, bal.Balance.TradableAmount, msg.Batch.Amount)
 }
 
-func TestBridgeReceive_TooManyProjects(t *testing.T) {
-	t.Parallel()
-	refId := "VCS-001"
-	s := setupBase(t)
-	setupBridgeTest(s, refId)
-	err := s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:           "C01-002",
-		Admin:        s.addr,
-		ClassKey:     1,
-		Jurisdiction: "US-KY",
-		Metadata:     "hi",
-		ReferenceId:  refId,
-	})
-	assert.NilError(t, err)
-
-	msg := core.MsgBridgeReceive{
-		ServiceAddress: s.addr.String(),
-		Batch: &core.MsgBridgeReceive_Batch{
-			Recipient: testutil.GenAddress(),
-			Amount:    "3",
-		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId: refId,
-		},
-	}
-	_, err = s.k.BridgeReceive(s.ctx, &msg)
-	assert.ErrorIs(t, err, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d projects registered "+
-		"with reference id %s", s.addr.String(), 2, refId))
-}
-
 func TestBridgeReceive_TooManyBatches(t *testing.T) {
 	t.Parallel()
 	refId := "VCS-001"
@@ -230,6 +200,48 @@ func TestBridgeReceive_TooManyBatches(t *testing.T) {
 	_, err = s.k.BridgeReceive(s.ctx, &msg)
 	assert.ErrorIs(t, err, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d batches issued "+
 		"with start %v and end %v dates in project %s", s.addr.String(), 2, msg.Batch.StartDate.String(), msg.Batch.EndDate.String(), project.Id))
+}
+
+func TestBridgeReceive_MultipleProjects(t *testing.T) {
+	t.Parallel()
+	refId := "VCS-001"
+	s := setupBase(t)
+	project, _ := setupBridgeTest(s, refId)
+
+	project2 := &api.Project{
+		Id:           "C01-002",
+		Admin:        s.addr,
+		ClassKey:     project.ClassKey,
+		Jurisdiction: "US-KY",
+		Metadata:     "project2",
+		ReferenceId:  refId,
+	}
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project2))
+
+	start, end := time.Now(), time.Now()
+	msg := core.MsgBridgeReceive{
+		ServiceAddress: s.addr.String(),
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.addr.String(),
+			Amount:    "3",
+			OriginTx: &core.OriginTx{
+				Id:     "0x12345",
+				Source: "polygon",
+			},
+			StartDate: &start,
+			EndDate:   &end,
+		},
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  refId,
+			Jurisdiction: "US-KY",
+			Metadata:     "",
+			ClassId:      "C01",
+		},
+	}
+	res, err := s.k.BridgeReceive(s.ctx, &msg)
+	assert.NilError(t, err)
+	// check to make sure the first project is selected
+	assert.Equal(t, res.ProjectId, project.Id)
 }
 
 func setupBridgeTest(s *baseSuite, refId string) (project *api.Project, batch *api.Batch) {

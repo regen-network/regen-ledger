@@ -18,30 +18,31 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return nil, err
 	}
 
+	class, err := k.stateStore.ClassTable().GetById(ctx, req.Project.ClassId)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.Project.ClassId, err.Error())
+	}
+
 	// first we check if there is an existing project
-	idx := api.ProjectAdminReferenceIdIndexKey{}.WithAdminReferenceId(bridgeServiceAddr, req.Project.ReferenceId)
+	idx := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(class.Key, req.Project.ReferenceId)
 	it, err := k.stateStore.ProjectTable().List(ctx, idx)
 	if err != nil {
 		return nil, err
 	}
-	defer it.Close()
 
-	projects := make([]*api.Project, 0)
-	for it.Next() {
-		project, err := it.Value()
+	// we only want the first project that matches the reference ID, so we do not loop here.
+	project := new(api.Project)
+	if it.Next() {
+		var err error
+		project, err = it.Value()
 		if err != nil {
 			return nil, err
 		}
-		projects = append(projects, project)
 	}
-
-	if len(projects) > 1 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d projects registered "+
-			"with reference id %s", bridgeServiceAddr.String(), len(projects), req.Project.ReferenceId)
-	}
+	it.Close()
 
 	// if no project was found, create one + issue batch
-	if len(projects) == 0 {
+	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
 			Issuer:       req.ServiceAddress,
 			ClassId:      req.Project.ClassId,
@@ -71,8 +72,6 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return &core.MsgBridgeReceiveResponse{BatchDenom: batchRes.BatchDenom, ProjectId: projectRes.ProjectId}, nil
 	}
 
-	project := projects[0]
-
 	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
 	// any batches in that iterator that have matching metadata, are added to the slice.
 	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
@@ -81,7 +80,6 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	if err != nil {
 		return nil, err
 	}
-	defer bIt.Close()
 
 	batches := make([]*api.Batch, 0)
 	for bIt.Next() {
@@ -94,6 +92,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			batches = append(batches, batch)
 		}
 	}
+	it.Close()
 
 	// TODO(Tyler): potentially select a batch by oldest issuance date?
 	amtBatches := len(batches)
