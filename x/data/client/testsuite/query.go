@@ -1,25 +1,26 @@
 package testsuite
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
 )
 
-func (s *IntegrationTestSuite) TestQueryByIRICmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
+func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-
-	validIri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
 
 	testCases := []struct {
 		name      string
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expIRI    string
 	}{
 		{
 			name:      "missing args",
@@ -34,176 +35,36 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid iri",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "invalid IRI",
-		},
-		{
-			name:   "valid",
-			args:   []string{validIri},
-			expErr: false,
-			expIRI: validIri,
+			name: "valid",
+			args: []string{s.iri1},
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryByIRICmd()
+			cmd := client.QueryAnchorByIRICmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
 			} else {
-				s.Require().NoError(err, out.String())
+				require.NoError(err)
 
-				var res data.QueryByIRIResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-
-				s.Require().Equal(tc.expIRI, res.Entry.Iri)
-				s.Require().NotNil(res.Entry.ContentHash)
-				s.Require().NotNil(res.Entry.Timestamp)
+				var res data.QueryAnchorByIRIResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Anchor)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
+func (s *IntegrationTestSuite) TestQueryAnchorByHashCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
-	validIris := []string{
-		"regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf",
-		"regen:13toVgfX85Ny2ZTVxNzuL7MUquwwF7vcMKSAdVw2bUpEaL7XCFnshuh.rdf",
-	}
-
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expIRIs   []string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid attestor",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "invalid bech32 string",
-		},
-		{
-			name:    "valid",
-			args:    []string{val.Address.String()},
-			expErr:  false,
-			expIRIs: validIris,
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryByAttestorCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res data.QueryByAttestorResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-
-				for i, entry := range res.Entries {
-					s.Require().Equal(tc.expIRIs[i], entry.Iri)
-					s.Require().NotNil(entry.ContentHash)
-					s.Require().NotNil(entry.Timestamp)
-				}
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryHashByIRICmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-
-	validIri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
-
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expIRI    string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid iri",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "invalid IRI",
-		},
-		{
-			name:   "valid",
-			args:   []string{validIri},
-			expErr: false,
-			expIRI: validIri,
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryHashByIRICmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res data.QueryHashByIRIResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-
-				iri, err := res.ContentHash.ToIRI()
-				s.Require().NoError(err)
-				s.Require().Equal(tc.expIRI, iri)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryIRIByHashCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-
-	_, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
-
-	bz, err := val.ClientCtx.Codec.MarshalJSON(ch)
-	s.Require().NoError(err)
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+	require.NoError(err)
 
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
@@ -212,7 +73,6 @@ func (s *IntegrationTestSuite) TestQueryIRIByHashCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expHash   *data.ContentHash
 	}{
 		{
 			name:      "missing args",
@@ -228,112 +88,37 @@ func (s *IntegrationTestSuite) TestQueryIRIByHashCmd() {
 		},
 		{
 			name:      "invalid file path",
-			args:      []string{"foo.json"},
+			args:      []string{"foo"},
 			expErr:    true,
 			expErrMsg: "no such file or directory",
 		},
 		{
-			name:    "valid",
-			args:    []string{filePath},
-			expErr:  false,
-			expHash: ch,
+			name: "valid",
+			args: []string{filePath},
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryIRIByHashCmd()
+			cmd := client.QueryAnchorByHashCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
 			} else {
-				s.Require().NoError(err, out.String())
+				require.NoError(err)
 
-				var res data.QueryIRIByHashResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-
-				hash, err := data.ParseIRI(res.Iri)
-				s.Require().NoError(err)
-				s.Require().Equal(tc.expHash, hash)
+				var res data.QueryAnchorByHashResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Anchor)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-
-	validIri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
-
-	acc1, err := val.ClientCtx.Keyring.Key("acc1")
-	s.Require().NoError(err)
-
-	acc2, err := val.ClientCtx.Keyring.Key("acc2")
-	s.Require().NoError(err)
-
-	testCases := []struct {
-		name         string
-		args         []string
-		expErr       bool
-		expErrMsg    string
-		expAttestors []string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid attestor",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "not found",
-		},
-		{
-			name:   "valid",
-			args:   []string{validIri},
-			expErr: false,
-			expAttestors: []string{
-				acc1.GetAddress().String(),
-				acc2.GetAddress().String(),
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryAttestorsCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res data.QueryAttestorsByIRIResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-
-				for _, attestor := range tc.expAttestors {
-					s.Require().Contains(res.Attestors, attestor)
-				}
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryResolverCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
+func (s *IntegrationTestSuite) TestQueryAttestationsByAttestorCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
 	testCases := []struct {
@@ -355,21 +140,203 @@ func (s *IntegrationTestSuite) TestQueryResolverCmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid id",
-			args:      []string{"abcd"},
-			expErr:    true,
-			expErrMsg: "invalid syntax",
+			name: "valid",
+			args: []string{s.addr1.String()},
 		},
 		{
-			name:      "id not found",
-			args:      []string{"404"},
+			name: "valid with pagination",
+			args: []string{
+				s.addr1.String(),
+				// TODO: #1113
+				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryAttestationsByAttestorCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.QueryAttestationsByAttestorResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Attestations)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Attestations, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAttestationsByIRICmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
 			expErr:    true,
-			expErrMsg: "not found",
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
 		},
 		{
-			name:   "valid",
-			args:   []string{"1"},
-			expErr: false,
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name: "valid",
+			args: []string{s.iri2},
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				s.iri2,
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryAttestationsByIRICmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.QueryAttestationsByIRIResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Attestations)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Attestations, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+	require.NoError(err)
+
+	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid file path",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name: "valid",
+			args: []string{filePath},
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				filePath,
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryAttestationsByHashCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.QueryAttestationsByHashResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Attestations)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Attestations, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolverCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name: "valid",
+			args: []string{fmt.Sprint(s.resolverID)},
 		},
 	}
 
@@ -378,21 +345,22 @@ func (s *IntegrationTestSuite) TestQueryResolverCmd() {
 			cmd := client.QueryResolverCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
 			} else {
-				s.Require().NoError(err, out.String())
+				require.NoError(err)
 
 				var res data.QueryResolverResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Resolver)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolversByIriCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
+func (s *IntegrationTestSuite) TestQueryResolversByIRICmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
 	testCases := []struct {
@@ -414,38 +382,118 @@ func (s *IntegrationTestSuite) TestQueryResolversByIriCmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid iri",
-			args:      []string{"abcd"},
-			expErr:    true,
-			expErrMsg: "not found",
+			name: "valid",
+			args: []string{s.iri1},
 		},
 		{
-			name:   "valid test",
-			args:   []string{s.iri},
-			expErr: false,
+			name: "valid with pagination",
+			args: []string{
+				s.iri1,
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryResolversByIriCmd()
+			cmd := client.QueryResolversByIRICmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
-				s.Require().Error(err, out.String())
-				s.Require().Contains(out.String(), tc.expErrMsg)
+				require.Error(err, out.String())
+				require.Contains(out.String(), tc.expErrMsg)
 			} else {
-				s.Require().NoError(err, out.String())
+				require.NoError(err)
 
 				var res data.QueryResolversByIRIResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Resolvers)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Resolvers, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolversByUrlCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
+func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+	require.NoError(err)
+
+	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid file path",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name: "valid",
+			args: []string{filePath},
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				filePath,
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryResolversByHashCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.QueryResolversByHashResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Resolvers)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Resolvers, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolversByURLCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
 	testCases := []struct {
@@ -467,24 +515,143 @@ func (s *IntegrationTestSuite) TestQueryResolversByUrlCmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:   "valid test",
-			args:   []string{s.url},
-			expErr: false,
+			name: "valid",
+			args: []string{s.url},
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				s.url,
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryResolversByUrlCmd()
+			cmd := client.QueryResolversByURLCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
-				s.Require().Error(err, out.String())
-				s.Require().Contains(out.String(), tc.expErrMsg)
+				require.Error(err, out.String())
+				require.Contains(out.String(), tc.expErrMsg)
 			} else {
-				s.Require().NoError(err, out.String())
+				require.NoError(err)
 
-				var res data.QueryResolversByUrlResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				var res data.QueryResolversByURLResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Resolvers)
+
+				if strings.Contains(tc.name, "pagination") {
+					require.Len(res.Resolvers, 1)
+					require.NotEmpty(res.Pagination)
+					require.NotEmpty(res.Pagination.Total)
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestConvertIRIToHashCmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name: "valid",
+			args: []string{s.iri1},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.ConvertIRIToHashCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.ConvertIRIToHashResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.ContentHash)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
+	require := s.Require()
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
+	require.NoError(err)
+
+	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid file path",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name: "valid",
+			args: []string{filePath},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.ConvertHashToIRICmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res data.ConvertHashToIRIResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.NotEmpty(res.Iri)
 			}
 		})
 	}
