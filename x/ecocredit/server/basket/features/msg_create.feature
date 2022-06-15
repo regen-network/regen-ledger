@@ -2,10 +2,10 @@ Feature: Msg/Create
 
   A basket can be created:
   - when the basket name is unique
-  - when the minimum basket fee is not set
-  - when the basket fee denom matches the minimum basket fee denom
-  - when the basket fee amount is greater than or equal to the minimum basket fee amount
-  - when the user has a balance greater than or equal to the minimum basket fee amount
+  - when a minimum basket fee is not set
+  - when the basket fee denom matches a minimum basket fee denom
+  - when the basket fee amount is greater than or equal to a minimum basket fee amount
+  - when the user has a balance greater than or equal to a minimum basket fee amount
   - when the basket includes a credit type that exists
   - when the basket criteria includes credit classes that exist
   - when the basket criteria includes credit classes that match the credit type
@@ -27,7 +27,7 @@ Feature: Msg/Create
       When alice attempts to create a basket with name "NCT"
       Then expect the error "basket with name NCT already exists: unique key violation"
 
-  Rule: The basket fee is not required if the minimum basket fee is not set
+  Rule: The basket fee is not required if a minimum basket fee is not set
 
     Background:
       Given a credit type
@@ -43,33 +43,50 @@ Feature: Msg/Create
 
     # No failing scenario - basket fee is not required if minimum basket fee is not set
 
-  Rule: The basket fee must match the minimum basket fee denom
+  Rule: The basket fee must match a minimum basket fee denom
 
     Background:
       Given a credit type
-      And a minimum basket fee "20regen"
       And alice has a token balance "20regen"
 
-    Scenario: basket fee matches the denom
+    Scenario: basket fee matches the denom (single fee)
+      Given a minimum basket fee "20regen"
       When alice attempts to create a basket with fee "20regen"
       Then expect no error
 
-    Scenario: basket fee does not match the denom
+    Scenario: basket fee matches the denom (multiple fees)
+      Given minimum basket fees "20regen,20atom"
+      When alice attempts to create a basket with fee "20regen"
+      Then expect no error
+
+    Scenario: basket fee does not match the denom (single fee)
+      Given a minimum basket fee "20regen"
       When alice attempts to create a basket with fee "20atom"
       Then expect the error "minimum fee 20regen, got 20atom: insufficient fee"
 
-    Scenario: basket fee not provided
+    Scenario: basket fee does not match the denom (multiple fees)
+      Given minimum basket fees "20regen,20atom"
+      When alice attempts to create a basket with fee "20stake"
+      Then expect the error "minimum fee one of 20atom,20regen, got 20stake: insufficient fee"
+
+    Scenario: basket fee not provided (single fee)
+      Given a minimum basket fee "20regen"
       When alice attempts to create a basket with no fee
       Then expect the error "minimum fee 20regen, got : insufficient fee"
 
-  Rule: The basket fee must be greater than or equal to the minimum basket fee
+    Scenario: basket fee not provided (multiple fees)
+      Given minimum basket fees "20regen,20atom"
+      When alice attempts to create a basket with no fee
+      Then expect the error "minimum fee one of 20atom,20regen, got : insufficient fee"
+
+  Rule: The basket fee must be greater than or equal to a minimum basket fee
 
     Background:
       Given a credit type
-      And a minimum basket fee "20regen"
       And alice has a token balance "20regen"
 
-    Scenario Outline: basket fee is greater than or equal to minimum basket fee
+    Scenario Outline: basket fee is greater than or equal to minimum basket fee (single fee)
+      Given a minimum basket fee "20regen"
       When alice attempts to create a basket with fee "<basket-fee>"
       Then expect no error
 
@@ -78,9 +95,25 @@ Feature: Msg/Create
         | greater than | 30regen    |
         | equal to     | 20regen    |
 
-    Scenario: basket fee is less than minimum basket fee
+    Scenario Outline: basket fee is greater than or equal to minimum basket fee (multiple fees)
+      Given minimum basket fees "20regen,20atom"
+      When alice attempts to create a basket with fee "<basket-fee>"
+      Then expect no error
+
+      Examples:
+        | description  | basket-fee |
+        | greater than | 30regen    |
+        | equal to     | 20regen    |
+
+    Scenario: basket fee is less than minimum basket fee (single fee)
+      Given a minimum basket fee "20regen"
       When alice attempts to create a basket with fee "10regen"
       Then expect the error "minimum fee 20regen, got 10regen: insufficient fee"
+
+    Scenario: basket fee is less than minimum basket fee (multiple fees)
+      Given minimum basket fees "20regen,20atom"
+      When alice attempts to create a basket with fee "10regen"
+      Then expect the error "minimum fee one of 20atom,20regen, got 10regen: insufficient fee"
 
   Rule: The user must have a balance greater than or equal to the basket fee amount
 

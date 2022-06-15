@@ -3,7 +3,7 @@
     "info": {
         "title": "Regen Ledger - REST and gRPC Gateway Documentation",
         "description": "Documentation describing REST and gRPC endpoints for state queries and broadcasting transactions.",
-        "version": "1.0.0"
+        "version": "v4.0.0"
     },
     "apis": [
         {
