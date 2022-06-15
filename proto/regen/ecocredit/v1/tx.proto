@@ -482,8 +482,10 @@ message MsgBridgeReceive {
   // issuer is the account address of the service bridging the credits.
   string issuer = 1;
 
+  // batch defines the credit batch information for the bridged credits.
   Batch batch = 2;
 
+  // project defines the project information for the bridged credits.
   Project project = 3;
 
   // Batch defines the credit batch information for the bridged credits. This

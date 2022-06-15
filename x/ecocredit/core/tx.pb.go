@@ -1751,8 +1751,10 @@ var xxx_messageInfo_MsgBridgeResponse proto.InternalMessageInfo
 // MsgBridgeReceive is the Msg/BridgeReceive request type.
 type MsgBridgeReceive struct {
 	// issuer is the account address of the service bridging the credits.
-	Issuer  string                    `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	Batch   *MsgBridgeReceive_Batch   `protobuf:"bytes,2,opt,name=batch,proto3" json:"batch,omitempty"`
+	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// batch defines the credit batch information for the bridged credits.
+	Batch *MsgBridgeReceive_Batch `protobuf:"bytes,2,opt,name=batch,proto3" json:"batch,omitempty"`
+	// project defines the project information for the bridged credits.
 	Project *MsgBridgeReceive_Project `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
 }
 
