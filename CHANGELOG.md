@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 
+*
+
+#### Changed
+
+*
+
+### x/ecocredit
+
+#### Added
+
+* [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Add additional bindings for query endpoints
+
+#### Fixed
+
 * [#1177](https://github.com/regen-network/regen-ledger/pull/1177) Remove exponent from `create-basket` command
 * [#1180](https://github.com/regen-network/regen-ledger/pull/1180) Fix batch dates and project IDs in state migrations
 * [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Add simple `Credits` type to be reused in messages
@@ -29,20 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `Issuer` to `Admin` in `Msg/CreateProject`
 * [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Update `Msg/Retire` to use `Credits`
 * [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `Metadata` to `NewMatadata` in `Msg/UpdateClassMetadata`
-
-### x/ecocredit
-
-#### Added
-
-* [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Add additional bindings for query endpoints
-
-#### Changed
-
-*
-
-#### Fixed
-
-*
 
 <!-- TODO: consolidate v4.0.0 pre-releases with official release once available -->
 ## [v4.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-beta1) - 2022-06-03
