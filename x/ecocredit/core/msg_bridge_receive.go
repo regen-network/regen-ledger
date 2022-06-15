@@ -57,7 +57,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	if len(batch.Metadata) > MaxMetadataLength {
 		return sdkerrors.ErrInvalidRequest.Wrapf("batch metadata length (%d) exceeds max metadata length: %d", len(batch.Metadata), MaxMetadataLength)
 	}
-	if len(batch.Note) > MaxNoteLength { // do we need to do this?
+	if len(batch.Note) > MaxNoteLength {
 		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(batch.Note), MaxNoteLength)
 	}
 
