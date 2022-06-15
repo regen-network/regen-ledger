@@ -159,9 +159,13 @@ func TestBridgeReceive_TooManyProjects(t *testing.T) {
 
 	msg := core.MsgBridgeReceive{
 		ServiceAddress: s.addr.String(),
-		Recipient:      testutil.GenAddress(),
-		Amount:         "3",
-		ProjectRefId:   refId,
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: testutil.GenAddress(),
+			Amount:    "3",
+		},
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId: refId,
+		},
 	}
 	_, err = s.k.BridgeReceive(s.ctx, &msg)
 	assert.ErrorIs(t, err, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d projects registered "+
