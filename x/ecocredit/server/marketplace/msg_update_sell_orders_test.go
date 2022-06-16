@@ -42,9 +42,9 @@ func TestUpdateSellOrders(t *testing.T) {
 }
 
 func (s *updateSellOrdersSuite) Before(t gocuke.TestingT) {
-	s.baseSuite = setupBase(t)
-	s.alice = s.addr
-	s.bob = s.addr2
+	s.baseSuite = setupBase(t, 2)
+	s.alice = s.addrs[0]
+	s.bob = s.addrs[1]
 	s.aliceTradableAmount = "200"
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
