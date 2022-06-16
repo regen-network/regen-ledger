@@ -205,9 +205,9 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	assert.NilError(t, err)
 
 	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
-		Admin:    s.addr.String(),
-		ClassId:  "C01",
-		Metadata: "barfoo",
+		Admin:       s.addr.String(),
+		ClassId:     "C01",
+		NewMetadata: "barfoo",
 	})
 	assert.NilError(t, err)
 
@@ -231,17 +231,17 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 
 	// try to update non-existent class
 	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
-		Admin:    s.addr.String(),
-		ClassId:  "FOO",
-		Metadata: "",
+		Admin:       s.addr.String(),
+		ClassId:     "FOO",
+		NewMetadata: "",
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrNotFound.Error())
 
 	// try to update class you are not the admin of
 	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
-		Admin:    addr.String(),
-		ClassId:  "C01",
-		Metadata: "FOO",
+		Admin:       addr.String(),
+		ClassId:     "C01",
+		NewMetadata: "FOO",
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrUnauthorized.Error())
 

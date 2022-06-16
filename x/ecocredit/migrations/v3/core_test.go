@@ -143,7 +143,7 @@ func TestMigrations(t *testing.T) {
 
 	err = creditTypeSeqTable.Create(sdkCtx, &v3.CreditTypeSeq{
 		Abbreviation: "C",
-		SeqNumber:    3,
+		SeqNumber:    2,
 	})
 	require.NoError(t, err)
 

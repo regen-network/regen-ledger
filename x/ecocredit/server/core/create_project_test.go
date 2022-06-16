@@ -17,7 +17,7 @@ func TestCreateProject_ValidProjectState(t *testing.T) {
 	s := setupBase(t)
 	makeClass(t, s.ctx, s.stateStore, s.addr)
 	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.addr.String(),
+		Admin:        s.addr.String(),
 		ClassId:      "C01",
 		Metadata:     "",
 		Jurisdiction: "US-NY",
@@ -36,7 +36,7 @@ func TestCreateProject_GeneratedProjectID(t *testing.T) {
 	s := setupBase(t)
 	makeClass(t, s.ctx, s.stateStore, s.addr)
 	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.addr.String(),
+		Admin:        s.addr.String(),
 		ClassId:      "C01",
 		Metadata:     "",
 		Jurisdiction: "US-NY",
@@ -45,7 +45,7 @@ func TestCreateProject_GeneratedProjectID(t *testing.T) {
 	assert.Equal(t, res.ProjectId, "C01-001", "got project id: %s", res.ProjectId)
 
 	res, err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.addr.String(),
+		Admin:        s.addr.String(),
 		ClassId:      "C01",
 		Metadata:     "",
 		Jurisdiction: "US-NY",
@@ -58,7 +58,7 @@ func TestCreateProject_BadClassID(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.addr.String(),
+		Admin:        s.addr.String(),
 		ClassId:      "NOPE",
 		Jurisdiction: "US-NY",
 	})
@@ -83,7 +83,7 @@ func TestCreateProject_With_ReferenceId_ValidProjectState(t *testing.T) {
 	s := setupBase(t)
 	makeClass(t, s.ctx, s.stateStore, s.addr)
 	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.addr.String(),
+		Admin:        s.addr.String(),
 		ClassId:      "C01",
 		Metadata:     "",
 		Jurisdiction: "US-NY",

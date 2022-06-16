@@ -3,9 +3,9 @@ package core
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
-
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -20,7 +20,7 @@ func TestCancel_Valid(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: batchDenom,
 				Amount:     "10.5",
@@ -49,7 +49,7 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "100000",
@@ -67,7 +67,7 @@ func TestCancel_BadPrecision(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "10.5290385029385820935",
@@ -84,12 +84,12 @@ func TestCancel_InvalidBatch(t *testing.T) {
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgCancel_CancelCredits{
+		Credits: []*core.Credits{
 			{
 				BatchDenom: "C00-00000000-00000000-01",
 				Amount:     "100000",
 			},
 		},
 	})
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+	assert.Error(t, err, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom C00-00000000-00000000-01: %s", ormerrors.NotFound.Error()).Error())
 }
