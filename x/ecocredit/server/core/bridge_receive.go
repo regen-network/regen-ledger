@@ -105,7 +105,7 @@ func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeRe
 	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
 	// any batches in that iterator that were created by the same issuer and have matching metadata, are added to the slice.
 	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
-	batchIdx := fmt.Sprintf("%s-%s-%s-", projectId, req.StartDate.Format("20060102"), req.EndDate.Format("20060102"))
+	batchIdx := fmt.Sprintf("%s-%s-%s-", projectId, req.StartDate.UTC().Format("20060102"), req.EndDate.UTC().Format("20060102"))
 	bIt, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(batchIdx))
 	if err != nil {
 		return nil, err
