@@ -107,6 +107,7 @@ func TestBridgeReceive_None(t *testing.T) {
 	setupBridgeTest(s, "VCS-002")
 	recipient := testutil.GenAddress()
 	start, end := time.Now(), time.Now()
+	refId := "VCS-001"
 	msg := core.MsgBridgeReceive{
 		Issuer: s.addr.String(),
 		Batch: &core.MsgBridgeReceive_Batch{
@@ -118,7 +119,7 @@ func TestBridgeReceive_None(t *testing.T) {
 			Metadata:  "bar",
 		},
 		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  "VCS-001",
+			ReferenceId:  refId,
 			Jurisdiction: "US-KY",
 			Metadata:     "foo",
 		},
@@ -131,6 +132,7 @@ func TestBridgeReceive_None(t *testing.T) {
 	}
 	res, err := s.k.BridgeReceive(s.ctx, &msg)
 	assert.NilError(t, err)
+	assert.Equal(t, res.ProjectId, refId)
 
 	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, res.BatchDenom)
 	assert.NilError(t, err)
