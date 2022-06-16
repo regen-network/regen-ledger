@@ -13,7 +13,7 @@ import (
 
 func TestQueryAllowedDenoms(t *testing.T) {
 	t.Parallel()
-	s := setupBase(t)
+	s := setupBase(t, 0)
 
 	allowedDenom := api.AllowedDenom{
 		BankDenom:    "uregen",

@@ -67,7 +67,7 @@ message MsgAnchorResponse {
   // iri is the IRI of the data that was anchored.
   string iri = 1;
 
-  // timestamp is the timestamp at which the data was anchored.
+  // timestamp is the time at which the data was anchored.
   google.protobuf.Timestamp timestamp = 2;
 }
 
@@ -87,10 +87,13 @@ message MsgAttest {
 
 // MsgAttestResponse is the Msg/Attest response type.
 message MsgAttestResponse {
-  // new_entries are the new attestor entries including the attestor, the IRI,
-  // and the timestamp. If the attestor attests to the same piece of data, the
-  // entry will not be updated and not included in the response.
-  repeated AttestorEntry new_entries = 1;
+  // iris are the IRIs of the data that was attested to. If the attestor attests
+  // to the same piece of data, the previous attestation will not be updated and
+  // the IRI will not be included in this list.
+  repeated string iris = 1;
+
+  // timestamp is the time at which any new attestations were made.
+  google.protobuf.Timestamp timestamp = 2;
 }
 
 // MsgDefineResolver is the Msg/DefineResolver request type.

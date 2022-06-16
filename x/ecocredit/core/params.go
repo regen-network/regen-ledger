@@ -8,12 +8,12 @@ import (
 
 var (
 	// This is a value of 20 REGEN
-	DefaultCreditClassFeeTokens = sdk.NewInt(2e7)
-	DefaultBasketCreationFee    = sdk.NewInt(2e7)
-	KeyCreditClassFee           = []byte("CreditClassFee")
-	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
-	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
-	KeyBasketCreationFee        = []byte("BasketCreationFee")
+	DefaultCreditClassFee   = sdk.NewInt(2e7)
+	DefaultBasketFee        = sdk.NewInt(2e7)
+	KeyCreditClassFee       = []byte("CreditClassFee")
+	KeyAllowedClassCreators = []byte("AllowedClassCreators")
+	KeyAllowlistEnabled     = []byte("AllowlistEnabled")
+	KeyBasketFee            = []byte("BasketFee")
 )
 
 // TODO: remove after we allow standard SI units for precision
@@ -32,7 +32,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
 		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
-		paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketFee, validateBasketCreationFee),
+		paramtypes.NewParamSetPair(KeyBasketFee, &p.BasketFee, validateBasketFee),
 	}
 }
 
@@ -50,7 +50,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if err := validateBasketCreationFee(p.BasketFee); err != nil {
+	if err := validateBasketFee(p.BasketFee); err != nil {
 		return err
 	}
 
@@ -93,7 +93,7 @@ func validateAllowlistEnabled(i interface{}) error {
 	return nil
 }
 
-func validateBasketCreationFee(i interface{}) error {
+func validateBasketFee(i interface{}) error {
 	v, ok := i.(sdk.Coins)
 	if !ok {
 		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
@@ -107,20 +107,20 @@ func validateBasketCreationFee(i interface{}) error {
 }
 
 // NewParams creates a new Params object.
-func NewParams(creditClassFee, basketCreationFee sdk.Coins, allowlist []string, allowlistEnabled bool) Params {
+func NewParams(creditClassFee, basketFee sdk.Coins, allowlist []string, allowlistEnabled bool) Params {
 	return Params{
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowlist,
 		AllowlistEnabled:     allowlistEnabled,
-		BasketFee:            basketCreationFee,
+		BasketFee:            basketFee,
 	}
 }
 
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFee)),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketFee)),
 		[]string{},
 		false,
 	)

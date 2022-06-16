@@ -4,8 +4,6 @@ The `data` module provides the following types used in multiple services. The ty
 
 <!-- listed alphabetically -->
 
-- [AttestorEntry](https://buf.build/regen/regen-ledger/docs/main:regen.data.v1#regen.data.v1.AttestorEntry)
-- [ContentEntry](https://buf.build/regen/regen-ledger/docs/main:regen.data.v1#regen.data.v1.ContentEntry)
 - [ContentHash](https://buf.build/regen/regen-ledger/docs/main:regen.data.v1#regen.data.v1.ContentHash)
 - [ContentHash.Graph](https://buf.build/regen/regen-ledger/docs/main:regen.data.v1#regen.data.v1.ContentHash.Graph)
 - [ContentHash.Raw](https://buf.build/regen/regen-ledger/docs/main:regen.data.v1#regen.data.v1.ContentHash.Raw)

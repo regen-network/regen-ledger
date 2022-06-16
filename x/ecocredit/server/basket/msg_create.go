@@ -19,31 +19,50 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	var fee sdk.Coins
-	k.paramsKeeper.Get(sdkCtx, core.KeyBasketCreationFee, &fee)
-	if !msg.Fee.IsAllGTE(fee) {
-		return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
-	}
+	k.paramsKeeper.Get(sdkCtx, core.KeyBasketFee, &fee)
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, coin := range fee {
-		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, coin.Denom)
-		if curatorBalance.IsNil() || curatorBalance.IsLT(coin) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", coin.Denom)
+	// In the next version of the basket package, this field will be updated to
+	// a single Coin rather than a list of Coins. In the meantime, the message
+	// will fail basic validation if more than one Coin is provided and only the
+	// minimum fee is checked against the balance of the curator account, sent
+	// to the basket submodule, and then burned by the basket submodule.
+	if len(fee) > 0 {
+
+		// check if single coin in msg.Fee is greater than or equal to any coin in fee
+		if !msg.Fee.IsAnyGTE(fee) {
+			if len(fee) > 1 {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee one of %s, got %s", fee, msg.Fee)
+			} else {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
+			}
 		}
-	}
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, fee)
-	if err != nil {
-		return nil, err
-	}
+		minimumFee := sdk.Coin{
+			Denom:  msg.Fee[0].Denom,
+			Amount: fee.AmountOf(msg.Fee[0].Denom),
+		}
 
-	err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, fee)
-	if err != nil {
-		return nil, err
+		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, minimumFee.Denom)
+		if curatorBalance.IsNil() || curatorBalance.IsLT(minimumFee) {
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", minimumFee.Denom)
+		}
+
+		minimumFees := sdk.Coins{minimumFee}
+
+		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, minimumFees)
+		if err != nil {
+			return nil, err
+		}
+
+		err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, minimumFees)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, msg.CreditTypeAbbrev)

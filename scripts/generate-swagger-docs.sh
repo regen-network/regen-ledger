@@ -46,6 +46,10 @@ fi
 # move generated swagger yaml file to swagger-ui directory
 cp ${SWAGGER_DIR}/swagger.yaml ${SWAGGER_DIR}/swagger-ui/
 
+# update swagger initializer to default to swagger.yaml
+# Note: using -i.bak makes this compatible with both GNU and BSD/Mac
+sed -i.bak "s|https://petstore.swagger.io/v2/swagger.json|swagger.yaml|" ${SWAGGER_UI_DIR}/swagger-initializer.js
+
 # generate statik golang code using updated swagger-ui directory
 statik -src=${SWAGGER_DIR}/swagger-ui -dest=${SWAGGER_DIR} -f -m
 
