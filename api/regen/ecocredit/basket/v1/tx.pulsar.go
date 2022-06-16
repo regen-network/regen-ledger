@@ -4055,8 +4055,8 @@ type MsgTake struct {
 	// credits which will be used only if retire_on_take is true for this basket.
 	//
 	// Deprecated (Since Revision 1): This field is will be removed in the next
-	// version in favor of retirement_jurisdiction. If retirement_jurisdiction is
-	// set, this field will be ignored.
+	// version in favor of retirement_jurisdiction. Only one of these need to be
+	// set and retirement_jurisdiction will be used if both are set.
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"`
 	// retire_on_take is a boolean that dictates whether the ecocredits
 	// received in exchange for the basket tokens will be received as
