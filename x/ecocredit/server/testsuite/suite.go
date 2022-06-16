@@ -522,7 +522,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		toCancel           string
 		expectErr          bool
 		expTradable        string
-		expTradableAmount  string
+		expTradableSupply  string
 		expRetired         string
 		expTotalAmount     string
 		expAmountCancelled string
@@ -555,7 +555,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toCancel:           "2.0002",
 			expectErr:          false,
 			expTradable:        "97.9998",
-			expTradableAmount:  "1115.7567",
+			expTradableSupply:  "1115.7567",
 			expRetired:         "0",
 			expTotalAmount:     "11120.50169",
 			expAmountCancelled: "2.0002",
@@ -566,7 +566,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toCancel:           "97.9998",
 			expectErr:          false,
 			expTradable:        "0",
-			expTradableAmount:  "1017.7569",
+			expTradableSupply:  "1017.7569",
 			expRetired:         "0",
 			expTotalAmount:     "11022.50189",
 			expAmountCancelled: "100.0000",
@@ -584,7 +584,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toCancel:           "1",
 			expectErr:          false,
 			expTradable:        "9.37",
-			expTradableAmount:  "1016.7569",
+			expTradableSupply:  "1016.7569",
 			expRetired:         "4.286",
 			expTotalAmount:     "11021.50189",
 			expAmountCancelled: "101.0000",
@@ -624,7 +624,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableAmount, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
 				s.assertDecStrEqual(rSupply0, querySupplyRes.RetiredAmount)
 				s.assertDecStrEqual(tc.expAmountCancelled, querySupplyRes.CancelledAmount)
 
@@ -644,8 +644,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expectErr         bool
 		expTradable       string
 		expRetired        string
-		expTradableAmount string
-		expRetiredAmount  string
+		expTradableSupply string
+		expRetiredSupply  string
 		expErrMessage     string
 	}{
 		{
@@ -697,8 +697,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr:         false,
 			expTradable:       "9.3699",
 			expRetired:        "4.2861",
-			expTradableAmount: "1016.7568",
-			expRetiredAmount:  "10004.74509",
+			expTradableSupply: "1016.7568",
+			expRetiredSupply:  "10004.74509",
 		},
 		{
 			name:              "can retire more credits",
@@ -707,8 +707,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr:         false,
 			expTradable:       "0.3699",
 			expRetired:        "13.2861",
-			expTradableAmount: "1007.7568",
-			expRetiredAmount:  "10013.74509",
+			expTradableSupply: "1007.7568",
+			expRetiredSupply:  "10013.74509",
 		},
 		{
 			name:              "can retire all credits",
@@ -717,8 +717,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr:         false,
 			expTradable:       "0",
 			expRetired:        "13.656",
-			expTradableAmount: "1007.3869",
-			expRetiredAmount:  "10014.11499",
+			expTradableSupply: "1007.3869",
+			expRetiredSupply:  "10014.11499",
 		},
 		{
 			name:          "can't retire any more credits",
@@ -763,8 +763,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableAmount, querySupplyRes.TradableAmount)
-				s.assertDecStrEqual(tc.expRetiredAmount, querySupplyRes.RetiredAmount)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
 			}
 		})
 	}
@@ -779,8 +779,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expRetiredSender     string
 		expTradableRecipient string
 		expRetiredRecipient  string
-		expTradableAmount    string
-		expRetiredAmount     string
+		expTradableSupply    string
+		expRetiredSupply     string
 		expErrMessage        string
 	}{
 		{
@@ -841,8 +841,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSender:     "10000.45899",
 			expTradableRecipient: "10",
 			expRetiredRecipient:  "20",
-			expTradableAmount:    "987.3869",
-			expRetiredAmount:     "10034.11499",
+			expTradableSupply:    "987.3869",
+			expRetiredSupply:     "10034.11499",
 		},
 		{
 			name:                 "can send with no retirement jurisdiction",
@@ -854,8 +854,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSender:     "10000.45899",
 			expTradableRecipient: "20",
 			expRetiredRecipient:  "20",
-			expTradableAmount:    "987.3869",
-			expRetiredAmount:     "10034.11499",
+			expTradableSupply:    "987.3869",
+			expRetiredSupply:     "10034.11499",
 		},
 		{
 			name:                 "can send all tradable",
@@ -867,8 +867,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSender:     "10000.45899",
 			expTradableRecipient: "87.3869",
 			expRetiredRecipient:  "920",
-			expTradableAmount:    "87.3869",
-			expRetiredAmount:     "10934.11499",
+			expTradableSupply:    "87.3869",
+			expRetiredSupply:     "10934.11499",
 		},
 		{
 			name:          "can't send any more",
@@ -926,8 +926,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableAmount, querySupplyRes.TradableAmount)
-				s.assertDecStrEqual(tc.expRetiredAmount, querySupplyRes.RetiredAmount)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
 			}
 		})
 	}
