@@ -31,8 +31,8 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 		},
 		Project: &core.MsgBridgeReceive_Project{
 			ReferenceId:  projectRefId,
-			Jurisdiction: "US-KY",
-			Metadata:     "hi",
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
 			Id:     "0x1324092835908235",
@@ -45,6 +45,8 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, res.ProjectId, project.Id)
 	assert.Equal(t, res.BatchDenom, batch.Denom)
+	assertBatchBridged(t, msg.Batch, batch)
+	assertProjectBridged(t, msg.Project, project)
 
 	// this was a fresh account, so we know their balance is only what was bridged to it.
 	bal, err := s.k.Balance(s.ctx, &core.QueryBalanceRequest{
@@ -75,7 +77,8 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 		},
 		Project: &core.MsgBridgeReceive_Project{
 			ReferenceId:  refId,
-			Jurisdiction: "US-KY",
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
 			Id:     "0x12345",
@@ -88,10 +91,12 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 	res, err := s.k.BridgeReceive(s.ctx, &msg)
 	assert.NilError(t, err)
 	assert.Equal(t, res.ProjectId, project.Id)
-	assert.Check(t, res.BatchDenom != batch.Denom)
+	assertProjectBridged(t, msg.Project, project)
 
+	assert.Check(t, res.BatchDenom != batch.Denom)
 	batch, err = s.stateStore.BatchTable().GetByDenom(s.ctx, res.BatchDenom)
 	assert.NilError(t, err)
+	assertBatchBridged(t, msg.Batch, batch)
 
 	bal, err := s.k.Balance(s.ctx, &core.QueryBalanceRequest{
 		Address:    recipient,
@@ -137,6 +142,7 @@ func TestBridgeReceive_None(t *testing.T) {
 	project, err := s.stateStore.ProjectTable().GetById(s.ctx, res.ProjectId)
 	assert.NilError(t, err)
 	assert.Equal(t, project.ReferenceId, refId)
+	assertProjectBridged(t, msg.Project, project)
 
 	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, res.BatchDenom)
 	assert.NilError(t, err)
@@ -146,13 +152,14 @@ func TestBridgeReceive_None(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, bal.Balance.TradableAmount, msg.Batch.Amount)
+	assertBatchBridged(t, msg.Batch, batch)
 }
 
 func TestBridgeReceive_MultipleProjects(t *testing.T) {
 	t.Parallel()
 	refId := "VCS-001"
 	s := setupBase(t)
-	project, _ := setupBridgeTest(s, refId)
+	project, batch := setupBridgeTest(s, refId)
 
 	project2 := &api.Project{
 		Id:           "C01-002",
@@ -164,7 +171,7 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 	}
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project2))
 
-	start, end := time.Now(), time.Now()
+	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
 	msg := core.MsgBridgeReceive{
 		Issuer: s.addr.String(),
 		Batch: &core.MsgBridgeReceive_Batch{
@@ -175,8 +182,8 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 		},
 		Project: &core.MsgBridgeReceive_Project{
 			ReferenceId:  refId,
-			Jurisdiction: "US-KY",
-			Metadata:     "",
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
 			Id:     "0x12345",
@@ -188,6 +195,8 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 	assert.NilError(t, err)
 	// check to make sure the first project is selected
 	assert.Equal(t, res.ProjectId, project.Id)
+	assertProjectBridged(t, msg.Project, project)
+	assertBatchBridged(t, msg.Batch, batch)
 }
 
 func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
@@ -246,6 +255,21 @@ func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 	assert.NilError(t, err)
 	// ensure the 2nd batch was picked, since it was manually set to be an older issuance date than the first.
 	assert.Equal(t, res.BatchDenom, batch2.Denom)
+	assertBatchBridged(t, msg.Batch, batch2)
+	assertProjectBridged(t, msg.Project, project)
+
+}
+
+func assertProjectBridged(t *testing.T, bridgedProject *core.MsgBridgeReceive_Project, project *api.Project) {
+	assert.Equal(t, bridgedProject.Jurisdiction, project.Jurisdiction)
+	assert.Equal(t, bridgedProject.Metadata, project.Metadata)
+	assert.Equal(t, bridgedProject.ReferenceId, project.ReferenceId)
+}
+
+func assertBatchBridged(t *testing.T, bridgedBatch *core.MsgBridgeReceive_Batch, batch *api.Batch) {
+	assert.Equal(t, bridgedBatch.Metadata, batch.Metadata)
+	assert.Check(t, bridgedBatch.StartDate.UTC().Equal(batch.StartDate.AsTime().UTC()))
+	assert.Check(t, bridgedBatch.EndDate.UTC().Equal(batch.EndDate.AsTime().UTC()))
 }
 
 func setupBridgeTest(s *baseSuite, refId string) (project *api.Project, batch *api.Batch) {
