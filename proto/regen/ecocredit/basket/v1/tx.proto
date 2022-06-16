@@ -130,7 +130,7 @@ message MsgTake {
   // Deprecated (Since Revision 1): This field is will be removed in the next
   // version in favor of retirement_jurisdiction. Only one of these need to be
   // set and retirement_jurisdiction will be used if both are set.
-  string retirement_location = 4;
+  string retirement_location = 4 [ deprecated = true ];
 
   // retire_on_take is a boolean that dictates whether the ecocredits
   // received in exchange for the basket tokens will be received as
