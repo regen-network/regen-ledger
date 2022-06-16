@@ -139,6 +139,8 @@ message MsgTake {
 
   // retirement_jurisdiction is the optional retirement jurisdiction for the
   // credits which will be used only if retire_on_take is true for this basket.
+  //
+  // Since Revision 1
   string retirement_jurisdiction = 6;
 }
 

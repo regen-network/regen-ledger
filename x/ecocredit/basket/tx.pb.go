@@ -356,6 +356,8 @@ type MsgTake struct {
 	RetireOnTake bool `protobuf:"varint,5,opt,name=retire_on_take,json=retireOnTake,proto3" json:"retire_on_take,omitempty"`
 	// retirement_jurisdiction is the optional retirement jurisdiction for the
 	// credits which will be used only if retire_on_take is true for this basket.
+	//
+	// Since Revision 1
 	RetirementJurisdiction string `protobuf:"bytes,6,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
 }
 
