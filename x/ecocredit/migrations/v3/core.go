@@ -142,7 +142,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		}
 		if err := ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
 			CreditTypeAbbrev: ctype.Abbreviation,
-			NextSequence:     ctype.SeqNumber,
+			NextSequence:     ctype.SeqNumber + 1, // in v3.0 we are storing current sequence
 		}); err != nil {
 			return err
 		}
