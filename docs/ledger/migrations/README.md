@@ -28,6 +28,6 @@ First and foremost, be sure to reach out and introduce yourself if you have not 
 
 Prior to a beta release tag, application developers might want to consider spinning up a single node network with a specific commit that includes a new feature or significant changes that will require a fair amount of work to implement. We would be happy to assist you in setting this up.
 
-Similar to deciding upon a commit and running a single node network on a remote server, application developers might also want to consider spinning up a local testnet as part of their workflow or more specifically for testing. We would be happy to assist you this as well.
+Similar to deciding upon a commit and running a single node network on a remote server, application developers might also want to consider spinning up a local testnet as part of their workflow or more specifically for testing. We would be happy to assist you with this as well.
 
 Once a beta release has been tagged, the Regen Ledger team spins up a temporary test network that will run up until the official upgrade of Regen Mainnet and Redwood Testnet. If you would like to test against this temporary test network, please reach out and we can keep you posted on updates.
