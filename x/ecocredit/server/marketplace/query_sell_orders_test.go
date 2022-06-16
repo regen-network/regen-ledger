@@ -8,7 +8,6 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
@@ -97,11 +96,11 @@ func TestSellOrdersByDenom(t *testing.T) {
 
 func TestSellOrdersBySeller(t *testing.T) {
 	t.Parallel()
-	s := setupBase(t, 2)
+	s := setupBase(t, 3)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	_, _, otherAddr := testdata.KeyTestPubAddr()
-	_, _, noOrdersAddr := testdata.KeyTestPubAddr()
+	otherAddr := s.addrs[1]
+	noOrdersAddr := s.addrs[2]
 
 	order1 := insertSellOrder(t, s, s.addrs[0], 1)
 	order2 := insertSellOrder(t, s, otherAddr, 1)
