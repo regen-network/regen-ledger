@@ -22,10 +22,12 @@ Once the software upgrade is executed, applications consuming the Regen Ledger A
 
 ## Staying Up-To-Date
 
-The time between a beta release and the software upgrade might seem too short depending on the size of an application consuming the Regen Ledger API, the number of features dependent upon the API, and the size of the team building the application.
+The time between a beta release and the software upgrade might seem a bit short depending on the size of the application consuming the Regen Ledger API, the number of features dependent upon the API, and the size of the team building the application.
 
-First and foremost, be sure to reach out and let us know who you are and what you're building so that we are aware of your needs and any concerns you may have. We would also love to hear your ideas and any feature requests you may have. Please reach out to us in our [Discord server](https://discord.gg/BDcBJu3).
+First and foremost, be sure to reach out and introduce yourself if you have not already and please share any questions or concerns you may have. We would love to work alongside teams building on top of Regen Ledger to ensure we are providing the best possible developer experience.
 
-...
+Prior to a beta release tag, application developers might want to consider spinning up a single node network with a specific commit that includes a new feature or significant changes that will require a fair amount of work to implement. We would be happy to assist you in setting this up.
 
-We also recommend application developers become familiar with running a [local testnet](../get-started/local-testnet.html) so that they can test against the latest changes.
+Similar to deciding upon a commit and running a single node network on a remote server, application developers might also want to consider spinning up a local testnet as part of their workflow or more specifically for testing. We would be happy to assist you this as well.
+
+Once a beta release has been tagged, the Regen Ledger team spins up a temporary test network that will run up until the official upgrade of Regen Mainnet and Redwood Testnet. If you would like to test against this temporary test network, please reach out and we can keep you posted on updates.
