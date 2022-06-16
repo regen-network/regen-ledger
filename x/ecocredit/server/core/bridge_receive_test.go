@@ -186,7 +186,7 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 	assert.Equal(t, res.ProjectId, project.Id)
 }
 
-func TestBridgeReceive_ChoosesLatestBatch(t *testing.T) {
+func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 	t.Parallel()
 	refId := "VCS-001"
 	s := setupBase(t)
