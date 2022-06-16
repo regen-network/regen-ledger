@@ -5666,14 +5666,18 @@ type QueryBasketResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// basket is the queried basket.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version. Use basket_info instead.
+	//
+	// Deprecated (Since Revision 1): This field is still populated using Basket
+	// but will be updated to use BasketInfo in the next version. In the meantime
+	// basket_info is available using BasketInfo.
 	//
 	// Deprecated: Do not use.
 	Basket *Basket `protobuf:"bytes,1,opt,name=basket,proto3" json:"basket,omitempty"`
 	// classes are the credit classes that can be deposited in the basket.
 	Classes []string `protobuf:"bytes,2,rep,name=classes,proto3" json:"classes,omitempty"`
 	// basket_info is the queried basket.
+	//
+	// Since Revision 1
 	BasketInfo *BasketInfo `protobuf:"bytes,3,opt,name=basket_info,json=basketInfo,proto3" json:"basket_info,omitempty"`
 }
 
@@ -5763,14 +5767,18 @@ type QueryBasketsResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// baskets are the fetched baskets.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version. Use baskets_info instead.
+	//
+	// Deprecated (Since Revision 1): This field is still populated using Basket
+	// but will be updated to use BasketInfo in the next version. In the meantime
+	// baskets_info is available using BasketInfo.
 	//
 	// Deprecated: Do not use.
 	Baskets []*Basket `protobuf:"bytes,1,rep,name=baskets,proto3" json:"baskets,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 	// baskets_info are the fetched baskets.
+	//
+	// Since Revision 1
 	BasketsInfo []*BasketInfo `protobuf:"bytes,3,rep,name=baskets_info,json=basketsInfo,proto3" json:"baskets_info,omitempty"`
 }
 
@@ -5869,14 +5877,18 @@ type QueryBasketBalancesResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// balances is a list of credit balances in the basket.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version. Use balances_info instead.
+	//
+	// Deprecated (Since Revision 1): This field is still populated using
+	// BasketBalance but will be updated to use BasketBalanceInfo in the next
+	// version. In the meantime baskets_info is available using BasketBalanceInfo.
 	//
 	// Deprecated: Do not use.
 	Balances []*BasketBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 	// balances_info is a list of credit balances in the basket.
+	//
+	// Since Revision 1
 	BalancesInfo []*BasketBalanceInfo `protobuf:"bytes,3,rep,name=balances_info,json=balancesInfo,proto3" json:"balances_info,omitempty"`
 }
 
