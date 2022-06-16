@@ -24,8 +24,18 @@ func (m MsgBridgeReceive) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridgeReceive) ValidateBasic() error {
+	// top level fields validation
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap("issuer")
+	}
+	if err := ValidateClassId(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	if m.OriginTx == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx is required")
+	}
+	if len(m.Note) > MaxNoteLength {
+		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(m.Note), MaxNoteLength)
 	}
 
 	// batch validation
@@ -39,10 +49,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	if _, err := math.NewPositiveDecFromString(batch.Amount); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	if batch.OriginTx == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx is required")
-	}
-	if err := batch.OriginTx.Validate(); err != nil {
+	if err := m.OriginTx.Validate(); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	if batch.StartDate == nil {
@@ -56,9 +63,6 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 	if len(batch.Metadata) > MaxMetadataLength {
 		return sdkerrors.ErrInvalidRequest.Wrapf("batch metadata length (%d) exceeds max metadata length: %d", len(batch.Metadata), MaxMetadataLength)
-	}
-	if len(batch.Note) > MaxNoteLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(batch.Note), MaxNoteLength)
 	}
 
 	// project validation
@@ -74,9 +78,6 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 	if len(project.Metadata) > MaxMetadataLength {
 		return sdkerrors.ErrInvalidRequest.Wrapf("project_metadata length (%d) exceeds max metadata length: %d", len(project.Metadata), MaxMetadataLength)
-	}
-	if err := ValidateClassId(project.ClassId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	return nil
 }

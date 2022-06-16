@@ -23,28 +23,29 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 	validBatch := MsgBridgeReceive_Batch{
 		Recipient: addr,
 		Amount:    "10.5",
-		OriginTx:  &validOriginTx,
 		StartDate: &validStart,
 		EndDate:   &validEnd,
 		Metadata:  "some metadata",
-		Note:      "some note",
 	}
 	validProject := MsgBridgeReceive_Project{
 		ReferenceId:  "VCS-001",
 		Jurisdiction: "US-KY",
 		Metadata:     "some metadata",
-		ClassId:      "C01",
 	}
 	validMsg := MsgBridgeReceive{
-		Issuer:  addr,
-		Batch:   &validBatch,
-		Project: &validProject,
+		Issuer:   addr,
+		Batch:    &validBatch,
+		Project:  &validProject,
+		OriginTx: &validOriginTx,
+		ClassId:  "C01",
+		Note:     "some note",
 	}
 
 	resetMsg := func() MsgBridgeReceive {
 		msg := validMsg
 		msg.Batch = &validBatch
 		msg.Project = &validProject
+		msg.OriginTx = &validOriginTx
 		return msg
 	}
 
@@ -94,7 +95,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: nil origin tx",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Batch.OriginTx = nil
+				validMsg.OriginTx = nil
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("origin_tx is required").Error(),
@@ -102,7 +103,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: empty origin tx",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Batch.OriginTx = &OriginTx{}
+				validMsg.OriginTx = &OriginTx{}
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrap("invalid OriginTx: no id").Error(),
@@ -177,7 +178,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: note length",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Batch.Note = strings.Repeat("X", MaxNoteLength+1)
+				validMsg.Note = strings.Repeat("X", MaxNoteLength+1)
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", MaxNoteLength+1, MaxNoteLength).Error(),
@@ -185,7 +186,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid: class Id",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Project.ClassId = "Foobar12345"
+				validMsg.ClassId = "Foobar12345"
 				return validMsg
 			},
 			errMsg: "class ID didn't match the format",

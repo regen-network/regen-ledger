@@ -18,7 +18,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return nil, err
 	}
 
-	project, err := k.getProjectFromBridgeReq(ctx, req.Project)
+	project, err := k.getProjectFromBridgeReq(ctx, req.Project, req.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
 			Admin:        req.Issuer,
-			ClassId:      req.Project.ClassId,
+			ClassId:      req.ClassId,
 			Metadata:     req.Project.Metadata,
 			Jurisdiction: req.Project.Jurisdiction,
 			ReferenceId:  req.Project.ReferenceId,
@@ -46,8 +46,8 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			StartDate: req.Batch.StartDate,
 			EndDate:   req.Batch.EndDate,
 			Open:      true,
-			OriginTx:  req.Batch.OriginTx,
-			Note:      req.Batch.Note,
+			OriginTx:  req.OriginTx,
+			Note:      req.Note,
 		})
 		if err != nil {
 			return nil, err
@@ -66,8 +66,8 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 				Issuance: []*core.BatchIssuance{
 					{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
 				},
-				OriginTx: req.Batch.OriginTx,
-				Note:     req.Batch.Note,
+				OriginTx: req.OriginTx,
+				Note:     req.Note,
 			})
 			if err != nil {
 				return nil, err
@@ -85,8 +85,8 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 				StartDate: req.Batch.StartDate,
 				EndDate:   req.Batch.EndDate,
 				Open:      true,
-				OriginTx:  req.Batch.OriginTx,
-				Note:      req.Batch.Note,
+				OriginTx:  req.OriginTx,
+				Note:      req.Note,
 			})
 			if err != nil {
 				return nil, err
@@ -143,10 +143,10 @@ func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeRe
 // getProjectFromBridgeReq attempts to get a project from state given the request.
 // The first project seen in the iterator is returned.
 // If no projects are found, nil is returned for both values.
-func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project) (*api.Project, error) {
-	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
+func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project, classId string) (*api.Project, error) {
+	class, err := k.stateStore.ClassTable().GetById(ctx, classId)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", classId, err.Error())
 	}
 
 	// first we check if there is an existing project
