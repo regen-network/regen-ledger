@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -140,66 +139,6 @@ func TestBridgeReceive_None(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, bal.Balance.TradableAmount, msg.Batch.Amount)
-}
-
-func TestBridgeReceive_TooManyBatches(t *testing.T) {
-	t.Parallel()
-	refId := "VCS-001"
-	s := setupBase(t)
-	project, batch := setupBridgeTest(s, refId)
-
-	// create 2 batches with "hi" as metadata.
-	batchMetadata := "hi"
-	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
-	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
-		Issuer:    s.addr.String(),
-		ProjectId: project.Id,
-		Issuance: []*core.BatchIssuance{
-			{Recipient: s.addr.String(), TradableAmount: "10"},
-		},
-		Metadata:  batchMetadata,
-		StartDate: &start,
-		EndDate:   &end,
-		Open:      true,
-		OriginTx:  &core.OriginTx{Id: "0x12345", Source: "polygon:0x12345"},
-		Note:      "hi",
-	})
-	assert.NilError(t, err)
-	_, err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
-		Issuer:    s.addr.String(),
-		ProjectId: project.Id,
-		Issuance: []*core.BatchIssuance{
-			{Recipient: s.addr.String(), TradableAmount: "10"},
-		},
-		Metadata:  batchMetadata,
-		StartDate: &start,
-		EndDate:   &end,
-		Open:      true,
-		OriginTx:  &core.OriginTx{Id: "0x123456", Source: "polygon:0x12345"},
-		Note:      "hi",
-	})
-	assert.NilError(t, err)
-
-	msg := core.MsgBridgeReceive{
-		Issuer: s.addr.String(),
-		Batch: &core.MsgBridgeReceive_Batch{
-			Recipient: testutil.GenAddress(),
-			Amount:    "3",
-			StartDate: &start,
-			EndDate:   &end,
-			Metadata:  batchMetadata,
-			Note:      "bridged",
-		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  refId,
-			Jurisdiction: "US-KY",
-			Metadata:     "hi",
-			ClassId:      "C01",
-		},
-	}
-	_, err = s.k.BridgeReceive(s.ctx, &msg)
-	assert.ErrorIs(t, err, sdkerrors.ErrInvalidRequest.Wrapf("fatal error: bridge service %s has %d batches issued "+
-		"with start %v and end %v dates in project %s", s.addr.String(), 2, msg.Batch.StartDate.String(), msg.Batch.EndDate.String(), project.Id))
 }
 
 func TestBridgeReceive_MultipleProjects(t *testing.T) {
