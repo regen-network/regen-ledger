@@ -132,7 +132,11 @@ func TestBridgeReceive_None(t *testing.T) {
 	}
 	res, err := s.k.BridgeReceive(s.ctx, &msg)
 	assert.NilError(t, err)
-	assert.Equal(t, res.ProjectId, refId)
+
+	// check ref id is correct
+	project, err := s.stateStore.ProjectTable().GetById(s.ctx, res.ProjectId)
+	assert.NilError(t, err)
+	assert.Equal(t, project.ReferenceId, refId)
 
 	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, res.BatchDenom)
 	assert.NilError(t, err)
