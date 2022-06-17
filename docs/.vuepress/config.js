@@ -105,7 +105,7 @@ module.exports = {
           ],
         },
         {
-          title: 'Migrations',
+          title: 'Migration Guides',
           collapsable: false,
           children: [
             '/ledger/migrations/',
