@@ -13,7 +13,6 @@ import (
 
 const (
 	marketplaceRoute = "regen/ecocredit/marketplace/v1"
-	basketRoute      = "regen/ecocredit/basket/v1"
 	coreRoute        = "regen/ecocredit/v1"
 )
 
