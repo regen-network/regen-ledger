@@ -94,18 +94,22 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/sell-orders/batch/%s", s.val.APIAddress, marketplaceRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/sell-orders-by-batch/%s", s.val.APIAddress, marketplaceRoute, s.batchDenom),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders/batch/%s?pagination.countTotal=true",
+				"%s/%s/sell-orders-by-batch/%s?pagination.countTotal=true",
 				// TODO: #1113
 				// "%s/%s/sell-orders/batch/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 				s.batchDenom,
 			),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/sell-orders/batch/%s", s.val.APIAddress, marketplaceRoute, s.batchDenom),
 		},
 	}
 
@@ -138,18 +142,22 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/sell-orders/seller/%s", s.val.APIAddress, marketplaceRoute, s.addr1),
+			fmt.Sprintf("%s/%s/sell-orders-by-seller/%s", s.val.APIAddress, marketplaceRoute, s.addr1),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders/seller/%s?pagination.countTotal=true",
+				"%s/%s/sell-orders-by-seller/%s?pagination.countTotal=true",
 				// TODO: #1113
 				// "%s/%s/sell-orders/seller/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 				s.addr1,
 			),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/sell-orders/seller/%s", s.val.APIAddress, marketplaceRoute, s.addr1),
 		},
 	}
 

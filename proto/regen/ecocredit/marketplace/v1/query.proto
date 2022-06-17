@@ -32,16 +32,24 @@ service Query {
   // the batch denom of the credits being sold.
   rpc SellOrdersByBatch(QuerySellOrdersByBatchRequest)
       returns (QuerySellOrdersByBatchResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/sell-orders/batch/{batch_denom}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-orders-by-batch/{batch_denom}"
+      additional_bindings : [ {
+        get : "/regen/ecocredit/marketplace/v1/sell-orders/batch/{batch_denom}"
+      } ]
+    };
   }
 
   // SellOrdersBySeller queries a paginated list of all sell orders based on the
   // account address of the seller.
   rpc SellOrdersBySeller(QuerySellOrdersBySellerRequest)
       returns (QuerySellOrdersBySellerResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/sell-orders/seller/{seller}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-orders-by-seller/{seller}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/marketplace/v1/sell-orders/seller/{seller}"}
+      ]
+    };
   }
 
   // AllowedDenoms queries a paginated list of all bank denoms allowed to be
