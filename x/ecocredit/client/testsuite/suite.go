@@ -1,7 +1,6 @@
 package testsuite
 
 import (
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
@@ -17,6 +16,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 type IntegrationTestSuite struct {
