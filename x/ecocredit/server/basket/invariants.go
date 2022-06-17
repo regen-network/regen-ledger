@@ -84,15 +84,15 @@ func (k Keeper) computeBasketBalances(ctx context.Context) (map[uint64]math.Dec,
 	for it.Next() {
 		b, err := it.Value()
 		if err != nil {
-			return nil, fmt.Errorf("Can't get basket balance %w", err)
+			return nil, fmt.Errorf("can't get basket balance %w", err)
 		}
 		bal, err := math.NewDecFromString(b.Balance)
 		if err != nil {
-			return nil, fmt.Errorf("Can't decode balance %s as math.Dec: %w", b.Balance, err)
+			return nil, fmt.Errorf("can't decode balance %s as math.Dec: %w", b.Balance, err)
 		}
 		if a, ok := balances[b.BasketId]; ok {
 			if a, err = a.Add(bal); err != nil {
-				return nil, fmt.Errorf("Can't add balances: %w", err)
+				return nil, fmt.Errorf("can't add balances: %w", err)
 			}
 			balances[b.BasketId] = a
 		} else {

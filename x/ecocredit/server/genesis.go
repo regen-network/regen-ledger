@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"github.com/gogo/protobuf/proto"
 
@@ -74,7 +75,9 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	}
 
 	store := ctx.KVStore(s.storeKey)
-	if err := setBalanceAndSupply(store, genesisState.Balances); err != nil {
+
+	batchDenomToBasketBalanceMap := s.getBasketBalanceMap(ctx)
+	if err := setBalanceAndSupply(store, genesisState.Balances, batchDenomToBasketBalanceMap); err != nil {
 		return nil, err
 	}
 
@@ -130,7 +133,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 }
 
 // setBalanceAndSupply sets the tradable and retired balance for an account and update supply for batch denom.
-func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error {
+func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance, batchDenomToBasketBalanceMap map[string]math.Dec) error {
 	for _, balance := range balances {
 		addr, err := sdk.AccAddressFromBech32(balance.Address)
 		if err != nil {
@@ -163,6 +166,17 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			key = ecocredit.RetiredSupplyKey(denomT)
 			ecocredit.AddAndSetDecimal(store, key, d)
 		}
+	}
+
+	keys := make([]string, 0, len(batchDenomToBasketBalanceMap))
+	for k := range batchDenomToBasketBalanceMap {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, denom := range keys {
+		key := ecocredit.TradableSupplyKey(ecocredit.BatchDenomT(denom))
+		ecocredit.AddAndSetDecimal(store, key, batchDenomToBasketBalanceMap[denom])
 	}
 
 	return nil
