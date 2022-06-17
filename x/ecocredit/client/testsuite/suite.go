@@ -7,7 +7,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/gogo/protobuf/proto"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
@@ -23,6 +22,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
