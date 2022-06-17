@@ -138,7 +138,7 @@ func TestMainnetMigrations(t *testing.T) {
 
 	err = creditTypeSeqTable.Create(sdkCtx, &v3.CreditTypeSeq{
 		Abbreviation: "C",
-		SeqNumber:    2,
+		SeqNumber:    1,
 	})
 	require.NoError(t, err)
 
@@ -537,7 +537,7 @@ func TestRedwoodMigrations(t *testing.T) {
 
 	err = creditTypeSeqTable.Create(sdkCtx, &v3.CreditTypeSeq{
 		Abbreviation: "C",
-		SeqNumber:    5,
+		SeqNumber:    4,
 	})
 	require.NoError(t, err)
 
