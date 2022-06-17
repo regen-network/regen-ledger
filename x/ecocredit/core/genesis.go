@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -15,6 +16,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -30,7 +32,7 @@ import (
 // - the retired amount of each credit batch complies with the credit type precision
 // - the calculated total amount of each credit batch matches the total supply
 // An error is returned if any of these validation checks fail.
-func ValidateGenesis(data json.RawMessage, params Params) error {
+func ValidateGenesis(data json.RawMessage, params Params, basketBalances []*basketapi.BasketBalance) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -122,6 +124,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	}
 
 	batchIdToPrecision := make(map[uint64]uint32) // map of batchID to precision
+	batchDenomToIdMap := make(map[string]uint64)  // map of batchDenom to batchId
 	bItr, err := ss.BatchTable().List(ormCtx, api.BatchPrimaryKey{})
 	if err != nil {
 		return err
@@ -134,6 +137,8 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		if err != nil {
 			return err
 		}
+
+		batchDenomToIdMap[batch.Denom] = batch.Key
 
 		if _, exists := batchIdToPrecision[batch.Key]; exists {
 			continue
@@ -190,6 +195,28 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	// calculate credit batch supply from genesis tradable, retired and escrowed balances
 	if err := calculateSupply(ormCtx, batchIdToPrecision, ss, batchIdToCalSupply); err != nil {
 		return err
+	}
+
+	for _, basket := range basketBalances {
+		batchId, ok := batchDenomToIdMap[basket.BatchDenom]
+		if !ok {
+			return fmt.Errorf("unknown credit batch %d in basket", batchId)
+		}
+
+		bb, err := math.NewNonNegativeDecFromString(basket.Balance)
+		if err != nil {
+			return err
+		}
+
+		if amount, ok := batchIdToCalSupply[batchId]; ok {
+			result, err := math.SafeAddBalance(amount, bb)
+			if err != nil {
+				return err
+			}
+			batchIdToCalSupply[batchId] = result
+		} else {
+			return fmt.Errorf("unknown credit batch %d in basket", batchId)
+		}
 	}
 
 	// verify calculated total amount of each credit batch matches the total supply

@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -24,6 +25,7 @@ func TestValidateGenesis(t *testing.T) {
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 	ss, err := api.NewStateStore(modDB)
+	require.NoError(t, err)
 
 	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
 		Abbreviation: "BIO",
@@ -109,7 +111,7 @@ func TestValidateGenesis(t *testing.T) {
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = core.ValidateGenesis(genesisJson, params)
+	err = core.ValidateGenesis(genesisJson, params, []*basketapi.BasketBalance{})
 	require.NoError(t, err)
 }
 
@@ -479,7 +481,7 @@ func TestGenesisValidate(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
 			jsn := setupStateAndExportJSON(t, tc.setupState)
-			err := core.ValidateGenesis(jsn, tc.params)
+			err := core.ValidateGenesis(jsn, tc.params, []*basketapi.BasketBalance{})
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -488,6 +490,112 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestValidateGenesisWithBasketBalance(t *testing.T) {
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+	ss, err := api.NewStateStore(modDB)
+	require.NoError(t, err)
+
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+		Abbreviation: "BIO",
+		Name:         "biodiversity",
+		Unit:         "acres",
+		Precision:    6,
+	}))
+
+	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
+		&api.BatchBalance{
+			BatchKey:       1,
+			Address:        sdk.AccAddress("addr1"),
+			TradableAmount: "90.003",
+			RetiredAmount:  "9.997",
+		}))
+
+	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
+		&api.BatchBalance{
+			BatchKey:       2,
+			Address:        sdk.AccAddress("addr1"),
+			TradableAmount: "1.234",
+			EscrowedAmount: "1.234",
+			RetiredAmount:  "0",
+		}))
+
+	basketBalances := []*basketapi.BasketBalance{
+		{
+			BasketId:   1,
+			BatchDenom: "C01-001-20180101-20200101-001",
+			Balance:    "100",
+		},
+		{
+			BasketId:   2,
+			BatchDenom: "BIO02-001-00000000-00000000-001",
+			Balance:    "10.000",
+		},
+	}
+
+	batches := []*api.Batch{
+		{
+			Issuer:     sdk.AccAddress("addr2"),
+			ProjectKey: 1,
+			Denom:      "C01-001-20180101-20200101-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+		},
+		{
+			Issuer:     sdk.AccAddress("addr3"),
+			ProjectKey: 1,
+			Denom:      "BIO02-001-00000000-00000000-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+		},
+	}
+	for _, b := range batches {
+		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
+	}
+
+	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
+		&api.BatchSupply{
+			BatchKey:       1,
+			TradableAmount: "190.003",
+			RetiredAmount:  "9.997",
+		}),
+	)
+
+	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
+		&api.BatchSupply{
+			BatchKey:       2,
+			TradableAmount: "12.468",
+			RetiredAmount:  "0",
+		}),
+	)
+
+	class := api.Class{
+		Id:               "BIO001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "BIO",
+	}
+	require.NoError(t, ss.ClassTable().Insert(ormCtx, &class))
+
+	project := api.Project{
+		Id:           "P01-001",
+		Admin:        sdk.AccAddress("addr6"),
+		ClassKey:     1,
+		Jurisdiction: "AQ",
+		Metadata:     "meta",
+	}
+	require.NoError(t, ss.ProjectTable().Insert(ormCtx, &project))
+
+	target := ormjson.NewRawMessageTarget()
+	require.NoError(t, modDB.ExportJSON(ormCtx, target))
+	genesisJson, err := target.JSON()
+	require.NoError(t, err)
+
+	params := core.Params{AllowlistEnabled: true}
+	err = core.ValidateGenesis(genesisJson, params, basketBalances)
+	require.NoError(t, err)
 }
 
 // setupStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.

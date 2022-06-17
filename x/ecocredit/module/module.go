@@ -25,10 +25,12 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -126,6 +128,16 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return err
 	}
 
+	var genesisMap map[string]json.RawMessage
+	if err := json.Unmarshal(bz, &genesisMap); err != nil {
+		return err
+	}
+
+	basketBalances := []*basketapi.BasketBalance{}
+	if err := json.Unmarshal(genesisMap[proto.MessageName(&basket.BasketBalance{})], &basketBalances); err != nil {
+		return err
+	}
+
 	err = db.ValidateJSON(jsonSource)
 	if err != nil {
 		return err
@@ -145,8 +157,7 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return fmt.Errorf("failed to unmarshal %s params state: %w", ecocredit.ModuleName, err)
 	}
 
-	return coretypes.ValidateGenesis(bz, params)
-
+	return coretypes.ValidateGenesis(bz, params, basketBalances)
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
