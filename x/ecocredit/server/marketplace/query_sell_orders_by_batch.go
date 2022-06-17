@@ -5,20 +5,27 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-// SellOrders queries all sell orders in state with optional pagination
-func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrdersRequest) (*marketplace.QuerySellOrdersResponse, error) {
+// SellOrdersByBatch queries all sell orders under a specific batch denom with optional pagination
+func (k Keeper) SellOrdersByBatch(ctx context.Context, req *marketplace.QuerySellOrdersByBatchRequest) (*marketplace.QuerySellOrdersByBatchResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderSellerIndexKey{}, ormlist.Paginate(pg))
+	batch, err := k.coreStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
+	}
+
+	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderBatchKeyIndexKey{}.WithBatchKey(batch.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -32,11 +39,6 @@ func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrders
 		}
 
 		seller := sdk.AccAddress(order.Seller)
-
-		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)
-		if err != nil {
-			return nil, err
-		}
 
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
@@ -62,5 +64,5 @@ func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrders
 		return nil, err
 	}
 
-	return &marketplace.QuerySellOrdersResponse{SellOrders: orders, Pagination: pr}, nil
+	return &marketplace.QuerySellOrdersByBatchResponse{SellOrders: orders, Pagination: pr}, nil
 }
