@@ -27,6 +27,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateProjectAdmin{}, "regen.core/MsgUpdateProjectAdmin", nil)
 	cdc.RegisterConcrete(&MsgUpdateProjectMetadata{}, "regen.core/MsgUpdateProjectMetadata", nil)
 	cdc.RegisterConcrete(&CreditTypeProposal{}, "regen.core/CreditTypeProposal", nil)
+	cdc.RegisterConcrete(&MsgBridgeReceive{}, "regen.core/MsgBridgeReceive", nil)
 }
 
 var (
