@@ -23,6 +23,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
 
@@ -76,10 +77,16 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	return s
 }
 
-// setupClassProjectBatch setups a class "C01", a project "PRO", a batch "C01-20200101-20210101-01", and a
+// setupClassProjectBatch setups a class "C01", a project "C01-001", a batch "C01-20200101-20210101-01", and a
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId, batchDenom string) {
-	classId, projectId, batchDenom = "C01", "C01-001", "C01-001-20200101-20210101-01"
+	var err error
+	classId, projectId = "C01", "C01-001"
+	start, end := &timestamppb.Timestamp{Seconds: 2}, &timestamppb.Timestamp{Seconds: 30}
+	startTime, endTime := start.AsTime(), end.AsTime()
+	batchDenom, err = core.FormatBatchDenom(projectId, 1, &startTime, &endTime)
+	assert.NilError(t, err)
+
 	cKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               classId,
 		Admin:            s.addr,
@@ -94,22 +101,31 @@ func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId
 	}))
 
 	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Admin:        s.addr,
 		Id:           projectId,
 		ClassKey:     cKey,
 		Jurisdiction: "US-OR",
 		Metadata:     "",
 	})
 	assert.NilError(t, err)
+	assert.NilError(t, s.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
+		ClassKey:     cKey,
+		NextSequence: 2,
+	}))
 
 	bKey, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: pKey,
 		Issuer:     s.addr,
 		Denom:      batchDenom,
 		Metadata:   "",
-		StartDate:  &timestamppb.Timestamp{Seconds: 2},
-		EndDate:    &timestamppb.Timestamp{Seconds: 2},
+		StartDate:  start,
+		EndDate:    end,
 	})
 	assert.NilError(t, err)
+	assert.NilError(t, s.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
+		ProjectKey:   pKey,
+		NextSequence: 2,
+	}))
 
 	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchKey:        bKey,
