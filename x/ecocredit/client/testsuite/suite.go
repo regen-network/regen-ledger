@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
@@ -15,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
@@ -40,6 +40,7 @@ type IntegrationTestSuite struct {
 
 	// test values
 	creditTypeAbbrev   string
+	basketFee          sdk.Coins
 	allowedDenoms      []string
 	classId            string
 	projectId          string
@@ -77,16 +78,25 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.classId, s.projectId, s.batchDenom = s.createClassProjectBatch(s.val.ClientCtx, s.addr1.String())
 
 	// create a basket and set test value
-	s.basketDenom = s.createBasket("NCT", s.creditTypeAbbrev, s.classId, s.addr1.String())
-
-	// credits to put in basket
-	credits := basket.BasketCredit{
-		BatchDenom: s.batchDenom,
-		Amount:     "1",
-	}
+	s.basketDenom = s.createBasket(&basket.MsgCreate{
+		Curator:          s.addr1.String(),
+		Name:             "NCT",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.classId},
+		Fee:              s.basketFee,
+	})
 
 	// put credits in basket (for testing basket balance)
-	s.putInBasket(s.basketDenom, credits, s.addr1.String())
+	s.putInBasket(&basket.MsgPut{
+		Owner:       s.addr1.String(),
+		BasketDenom: s.basketDenom,
+		Credits: []*basket.BasketCredit{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     "1",
+			},
+		},
+	})
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -125,6 +135,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	// set allowed denoms
 	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
 
+	// set credit type abbreviation
 	s.creditTypeAbbrev = "C"
 
 	// insert credit type
@@ -141,8 +152,12 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	err = mdb.ExportJSON(ctx, target)
 	s.Require().NoError(err)
 
-	// merge the params into the json target
 	params := core.DefaultParams()
+
+	// set basket fee
+	s.basketFee = params.BasketFee
+
+	// merge the params into the json target
 	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
 	s.Require().NoError(err)
 
@@ -178,16 +193,18 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 	s.addr = account // TODO: addr2 (#922 / #1042)
 }
 
-func (s *IntegrationTestSuite) createBasket(name, creditTypeAbbrev, classId string, curator string) (basketDenom string) {
+func (s *IntegrationTestSuite) createBasket(msg *basket.MsgCreate) (basketDenom string) {
 	require := s.Require()
+
+	allowedClasses := strings.Join(msg.AllowedClasses, ",")
 
 	cmd := basketclient.TxCreateBasket()
 	args := []string{
-		name,
-		fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, creditTypeAbbrev),
-		fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, classId),
-		fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, "20000000stake"),
-		makeFlagFrom(curator),
+		msg.Name,
+		fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, msg.CreditTypeAbbrev),
+		fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, allowedClasses),
+		fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, msg.Fee),
+		makeFlagFrom(msg.Curator),
 	}
 	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
@@ -195,6 +212,7 @@ func (s *IntegrationTestSuite) createBasket(name, creditTypeAbbrev, classId stri
 
 	var res sdk.TxResponse
 	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
 
 	for _, event := range res.Logs[0].Events {
 		if event.Type == proto.MessageName(&basket.EventCreate{}) {
@@ -211,22 +229,26 @@ func (s *IntegrationTestSuite) createBasket(name, creditTypeAbbrev, classId stri
 	return ""
 }
 
-func (s *IntegrationTestSuite) putInBasket(basketDenom string, credits basket.BasketCredit, owner string) {
+func (s *IntegrationTestSuite) putInBasket(msg *basket.MsgPut) {
 	require := s.Require()
 
 	// using json because array of BasketCredit is not a proto message
-	bytes, err := json.Marshal([]basket.BasketCredit{credits})
+	bytes, err := json.Marshal(msg.Credits)
 	require.NoError(err)
 
 	creditsJson := testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
 
 	cmd := basketclient.TxPutInBasket()
 	args := []string{
-		basketDenom,
+		msg.BasketDenom,
 		creditsJson,
-		makeFlagFrom(owner),
+		makeFlagFrom(msg.Owner),
 	}
 	args = append(args, s.commonTxFlags()...)
-	_, err = cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 	require.NoError(err)
+
+	var res sdk.TxResponse
+	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
 }

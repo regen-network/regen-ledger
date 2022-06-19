@@ -71,7 +71,6 @@ func (s *IntegrationTestSuite) TestQueryBasketsCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*basket.Basket
 	}{
 		{
 			name:      "too many args",
@@ -178,7 +177,6 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*basket.Basket
 	}{
 		{
 			name:      "missing args",
