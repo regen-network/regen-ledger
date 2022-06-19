@@ -94,7 +94,12 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/sell-orders-by-batch/%s", s.val.APIAddress, marketplaceRoute, s.batchDenom),
+			fmt.Sprintf(
+				"%s/%s/sell-orders-by-batch/%s",
+				s.val.APIAddress,
+				marketplaceRoute,
+				s.batchDenom,
+			),
 		},
 		{
 			"valid with pagination",
@@ -109,7 +114,12 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/sell-orders/batch/%s", s.val.APIAddress, marketplaceRoute, s.batchDenom),
+			fmt.Sprintf(
+				"%s/%s/sell-orders/batch/%s",
+				s.val.APIAddress,
+				marketplaceRoute,
+				s.batchDenom,
+			),
 		},
 	}
 
@@ -142,7 +152,12 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/sell-orders-by-seller/%s", s.val.APIAddress, marketplaceRoute, s.addr1),
+			fmt.Sprintf(
+				"%s/%s/sell-orders-by-seller/%s",
+				s.val.APIAddress,
+				marketplaceRoute,
+				s.addr1,
+			),
 		},
 		{
 			"valid with pagination",
@@ -157,7 +172,12 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/sell-orders/seller/%s", s.val.APIAddress, marketplaceRoute, s.addr1),
+			fmt.Sprintf(
+				"%s/%s/sell-orders/seller/%s",
+				s.val.APIAddress,
+				marketplaceRoute,
+				s.addr1,
+			),
 		},
 	}
 

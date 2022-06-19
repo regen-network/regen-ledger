@@ -70,7 +70,6 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*marketplace.SellOrder
 	}{
 		{
 			name:      "too many args",
