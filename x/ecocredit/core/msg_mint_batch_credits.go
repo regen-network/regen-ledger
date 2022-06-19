@@ -34,8 +34,8 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 	if err := ValidateBatchDenom(m.BatchDenom); err != nil {
 		return err
 	}
-	if len(m.Note) > 512 {
-		return errBadReq.Wrap("note must not be longer than 512 characters")
+	if len(m.Note) > MaxNoteLength {
+		return errBadReq.Wrapf("note must not be longer than %d characters", MaxNoteLength)
 	}
 	if err = validateBatchIssuances(m.Issuance); err != nil {
 		return err

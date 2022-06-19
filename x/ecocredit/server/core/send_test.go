@@ -14,7 +14,7 @@ func TestSend_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
-	s.setupClassProjectBatch(t)
+	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
 
@@ -22,8 +22,8 @@ func TestSend_Valid(t *testing.T) {
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
 		Credits: []*core.MsgSend_SendCredits{
-			{BatchDenom: "C01-001-20200101-20210101-01", TradableAmount: "2.51"},
-			{BatchDenom: "C01-001-20200101-20210101-01", RetiredAmount: "1.30", RetirementJurisdiction: "US-OR"},
+			{BatchDenom: batchDenom, TradableAmount: "2.51"},
+			{BatchDenom: batchDenom, RetiredAmount: "1.30", RetirementJurisdiction: "US-OR"},
 		},
 	})
 	assert.NilError(t, err)
@@ -58,14 +58,14 @@ func TestSend_Errors(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
-	s.setupClassProjectBatch(t)
+	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	// test sending more than user balance
 	_, err := s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
 		Credits: []*core.MsgSend_SendCredits{
-			{BatchDenom: "C01-001-20200101-20210101-01", TradableAmount: "1000000"},
+			{BatchDenom: batchDenom, TradableAmount: "1000000"},
 		},
 	})
 	assert.ErrorContains(t, err, "insufficient funds")
@@ -75,7 +75,7 @@ func TestSend_Errors(t *testing.T) {
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
 		Credits: []*core.MsgSend_SendCredits{
-			{BatchDenom: "C01-001-20200101-20210101-01", TradableAmount: "10.325092385"},
+			{BatchDenom: batchDenom, TradableAmount: "10.325092385"},
 		},
 	})
 	assert.ErrorContains(t, err, "exceeds maximum decimal places")
