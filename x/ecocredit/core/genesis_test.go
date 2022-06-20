@@ -111,7 +111,7 @@ func TestValidateGenesis(t *testing.T) {
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = core.ValidateGenesis(genesisJson, params, []*basketapi.BasketBalance{})
+	err = core.ValidateGenesis(genesisJson, params)
 	require.NoError(t, err)
 }
 
@@ -481,7 +481,7 @@ func TestGenesisValidate(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
 			jsn := setupStateAndExportJSON(t, tc.setupState)
-			err := core.ValidateGenesis(jsn, tc.params, []*basketapi.BasketBalance{})
+			err := core.ValidateGenesis(jsn, tc.params)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -497,6 +497,9 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 	ss, err := api.NewStateStore(modDB)
+	require.NoError(t, err)
+
+	bsktStore, err := basketapi.NewStateStore(modDB)
 	require.NoError(t, err)
 
 	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
@@ -522,19 +525,6 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 			EscrowedAmount: "1.234",
 			RetiredAmount:  "0",
 		}))
-
-	basketBalances := []*basketapi.BasketBalance{
-		{
-			BasketId:   1,
-			BatchDenom: "C01-001-20180101-20200101-001",
-			Balance:    "100",
-		},
-		{
-			BasketId:   2,
-			BatchDenom: "BIO02-001-00000000-00000000-001",
-			Balance:    "10.000",
-		},
-	}
 
 	batches := []*api.Batch{
 		{
@@ -588,13 +578,29 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	}
 	require.NoError(t, ss.ProjectTable().Insert(ormCtx, &project))
 
+	basketBalances := []*basketapi.BasketBalance{
+		{
+			BasketId:   1,
+			BatchDenom: "C01-001-20180101-20200101-001",
+			Balance:    "100",
+		},
+		{
+			BasketId:   2,
+			BatchDenom: "BIO02-001-00000000-00000000-001",
+			Balance:    "10.000",
+		},
+	}
+	for _, b := range basketBalances {
+		require.NoError(t, bsktStore.BasketBalanceTable().Insert(ormCtx, b))
+	}
+
 	target := ormjson.NewRawMessageTarget()
 	require.NoError(t, modDB.ExportJSON(ormCtx, target))
 	genesisJson, err := target.JSON()
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = core.ValidateGenesis(genesisJson, params, basketBalances)
+	err = core.ValidateGenesis(genesisJson, params)
 	require.NoError(t, err)
 }
 

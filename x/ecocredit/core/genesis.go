@@ -32,7 +32,7 @@ import (
 // - the retired amount of each credit batch complies with the credit type precision
 // - the calculated total amount of each credit batch matches the total supply
 // An error is returned if any of these validation checks fail.
-func ValidateGenesis(data json.RawMessage, params Params, basketBalances []*basketapi.BasketBalance) error {
+func ValidateGenesis(data json.RawMessage, params Params) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -197,13 +197,28 @@ func ValidateGenesis(data json.RawMessage, params Params, basketBalances []*bask
 		return err
 	}
 
-	for _, basket := range basketBalances {
-		batchId, ok := batchDenomToIdMap[basket.BatchDenom]
+	basketStore, err := basketapi.NewStateStore(ormdb)
+	if err != nil {
+		return err
+	}
+
+	bBalanceItr, err := basketStore.BasketBalanceTable().List(ormCtx, basketapi.BasketBalancePrimaryKey{})
+	if err != nil {
+		return err
+	}
+	defer bBalanceItr.Close()
+
+	for bBalanceItr.Next() {
+		bBalance, err := bBalanceItr.Value()
+		if err != nil {
+			return err
+		}
+		batchId, ok := batchDenomToIdMap[bBalance.BatchDenom]
 		if !ok {
 			return fmt.Errorf("unknown credit batch %d in basket", batchId)
 		}
 
-		bb, err := math.NewNonNegativeDecFromString(basket.Balance)
+		bb, err := math.NewNonNegativeDecFromString(bBalance.Balance)
 		if err != nil {
 			return err
 		}
