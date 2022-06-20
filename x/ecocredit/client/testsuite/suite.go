@@ -16,6 +16,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 type IntegrationTestSuite struct {
@@ -35,6 +36,7 @@ type IntegrationTestSuite struct {
 	projectId          string
 	projectReferenceId string
 	batchDenom         string
+	sellOrderId        uint64
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -64,6 +66,22 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// create a class, project, and batch with first test account and set test values
 	s.classId, s.projectId, s.batchDenom = s.createClassProjectBatch(s.val.ClientCtx, s.addr1.String())
+
+	// default bond denom added as allowed denom in setupGenesis
+	askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
+
+	// create sell orders with first test account and set test values
+	orderIds, err := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+		Seller: s.addr1.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{
+				BatchDenom: s.batchDenom,
+				Quantity:   "10",
+				AskPrice:   &askPrice,
+			},
+		},
+	})
+	s.sellOrderId = orderIds[0]
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
