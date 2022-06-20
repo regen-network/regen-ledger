@@ -1,27 +1,28 @@
 package marketplace
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"strconv"
 	"strings"
-
-	"github.com/spf13/cobra"
-	"sigs.k8s.io/yaml"
-
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/spf13/cobra"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 const (
 	FlagRetirementJurisdiction = "retirement-jurisdiction"
 )
+
+func txFlags(cmd *cobra.Command) *cobra.Command {
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.MarkFlagRequired(flags.FlagFrom)
+	return cmd
+}
 
 // TxSellCmd returns a transaction command that creates sell orders.
 func TxSellCmd() *cobra.Command {
@@ -44,52 +45,14 @@ regen tx ecocredit sell "[{batch_denom: "C01-20210101-20210201-001", quantity: "
 				return err
 			}
 
-			seller := clientCtx.GetFromAddress()
-
-			// declare orders array with ask price as string
-			var strOrders []struct {
-				BatchDenom        string `json:"batch_denom"`
-				Quantity          string `json:"quantity"`
-				AskPrice          string `json:"ask_price"`
-				DisableAutoRetire bool   `json:"disable_auto_retire"`
-				Expiration        string `json:"expiration"`
-			}
-
-			// unmarshal YAML encoded orders with ask price as string
-			if err := yaml.Unmarshal([]byte(args[0]), &strOrders); err != nil {
-				return err
-			}
-
-			orders := make([]*marketplace.MsgSell_Order, len(strOrders))
-
-			// loop through orders with ask price as string
-			for i, o := range strOrders {
-
-				askPrice, err := sdk.ParseCoinNormalized(o.AskPrice)
-				if err != nil {
-					return err
-				}
-
-				// set order with ask price as sdk.Coin
-				orders[i] = &marketplace.MsgSell_Order{
-					BatchDenom:        o.BatchDenom,
-					AskPrice:          &askPrice,
-					Quantity:          o.Quantity,
-					DisableAutoRetire: o.DisableAutoRetire,
-				}
-
-				if o.Expiration != "" {
-					tm, err := types.ParseDate("expiration", o.Expiration)
-					if err != nil {
-						return err
-					}
-					orders[i].Expiration = &tm
-				}
+			orders, err := parseSellOrders(args[0])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
 			// create sell message
 			msg := marketplace.MsgSell{
-				Seller: seller.String(),
+				Seller: clientCtx.GetFromAddress().String(),
 				Orders: orders,
 			}
 
@@ -97,9 +60,8 @@ regen tx ecocredit sell "[{batch_denom: "C01-20210101-20210201-001", quantity: "
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
 
-	return cmd
+	return txFlags(cmd)
 }
 
 // TxUpdateSellOrdersCmd returns a transaction command that creates sell orders.
@@ -123,61 +85,14 @@ regen tx ecocredit update-sell-orders "[{sell_order_id: "1", new_quantity: "5", 
 				return err
 			}
 
-			// get the seller address from the --from flag
-			seller := clientCtx.GetFromAddress()
-
-			// declare updates array with ask price as string
-			var strUpdates []struct {
-				SellOrderId       string `json:"sell_order_id"`
-				NewQuantity       string `json:"new_quantity"`
-				NewAskPrice       string `json:"new_ask_price"`
-				DisableAutoRetire bool   `json:"disable_auto_retire"`
-				NewExpiration     string `json:"new_expiration"`
-			}
-
-			// unmarshal YAML encoded updates with new ask price as string
-			if err := yaml.Unmarshal([]byte(args[0]), &strUpdates); err != nil {
-				return err
-			}
-
-			// declare updates array with new ask price as sdk.Coin
-			updates := make([]*marketplace.MsgUpdateSellOrders_Update, len(strUpdates))
-
-			// loop through updates with new ask price as string
-			for i, u := range strUpdates {
-
-				// parse sell order id
-				sellOrderId, err := strconv.ParseUint(u.SellOrderId, 10, 64)
-				if err != nil {
-					return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
-				}
-
-				// parse and normalize new ask price as sdk.Coin
-				askPrice, err := sdk.ParseCoinNormalized(u.NewAskPrice)
-				if err != nil {
-					return err
-				}
-
-				// set update with new ask price as sdk.Coin
-				updates[i] = &marketplace.MsgUpdateSellOrders_Update{
-					SellOrderId:       sellOrderId,
-					NewAskPrice:       &askPrice,
-					NewQuantity:       u.NewQuantity,
-					DisableAutoRetire: u.DisableAutoRetire,
-				}
-
-				if u.NewExpiration != "" {
-					tm, err := types.ParseDate("expiration", u.NewExpiration)
-					if err != nil {
-						return err
-					}
-					updates[i].NewExpiration = &tm
-				}
+			updates, err := parseSellUpdates(args[0])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
 			// create update sell orders message
 			msg := marketplace.MsgUpdateSellOrders{
-				Seller:  seller.String(),
+				Seller:  clientCtx.GetFromAddress().String(),
 				Updates: updates,
 			}
 
@@ -185,13 +100,12 @@ regen tx ecocredit update-sell-orders "[{sell_order_id: "1", new_quantity: "5", 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
 
-	return cmd
+	return txFlags(cmd)
 }
 
-// TxBuyDirect returns a transaction command for a single direct buy order.
-func TxBuyDirect() *cobra.Command {
+// TxBuyDirectCmd returns a transaction command for a single direct buy order.
+func TxBuyDirectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "buy-direct [sell_order_id] [quantity] [bid_price] [disable_auto_retire] [flags]",
 		Short: "Buy ecocredits from a specific sell order",
@@ -205,22 +119,22 @@ func TxBuyDirect() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			sellOrderIdStr, qtyStr, bidPriceStr, autoRetireStr := args[0], args[1], args[2], args[3]
 
-			sellOrderId, err := strconv.ParseUint(sellOrderIdStr, 10, 64)
+			sellOrderId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			bidPrice, err := sdk.ParseCoinNormalized(bidPriceStr)
+			bidPrice, err := sdk.ParseCoinNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
-			disableAutoRetire, err := strconv.ParseBool(autoRetireStr)
+			disableAutoRetire, err := strconv.ParseBool(args[3])
 			if err != nil {
 				return err
 			}
+
 			var retireJurisdiction string
 			retireJurisdiction, err = cmd.Flags().GetString(FlagRetirementJurisdiction)
 			if err != nil {
@@ -232,27 +146,25 @@ func TxBuyDirect() *cobra.Command {
 				Orders: []*marketplace.MsgBuyDirect_Order{
 					{
 						SellOrderId:            sellOrderId,
-						Quantity:               qtyStr,
+						Quantity:               args[1],
 						BidPrice:               &bidPrice,
 						DisableAutoRetire:      disableAutoRetire,
 						RetirementJurisdiction: retireJurisdiction,
 					},
 				},
 			}
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "the jurisdiction to use for retirement when auto retire is true.")
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
+
+	return txFlags(cmd)
 }
 
-// TxBuyDirectBatch returns a transaction command for a batch direct buy order using a json file.
-func TxBuyDirectBatch() *cobra.Command {
+// TxBuyDirectBatchCmd returns a transaction command for a batch direct buy order using a json file.
+func TxBuyDirectBatchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "buy-direct-batch [name_of_file.json]",
 		Short: "Buy ecocredits from multiple sell orders",
@@ -277,15 +189,10 @@ func TxBuyDirectBatch() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			batch, err := ioutil.ReadFile(args[0])
-			if err != nil {
-				return err
-			}
 
-			var orders []*marketplace.MsgBuyDirect_Order
-			err = json.Unmarshal(batch, &orders)
+			orders, err := parseBuyOrders(args[0])
 			if err != nil {
-				return err
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
 			msg := marketplace.MsgBuyDirect{
@@ -296,6 +203,6 @@ func TxBuyDirectBatch() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
+
+	return txFlags(cmd)
 }

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/types"
 	"github.com/spf13/cobra"
 
@@ -18,7 +19,6 @@ import (
 )
 
 const (
-	FlagExponent               = "exponent"
 	FlagDisableAutoRetire      = "disable-auto-retire"
 	FlagCreditTypeAbbreviation = "credit-type-abbreviation"
 	FlagAllowedClasses         = "allowed-classes"
@@ -28,7 +28,13 @@ const (
 	FlagDenomDescription       = "description"
 )
 
-func TxCreateBasket() *cobra.Command {
+func txFlags(cmd *cobra.Command) *cobra.Command {
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.MarkFlagRequired(flags.FlagFrom)
+	return cmd
+}
+
+func TxCreateBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-basket [name]",
 		Short: "Creates a bank denom that wraps credits",
@@ -155,8 +161,6 @@ Flags:
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
-
 	// command flags
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
 	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type abbreviation (e.g. \"C\")")
@@ -170,10 +174,10 @@ Flags:
 	cmd.MarkFlagRequired(FlagCreditTypeAbbreviation)
 	cmd.MarkFlagRequired(FlagAllowedClasses)
 
-	return cmd
+	return txFlags(cmd)
 }
 
-func TxPutInBasket() *cobra.Command {
+func TxPutInBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "put-in-basket [basket_denom] [credits_json_file]",
 		Short: "add credits to the basket",
@@ -208,7 +212,7 @@ Where the credits.json file contains:
 
 			credits, err := parseBasketCredits(args[1])
 			if err != nil {
-				return err
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
 			msg := basket.MsgPut{
@@ -225,9 +229,7 @@ Where the credits.json file contains:
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
+	return txFlags(cmd)
 }
 
 const (
@@ -235,7 +237,7 @@ const (
 	FlagRetireOnTake           = "retire-on-take"
 )
 
-func TxTakeFromBasket() *cobra.Command {
+func TxTakeFromBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "take-from-basket [basket_denom] [amount]",
 		Short: "Takes credits from a basket",
@@ -289,9 +291,8 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take true --reti
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "jurisdiction for the credits which will be used only if --retire-on-take flag is true")
 	cmd.Flags().Bool(FlagRetireOnTake, false, "dictates whether the ecocredits received in exchange for the basket tokens will be received as retired or tradable credits")
 
-	return cmd
+	return txFlags(cmd)
 }

@@ -23,7 +23,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
@@ -103,7 +103,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "hi",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	}
 	classId, err := s.createClass(clientCtx, class)
@@ -431,7 +431,6 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
 
 	testCases := []struct {
 		name                   string
@@ -455,7 +454,7 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 		},
 		{
 			name:                   "valid",
-			args:                   []string{batchDenom, val.Address.String()},
+			args:                   []string{s.batchDenom, val.Address.String()},
 			expectErr:              false,
 			expectedTradableAmount: "100",
 			expectedRetiredAmount:  "0.000001",
@@ -486,7 +485,6 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
 
 	testCases := []struct {
 		name           string
@@ -508,7 +506,7 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 		},
 		{
 			name:      "valid credit batch",
-			args:      []string{batchDenom},
+			args:      []string{s.batchDenom},
 			expectErr: false,
 		},
 	}
@@ -589,14 +587,13 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
 	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
 		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
+			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 		},
 	})
 	s.Require().NoError(err)
@@ -650,7 +647,6 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
 	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
@@ -658,8 +654,8 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
 		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
+			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
+			{BatchDenom: s.batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
 		},
 	})
 	s.Require().NoError(err)
@@ -707,15 +703,14 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySellerCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
 	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
 		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
+			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
+			{BatchDenom: s.batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
 		},
 	})
 	s.Require().NoError(err)
@@ -766,22 +761,8 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySellerCmd() {
 }
 
 func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
+	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
-	expiration, err := types.ParseDate("expiration", "2050-03-11")
-	s.Require().NoError(err)
-
-	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Seller: val.Address.String(),
-		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
-		},
-	})
-	s.Require().NoError(err)
 
 	testCases := []struct {
 		name      string
@@ -803,7 +784,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 		},
 		{
 			name:      "valid",
-			args:      []string{batchDenom, fmt.Sprintf("--%s", flags.FlagCountTotal)},
+			args:      []string{s.batchDenom, fmt.Sprintf("--%s", flags.FlagCountTotal)},
 			expErr:    false,
 			expErrMsg: "",
 		},
@@ -822,8 +803,8 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 				var res marketplace.QuerySellOrdersByBatchDenomResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().NotNil(res.Pagination)
-				s.Require().Len(res.SellOrders, 2)
-				s.Require().Equal(uint64(2), res.Pagination.Total)
+				s.Require().NotEmpty(res.SellOrders)
+				s.Require().NotEmpty(res.Pagination.Total)
 			}
 		})
 	}
@@ -854,7 +835,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 			name: "valid within pagination",
 			args: []string{
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
-				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				// TODO: #1113
+				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 			},
 		},
 	}
@@ -1003,7 +985,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	require.NoError(err)
