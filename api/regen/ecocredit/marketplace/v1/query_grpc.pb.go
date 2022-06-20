@@ -26,9 +26,9 @@ type QueryClient interface {
 	SellOrder(ctx context.Context, in *QuerySellOrderRequest, opts ...grpc.CallOption) (*QuerySellOrderResponse, error)
 	// SellOrders queries a paginated list of all sell orders.
 	SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error)
-	// SellOrdersByBatchDenom queries a paginated list of all sell orders based on
+	// SellOrdersByBatch queries a paginated list of all sell orders based on
 	// the batch denom of the credits being sold.
-	SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error)
+	SellOrdersByBatch(ctx context.Context, in *QuerySellOrdersByBatchRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchResponse, error)
 	// SellOrdersBySeller queries a paginated list of all sell orders based on the
 	// account address of the seller.
 	SellOrdersBySeller(ctx context.Context, in *QuerySellOrdersBySellerRequest, opts ...grpc.CallOption) (*QuerySellOrdersBySellerResponse, error)
@@ -63,9 +63,9 @@ func (c *queryClient) SellOrders(ctx context.Context, in *QuerySellOrdersRequest
 	return out, nil
 }
 
-func (c *queryClient) SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error) {
-	out := new(QuerySellOrdersByBatchDenomResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatchDenom", in, out, opts...)
+func (c *queryClient) SellOrdersByBatch(ctx context.Context, in *QuerySellOrdersByBatchRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchResponse, error) {
+	out := new(QuerySellOrdersByBatchResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,9 +98,9 @@ type QueryServer interface {
 	SellOrder(context.Context, *QuerySellOrderRequest) (*QuerySellOrderResponse, error)
 	// SellOrders queries a paginated list of all sell orders.
 	SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error)
-	// SellOrdersByBatchDenom queries a paginated list of all sell orders based on
+	// SellOrdersByBatch queries a paginated list of all sell orders based on
 	// the batch denom of the credits being sold.
-	SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error)
+	SellOrdersByBatch(context.Context, *QuerySellOrdersByBatchRequest) (*QuerySellOrdersByBatchResponse, error)
 	// SellOrdersBySeller queries a paginated list of all sell orders based on the
 	// account address of the seller.
 	SellOrdersBySeller(context.Context, *QuerySellOrdersBySellerRequest) (*QuerySellOrdersBySellerResponse, error)
@@ -120,8 +120,8 @@ func (UnimplementedQueryServer) SellOrder(context.Context, *QuerySellOrderReques
 func (UnimplementedQueryServer) SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SellOrders not implemented")
 }
-func (UnimplementedQueryServer) SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByBatchDenom not implemented")
+func (UnimplementedQueryServer) SellOrdersByBatch(context.Context, *QuerySellOrdersByBatchRequest) (*QuerySellOrdersByBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByBatch not implemented")
 }
 func (UnimplementedQueryServer) SellOrdersBySeller(context.Context, *QuerySellOrdersBySellerRequest) (*QuerySellOrdersBySellerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersBySeller not implemented")
@@ -178,20 +178,20 @@ func _Query_SellOrders_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_SellOrdersByBatchDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySellOrdersByBatchDenomRequest)
+func _Query_SellOrdersByBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrdersByBatchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, in)
+		return srv.(QueryServer).SellOrdersByBatch(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatchDenom",
+		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatch",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, req.(*QuerySellOrdersByBatchDenomRequest))
+		return srv.(QueryServer).SellOrdersByBatch(ctx, req.(*QuerySellOrdersByBatchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -248,8 +248,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_SellOrders_Handler,
 		},
 		{
-			MethodName: "SellOrdersByBatchDenom",
-			Handler:    _Query_SellOrdersByBatchDenom_Handler,
+			MethodName: "SellOrdersByBatch",
+			Handler:    _Query_SellOrdersByBatch_Handler,
 		},
 		{
 			MethodName: "SellOrdersBySeller",

@@ -25,6 +25,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 type IntegrationTestSuite struct {
@@ -47,6 +48,7 @@ type IntegrationTestSuite struct {
 	projectReferenceId string
 	batchDenom         string
 	basketDenom        string
+	sellOrderId        uint64
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -97,6 +99,22 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			},
 		},
 	})
+
+	// default bond denom added as allowed denom in setupGenesis
+	askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
+
+	// create sell orders with first test account and set test values
+	orderIds, err := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+		Seller: s.addr1.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{
+				BatchDenom: s.batchDenom,
+				Quantity:   "10",
+				AskPrice:   &askPrice,
+			},
+		},
+	})
+	s.sellOrderId = orderIds[0]
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -232,7 +250,7 @@ func (s *IntegrationTestSuite) createBasket(msg *basket.MsgCreate) (basketDenom 
 func (s *IntegrationTestSuite) putInBasket(msg *basket.MsgPut) {
 	require := s.Require()
 
-	// using json because array of BasketCredit is not a proto message
+	// using json package because array is not a proto message
 	bytes, err := json.Marshal(msg.Credits)
 	require.NoError(err)
 
