@@ -27,7 +27,7 @@ service Query {
       post : "/regen/data/v1/anchor-by-hash"
       body : "*"
       additional_bindings : [
-        {post : "/regen/data/v1/anchors/hash", body : "*"}
+        {post : "/regen/data/v1/anchors/hash" body : "*"}
       ]
     };
   }
@@ -60,7 +60,7 @@ service Query {
       post : "/regen/data/v1/attestations-by-hash"
       body : "*"
       additional_bindings : [
-        {post : "/regen/data/v1/attestations/hash", body : "*"}
+        {post : "/regen/data/v1/attestations/hash" body : "*"}
       ]
     };
   }
@@ -91,7 +91,7 @@ service Query {
       post : "/regen/data/v1/resolvers-by-hash"
       body : "*"
       additional_bindings : [
-        {post : "/regen/data/v1/resolvers/hash", body : "*"}
+        {post : "/regen/data/v1/resolvers/hash" body : "*"}
       ]
     };
   }
@@ -103,7 +103,7 @@ service Query {
       post : "/regen/data/v1/resolvers-by-url"
       body : "*"
       additional_bindings : [
-        {post : "/regen/data/v1/resolvers/url", body : "*"}
+        {post : "/regen/data/v1/resolvers/url" body : "*"}
       ]
     };
   }
