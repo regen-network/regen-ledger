@@ -147,9 +147,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		},
 	})
 
-	askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
+	askPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
-	// create test sell orders
+	// create sell orders with first test account and set test values
 	sellOrderIds := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
 		Seller: s.addr1.String(),
 		Orders: []*marketplace.MsgSell_Order{

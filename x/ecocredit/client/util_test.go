@@ -103,13 +103,13 @@ func TestParseSendCredits(t *testing.T) {
 	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
 	validJson := testutil.WriteToNewTempFile(t, `[
 		{
-			"batch_denom": 		"C01-001-20210101-20210101-001",
-			"tradable_amount": 	"10"
+			"batch_denom": "C01-001-20210101-20210101-001",
+			"tradable_amount": "10"
 		},
 		{
-			"batch_denom": 				"C01-001-20210101-20210101-002",
-			"retired_amount": 			"2.5",
-			"retirement_jurisdiction": 	"US-WA"
+			"batch_denom": "C01-001-20210101-20210101-002",
+			"retired_amount": "2.5",
+			"retirement_jurisdiction": "US-WA"
 		}
 	]`).Name()
 

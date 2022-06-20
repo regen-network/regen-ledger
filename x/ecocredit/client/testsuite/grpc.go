@@ -147,6 +147,8 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -199,6 +201,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
