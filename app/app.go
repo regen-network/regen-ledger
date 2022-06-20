@@ -91,6 +91,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	regentypes "github.com/regen-network/regen-ledger/types"
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
@@ -167,9 +168,9 @@ func init() {
 	// every validator 10,000 times more voting power than they currently have
 	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 
-	// set the denom regex for basket coins
+	// TODO: remove after updating to cosmos-sdk v0.46 #857
 	sdk.SetCoinDenomRegex(func() string {
-		return basket.RegexBasketDenom
+		return regentypes.CoinDenomRegex
 	})
 }
 

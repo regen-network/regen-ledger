@@ -50,11 +50,11 @@ Feature: MsgPut
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "1"
+      "basket_denom": "foo"
     }
     """
     When the message is validated
-    Then expect the error "1 is not a valid basket denom: invalid request"
+    Then expect the error "foo is not a valid basket denom: invalid request"
 
   Scenario: an error is returned if credit list is empty
     Given the message
