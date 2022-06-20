@@ -143,7 +143,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	askPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
 	// create new sell orders to not interfere with other tests
-	sellOrderIds, err := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+	sellOrderIds := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
 		Seller: s.addr1.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
@@ -158,7 +158,6 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 			},
 		},
 	})
-	require.NoError(err)
 
 	// using json package because array is not a proto message
 	bz, err := json.Marshal([]marketplace.MsgUpdateSellOrders_Update{
@@ -278,7 +277,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 
 	buyer := s.addr1.String()
 
-	sellOrderId := fmt.Sprint(s.sellOrderIds[0])
+	sellOrderId := fmt.Sprint(s.sellOrderId)
 	bidPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10).String()
 
 	testCases := []struct {
@@ -372,13 +371,13 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 	// using json package because array is not a proto message
 	bz, err := json.Marshal([]marketplace.MsgBuyDirect_Order{
 		{
-			SellOrderId:       s.sellOrderIds[0],
+			SellOrderId:       s.sellOrderId,
 			Quantity:          "10",
 			BidPrice:          &bidPrice,
 			DisableAutoRetire: true,
 		},
 		{
-			SellOrderId:            s.sellOrderIds[0],
+			SellOrderId:            s.sellOrderId,
 			Quantity:               "10",
 			BidPrice:               &bidPrice,
 			RetirementJurisdiction: "US-WA",

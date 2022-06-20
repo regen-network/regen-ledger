@@ -5,9 +5,17 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/spf13/cobra"
 )
+
+func txFlags(cmd *cobra.Command) *cobra.Command {
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.MarkFlagRequired(flags.FlagFrom)
+	return cmd
+}
 
 func parseSellOrders(jsonFile string) ([]*marketplace.MsgSell_Order, error) {
 	bz, err := ioutil.ReadFile(jsonFile)

@@ -627,34 +627,31 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	newAdmin := s.addr2.String()
 
 	// create new credit class to not interfere with other tests
-	classId1, err := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classId1 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &s.creditClassFee[0],
 	})
-	require.NoError(err)
 
 	// create new credit class to not interfere with other tests
-	classId2, err := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classId2 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &s.creditClassFee[0],
 	})
-	require.NoError(err)
 
 	// create new credit class to not interfere with other tests
-	classId3, err := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classId3 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &s.creditClassFee[0],
 	})
-	require.NoError(err)
 
 	testCases := []struct {
 		name      string
@@ -1067,34 +1064,31 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	newAdmin := s.addr2.String()
 
 	// create new project in order to not interfere with other tests
-	projectId1, err := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectId1 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
 		Admin:        s.addr1.String(),
 		ClassId:      s.classId,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
 		ReferenceId:  s.projectReferenceId,
 	})
-	require.NoError(err)
 
 	// create new project in order to not interfere with other tests
-	projectId2, err := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectId2 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
 		Admin:        s.addr1.String(),
 		ClassId:      s.classId,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
 		ReferenceId:  s.projectReferenceId,
 	})
-	require.NoError(err)
 
 	// create new project in order to not interfere with other tests
-	projectId3, err := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectId3 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
 		Admin:        s.addr1.String(),
 		ClassId:      s.classId,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
 		ReferenceId:  s.projectReferenceId,
 	})
-	require.NoError(err)
 
 	testCases := []struct {
 		name      string

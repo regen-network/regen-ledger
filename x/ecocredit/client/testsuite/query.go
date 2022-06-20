@@ -15,22 +15,22 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	val2 := s.network.Validators[1]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+	classId := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
-	s.Require().NoError(err)
-	classId2, err := s.createClass(clientCtx, &core.MsgCreateClass{
+
+	classId2 := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
-	s.Require().NoError(err)
+
 	classIds := [2]string{classId, classId2}
 
 	testCases := []struct {
@@ -102,8 +102,8 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	}
-	classId, err := s.createClass(clientCtx, class)
-	s.Require().NoError(err)
+
+	classId := s.createClass(clientCtx, class)
 
 	testCases := []struct {
 		name           string
@@ -750,14 +750,13 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 	clientCtx.OutputFormat = "JSON"
 	require := s.Require()
 
-	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+	classId := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
-	require.NoError(err)
 
 	testCases := []struct {
 		name           string

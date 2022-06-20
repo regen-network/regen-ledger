@@ -93,16 +93,16 @@ regen tx ecocredit create-class regen1el...xmgqelsw,regen2tl...xsgqdlhy C "metad
 				return err
 			}
 
-			// get the class admin from the --from flag
+			// Get the class admin from the --from flag
 			admin := clientCtx.GetFromAddress()
 
-			// parse the comma-separated list of issuers
+			// Parse the comma-separated list of issuers
 			issuers := strings.Split(args[0], ",")
 			for i := range issuers {
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 
-			// parse and normalize credit clas fee
+			// Parse and normalize credit clas fee
 			fee, err := sdk.ParseCoinNormalized(args[3])
 			if err != nil {
 				return err

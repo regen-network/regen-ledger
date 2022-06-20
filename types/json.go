@@ -60,7 +60,6 @@ func CheckDuplicateKey(d *json.Decoder, path []string) error {
 		if _, err := d.Token(); err != nil {
 			return err
 		}
-
 	}
 
 	return nil

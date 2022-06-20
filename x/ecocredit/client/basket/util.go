@@ -5,9 +5,17 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/spf13/cobra"
 )
+
+func txFlags(cmd *cobra.Command) *cobra.Command {
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.MarkFlagRequired(flags.FlagFrom)
+	return cmd
+}
 
 func parseBasketCredits(creditsFile string) ([]*basket.BasketCredit, error) {
 	bz, err := ioutil.ReadFile(creditsFile)

@@ -17,7 +17,7 @@ func TestCheckDuplicateKey(t *testing.T) {
 	}{
 		{
 			name:      "invalid json",
-			input:     `{foo:bar}`,
+			input:     "{foo:bar}",
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
@@ -28,16 +28,8 @@ func TestCheckDuplicateKey(t *testing.T) {
 			expErrMsg: "duplicate key foo",
 		},
 		{
-			name: "invalid json duplicate nested keys",
-			input: `{
-				"foo": "bar",
-				"baz": [
-					{
-						"foo": "bar",
-						"foo": "baz"
-					}
-				]
-			}`,
+			name:      "invalid json duplicate nested keys",
+			input:     `{"foo": "bar", "baz": [{"foo": "bar", "foo": "baz"}]}`,
 			expErr:    true,
 			expErrMsg: "duplicate key foo",
 		},
@@ -46,16 +38,8 @@ func TestCheckDuplicateKey(t *testing.T) {
 			input: `{"foo": "bar", "baz": "foo"}`,
 		},
 		{
-			name: "valid json nested",
-			input: `{
-				"foo": "bar",
-				"baz": [
-					{
-						"foo": "bar",
-						"baz": "foo"
-					}
-				]
-			}`,
+			name:  "valid json nested",
+			input: `{"foo": "bar", "baz": [{"foo": "bar", "baz": "foo"}]}`,
 		},
 	}
 

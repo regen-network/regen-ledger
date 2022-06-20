@@ -4,12 +4,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -17,12 +17,6 @@ import (
 const (
 	FlagRetirementJurisdiction = "retirement-jurisdiction"
 )
-
-func txFlags(cmd *cobra.Command) *cobra.Command {
-	flags.AddTxFlagsToCmd(cmd)
-	cmd.MarkFlagRequired(flags.FlagFrom)
-	return cmd
-}
 
 // TxSellCmd returns a transaction command that creates sell orders.
 func TxSellCmd() *cobra.Command {

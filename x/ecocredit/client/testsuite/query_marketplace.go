@@ -37,7 +37,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 		},
 		{
 			name: "valid",
-			args: []string{fmt.Sprint(s.sellOrderIds[0])},
+			args: []string{fmt.Sprint(s.sellOrderId)},
 		},
 	}
 

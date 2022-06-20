@@ -7,10 +7,6 @@ import (
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
@@ -27,10 +23,14 @@ import (
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -56,7 +56,7 @@ type IntegrationTestSuite struct {
 	projectReferenceId string
 	batchDenom         string
 	basketDenom        string
-	sellOrderIds       []uint64
+	sellOrderId        uint64
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -64,6 +64,8 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	require := s.Require()
+
 	s.T().Log("setting up integration test suite")
 
 	// set genesis values and params
@@ -71,10 +73,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var err error
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	s.val = s.network.Validators[0]
 
@@ -82,36 +84,34 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.setupTestAccounts()
 
 	// create test credit class
-	s.classId, err = s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	s.classId = s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
 		Admin:            s.addr1.String(),
 		Issuers:          []string{s.addr1.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &s.creditClassFee[0],
 	})
-	s.Require().NoError(err)
 
 	// set test reference id
 	s.projectReferenceId = "VCS-001"
 
 	// create test project
-	s.projectId, err = s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	s.projectId = s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
 		Admin:        s.addr1.String(),
 		ClassId:      s.classId,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
 		ReferenceId:  s.projectReferenceId,
 	})
-	s.Require().NoError(err)
 
 	startDate, err := types.ParseDate("start date", "2020-01-01")
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	endDate, err := types.ParseDate("expiration", "2021-01-01")
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// create test credit batch
-	s.batchDenom, err = s.createBatch(s.val.ClientCtx, &core.MsgCreateBatch{
+	s.batchDenom = s.createBatch(s.val.ClientCtx, &core.MsgCreateBatch{
 		Issuer:    s.addr1.String(),
 		ProjectId: s.projectId,
 		Issuance: []*core.BatchIssuance{
@@ -125,7 +125,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		StartDate: &startDate,
 		EndDate:   &endDate,
 	})
-	s.Require().NoError(err)
 
 	// create a basket and set test value
 	s.basketDenom = s.createBasket(s.val.ClientCtx, &basket.MsgCreate{
@@ -151,7 +150,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 
 	// create test sell orders
-	s.sellOrderIds, err = s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+	sellOrderIds := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
 		Seller: s.addr1.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
@@ -162,7 +161,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			},
 		},
 	})
-	s.Require().NoError(err)
+
+	s.sellOrderId = sellOrderIds[0]
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -171,18 +171,20 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *IntegrationTestSuite) setupGenesis() {
+	require := s.Require()
+
 	// set up temporary mem db
 	db := dbm.NewMemDB()
 	defer db.Close()
 
 	mdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	coreStore, err := api.NewStateStore(mdb)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	marketStore, err := marketApi.NewStateStore(mdb)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
@@ -196,7 +198,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 		BankDenom:    sdk.DefaultBondDenom,
 		DisplayDenom: sdk.DefaultBondDenom,
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// set allowed denoms
 	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
@@ -211,12 +213,12 @@ func (s *IntegrationTestSuite) setupGenesis() {
 		Unit:         "metric ton CO2 equivalent",
 		Precision:    6,
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// export genesis into target
 	target := ormjson.NewRawMessageTarget()
 	err = mdb.ExportJSON(ctx, target)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	params := core.DefaultParams()
 
@@ -226,11 +228,11 @@ func (s *IntegrationTestSuite) setupGenesis() {
 
 	// merge the params into the json target
 	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// get raw json from target
 	json, err := target.JSON()
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// set the module genesis
 	s.cfg.GenesisState[ecocredit.ModuleName] = json
@@ -278,105 +280,112 @@ func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sd
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (string, error) {
-	var issuersStr string
-	if len(msg.Issuers) == 1 {
-		issuersStr = msg.Issuers[0]
-	} else if len(msg.Issuers) > 1 {
-		issuersStr = strings.Join(
-			msg.Issuers,
-			",",
-		)
-	}
+func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (classId string) {
+	require := s.Require()
+
+	cmd := coreclient.TxCreateClassCmd()
 	args := []string{
-		issuersStr,
+		strings.Join(msg.Issuers, ","),
 		msg.CreditTypeAbbrev,
 		msg.Metadata,
 		msg.Fee.String(),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
 	}
-	flags := append(s.commonTxFlags(), fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin))
-	args = append(args, flags...)
-
-	cmd := coreclient.TxCreateClassCmd()
+	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	var res sdk.TxResponse
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&core.EventCreateClass{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "class_id" {
-					return strings.Trim(attr.Value, "\""), nil
+					return strings.Trim(attr.Value, "\"")
 				}
 			}
 		}
 	}
-	return "", fmt.Errorf("class_id not found")
+
+	require.Fail("failed to find class id in response")
+
+	return ""
 }
 
-func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
+func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (projectId string) {
+	require := s.Require()
+
 	cmd := coreclient.TxCreateProjectCmd()
-	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
-		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
-		return append(args, flags...)
+	args := []string{
+		msg.ClassId,
+		msg.Jurisdiction,
+		msg.Metadata,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
+		fmt.Sprintf("--reference-id=%s", msg.ReferenceId),
 	}
-
-	referenceIdFlag := fmt.Sprintf("--reference-id=%s", msg.ReferenceId)
-	flags := append(s.commonTxFlags(), fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin), referenceIdFlag)
-	args := makeCreateProjectArgs(msg, flags...)
-
+	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
-	s.Require().NoError(err)
+	require.NoError(err)
+
 	var res sdk.TxResponse
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&core.EventCreateProject{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "project_id" {
-					return strings.Trim(attr.Value, "\""), nil
+					return strings.Trim(attr.Value, "\"")
 				}
 			}
 		}
 	}
-	return "", fmt.Errorf("project_id not found")
+
+	require.Fail("failed to find project id in response")
+
+	return ""
 }
 
-func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.MsgCreateBatch) (string, error) {
-	bytes, err := clientCtx.Codec.MarshalJSON(msg)
-	s.Require().NoError(err)
+func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.MsgCreateBatch) (batchDenom string) {
+	require := s.Require()
 
-	batchJson := testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
+	bz, err := clientCtx.Codec.MarshalJSON(msg)
+	require.NoError(err)
 
-	args := []string{batchJson, fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Issuer)}
-	args = append(args, s.commonTxFlags()...)
+	jsonFile := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
 	cmd := coreclient.TxCreateBatchCmd()
+	args := []string{
+		jsonFile,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Issuer),
+	}
+	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
-	s.Require().NoError(err)
+	require.NoError(err)
+
 	var res sdk.TxResponse
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "batch_denom" {
-					return strings.Trim(attr.Value, "\""), nil
+					return strings.Trim(attr.Value, "\"")
 				}
 			}
 		}
 	}
-	return "", fmt.Errorf("could not find batch_denom")
+
+	require.Fail("failed to find batch denom in response")
+
+	return ""
 }
 
 func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *basket.MsgCreate) (basketDenom string) {
 	require := s.Require()
 
-	allowedClasses := strings.Join(msg.AllowedClasses, ",")
-
 	cmd := basketclient.TxCreateBasketCmd()
 	args := []string{
 		msg.Name,
 		fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, msg.CreditTypeAbbrev),
-		fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, allowedClasses),
+		fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, strings.Join(msg.AllowedClasses, ",")),
 		fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, msg.Fee),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Curator),
 	}
@@ -407,15 +416,15 @@ func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket
 	require := s.Require()
 
 	// using json because array of BasketCredit is not a proto message
-	bytes, err := json.Marshal(msg.Credits)
+	bz, err := json.Marshal(msg.Credits)
 	require.NoError(err)
 
-	creditsJson := testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
+	jsonFile := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
 	cmd := basketclient.TxPutInBasketCmd()
 	args := []string{
 		msg.BasketDenom,
-		creditsJson,
+		jsonFile,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Owner),
 	}
 	args = append(args, s.commonTxFlags()...)
@@ -427,7 +436,7 @@ func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket
 	require.Zero(res.Code, res.RawLog)
 }
 
-func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) ([]uint64, error) {
+func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) (sellOrderIds []uint64) {
 	require := s.Require()
 
 	// using json package because array is not a proto message
@@ -466,5 +475,5 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 		require.Fail("failed to find sell order ids in response")
 	}
 
-	return orderIds, nil
+	return orderIds
 }

@@ -5,14 +5,13 @@ import (
 	"strings"
 	"time"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -27,12 +26,6 @@ const (
 	FlagBasketFee              = "basket-fee"
 	FlagDenomDescription       = "description"
 )
-
-func txFlags(cmd *cobra.Command) *cobra.Command {
-	flags.AddTxFlagsToCmd(cmd)
-	cmd.MarkFlagRequired(flags.FlagFrom)
-	return cmd
-}
 
 func TxCreateBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
