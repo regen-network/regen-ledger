@@ -128,7 +128,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	// create a basket and set test value
-	s.basketDenom = s.createBasket(&basket.MsgCreate{
+	s.basketDenom = s.createBasket(s.val.ClientCtx, &basket.MsgCreate{
 		Curator:          s.addr1.String(),
 		Name:             "NCT",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// put credits in basket (for testing basket balance)
-	s.putInBasket(&basket.MsgPut{
+	s.putInBasket(s.val.ClientCtx, &basket.MsgPut{
 		Owner:       s.addr1.String(),
 		BasketDenom: s.basketDenom,
 		Credits: []*basket.BasketCredit{
@@ -201,6 +201,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	// set allowed denoms
 	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
 
+	// set credit type abbreviation
 	s.creditTypeAbbrev = "C"
 
 	// insert credit type
@@ -218,6 +219,8 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	s.Require().NoError(err)
 
 	params := core.DefaultParams()
+
+	// set credit class and basket fees
 	s.creditClassFee = params.CreditClassFee
 	s.basketFee = params.BasketFee
 
@@ -340,7 +343,7 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 }
 
 func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.MsgCreateBatch) (string, error) {
-	bytes, err := s.network.Validators[0].ClientCtx.Codec.MarshalJSON(msg)
+	bytes, err := clientCtx.Codec.MarshalJSON(msg)
 	s.Require().NoError(err)
 
 	batchJson := testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
@@ -364,7 +367,7 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 	return "", fmt.Errorf("could not find batch_denom")
 }
 
-func (s *IntegrationTestSuite) createBasket(msg *basket.MsgCreate) (basketDenom string) {
+func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *basket.MsgCreate) (basketDenom string) {
 	require := s.Require()
 
 	allowedClasses := strings.Join(msg.AllowedClasses, ",")
@@ -378,11 +381,11 @@ func (s *IntegrationTestSuite) createBasket(msg *basket.MsgCreate) (basketDenom 
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Curator),
 	}
 	args = append(args, s.commonTxFlags()...)
-	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
 
 	var res sdk.TxResponse
-	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
 
 	for _, event := range res.Logs[0].Events {
@@ -400,7 +403,7 @@ func (s *IntegrationTestSuite) createBasket(msg *basket.MsgCreate) (basketDenom 
 	return ""
 }
 
-func (s *IntegrationTestSuite) putInBasket(msg *basket.MsgPut) {
+func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket.MsgPut) {
 	require := s.Require()
 
 	// using json because array of BasketCredit is not a proto message
@@ -416,11 +419,11 @@ func (s *IntegrationTestSuite) putInBasket(msg *basket.MsgPut) {
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Owner),
 	}
 	args = append(args, s.commonTxFlags()...)
-	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
 
 	var res sdk.TxResponse
-	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
 }
 
@@ -443,7 +446,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	require.NoError(err)
 
 	var res sdk.TxResponse
-	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
 
 	orderIds := make([]uint64, 0, len(msg.Orders))
