@@ -1,6 +1,11 @@
 package testsuite
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
+
+	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
@@ -9,12 +14,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -31,11 +40,14 @@ type IntegrationTestSuite struct {
 	addr  sdk.AccAddress // TODO: addr2 (#922 / #1042)
 
 	// test values
+	creditTypeAbbrev   string
+	basketFee          sdk.Coins
 	allowedDenoms      []string
 	classId            string
 	projectId          string
 	projectReferenceId string
 	batchDenom         string
+	basketDenom        string
 	sellOrderId        uint64
 }
 
@@ -66,6 +78,27 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// create a class, project, and batch with first test account and set test values
 	s.classId, s.projectId, s.batchDenom = s.createClassProjectBatch(s.val.ClientCtx, s.addr1.String())
+
+	// create a basket and set test value
+	s.basketDenom = s.createBasket(&basket.MsgCreate{
+		Curator:          s.addr1.String(),
+		Name:             "NCT",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.classId},
+		Fee:              s.basketFee,
+	})
+
+	// put credits in basket (for testing basket balance)
+	s.putInBasket(&basket.MsgPut{
+		Owner:       s.addr1.String(),
+		BasketDenom: s.basketDenom,
+		Credits: []*basket.BasketCredit{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     "1",
+			},
+		},
+	})
 
 	// default bond denom added as allowed denom in setupGenesis
 	askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
@@ -120,9 +153,12 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	// set allowed denoms
 	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
 
+	// set credit type abbreviation
+	s.creditTypeAbbrev = "C"
+
 	// insert credit type
 	err = coreStore.CreditTypeTable().Insert(ctx, &api.CreditType{
-		Abbreviation: "C",
+		Abbreviation: s.creditTypeAbbrev,
 		Name:         "carbon",
 		Unit:         "metric ton CO2 equivalent",
 		Precision:    6,
@@ -134,8 +170,12 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	err = mdb.ExportJSON(ctx, target)
 	s.Require().NoError(err)
 
-	// merge the params into the json target
 	params := core.DefaultParams()
+
+	// set basket fee
+	s.basketFee = params.BasketFee
+
+	// merge the params into the json target
 	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
 	s.Require().NoError(err)
 
@@ -169,4 +209,64 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 	// set test accounts
 	s.addr1 = s.val.Address
 	s.addr = account // TODO: addr2 (#922 / #1042)
+}
+
+func (s *IntegrationTestSuite) createBasket(msg *basket.MsgCreate) (basketDenom string) {
+	require := s.Require()
+
+	allowedClasses := strings.Join(msg.AllowedClasses, ",")
+
+	cmd := basketclient.TxCreateBasket()
+	args := []string{
+		msg.Name,
+		fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, msg.CreditTypeAbbrev),
+		fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, allowedClasses),
+		fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, msg.Fee),
+		makeFlagFrom(msg.Curator),
+	}
+	args = append(args, s.commonTxFlags()...)
+	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+	require.NoError(err)
+
+	var res sdk.TxResponse
+	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
+
+	for _, event := range res.Logs[0].Events {
+		if event.Type == proto.MessageName(&basket.EventCreate{}) {
+			for _, attr := range event.Attributes {
+				if attr.Key == "basket_denom" {
+					return strings.Trim(attr.Value, "\"")
+				}
+			}
+		}
+	}
+
+	require.Fail("failed to find basket denom in response")
+
+	return ""
+}
+
+func (s *IntegrationTestSuite) putInBasket(msg *basket.MsgPut) {
+	require := s.Require()
+
+	// using json package because array is not a proto message
+	bytes, err := json.Marshal(msg.Credits)
+	require.NoError(err)
+
+	creditsJson := testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
+
+	cmd := basketclient.TxPutInBasket()
+	args := []string{
+		msg.BasketDenom,
+		creditsJson,
+		makeFlagFrom(msg.Owner),
+	}
+	args = append(args, s.commonTxFlags()...)
+	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+	require.NoError(err)
+
+	var res sdk.TxResponse
+	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
 }
