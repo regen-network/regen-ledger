@@ -93,13 +93,22 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	denomUnits := []*banktypes.DenomUnit{{
-		Denom:    displayDenom,
-		Exponent: creditType.Precision,
-	}}
-	if creditType.Precision != 0 {
+	denomUnits := make([]*banktypes.DenomUnit, 0)
+
+	// Set denomination units in ascending order and
+	// the first denomination unit must be the base
+	if creditType.Precision == 0 {
+		denomUnits = append(denomUnits, &banktypes.DenomUnit{
+			Denom:    displayDenom,
+			Exponent: creditType.Precision,
+		})
+	} else {
 		denomUnits = append(denomUnits, &banktypes.DenomUnit{
 			Denom: denom,
+		})
+		denomUnits = append(denomUnits, &banktypes.DenomUnit{
+			Denom:    displayDenom,
+			Exponent: creditType.Precision,
 		})
 	}
 

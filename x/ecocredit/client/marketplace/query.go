@@ -125,15 +125,15 @@ regen q ecocredit sell-orders-by-seller regen1fv85...zkfu --limit 10 --offset 2
 	return cmd
 }
 
-// QuerySellOrdersByBatchDenomCmd returns a query command that retrieves all sell orders by batch denom with pagination.
-func QuerySellOrdersByBatchDenomCmd() *cobra.Command {
+// QuerySellOrdersByBatchCmd returns a query command that retrieves all sell orders by batch denom with pagination.
+func QuerySellOrdersByBatchCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sell-orders-by-batch-denom [batch_denom]",
+		Use:   "sell-orders-by-batch [batch_denom]",
 		Short: "List all sell orders by batch denom with pagination",
 		Long:  "Retrieve sell orders by batch by denom with pagination",
 		Example: `
-regen q ecocredit sell-orders-by-batch-denom C01-20210101-20210201-001
-regen q ecocredit sell-orders-by-batch-denom C01-20210101-20210201-001 --limit 10 --offset 2
+regen q ecocredit sell-orders-by-batch C01-001-20210101-20210201-001
+regen q ecocredit sell-orders-by-batch C01-001-20210101-20210201-001 --limit 10 --offset 2
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -147,7 +147,7 @@ regen q ecocredit sell-orders-by-batch-denom C01-20210101-20210201-001 --limit 1
 			if err != nil {
 				return err
 			}
-			res, err := client.SellOrdersByBatchDenom(cmd.Context(), &marketplace.QuerySellOrdersByBatchDenomRequest{
+			res, err := client.SellOrdersByBatch(cmd.Context(), &marketplace.QuerySellOrdersByBatchRequest{
 				BatchDenom: args[0],
 				Pagination: pagination,
 			})
@@ -159,7 +159,7 @@ regen q ecocredit sell-orders-by-batch-denom C01-20210101-20210201-001 --limit 1
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "sell-orders-by-batch-denom")
+	flags.AddPaginationFlagsToCmd(cmd, "sell-orders-by-batch")
 	return cmd
 }
 

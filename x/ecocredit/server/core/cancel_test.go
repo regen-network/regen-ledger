@@ -45,13 +45,13 @@ func TestCancel_Valid(t *testing.T) {
 func TestCancel_InsufficientFunds(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	s.setupClassProjectBatch(t)
+	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
 		Credits: []*core.Credits{
 			{
-				BatchDenom: "C01-001-20200101-20210101-01",
+				BatchDenom: batchDenom,
 				Amount:     "100000",
 			},
 		},
@@ -63,13 +63,13 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 func TestCancel_BadPrecision(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	s.setupClassProjectBatch(t)
+	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Owner: s.addr.String(),
 		Credits: []*core.Credits{
 			{
-				BatchDenom: "C01-001-20200101-20210101-01",
+				BatchDenom: batchDenom,
 				Amount:     "10.5290385029385820935",
 			},
 		},

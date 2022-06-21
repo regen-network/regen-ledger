@@ -14,16 +14,20 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestValidateGenesis(t *testing.T) {
+	t.Parallel()
+
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 	ss, err := api.NewStateStore(modDB)
+	require.NoError(t, err)
 
 	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
 		Abbreviation: "BIO",
@@ -114,6 +118,8 @@ func TestValidateGenesis(t *testing.T) {
 }
 
 func TestGenesisValidate(t *testing.T) {
+	t.Parallel()
+
 	defaultParams := core.DefaultParams()
 	addr1 := sdk.AccAddress("foobar")
 	addr2 := sdk.AccAddress("fooBarBaz")
@@ -488,6 +494,120 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestValidateGenesisWithBasketBalance(t *testing.T) {
+	t.Parallel()
+
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+	ss, err := api.NewStateStore(modDB)
+	require.NoError(t, err)
+
+	bsktStore, err := basketapi.NewStateStore(modDB)
+	require.NoError(t, err)
+
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+		Abbreviation: "BIO",
+		Name:         "biodiversity",
+		Unit:         "acres",
+		Precision:    6,
+	}))
+
+	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
+		&api.BatchBalance{
+			BatchKey:       1,
+			Address:        sdk.AccAddress("addr1"),
+			TradableAmount: "90.003",
+			RetiredAmount:  "9.997",
+		}))
+
+	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
+		&api.BatchBalance{
+			BatchKey:       2,
+			Address:        sdk.AccAddress("addr1"),
+			TradableAmount: "1.234",
+			EscrowedAmount: "1.234",
+			RetiredAmount:  "0",
+		}))
+
+	batches := []*api.Batch{
+		{
+			Issuer:     sdk.AccAddress("addr2"),
+			ProjectKey: 1,
+			Denom:      "C01-001-20180101-20200101-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+		},
+		{
+			Issuer:     sdk.AccAddress("addr3"),
+			ProjectKey: 1,
+			Denom:      "BIO02-001-00000000-00000000-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+		},
+	}
+	for _, b := range batches {
+		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
+	}
+
+	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
+		&api.BatchSupply{
+			BatchKey:       1,
+			TradableAmount: "190.003",
+			RetiredAmount:  "9.997",
+		}),
+	)
+
+	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
+		&api.BatchSupply{
+			BatchKey:       2,
+			TradableAmount: "12.468",
+			RetiredAmount:  "0",
+		}),
+	)
+
+	class := api.Class{
+		Id:               "BIO001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "BIO",
+	}
+	require.NoError(t, ss.ClassTable().Insert(ormCtx, &class))
+
+	project := api.Project{
+		Id:           "P01-001",
+		Admin:        sdk.AccAddress("addr6"),
+		ClassKey:     1,
+		Jurisdiction: "AQ",
+		Metadata:     "meta",
+	}
+	require.NoError(t, ss.ProjectTable().Insert(ormCtx, &project))
+
+	basketBalances := []*basketapi.BasketBalance{
+		{
+			BasketId:   1,
+			BatchDenom: "C01-001-20180101-20200101-001",
+			Balance:    "100",
+		},
+		{
+			BasketId:   2,
+			BatchDenom: "BIO02-001-00000000-00000000-001",
+			Balance:    "10.000",
+		},
+	}
+	for _, b := range basketBalances {
+		require.NoError(t, bsktStore.BasketBalanceTable().Insert(ormCtx, b))
+	}
+
+	target := ormjson.NewRawMessageTarget()
+	require.NoError(t, modDB.ExportJSON(ormCtx, target))
+	genesisJson, err := target.JSON()
+	require.NoError(t, err)
+
+	params := core.Params{AllowlistEnabled: true}
+	err = core.ValidateGenesis(genesisJson, params)
+	require.NoError(t, err)
 }
 
 // setupStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
