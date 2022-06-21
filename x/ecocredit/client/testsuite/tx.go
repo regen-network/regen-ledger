@@ -1728,8 +1728,13 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 
 	// order format closure
 	formatOrder := func(o *marketplace.MsgSell_Order) string {
-		return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t, expiration: %s}`,
-			o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire, formatTime(o.Expiration))
+		if o.Expiration != nil {
+			return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t, expiration: %s}`,
+				o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire, formatTime(o.Expiration))
+		} else {
+			return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t}`,
+				o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire)
+		}
 	}
 
 	// go through all orders and format them

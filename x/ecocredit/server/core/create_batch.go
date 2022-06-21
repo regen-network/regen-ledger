@@ -51,7 +51,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
+	startDate, endDate := timestamppb.New(*req.StartDate), timestamppb.New(*req.EndDate)
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	batchKey, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
 		ProjectKey:   projectInfo.Key,
