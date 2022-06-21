@@ -5,33 +5,38 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-// SellOrders queries all sell orders in state with optional pagination
-func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrdersRequest) (*marketplace.QuerySellOrdersResponse, error) {
+// SellOrdersBySeller queries all sell orders created by the given address with optional pagination
+func (k Keeper) SellOrdersBySeller(ctx context.Context, req *marketplace.QuerySellOrdersBySellerRequest) (*marketplace.QuerySellOrdersBySellerResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderSellerIndexKey{}, ormlist.Paginate(pg))
+	seller, err := sdk.AccAddressFromBech32(req.Seller)
+	if err != nil {
+		return nil, err
+	}
+
+	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderSellerIndexKey{}.WithSeller(seller), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 	defer it.Close()
 
+	sellerString := seller.String()
 	orders := make([]*marketplace.SellOrderInfo, 0, 10)
 	for it.Next() {
 		order, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-
-		seller := sdk.AccAddress(order.Seller)
 
 		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)
 		if err != nil {
@@ -45,7 +50,7 @@ func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrders
 
 		info := marketplace.SellOrderInfo{
 			Id:                order.Id,
-			Seller:            seller.String(),
+			Seller:            sellerString,
 			BatchDenom:        batch.Denom,
 			Quantity:          order.Quantity,
 			AskDenom:          market.BankDenom,
@@ -62,5 +67,5 @@ func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrders
 		return nil, err
 	}
 
-	return &marketplace.QuerySellOrdersResponse{SellOrders: orders, Pagination: pr}, nil
+	return &marketplace.QuerySellOrdersBySellerResponse{SellOrders: orders, Pagination: pr}, nil
 }

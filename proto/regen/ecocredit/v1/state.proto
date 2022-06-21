@@ -83,6 +83,7 @@ message Project {
     index : {id : 2, fields : "class_key,id", unique : true}
     index : {id : 3, fields : "admin"}
     index : {id : 4, fields : "reference_id"}
+    index : {id : 5, fields : "class_key,reference_id"}
   };
 
   // key is the table row identifier of the project used internally for

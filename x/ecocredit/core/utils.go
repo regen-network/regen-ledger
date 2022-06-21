@@ -15,10 +15,14 @@ import (
 
 var errBadReq = sdkerrors.ErrInvalidRequest
 
-// MaxMetadataLength defines the max length of the metadata bytes field
-// for the credit-class & credit-batch.
-// TODO: This could be used as params once x/params is upgraded to use protobuf
-const MaxMetadataLength = 256
+const (
+	// MaxMetadataLength defines the max length of the metadata bytes field
+	// for the credit-class & credit-batch.
+	MaxMetadataLength = 256
+
+	// MaxNoteLength defines the max length for note fields.
+	MaxNoteLength = 512
+)
 
 var (
 	RegexClassId      = `[A-Z]{1,3}[0-9]{2,}`
