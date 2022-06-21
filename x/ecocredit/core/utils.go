@@ -89,10 +89,10 @@ func FormatBatchDenom(projectId string, batchSeqNo uint64, startDate, endDate *t
 		projectId,
 
 		// Start Date as YYYYMMDD
-		startDate.Format("20060102"),
+		startDate.UTC().Format("20060102"),
 
 		// End Date as YYYYMMDD
-		endDate.Format("20060102"),
+		endDate.UTC().Format("20060102"),
 
 		// Batch sequence number padded to at least three digits
 		batchSeqNo,

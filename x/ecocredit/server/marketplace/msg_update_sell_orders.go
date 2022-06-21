@@ -89,6 +89,10 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 	}
 
 	if update.NewExpiration != nil {
+		// force to UTC
+		expirationUTC := update.NewExpiration.UTC()
+		update.NewExpiration = &expirationUTC
+
 		// verify expiration is in the future
 		if !update.NewExpiration.After(sdkCtx.BlockTime()) {
 			return sdkerrors.ErrInvalidRequest.Wrapf(
