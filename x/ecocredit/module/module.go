@@ -38,11 +38,10 @@ import (
 )
 
 type Module struct {
-	paramSpace         paramtypes.Subspace
-	accountKeeper      ecocredit.AccountKeeper
-	bankKeeper         ecocredit.BankKeeper
-	distributionKeeper ecocredit.DistributionKeeper
-	Keeper             server.Keeper
+	paramSpace    paramtypes.Subspace
+	accountKeeper ecocredit.AccountKeeper
+	bankKeeper    ecocredit.BankKeeper
+	Keeper        server.Keeper
 }
 
 // NewModule returns a new Module object.
@@ -50,17 +49,15 @@ func NewModule(
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
-	distributionKeeper ecocredit.DistributionKeeper,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
 	}
 
 	return &Module{
-		paramSpace:         paramSpace,
-		bankKeeper:         bankKeeper,
-		accountKeeper:      accountKeeper,
-		distributionKeeper: distributionKeeper,
+		paramSpace:    paramSpace,
+		bankKeeper:    bankKeeper,
+		accountKeeper: accountKeeper,
 	}
 }
 
@@ -81,7 +78,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
+	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
 }
 
 //nolint:errcheck
@@ -149,7 +146,6 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 	}
 
 	return coretypes.ValidateGenesis(bz, params)
-
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {

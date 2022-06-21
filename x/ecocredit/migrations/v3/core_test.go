@@ -21,6 +21,7 @@ import (
 
 	regenorm "github.com/regen-network/regen-ledger/orm"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -46,6 +47,7 @@ func TestMigrations(t *testing.T) {
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
+
 	store := sdkCtx.KVStore(ecocreditKey)
 
 	paramStore.WithKeyTable(v3.ParamKeyTable())
@@ -141,7 +143,7 @@ func TestMigrations(t *testing.T) {
 
 	err = creditTypeSeqTable.Create(sdkCtx, &v3.CreditTypeSeq{
 		Abbreviation: "C",
-		SeqNumber:    3,
+		SeqNumber:    2,
 	})
 	require.NoError(t, err)
 
@@ -171,7 +173,10 @@ func TestMigrations(t *testing.T) {
 	ss, err := api.NewStateStore(ormdb)
 	require.Nil(t, err)
 
-	err = v3.MigrateState(sdkCtx, ecocreditKey, encCfg.Marshaler, ss, paramStore)
+	basketStore, err := basketapi.NewStateStore(ormdb)
+	require.Nil(t, err)
+
+	err = v3.MigrateState(sdkCtx, ecocreditKey, encCfg.Marshaler, ss, basketStore, paramStore)
 	require.NoError(t, err)
 
 	ctx := sdk.WrapSDKContext(sdkCtx)
@@ -210,6 +215,9 @@ func TestMigrations(t *testing.T) {
 	require.NotNil(t, res1.Admin)
 
 	// verify batch migration
+	// batch1 issuer -> issuer1
+	// batch2 issuer -> issuer2
+	// batch3 issuer -> issuer2
 	expbd1, err := core.FormatBatchDenom("C01-001", 1, &startDate, &endDate)
 	require.NoError(t, err)
 	expbd2, err := core.FormatBatchDenom("C01-002", 1, &startDate, &endDate)
@@ -219,12 +227,17 @@ func TestMigrations(t *testing.T) {
 	batchRes, err := ss.BatchTable().GetByDenom(ctx, expbd1)
 	require.NoError(t, err)
 	require.Equal(t, expbd1, batchRes.Denom)
+	require.Equal(t, issuer1.String(), sdk.AccAddress(batchRes.Issuer).String())
+
 	batchRes, err = ss.BatchTable().GetByDenom(ctx, expbd2)
 	require.NoError(t, err)
 	require.Equal(t, expbd2, batchRes.Denom)
+	require.Equal(t, issuer2.String(), sdk.AccAddress(batchRes.Issuer).String())
+
 	batchRes, err = ss.BatchTable().GetByDenom(ctx, expbd3)
 	require.NoError(t, err)
 	require.Equal(t, expbd3, batchRes.Denom)
+	require.Equal(t, issuer2.String(), sdk.AccAddress(batchRes.Issuer).String())
 
 	// verify project sequence
 	res2, err := ss.ProjectSequenceTable().Get(ctx, 1)

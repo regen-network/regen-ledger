@@ -66,7 +66,7 @@ func (s *createProjectSuite) AliceHasCreatedACreditClassWithCreditType(a string)
 
 func (s *createProjectSuite) AliceHasCreatedAProjectWithCreditClassId(a string) {
 	_, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.alice.String(),
+		Admin:        s.alice.String(),
 		ClassId:      a,
 		Jurisdiction: "US",
 	})
@@ -88,7 +88,7 @@ func (s *createProjectSuite) TheProjectSequenceForCreditClassIs(a, b string) {
 
 func (s *createProjectSuite) AliceCreatesAProjectWithCreditClassId(a string) {
 	_, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.alice.String(),
+		Admin:        s.alice.String(),
 		ClassId:      a,
 		Jurisdiction: "US",
 	})

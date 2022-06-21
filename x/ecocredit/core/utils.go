@@ -15,10 +15,14 @@ import (
 
 var errBadReq = sdkerrors.ErrInvalidRequest
 
-// MaxMetadataLength defines the max length of the metadata bytes field
-// for the credit-class & credit-batch.
-// TODO: This could be used as params once x/params is upgraded to use protobuf
-const MaxMetadataLength = 256
+const (
+	// MaxMetadataLength defines the max length of the metadata bytes field
+	// for the credit-class & credit-batch.
+	MaxMetadataLength = 256
+
+	// MaxNoteLength defines the max length for note fields.
+	MaxNoteLength = 512
+)
 
 var (
 	RegexClassId      = `[A-Z]{1,3}[0-9]{2,}`
@@ -85,10 +89,10 @@ func FormatBatchDenom(projectId string, batchSeqNo uint64, startDate, endDate *t
 		projectId,
 
 		// Start Date as YYYYMMDD
-		startDate.Format("20060102"),
+		startDate.UTC().Format("20060102"),
 
 		// End Date as YYYYMMDD
-		endDate.Format("20060102"),
+		endDate.UTC().Format("20060102"),
 
 		// Batch sequence number padded to at least three digits
 		batchSeqNo,

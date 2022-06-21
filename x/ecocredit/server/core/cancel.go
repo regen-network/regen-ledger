@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
@@ -15,10 +17,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// Cancel credits, removing them from the supply and balance of the holder
+// Cancel credits, removing them from the supply and balance of the owner
 func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCancelResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
-	holder, err := sdk.AccAddressFromBech32(req.Holder)
+	owner, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
 		return nil, err
 	}
@@ -26,15 +28,15 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", credit.BatchDenom, err.Error())
 		}
 		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Key)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, owner, batch.Key)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get %s balance for %s: %s", batch.Denom, owner.String(), err.Error())
 		}
 		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 		if err != nil {
@@ -60,7 +62,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			BatchKey:       batch.Key,
-			Address:        holder,
+			Address:        owner,
 			TradableAmount: userBalTradable.String(),
 			RetiredAmount:  userBalance.RetiredAmount,
 		}); err != nil {
@@ -77,7 +79,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCancel{
-			Owner:      holder.String(),
+			Owner:      owner.String(),
 			BatchDenom: credit.BatchDenom,
 			Amount:     credit.Amount,
 			Reason:     req.Reason,

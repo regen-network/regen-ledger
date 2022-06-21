@@ -8114,11 +8114,11 @@ type EventRetire struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// owner is the account that owns the retired credits. This will be the
-	// account receiving credits in the case that credits were retired upon
-	// issuance using Msg/CreateBatch, retired upon transfer using Msg/Send,
-	// retired upon taking from a basket using basket.Msg/Take, or retired
-	// upon purchase using marketplace.Msg/BuyDirect.
+	// owner is the address of the account that owns the retired credits. This
+	// will be the account receiving credits in the case that credits were retired
+	// upon issuance using Msg/CreateBatch, retired upon transfer using Msg/Send,
+	// retired upon taking from a basket using basket.Msg/Take, or retired upon
+	// purchase using marketplace.Msg/BuyDirect.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// batch_denom is the unique identifier of the credit batch within which the
 	// credits were retired.
@@ -8189,7 +8189,7 @@ type EventCancel struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// owner is the account which has cancelled the credits.
+	// owner is the address of the account that cancelled the credits.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// batch_denom is the unique identifier of the credit batch within which the
 	// credits were cancelled.

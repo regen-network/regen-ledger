@@ -204,7 +204,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:       val.Address.String(),
+		Admin:        val.Address.String(),
 		ClassId:      classId,
 		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
@@ -986,7 +986,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				for _, e := range res.Logs[0].Events {
 					if e.Type == proto.MessageName(&marketplace.EventSell{}) {
 						for _, attr := range e.Attributes {
-							if attr.Key == "order_id" {
+							if attr.Key == "sell_order_id" {
 								found = true
 								orderIdStr := strings.Trim(attr.Value, "\"")
 								_, err := strconv.ParseUint(orderIdStr, 10, 64)
@@ -1026,7 +1026,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: valAddrStr,
+		Seller: valAddrStr,
 		Orders: []*marketplace.MsgSell_Order{
 			{batchDenom, "10", &askCoin, true, &expiration},
 		},
@@ -1041,7 +1041,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		}
 		updatesStr := strings.Join(updates, ",")
 		updateArg := fmt.Sprintf(`[%s]`, updatesStr)
-		args := []string{updateArg, makeFlagFrom(msg.Owner)}
+		args := []string{updateArg, makeFlagFrom(msg.Seller)}
 		return append(args, s.commonTxFlags()...)
 	}
 
@@ -1075,7 +1075,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		{
 			name: "valid",
 			args: makeArgs(&marketplace.MsgUpdateSellOrders{
-				Owner: valAddrStr,
+				Seller: valAddrStr,
 				Updates: []*marketplace.MsgUpdateSellOrders_Update{
 					{SellOrderId: orderId, NewQuantity: "9.99", NewAskPrice: &newAsk, DisableAutoRetire: false, NewExpiration: &newExpiration},
 				},
@@ -1132,7 +1132,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
 		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
-		args = append(args, makeFlagFrom(msg.Issuer))
+		args = append(args, makeFlagFrom(msg.Admin))
 		return append(args, s.commonTxFlags()...)
 	}
 
@@ -1157,7 +1157,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx without project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:       val0.Address.String(),
+				Admin:        val0.Address.String(),
 				ClassId:      classId,
 				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
@@ -1168,7 +1168,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx with project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:       val0.Address.String(),
+				Admin:        val0.Address.String(),
 				ClassId:      classId,
 				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
@@ -1213,7 +1213,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: valAddrStr,
+		Seller: valAddrStr,
 		Orders: []*marketplace.MsgSell_Order{
 			{batchDenom, "10", &askCoin, true, &expiration},
 			{batchDenom, "10", &askCoin, false, &expiration},
@@ -1326,7 +1326,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: valAddrStr,
+		Seller: valAddrStr,
 		Orders: []*marketplace.MsgSell_Order{
 			{batchDenom, "10", &askCoin, true, &expiration},
 			{batchDenom, "10", &askCoin, false, &expiration},
@@ -1682,7 +1682,11 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 		return append(args, flags...)
 	}
 
-	out, err := cli.ExecTestCLICmd(clientCtx, cmd, makeCreateProjectArgs(msg, append(s.commonTxFlags(), makeFlagFrom(msg.Issuer))...))
+	referenceIdFlag := fmt.Sprintf("--reference-id=%s", msg.ReferenceId)
+	flags := append(s.commonTxFlags(), makeFlagFrom(msg.Admin), referenceIdFlag)
+	args := makeCreateProjectArgs(msg, flags...)
+
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	s.Require().NoError(err)
 	var res sdk.TxResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
@@ -1724,8 +1728,13 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 
 	// order format closure
 	formatOrder := func(o *marketplace.MsgSell_Order) string {
-		return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t, expiration: %s}`,
-			o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire, formatTime(o.Expiration))
+		if o.Expiration != nil {
+			return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t, expiration: %s}`,
+				o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire, formatTime(o.Expiration))
+		} else {
+			return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t}`,
+				o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire)
+		}
 	}
 
 	// go through all orders and format them
@@ -1737,7 +1746,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	// merge args
 	ordersStr := strings.Join(orders, ",")
 	orderArg := fmt.Sprintf(`[%s]`, ordersStr)
-	args := []string{orderArg, makeFlagFrom(msg.Owner)}
+	args := []string{orderArg, makeFlagFrom(msg.Seller)}
 	args = append(args, s.commonTxFlags()...)
 
 	// execute command
@@ -1753,7 +1762,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&marketplace.EventSell{}) {
 			for _, attr := range e.Attributes {
-				if attr.Key == "order_id" {
+				if attr.Key == "sell_order_id" {
 					orderId, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
 					s.Require().NoError(err)
 					orderIds = append(orderIds, orderId)
@@ -1788,13 +1797,16 @@ func (s *IntegrationTestSuite) createClassProject(clientCtx client.Context, addr
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
+
 	projectId, err = s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:       addr,
+		Admin:        addr,
 		ClassId:      classId,
 		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
+		ReferenceId:  s.projectReferenceId,
 	})
 	s.Require().NoError(err)
+
 	return classId, projectId
 }
 

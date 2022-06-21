@@ -12,7 +12,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -109,7 +108,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		buyer, _ := simtypes.RandomAcc(r, accs)
 		buyerAddr := buyer.Address.String()
 
-		ctx := regentypes.Context{Context: sdkCtx}
+		ctx := sdk.WrapSDKContext(sdkCtx)
 		result, err := mktQryClient.SellOrders(ctx, &marketplace.QuerySellOrdersRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, err.Error()), nil, err
@@ -147,7 +146,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Orders: buyOrders,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, buyerAddr, TypeMsgSell)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, buyerAddr, TypeMsgBuyDirect)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -178,16 +177,16 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	return func(
 		r *rand.Rand, baseApp *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		owner, _ := simtypes.RandomAcc(r, accs)
-		ownerAddr := owner.Address.String()
+		seller, _ := simtypes.RandomAcc(r, accs)
+		sellerAddr := seller.Address.String()
 
-		ctx := regentypes.Context{Context: sdkCtx}
+		ctx := sdk.WrapSDKContext(sdkCtx)
 		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgSell)
 		if class == nil {
 			return op, nil, err
 		}
 
-		batchRes, err := qryClient.BatchesByIssuer(ctx, &core.QueryBatchesByIssuerRequest{Issuer: owner.Address.String()})
+		batchRes, err := qryClient.BatchesByIssuer(ctx, &core.QueryBatchesByIssuerRequest{Issuer: seller.Address.String()})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 		}
@@ -203,12 +202,12 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		sellOrders := make([]*marketplace.MsgSell_Order, max)
 		for i := 0; i < max; i++ {
-			bal, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{Account: ownerAddr, BatchDenom: batches[i].Denom})
+			bal, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{Address: sellerAddr, BatchDenom: batches[i].Denom})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 			}
 
-			exp := ctx.BlockTime().AddDate(1, 0, 0)
+			exp := sdkCtx.BlockTime().AddDate(1, 0, 0)
 			d, err := math.NewNonNegativeDecFromString(bal.Balance.TradableAmount)
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
@@ -220,7 +219,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 			balInt, err := d.Int64()
 			if err != nil {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, nil
 			}
 
 			quantity := int(balInt)
@@ -239,11 +238,11 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &marketplace.MsgSell{
-			Owner:  owner.Address.String(),
+			Seller: seller.Address.String(),
 			Orders: sellOrders,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, ownerAddr, TypeMsgSell)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, sellerAddr, TypeMsgSell)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -273,11 +272,11 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		owner, _ := simtypes.RandomAcc(r, accs)
-		ownerAddr := owner.Address.String()
+		seller, _ := simtypes.RandomAcc(r, accs)
+		sellerAddr := seller.Address.String()
 
-		ctx := regentypes.Context{Context: sdkCtx}
-		result, err := mktQryClient.SellOrdersByAddress(ctx, &marketplace.QuerySellOrdersByAddressRequest{Address: ownerAddr})
+		ctx := sdk.WrapSDKContext(sdkCtx)
+		result, err := mktQryClient.SellOrdersBySeller(ctx, &marketplace.QuerySellOrdersBySellerRequest{Seller: sellerAddr})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, err.Error()), nil, err
 		}
@@ -301,7 +300,10 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, err.Error()), nil, nil
 			}
 
-			newQuantity := simtypes.RandIntBetween(r, 1, q)
+			newQuantity := 1
+			if q > 1 {
+				newQuantity = simtypes.RandIntBetween(r, 1, q)
+			}
 			updatedOrders[i] = &marketplace.MsgUpdateSellOrders_Update{
 				SellOrderId: orders[i].Id,
 				NewQuantity: func() string {
@@ -319,11 +321,11 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		}
 
 		msg := &marketplace.MsgUpdateSellOrders{
-			Owner:   ownerAddr,
+			Seller:  sellerAddr,
 			Updates: updatedOrders,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, ownerAddr, TypeMsgUpdateSellOrder)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, sellerAddr, TypeMsgUpdateSellOrder)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -353,11 +355,11 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		owner, _ := simtypes.RandomAcc(r, accs)
-		ownerAddr := owner.Address.String()
+		seller, _ := simtypes.RandomAcc(r, accs)
+		sellerAddr := seller.Address.String()
 
-		ctx := regentypes.Context{Context: sdkCtx}
-		result, err := mktQryClient.SellOrdersByAddress(ctx, &marketplace.QuerySellOrdersByAddressRequest{Address: ownerAddr})
+		ctx := sdk.WrapSDKContext(sdkCtx)
+		result, err := mktQryClient.SellOrdersBySeller(ctx, &marketplace.QuerySellOrdersBySellerRequest{Seller: sellerAddr})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancelSellOrder, err.Error()), nil, err
 		}
@@ -370,11 +372,11 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		// select random order
 		order := orders[r.Intn(len(orders))]
 		msg := &marketplace.MsgCancelSellOrder{
-			Seller:      ownerAddr,
+			Seller:      sellerAddr,
 			SellOrderId: order.Id,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, ownerAddr, TypeMsgCancelSellOrder)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, sellerAddr, TypeMsgCancelSellOrder)
 		if spendable == nil {
 			return op, nil, err
 		}

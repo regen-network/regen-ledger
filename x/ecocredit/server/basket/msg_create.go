@@ -19,33 +19,60 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	var fee sdk.Coins
-	k.paramsKeeper.Get(sdkCtx, core.KeyBasketCreationFee, &fee)
-	if !msg.Fee.IsAllGTE(fee) {
-		return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
-	}
+	k.paramsKeeper.Get(sdkCtx, core.KeyBasketFee, &fee)
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, coin := range fee {
-		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, coin.Denom)
-		if curatorBalance.IsNil() || curatorBalance.IsLT(coin) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", coin.Denom)
+	// In the next version of the basket package, this field will be updated to
+	// a single Coin rather than a list of Coins. In the meantime, the message
+	// will fail basic validation if more than one Coin is provided and only the
+	// minimum fee is checked against the balance of the curator account, sent
+	// to the basket submodule, and then burned by the basket submodule.
+	if len(fee) > 0 {
+
+		// check if single coin in msg.Fee is greater than or equal to any coin in fee
+		if !msg.Fee.IsAnyGTE(fee) {
+			if len(fee) > 1 {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee one of %s, got %s", fee, msg.Fee)
+			} else {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
+			}
+		}
+
+		minimumFee := sdk.Coin{
+			Denom:  msg.Fee[0].Denom,
+			Amount: fee.AmountOf(msg.Fee[0].Denom),
+		}
+
+		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, minimumFee.Denom)
+		if curatorBalance.IsNil() || curatorBalance.IsLT(minimumFee) {
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", minimumFee.Denom)
+		}
+
+		minimumFees := sdk.Coins{minimumFee}
+
+		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, minimumFees)
+		if err != nil {
+			return nil, err
+		}
+
+		err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, minimumFees)
+		if err != nil {
+			return nil, err
 		}
 	}
 
-	err = k.distKeeper.FundCommunityPool(sdkCtx, fee, curator)
+	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, msg.CreditTypeAbbrev)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+			"could not get credit type with abbreviation %s: %s", msg.CreditTypeAbbrev, err.Error(),
+		)
 	}
 
-	if err = k.validateCreditType(ctx, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
-		return nil, err
-	}
-
-	denom, displayDenom, err := basket.FormatBasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
+	denom, displayDenom, err := basket.FormatBasketDenom(msg.Name, msg.CreditTypeAbbrev, creditType.Precision)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +83,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
-		Exponent:          msg.Exponent,
+		Exponent:          creditType.Precision, // exponent is no longer used but set until removed
 		Name:              msg.Name,
 	})
 	if err != nil {
@@ -66,13 +93,22 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	denomUnits := []*banktypes.DenomUnit{{
-		Denom:    displayDenom,
-		Exponent: msg.Exponent,
-	}}
-	if msg.Exponent != 0 {
+	denomUnits := make([]*banktypes.DenomUnit, 0)
+
+	// Set denomination units in ascending order and
+	// the first denomination unit must be the base
+	if creditType.Precision == 0 {
+		denomUnits = append(denomUnits, &banktypes.DenomUnit{
+			Denom:    displayDenom,
+			Exponent: creditType.Precision,
+		})
+	} else {
 		denomUnits = append(denomUnits, &banktypes.DenomUnit{
 			Denom: denom,
+		})
+		denomUnits = append(denomUnits, &banktypes.DenomUnit{
+			Denom:    displayDenom,
+			Exponent: creditType.Precision,
 		})
 	}
 
@@ -91,23 +127,6 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	})
 
 	return &basket.MsgCreateResponse{BasketDenom: denom}, err
-}
-
-// validateCreditType returns error if a given credit type abbreviation doesn't exist or
-// it's precision is bigger then the requested exponent.
-func (k Keeper) validateCreditType(ctx context.Context, abbreviation string, exponent uint32) error {
-	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, abbreviation)
-	if err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type with abbreviation %s: %s", abbreviation, err.Error())
-	}
-	if creditType.Precision > exponent {
-		return sdkerrors.ErrInvalidRequest.Wrapf(
-			"exponent %d must be >= credit type precision %d",
-			exponent,
-			creditType.Precision,
-		)
-	}
-	return nil
 }
 
 // indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts

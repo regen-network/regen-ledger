@@ -7,5 +7,5 @@ import (
 )
 
 func (s serverImpl) RunMigrations(ctx sdk.Context, cdc codec.Codec) error {
-	return v3.MigrateState(ctx, s.storeKey, cdc, s.stateStore, s.paramSpace)
+	return v3.MigrateState(ctx, s.storeKey, cdc, s.stateStore, s.basketStore, s.paramSpace)
 }

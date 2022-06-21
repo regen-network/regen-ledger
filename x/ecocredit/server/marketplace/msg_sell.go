@@ -21,7 +21,7 @@ import (
 func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
+	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		orderIndex := fmt.Sprintf("order[%d]", i)
+		// orderIndex is used for more granular error messages when
+		// an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("orders[%d]", i)
 
 		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
@@ -49,7 +51,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}
 
 		// verify expiration is in the future
-		if order.Expiration != nil && !order.Expiration.After(sdkCtx.BlockTime()) {
+		if order.Expiration != nil && !order.Expiration.UTC().After(sdkCtx.BlockTime()) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 				"%s: expiration must be in the future: %s", orderIndex, order.Expiration,
 			)
@@ -60,7 +62,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			return nil, err
 		}
 
-		if err = k.escrowCredits(ctx, orderIndex, ownerAcc, batch.Key, sellQty); err != nil {
+		if err = k.escrowCredits(ctx, orderIndex, sellerAcc, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
@@ -80,7 +82,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}
 
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
-			Seller:            ownerAcc,
+			Seller:            sellerAcc,
 			BatchKey:          batch.Key,
 			Quantity:          order.Quantity,
 			MarketId:          marketId,
@@ -96,7 +98,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		sellOrderIds[i] = id
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
-			OrderId: id,
+			SellOrderId: id,
 		}); err != nil {
 			return nil, err
 		}
@@ -124,8 +126,8 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 	}
 }
 
-func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchId uint64, quantity math.Dec) error {
-	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchId)
+func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
+	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchKey)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf(
 			"%s: credit quantity: %v, tradable balance: 0", orderIndex, quantity,

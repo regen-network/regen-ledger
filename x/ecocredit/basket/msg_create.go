@@ -55,10 +55,6 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("description length cannot be greater than %d characters", descrMaxLen)
 	}
 
-	if _, err := core.ExponentToPrefix(m.Exponent); err != nil {
-		return err
-	}
-
 	if len(m.CreditTypeAbbrev) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation cannot be empty")
 	}
@@ -82,6 +78,13 @@ func (m MsgCreate) ValidateBasic() error {
 
 	if err := m.DateCriteria.Validate(); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("invalid date criteria: %s", err)
+	}
+
+	// In the next version of the basket package, this field will be updated to
+	// a single Coin rather than a list of Coins. In the meantime, the message
+	// will fail basic validation if more than one Coin is provided.
+	if len(m.Fee) > 1 {
+		return sdkerrors.ErrInvalidRequest.Wrap("more than one fee is not allowed")
 	}
 
 	return m.Fee.Validate()

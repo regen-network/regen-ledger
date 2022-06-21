@@ -20,7 +20,7 @@ message SellOrder {
   // id is the unique ID of sell order.
   uint64 id = 1;
 
-  // seller is the bytes address of the owner of the credits being sold.
+  // seller is the address of the account that is selling credits.
   bytes seller = 2;
 
   // batch_key is the table row identifier of the credit batch used internally
