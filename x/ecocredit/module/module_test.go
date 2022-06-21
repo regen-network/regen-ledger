@@ -30,7 +30,7 @@ func TestHybridORMLegacyGenesis(t *testing.T) {
 	  "regen.ecocredit.basket.v1.Basket":[{
 	    "basket_denom":"foo"
 	  }],
-    "regen.ecocredit.basket.v1.BasketBalance":[]
+	  "regen.ecocredit.basket.v1.BasketBalance":[]
 	}`)))
 
 	require.NoError(t, m.ValidateGenesis(cdc, nil, []byte(`
