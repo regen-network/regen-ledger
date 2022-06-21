@@ -21,6 +21,8 @@ import (
 )
 
 func TestValidateGenesis(t *testing.T) {
+	t.Parallel()
+
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
@@ -116,6 +118,8 @@ func TestValidateGenesis(t *testing.T) {
 }
 
 func TestGenesisValidate(t *testing.T) {
+	t.Parallel()
+
 	defaultParams := core.DefaultParams()
 	addr1 := sdk.AccAddress("foobar")
 	addr2 := sdk.AccAddress("fooBarBaz")
@@ -493,6 +497,8 @@ func TestGenesisValidate(t *testing.T) {
 }
 
 func TestValidateGenesisWithBasketBalance(t *testing.T) {
+	t.Parallel()
+
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
