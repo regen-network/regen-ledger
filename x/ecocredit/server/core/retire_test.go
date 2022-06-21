@@ -14,7 +14,7 @@ import (
 func TestRetire_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	s.setupClassProjectBatch(t)
+	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	// starting balance
 	// tradable: 10.5
@@ -26,7 +26,7 @@ func TestRetire_Valid(t *testing.T) {
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
 		Owner: s.addr.String(),
 		Credits: []*core.Credits{
-			{BatchDenom: "C01-001-20200101-20210101-01", Amount: "10.0"},
+			{BatchDenom: batchDenom, Amount: "10.0"},
 		},
 		Jurisdiction: "US-NY",
 	})

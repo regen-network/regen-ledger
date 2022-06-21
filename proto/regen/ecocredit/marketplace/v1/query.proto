@@ -14,8 +14,12 @@ service Query {
 
   // SellOrder queries a sell order by its unique identifier.
   rpc SellOrder(QuerySellOrderRequest) returns (QuerySellOrderResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/sell-orders/{sell_order_id}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-order/{sell_order_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/marketplace/v1/sell-orders/{sell_order_id}"}
+      ]
+    };
   }
 
   // SellOrders queries a paginated list of all sell orders.
@@ -24,20 +28,28 @@ service Query {
         "/regen/ecocredit/marketplace/v1/sell-orders";
   }
 
-  // SellOrdersByBatchDenom queries a paginated list of all sell orders based on
+  // SellOrdersByBatch queries a paginated list of all sell orders based on
   // the batch denom of the credits being sold.
-  rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest)
-      returns (QuerySellOrdersByBatchDenomResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/{batch_denom}";
+  rpc SellOrdersByBatch(QuerySellOrdersByBatchRequest)
+      returns (QuerySellOrdersByBatchResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-orders-by-batch/{batch_denom}"
+      additional_bindings : [ {
+        get : "/regen/ecocredit/marketplace/v1/sell-orders/batch/{batch_denom}"
+      } ]
+    };
   }
 
   // SellOrdersBySeller queries a paginated list of all sell orders based on the
   // account address of the seller.
   rpc SellOrdersBySeller(QuerySellOrdersBySellerRequest)
       returns (QuerySellOrdersBySellerResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/sell-orders/seller/{seller}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-orders-by-seller/{seller}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/marketplace/v1/sell-orders/seller/{seller}"}
+      ]
+    };
   }
 
   // AllowedDenoms queries a paginated list of all bank denoms allowed to be
@@ -80,9 +92,9 @@ message QuerySellOrdersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByBatchDenomRequest is the Query/SellOrdersByBatchDenom
+// QuerySellOrdersByBatchRequest is the Query/SellOrdersByBatch
 // request type.
-message QuerySellOrdersByBatchDenomRequest {
+message QuerySellOrdersByBatchRequest {
 
   // batch_denom is an ecocredit denom
   string batch_denom = 1;
@@ -91,9 +103,9 @@ message QuerySellOrdersByBatchDenomRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySellOrdersByBatchDenomResponse is the Query/SellOrdersByBatchDenom
+// QuerySellOrdersByBatchResponse is the Query/SellOrdersByBatch
 // response type.
-message QuerySellOrdersByBatchDenomResponse {
+message QuerySellOrdersByBatchResponse {
 
   // sell_orders is a list of sell orders.
   repeated SellOrderInfo sell_orders = 1;
