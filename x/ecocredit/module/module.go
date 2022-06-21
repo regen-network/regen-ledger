@@ -145,7 +145,11 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
 	}
 
+<<<<<<< HEAD
 	return data.Validate()
+=======
+	return coretypes.ValidateGenesis(bz, params)
+>>>>>>> 1853c2b (fix(ecocredit): fix genesis validation to include basket balances (#1195))
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
