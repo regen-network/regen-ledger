@@ -92,7 +92,7 @@ type MsgClient interface {
 	// Bridge cancels a specified amount of tradable credits and emits a special
 	// bridge event handled by an external bridge service.
 	Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
-	// BridgeReceive processes credits being sent from an external registry to
+	// BridgeReceive processes credits being sent from an external registry or network to
 	// Regen Ledger.
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 }
@@ -314,7 +314,7 @@ type MsgServer interface {
 	// Bridge cancels a specified amount of tradable credits and emits a special
 	// bridge event handled by an external bridge service.
 	Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error)
-	// BridgeReceive processes credits being sent from an external registry to
+	// BridgeReceive processes credits being sent from an external registry or network to
 	// Regen Ledger.
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	mustEmbedUnimplementedMsgServer()
