@@ -25,6 +25,8 @@ const (
 	FlagStartDateWindow        = "start-date-window"
 	FlagBasketFee              = "basket-fee"
 	FlagDenomDescription       = "description"
+	FlagRetirementJurisdiction = "retirement-jurisdiction"
+	FlagRetireOnTake           = "retire-on-take"
 )
 
 func TxCreateBasketCmd() *cobra.Command {
@@ -172,11 +174,12 @@ Flags:
 
 func TxPutInBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "put-in-basket [basket_denom] [credits_json_file]",
+		Use:   "put-in-basket [basket_denom] [credits]",
 		Short: "add credits to the basket",
 		Long: strings.TrimSpace(`add credits to the basket.
 Parameters:
 		basket_denom: basket identifier
+		credits: path to JSON file containing credits to put in the basket
 Flags:
 		from: account address of the owner
 		`),
@@ -224,11 +227,6 @@ Where the credits.json file contains:
 
 	return txFlags(cmd)
 }
-
-const (
-	FlagRetirementJurisdiction = "retirement-jurisdiction"
-	FlagRetireOnTake           = "retire-on-take"
-)
 
 func TxTakeFromBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{

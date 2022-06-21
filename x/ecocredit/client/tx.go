@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -18,6 +17,18 @@ import (
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+)
+
+const (
+	FlagProjectId     string = "project-id"
+	FlagIssuances     string = "issuances"
+	FlagStartDate     string = "start-date"
+	FlagEndDate       string = "end-date"
+	FlagMetadata      string = "metadata"
+	FlagAddIssuers    string = "add-issuers"
+	FlagRemoveIssuers string = "remove-issuers"
+	FlagReferenceId   string = "reference-id"
+	FlagIssuer        string = "issuer"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -51,12 +62,6 @@ func TxCmd(name string) *cobra.Command {
 		marketplacecli.TxBuyDirectCmd(),
 		marketplacecli.TxBuyDirectBatchCmd(),
 	)
-	return cmd
-}
-
-func txFlags(cmd *cobra.Command) *cobra.Command {
-	flags.AddTxFlagsToCmd(cmd)
-	cmd.MarkFlagRequired(flags.FlagFrom)
 	return cmd
 }
 
@@ -122,18 +127,6 @@ regen tx ecocredit create-class regen1el...xmgqelsw,regen2tl...xsgqdlhy C "metad
 
 	return txFlags(cmd)
 }
-
-const (
-	FlagProjectId     string = "project-id"
-	FlagIssuances     string = "issuances"
-	FlagStartDate     string = "start-date"
-	FlagEndDate       string = "end-date"
-	FlagMetadata      string = "metadata"
-	FlagAddIssuers    string = "add-issuers"
-	FlagRemoveIssuers string = "remove-issuers"
-	FlagReferenceId   string = "reference-id"
-	FlagIssuer        string = "issuer"
-)
 
 // TxGenBatchJSONCmd returns a transaction command that generates JSON to
 // represent a new credit batch.
@@ -248,30 +241,36 @@ Required Flags:
 // TxCreateBatchCmd returns a transaction command that creates a credit batch.
 func TxCreateBatchCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-batch [msg-create-batch-json-file]",
+		Use:   "create-batch [batch-json]",
 		Short: "Issues a new credit batch",
 		Long: `Issues a new credit batch.
 
 Parameters:
-  msg-create-batch-json-file: Path to a file containing a JSON object
-                              representing MsgCreateBatch. The JSON has format:
-                              {
-                                "project_id": "C01-001",
-                                "issuance": [
-                                  {
-                                    "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-                                    "tradable_amount":     "1000",
-                                    "retired_amount":      "15",
-                                    "retirement_jurisdiction": "ST-UVW XY Z12",
-                                  },
-                                ],
-                                "metadata":         "metadata",
-                                "start_date":       "1990-01-01",
-                                "end_date":         "1995-10-31",
-                                "project_jurisdiction": "AB-CDE FG1 345",
-                                "issuer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
-                              }
-                              `,
+  batch-json: path to JSON file containing credit batch information
+
+Example JSON:
+{
+  "project_id": "C01-001",
+  "issuer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+  "issuance": [
+    {
+      "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "tradable_amount": "1000",
+      "retired_amount": "500",
+      "retirement_jurisdiction": "US-WA"
+    },
+    {
+      "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "tradable_amount": "1000",
+      "retired_amount": "500",
+      "retirement_jurisdiction": "US-WA"
+    }
+  ],
+  "metadata": "metadata",
+  "start_date": "1990-01-01",
+  "end_date": "1995-10-31"
+}
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -305,9 +304,24 @@ func TxSendCmd() *cobra.Command {
 
 Parameters:
   recipient: recipient address
-  credits:   JSON encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "C01-001-20210101-20210201-001", tradable_amount: "5", retired_amount: "0", retirement_jurisdiction: "YY-ZZ 12345"}]'
-             Note: "retirement_jurisdiction" is only required when "retired_amount" is positive.`,
+  credits: path to JSON file containing credits to send
+
+Example JSON:
+[
+  {
+    "batch_denom": "C01-001-20210101-20210201-001",
+    "tradable_amount": "500"
+  },
+  {
+    "batch_denom": "C01-001-20210101-20210201-002",
+    "tradable_amount": "50",
+    "retired_amount": "100",
+    "retirement_jurisdiction": "YY-ZZ 12345"
+  }
+]
+
+Note: "retirement_jurisdiction" is only required when "retired_amount" is positive.
+		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -342,14 +356,26 @@ func TxRetireCmd() *cobra.Command {
 		Long: `Retires a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
-  credits:             JSON encoded credit list. Note: numerical values must be written in strings.
-                       eg: '[{batch_denom: "C01-20210101-20210201-001", amount: "5"}]'
+  credits: path to JSON file containing credits to retire
   retirement_jurisdiction: A string representing the jurisdiction of the buyer or
                        beneficiary of retired credits. It has the form
                        <country-code>[-<region-code>[ <postal-code>]], where
                        country-code and region-code are taken from ISO 3166, and
                        postal-code being up to 64 alphanumeric characters.
-                       eg: 'AA-BB 12345'`,
+                       eg: 'AA-BB 12345'
+
+Example JSON:
+[
+  {
+    "batch_denom": "C01-20210101-20210201-001",
+    "amount": "5"
+  },
+  {
+    "batch_denom": "C01-20210101-20210201-002",
+    "amount": "10"
+  }
+]
+		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -384,12 +410,23 @@ func TxCancelCmd() *cobra.Command {
 		Long: `Cancels a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
-  credits:  comma-separated list of credits in the form [<amount> <batch-denom>]
-            eg: '10 C01-001-20200101-20210101-001, 0.1 C01-001-20200101-20210101-001'
+  credits:  path to JSON file containing credits to retire
   reason:   reason is any arbitrary string that specifies the reason for cancelling credits.
-`,
+
+Example JSON:
+[
+  {
+    "batch_denom": "C01-20210101-20210201-001",
+    "amount": "5"
+  },
+  {
+    "batch_denom": "C01-20210101-20210201-002",
+    "amount": "10"
+  }
+]
+		`,
 		Example: `
-regen tx ecocredit cancel '10 C01-001-20200101-20210101-001,0.1 C01-001-20200101-20210101-001' "bridging assets to another chain"
+regen tx ecocredit cancel credits.json "transferring credits to another registry"
 		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

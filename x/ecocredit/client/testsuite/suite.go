@@ -472,7 +472,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	}
 
 	if len(orderIds) == 0 {
-		require.Fail("failed to find sell order ids in response")
+		require.Fail("failed to find sell order id(s) in response")
 	}
 
 	return orderIds

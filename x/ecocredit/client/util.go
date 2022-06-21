@@ -9,12 +9,23 @@ import (
 	"github.com/spf13/cobra"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// prints a query client response
+func txFlags(cmd *cobra.Command) *cobra.Command {
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.MarkFlagRequired(flags.FlagFrom)
+	return cmd
+}
+
+func qflags(cmd *cobra.Command) *cobra.Command {
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
 func printQueryResponse(clientCtx sdkclient.Context, res proto.Message, err error) error {
 	if err != nil {
 		return err

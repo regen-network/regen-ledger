@@ -113,6 +113,88 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
+	require := s.Require()
+
+	admin := s.addr1.String()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 3 arg(s), received 2",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar", "baz", "foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 3 arg(s), received 4",
+		},
+		{
+			name: "missing from flag",
+			args: []string{
+				s.classId,
+				"US-WA",
+				"metadata",
+			},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s) \"from\" not set",
+		},
+		{
+			name: "valid",
+			args: []string{
+				s.classId,
+				"US-WA",
+				"metadata",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+			},
+		},
+		{
+			name: "valid from key-name",
+			args: []string{
+				s.classId,
+				"US-WA",
+				"metadata",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+			},
+		},
+		{
+			name: "valid with amino-json",
+			args: []string{
+				s.classId,
+				"US-WA",
+				"metadata",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.TxCreateProjectCmd()
+			args := append(tc.args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 	require := s.Require()
 
@@ -726,84 +808,6 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
-	require := s.Require()
-
-	admin := s.addr1.String()
-
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 2 arg(s), received 1",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar", "baz"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 2 arg(s), received 3",
-		},
-		{
-			name: "missing from flag",
-			args: []string{
-				s.classId,
-				"metadata",
-			},
-			expErr:    true,
-			expErrMsg: "Error: required flag(s) \"from\" not set",
-		},
-		{
-			name: "valid",
-			args: []string{
-				s.classId,
-				"metadata",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
-			},
-		},
-		{
-			name: "valid from key-name",
-			args: []string{
-				s.classId,
-				"metadata",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
-			},
-		},
-		{
-			name: "valid with amino-json",
-			args: []string{
-				s.classId,
-				"metadata",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
-				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateClassMetadataCmd()
-			args := append(tc.args, s.commonTxFlags()...)
-			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(out.String(), tc.expErrMsg)
-			} else {
-				require.NoError(err)
-
-				var res sdk.TxResponse
-				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.Zero(res.Code, res.RawLog)
-			}
-		})
-	}
-}
-
 func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	require := s.Require()
 
@@ -897,7 +901,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
+func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 	require := s.Require()
 
 	admin := s.addr1.String()
@@ -910,21 +914,20 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 	}{
 		{
 			name:      "missing args",
-			args:      []string{"foo", "bar"},
+			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "Error: accepts 3 arg(s), received 2",
+			expErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:      "too many args",
-			args:      []string{"foo", "bar", "baz", "foo"},
+			args:      []string{"foo", "bar", "baz"},
 			expErr:    true,
-			expErrMsg: "Error: accepts 3 arg(s), received 4",
+			expErrMsg: "Error: accepts 2 arg(s), received 3",
 		},
 		{
 			name: "missing from flag",
 			args: []string{
 				s.classId,
-				"US-WA",
 				"metadata",
 			},
 			expErr:    true,
@@ -934,7 +937,6 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 			name: "valid",
 			args: []string{
 				s.classId,
-				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
@@ -943,7 +945,6 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 			name: "valid from key-name",
 			args: []string{
 				s.classId,
-				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -952,7 +953,6 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 			name: "valid with amino-json",
 			args: []string{
 				s.classId,
-				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
@@ -962,7 +962,113 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCreateProjectCmd()
+			cmd := coreclient.TxUpdateClassMetadataCmd()
+			args := append(tc.args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
+	require := s.Require()
+
+	admin := s.addr1.String()
+	newAdmin := s.addr2.String()
+
+	// create new project in order to not interfere with other tests
+	projectId1 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+		Admin:        admin,
+		ClassId:      s.classId,
+		Metadata:     "metadata",
+		Jurisdiction: "US-WA",
+		ReferenceId:  s.projectReferenceId,
+	})
+
+	// create new project in order to not interfere with other tests
+	projectId2 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+		Admin:        admin,
+		ClassId:      s.classId,
+		Metadata:     "metadata",
+		Jurisdiction: "US-WA",
+		ReferenceId:  s.projectReferenceId,
+	})
+
+	// create new project in order to not interfere with other tests
+	projectId3 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+		Admin:        admin,
+		ClassId:      s.classId,
+		Metadata:     "metadata",
+		Jurisdiction: "US-WA",
+		ReferenceId:  s.projectReferenceId,
+	})
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 1",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar", "baz"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 3",
+		},
+		{
+			name: "missing from flag",
+			args: []string{
+				s.projectId,
+				newAdmin,
+			},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s) \"from\" not set",
+		},
+		{
+			name: "valid",
+			args: []string{
+				projectId1,
+				newAdmin,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+			},
+		},
+		{
+			name: "valid from key-name",
+			args: []string{
+				projectId2,
+				newAdmin,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+			},
+		},
+		{
+			name: "valid with amino-json",
+			args: []string{
+				projectId3,
+				newAdmin,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.TxUpdateProjectAdminCmd()
 			args := append(tc.args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -1041,112 +1147,6 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := coreclient.TxUpdateProjectMetadataCmd()
-			args := append(tc.args, s.commonTxFlags()...)
-			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(out.String(), tc.expErrMsg)
-			} else {
-				require.NoError(err)
-
-				var res sdk.TxResponse
-				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.Zero(res.Code, res.RawLog)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
-	require := s.Require()
-
-	admin := s.addr1.String()
-	newAdmin := s.addr2.String()
-
-	// create new project in order to not interfere with other tests
-	projectId1 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
-		Admin:        s.addr1.String(),
-		ClassId:      s.classId,
-		Metadata:     "metadata",
-		Jurisdiction: "US-WA",
-		ReferenceId:  s.projectReferenceId,
-	})
-
-	// create new project in order to not interfere with other tests
-	projectId2 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
-		Admin:        s.addr1.String(),
-		ClassId:      s.classId,
-		Metadata:     "metadata",
-		Jurisdiction: "US-WA",
-		ReferenceId:  s.projectReferenceId,
-	})
-
-	// create new project in order to not interfere with other tests
-	projectId3 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
-		Admin:        s.addr1.String(),
-		ClassId:      s.classId,
-		Metadata:     "metadata",
-		Jurisdiction: "US-WA",
-		ReferenceId:  s.projectReferenceId,
-	})
-
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name:      "missing args",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 2 arg(s), received 1",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar", "baz"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 2 arg(s), received 3",
-		},
-		{
-			name: "missing from flag",
-			args: []string{
-				s.projectId,
-				newAdmin,
-			},
-			expErr:    true,
-			expErrMsg: "Error: required flag(s) \"from\" not set",
-		},
-		{
-			name: "valid",
-			args: []string{
-				projectId1,
-				newAdmin,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
-			},
-		},
-		{
-			name: "valid from key-name",
-			args: []string{
-				projectId2,
-				newAdmin,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
-			},
-		},
-		{
-			name: "valid with amino-json",
-			args: []string{
-				projectId3,
-				newAdmin,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
-				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateProjectAdminCmd()
 			args := append(tc.args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {

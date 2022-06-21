@@ -2,7 +2,6 @@ package marketplace
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -26,13 +25,27 @@ func TxSellCmd() *cobra.Command {
 		Long: `Creates new sell orders with transaction author (--from) as seller.
 
 Parameters:
-  orders:  YAML encoded order list. Note: numerical values must be written in strings.
-           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'
-           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
-		Args: cobra.ExactArgs(1),
-		Example: `
-regen tx ecocredit sell "[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]"
+  orders:  path to JSON file containing orders to create
+
+Example JSON:
+[
+  {
+    "batch_denom": "C01-20210101-20210201-001",
+    "quantity": "5",
+    "ask_price": "100regen",
+    "disable_auto_retire": "true"
+  },
+  {
+    "batch_denom": "C01-20210101-20210201-002",
+    "quantity": "10",
+    "ask_price": "80regen",
+    "disable_auto_retire": false,
+    "expiration": "2024-01-01"
+  }
+]
 		`,
+		Args:    cobra.ExactArgs(1),
+		Example: "regen tx ecocredit sell orders.json",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -66,13 +79,27 @@ func TxUpdateSellOrdersCmd() *cobra.Command {
 		Long: `Updates existing sell orders with transaction author (--from) as seller.
 
 Parameters:
-  updates:  YAML encoded update list. Note: numerical values must be written in strings.
-           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]'
-           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false, new_expiration: "2026-01-01"}]'`,
-		Args: cobra.ExactArgs(1),
-		Example: `
-regen tx ecocredit update-sell-orders "[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]"
+  updates:  path to JSON file containing orders to update
+
+Example JSON:
+[
+  {
+    "sell_order_id": 1,
+    "quantity": "5",
+    "ask_price": "100regen",
+    "disable_auto_retire": "true"
+  },
+  {
+    "sell_order_id": 2,
+    "quantity": "10",
+    "ask_price": "80regen",
+    "disable_auto_retire": false,
+    "expiration": "2024-01-01"
+  }
+]
 		`,
+		Args:    cobra.ExactArgs(1),
+		Example: "regen tx ecocredit update-sell-orders updates.json",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -160,23 +187,39 @@ func TxBuyDirectCmd() *cobra.Command {
 // TxBuyDirectBatchCmd returns a transaction command for a batch direct buy order using a json file.
 func TxBuyDirectBatchCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "buy-direct-batch [name_of_file.json]",
+		Use:   "buy-direct-batch [orders]",
 		Short: "Buy ecocredits from multiple sell orders",
 		Long: "Batch purchase ecocredits using a json file. DisableAutoRetire can be set to false to " +
 			"retire the credits immediately upon purchase. When set to true, credits will be received in a tradable state, " +
 			"IF AND ONLY IF the sell order also has auto retire disabled. NOTE: The bid price is the price paid PER credit. " +
 			"The total cost will be quantity * bid_price.",
-		Example: strings.TrimSpace(`regen tx ecocredit buy-direct-batch batch.json
-		where batch.json has the following form:
-		[
-			{
-			   "sell_order_id": 52,
-			   "quantity": "32.5",
-			   "bid_price": {"denom": "uregen", "amount": "32000000"},
-			   "disable_auto_retire": false,
-			   "retirement_jurisdiction": "US-NY"
-			},
-		]`),
+		Example: `
+regen tx ecocredit buy-direct-batch orders.json
+
+Example JSON:
+[
+  {
+    "sell_order_id": 1,
+    "quantity": "32.5",
+    "bid_price": {
+      "denom": "uregen",
+      "amount": "32000000"
+    },
+    "disable_auto_retire": false,
+    "retirement_jurisdiction": "US-NY"
+  },
+  {
+    "sell_order_id": 2,
+    "quantity": "32.5",
+    "bid_price": {
+      "denom": "uregen",
+      "amount": "32000000"
+    },
+    "disable_auto_retire": false,
+    "retirement_jurisdiction": "US-NY"
+  }
+]
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
