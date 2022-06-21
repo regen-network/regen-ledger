@@ -7,12 +7,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -46,98 +44,6 @@ func TestSellOrders(t *testing.T) {
 		assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
 	}
 	assert.Equal(t, uint64(2), res.Pagination.Total)
-}
-
-func TestSellOrdersByDenom(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t, 2)
-	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
-
-	// make another batch
-	otherDenom := "C01-19990101-20290101-001"
-	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecocreditApi.Batch{
-		ProjectKey: 1,
-		Denom:      otherDenom,
-		Metadata:   "",
-		StartDate:  nil,
-		EndDate:    nil,
-	}))
-
-	order1 := insertSellOrder(t, s, s.addrs[0], 1)
-	order2 := insertSellOrder(t, s, s.addrs[0], 2)
-
-	// query the first denom
-	res, err := s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
-		BatchDenom: batchDenom,
-		Pagination: &query.PageRequest{CountTotal: true},
-	})
-	assert.NilError(t, err)
-	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
-	assert.Equal(t, uint64(1), res.Pagination.Total)
-
-	// query the second denom
-	res, err = s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
-		BatchDenom: otherDenom,
-		Pagination: &query.PageRequest{CountTotal: true},
-	})
-	assert.NilError(t, err)
-	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
-	assert.Equal(t, uint64(1), res.Pagination.Total)
-
-	// bad denom should error
-	_, err = s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
-		BatchDenom: "yikes!",
-		Pagination: nil,
-	})
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-}
-
-func TestSellOrdersBySeller(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t, 3)
-	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
-
-	otherAddr := s.addrs[1]
-	noOrdersAddr := s.addrs[2]
-
-	order1 := insertSellOrder(t, s, s.addrs[0], 1)
-	order2 := insertSellOrder(t, s, otherAddr, 1)
-
-	res, err := s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
-		Seller:     s.addrs[0].String(),
-		Pagination: &query.PageRequest{CountTotal: true},
-	})
-	assert.NilError(t, err)
-	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
-	assert.Equal(t, uint64(1), res.Pagination.Total)
-
-	res, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
-		Seller:     otherAddr.String(),
-		Pagination: &query.PageRequest{CountTotal: true},
-	})
-	assert.NilError(t, err)
-	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
-	assert.Equal(t, uint64(1), res.Pagination.Total)
-
-	// addr with no sell orders should just return empty slice
-	res, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
-		Seller:     noOrdersAddr.String(),
-		Pagination: &query.PageRequest{CountTotal: true},
-	})
-	assert.NilError(t, err)
-	assert.Equal(t, 0, len(res.SellOrders))
-	assert.Equal(t, uint64(0), res.Pagination.Total)
-
-	// bad address should fail
-	_, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
-		Seller:     "foobar1vlk23jrkl",
-		Pagination: nil,
-	})
-	assert.ErrorContains(t, err, "decoding bech32 failed")
 }
 
 func insertSellOrder(t *testing.T, s *baseSuite, addr sdk.AccAddress, batchKey uint64) *api.SellOrder {

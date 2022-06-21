@@ -14,8 +14,12 @@ service Query {
 
   // Basket queries one basket by denom.
   rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/basket/v1/baskets/{basket_denom}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/basket/v1/basket/{basket_denom}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/basket/v1/baskets/{basket_denom}"}
+      ]
+    };
   }
 
   // Baskets lists all baskets in the ecocredit module.
@@ -26,15 +30,27 @@ service Query {
   // BasketBalances lists the balance of each credit batch in the basket.
   rpc BasketBalances(QueryBasketBalancesRequest)
       returns (QueryBasketBalancesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/basket/v1/basket-balances/{basket_denom}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances"}
+      ]
+    };
   }
 
   // BasketBalance queries the balance of a specific credit batch in the basket.
   rpc BasketBalance(QueryBasketBalanceRequest)
       returns (QueryBasketBalanceResponse) {
-    option (google.api.http).get = "/regen/ecocredit/basket/v1/baskets/"
-                                   "{basket_denom}/balances/{batch_denom}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/basket/v1/basket-balance/{basket_denom}/"
+            "{batch_denom}"
+      additional_bindings : [
+        {
+          get : "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances/"
+                "{batch_denom}"
+        }
+      ]
+    };
   }
 }
 
