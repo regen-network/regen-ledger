@@ -84,9 +84,6 @@ func (m *BasketCredit) GetAmount() string {
 
 // DateCriteria represents the information for credit acceptance in a basket.
 // At most, only one of the values should be set.
-// NOTE: gogo proto `oneof` is not compatible with Amino signing, hence we
-// directly define both `start_date_window` and `min_start_date`. In the future,
-// with pulsar, this should change and we should use `oneof`.
 type DateCriteria struct {
 	// min_start_date (optional) is the earliest start date for batches of credits
 	// allowed into the basket. At most only one of `start_date_window`,
