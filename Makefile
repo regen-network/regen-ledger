@@ -115,6 +115,10 @@ endif
 
 ldflags += -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
 
+ifeq ($(LINK_STATICALLY),true)
+	ldflags += -linkmode=external -extldflags "-L/usr/local/lib/ -lwasmvm_muslc -Wl,-z,muldefs -static"
+endif
+
 ifeq ($(NO_STRIP),false)
   ldflags += -w -s
 endif
