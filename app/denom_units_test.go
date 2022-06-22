@@ -5,7 +5,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"testing"
 
@@ -39,6 +38,8 @@ func TestDenomUnitsMigration(t *testing.T) {
 
 	ctx := regenApp.BaseApp.NewContext(false, tmproto.Header{})
 
+	rNCT := "eco.uc.rNCT"
+	nCT := "eco.uc.NCT"
 	regenApp.BankKeeper.SetDenomMetaData(ctx, types.Metadata{
 		Description: "this is a test rNCT basket",
 		DenomUnits: []*types.DenomUnit{
@@ -63,7 +64,7 @@ func TestDenomUnitsMigration(t *testing.T) {
 				Aliases:  []string{},
 			},
 		},
-		Base:    "eco.uC.rNCT",
+		Base:    rNCT,
 		Display: "eco.C.rNCT",
 		Name:    "rNCT",
 		Symbol:  "rNCT",
@@ -83,17 +84,25 @@ func TestDenomUnitsMigration(t *testing.T) {
 				Aliases:  []string{},
 			},
 		},
-		Base:    "eco.uC.NCT",
+		Base:    nCT,
 		Display: "eco.C.NCT",
 		Name:    "NCT",
 		Symbol:  "NCT",
 	})
 
-	err = migrateDenomUnits(ctx, regenApp.BankKeeper)
-	require.NoError(t, err)
+	migrateDenomUnits(ctx, regenApp.BankKeeper)
 
-	md, _ := regenApp.BankKeeper.GetDenomMetaData(ctx, "eco.uC.rNCT")
-	fmt.Println(md.DenomUnits)
-	require.True(t, false)
+	denomMetadata, found := regenApp.BankKeeper.GetDenomMetaData(ctx, rNCT)
+	require.True(t, found)
+	require.Len(t, denomMetadata.DenomUnits, 4)
+	require.Equal(t, denomMetadata.DenomUnits[0].Exponent, uint32(0))
+	require.Equal(t, denomMetadata.DenomUnits[1].Exponent, uint32(3))
+	require.Equal(t, denomMetadata.DenomUnits[2].Exponent, uint32(6))
+	require.Equal(t, denomMetadata.DenomUnits[3].Exponent, uint32(9))
 
+	denomMetadata, found = regenApp.BankKeeper.GetDenomMetaData(ctx, nCT)
+	require.True(t, found)
+	require.Len(t, denomMetadata.DenomUnits, 2)
+	require.Equal(t, denomMetadata.DenomUnits[0].Exponent, uint32(0))
+	require.Equal(t, denomMetadata.DenomUnits[1].Exponent, uint32(6))
 }

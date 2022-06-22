@@ -100,11 +100,8 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			}
 		}
 
-		//
 		if ctx.ChainID() == "regen-redwood-1" {
-			if err := migrateDenomUnits(ctx, app.BankKeeper); err != nil {
-				return nil, err
-			}
+			migrateDenomUnits(ctx, app.BankKeeper)
 		}
 
 		return toVersion, nil
@@ -112,27 +109,24 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 }
 
-func migrateDenomUnits(ctx sdk.Context, bk bankkeeper.Keeper) error {
-	metadatas := make([]banktypes.Metadata, 0)
+// migrateDenomUnits update basket metadata denom units list in ascending order
+func migrateDenomUnits(ctx sdk.Context, bk bankkeeper.Keeper) {
+	metadataList := make([]banktypes.Metadata, 0)
 	bk.IterateAllDenomMetaData(ctx, func(m banktypes.Metadata) bool {
 		metadata := m
-		du := metadata.DenomUnits
-		fmt.Println("Du...", du)
-		sort.Slice(du[:], func(i, j int) bool {
-			fmt.Println("i = ", du[i].Exponent, "   j = ", du[j].Exponent)
-			return du[i].Exponent < du[j].Exponent
+		denomUnits := metadata.DenomUnits
+		sort.Slice(denomUnits, func(i, j int) bool {
+			return denomUnits[i].Exponent < denomUnits[j].Exponent
 		})
 
-		metadata.DenomUnits = du
-		metadatas = append(metadatas, metadata)
+		metadata.DenomUnits = denomUnits
+		metadataList = append(metadataList, metadata)
 		return false
 	})
 
-	for _, metadata := range metadatas {
+	for _, metadata := range metadataList {
 		bk.SetDenomMetaData(ctx, metadata)
 	}
-
-	return nil
 }
 
 func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {
