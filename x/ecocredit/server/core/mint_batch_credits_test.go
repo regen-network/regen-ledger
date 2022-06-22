@@ -37,9 +37,9 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 		BatchDenom: batch.Denom,
 		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
-			Id:       "0x1324092835908235",
+			Id:       "0x64",
 			Source:   "polygon",
-			Contract: "0x325325230958",
+			Contract: "0x40",
 			Note:     "note",
 		},
 	}
@@ -65,9 +65,9 @@ func TestMintBatchCredits_Unauthorized(t *testing.T) {
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
 		OriginTx: &core.OriginTx{
-			Id:       "0x1324092835908235",
+			Id:       "0x64",
 			Source:   "polygon",
-			Contract: "0x325325230958",
+			Contract: "0x40",
 			Note:     "note",
 		},
 	})
@@ -84,9 +84,9 @@ func TestMintBatchCredits_ClosedBatch(t *testing.T) {
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
 		OriginTx: &core.OriginTx{
-			Id:       "0x1324092835908235",
+			Id:       "0x64",
 			Source:   "polygon",
-			Contract: "0x325325230958",
+			Contract: "0x40",
 			Note:     "note",
 		},
 	})
@@ -124,9 +124,9 @@ func TestMintBatchCredits_SameTxId(t *testing.T) {
 		BatchDenom: batch.Denom,
 		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
-			Id:       "0x1324092835908235",
+			Id:       "0x64",
 			Source:   "polygon",
-			Contract: "0x325325230958",
+			Contract: "0x40",
 			Note:     "note",
 		},
 	}
