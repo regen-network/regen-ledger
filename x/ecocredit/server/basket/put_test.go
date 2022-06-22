@@ -20,7 +20,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basket2 "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 	"github.com/stretchr/testify/require"
@@ -72,7 +71,7 @@ func TestPut(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	ctrl := gomock.NewController(t)
 	b := ormtest.NewMemoryBackend()
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{
+	db, err := ormdb.NewModuleDB(ecocredit.ModuleSchema, ormdb.ModuleDBOptions{
 		GetBackend: func(ctx context.Context) (ormtable.Backend, error) {
 			return b, nil
 		},
