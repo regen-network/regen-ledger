@@ -7,6 +7,7 @@ package app
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 
@@ -22,6 +23,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -98,9 +100,39 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			}
 		}
 
+		//
+		if ctx.ChainID() == "regen-redwood-1" {
+			if err := migrateDenomUnits(ctx, app.BankKeeper); err != nil {
+				return nil, err
+			}
+		}
+
 		return toVersion, nil
 	})
 
+}
+
+func migrateDenomUnits(ctx sdk.Context, bk bankkeeper.Keeper) error {
+	metadatas := make([]banktypes.Metadata, 0)
+	bk.IterateAllDenomMetaData(ctx, func(m banktypes.Metadata) bool {
+		metadata := m
+		du := metadata.DenomUnits
+		fmt.Println("Du...", du)
+		sort.Slice(du[:], func(i, j int) bool {
+			fmt.Println("i = ", du[i].Exponent, "   j = ", du[j].Exponent)
+			return du[i].Exponent < du[j].Exponent
+		})
+
+		metadata.DenomUnits = du
+		metadatas = append(metadatas, metadata)
+		return false
+	})
+
+	for _, metadata := range metadatas {
+		bk.SetDenomMetaData(ctx, metadata)
+	}
+
+	return nil
 }
 
 func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {
