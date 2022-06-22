@@ -89,8 +89,10 @@ message OriginTx {
   // mint process (e.g. polygon, ethereum, verra).
   string source = 2;
 
-  // contract is the address of the contract from which the transaction was
-  // executed.
+  // contract is the address of the contract on the source chain that was
+  // executed when creating the transaction. This address will be used when
+  // sending credits back to the source chain. This field can be left blank
+  // if credits are being bridged from another registry.
   string contract = 3;
 
   // note is a reference note for accounting that will be included in an event

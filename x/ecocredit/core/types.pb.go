@@ -256,8 +256,10 @@ type OriginTx struct {
 	// source is the source chain or registry of the transaction originating the
 	// mint process (e.g. polygon, ethereum, verra).
 	Source string `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
-	// contract is the address of the contract from which the transaction was
-	// executed.
+	// contract is the address of the contract on the source chain that was
+	// executed when creating the transaction. This address will be used when
+	// sending credits back to the source chain. This field can be left blank
+	// if credits are being bridged from another registry.
 	Contract string `protobuf:"bytes,3,opt,name=contract,proto3" json:"contract,omitempty"`
 	// note is a reference note for accounting that will be included in an event
 	// emitted from either Msg/CreateBatch or Msg/MintBatchCredits.
