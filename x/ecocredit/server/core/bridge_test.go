@@ -3,9 +3,9 @@ package core
 import (
 	"testing"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"gotest.tools/v3/assert"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 

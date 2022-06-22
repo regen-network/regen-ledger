@@ -84,7 +84,7 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 		},
 		OriginTx: &core.OriginTx{
 			Id:       "0x12345",
-			Source:   "polygon:0x12345",
+			Source:   "polygon",
 			Contract: "0x325325230958",
 			Note:     "note",
 		},
@@ -133,7 +133,7 @@ func TestBridgeReceive_None(t *testing.T) {
 		},
 		OriginTx: &core.OriginTx{
 			Id:       "0x12345",
-			Source:   "polygon:0x12345",
+			Source:   "polygon",
 			Contract: "0x325325230958",
 			Note:     "note",
 		},
@@ -191,7 +191,7 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 		},
 		OriginTx: &core.OriginTx{
 			Id:       "0x12345",
-			Source:   "polygon:0x12345",
+			Source:   "polygon",
 			Contract: "0x325325230958",
 			Note:     "note",
 		},
@@ -251,7 +251,7 @@ func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 		},
 		OriginTx: &core.OriginTx{
 			Id:       "0x12345",
-			Source:   "polygon:0x12345",
+			Source:   "polygon",
 			Contract: "0x325325230958",
 			Note:     "note",
 		},
