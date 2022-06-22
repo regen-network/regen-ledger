@@ -90,7 +90,7 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -115,7 +115,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 }
 
 func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		return err
 	}
@@ -145,11 +145,7 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
 	}
 
-<<<<<<< HEAD
-	return data.Validate()
-=======
-	return coretypes.ValidateGenesis(bz, params)
->>>>>>> 1853c2b (fix(ecocredit): fix genesis validation to include basket balances (#1195))
+	return data.Validate(bz)
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {

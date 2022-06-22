@@ -4,12 +4,22 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/orm"
 )
 
 var _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}
+
+var ModuleSchema = ormdb.ModuleSchema{
+	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
+		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
+	},
+	Prefix: []byte{ORMPrefix},
+}
 
 // PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for ClassInfo.
