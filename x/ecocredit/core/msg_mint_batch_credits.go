@@ -34,9 +34,6 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 	if err := ValidateBatchDenom(m.BatchDenom); err != nil {
 		return err
 	}
-	if len(m.Note) > MaxNoteLength {
-		return errBadReq.Wrapf("note must not be longer than %d characters", MaxNoteLength)
-	}
 	if err = validateBatchIssuances(m.Issuance); err != nil {
 		return err
 	}
@@ -98,6 +95,13 @@ func validateOriginTx(o *OriginTx, required bool) error {
 	}
 	if !reOriginTxSource.MatchString(o.Source) {
 		return errBadReq.Wrap("origin_tx.source must be at most 32 characters long, valid characters: alpha-numberic, space, '-' or '_'")
+	}
+	// TODO: contract is only required for MsgBridgeReceive?
+	if len(o.Contract) > 0 && !isValidEthereumAddress(o.Contract) {
+		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", o.Contract)
+	}
+	if len(o.Note) > MaxNoteLength {
+		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(o.Note), MaxNoteLength)
 	}
 	return nil
 }

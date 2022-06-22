@@ -3,6 +3,7 @@ package core
 import (
 	"testing"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -18,7 +19,13 @@ func TestBridge_Valid(t *testing.T) {
 	// Supply -> tradable: 10.5 , retired: 10.5
 	// s.addr balance -> tradable 10.5 , retired 10.5
 
-	_, err := s.k.Bridge(s.ctx, &core.MsgBridge{
+	err := s.stateStore.BatchOriginTxTable().Insert(s.ctx, &api.BatchOriginTx{
+		BatchDenom: batchDenom,
+		Contract:   contract,
+	})
+	assert.NilError(t, err)
+
+	_, err = s.k.Bridge(s.ctx, &core.MsgBridge{
 		Owner: s.addr.String(),
 		Credits: []*core.Credits{
 			{
@@ -28,7 +35,6 @@ func TestBridge_Valid(t *testing.T) {
 		},
 		Target:    "polygon",
 		Recipient: recipient,
-		Contract:  contract,
 	})
 	assert.NilError(t, err)
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -19,13 +20,31 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 		return nil, err
 	}
 
-	sdkCtx := types.UnwrapSDKContext(ctx)
-	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventBridge{
-		Target:    req.Target,
-		Recipient: req.Recipient,
-		Contract:  req.Contract,
-	}); err != nil {
-		return nil, err
+	for _, credit := range req.Credits {
+		it, err := k.stateStore.BatchOriginTxTable().List(
+			ctx,
+			api.BatchOriginTxBatchDenomIndexKey{}.WithBatchDenom(credit.BatchDenom),
+		)
+		// we only want the first origin tx that matches the batch denom
+		var originTx *api.BatchOriginTx
+		if it.Next() {
+			var err error
+			originTx, err = it.Value()
+			if err != nil {
+				return nil, err
+			}
+		}
+		it.Close()
+
+		sdkCtx := types.UnwrapSDKContext(ctx)
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventBridge{
+			Target:    req.Target,
+			Recipient: req.Recipient,
+			Contract:  originTx.Contract,
+			Amount:    credit.Amount,
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	return &core.MsgBridgeResponse{}, nil

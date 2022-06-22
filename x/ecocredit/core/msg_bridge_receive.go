@@ -34,9 +34,6 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	if err := validateOriginTx(m.OriginTx, true); err != nil {
 		return err
 	}
-	if len(m.Note) > MaxNoteLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(m.Note), MaxNoteLength)
-	}
 
 	// batch validation
 	if m.Batch == nil {

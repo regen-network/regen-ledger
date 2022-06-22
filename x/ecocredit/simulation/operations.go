@@ -992,10 +992,11 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			BatchDenom: batch.Denom,
 			Issuance:   generateBatchIssuance(r, accs),
 			OriginTx: &core.OriginTx{
-				Source: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
-				Id:     simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
+				Id:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
+				Source:   simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
+				Contract: "0x06012c8cf97bead5deae237070f9587f8e7a266d",
+				Note:     simtypes.RandStringOfLength(r, 5),
 			},
-			Note: simtypes.RandStringOfLength(r, 5),
 		}
 
 		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, issuerAddr, TypeMsgUpdateClassIssuers)
@@ -1147,7 +1148,6 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 		msg := &core.MsgBridge{
 			Target:    "polygon",
 			Recipient: "0x323b5d4c32345ced77393b3530b1eed0f346429d",
-			Contract:  "0x06012c8cf97bead5deae237070f9587f8e7a266d",
 			Owner:     owner,
 			Credits: []*core.Credits{
 				{

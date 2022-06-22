@@ -269,12 +269,15 @@ message BatchSupply {
   string cancelled_amount = 4;
 }
 
-// BatchOriginTx indexes the transaction ID from batch mint operations in order
-// to prevent double minting errors.
+// BatchOriginTx indexes the transaction ID provided in Msg/BridgeReceive,
+// Msg/CreateBatch, or Msg/MintBatchCredits to prevent double minting errors
+// and stores the address of the contract that was executed when creating the
+// transaction to be used when sending credits back to the source chain.
 message BatchOriginTx {
   option (cosmos.orm.v1alpha1.table) = {
     id : 11,
     primary_key : {fields : "id,source"}
+    index : {id : 1, fields : "batch_denom"}
   };
 
   // id is the transaction ID of an originating transaction or operation
@@ -285,9 +288,12 @@ message BatchOriginTx {
   // the mint process (e.g. polygon, ethereum, verra).
   string source = 2;
 
-  // note is a reference note for accounting that is passed to an event.
-  string note = 3;
+  // contract is the address of the contract on the source chain that was
+  // executed when creating the transaction. This address will be used when
+  // sending credits back to the source chain.
+  string contract = 3;
 
-  // batch_denom is the denom of the credit batch.
+  // batch_denom is the denom of the credit batch that was either created or
+  // within which credits were minted as a result of the transaction.
   string batch_denom = 4;
 }

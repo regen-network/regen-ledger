@@ -37,10 +37,11 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 		BatchDenom: batch.Denom,
 		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
-			Id:     "210985091248",
-			Source: "Ethereum",
+			Id:       "0x1324092835908235",
+			Source:   "polygon",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
-		Note: "bridged credits",
 	}
 
 	_, err = s.k.MintBatchCredits(ctx, &msg)
@@ -64,8 +65,10 @@ func TestMintBatchCredits_Unauthorized(t *testing.T) {
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
 		OriginTx: &core.OriginTx{
-			Id:     "210985091248",
-			Source: "Ethereum",
+			Id:       "0x1324092835908235",
+			Source:   "polygon",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
 	})
 	assert.ErrorContains(t, err, "unauthorized")
@@ -81,8 +84,10 @@ func TestMintBatchCredits_ClosedBatch(t *testing.T) {
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
 		OriginTx: &core.OriginTx{
-			Id:     "210985091248",
-			Source: "Ethereum",
+			Id:       "0x1324092835908235",
+			Source:   "polygon",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
 	})
 	assert.ErrorContains(t, err, "credits cannot be minted in a closed batch")
@@ -119,10 +124,11 @@ func TestMintBatchCredits_SameTxId(t *testing.T) {
 		BatchDenom: batch.Denom,
 		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
-			Id:     "210985091248",
-			Source: "Ethereum",
+			Id:       "0x1324092835908235",
+			Source:   "polygon",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
-		Note: "bridged credits",
 	}
 
 	_, err := s.k.MintBatchCredits(ctx, &msg)

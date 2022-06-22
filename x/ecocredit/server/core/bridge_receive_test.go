@@ -21,7 +21,13 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 
 	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
 	msg := core.MsgBridgeReceive{
-		Issuer: s.addr.String(),
+		Issuer:  s.addr.String(),
+		ClassId: "C01",
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  projectRefId,
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
+		},
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: recipient,
 			Amount:    "3",
@@ -29,17 +35,12 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 			EndDate:   &end,
 			Metadata:  "",
 		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  projectRefId,
-			Jurisdiction: project.Jurisdiction,
-			Metadata:     project.Metadata,
-		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x1324092835908235",
-			Source: "polygon:0x325325230958",
+			Id:       "0x1324092835908235",
+			Source:   "polygon",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
-		Note:    "bridged from test",
-		ClassId: "C01",
 	}
 	res, err := s.k.BridgeReceive(s.ctx, &msg)
 	assert.NilError(t, err)
@@ -67,7 +68,13 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 	startDate, endDate := (&timestamppb.Timestamp{Seconds: 500}).AsTime(), (&timestamppb.Timestamp{Seconds: 600}).AsTime()
 
 	msg := core.MsgBridgeReceive{
-		Issuer: s.addr.String(),
+		Issuer:  s.addr.String(),
+		ClassId: "C01",
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  refId,
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
+		},
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: recipient,
 			Amount:    "3",
@@ -75,17 +82,12 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 			EndDate:   &endDate,
 			Metadata:  "hi",
 		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  refId,
-			Jurisdiction: project.Jurisdiction,
-			Metadata:     project.Metadata,
-		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x12345",
-			Source: "polygon:0x12345",
+			Id:       "0x12345",
+			Source:   "polygon:0x12345",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
-		ClassId: "C01",
-		Note:    "bridged test",
 	}
 
 	res, err := s.k.BridgeReceive(s.ctx, &msg)
@@ -114,7 +116,13 @@ func TestBridgeReceive_None(t *testing.T) {
 	start, end := time.Now(), time.Now()
 	refId := "VCS-001"
 	msg := core.MsgBridgeReceive{
-		Issuer: s.addr.String(),
+		Issuer:  s.addr.String(),
+		ClassId: "C01",
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  refId,
+			Jurisdiction: "US-KY",
+			Metadata:     "foo",
+		},
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: recipient,
 			Amount:    "3",
@@ -123,17 +131,12 @@ func TestBridgeReceive_None(t *testing.T) {
 			EndDate:   &end,
 			Metadata:  "bar",
 		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  refId,
-			Jurisdiction: "US-KY",
-			Metadata:     "foo",
-		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x12345",
-			Source: "polygon:0x12345",
+			Id:       "0x12345",
+			Source:   "polygon:0x12345",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
-		ClassId: "C01",
-		Note:    "bridged",
 	}
 	res, err := s.k.BridgeReceive(s.ctx, &msg)
 	assert.NilError(t, err)
@@ -173,23 +176,25 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 
 	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
 	msg := core.MsgBridgeReceive{
-		Issuer: s.addr.String(),
+		Issuer:  s.addr.String(),
+		ClassId: "C01",
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  refId,
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
+		},
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: s.addr.String(),
 			Amount:    "3",
 			StartDate: &start,
 			EndDate:   &end,
 		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  refId,
-			Jurisdiction: project.Jurisdiction,
-			Metadata:     project.Metadata,
-		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x12345",
-			Source: "polygon",
+			Id:       "0x12345",
+			Source:   "polygon:0x12345",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
-		ClassId: "C01",
 	}
 	res, err := s.k.BridgeReceive(s.ctx, &msg)
 	assert.NilError(t, err)
@@ -230,7 +235,13 @@ func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 
 	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
 	msg := &core.MsgBridgeReceive{
-		Issuer: s.addr.String(),
+		Issuer:  s.addr.String(),
+		ClassId: "C01",
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  project.ReferenceId,
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
+		},
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: s.addr.String(),
 			Amount:    "3",
@@ -238,17 +249,12 @@ func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 			EndDate:   &end,
 			Metadata:  batch.Metadata,
 		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  project.ReferenceId,
-			Jurisdiction: project.Jurisdiction,
-			Metadata:     project.Metadata,
-		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x12345",
-			Source: "polygon",
+			Id:       "0x12345",
+			Source:   "polygon:0x12345",
+			Contract: "0x325325230958",
+			Note:     "note",
 		},
-		Note:    "test",
-		ClassId: "C01",
 	}
 
 	res, err := s.k.BridgeReceive(s.ctx, msg)

@@ -192,7 +192,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
 			Id:         req.OriginTx.Id,
 			Source:     req.OriginTx.Source,
-			Note:       req.Note,
+			Contract:   req.OriginTx.Contract,
 			BatchDenom: batchDenom,
 		}); err != nil {
 			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {

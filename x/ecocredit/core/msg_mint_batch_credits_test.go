@@ -3,10 +3,8 @@ package core
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-	"github.com/thanhpk/randstr"
-
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMsgMintBatchCredits(t *testing.T) {
@@ -21,17 +19,12 @@ func TestMsgMintBatchCredits(t *testing.T) {
 	}{
 		{"invalid issuer", "issuer", MsgMintBatchCredits{Issuer: "invalid"}},
 		{"invalid batch denom", "invalid batch denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}},
-		{"invalid note", "note must",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, Note: randstr.String(514)}},
 		{"missing origin tx", "origin_tx is required",
 			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom}},
 
 		{"good-no-note", "",
 			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx,
 				Issuance: batchIssuances}},
-		{"good-note", "",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx,
-				Note: randstr.String(300), Issuance: batchIssuances}},
 	}
 	for _, tc := range tcs {
 		err := tc.m.ValidateBasic()

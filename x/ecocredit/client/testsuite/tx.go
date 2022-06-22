@@ -1826,7 +1826,6 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		EndDate:   &end,
 		Open:      false,
 		OriginTx:  nil,
-		Note:      "",
 	})
 	s.Require().NoError(err)
 	return

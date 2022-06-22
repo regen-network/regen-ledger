@@ -1542,6 +1542,19 @@ func (this BatchOriginTxIdSourceIndexKey) WithIdSource(id string, source string)
 	return this
 }
 
+type BatchOriginTxBatchDenomIndexKey struct {
+	vs []interface{}
+}
+
+func (x BatchOriginTxBatchDenomIndexKey) id() uint32             { return 1 }
+func (x BatchOriginTxBatchDenomIndexKey) values() []interface{}  { return x.vs }
+func (x BatchOriginTxBatchDenomIndexKey) batchOriginTxIndexKey() {}
+
+func (this BatchOriginTxBatchDenomIndexKey) WithBatchDenom(batch_denom string) BatchOriginTxBatchDenomIndexKey {
+	this.vs = []interface{}{batch_denom}
+	return this
+}
+
 type batchOriginTxTable struct {
 	table ormtable.Table
 }
