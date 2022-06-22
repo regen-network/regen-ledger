@@ -392,7 +392,7 @@ func TestGenesisValidate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.gensisState().Validate()
+			err := tc.gensisState().Validate([]byte(`{}`))
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Equal(t, tc.errorMsg, err.Error())
