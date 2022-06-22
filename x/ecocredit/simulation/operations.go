@@ -231,6 +231,7 @@ func WeightedOperations(
 			weightMsgUpdateProjectMetadata,
 			SimulateMsgUpdateProjectMetadata(ak, bk, qryClient),
 		),
+
 		simulation.NewWeightedOperation(
 			weightMsgMintBatchCredits,
 			SimulateMsgMintBatchCredits(ak, bk, qryClient),
@@ -500,6 +501,18 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		now := sdkCtx.BlockTime()
 		tenHours := now.Add(10 * time.Hour)
 
+		open := r.Float32() < 0.3 // 30% chance of credit batch being dynamic batch
+
+		var originTx *core.OriginTx
+		if open {
+			originTx = &core.OriginTx{
+				Id:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
+				Source:   "polygon",
+				Contract: "0x06012c8cf97bead5deae237070f9587f8e7a266d",
+				Note:     simtypes.RandStringOfLength(r, 5),
+			}
+		}
+
 		msg := &core.MsgCreateBatch{
 			Issuer:    issuer.Address.String(),
 			ProjectId: project.Id,
@@ -507,13 +520,8 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			StartDate: &now,
 			EndDate:   &tenHours,
 			Metadata:  simtypes.RandStringOfLength(r, 10),
-			Open:      r.Float32() < 0.3, // 30% chance of credit batch being dynamic batch
-			OriginTx: &core.OriginTx{
-				Id:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
-				Source:   "polygon",
-				Contract: "0x06012c8cf97bead5deae237070f9587f8e7a266d",
-				Note:     simtypes.RandStringOfLength(r, 5),
-			},
+			Open:      open,
+			OriginTx:  originTx,
 		}
 
 		txCtx := simulation.OperationInput{
