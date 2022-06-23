@@ -67,5 +67,4 @@ jobs:
           args: build --skip-validate --rm-dist
       - name: Test Packages
         run: |
-          /home/runner/work/regen-ledger/regen-ledger/dist/regen-darwin-amd64_darwin_amd64_v1/regen version
           /home/runner/work/regen-ledger/regen-ledger/dist/regen-linux-amd64_linux_amd64_v1/regen version
