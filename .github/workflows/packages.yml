@@ -28,8 +28,9 @@ jobs:
       -
         name: LibWasm for CosmWasm Support
         run: |
-          sudo curl -o usr/lib/libwasmvm_muslc.a -L https://github.com/CosmWasm/wasmvm/releases/download/v1.0.0-beta5/libwasmvm_muslc.a
-          sha256sum usr/lib/libwasmvm_muslc.a | grep d16a2cab22c75dbe8af32265b9346c6266070bdcf9ed5aa9b7b39a7e32e25fe0
+          curl -o /home/runner/work/libwasmvm_muslc.a -L https://github.com/CosmWasm/wasmvm/releases/download/v1.0.0-beta5/libwasmvm_muslc.a
+          sha256sum /home/runner/work/libwasmvm_muslc.a | grep d16a2cab22c75dbe8af32265b9346c6266070bdcf9ed5aa9b7b39a7e32e25fe0
+          sudo ln -s /home/runner/work/libwasmvm_muslc.a /usr/lib/libwasmvm_muslc.a
       -
         name: Checkout
         uses: actions/checkout@v2
