@@ -3,7 +3,6 @@ project_name: regen-ledger
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
-  - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
 
 builds:
   - id: regen-darwin-amd64
@@ -16,6 +15,7 @@ builds:
     env:
       - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
       - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
+      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
     flags:
       - -mod=readonly
       - -tags="netgo ledger muslc"
@@ -39,6 +39,7 @@ builds:
 #    env:
 #      - CC=/home/runner/work/osxcross/target/target/bin/oa64-clang
 #      - CXX=/home/runner/work/osxcross/target/target/bin/oa64-clang++
+#      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
 #    flags:
 #      - -mod=readonly
 #      - -tags="netgo ledger muslc"
