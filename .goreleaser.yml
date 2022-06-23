@@ -29,28 +29,28 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl"
 
-  - id: regen-darwin-arm64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - arm64
-    goos:
-      - darwin
-    env:
-      - CC=/home/runner/work/osxcross/target/target/bin/oa64-clang
-      - CXX=/home/runner/work/osxcross/target/target/bin/oa64-clang++
-    flags:
-      - -mod=readonly
-      - -tags="netgo ledger muslc"
-      - -trimpath
-    ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl"
+#  - id: regen-darwin-arm64
+#    binary: regen
+#    main: ./app/regen
+#    goarch:
+#      - arm64
+#    goos:
+#      - darwin
+#    env:
+#      - CC=/home/runner/work/osxcross/target/target/bin/oa64-clang
+#      - CXX=/home/runner/work/osxcross/target/target/bin/oa64-clang++
+#    flags:
+#      - -mod=readonly
+#      - -tags="netgo ledger muslc"
+#      - -trimpath
+#    ldflags:
+#      - -s -w
+#      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
+#      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl"
 
   - id: regen-linux-amd64
     binary: regen
@@ -75,28 +75,28 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
-  - id: regen-linux-arm64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - arm64
-    goos:
-      - linux
-    env:
-      - CC=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-gcc
-      - CXX=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-g++
-    flags:
-      - -mod=readonly
-      - -tags="netgo ledger muslc"
-      - -trimpath
-    ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
+#  - id: regen-linux-arm64
+#    binary: regen
+#    main: ./app/regen
+#    goarch:
+#      - arm64
+#    goos:
+#      - linux
+#    env:
+#      - CC=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-gcc
+#      - CXX=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-g++
+#    flags:
+#      - -mod=readonly
+#      - -tags="netgo ledger muslc"
+#      - -trimpath
+#    ldflags:
+#      - -s -w
+#      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
+#      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
   - id: regen-windows-amd64
     binary: regen
@@ -125,9 +125,9 @@ archives:
   - id: regen
     builds:
       - regen-darwin-amd64
-      - regen-darwin-arm64
+#      - regen-darwin-arm64
       - regen-linux-amd64
-      - regen-linux-arm64
+#      - regen-linux-arm64
       - regen-windows-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true

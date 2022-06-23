@@ -7,8 +7,8 @@ require (
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11
-	github.com/golang/mock v1.6.0
 	github.com/gogo/protobuf v1.3.3
+	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.7
 	github.com/gorilla/mux v1.8.0
