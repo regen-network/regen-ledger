@@ -83,9 +83,9 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	// set the denom regex for basket coins
+	// TODO: remove after updating to cosmos-sdk v0.46 #857
 	sdk.SetCoinDenomRegex(func() string {
-		return basket.RegexBasketDenom
+		return types.CoinDenomRegex
 	})
 
 	s.fixture = s.fixtureFactory.Setup()
