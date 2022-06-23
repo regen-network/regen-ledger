@@ -111,7 +111,7 @@ func migrateDenomMetadata(ctx sdk.Context, bk bankkeeper.Keeper) error {
 	denom := "uregen"
 	metadata, found := bk.GetDenomMetaData(ctx, denom)
 	if !found {
-		return fmt.Errorf("metadata is present for %s denom", denom)
+		return fmt.Errorf("no metadata found for %s denom", denom)
 	}
 
 	metadata.Name = "Regen"
