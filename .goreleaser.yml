@@ -25,7 +25,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/usr/local/lib/ -lwasmvm_muslc -Wl,-z,muldefs -static"
 
   - id: regen-darwin-arm64
@@ -48,7 +48,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/usr/local/lib/ -lwasmvm_muslc -Wl,-z,muldefs -static"
 
   - id: regen-linux-amd64
@@ -71,7 +71,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/usr/local/lib/ -lwasmvm_muslc -Wl,-z,muldefs -static"
 
   - id: regen-linux-arm64
@@ -94,7 +94,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/usr/local/lib/ -lwasmvm_muslc -Wl,-z,muldefs -static"
 
   - id: regen-windows-amd64
@@ -117,7 +117,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/usr/local/lib/ -lwasmvm_muslc -Wl,-z,muldefs -static"
 
 archives:
