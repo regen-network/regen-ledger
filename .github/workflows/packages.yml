@@ -18,7 +18,9 @@ jobs:
         name: GCC multilib
         run: |
           sudo apt-get update
-          sudo apt-get install gcc-multilib g++-multilib clang
+          sudo apt-get install clang
+          sudo apt-get install gcc-multilib g++-multilib
+          sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
       -
         name: OSXCross for CGO Support
         run: |

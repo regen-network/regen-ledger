@@ -55,6 +55,9 @@ builds:
   - id: regen-linux-amd64
     binary: regen
     main: ./app/regen
+    env:
+      - CC=x86_64-linux-gnu-gcc
+      - CXX=x86_64-linux-gnu-g++
     goarch:
       - amd64
     goos:
@@ -75,6 +78,9 @@ builds:
 #  - id: regen-linux-arm64
 #    binary: regen
 #    main: ./app/regen
+#    env:
+#      - CC=aarch64-linux-gnu-gcc
+#      - CXX=aarch64-linux-gnu-g++
 #    goarch:
 #      - arm64
 #    goos:
@@ -95,6 +101,9 @@ builds:
   - id: regen-windows-amd64
     binary: regen
     main: ./app/regen
+    env:
+      - CC=x86_64-w64-mingw32-gcc
+      - CXX=x86_64-w64-mingw32-g++
     goarch:
       - amd64
     goos:
