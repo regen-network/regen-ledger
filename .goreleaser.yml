@@ -13,8 +13,8 @@ builds:
     goos:
       - darwin
     env:
-      - CC=o64-clang
-      - CXX=o64-clang++
+      - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
+      - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
     flags:
       - -mod=readonly
       - -tags="netgo ledger muslc"
@@ -36,8 +36,8 @@ builds:
     goos:
       - darwin
     env:
-      - CC=oa64-clang
-      - CXX=oa64-clang++
+      - CC=/home/runner/work/osxcross/target/target/bin/oa64-clang
+      - CXX=/home/runner/work/osxcross/target/target/bin/oa64-clang++
     flags:
       - -mod=readonly
       - -tags="netgo ledger muslc"
@@ -55,8 +55,8 @@ builds:
     binary: regen
     main: ./app/regen
     env:
-      - CC=x86_64-linux-gnu-gcc
-      - CXX=x86_64-linux-gnu-g++
+      - CC=/home/runner/work/osxcross/target/target/bin/x86_64-linux-gnu-gcc
+      - CXX=/home/runner/work/osxcross/target/target/bin/x86_64-linux-gnu-g++
     goarch:
       - amd64
     goos:
@@ -82,8 +82,8 @@ builds:
     goos:
       - linux
     env:
-      - CC=aarch64-linux-gnu-gcc
-      - CXX=aarch64-linux-gnu-g++
+      - CC=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-gcc
+      - CXX=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-g++
     flags:
       - -mod=readonly
       - -tags="netgo ledger muslc"
@@ -105,8 +105,8 @@ builds:
     goos:
       - windows
     env:
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
+      - CC=/home/runner/work/osxcross/target/target/bin/x86_64-w64-mingw32-gcc
+      - CXX=/home/runner/work/osxcross/target/target/bin/x86_64-w64-mingw32-g++
     flags:
       - -mod=readonly
       - -tags="netgo ledger muslc"
