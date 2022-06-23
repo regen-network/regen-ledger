@@ -15,13 +15,19 @@ SWAGGER_UI_VERSION=4.11.0
 SWAGGER_UI_DOWNLOAD_URL=https://github.com/swagger-api/swagger-ui/archive/refs/tags/v${SWAGGER_UI_VERSION}.zip
 SWAGGER_UI_PACKAGE_NAME=${SWAGGER_DIR}/swagger-ui-${SWAGGER_UI_VERSION}
 
+# install swagger-combine if not already installed
+npm list -g | grep swagger-combine > /dev/null || npm install -g swagger-combine --no-shrinkwrap
+
+# install statik if not already installed
+go install github.com/rakyll/statik@latest
+
 # download Cosmos SDK swagger yaml file
 echo "SDK version ${SDK_VERSION}"
-wget "${SDK_RAW_URL}" -O ${SWAGGER_DIR}/swagger-sdk.yaml
+curl -o ${SWAGGER_DIR}/swagger-sdk.yaml -sfL "${SDK_RAW_URL}"
 
 # download IBC swagger yaml file
 echo "IBC version ${IBC_VERSION}"
-wget "${IBC_RAW_URL}" -O ${SWAGGER_DIR}/swagger-ibc.yaml
+curl -o ${SWAGGER_DIR}/swagger-ibc.yaml -sfL "${IBC_RAW_URL}"
 
 # combine swagger yaml files using nodejs package `swagger-combine`
 # all the individual swagger files need to be configured in `config.json` for merging
@@ -34,7 +40,7 @@ swagger-combine ${SWAGGER_DIR}/config.json -f yaml \
 # swagger-ui directory, then remove zip file and unzipped swagger-ui directory
 if [ ! -d ${SWAGGER_UI_DIR} ]; then
   # download swagger-ui
-  wget ${SWAGGER_UI_DOWNLOAD_URL} -O ${SWAGGER_UI_PACKAGE_NAME}.zip
+  curl -o ${SWAGGER_UI_PACKAGE_NAME}.zip -sfL ${SWAGGER_UI_DOWNLOAD_URL}
   # unzip swagger-ui package
   unzip ${SWAGGER_UI_PACKAGE_NAME}.zip -d ${SWAGGER_DIR}
   # move swagger-ui dist directory to swagger-ui directory
