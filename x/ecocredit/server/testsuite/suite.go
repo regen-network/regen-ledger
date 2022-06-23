@@ -512,8 +512,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	querySupplyRes, err := s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 	s.Require().NoError(err)
 	s.Require().NotNil(querySupplyRes)
-	s.Require().Equal(tSupply0, querySupplyRes.TradableSupply)
-	s.Require().Equal(rSupply0, querySupplyRes.RetiredSupply)
+	s.Require().Equal(tSupply0, querySupplyRes.TradableAmount)
+	s.Require().Equal(rSupply0, querySupplyRes.RetiredAmount)
 
 	// cancel credits
 	cancelCases := []struct {
@@ -624,8 +624,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableSupply)
-				s.assertDecStrEqual(rSupply0, querySupplyRes.RetiredSupply)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(rSupply0, querySupplyRes.RetiredAmount)
 				s.assertDecStrEqual(tc.expAmountCancelled, querySupplyRes.CancelledAmount)
 
 				// query batch
@@ -763,8 +763,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableSupply)
-				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
 			}
 		})
 	}
@@ -926,8 +926,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableSupply)
-				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
 			}
 		})
 	}

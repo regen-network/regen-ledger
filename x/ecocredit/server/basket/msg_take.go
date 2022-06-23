@@ -99,6 +99,14 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 			return nil, err
 		}
 
+		// retirement_location is deprecated but still supported
+		var retirementJurisdiction string
+		if len(msg.RetirementJurisdiction) != 0 {
+			retirementJurisdiction = msg.RetirementJurisdiction
+		} else {
+			retirementJurisdiction = msg.RetirementLocation
+		}
+
 		cmp := balance.Cmp(amountCreditsNeeded)
 		if cmp > 0 {
 			credits = append(credits, &baskettypes.BasketCredit{
@@ -111,9 +119,8 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				acct,
 				basketBalance.BatchDenom,
 				amountCreditsNeeded,
-				basket.BasketDenom,
 				retire,
-				msg.RetirementJurisdiction,
+				retirementJurisdiction,
 			)
 			if err != nil {
 				return nil, err
@@ -142,9 +149,8 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				acct,
 				basketBalance.BatchDenom,
 				balance,
-				basket.BasketDenom,
 				retire,
-				msg.RetirementJurisdiction,
+				retirementJurisdiction,
 			)
 			if err != nil {
 				return nil, err
@@ -180,7 +186,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	}, err
 }
 
-func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, basketDenom string, retire bool, retirementJurisdiction string) error {
+func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, retire bool, jurisdiction string) error {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	batch, err := k.coreStore.BatchTable().GetByDenom(ctx, batchDenom)
 	if err != nil {
@@ -216,7 +222,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			Owner:        owner.String(),
 			BatchDenom:   batchDenom,
 			Amount:       amount.String(),
-			Jurisdiction: retirementJurisdiction,
+			Jurisdiction: jurisdiction,
 		})
 	}
 }
