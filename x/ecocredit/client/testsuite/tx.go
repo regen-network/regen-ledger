@@ -335,7 +335,7 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 	recipient := s.addr2.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]core.MsgSend_SendCredits{
+	bz, err := json.Marshal([]core.MsgSendBulk_SendCredits{
 		{
 			BatchDenom:             s.batchDenom,
 			TradableAmount:         "10",

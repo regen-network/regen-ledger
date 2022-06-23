@@ -21,6 +21,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSealBatch{}, "regen.core/MsgSealBatch", nil)
 	cdc.RegisterConcrete(&MsgRetire{}, "regen.core/MsgRetire", nil)
 	cdc.RegisterConcrete(&MsgSend{}, "regen.core/MsgSend", nil)
+	cdc.RegisterConcrete(&MsgSendBulk{}, "regen.core/MsgSendBulk", nil)
 	cdc.RegisterConcrete(&MsgUpdateClassAdmin{}, "regen.core/MsgUpdateClassAdmin", nil)
 	cdc.RegisterConcrete(&MsgUpdateClassMetadata{}, "regen.core/MsgUpdateClassMetadata", nil)
 	cdc.RegisterConcrete(&MsgUpdateClassIssuers{}, "regen.core/MsgUpdateClassIssuers", nil)

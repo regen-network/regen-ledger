@@ -883,10 +883,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range sendCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Send(s.ctx, &core.MsgSend{
+			_, err := s.msgClient.SendBulk(s.ctx, &core.MsgSendBulk{
 				Sender:    addr2,
 				Recipient: addr3,
-				Credits: []*core.MsgSend_SendCredits{
+				Credits: []*core.MsgSendBulk_SendCredits{
 					{
 						BatchDenom:             batchDenom,
 						TradableAmount:         tc.sendTradable,

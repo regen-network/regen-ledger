@@ -15,14 +15,14 @@ func TestMsgSend(t *testing.T) {
 	addr2 := testutil.GenAddress()
 
 	tests := map[string]struct {
-		src    MsgSend
+		src    MsgSendBulk
 		expErr bool
 	}{
 		"valid msg": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:             batchDenom,
 						TradableAmount:         "10",
@@ -34,10 +34,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: false,
 		},
 		"invalid msg with Credits.RetiredAmount negative value": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:     "some_denom",
 						TradableAmount: "10",
@@ -48,16 +48,16 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"invalid msg without credits": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
 			},
 			expErr: true,
 		},
 		"invalid msg without sender": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:             "some_denom",
 						TradableAmount:         "10",
@@ -69,9 +69,9 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"invalid msg without recipient": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender: addr1,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:             "some_denom",
 						TradableAmount:         "10",
@@ -83,10 +83,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"invalid msg without Credits.BatchDenom": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						TradableAmount:         "10",
 						RetiredAmount:          "10",
@@ -97,10 +97,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"invalid msg without Credits.TradableAmount set": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:             "some_denom",
 						RetiredAmount:          "10",
@@ -111,10 +111,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"invalid msg without Credits.RetiredAmount set": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:             "some_denom",
 						TradableAmount:         "10",
@@ -125,10 +125,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"invalid msg without Credits.RetirementJurisdiction": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:     "some_denom",
 						TradableAmount: "10",
@@ -139,10 +139,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"valid msg without Credits.RetirementJurisdiction(When RetiredAmount is zero)": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:     batchDenom,
 						TradableAmount: "10",
@@ -153,10 +153,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: false,
 		},
 		"invalid msg with wrong sender": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    "wrongSender",
 				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:     "some_denom",
 						TradableAmount: "10",
@@ -167,10 +167,10 @@ func TestMsgSend(t *testing.T) {
 			expErr: true,
 		},
 		"invalid msg with wrong recipient": {
-			src: MsgSend{
+			src: MsgSendBulk{
 				Sender:    addr1,
 				Recipient: "wrongRecipient",
-				Credits: []*MsgSend_SendCredits{
+				Credits: []*MsgSendBulk_SendCredits{
 					{
 						BatchDenom:     "some_denom",
 						TradableAmount: "10",

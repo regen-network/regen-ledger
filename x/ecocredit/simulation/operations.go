@@ -64,7 +64,7 @@ var (
 	TypeMsgCreateClass           = sdk.MsgTypeURL(&core.MsgCreateClass{})
 	TypeMsgCreateProject         = sdk.MsgTypeURL(&core.MsgCreateProject{})
 	TypeMsgCreateBatch           = sdk.MsgTypeURL(&core.MsgCreateBatch{})
-	TypeMsgSend                  = sdk.MsgTypeURL(&core.MsgSend{})
+	TypeMsgSend                  = sdk.MsgTypeURL(&core.MsgSendBulk{})
 	TypeMsgRetire                = sdk.MsgTypeURL(&core.MsgRetire{})
 	TypeMsgCancel                = sdk.MsgTypeURL(&core.MsgCancel{})
 	TypeMsgUpdateClassAdmin      = sdk.MsgTypeURL(&core.MsgUpdateClassAdmin{})
@@ -612,10 +612,10 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "insufficient credit balance"), nil, nil
 		}
 
-		msg := &core.MsgSend{
+		msg := &core.MsgSendBulk{
 			Sender:    admin,
 			Recipient: recipient.Address.String(),
-			Credits: []*core.MsgSend_SendCredits{
+			Credits: []*core.MsgSendBulk_SendCredits{
 				{
 					BatchDenom:             batch.Denom,
 					TradableAmount:         fmt.Sprintf("%d", tradable),

@@ -5,7 +5,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -33,34 +32,10 @@ func (m *MsgSend) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
-	}
-
-	for _, credit := range m.Credits {
-		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
-			return err
-		}
-
-		if _, err := math.NewNonNegativeDecFromString(credit.TradableAmount); err != nil {
-			return err
-		}
-
-		retiredAmount, err := math.NewNonNegativeDecFromString(credit.RetiredAmount)
-		if err != nil {
-			return err
-		}
-
-		if !retiredAmount.IsZero() {
-			if err = ValidateJurisdiction(credit.RetirementJurisdiction); err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 
-// GetSigners returns the expected signers for MsgSend.
+// GetSigners returns the expected signers for MsgSendBulk.
 func (m *MsgSend) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{addr}

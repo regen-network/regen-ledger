@@ -46,6 +46,7 @@ func TxCmd(name string) *cobra.Command {
 		TxGenBatchJSONCmd(),
 		TxCreateBatchCmd(),
 		TxSendCmd(),
+		TxSendBulkCmd(),
 		TxRetireCmd(),
 		TxCancelCmd(),
 		TxUpdateClassMetadataCmd(),
@@ -298,7 +299,37 @@ Example JSON:
 // to another.
 func TxSendCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "send [recipient] [credits]",
+		Use:   "send [amount] [batch_denom] [recipient]",
+		Short: "Sends credits from the transaction author (--from) to the recipient",
+		Long: `Sends credits from the transaction author (--from) to the recipient.
+
+Parameters:
+  amount: amount to send
+  batch_denom: batch denomination
+  recipient: recipient address`,
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			msg := core.MsgSend{
+				Sender:     clientCtx.GetFromAddress().String(),
+				Amount:     args[0],
+				BatchDenom: args[1],
+				Recipient:  args[2],
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+	return txFlags(cmd)
+}
+
+// TxSendBulkCmd returns a transaction command that sends credits from one account
+// to another.
+func TxSendBulkCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "send-bulk [recipient] [credits]",
 		Short: "Sends credits from the transaction author (--from) to the recipient",
 		Long: `Sends credits from the transaction author (--from) to the recipient.
 
@@ -335,7 +366,7 @@ Note: "retirement_jurisdiction" is only required when "retired_amount" is positi
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
-			msg := core.MsgSend{
+			msg := core.MsgSendBulk{
 				Sender:    clientCtx.GetFromAddress().String(),
 				Recipient: args[0],
 				Credits:   credits,
