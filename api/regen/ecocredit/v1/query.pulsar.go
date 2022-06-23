@@ -16579,16 +16579,16 @@ func (x *fastReflection_QuerySupplyRequest) ProtoMethods() *protoiface.Methods {
 
 var (
 	md_QuerySupplyResponse                  protoreflect.MessageDescriptor
-	fd_QuerySupplyResponse_tradable_supply  protoreflect.FieldDescriptor
-	fd_QuerySupplyResponse_retired_supply   protoreflect.FieldDescriptor
+	fd_QuerySupplyResponse_tradable_amount  protoreflect.FieldDescriptor
+	fd_QuerySupplyResponse_retired_amount   protoreflect.FieldDescriptor
 	fd_QuerySupplyResponse_cancelled_amount protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_query_proto_init()
 	md_QuerySupplyResponse = File_regen_ecocredit_v1_query_proto.Messages().ByName("QuerySupplyResponse")
-	fd_QuerySupplyResponse_tradable_supply = md_QuerySupplyResponse.Fields().ByName("tradable_supply")
-	fd_QuerySupplyResponse_retired_supply = md_QuerySupplyResponse.Fields().ByName("retired_supply")
+	fd_QuerySupplyResponse_tradable_amount = md_QuerySupplyResponse.Fields().ByName("tradable_amount")
+	fd_QuerySupplyResponse_retired_amount = md_QuerySupplyResponse.Fields().ByName("retired_amount")
 	fd_QuerySupplyResponse_cancelled_amount = md_QuerySupplyResponse.Fields().ByName("cancelled_amount")
 }
 
@@ -16657,15 +16657,15 @@ func (x *fastReflection_QuerySupplyResponse) Interface() protoreflect.ProtoMessa
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QuerySupplyResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.TradableSupply != "" {
-		value := protoreflect.ValueOfString(x.TradableSupply)
-		if !f(fd_QuerySupplyResponse_tradable_supply, value) {
+	if x.TradableAmount != "" {
+		value := protoreflect.ValueOfString(x.TradableAmount)
+		if !f(fd_QuerySupplyResponse_tradable_amount, value) {
 			return
 		}
 	}
-	if x.RetiredSupply != "" {
-		value := protoreflect.ValueOfString(x.RetiredSupply)
-		if !f(fd_QuerySupplyResponse_retired_supply, value) {
+	if x.RetiredAmount != "" {
+		value := protoreflect.ValueOfString(x.RetiredAmount)
+		if !f(fd_QuerySupplyResponse_retired_amount, value) {
 			return
 		}
 	}
@@ -16690,10 +16690,10 @@ func (x *fastReflection_QuerySupplyResponse) Range(f func(protoreflect.FieldDesc
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QuerySupplyResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_supply":
-		return x.TradableSupply != ""
-	case "regen.ecocredit.v1.QuerySupplyResponse.retired_supply":
-		return x.RetiredSupply != ""
+	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_amount":
+		return x.TradableAmount != ""
+	case "regen.ecocredit.v1.QuerySupplyResponse.retired_amount":
+		return x.RetiredAmount != ""
 	case "regen.ecocredit.v1.QuerySupplyResponse.cancelled_amount":
 		return x.CancelledAmount != ""
 	default:
@@ -16712,10 +16712,10 @@ func (x *fastReflection_QuerySupplyResponse) Has(fd protoreflect.FieldDescriptor
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QuerySupplyResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_supply":
-		x.TradableSupply = ""
-	case "regen.ecocredit.v1.QuerySupplyResponse.retired_supply":
-		x.RetiredSupply = ""
+	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_amount":
+		x.TradableAmount = ""
+	case "regen.ecocredit.v1.QuerySupplyResponse.retired_amount":
+		x.RetiredAmount = ""
 	case "regen.ecocredit.v1.QuerySupplyResponse.cancelled_amount":
 		x.CancelledAmount = ""
 	default:
@@ -16734,11 +16734,11 @@ func (x *fastReflection_QuerySupplyResponse) Clear(fd protoreflect.FieldDescript
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QuerySupplyResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_supply":
-		value := x.TradableSupply
+	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_amount":
+		value := x.TradableAmount
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.QuerySupplyResponse.retired_supply":
-		value := x.RetiredSupply
+	case "regen.ecocredit.v1.QuerySupplyResponse.retired_amount":
+		value := x.RetiredAmount
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.QuerySupplyResponse.cancelled_amount":
 		value := x.CancelledAmount
@@ -16763,10 +16763,10 @@ func (x *fastReflection_QuerySupplyResponse) Get(descriptor protoreflect.FieldDe
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QuerySupplyResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_supply":
-		x.TradableSupply = value.Interface().(string)
-	case "regen.ecocredit.v1.QuerySupplyResponse.retired_supply":
-		x.RetiredSupply = value.Interface().(string)
+	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_amount":
+		x.TradableAmount = value.Interface().(string)
+	case "regen.ecocredit.v1.QuerySupplyResponse.retired_amount":
+		x.RetiredAmount = value.Interface().(string)
 	case "regen.ecocredit.v1.QuerySupplyResponse.cancelled_amount":
 		x.CancelledAmount = value.Interface().(string)
 	default:
@@ -16789,10 +16789,10 @@ func (x *fastReflection_QuerySupplyResponse) Set(fd protoreflect.FieldDescriptor
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QuerySupplyResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_supply":
-		panic(fmt.Errorf("field tradable_supply of message regen.ecocredit.v1.QuerySupplyResponse is not mutable"))
-	case "regen.ecocredit.v1.QuerySupplyResponse.retired_supply":
-		panic(fmt.Errorf("field retired_supply of message regen.ecocredit.v1.QuerySupplyResponse is not mutable"))
+	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_amount":
+		panic(fmt.Errorf("field tradable_amount of message regen.ecocredit.v1.QuerySupplyResponse is not mutable"))
+	case "regen.ecocredit.v1.QuerySupplyResponse.retired_amount":
+		panic(fmt.Errorf("field retired_amount of message regen.ecocredit.v1.QuerySupplyResponse is not mutable"))
 	case "regen.ecocredit.v1.QuerySupplyResponse.cancelled_amount":
 		panic(fmt.Errorf("field cancelled_amount of message regen.ecocredit.v1.QuerySupplyResponse is not mutable"))
 	default:
@@ -16808,9 +16808,9 @@ func (x *fastReflection_QuerySupplyResponse) Mutable(fd protoreflect.FieldDescri
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QuerySupplyResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_supply":
+	case "regen.ecocredit.v1.QuerySupplyResponse.tradable_amount":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.QuerySupplyResponse.retired_supply":
+	case "regen.ecocredit.v1.QuerySupplyResponse.retired_amount":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.QuerySupplyResponse.cancelled_amount":
 		return protoreflect.ValueOfString("")
@@ -16883,11 +16883,11 @@ func (x *fastReflection_QuerySupplyResponse) ProtoMethods() *protoiface.Methods 
 		var n int
 		var l int
 		_ = l
-		l = len(x.TradableSupply)
+		l = len(x.TradableAmount)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.RetiredSupply)
+		l = len(x.RetiredAmount)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -16931,17 +16931,17 @@ func (x *fastReflection_QuerySupplyResponse) ProtoMethods() *protoiface.Methods 
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.RetiredSupply) > 0 {
-			i -= len(x.RetiredSupply)
-			copy(dAtA[i:], x.RetiredSupply)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetiredSupply)))
+		if len(x.RetiredAmount) > 0 {
+			i -= len(x.RetiredAmount)
+			copy(dAtA[i:], x.RetiredAmount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetiredAmount)))
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.TradableSupply) > 0 {
-			i -= len(x.TradableSupply)
-			copy(dAtA[i:], x.TradableSupply)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TradableSupply)))
+		if len(x.TradableAmount) > 0 {
+			i -= len(x.TradableAmount)
+			copy(dAtA[i:], x.TradableAmount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TradableAmount)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -16996,7 +16996,7 @@ func (x *fastReflection_QuerySupplyResponse) ProtoMethods() *protoiface.Methods 
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TradableSupply", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -17024,11 +17024,11 @@ func (x *fastReflection_QuerySupplyResponse) ProtoMethods() *protoiface.Methods 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.TradableSupply = string(dAtA[iNdEx:postIndex])
+				x.TradableAmount = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RetiredSupply", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -17056,7 +17056,7 @@ func (x *fastReflection_QuerySupplyResponse) ProtoMethods() *protoiface.Methods 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.RetiredSupply = string(dAtA[iNdEx:postIndex])
+				x.RetiredAmount = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -23138,12 +23138,12 @@ type QuerySupplyResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// tradable_supply is the decimal number of tradable credits in the batch
+	// tradable_amount is the decimal number of tradable credits in the batch
 	// supply.
-	TradableSupply string `protobuf:"bytes,1,opt,name=tradable_supply,json=tradableSupply,proto3" json:"tradable_supply,omitempty"`
-	// retired_supply is the decimal number of retired credits in the batch
+	TradableAmount string `protobuf:"bytes,1,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
+	// retired_amount is the decimal number of retired credits in the batch
 	// supply.
-	RetiredSupply string `protobuf:"bytes,2,opt,name=retired_supply,json=retiredSupply,proto3" json:"retired_supply,omitempty"`
+	RetiredAmount string `protobuf:"bytes,2,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 	// cancelled_amount is the decimal number of cancelled credits in the batch
 	// supply.
 	CancelledAmount string `protobuf:"bytes,3,opt,name=cancelled_amount,json=cancelledAmount,proto3" json:"cancelled_amount,omitempty"`
@@ -23169,16 +23169,16 @@ func (*QuerySupplyResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{33}
 }
 
-func (x *QuerySupplyResponse) GetTradableSupply() string {
+func (x *QuerySupplyResponse) GetTradableAmount() string {
 	if x != nil {
-		return x.TradableSupply
+		return x.TradableAmount
 	}
 	return ""
 }
 
-func (x *QuerySupplyResponse) GetRetiredSupply() string {
+func (x *QuerySupplyResponse) GetRetiredAmount() string {
 	if x != nil {
-		return x.RetiredSupply
+		return x.RetiredAmount
 	}
 	return ""
 }
@@ -23917,11 +23917,11 @@ var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e,
 	0x6f, 0x6d, 0x22, 0x90, 0x01, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70, 0x70,
 	0x6c, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72,
-	0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x73, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x53, 0x75, 0x70,
-	0x70, 0x6c, 0x79, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x73,
-	0x75, 0x70, 0x70, 0x6c, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74,
-	0x69, 0x72, 0x65, 0x64, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x12, 0x29, 0x0a, 0x10, 0x63, 0x61,
+	0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74,
+	0x69, 0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x63, 0x61,
 	0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x64, 0x41,
 	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x19, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72,

@@ -491,13 +491,13 @@ message QuerySupplyRequest {
 // QuerySupplyResponse is the Query/Supply response type.
 message QuerySupplyResponse {
 
-  // tradable_supply is the decimal number of tradable credits in the batch
+  // tradable_amount is the decimal number of tradable credits in the batch
   // supply.
-  string tradable_supply = 1;
+  string tradable_amount = 1;
 
-  // retired_supply is the decimal number of retired credits in the batch
+  // retired_amount is the decimal number of retired credits in the batch
   // supply.
-  string retired_supply = 2;
+  string retired_amount = 2;
 
   // cancelled_amount is the decimal number of cancelled credits in the batch
   // supply.
