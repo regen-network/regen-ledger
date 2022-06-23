@@ -27,7 +27,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs -static"
+      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
   - id: regen-darwin-arm64
     binary: regen
@@ -50,7 +50,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs -static"
+      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
   - id: regen-linux-amd64
     binary: regen
@@ -73,7 +73,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs -static"
+      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
   - id: regen-linux-arm64
     binary: regen
@@ -96,7 +96,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs -static"
+      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
   - id: regen-windows-amd64
     binary: regen
@@ -119,7 +119,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs -static"
+      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
 archives:
   - id: regen
