@@ -27,7 +27,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,muldefs"
+      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl"
 
   - id: regen-darwin-arm64
     binary: regen
@@ -50,7 +50,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,muldefs"
+      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl"
 
   - id: regen-linux-amd64
     binary: regen
