@@ -46,7 +46,7 @@ func NewModule(ak data.AccountKeeper, bk data.BankKeeper) Module {
 }
 
 func (a Module) Name() string {
-	return "data"
+	return data.ModuleName
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
@@ -63,7 +63,7 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage {
-	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(&data.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +83,7 @@ func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage {
 }
 
 func (a Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
-	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(&data.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		return err
 	}
