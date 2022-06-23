@@ -7,6 +7,7 @@ package app
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 
@@ -22,6 +23,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -98,9 +100,33 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			}
 		}
 
+		if ctx.ChainID() == "regen-redwood-1" {
+			migrateDenomUnits(ctx, app.BankKeeper)
+		}
+
 		return toVersion, nil
 	})
 
+}
+
+// migrateDenomUnits update basket metadata denom units list in ascending order
+func migrateDenomUnits(ctx sdk.Context, bk bankkeeper.Keeper) {
+	metadataList := make([]banktypes.Metadata, 0)
+	bk.IterateAllDenomMetaData(ctx, func(m banktypes.Metadata) bool {
+		metadata := m
+		denomUnits := metadata.DenomUnits
+		sort.Slice(denomUnits, func(i, j int) bool {
+			return denomUnits[i].Exponent < denomUnits[j].Exponent
+		})
+
+		metadata.DenomUnits = denomUnits
+		metadataList = append(metadataList, metadata)
+		return false
+	})
+
+	for _, metadata := range metadataList {
+		bk.SetDenomMetaData(ctx, metadata)
+	}
 }
 
 func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {
