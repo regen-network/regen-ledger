@@ -98,9 +98,27 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			}
 		}
 
+		// add name and symbol to regen denom metadata
+		if err := migrateDenomMetadata(ctx, app.BankKeeper); err != nil {
+			return nil, err
+		}
+
 		return toVersion, nil
 	})
+}
 
+func migrateDenomMetadata(ctx sdk.Context, bk bankkeeper.Keeper) error {
+	denom := "uregen"
+	metadata, found := bk.GetDenomMetaData(ctx, denom)
+	if !found {
+		return fmt.Errorf("metadata is present for %s denom", denom)
+	}
+
+	metadata.Name = "Regen"
+	metadata.Symbol = "REGEN"
+	bk.SetDenomMetaData(ctx, metadata)
+
+	return nil
 }
 
 func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {
