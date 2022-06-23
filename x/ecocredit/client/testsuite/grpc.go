@@ -532,8 +532,8 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
-			require.NotEmpty(res.RetiredSupply)
-			require.NotEmpty(res.TradableSupply)
+			require.NotEmpty(res.RetiredAmount)
+			require.NotEmpty(res.TradableAmount)
 		})
 	}
 }

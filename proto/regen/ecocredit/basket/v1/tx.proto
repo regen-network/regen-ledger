@@ -124,14 +124,24 @@ message MsgTake {
   // amount is the integer number of basket tokens to convert into credits.
   string amount = 3;
 
-  // retirement_jurisdiction is the optional retirement jurisdiction for the
+  // retirement_location is the optional retirement jurisdiction for the
   // credits which will be used only if retire_on_take is true for this basket.
-  string retirement_jurisdiction = 4;
+  //
+  // Deprecated (Since Revision 1): This field will be removed in the next
+  // version in favor of retirement_jurisdiction. Only one of these need to be
+  // set and retirement_jurisdiction will be used if both are set.
+  string retirement_location = 4 [ deprecated = true ];
 
   // retire_on_take is a boolean that dictates whether the ecocredits
   // received in exchange for the basket tokens will be received as
   // retired or tradable credits.
   bool retire_on_take = 5;
+
+  // retirement_jurisdiction is the optional retirement jurisdiction for the
+  // credits which will be used only if retire_on_take is true for this basket.
+  //
+  // Since Revision 1
+  string retirement_jurisdiction = 6;
 }
 
 // MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
