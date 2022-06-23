@@ -2,7 +2,6 @@ project_name: regen-ledger
 
 env:
   - GO111MODULE=on
-  - CGO_ENABLED=1
 
 builds:
   - id: regen-darwin-amd64
@@ -13,6 +12,7 @@ builds:
     goos:
       - darwin
     env:
+      - CGO_ENABLED=1
       - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
       - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
       - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
@@ -37,8 +37,7 @@ builds:
 #    goos:
 #      - darwin
 #    env:
-#      - CC=/home/runner/work/osxcross/target/target/bin/oa64-clang
-#      - CXX=/home/runner/work/osxcross/target/target/bin/oa64-clang++
+#      - CGO_ENABLED=0
 #      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
 #    flags:
 #      - -mod=readonly
@@ -57,6 +56,7 @@ builds:
     binary: regen
     main: ./app/regen
     env:
+      - CGO_ENABLED=1
       - CC=x86_64-linux-gnu-gcc
       - CXX=x86_64-linux-gnu-g++
     goarch:
@@ -76,39 +76,15 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
-#  - id: regen-linux-arm64
-#    binary: regen
-#    main: ./app/regen
-#    env:
-#      - CC=aarch64-linux-gnu-gcc
-#      - CXX=aarch64-linux-gnu-g++
-#    goarch:
-#      - arm64
-#    goos:
-#      - linux
-#    flags:
-#      - -mod=readonly
-#      - -tags="netgo ledger muslc"
-#      - -trimpath
-#    ldflags:
-#      - -s -w
-#      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-#      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-#      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-#      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-#      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
-
-  - id: regen-windows-amd64
+  - id: regen-linux-arm64
     binary: regen
     main: ./app/regen
     env:
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
+      - CGO_ENABLED=0
     goarch:
-      - amd64
+      - arm64
     goos:
-      - windows
+      - linux
     flags:
       - -mod=readonly
       - -tags="netgo ledger muslc"
@@ -122,6 +98,29 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
       - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
 
+#  - id: regen-windows-amd64
+#    binary: regen
+#    main: ./app/regen
+#    env:
+#      - CC=x86_64-w64-mingw32-gcc
+#      - CXX=x86_64-w64-mingw32-g++
+#    goarch:
+#      - amd64
+#    goos:
+#      - windows
+#    flags:
+#      - -mod=readonly
+#      - -tags="netgo ledger muslc"
+#      - -trimpath
+#    ldflags:
+#      - -s -w
+#      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
+#      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
+
 archives:
   - id: regen
     builds:
@@ -129,7 +128,7 @@ archives:
 #      - regen-darwin-arm64
       - regen-linux-amd64
 #      - regen-linux-arm64
-      - regen-windows-amd64
+#      - regen-windows-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
