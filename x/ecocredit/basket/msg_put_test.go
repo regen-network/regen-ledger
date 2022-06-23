@@ -8,6 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/types"
 )
 
 type msgPutSuite struct {
@@ -23,9 +25,9 @@ func TestMsgPut(t *testing.T) {
 func (s *msgPutSuite) Before(t gocuke.TestingT) {
 	s.t = t
 
-	// set the denom regex for basket coins
+	// TODO: remove after updating to cosmos-sdk v0.46 #857
 	sdk.SetCoinDenomRegex(func() string {
-		return RegexBasketDenom
+		return types.CoinDenomRegex
 	})
 }
 
