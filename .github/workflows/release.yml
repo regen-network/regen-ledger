@@ -1,6 +1,10 @@
-name: release
+name: Release
 
-on: 
+# This workflow should always match the "Release" workflow aside
+# from when this workflow is triggered and what arguments are passed
+# to goreleaser/goreleaser-action@v2 in the "Run GoReleaser" step.
+
+on:
   push:
     tags:
       - v*
@@ -17,8 +21,8 @@ jobs:
       -
         name: OSXCross for CGO Support
         run: |
-          mkdir /home/runner/work/osxcross
-          git clone https://github.com/likhita-809/osxcross-target.git /home/runner/work/osxcross/target
+          mkdir ../../osxcross
+          git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
           sudo ln -s /home/runner/work/osxcross/target/target/lib/libcrypto.so.1.0.0 usr/local/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
       -
         name: LibWasm for CosmWasm Support
