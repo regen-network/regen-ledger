@@ -55,9 +55,6 @@ builds:
   - id: regen-linux-amd64
     binary: regen
     main: ./app/regen
-    env:
-      - CC=/home/runner/work/osxcross/target/target/bin/x86_64-linux-gnu-gcc
-      - CXX=/home/runner/work/osxcross/target/target/bin/x86_64-linux-gnu-g++
     goarch:
       - amd64
     goos:
@@ -82,9 +79,6 @@ builds:
 #      - arm64
 #    goos:
 #      - linux
-#    env:
-#      - CC=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-gcc
-#      - CXX=/home/runner/work/osxcross/target/target/bin/aarch64-linux-gnu-g++
 #    flags:
 #      - -mod=readonly
 #      - -tags="netgo ledger muslc"
