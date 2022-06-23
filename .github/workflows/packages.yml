@@ -22,8 +22,8 @@ jobs:
       -
         name: OSXCross for CGO Support
         run: |
-          mkdir ../../osxcross
-          git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
+          mkdir /home/runner/work/osxcross
+          git clone https://github.com/likhita-809/osxcross-target.git /home/runner/work/osxcross/target
           sudo ln -s /home/runner/work/osxcross/target/target/lib/libcrypto.so.1.0.0 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
       -
         name: LibWasm for CosmWasm Support
