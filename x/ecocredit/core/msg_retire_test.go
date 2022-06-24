@@ -19,8 +19,8 @@ func TestMsgRetire(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgRetire{
-				Holder: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -32,7 +32,7 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without holder": {
 			src: MsgRetire{
-				Credits: []*MsgRetire_RetireCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -44,8 +44,8 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg with wrong holder address": {
 			src: MsgRetire{
-				Holder: "wrongHolder",
-				Credits: []*MsgRetire_RetireCredits{
+				Owner: "wrong owner",
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -57,15 +57,15 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without credits": {
 			src: MsgRetire{
-				Holder:       addr1,
+				Owner:        addr1,
 				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgRetire{
-				Holder: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						Amount: "10",
 					},
@@ -76,8 +76,8 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without Credits.Amount": {
 			src: MsgRetire{
-				Holder: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 					},
@@ -88,8 +88,8 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgRetire{
-				Holder: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "abc",
@@ -101,8 +101,8 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without jurisdiction": {
 			src: MsgRetire{
-				Holder: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -113,8 +113,8 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg with wrong jurisdiction": {
 			src: MsgRetire{
-				Holder: addr1,
-				Credits: []*MsgRetire_RetireCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",

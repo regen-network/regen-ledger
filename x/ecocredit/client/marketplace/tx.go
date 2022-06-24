@@ -27,21 +27,24 @@ const (
 func TxSellCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell [orders]",
-		Short: "Creates new sell orders with transaction author (--from) as owner",
-		Long: `Creates new sell orders with transaction author (--from) as owner.
+		Short: "Creates new sell orders with transaction author (--from) as seller",
+		Long: `Creates new sell orders with transaction author (--from) as seller.
 
 Parameters:
   orders:  YAML encoded order list. Note: numerical values must be written in strings.
            eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'
            eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
 		Args: cobra.ExactArgs(1),
+		Example: `
+regen tx ecocredit sell "[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]"
+		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			owner := clientCtx.GetFromAddress()
+			seller := clientCtx.GetFromAddress()
 
 			// declare orders array with ask price as string
 			var strOrders []struct {
@@ -86,7 +89,7 @@ Parameters:
 
 			// create sell message
 			msg := marketplace.MsgSell{
-				Owner:  owner.String(),
+				Seller: seller.String(),
 				Orders: orders,
 			}
 
@@ -103,22 +106,25 @@ Parameters:
 func TxUpdateSellOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-sell-orders [updates]",
-		Short: "Updates existing sell orders with transaction author (--from) as owner",
-		Long: `Updates existing sell orders with transaction author (--from) as owner.
+		Short: "Updates existing sell orders with transaction author (--from) as seller",
+		Long: `Updates existing sell orders with transaction author (--from) as seller.
 
 Parameters:
   updates:  YAML encoded update list. Note: numerical values must be written in strings.
            eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]'
            eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false, new_expiration: "2026-01-01"}]'`,
 		Args: cobra.ExactArgs(1),
+		Example: `
+regen tx ecocredit update-sell-orders "[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]"
+		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			// get the order owner from the --from flag
-			owner := clientCtx.GetFromAddress()
+			// get the seller address from the --from flag
+			seller := clientCtx.GetFromAddress()
 
 			// declare updates array with ask price as string
 			var strUpdates []struct {
@@ -171,7 +177,7 @@ Parameters:
 
 			// create update sell orders message
 			msg := marketplace.MsgUpdateSellOrders{
-				Owner:   owner.String(),
+				Seller:  seller.String(),
 				Updates: updates,
 			}
 
@@ -187,7 +193,7 @@ Parameters:
 // TxBuyDirect returns a transaction command for a single direct buy order.
 func TxBuyDirect() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "buy-direct [sell_order_id] [quantity] [bid_price] [disable_auto_retire]",
+		Use:   "buy-direct [sell_order_id] [quantity] [bid_price] [disable_auto_retire] [flags]",
 		Short: "Buy ecocredits from a specific sell order",
 		Long: "Purchase ecocredits from a specific sell order. DisableAutoRetire can be set to false to retire the credits immediately upon purchase." +
 			"When set to true, credits will be received in a tradable state, IF AND ONLY IF the sell order also has auto retire disabled. " +
@@ -265,6 +271,7 @@ func TxBuyDirectBatch() *cobra.Command {
 			   "retirement_jurisdiction": "US-NY"
 			},
 		]`),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -284,9 +291,6 @@ func TxBuyDirectBatch() *cobra.Command {
 			msg := marketplace.MsgBuyDirect{
 				Buyer:  clientCtx.GetFromAddress().String(),
 				Orders: orders,
-			}
-			if err = msg.ValidateBasic(); err != nil {
-				return err
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

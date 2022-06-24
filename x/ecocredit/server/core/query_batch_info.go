@@ -4,20 +4,21 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// BatchInfo queries for information on a credit batch.
-func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoRequest) (*core.QueryBatchInfoResponse, error) {
-	if err := core.ValidateDenom(request.BatchDenom); err != nil {
+// Batch queries for information on a credit batch.
+func (k Keeper) Batch(ctx context.Context, request *core.QueryBatchRequest) (*core.QueryBatchResponse, error) {
+	if err := core.ValidateBatchDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
 
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, request.BatchDenom)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", request.BatchDenom, err.Error())
 	}
 
 	issuer := sdk.AccAddress(batch.Issuer)
@@ -38,5 +39,5 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		Open:         batch.Open,
 	}
 
-	return &core.QueryBatchInfoResponse{Batch: &info}, nil
+	return &core.QueryBatchResponse{Batch: &info}, nil
 }

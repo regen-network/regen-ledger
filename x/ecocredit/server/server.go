@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -26,25 +28,34 @@ type serverImpl struct {
 	bankKeeper    ecocredit.BankKeeper
 	accountKeeper ecocredit.AccountKeeper
 
-	basketKeeper      basket.Keeper
 	coreKeeper        core.Keeper
+	basketKeeper      basket.Keeper
 	marketplaceKeeper marketplace.Keeper
 
-	db         ormdb.ModuleDB
-	stateStore api.StateStore
-}
-
-func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
-	return s.coreKeeper.AddCreditType(ctx, ctp)
+	db          ormdb.ModuleDB
+	stateStore  api.StateStore
+	basketStore basketapi.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
+	}
+
+	// ensure ecocredit module account is set
+	coreAddr := s.accountKeeper.GetModuleAddress(ecocredit.ModuleName)
+	if coreAddr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", ecocredit.ModuleName))
+	}
+
+	// ensure basket submodule account is set
+	basketAddr := s.accountKeeper.GetModuleAddress(baskettypes.BasketSubModuleName)
+	if basketAddr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", baskettypes.BasketSubModuleName))
 	}
 
 	var err error
@@ -54,8 +65,10 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 
 	coreStore, basketStore, marketStore := getStateStores(s.db)
-	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, distKeeper, s.paramSpace)
-	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace)
+	s.stateStore = coreStore
+	s.basketStore = basketStore
+	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr)
+	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr)
 	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
 
 	return s
@@ -82,9 +95,8 @@ func RegisterServices(
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
-	distKeeper ecocredit.DistributionKeeper,
 ) Keeper {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper)
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper)
 
 	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
 	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)

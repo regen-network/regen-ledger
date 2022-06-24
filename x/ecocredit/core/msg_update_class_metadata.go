@@ -23,11 +23,11 @@ func (m *MsgUpdateClassMetadata) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
+	if err := ValidateClassId(m.ClassId); err != nil {
 		return err
 	}
 
-	if len(m.Metadata) > MaxMetadataLength {
+	if len(m.NewMetadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
 	}
 

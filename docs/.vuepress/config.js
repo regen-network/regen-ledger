@@ -92,8 +92,8 @@ module.exports = {
           collapsable: false,
           children: [
             '/ledger/get-started/',
+            '/ledger/get-started/local-testnet',
             '/ledger/get-started/live-networks',
-            '/ledger/get-started/prerequisites',
           ],
         },
         {
@@ -120,6 +120,7 @@ module.exports = {
         {
           title: 'Ecocredit Module',
           collapsable: false,
+          sidebarDepth: 0,
           children: [
             {
               title: 'Overview',
@@ -130,12 +131,14 @@ module.exports = {
             '/modules/ecocredit/03_messages',
             '/modules/ecocredit/04_queries',
             '/modules/ecocredit/05_events',
-            '/modules/ecocredit/06_client',
+            '/modules/ecocredit/06_types',
+            '/modules/ecocredit/07_client',
           ],
         },
         {
           title: 'Data Module',
           collapsable: false,
+          sidebarDepth: 0,
           children: [
             {
               title: 'Overview',
@@ -144,8 +147,10 @@ module.exports = {
             '/modules/data/01_concepts',
             '/modules/data/02_state',
             '/modules/data/03_messages',
-            '/modules/data/04_events',
-            '/modules/data/05_client',
+            '/modules/data/04_queries',
+            '/modules/data/05_events',
+            '/modules/data/06_types',
+            '/modules/data/07_client',
           ],
         },
       ],
@@ -164,9 +169,11 @@ module.exports = {
           title: 'Get Started',
           collapsable: false,
           children: [
+            '/validators/get-started/',
+            '/validators/get-started/install-regen',
+            '/validators/get-started/install-cosmovisor',
             '/validators/get-started/run-a-full-node',
             '/validators/get-started/create-a-validator',
-            '/validators/get-started/prerequisites',
           ]
         },
         {
@@ -251,11 +258,6 @@ module.exports = {
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
-    'vuepress-plugin-clean-urls',
-      {
-        normalSuffix: '/',
-        indexSuffix: '/',
-      },
     ],
   markdown: {
     extendMarkdown: md => {

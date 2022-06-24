@@ -1,6 +1,6 @@
-module github.com/regen-network/regen-ledger/v3
+module github.com/regen-network/regen-ledger/v4
 
-go 1.17
+go 1.18
 
 require (
 	github.com/CosmWasm/wasmd v0.22.0

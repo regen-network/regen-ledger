@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -27,7 +29,7 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 		if err != nil {
 			return nil, err
 		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 			Sender:         req.Sender,
 			Recipient:      req.Recipient,
 			BatchDenom:     credit.BatchDenom,
@@ -45,7 +47,7 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 	if err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", credit.BatchDenom, err.Error())
 	}
 	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
 	if err != nil {
@@ -69,16 +71,16 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	if err != nil {
 		if err == ormerrors.NotFound {
 			toBalance = &api.BatchBalance{
-				BatchKey: batch.Key,
-				Address:  to,
-				Tradable: "0",
-				Retired:  "0",
+				BatchKey:       batch.Key,
+				Address:        to,
+				TradableAmount: "0",
+				RetiredAmount:  "0",
 			}
 		} else {
 			return err
 		}
 	}
-	decs, err := utils.GetNonNegativeFixedDecs(precision, toBalance.Tradable, toBalance.Retired, fromBalance.Tradable, fromBalance.Retired, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
+	decs, err := utils.GetNonNegativeFixedDecs(precision, toBalance.TradableAmount, toBalance.RetiredAmount, fromBalance.TradableAmount, fromBalance.RetiredAmount, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
 	if err != nil {
 		return err
 	}
@@ -120,20 +122,20 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	// update the "to" balance
 	if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		BatchKey: batch.Key,
-		Address:  to,
-		Tradable: toTradableBalance.String(),
-		Retired:  toRetiredBalance.String(),
+		BatchKey:       batch.Key,
+		Address:        to,
+		TradableAmount: toTradableBalance.String(),
+		RetiredAmount:  toRetiredBalance.String(),
 	}); err != nil {
 		return err
 	}
 
 	// update the "from" balance
 	if err := k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
-		BatchKey: batch.Key,
-		Address:  from,
-		Tradable: fromTradableBalance.String(),
-		Retired:  fromRetiredBalance.String(),
+		BatchKey:       batch.Key,
+		Address:        from,
+		TradableAmount: fromTradableBalance.String(),
+		RetiredAmount:  fromRetiredBalance.String(),
 	}); err != nil {
 		return err
 	}
@@ -148,7 +150,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 			return err
 		}
 		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:      to.String(),
+			Owner:        to.String(),
 			BatchDenom:   credit.BatchDenom,
 			Amount:       sendAmtRetired.String(),
 			Jurisdiction: credit.RetirementJurisdiction,

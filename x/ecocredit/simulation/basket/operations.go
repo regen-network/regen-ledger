@@ -1,6 +1,7 @@
 package basketsims
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -16,7 +17,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -98,7 +98,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		curator, _ := simtypes.RandomAcc(r, accs)
 
-		ctx := regentypes.Context{Context: sdkCtx}
+		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := qryClient.Params(ctx, &core.QueryParamsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
@@ -202,7 +202,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		ctx := regentypes.Context{Context: sdkCtx}
+		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := bsktQryClient.Baskets(ctx, &basket.QueryBasketsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
@@ -269,14 +269,16 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var credits []*basket.BasketCredit
 		for _, classInfo := range classInfoList {
 
-			resProjects, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{ClassId: classInfo.Id})
+			resProjects, err := qryClient.ProjectsByClass(ctx, &core.QueryProjectsByClassRequest{ClassId: classInfo.Id})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 			}
 
 			for _, projectInfo := range resProjects.GetProjects() {
 
-				batchesRes, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{ProjectId: projectInfo.Id})
+				batchesRes, err := qryClient.BatchesByProject(ctx, &core.QueryBatchesByProjectRequest{
+					ProjectId: projectInfo.Id,
+				})
 				if err != nil {
 					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 				}
@@ -286,13 +288,13 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					count := 0
 					for _, batch := range batches {
 						balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-							Account: ownerAddr, BatchDenom: batch.Denom,
+							Address: ownerAddr, BatchDenom: batch.Denom,
 						})
 						if err != nil {
 							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 						}
 
-						tradableAmount := balanceRes.Balance.Tradable
+						tradableAmount := balanceRes.Balance.TradableAmount
 						if tradableAmount != "0" {
 							d, err := math.NewPositiveDecFromString(tradableAmount)
 							if err != nil {
@@ -380,19 +382,19 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		owner, _ := simtypes.RandomAcc(r, accs)
 		ownerAddr := owner.Address.String()
 
-		ctx := regentypes.Context{Context: sdkCtx}
+		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := bsktQryClient.Baskets(ctx, &basket.QueryBasketsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
 		}
 
-		baskets := res.Baskets
+		baskets := res.BasketsInfo
 		if len(baskets) == 0 {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no baskets"), nil, nil
 		}
 
-		var rBasket *basket.Basket
-		var bBalances []*basket.BasketBalance
+		var rBasket *basket.BasketInfo
+		var bBalances []*basket.BasketBalanceInfo
 		for _, b := range baskets {
 			balancesRes, err := bsktQryClient.BasketBalances(ctx, &basket.QueryBasketBalancesRequest{
 				BasketDenom: b.BasketDenom,
@@ -400,7 +402,7 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
 			}
-			balances := balancesRes.Balances
+			balances := balancesRes.BalancesInfo
 			if len(balances) != 0 {
 				rBasket = b
 				bBalances = balances
@@ -490,7 +492,7 @@ func min(x, y int) int {
 	return x
 }
 
-func randomCreditType(r *rand.Rand, ctx regentypes.Context, qryClient core.QueryClient) (*core.CreditType, error) {
+func randomCreditType(r *rand.Rand, ctx context.Context, qryClient core.QueryClient) (*core.CreditType, error) {
 	res, err := qryClient.CreditTypes(ctx, &core.QueryCreditTypesRequest{})
 	if err != nil {
 		return nil, err

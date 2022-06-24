@@ -30,14 +30,14 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 
 	// insert project
 	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id: "P01",
+		Id: "C01-001",
 	})
 	assert.NilError(t, err)
 
 	batch1 := &api.Batch{
 		Issuer:       s.addr,
 		ProjectKey:   pKey,
-		Denom:        "C01-20200101-20210101-001",
+		Denom:        "C01-001-20200101-20210101-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
 		EndDate:      timestamppb.New(endTime),

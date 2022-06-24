@@ -14,7 +14,7 @@ import (
 func TestRetire_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	s.setupClassProjectBatch(t)
+	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	// starting balance
 	// tradable: 10.5
@@ -24,9 +24,9 @@ func TestRetire_Valid(t *testing.T) {
 	// retire 10.0 -> 0.5 leftover in tradable, retired becomes 20.5
 
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
-			{BatchDenom: "C01-20200101-20210101-01", Amount: "10.0"},
+		Owner: s.addr.String(),
+		Credits: []*core.Credits{
+			{BatchDenom: batchDenom, Amount: "10.0"},
 		},
 		Jurisdiction: "US-NY",
 	})
@@ -36,8 +36,8 @@ func TestRetire_Valid(t *testing.T) {
 
 	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, bal.Tradable, "0.5")
-	assert.Equal(t, bal.Retired, "20.5")
+	assert.Equal(t, bal.TradableAmount, "0.5")
+	assert.Equal(t, bal.RetiredAmount, "20.5")
 
 	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -52,8 +52,8 @@ func TestRetire_Invalid(t *testing.T) {
 
 	// invalid batch denom
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
+		Owner: s.addr.String(),
+		Credits: []*core.Credits{
 			{BatchDenom: "A00-00000000-00000000-01", Amount: "10.35"},
 		},
 		Jurisdiction: "US-NY",
@@ -62,8 +62,8 @@ func TestRetire_Invalid(t *testing.T) {
 
 	// out of precision
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
+		Owner: s.addr.String(),
+		Credits: []*core.Credits{
 			{BatchDenom: batchDenom, Amount: "10.35250982359823095"},
 		},
 		Jurisdiction: "US-NY",
@@ -72,8 +72,8 @@ func TestRetire_Invalid(t *testing.T) {
 
 	// not enough credits
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
-		Credits: []*core.MsgRetire_RetireCredits{
+		Owner: s.addr.String(),
+		Credits: []*core.Credits{
 			{BatchDenom: batchDenom, Amount: "150"},
 		},
 		Jurisdiction: "US-NY",

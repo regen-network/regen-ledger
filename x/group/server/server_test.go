@@ -3,7 +3,6 @@ package server_test
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -22,7 +21,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
@@ -50,11 +49,12 @@ func TestServer(t *testing.T) {
 	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
-		authtypes.FeeCollectorName:     nil,
-		minttypes.ModuleName:           {authtypes.Minter},
-		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		ecocredittypes.ModuleName:      {authtypes.Burner},
+		authtypes.FeeCollectorName:      nil,
+		minttypes.ModuleName:            {authtypes.Minter},
+		stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
+		ecocredittypes.ModuleName:       {authtypes.Burner},
+		baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
@@ -69,9 +69,6 @@ func TestServer(t *testing.T) {
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		cdc, bankKey, accountKeeper, bankSubspace, modAccAddrs,
 	)
-
-	ctrl := gomock.NewController(t)
-	distKeeper := mocks.NewMockDistributionKeeper(ctrl)
 
 	stakingKeeper := stakingkeeper.NewKeeper(
 		cdc, stakingKey, accountKeeper, bankKeeper, stakingSubspace,
@@ -91,7 +88,7 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(stakingKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(mintKey, sdk.StoreTypeIAVL)
 
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{
 		group.Module{AccountKeeper: accountKeeper},
 		ecocreditModule,

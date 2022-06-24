@@ -24,8 +24,8 @@ func (m MsgCancel) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCancel) ValidateBasic() error {
 
-	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
-		return sdkerrors.Wrap(err, "holder")
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return sdkerrors.Wrap(err, "owner")
 	}
 
 	if len(m.Credits) == 0 {
@@ -33,7 +33,7 @@ func (m *MsgCancel) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if err := ValidateDenom(credit.BatchDenom); err != nil {
+		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
 			return err
 		}
 
@@ -41,11 +41,16 @@ func (m *MsgCancel) ValidateBasic() error {
 			return err
 		}
 	}
+
+	if len(m.Reason) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("reason is required")
+	}
+
 	return nil
 }
 
 // GetSigners returns the expected signers for MsgCancel.
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Holder)
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}
 }

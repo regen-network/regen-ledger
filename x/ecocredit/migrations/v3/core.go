@@ -2,17 +2,21 @@ package v3
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/regen-network/regen-ledger/orm"
-
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 type batchMapT struct {
@@ -22,7 +26,7 @@ type batchMapT struct {
 
 // MigrateState performs in-place store migrations from v3.0 to v4.0.
 func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
-	cdc codec.Codec, ss api.StateStore) error {
+	cdc codec.Codec, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ClassInfo{}, cdc)
 	if err != nil {
 		return err
@@ -41,6 +45,29 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	creditTypeSeqTable := creditTypeSeqTableBuilder.Build()
 
+	// migrate credit types from params to ORM table
+	bz := subspace.GetRaw(sdkCtx, KeyCreditTypes)
+	if bz == nil {
+		return fmt.Errorf("credit types empty")
+	}
+
+	var creditTypes []CreditType
+	if err := json.Unmarshal(bz, &creditTypes); err != nil {
+		return err
+	}
+
+	ctx := sdk.WrapSDKContext(sdkCtx)
+	for _, creditType := range creditTypes {
+		if err := ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			Abbreviation: creditType.Abbreviation,
+			Name:         creditType.Name,
+			Unit:         creditType.Unit,
+			Precision:    creditType.Precision,
+		}); err != nil {
+			return err
+		}
+	}
+
 	// migrate credit classes to ORM v1
 	classItr, err := classInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
@@ -50,7 +77,6 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 	classKeyToClassId := make(map[uint64]string) // map of a class key to a class id
 	classIdToClassKey := make(map[string]uint64) // map of a class id to a class key
-	ctx := sdk.WrapSDKContext(sdkCtx)
 	for {
 		var classInfo ClassInfo
 		if _, err := classItr.LoadNext(&classInfo); err != nil {
@@ -116,7 +142,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		}
 		if err := ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
 			CreditTypeAbbrev: ctype.Abbreviation,
-			NextSequence:     ctype.SeqNumber,
+			NextSequence:     ctype.SeqNumber + 1, // in v3.0 we are storing current sequence
 		}); err != nil {
 			return err
 		}
@@ -128,9 +154,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 
 	// migrate credit batches to ORM v1 and create projects for existing credit classes
-	batchDenomToBatchMap := make(map[string]batchMapT) // map of a batch denom to batch id and amount cancelled
-	projectKeyToBatchSeq := make(map[uint64]uint64)    // map of a project key to batch sequence
-	classKeyToProjectSeq := make(map[uint64]uint64)    // map of a class key to project sequence
+	batchDenomToBatchMap := make(map[string]batchMapT)    // map of a batch denom to batch id and amount cancelled
+	projectKeyToBatchSeq := make(map[uint64]uint64)       // map of a project key to batch sequence
+	classKeyToProjectSeq := make(map[uint64]uint64)       // map of a class key to project sequence
+	oldBatchDenomToNewDenomMap := make(map[string]string) // map of a old batch denom to new batch denom
 	batchItr, err := batchInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err
@@ -157,15 +184,17 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 		projectExists := false
 		var projectKey uint64
+		var projectId string
 		for pItr.Next() {
-			pInfo, err := pItr.Value()
+			project, err := pItr.Value()
 			if err != nil {
 				return err
 			}
 
-			if pInfo.ClassKey == classIdToClassKey[batchInfo.ClassId] && pInfo.Jurisdiction == batchInfo.ProjectLocation {
+			if project.ClassKey == classIdToClassKey[batchInfo.ClassId] && project.Jurisdiction == batchInfo.ProjectLocation {
 				projectExists = true
-				projectKey = pInfo.Key
+				projectKey = project.Key
+				projectId = project.Id
 				break
 			}
 
@@ -182,7 +211,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				classKeyToProjectSeq[classKey] = 2
 			}
 
-			id := FormatProjectID(batchInfo.ClassId, projectSeq)
+			id := core.FormatProjectId(batchInfo.ClassId, projectSeq)
 			key, err := ss.ProjectTable().InsertReturningID(ctx,
 				&api.Project{
 					Id:           id,
@@ -196,31 +225,54 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				return err
 			}
 			projectKey = key
+			projectId = id
 		}
 
-		bInfo := api.Batch{
-			ProjectKey:   projectKey,
-			Denom:        batchInfo.BatchDenom,
-			Metadata:     string(batchInfo.Metadata),
-			StartDate:    timestamppb.New(*batchInfo.StartDate),
-			EndDate:      timestamppb.New(*batchInfo.EndDate),
-			IssuanceDate: nil,
-		}
-
-		bID, err := ss.BatchTable().InsertReturningID(ctx, &bInfo)
+		startDate, endDate, err := ParseBatchDenom(batchInfo.BatchDenom)
 		if err != nil {
 			return err
 		}
 
-		batchDenomToBatchMap[bInfo.Denom] = batchMapT{
+		var batchSeq uint64 = 1
+		if v, ok := projectKeyToBatchSeq[projectKey]; ok {
+			batchSeq = v
+		}
+
+		batchDenom, err := core.FormatBatchDenom(projectId, batchSeq, startDate, endDate)
+		if err != nil {
+			return err
+		}
+
+		oldBatchDenomToNewDenomMap[batchInfo.BatchDenom] = batchDenom
+		batchIssuer, err := sdk.AccAddressFromBech32(batchInfo.Issuer)
+		if err != nil {
+			return err
+		}
+
+		batch := api.Batch{
+			ProjectKey:   projectKey,
+			Denom:        batchDenom,
+			Metadata:     string(batchInfo.Metadata),
+			StartDate:    timestamppb.New(*batchInfo.StartDate),
+			EndDate:      timestamppb.New(*batchInfo.EndDate),
+			IssuanceDate: nil,
+			Issuer:       batchIssuer,
+		}
+
+		bID, err := ss.BatchTable().InsertReturningID(ctx, &batch)
+		if err != nil {
+			return err
+		}
+
+		batchDenomToBatchMap[batchInfo.BatchDenom] = batchMapT{
 			Id:              bID,
 			AmountCancelled: batchInfo.AmountCancelled,
 		}
 
-		if v, ok := projectKeyToBatchSeq[bInfo.ProjectKey]; ok {
-			projectKeyToBatchSeq[bInfo.ProjectKey] = v + 1
+		if v, ok := projectKeyToBatchSeq[batch.ProjectKey]; ok {
+			projectKeyToBatchSeq[batch.ProjectKey] = v + 1
 		} else {
-			projectKeyToBatchSeq[bInfo.ProjectKey] = 2
+			projectKeyToBatchSeq[batch.ProjectKey] = 2
 		}
 
 		// delete credit batch from old store
@@ -272,6 +324,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return err
 	}
 
+	if err := patchMigrate(ctx, sdkCtx, ss, basketStore, oldBatchDenomToNewDenomMap); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -285,9 +341,11 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 		}
 
 		if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-			BatchKey: batchDenomToBatchMap[denom].Id,
-			Address:  addr,
-			Tradable: balance,
+			BatchKey:       batchDenomToBatchMap[denom].Id,
+			Address:        addr,
+			TradableAmount: balance,
+			RetiredAmount:  "0",
+			EscrowedAmount: "0",
 		}); err != nil {
 			return true, err
 		}
@@ -311,9 +369,11 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 		if err != nil {
 			if ormerrors.IsNotFound(err) {
 				if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-					BatchKey: batchDenomToBatchMap[denom].Id,
-					Address:  addr,
-					Retired:  balance,
+					BatchKey:       batchDenomToBatchMap[denom].Id,
+					Address:        addr,
+					RetiredAmount:  balance,
+					TradableAmount: "0",
+					EscrowedAmount: "0",
 				}); err != nil {
 					return true, err
 				}
@@ -324,10 +384,11 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 		}
 
 		if err := ss.BatchBalanceTable().Update(ctx, &api.BatchBalance{
-			BatchKey: batchDenomToBatchMap[denom].Id,
-			Address:  addr,
-			Tradable: b.Tradable,
-			Retired:  balance,
+			BatchKey:       batchDenomToBatchMap[denom].Id,
+			Address:        addr,
+			TradableAmount: b.TradableAmount,
+			RetiredAmount:  balance,
+			EscrowedAmount: "0",
 		}); err != nil {
 			return true, err
 		}
@@ -349,6 +410,7 @@ func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Cont
 			BatchKey:        batchDenomToBatchMap[denom].Id,
 			CancelledAmount: batchDenomToBatchMap[denom].AmountCancelled,
 			TradableAmount:  supply,
+			RetiredAmount:   "0",
 		}); err != nil {
 			return false, err
 		}
@@ -370,6 +432,7 @@ func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Cont
 					BatchKey:        batchDenomToBatchMap[denom].Id,
 					CancelledAmount: batchDenomToBatchMap[denom].AmountCancelled,
 					RetiredAmount:   supply,
+					TradableAmount:  "0",
 				}); err != nil {
 					return false, err
 				}

@@ -11,7 +11,7 @@ import (
 
 func TestMsgCreateProject(t *testing.T) {
 	t.Parallel()
-	issuer := testutil.GenAddress()
+	admin := testutil.GenAddress()
 
 	testCases := []struct {
 		name   string
@@ -19,20 +19,9 @@ func TestMsgCreateProject(t *testing.T) {
 		expErr bool
 	}{
 		{
-			"valid msg with project id",
+			"valid msg without reference id",
 			MsgCreateProject{
-				Issuer:       issuer,
-				ClassId:      "A00",
-				Metadata:     "hello",
-				Jurisdiction: "AB-CDE FG1 345",
-				ProjectId:    "A0",
-			},
-			false,
-		},
-		{
-			"valid msg without project id",
-			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A00",
 				Metadata:     "hello",
 				Jurisdiction: "AB-CDE FG1 345",
@@ -40,59 +29,66 @@ func TestMsgCreateProject(t *testing.T) {
 			false,
 		},
 		{
-			"invalid issuer",
+			"invalid admin",
 			MsgCreateProject{
-				Issuer:       "invalid address",
+				Admin:        "invalid address",
 				ClassId:      "A00",
 				Metadata:     "hello",
 				Jurisdiction: "AB-CDE FG1 345",
-				ProjectId:    "A0",
-			},
-			true,
-		},
-		{
-			"invalid project id",
-			MsgCreateProject{
-				Issuer:       issuer,
-				ClassId:      "A00",
-				Metadata:     "hello",
-				Jurisdiction: "AB-CDE FG1 345",
-				ProjectId:    "A",
 			},
 			true,
 		},
 		{
 			"invalid class id",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "ABCD",
 				Metadata:     "hello",
 				Jurisdiction: "AB-CDE FG1 345",
-				ProjectId:    "AB",
 			},
 			true,
 		},
 		{
 			"invalid project jurisdiction",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A01",
 				Metadata:     "hello",
 				Jurisdiction: "abcd",
-				ProjectId:    "AB",
 			},
 			true,
 		},
 		{
 			"invalid: metadata is too large",
 			MsgCreateProject{
-				Issuer:       issuer,
+				Admin:        admin,
 				ClassId:      "A01",
 				Metadata:     strings.Repeat("x", 288),
 				Jurisdiction: "AB-CDE FG1 345",
-				ProjectId:    "AB",
 			},
 			true,
+		},
+		{
+			"invalid: reference id is too large",
+			MsgCreateProject{
+				Admin:        admin,
+				ClassId:      "A01",
+				Metadata:     "metadata",
+				Jurisdiction: "AB-CDE FG1 345",
+				ReferenceId:  strings.Repeat("x", MaxReferenceIdLength+1),
+			},
+			true,
+		},
+		{
+			"valid: with reference id",
+			MsgCreateProject{
+				Admin:        admin,
+				ClassId:      "A01",
+				Metadata:     "metadata",
+				Jurisdiction: "AB-CDE FG1 345",
+				ReferenceId:  strings.Repeat("x", 10),
+			},
+			false,
 		},
 	}
 

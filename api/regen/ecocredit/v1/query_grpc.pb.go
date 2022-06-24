@@ -27,24 +27,35 @@ type QueryClient interface {
 	// ClassesByAdmin queries for all credit classes with a specific admin
 	// address.
 	ClassesByAdmin(ctx context.Context, in *QueryClassesByAdminRequest, opts ...grpc.CallOption) (*QueryClassesByAdminResponse, error)
-	// ClassInfo queries for information on a credit class.
-	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
+	// Class queries for information on a credit class.
+	Class(ctx context.Context, in *QueryClassRequest, opts ...grpc.CallOption) (*QueryClassResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
 	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
-	// Projects queries for all projects within a class with pagination.
+	// Projects queries for all projects with pagination.
 	Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error)
-	// ClassInfo queries for information on a project.
-	ProjectInfo(ctx context.Context, in *QueryProjectInfoRequest, opts ...grpc.CallOption) (*QueryProjectInfoResponse, error)
-	// Batches queries for all batches in the given project with pagination.
+	// ProjectsByClass queries for all projects within a class with pagination.
+	ProjectsByClass(ctx context.Context, in *QueryProjectsByClassRequest, opts ...grpc.CallOption) (*QueryProjectsByClassResponse, error)
+	// ProjectsByReferenceId queries for all projects by reference-id with
+	// pagination.
+	ProjectsByReferenceId(ctx context.Context, in *QueryProjectsByReferenceIdRequest, opts ...grpc.CallOption) (*QueryProjectsByReferenceIdResponse, error)
+	// ProjectsByAdmin queries for all projects by admin with
+	// pagination.
+	ProjectsByAdmin(ctx context.Context, in *QueryProjectsByAdminRequest, opts ...grpc.CallOption) (*QueryProjectsByAdminResponse, error)
+	// Project queries for information on a project.
+	Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error)
+	// Batches queries for all batches with pagination.
 	Batches(ctx context.Context, in *QueryBatchesRequest, opts ...grpc.CallOption) (*QueryBatchesResponse, error)
 	// BatchesByIssuer queries all batches issued from a given issuer address.
 	BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(ctx context.Context, in *QueryBatchesByClassRequest, opts ...grpc.CallOption) (*QueryBatchesByClassResponse, error)
-	// BatchInfo queries for information on a credit batch.
-	BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error)
+	// BatchesByProject queries for all batches from a given project with
+	// pagination.
+	BatchesByProject(ctx context.Context, in *QueryBatchesByProjectRequest, opts ...grpc.CallOption) (*QueryBatchesByProjectResponse, error)
+	// Batch queries for information on a credit batch.
+	Batch(ctx context.Context, in *QueryBatchRequest, opts ...grpc.CallOption) (*QueryBatchResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
-	// batch for a given account.
+	// batch for a given account address.
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
 	// Balances queries all credit balances the given account holds.
 	Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error)
@@ -83,9 +94,9 @@ func (c *queryClient) ClassesByAdmin(ctx context.Context, in *QueryClassesByAdmi
 	return out, nil
 }
 
-func (c *queryClient) ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error) {
-	out := new(QueryClassInfoResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassInfo", in, out, opts...)
+func (c *queryClient) Class(ctx context.Context, in *QueryClassRequest, opts ...grpc.CallOption) (*QueryClassResponse, error) {
+	out := new(QueryClassResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Class", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,9 +121,36 @@ func (c *queryClient) Projects(ctx context.Context, in *QueryProjectsRequest, op
 	return out, nil
 }
 
-func (c *queryClient) ProjectInfo(ctx context.Context, in *QueryProjectInfoRequest, opts ...grpc.CallOption) (*QueryProjectInfoResponse, error) {
-	out := new(QueryProjectInfoResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectInfo", in, out, opts...)
+func (c *queryClient) ProjectsByClass(ctx context.Context, in *QueryProjectsByClassRequest, opts ...grpc.CallOption) (*QueryProjectsByClassResponse, error) {
+	out := new(QueryProjectsByClassResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectsByClass", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProjectsByReferenceId(ctx context.Context, in *QueryProjectsByReferenceIdRequest, opts ...grpc.CallOption) (*QueryProjectsByReferenceIdResponse, error) {
+	out := new(QueryProjectsByReferenceIdResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectsByReferenceId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProjectsByAdmin(ctx context.Context, in *QueryProjectsByAdminRequest, opts ...grpc.CallOption) (*QueryProjectsByAdminResponse, error) {
+	out := new(QueryProjectsByAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectsByAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error) {
+	out := new(QueryProjectResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Project", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -146,9 +184,18 @@ func (c *queryClient) BatchesByClass(ctx context.Context, in *QueryBatchesByClas
 	return out, nil
 }
 
-func (c *queryClient) BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error) {
-	out := new(QueryBatchInfoResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchInfo", in, out, opts...)
+func (c *queryClient) BatchesByProject(ctx context.Context, in *QueryBatchesByProjectRequest, opts ...grpc.CallOption) (*QueryBatchesByProjectResponse, error) {
+	out := new(QueryBatchesByProjectResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchesByProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Batch(ctx context.Context, in *QueryBatchRequest, opts ...grpc.CallOption) (*QueryBatchResponse, error) {
+	out := new(QueryBatchResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Batch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -209,24 +256,35 @@ type QueryServer interface {
 	// ClassesByAdmin queries for all credit classes with a specific admin
 	// address.
 	ClassesByAdmin(context.Context, *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error)
-	// ClassInfo queries for information on a credit class.
-	ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
+	// Class queries for information on a credit class.
+	Class(context.Context, *QueryClassRequest) (*QueryClassResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
 	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
-	// Projects queries for all projects within a class with pagination.
+	// Projects queries for all projects with pagination.
 	Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error)
-	// ClassInfo queries for information on a project.
-	ProjectInfo(context.Context, *QueryProjectInfoRequest) (*QueryProjectInfoResponse, error)
-	// Batches queries for all batches in the given project with pagination.
+	// ProjectsByClass queries for all projects within a class with pagination.
+	ProjectsByClass(context.Context, *QueryProjectsByClassRequest) (*QueryProjectsByClassResponse, error)
+	// ProjectsByReferenceId queries for all projects by reference-id with
+	// pagination.
+	ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error)
+	// ProjectsByAdmin queries for all projects by admin with
+	// pagination.
+	ProjectsByAdmin(context.Context, *QueryProjectsByAdminRequest) (*QueryProjectsByAdminResponse, error)
+	// Project queries for information on a project.
+	Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error)
+	// Batches queries for all batches with pagination.
 	Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error)
 	// BatchesByIssuer queries all batches issued from a given issuer address.
 	BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error)
-	// BatchInfo queries for information on a credit batch.
-	BatchInfo(context.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error)
+	// BatchesByProject queries for all batches from a given project with
+	// pagination.
+	BatchesByProject(context.Context, *QueryBatchesByProjectRequest) (*QueryBatchesByProjectResponse, error)
+	// Batch queries for information on a credit batch.
+	Batch(context.Context, *QueryBatchRequest) (*QueryBatchResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
-	// batch for a given account.
+	// batch for a given account address.
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
 	// Balances queries all credit balances the given account holds.
 	Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error)
@@ -250,8 +308,8 @@ func (UnimplementedQueryServer) Classes(context.Context, *QueryClassesRequest) (
 func (UnimplementedQueryServer) ClassesByAdmin(context.Context, *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassesByAdmin not implemented")
 }
-func (UnimplementedQueryServer) ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClassInfo not implemented")
+func (UnimplementedQueryServer) Class(context.Context, *QueryClassRequest) (*QueryClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Class not implemented")
 }
 func (UnimplementedQueryServer) ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassIssuers not implemented")
@@ -259,8 +317,17 @@ func (UnimplementedQueryServer) ClassIssuers(context.Context, *QueryClassIssuers
 func (UnimplementedQueryServer) Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Projects not implemented")
 }
-func (UnimplementedQueryServer) ProjectInfo(context.Context, *QueryProjectInfoRequest) (*QueryProjectInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProjectInfo not implemented")
+func (UnimplementedQueryServer) ProjectsByClass(context.Context, *QueryProjectsByClassRequest) (*QueryProjectsByClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByClass not implemented")
+}
+func (UnimplementedQueryServer) ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByReferenceId not implemented")
+}
+func (UnimplementedQueryServer) ProjectsByAdmin(context.Context, *QueryProjectsByAdminRequest) (*QueryProjectsByAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByAdmin not implemented")
+}
+func (UnimplementedQueryServer) Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Project not implemented")
 }
 func (UnimplementedQueryServer) Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Batches not implemented")
@@ -271,8 +338,11 @@ func (UnimplementedQueryServer) BatchesByIssuer(context.Context, *QueryBatchesBy
 func (UnimplementedQueryServer) BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchesByClass not implemented")
 }
-func (UnimplementedQueryServer) BatchInfo(context.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BatchInfo not implemented")
+func (UnimplementedQueryServer) BatchesByProject(context.Context, *QueryBatchesByProjectRequest) (*QueryBatchesByProjectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchesByProject not implemented")
+}
+func (UnimplementedQueryServer) Batch(context.Context, *QueryBatchRequest) (*QueryBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Batch not implemented")
 }
 func (UnimplementedQueryServer) Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Balance not implemented")
@@ -338,20 +408,20 @@ func _Query_ClassesByAdmin_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ClassInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryClassInfoRequest)
+func _Query_Class_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ClassInfo(ctx, in)
+		return srv.(QueryServer).Class(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Query/ClassInfo",
+		FullMethod: "/regen.ecocredit.v1.Query/Class",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClassInfo(ctx, req.(*QueryClassInfoRequest))
+		return srv.(QueryServer).Class(ctx, req.(*QueryClassRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -392,20 +462,74 @@ func _Query_Projects_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ProjectInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryProjectInfoRequest)
+func _Query_ProjectsByClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectsByClassRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ProjectInfo(ctx, in)
+		return srv.(QueryServer).ProjectsByClass(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Query/ProjectInfo",
+		FullMethod: "/regen.ecocredit.v1.Query/ProjectsByClass",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ProjectInfo(ctx, req.(*QueryProjectInfoRequest))
+		return srv.(QueryServer).ProjectsByClass(ctx, req.(*QueryProjectsByClassRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProjectsByReferenceId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectsByReferenceIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProjectsByReferenceId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ProjectsByReferenceId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProjectsByReferenceId(ctx, req.(*QueryProjectsByReferenceIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProjectsByAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectsByAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProjectsByAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ProjectsByAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProjectsByAdmin(ctx, req.(*QueryProjectsByAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Project_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Project(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/Project",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Project(ctx, req.(*QueryProjectRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -464,20 +588,38 @@ func _Query_BatchesByClass_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_BatchInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBatchInfoRequest)
+func _Query_BatchesByProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBatchesByProjectRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).BatchInfo(ctx, in)
+		return srv.(QueryServer).BatchesByProject(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Query/BatchInfo",
+		FullMethod: "/regen.ecocredit.v1.Query/BatchesByProject",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BatchInfo(ctx, req.(*QueryBatchInfoRequest))
+		return srv.(QueryServer).BatchesByProject(ctx, req.(*QueryBatchesByProjectRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Batch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Batch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/Batch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Batch(ctx, req.(*QueryBatchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -588,8 +730,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ClassesByAdmin_Handler,
 		},
 		{
-			MethodName: "ClassInfo",
-			Handler:    _Query_ClassInfo_Handler,
+			MethodName: "Class",
+			Handler:    _Query_Class_Handler,
 		},
 		{
 			MethodName: "ClassIssuers",
@@ -600,8 +742,20 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Projects_Handler,
 		},
 		{
-			MethodName: "ProjectInfo",
-			Handler:    _Query_ProjectInfo_Handler,
+			MethodName: "ProjectsByClass",
+			Handler:    _Query_ProjectsByClass_Handler,
+		},
+		{
+			MethodName: "ProjectsByReferenceId",
+			Handler:    _Query_ProjectsByReferenceId_Handler,
+		},
+		{
+			MethodName: "ProjectsByAdmin",
+			Handler:    _Query_ProjectsByAdmin_Handler,
+		},
+		{
+			MethodName: "Project",
+			Handler:    _Query_Project_Handler,
 		},
 		{
 			MethodName: "Batches",
@@ -616,8 +770,12 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_BatchesByClass_Handler,
 		},
 		{
-			MethodName: "BatchInfo",
-			Handler:    _Query_BatchInfo_Handler,
+			MethodName: "BatchesByProject",
+			Handler:    _Query_BatchesByProject_Handler,
+		},
+		{
+			MethodName: "Batch",
+			Handler:    _Query_Batch_Handler,
 		},
 		{
 			MethodName: "Balance",

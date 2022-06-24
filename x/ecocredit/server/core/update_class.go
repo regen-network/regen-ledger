@@ -27,7 +27,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
 	classAdmin := sdk.AccAddress(classInfo.Admin)
@@ -39,10 +39,8 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 		return nil, err
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassAdminUpdated{
-		ClassId:  req.ClassId,
-		OldAdmin: reqAddr.String(),
-		NewAdmin: newAdmin.String(),
+	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassAdmin{
+		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
 	}
@@ -60,7 +58,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 
 	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
 	admin := sdk.AccAddress(class.Admin)
@@ -100,10 +98,8 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgUpdateClassIssuers issuer iteration")
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassIssuersUpdated{
-		ClassId:        req.ClassId,
-		AddedIssuers:   req.AddIssuers,
-		RemovedIssuers: req.RemoveIssuers,
+	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassIssuers{
+		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
 	}
@@ -121,7 +117,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
 	admin := sdk.AccAddress(classInfo.Admin)
@@ -129,16 +125,13 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 
-	oldMetadata := classInfo.Metadata
-	classInfo.Metadata = req.Metadata
+	classInfo.Metadata = req.NewMetadata
 	if err = k.stateStore.ClassTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassMetadataUpdated{
-		ClassId:     req.ClassId,
-		OldMetadata: oldMetadata,
-		NewMetadata: req.Metadata,
+	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassMetadata{
+		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
 	}

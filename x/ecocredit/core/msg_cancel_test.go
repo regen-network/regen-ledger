@@ -3,8 +3,9 @@ package core
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
+
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgCancel(t *testing.T) {
@@ -18,19 +19,20 @@ func TestMsgCancel(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
+				Reason: "reason",
 			},
 			expErr: false,
 		},
 		"invalid msg without holder": {
 			src: MsgCancel{
-				Credits: []*MsgCancel_CancelCredits{
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -41,8 +43,8 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg with wrong holder address": {
 			src: MsgCancel{
-				Holder: "wrongHolder",
-				Credits: []*MsgCancel_CancelCredits{
+				Owner: "wrong owner",
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "10",
@@ -53,14 +55,14 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg without credits": {
 			src: MsgCancel{
-				Holder: addr1,
+				Owner: addr1,
 			},
 			expErr: true,
 		},
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						Amount: "10",
 					},
@@ -70,8 +72,8 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg without Credits.Amount": {
 			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 					},
@@ -81,11 +83,23 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
+				Owner: addr1,
+				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     "abc",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg reason is required": {
+			src: MsgCancel{
+				Owner: addr1,
+				Credits: []*Credits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "1",
 					},
 				},
 			},

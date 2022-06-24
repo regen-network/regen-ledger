@@ -4,15 +4,16 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// ProjectInfo queries project info from the given project name.
-func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoRequest) (*core.QueryProjectInfoResponse, error) {
+// Project queries project info from the given project name.
+func (k Keeper) Project(ctx context.Context, request *core.QueryProjectRequest) (*core.QueryProjectResponse, error) {
 	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", request.ProjectId, err.Error())
 	}
 
 	admin := sdk.AccAddress(project.Admin)
@@ -30,5 +31,5 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 		Metadata:     project.Metadata,
 	}
 
-	return &core.QueryProjectInfoResponse{Project: &info}, nil
+	return &core.QueryProjectResponse{Project: &info}, nil
 }

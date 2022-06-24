@@ -91,16 +91,17 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	regentypes "github.com/regen-network/regen-ledger/types"
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/regen-network/regen-ledger/v3/client/docs/statik"
+	_ "github.com/regen-network/regen-ledger/v4/client/docs/statik"
 )
 
 const (
@@ -167,9 +168,9 @@ func init() {
 	// every validator 10,000 times more voting power than they currently have
 	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 
-	// set the denom regex for basket coins.
+	// TODO: remove after updating to cosmos-sdk v0.46 #857
 	sdk.SetCoinDenomRegex(func() string {
-		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+		return regentypes.CoinDenomRegex
 	})
 }
 
@@ -382,7 +383,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.GetSubspace(ecocredit.DefaultParamspace),
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.DistrKeeper,
 	)
 	dataModule := data.NewModule(app.AccountKeeper, app.BankKeeper)
 	newModules := []moduletypes.Module{ecocreditModule, dataModule}
@@ -396,7 +396,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	}
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
 
-	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewCreditTypeProposalHandler(ecocreditModule.Keeper))
+	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewProposalHandler(ecocreditModule.Keeper))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -540,7 +540,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			// authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry), // enable after updating sdk version v0.46
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
-			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
 			data.NewModule(app.AccountKeeper, app.BankKeeper),
 		}, app.setCustomSimulationManager()...)...,
 	)
