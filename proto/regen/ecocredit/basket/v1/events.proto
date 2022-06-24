@@ -14,8 +14,9 @@ message EventCreate {
 
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
-  // Deprecated: This field is still populated and will be removed in the
-  // next version.
+  //
+  // Deprecated (Since Revision 1): This field is still populated and will be
+  // removed in the next version.
   string curator = 2 [ deprecated = true ];
 }
 
@@ -30,13 +31,15 @@ message EventPut {
   string basket_denom = 2;
 
   // credits are the credits that were added to the basket.
-  // Deprecated: This field is still populated and will be removed in the
-  // next version.
+  //
+  // Deprecated (Since Revision 1): This field is still populated and will be
+  // removed in the next version.
   repeated BasketCredit credits = 3 [ deprecated = true ];
 
   // amount is the integer number of basket tokens converted from credits.
-  // Deprecated: This field is still populated and will be removed in the
-  // next version.
+  //
+  // Deprecated (Since Revision 1): This field is still populated and will be
+  // removed in the next version.
   string amount = 4 [ deprecated = true ];
 }
 
@@ -51,12 +54,14 @@ message EventTake {
   string basket_denom = 2;
 
   // credits are the credits that were taken from the basket.
-  // Deprecated: This field is still populated and will be removed in the
-  // next version.
+  //
+  // Deprecated (Since Revision 1): This field is still populated and will be
+  // removed in the next version.
   repeated BasketCredit credits = 3 [ deprecated = true ];
 
   // amount is the integer number of basket tokens converted to credits.
-  // Deprecated: This field is still populated and will be removed in the
-  // next version.
+  //
+  // Deprecated (Since Revision 1): This field is still populated and will be
+  // removed in the next version.
   string amount = 4 [ deprecated = true ];
 }
