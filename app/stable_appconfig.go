@@ -100,13 +100,32 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			}
 		}
 
+		// add name and symbol to regen denom metadata
+		if err := migrateDenomMetadata(ctx, app.BankKeeper); err != nil {
+			return nil, err
+		}
+
+		// update denom unit order for basket tokens
 		if ctx.ChainID() == "regen-redwood-1" {
 			migrateDenomUnits(ctx, app.BankKeeper)
 		}
 
 		return toVersion, nil
 	})
+}
 
+func migrateDenomMetadata(ctx sdk.Context, bk bankkeeper.Keeper) error {
+	denom := "uregen"
+	metadata, found := bk.GetDenomMetaData(ctx, denom)
+	if !found {
+		return fmt.Errorf("no metadata found for %s denom", denom)
+	}
+
+	metadata.Name = "Regen"
+	metadata.Symbol = "REGEN"
+	bk.SetDenomMetaData(ctx, metadata)
+
+	return nil
 }
 
 // migrateDenomUnits update basket metadata denom units list in ascending order
