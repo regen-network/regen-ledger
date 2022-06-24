@@ -6,20 +6,23 @@ on:
       - v*
 
 jobs:
-  goreleaser:
-    name: GoReleaser
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      -
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      -
+        uses: actions/setup-go@v2
         with:
           go-version: 1.18
       -
-        name: Release Setup
+        name: Run release setup
         run: ./scripts/release-setup.sh
         shell: bash
       -
-        name: Release
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest

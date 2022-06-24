@@ -13,31 +13,32 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        envs: ["stable-build", "experimental-build"]
+        envs: ["stable-build", "experimental-build", "release-build"]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.3
+      -
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      -
+        uses: actions/setup-go@v2.1.3
         with:
           go-version: 1.18
-      - name: experimental build
-        if: matrix.envs == 'experimental-build'
-        run: EXPERIMENTAL=true make build
-      - name: stable build
+      -
+        name: Build Stable
         if: matrix.envs == 'stable-build'
         run: make build
-
-  goreleaser:
-    name: GoReleaser
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
       -
-        name: Release Setup
+        name: Build Experimental
+        if: matrix.envs == 'experimental-build'
+        run: EXPERIMENTAL=true make build
+      -
+        name: Run release setup
+        if: matrix.envs == 'release-build'
         run: ./scripts/release-setup.sh
         shell: bash
       -
-        name: Build
+        name: Build Release
+        if: matrix.envs == 'release-build'
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
