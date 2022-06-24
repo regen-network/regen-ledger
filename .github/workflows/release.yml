@@ -16,7 +16,7 @@ jobs:
           go-version: 1.18
       -
         name: Release Setup
-        run: ../../scripts/release-setup.sh
+        run: ./scripts/release-setup.sh
         shell: bash
       -
         name: Release

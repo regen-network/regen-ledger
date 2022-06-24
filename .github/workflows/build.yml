@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-go@v2
       -
         name: Release Setup
-        run: ../../scripts/release-setup.sh
+        run: ./scripts/release-setup.sh
         shell: bash
       -
         name: Build
