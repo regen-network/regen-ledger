@@ -103,6 +103,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		// add name and symbol to regen denom metadata
 		if err := migrateDenomMetadata(ctx, app.BankKeeper); err != nil {
 			return nil, err
+		}
 
 		// update denom unit order for basket tokens
 		if ctx.ChainID() == "regen-redwood-1" {
