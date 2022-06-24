@@ -24,11 +24,11 @@ jobs:
         with:
           go-version: 1.18
       -
-        name: Build Stable
+        name: Build stable
         if: matrix.envs == 'stable-build'
         run: make build
       -
-        name: Build Experimental
+        name: Build experimental
         if: matrix.envs == 'experimental-build'
         run: EXPERIMENTAL=true make build
       -
@@ -37,7 +37,7 @@ jobs:
         run: ./scripts/release-setup.sh
         shell: bash
       -
-        name: Build Release
+        name: Build release
         if: matrix.envs == 'release-build'
         uses: goreleaser/goreleaser-action@v2
         with:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# this script should only be used with github actions calling goreleaser
+# this script should only be called within github actions running goreleaser
 
 sudo apt-get update
 sudo apt-get install clang

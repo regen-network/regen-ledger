@@ -23,6 +23,7 @@ jobs:
         run: ./scripts/release-setup.sh
         shell: bash
       -
+        name: Build and release
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
