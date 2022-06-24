@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/CosmWasm/wasmd/app"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -54,16 +53,15 @@ func TestLostFunds(t *testing.T) {
 	db := dbm.NewMemDB()
 
 	regenApp := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{},
-		app.DefaultNodeHome, 0, encCfg, simapp.EmptyAppOptions{}, nil)
+		DefaultNodeHome, 0, encCfg, simapp.EmptyAppOptions{}, nil)
 	bz := NewDefaultGenesisState(encCfg.Marshaler)
 	stateBytes, err := json.MarshalIndent(bz, "", " ")
 	require.NoError(t, err)
 
 	regenApp.InitChain(
 		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: app.DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
+			Validators:    []abci.ValidatorUpdate{},
+			AppStateBytes: stateBytes,
 		},
 	)
 

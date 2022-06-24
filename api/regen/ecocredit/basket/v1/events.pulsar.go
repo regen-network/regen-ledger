@@ -1891,8 +1891,9 @@ type EventCreate struct {
 	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// curator is the address of the basket curator who is able to change certain
 	// basket settings.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version.
+	//
+	// Deprecated (Since Revision 1): This field is still populated and will be
+	// removed in the next version.
 	//
 	// Deprecated: Do not use.
 	Curator string `protobuf:"bytes,2,opt,name=curator,proto3" json:"curator,omitempty"`
@@ -1945,14 +1946,16 @@ type EventPut struct {
 	// basket_denom is the basket bank denom that the credits were added to.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are the credits that were added to the basket.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version.
+	//
+	// Deprecated (Since Revision 1): This field is still populated and will be
+	// removed in the next version.
 	//
 	// Deprecated: Do not use.
 	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 	// amount is the integer number of basket tokens converted from credits.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version.
+	//
+	// Deprecated (Since Revision 1): This field is still populated and will be
+	// removed in the next version.
 	//
 	// Deprecated: Do not use.
 	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
@@ -2020,14 +2023,16 @@ type EventTake struct {
 	// basket_denom is the basket bank denom that credits were taken from.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are the credits that were taken from the basket.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version.
+	//
+	// Deprecated (Since Revision 1): This field is still populated and will be
+	// removed in the next version.
 	//
 	// Deprecated: Do not use.
 	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 	// amount is the integer number of basket tokens converted to credits.
-	// Deprecated: This field is still populated and will be removed in the
-	// next version.
+	//
+	// Deprecated (Since Revision 1): This field is still populated and will be
+	// removed in the next version.
 	//
 	// Deprecated: Do not use.
 	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`

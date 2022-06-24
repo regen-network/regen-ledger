@@ -21,8 +21,8 @@ func (k Keeper) Supply(ctx context.Context, request *core.QuerySupplyRequest) (*
 	}
 
 	return &core.QuerySupplyResponse{
-		TradableSupply:  supply.TradableAmount,
-		RetiredSupply:   supply.RetiredAmount,
+		TradableAmount:  supply.TradableAmount,
+		RetiredAmount:   supply.RetiredAmount,
 		CancelledAmount: supply.CancelledAmount,
 	}, nil
 }

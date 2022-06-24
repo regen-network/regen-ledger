@@ -521,8 +521,8 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 
 				var res core.QuerySupplyResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().NotEmpty(res.TradableSupply)
-				s.Require().NotEmpty(res.RetiredSupply)
+				s.Require().NotEmpty(res.TradableAmount)
+				s.Require().NotEmpty(res.RetiredAmount)
 			}
 		})
 	}

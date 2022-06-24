@@ -1,20 +1,29 @@
 #!/usr/bin/make -f
 
-PACKAGES_NOSIMULATION=$(shell go list ./... | grep -v '/simulation')
-PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
-VERSION := $(shell echo $(shell git describe --tags))
-COMMIT := $(shell git log -1 --format='%H')
-LEDGER_ENABLED ?= true
-BINDIR ?= $(GOPATH)/bin
-BUILDDIR ?= $(CURDIR)/build
-APP_DIR = ./app
-MOCKS_DIR = $(CURDIR)/tests/mocks
-HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
-DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc11
-PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
-DOCKER := $(shell which docker)
+export GO111MODULE=on
 
-export GO111MODULE = on
+BUILD_DIR ?= $(CURDIR)/build
+REGEN_DIR := $(CURDIR)/app/regen
+
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+COMMIT := $(shell git log -1 --format='%H')
+
+ifeq (,$(VERSION))
+  VERSION := $(shell git describe --exact-match 2>/dev/null)
+  ifeq (,$(VERSION))
+    VERSION := $(BRANCH)-$(COMMIT)
+  endif
+endif
+
+SDK_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::')
+TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
+
+LEDGER_ENABLED ?= true
+DB_BACKEND ?= goleveldb
+
+###############################################################################
+###                            Build Tags/Flags                             ###
+###############################################################################
 
 # process build tags
 
@@ -47,141 +56,201 @@ ifeq ($(LEDGER_ENABLED),true)
   endif
 endif
 
-ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
-  build_tags += gcc
+ifeq ($(DB_BACKEND), goleveldb)
+  build_tags += goleveldb
 endif
 
+ifeq ($(DB_BACKEND), cleveldb)
+  build_tags += gcc
+  build_tags += cleveldb
+endif
 
-whitespace :=
-whitespace += $(whitespace)
-comma := ,
-build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+ifeq ($(DB_BACKEND), boltdb)
+  build_tags += boltdb
+endif
+
+ifeq ($(DB_BACKEND), rocksdb)
+  build_tags += rocksdb
+endif
+
+ifeq ($(DB_BACKEND), badgerdb)
+  build_tags += badgerdb
+endif
+
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
 
 # process linker flags
+
+empty :=
+whitespace := $(empty) $(empty)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=regen \
 		  -X github.com/cosmos/cosmos-sdk/version.AppName=regen \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+		  -X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)
 
-# DB backend selection
-ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
+ifeq ($(DB_BACKEND), goleveldb)
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=goleveldb
+endif
+
+ifeq ($(DB_BACKEND), cleveldb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
-ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
-  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
-  BUILD_TAGS += badgerdb
-endif
-# handle rocksdb
-ifeq (rocksdb,$(findstring rocksdb,$(TENDERMINT_BUILD_OPTIONS)))
-  CGO_ENABLED=1
-  BUILD_TAGS += rocksdb
-endif
-# handle boltdb
-ifeq (boltdb,$(findstring boltdb,$(TENDERMINT_BUILD_OPTIONS)))
-  BUILD_TAGS += boltdb
+
+ifeq ($(DB_BACKEND), boltdb)
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb
 endif
 
-ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
+ifeq ($(DB_BACKEND), rocksdb)
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
+endif
+
+ifeq ($(DB_BACKEND), badgerdb)
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
+endif
+
+ldflags += -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+
+ifeq ($(NO_STRIP),false)
   ldflags += -w -s
 endif
-ldflags += $(LDFLAGS)
+
+ldflags += $(LD_FLAGS)
 ldflags := $(strip $(ldflags))
 
-build_tags += $(BUILD_TAGS)
-build_tags := $(strip $(build_tags))
+# set build flags
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
-# check for nostrip option
-ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
+BUILD_FLAGS := -tags '$(build_tags)' -ldflags '$(ldflags)'
+
+ifeq ($(NO_STRIP),false)
   BUILD_FLAGS += -trimpath
 endif
 
-all: tools build lint test
-
-# The below include contains the tools and runsim targets.
-include contrib/devtools/Makefile
-
 ###############################################################################
-###                                  Build                                  ###
+###                             Build / Install                             ###
 ###############################################################################
 
-BUILD_TARGETS := build install
+all: build
 
-build: BUILD_ARGS=-o $(BUILDDIR)/
+install: go.sum go-version
+	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
+
+build: go.sum go-version
+	mkdir -p $(BUILD_DIR)
+	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_DIR)
+
 build-linux:
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
 
-$(BUILD_TARGETS): go.sum $(BUILDDIR)/
-	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
-
-$(BUILDDIR)/:
-	mkdir -p $(BUILDDIR)/
-
-build-regen-all: go.sum
-	$(if $(shell docker inspect -f '{{ .Id }}' tendermint/xrnnode 2>/dev/null),$(info found image tendermint/xrnnode),docker pull tendermint/xrnnode:latest)
-	docker rm latest-build || true
-	docker run --volume=$(CURDIR):/sources:ro \
-		--env TARGET_OS='darwin linux windows' \
-		--env APP=regen \
-		--env VERSION=$(VERSION) \
-		--env COMMIT=$(COMMIT) \
-		--env LEDGER_ENABLED=$(LEDGER_ENABLED) \
-		--name latest-build tendermint/xrnnode:latest
-	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
-
-build-regen-linux: go.sum $(BUILDDIR)/
-	$(if $(shell docker inspect -f '{{ .Id }}' tendermint/xrnnode 2>/dev/null),$(info found image tendermint/xrnnode),docker pull tendermint/xrnnode:latest)
-	docker rm latest-build || true
-	docker run --volume=$(CURDIR):/sources:ro \
-		--env TARGET_OS='linux' \
-		--env APP=regen \
-		--env VERSION=$(VERSION) \
-		--env COMMIT=$(COMMIT) \
-		--env LEDGER_ENABLED=false \
-		--name latest-build tendermint/xrnnode:latest
-	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
-	cp artifacts/regen-*-linux-amd64 $(BUILDDIR)/regen
-
-.PHONY: build build-linux build-regen-all build-regen-linux
-
-mockgen_cmd=go run github.com/golang/mock/mockgen
-
-mocks: $(MOCKS_DIR)
-	$(mockgen_cmd) -source=client/account_retriever.go -package mocks -destination tests/mocks/account_retriever.go
-	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tm_db_DB.go github.com/tendermint/tm-db DB
-	$(mockgen_cmd) -source=types/module/module.go -package mocks -destination tests/mocks/types_module_module.go
-	$(mockgen_cmd) -source=types/invariant.go -package mocks -destination tests/mocks/types_invariant.go
-	$(mockgen_cmd) -source=types/router.go -package mocks -destination tests/mocks/types_router.go
-	$(mockgen_cmd) -package mocks -destination tests/mocks/grpc_server.go github.com/gogo/protobuf/grpc Server
-	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tendermint_libs_log_DB.go github.com/tendermint/tendermint/libs/log Logger
-.PHONY: mocks
-
-$(MOCKS_DIR):
-	mkdir -p $(MOCKS_DIR)
-
-distclean: clean tools-clean
 clean:
-	rm -rf \
-	$(BUILDDIR)/ \
-	artifacts/ \
-	tmp-swagger-gen/
+	rm -rf $(BUILD_DIR)
 
-.PHONY: distclean clean
+.PHONY: build build-linux install clean
 
 ###############################################################################
-###                          Tools & Dependencies                           ###
+###                               Go Version                                ###
 ###############################################################################
 
-go.sum: go.mod
-	echo "Ensure dependencies have not been modified ..." >&2
-	go mod verify
-	go mod tidy
+GO_MAJOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1)
+GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
+MIN_GO_MAJOR_VERSION = 1
+MIN_GO_MINOR_VERSION = 18
+GO_VERSION_ERROR = Golang version $(GO_MAJOR_VERSION).$(GO_MINOR_VERSION) is not supported, \
+please update to at least $(MIN_GO_MAJOR_VERSION).$(MIN_GO_MINOR_VERSION)
+
+go-version:
+	@if [ $(GO_MAJOR_VERSION) -gt $(MIN_GO_MAJOR_VERSION) ]; then \
+		exit 0; \
+	elif [ $(GO_MAJOR_VERSION) -lt $(MIN_GO_MAJOR_VERSION) ]; then \
+		echo $(GO_VERSION_ERROR); \
+		exit 1; \
+	elif [ $(GO_MINOR_VERSION) -lt $(MIN_GO_MINOR_VERSION) ]; then \
+		echo $(GO_VERSION_ERROR); \
+		exit 1; \
+	fi
+
+.PHONY: go-version
+
+###############################################################################
+###                               Go Modules                                ###
+###############################################################################
+
+go.sum: go.mod verify tidy
+
+verify:
+	@find . -name 'go.mod' -type f -execdir go mod verify \;
 
 tidy:
-	./scripts/go-mod-tidy-all.sh
-.PHONY: tidy
+	@find . -name 'go.mod' -type f -execdir go mod tidy \;
+
+.PHONY: verify tidy
+
+###############################################################################
+###                               Go Generate                               ###
+###############################################################################
+
+generate:
+	@find . -name 'go.mod' -type f -execdir go generate ./... \;
+
+.PHONY: generate
+
+###############################################################################
+###                             Lint / Format                               ###
+###############################################################################
+
+lint:
+	golangci-lint run --out-format=tab
+
+lint-fix:
+	golangci-lint run --fix --out-format=tab --issues-exit-code=0
+
+format_filter = -name '*.go' -type f \
+	-not -path '*.git*' \
+	-not -name '*.pb.go' \
+	-not -name '*.gw.go' \
+	-not -name '*.pulsar.go' \
+	-not -name '*.cosmos_orm.go' \
+	-not -name 'statik.go'
+
+format:
+	@find . $(format_filter) | xargs gofmt -w -s
+	@find . $(format_filter) | xargs misspell -w
+	@find . $(format_filter) | xargs goimports -w
+
+.PHONY: lint lint-fix format
+
+###############################################################################
+###                                  Tools                                  ###
+###############################################################################
+
+tools: go-version
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/client9/misspell/cmd/misspell@latest
+	go install golang.org/x/tools/cmd/goimports@latest
+
+.PHONY: tools
+
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
+
+include make/proto.mk
+
+###############################################################################
+###                                  Tests                                  ###
+###############################################################################
+
+include make/tests.mk
+
+###############################################################################
+###                               Simulations                               ###
+###############################################################################
+
+include make/sims.mk
 
 ###############################################################################
 ###                              Documentation                              ###
@@ -199,201 +268,22 @@ godocs:
 	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v4/"
 	godoc -http=:6060
 
+.PHONY: docs-dev docs-build godocs
+
 ###############################################################################
 ###                                Swagger                                  ###
 ###############################################################################
 
-swagger: statik proto-swagger-gen
-	./scripts/generate-swagger-docs.sh
+swagger: proto-swagger-gen
+	@./scripts/generate-swagger-docs.sh
 
 .PHONY: swagger
 
 ###############################################################################
-###                           Tests & Simulation                            ###
-###############################################################################
-
-test: test-unit
-test-all: test-unit test-ledger-mock test-race test-cover
-
-TEST_PACKAGES=./...
-TEST_TARGETS := test-unit test-unit-amino test-unit-proto test-ledger-mock test-race test-ledger test-race
-
-# Test runs-specific rules. To add a new test target, just add
-# a new rule, customise ARGS or TEST_PACKAGES ad libitum, and
-# append the new rule to the TEST_TARGETS list.
-UNIT_TEST_ARGS		= cgo ledger test_ledger_mock norace
-AMINO_TEST_ARGS		= ledger test_ledger_mock test_amino norace
-LEDGER_TEST_ARGS	= cgo ledger norace
-LEDGER_MOCK_ARGS	= ledger test_ledger_mock norace
-TEST_RACE_ARGS		= cgo ledger test_ledger_mock
-ifeq ($(EXPERIMENTAL),true)
-	UNIT_TEST_ARGS		+= experimental
-	AMINO_TEST_ARGS		+= experimental
-	LEDGER_TEST_ARGS	+= experimental
-	LEDGER_MOCK_ARGS	+= experimental
-	TEST_RACE_ARGS		+= experimental
-endif
-
-test-unit: ARGS=-tags='$(UNIT_TEST_ARGS)'
-test-unit-amino: ARGS=-tags='${AMINO_TEST_ARGS}'
-test-ledger: ARGS=-tags='${LEDGER_TEST_ARGS}'
-test-ledger-mock: ARGS=-tags='${LEDGER_MOCK_ARGS}'
-test-race: ARGS=-race -tags='${TEST_RACE_ARGS}'
-test-race: TEST_PACKAGES=$(PACKAGES_NOSIMULATION)
-
-$(TEST_TARGETS): run-tests
-
-SUB_MODULES = $(shell find . -type f -name 'go.mod' -print0 | xargs -0 -n1 dirname | sort)
-CURRENT_DIR = $(shell pwd)
-run-tests:
-ifneq (,$(shell which tparse 2>/dev/null))
-	@echo "Unit tests"; \
-	for module in $(SUB_MODULES); do \
-		echo "Testing Module $$module"; \
-		cd ${CURRENT_DIR}/$$module; \
-		go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) ./... | tparse; \
-	done
-else
-	@echo "Unit tests"; \
-	for module in $(SUB_MODULES); do \
-		echo "Testing Module $$module"; \
-		cd ${CURRENT_DIR}/$$module; \
-		go test -mod=readonly $(ARGS) $(TEST_PACKAGES) ./... ; \
-	done
-endif
-
-.PHONY: run-tests test test-all $(TEST_TARGETS)
-
-test-cover:
-	@export VERSION=$(VERSION);
-	@bash scripts/test_cover.sh
-.PHONY: test-cover
-
-benchmark:
-	@go test -mod=readonly -bench=. $(PACKAGES_NOSIMULATION)
-.PHONY: benchmark
-
-###############################################################################
-###                                Linting                                  ###
-###############################################################################
-
-lint:
-	golangci-lint run --out-format=tab
-
-lint-fix:
-	golangci-lint run --fix --out-format=tab --issues-exit-code=0
-.PHONY: lint lint-fix
-
-format:
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -path "./tests/mocks/*" -not -name '*.pb.go' | xargs gofmt -w -s
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -path "./tests/mocks/*" -not -name '*.pb.go' | xargs misspell -w
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -path "./tests/mocks/*" -not -name '*.pb.go' | xargs goimports -w -local github.com/cosmos/cosmos-sdk
-.PHONY: format
-
-###############################################################################
-###                                 Devdoc                                  ###
-###############################################################################
-
-DEVDOC_SAVE = docker commit `docker ps -a -n 1 -q` devdoc:local
-
-devdoc-init:
-	docker run -it -v "$(CURDIR):/go/src/github.com/cosmos/cosmos-sdk" -w "/go/src/github.com/cosmos/cosmos-sdk" tendermint/devdoc echo
-	# TODO make this safer
-	$(call DEVDOC_SAVE)
-
-devdoc:
-	docker run -it -v "$(CURDIR):/go/src/github.com/cosmos/cosmos-sdk" -w "/go/src/github.com/cosmos/cosmos-sdk" devdoc:local bash
-
-devdoc-save:
-	# TODO make this safer
-	$(call DEVDOC_SAVE)
-
-devdoc-clean:
-	docker rmi -f $$(docker images -f "dangling=true" -q)
-
-devdoc-update:
-	docker pull tendermint/devdoc
-
-.PHONY: devdoc devdoc-clean devdoc-init devdoc-save devdoc-update
-
-###############################################################################
-###                                Protobuf                                 ###
-###############################################################################
-
-containerProtoVer=v0.7
-containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
-containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
-containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
-containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
-
-proto-all: proto-gen proto-lint proto-check-breaking proto-format
-.PHONY: proto-all proto-gen proto-gen-docker proto-lint proto-check-breaking proto-format
-
-proto-gen:
-	@echo "Generating Protobuf files"
-	@echo "If you're having trouble with this command, you need to install the latest buf, protoc-gen-gocosmos, protoc-gen-grpc-gateway, protoc-gen-go-pulsar, protoc-gen-go-grpc and protoc-gen-go-cosmos-orm locally"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
-		sh ./scripts/protocgen.sh; fi
-
-proto-format:
-	@echo "Formatting Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoFmt}$$"; then docker start -a $(containerProtoFmt); else docker run --name $(containerProtoFmt) -v $(CURDIR):/workspace --workdir /workspace tendermintdev/docker-build-proto \
-		find ./ -not -path "./third_party/*" -name "*.proto" -exec clang-format -i {} \; ; fi
-
-proto-format-direct:
-	find ./ -not -path "./third_party/*" -name "*.proto" -exec clang-format -i {} \;
-
-proto-lint:
-	@$(DOCKER_BUF) lint --error-format=json
-
-proto-lint-direct:
-	@buf lint --error-format=json
-
-proto-check-breaking:
-	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=master
-
-proto-check-breaking-direct:
-	@buf breaking --against '.git#branch=master'
-
-GOGO_PROTO_URL           = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
-GOOGLE_PROTO_URL         = https://raw.githubusercontent.com/googleapis/googleapis/master
-REGEN_COSMOS_PROTO_URL   = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
-COSMOS_PROTO_URL         = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.45.4/proto/cosmos
-COSMOS_ORM_PROTO_URL     = https://raw.githubusercontent.com/cosmos/cosmos-sdk/orm/v1.0.0-alpha.10/proto/cosmos
-
-GOGO_PROTO_TYPES         = third_party/proto/gogoproto
-GOOGLE_PROTO_TYPES       = third_party/proto/google
-REGEN_COSMOS_PROTO_TYPES = third_party/proto/cosmos_proto
-COSMOS_PROTO_TYPES       = third_party/proto/cosmos
-
-proto-update-deps:
-	@mkdir -p $(GOGO_PROTO_TYPES)
-	@curl -sSL $(GOGO_PROTO_URL)/gogoproto/gogo.proto > $(GOGO_PROTO_TYPES)/gogo.proto
-
-	@mkdir -p $(GOOGLE_PROTO_TYPES)/api/
-	@curl -sSL $(GOOGLE_PROTO_URL)/google/api/annotations.proto > $(GOOGLE_PROTO_TYPES)/api/annotations.proto
-	@curl -sSL $(GOOGLE_PROTO_URL)/google/api/http.proto > $(GOOGLE_PROTO_TYPES)/api/http.proto
-
-	@mkdir -p $(REGEN_COSMOS_PROTO_TYPES)
-	@curl -sSL $(REGEN_COSMOS_PROTO_URL)/cosmos.proto > $(REGEN_COSMOS_PROTO_TYPES)/cosmos.proto
-
-	@mkdir -p $(COSMOS_PROTO_TYPES)/base/v1beta1/
-	@curl -sSL $(COSMOS_PROTO_URL)/base/v1beta1/coin.proto > $(COSMOS_PROTO_TYPES)/base/v1beta1/coin.proto
-
-	@mkdir -p $(COSMOS_PROTO_TYPES)/base/query/v1beta1/
-	@curl -sSL $(COSMOS_PROTO_URL)/base/query/v1beta1/pagination.proto > $(COSMOS_PROTO_TYPES)/base/query/v1beta1/pagination.proto
-
-	@mkdir -p $(COSMOS_PROTO_TYPES)/orm/v1alpha1/
-	@curl -sSL $(COSMOS_ORM_PROTO_URL)/orm/v1alpha1/orm.proto > $(COSMOS_PROTO_TYPES)/orm/v1alpha1/orm.proto
-
-proto-swagger-gen: proto-update-deps
-	@echo "Generating Protobuf Swagger"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
-		sh ./scripts/protoc-swagger-gen.sh; fi
-
-###############################################################################
 ###                                Localnet                                 ###
 ###############################################################################
+
+DOCKER := $(shell which docker)
 
 localnet-build-env:
 	$(MAKE) -C contrib/images regen-env
@@ -403,7 +293,6 @@ localnet-build-nodes:
 			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test
 	docker-compose up -d
 
-
 # localnet-start will run a 4-node testnet locally. The nodes are
 # based off the docker images in: ./contrib/images/regen-env
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
@@ -412,12 +301,3 @@ localnet-stop:
 	docker-compose down -v
 
 .PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
-
-include sims.mk
-
-###############################################################################
-###                                Generate                                 ###
-###############################################################################
-
-generate:
-	find . -name 'go.mod' -type f -execdir go generate ./... \;
