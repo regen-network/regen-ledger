@@ -83,7 +83,6 @@ func NewPositiveDecFromString(s string) (Dec, error) {
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
-
 	if !d.IsPositive() || !d.IsFinite() {
 		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
