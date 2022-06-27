@@ -8,7 +8,7 @@ Feature: Define Resolver
     Scenario: the url and manager combination is unique
       Given alice has defined a resolver with url "https://foo.bar"
       When bob attempts to define a resolver with url "https://foo.bar"
-      Then expect the resolver with id "1" and url "https://foo.bar" and manager alice
+      Then expect the resolver with id "2" and url "https://foo.bar" and manager bob
 
     Scenario: the url and manager combination is not unique
       Given alice has defined a resolver with url "https://foo.bar"

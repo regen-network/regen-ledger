@@ -52,14 +52,14 @@ func (s *defineResolverSuite) BobAttemptsToDefineAResolverWithUrl(a string) {
 	})
 }
 
-func (s *defineResolverSuite) ExpectTheResolverWithIdAndUrlAndManagerAlice(a string, b string) {
+func (s *defineResolverSuite) ExpectTheResolverWithIdAndUrlAndManagerBob(a string, b string) {
 	id, err := strconv.ParseUint(a, 10, 64)
 	require.NoError(s.t, err)
 
 	resolver, err := s.server.stateStore.ResolverTable().Get(s.ctx, id)
 	require.NoError(s.t, err)
 	require.Equal(s.t, b, resolver.Url)
-	require.Equal(s.t, s.alice.Bytes(), resolver.Manager)
+	require.Equal(s.t, s.bob.Bytes(), resolver.Manager)
 }
 
 func (s *defineResolverSuite) ExpectTheError(a string) {
