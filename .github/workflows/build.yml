@@ -5,25 +5,41 @@ on:
   push:
     branches:
       - master
+      - release/v*
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        envs: ["stable-build", "experimental-build"]
+        envs: ["stable-build", "experimental-build", "release-build"]
     steps:
-      - name: Install Go
+      -
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      -
         uses: actions/setup-go@v2.1.3
         with:
           go-version: 1.18
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Display go version
-        run: go version
-      - name: experimental build
-        if: matrix.envs == 'experimental-build'
-        run: EXPERIMENTAL=true make build
-      - name: stable build
+      -
+        name: Build stable
         if: matrix.envs == 'stable-build'
         run: make build
+      -
+        name: Build experimental
+        if: matrix.envs == 'experimental-build'
+        run: EXPERIMENTAL=true make build
+      -
+        name: Run release setup
+        if: matrix.envs == 'release-build'
+        run: ./scripts/release-setup.sh
+        shell: bash
+      -
+        name: Build release
+        if: matrix.envs == 'release-build'
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: build --skip-validate --rm-dist
