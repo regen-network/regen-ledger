@@ -146,7 +146,6 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 	}
 
 	return coretypes.ValidateGenesis(bz, params)
-
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {

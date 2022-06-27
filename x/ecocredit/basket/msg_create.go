@@ -1,9 +1,6 @@
 package basket
 
 import (
-	"fmt"
-	"regexp"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -12,19 +9,9 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-const (
-	nameMinLen  = 3
-	nameMaxLen  = 8
-	descrMaxLen = 256
-)
+const descrMaxLen = 256
 
-var (
-	_ legacytx.LegacyMsg = &MsgCreate{}
-
-	// first character must be alphabetic, the rest can be alphanumeric. We reduce length
-	// constraints by one to account for the first character being forced to alphabetic.
-	reName = regexp.MustCompile(fmt.Sprintf("^[[:alpha:]][[:alnum:]]{%d,%d}$", nameMinLen-1, nameMaxLen-1))
-)
+var _ legacytx.LegacyMsg = &MsgCreate{}
 
 // Route implements LegacyMsg.
 func (m MsgCreate) Route() string { return sdk.MsgTypeURL(&m) }
@@ -47,8 +34,8 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("name cannot be empty")
 	}
 
-	if !reName.MatchString(m.Name) {
-		return sdkerrors.ErrInvalidRequest.Wrapf("name must start with an alphabetic character, and be between %d and %d alphanumeric characters long", nameMinLen, nameMaxLen)
+	if err := ValidateBasketName(m.Name); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.Description) > descrMaxLen {

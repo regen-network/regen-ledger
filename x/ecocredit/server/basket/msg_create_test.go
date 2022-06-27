@@ -303,16 +303,16 @@ func (s *createSuite) getDenomMetadata() bank.Metadata {
 	denom, displayDenom, err := basket.FormatBasketDenom(s.basketName, s.creditTypeAbbrev, s.creditTypePrecision)
 	require.NoError(s.t, err)
 
-	denomUnits := []*bank.DenomUnit{{
-		Denom:    displayDenom,
-		Exponent: s.creditTypePrecision,
-	}}
-
+	denomUnits := make([]*bank.DenomUnit, 0)
 	if denom != displayDenom {
 		denomUnits = append(denomUnits, &bank.DenomUnit{
 			Denom: denom,
 		})
 	}
+	denomUnits = append(denomUnits, &bank.DenomUnit{
+		Denom:    displayDenom,
+		Exponent: s.creditTypePrecision,
+	})
 
 	return bank.Metadata{
 		Name:       s.basketName,
