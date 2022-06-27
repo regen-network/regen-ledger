@@ -1,0 +1,20 @@
+# TestDec/TestIsFinite 2022/06/27 12:26:36 [rapid] draw floatAndDec: math.floatAndDec{float:-1, dec:math.Dec{dec:apd.Decimal{Form:0, Negative:true, Exponent:0, Coeff:big.Int{neg:false, abs:big.nat{0x1}}}}}
+# TestDec/TestIsFinite 2022/06/27 12:26:36 
+# 	Error Trace:	dec_test.go:561
+# 	            				engine.go:276
+# 	            				engine.go:285
+# 	            				engine.go:138
+# 	            				engine.go:115
+# 	Error:      	Not equal: 
+# 	            	expected: false
+# 	            	actual  : true
+# 	Test:       	TestDec/TestIsFinite
+# 
+v0.4.6#6744812312311365664
+0x10000000000000
+0x0
+0x0
+0x0
+0x0
+0x0
+0x0

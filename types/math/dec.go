@@ -246,18 +246,22 @@ func (x Dec) Equal(y Dec) bool {
 	return x.dec.Cmp(&y.dec) == 0
 }
 
+// IsZero returns true if the decimal is zero.
 func (x Dec) IsZero() bool {
 	return x.dec.IsZero()
 }
 
+// IsNegative returns true if the decimal is negative.
 func (x Dec) IsNegative() bool {
 	return x.dec.Negative && !x.dec.IsZero()
 }
 
+// IsPositive returns true if the decimal is positive.
 func (x Dec) IsPositive() bool {
 	return !x.dec.Negative && !x.dec.IsZero()
 }
 
+// IsFinite returns true if the decimal is finite.
 func (x Dec) IsFinite() bool {
 	return x.dec.Form == apd.Finite
 }
