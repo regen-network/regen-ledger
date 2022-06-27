@@ -88,10 +88,10 @@ comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=regen \
-		  -X github.com/cosmos/cosmos-sdk/version.AppName=regen \
-		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
-		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)
+	-X github.com/cosmos/cosmos-sdk/version.AppName=regen \
+	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+	-X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)
 
 ifeq ($(DB_BACKEND), goleveldb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=goleveldb
@@ -163,6 +163,7 @@ GO_VERSION_ERROR = Golang version $(GO_MAJOR_VERSION).$(GO_MINOR_VERSION) is not
 please update to at least $(MIN_GO_MAJOR_VERSION).$(MIN_GO_MINOR_VERSION)
 
 go-version:
+	@echo "Verifying go version..."
 	@if [ $(GO_MAJOR_VERSION) -gt $(MIN_GO_MAJOR_VERSION) ]; then \
 		exit 0; \
 	elif [ $(GO_MAJOR_VERSION) -lt $(MIN_GO_MAJOR_VERSION) ]; then \
@@ -179,12 +180,17 @@ go-version:
 ###                               Go Modules                                ###
 ###############################################################################
 
-go.sum: go.mod verify tidy
+go.sum: go.mod
+	@echo "Ensuring app dependencies have not been modified..."
+	go mod verify
+	go mod tidy
 
 verify:
+	@echo "Verifying all go module dependencies..."
 	@find . -name 'go.mod' -type f -execdir go mod verify \;
 
 tidy:
+	@echo "Cleaning up all go module dependencies..."
 	@find . -name 'go.mod' -type f -execdir go mod tidy \;
 
 .PHONY: verify tidy
@@ -194,6 +200,7 @@ tidy:
 ###############################################################################
 
 generate:
+	@echo "Generating source files from directives..."
 	@find . -name 'go.mod' -type f -execdir go generate ./... \;
 
 .PHONY: generate
