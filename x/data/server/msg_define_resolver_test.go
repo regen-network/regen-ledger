@@ -15,6 +15,7 @@ import (
 type defineResolverSuite struct {
 	*baseSuite
 	alice       sdk.AccAddress
+	bob         sdk.AccAddress
 	resolverUrl string
 	err         error
 }
@@ -26,6 +27,7 @@ func TestDefineResolver(t *testing.T) {
 func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addrs[0]
+	s.bob = s.addrs[1]
 }
 
 func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
@@ -39,6 +41,13 @@ func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 func (s *defineResolverSuite) AliceAttemptsToDefineAResolverWithUrl(a string) {
 	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
+		ResolverUrl: a,
+	})
+}
+
+func (s *defineResolverSuite) BobAttemptsToDefineAResolverWithUrl(a string) {
+	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
+		Manager:     s.bob.String(),
 		ResolverUrl: a,
 	})
 }

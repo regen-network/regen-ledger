@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
@@ -21,7 +23,11 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		Manager: manager,
 	})
 	if err != nil {
-		return nil, data.ErrResolverURLExists
+		if err == ormerrors.UniqueKeyViolation {
+			return nil, fmt.Errorf("a resolver with the same URL and manager already exists: %s", err)
+		} else {
+			return nil, err
+		}
 	}
 
 	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&data.EventDefineResolver{

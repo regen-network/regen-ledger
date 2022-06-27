@@ -62,6 +62,7 @@ message Resolver {
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1, fields : "url"}
     index : {id : 2, fields : "manager"}
+    index : {id : 3, fields : "url,manager", unique: true}
   };
 
   // id is the ID of the resolver.
