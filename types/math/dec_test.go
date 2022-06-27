@@ -60,7 +60,6 @@ func TestDec(t *testing.T) {
 	t.Run("TestIsZero", rapid.MakeCheck(testIsZero))
 	t.Run("TestIsNegative", rapid.MakeCheck(testIsNegative))
 	t.Run("TestIsPositive", rapid.MakeCheck(testIsPositive))
-	t.Run("TestIsFinite", rapid.MakeCheck(testIsFinite))
 	t.Run("TestNumDecimalPlaces", rapid.MakeCheck(testNumDecimalPlaces))
 
 	// Unit tests
@@ -553,18 +552,6 @@ func testIsPositive(t *rapid.T) {
 	require.Equal(t, f > 0, dec.IsPositive())
 }
 
-// Property: isFinite(f) == isFinite(NewDecFromString(f.String()))
-func testIsFinite(t *rapid.T) {
-	// genDec always draws from float64
-	a := genDec.Draw(t, "a").(Dec)
-	require.True(t, a.IsFinite())
-
-	b, err := NewDecFromString("NaN")
-	require.NoError(t, err)
-
-	require.False(t, b.IsFinite())
-}
-
 // Property: floatDecimalPlaces(f) == NumDecimalPlaces(NewDecFromString(f.String()))
 func testNumDecimalPlaces(t *rapid.T) {
 	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec").(floatAndDec)
@@ -609,6 +596,18 @@ func floatDecimalPlaces(t *rapid.T, f float64) uint32 {
 	} else {
 		return uint32(res)
 	}
+}
+
+func TestIsFinite(t *testing.T) {
+	a, err := NewDecFromString("1.5")
+	require.NoError(t, err)
+
+	require.True(t, a.IsFinite())
+
+	b, err := NewDecFromString("NaN")
+	require.NoError(t, err)
+
+	require.False(t, b.IsFinite())
 }
 
 func TestReduce(t *testing.T) {
