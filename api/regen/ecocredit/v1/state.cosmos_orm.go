@@ -1616,6 +1616,9 @@ type BatchContractTable interface {
 	Has(ctx context.Context, batch_key uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, batch_key uint64) (*BatchContract, error)
+	HasByContract(ctx context.Context, contract string) (found bool, err error)
+	// GetByContract returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByContract(ctx context.Context, contract string) (*BatchContract, error)
 	List(ctx context.Context, prefixKey BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error)
 	ListRange(ctx context.Context, from, to BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BatchContractIndexKey) error
@@ -1656,6 +1659,19 @@ func (this BatchContractBatchKeyIndexKey) WithBatchKey(batch_key uint64) BatchCo
 	return this
 }
 
+type BatchContractContractIndexKey struct {
+	vs []interface{}
+}
+
+func (x BatchContractContractIndexKey) id() uint32             { return 1 }
+func (x BatchContractContractIndexKey) values() []interface{}  { return x.vs }
+func (x BatchContractContractIndexKey) batchContractIndexKey() {}
+
+func (this BatchContractContractIndexKey) WithContract(contract string) BatchContractContractIndexKey {
+	this.vs = []interface{}{contract}
+	return this
+}
+
 type batchContractTable struct {
 	table ormtable.Table
 }
@@ -1683,6 +1699,26 @@ func (this batchContractTable) Has(ctx context.Context, batch_key uint64) (found
 func (this batchContractTable) Get(ctx context.Context, batch_key uint64) (*BatchContract, error) {
 	var batchContract BatchContract
 	found, err := this.table.PrimaryKey().Get(ctx, &batchContract, batch_key)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &batchContract, nil
+}
+
+func (this batchContractTable) HasByContract(ctx context.Context, contract string) (found bool, err error) {
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		contract,
+	)
+}
+
+func (this batchContractTable) GetByContract(ctx context.Context, contract string) (*BatchContract, error) {
+	var batchContract BatchContract
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &batchContract,
+		contract,
+	)
 	if err != nil {
 		return nil, err
 	}

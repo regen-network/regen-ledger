@@ -85,7 +85,7 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 		OriginTx: &core.OriginTx{
 			Id:       "0x64",
 			Source:   "polygon",
-			Contract: "0x40",
+			Contract: "0x50", // different contract address
 			Note:     "note",
 		},
 	}
@@ -134,7 +134,7 @@ func TestBridgeReceive_None(t *testing.T) {
 		OriginTx: &core.OriginTx{
 			Id:       "0x64",
 			Source:   "polygon",
-			Contract: "0x40",
+			Contract: "0x50", // different contract address
 			Note:     "note",
 		},
 	}
@@ -204,7 +204,7 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 	assertBatchBridged(t, msg.Batch, batch)
 }
 
-func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
+func TestBridgeReceive_ChoosesMatchingContract(t *testing.T) {
 	t.Parallel()
 	refId := "VCS-001"
 	s := setupBase(t)
@@ -226,6 +226,12 @@ func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 	}
 	b2key, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, batch2)
 	assert.NilError(t, err)
+
+	assert.NilError(s.t, s.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: b2key,
+		Contract: "0x50",
+	}))
+
 	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchKey:        b2key,
 		TradableAmount:  "1",
@@ -252,14 +258,13 @@ func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 		OriginTx: &core.OriginTx{
 			Id:       "0x64",
 			Source:   "polygon",
-			Contract: "0x40",
+			Contract: "0x50",
 			Note:     "note",
 		},
 	}
 
 	res, err := s.k.BridgeReceive(s.ctx, msg)
 	assert.NilError(t, err)
-	// ensure the 2nd batch was picked, since it was manually set to be an older issuance date than the first.
 	assert.Equal(t, res.BatchDenom, batch2.Denom)
 	assertBatchBridged(t, msg.Batch, batch2)
 	assertProjectBridged(t, msg.Project, project)
@@ -285,6 +290,10 @@ func setupBridgeTest(s *baseSuite, refId string) (project *api.Project, batch *a
 	assert.NilError(s.t, err)
 	batch.Open = true
 	assert.NilError(s.t, s.stateStore.BatchTable().Update(s.ctx, batch))
+	assert.NilError(s.t, s.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: batch.Key,
+		Contract: "0x40",
+	}))
 	project, err = s.stateStore.ProjectTable().GetById(s.ctx, projectId)
 	assert.NilError(s.t, err)
 	project.ReferenceId = refId

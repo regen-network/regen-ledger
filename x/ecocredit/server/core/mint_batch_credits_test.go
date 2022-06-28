@@ -25,6 +25,11 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 	supplyBefore, err := s.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 	assert.NilError(t, err)
 
+	assert.NilError(t, s.stateStore.BatchContractTable().Insert(ctx, &api.BatchContract{
+		BatchKey: batch.Key,
+		Contract: "0x40",
+	}))
+
 	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
 	issuance := core.BatchIssuance{
 		Recipient:              s.addr.String(),
@@ -112,6 +117,11 @@ func TestMintBatchCredits_SameTxId(t *testing.T) {
 	ctx := s.ctx
 	batch := setupMintBatchTest(s, true)
 
+	assert.NilError(t, s.stateStore.BatchContractTable().Insert(ctx, &api.BatchContract{
+		BatchKey: batch.Key,
+		Contract: "0x40",
+	}))
+
 	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
 	issuance := core.BatchIssuance{
 		Recipient:              s.addr.String(),
@@ -127,7 +137,6 @@ func TestMintBatchCredits_SameTxId(t *testing.T) {
 			Id:       "0x64",
 			Source:   "polygon",
 			Contract: "0x40",
-			Note:     "note",
 		},
 	}
 
@@ -136,6 +145,34 @@ func TestMintBatchCredits_SameTxId(t *testing.T) {
 
 	_, err = s.k.MintBatchCredits(ctx, &msg)
 	assert.ErrorContains(t, err, "credits already issued with tx id")
+}
+
+func TestMintBatchCredits_NoBatchContract(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	ctx := s.ctx
+	batch := setupMintBatchTest(s, true)
+
+	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
+	issuance := core.BatchIssuance{
+		Recipient:              s.addr.String(),
+		TradableAmount:         mintTradable.String(),
+		RetiredAmount:          mintRetired.String(),
+		RetirementJurisdiction: "US-OR",
+	}
+	msg := core.MsgMintBatchCredits{
+		Issuer:     s.addr.String(),
+		BatchDenom: batch.Denom,
+		Issuance:   []*core.BatchIssuance{&issuance},
+		OriginTx: &core.OriginTx{
+			Id:       "0x64",
+			Source:   "polygon",
+			Contract: "0x40",
+		},
+	}
+
+	_, err := s.k.MintBatchCredits(ctx, &msg)
+	assert.ErrorContains(t, err, "credit batch with matching contract not found")
 }
 
 func setupMintBatchTest(s *baseSuite, open bool) *api.Batch {

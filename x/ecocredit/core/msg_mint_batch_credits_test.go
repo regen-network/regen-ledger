@@ -108,7 +108,7 @@ func TestValidateOriginTx(t *testing.T) {
 			OriginTx{
 				Source: "polygon",
 				Id:     "0x123",
-				Note:   randstr.String(514),
+				Note:   randstr.String(513),
 			},
 		},
 		{
@@ -142,7 +142,7 @@ func TestValidateOriginTx(t *testing.T) {
 			OriginTx{
 				Source: "polygon",
 				Id:     "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
-				Note:   randstr.String(511),
+				Note:   randstr.String(512),
 			},
 		},
 	}

@@ -93,7 +93,7 @@ message OriginTx {
   // executed when creating the transaction. This address will be stored in
   // state separately from the origin tx and on a per credit batch basis to be
   // used when sending credits back to the source chain. This field can be left
-  // blank if credits are bridged from a non contract-based source.
+  // blank if credits are bridged from a non-contract-based source.
   string contract = 3;
 
   // note is a reference note for accounting that will be included in an event

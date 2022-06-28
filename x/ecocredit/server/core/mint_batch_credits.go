@@ -38,6 +38,18 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, err
 	}
 
+	if len(req.OriginTx.Contract) > 0 {
+		_, err := k.stateStore.BatchContractTable().GetByContract(ctx, req.OriginTx.Contract)
+		if err != nil {
+			if ormerrors.NotFound.Is(err) {
+				return nil, sdkerrors.ErrInvalidRequest.Wrap(
+					"credit batch with matching contract not found",
+				)
+			}
+			return nil, err
+		}
+	}
+
 	ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
 	if err != nil {
 		return nil, err

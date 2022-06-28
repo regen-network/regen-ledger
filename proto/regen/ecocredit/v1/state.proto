@@ -294,6 +294,7 @@ message BatchContract {
   option (cosmos.orm.v1alpha1.table) = {
     id : 12,
     primary_key : {fields : "batch_key"}
+    index : {id : 1, fields : "contract", unique: true}
   };
 
   // batch_key is the table row identifier of the credit batch used internally

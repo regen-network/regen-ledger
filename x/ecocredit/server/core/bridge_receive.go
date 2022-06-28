@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -62,7 +63,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			ProjectId:  projectRes.ProjectId,
 		}
 	} else {
-		batch, err := k.getBatchFromBridgeReq(ctx, req.Batch, project.Id, bridgeServiceAddr)
+		batch, err := k.getBatchFromBridgeReq(ctx, req.Batch, project.Id, bridgeServiceAddr, req.OriginTx.Contract)
 		if err != nil {
 			return nil, err
 		}
@@ -131,7 +132,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 // getBatchFromBridgeReq attempts to retrieve a batch from state given the request.
 // In the event that multiple batches are matched, the batch with the oldest issuance date is selected.
 // When no batches are found, nil is returned for both return values.
-func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Batch, projectId string, bridgeAddr sdk.AccAddress) (*api.Batch, error) {
+func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Batch, projectId string, bridgeAddr sdk.AccAddress, contractAddress string) (*api.Batch, error) {
 	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
 	// any batches in that iterator that were created by the same issuer and have matching metadata, are added to the slice.
 	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
@@ -146,6 +147,23 @@ func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeRe
 		if err != nil {
 			return nil, err
 		}
+
+		// check the contract provided in origin tx matches the batch contract
+		batchContract, err := k.stateStore.BatchContractTable().Get(ctx, batch.Key)
+		if err != nil {
+			if ormerrors.NotFound.Is(err) {
+				// if contract for credit batch not found, skip this batch so that
+				// we can create a new credit batch for the contract provided
+				continue
+			}
+			return nil, err
+		}
+		// if credit batch does not have a matching contract, skip this batch so
+		// that we can create a new credit batch for the contract provided
+		if batchContract.Contract != contractAddress {
+			continue
+		}
+
 		// the timestamp stored in the batch is more granular than the date in the denom representation, so we match here.
 		if batch.StartDate.AsTime().UTC().Equal(req.StartDate.UTC()) &&
 			batch.EndDate.AsTime().UTC().Equal(req.EndDate.UTC()) &&
