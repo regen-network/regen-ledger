@@ -50,7 +50,7 @@ func TestQuery_ResolversByHash(t *testing.T) {
 	require.NoError(t, err)
 	rid2, err := s.server.stateStore.ResolverTable().InsertReturningID(s.ctx, &api.Resolver{
 		Url:     url,
-		Manager: s.addrs[0],
+		Manager: s.addrs[1],
 	})
 	require.NoError(t, err)
 
