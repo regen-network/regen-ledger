@@ -190,15 +190,24 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	if req.OriginTx != nil {
 		if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
-			Id:         req.OriginTx.Id,
-			Source:     req.OriginTx.Source,
-			Contract:   req.OriginTx.Contract,
-			BatchDenom: batchDenom,
+			Id:     req.OriginTx.Id,
+			Source: req.OriginTx.Source,
 		}); err != nil {
 			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
 			}
 			return nil, err
+		}
+
+		// insert batch contract mapping if contract is provided
+		if len(req.OriginTx.Contract) != 0 {
+			err = k.stateStore.BatchContractTable().Insert(ctx, &api.BatchContract{
+				BatchKey: batchKey,
+				Contract: req.OriginTx.Contract,
+			})
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 

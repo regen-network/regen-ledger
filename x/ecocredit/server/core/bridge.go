@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -22,36 +22,26 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 	}
 
 	for _, credit := range req.Credits {
-		it, err := k.stateStore.BatchOriginTxTable().List(
-			ctx,
-			api.BatchOriginTxBatchDenomIndexKey{}.WithBatchDenom(credit.BatchDenom),
-		)
-		// all contract addresses should be the same for a given batch, therefore,
-		// we only want the first origin tx that matches the batch denom
-		var originTx *api.BatchOriginTx
-		if it.Next() {
-			var err error
-			originTx, err = it.Value()
-			if err != nil {
-				return nil, err
-			}
+		batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
+		if err != nil {
+			return nil, err // we already know the batch exists from Cancel
 		}
-		it.Close()
 
-		// if no matching origin tx was found then we error because we only support
-		// bridging credits from credit batches that were created as a result of a
-		// bridge operation (i.e. only bridging previously bridged credits)
-		if originTx == nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrap(
-				"only credits previously bridged from another chain are supported at this time",
-			)
+		batchContract, err := k.stateStore.BatchContractTable().Get(ctx, batch.Key)
+		if err != nil {
+			if err == ormerrors.NotFound {
+				return nil, sdkerrors.ErrInvalidRequest.Wrap(
+					"only credits previously bridged from another chain are supported at this time",
+				)
+			}
+			return nil, err
 		}
 
 		sdkCtx := types.UnwrapSDKContext(ctx)
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventBridge{
 			Target:    req.Target,
 			Recipient: req.Recipient,
-			Contract:  originTx.Contract,
+			Contract:  batchContract.Contract,
 			Amount:    credit.Amount,
 		}); err != nil {
 			return nil, err

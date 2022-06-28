@@ -1542,19 +1542,6 @@ func (this BatchOriginTxIdSourceIndexKey) WithIdSource(id string, source string)
 	return this
 }
 
-type BatchOriginTxBatchDenomIndexKey struct {
-	vs []interface{}
-}
-
-func (x BatchOriginTxBatchDenomIndexKey) id() uint32             { return 1 }
-func (x BatchOriginTxBatchDenomIndexKey) values() []interface{}  { return x.vs }
-func (x BatchOriginTxBatchDenomIndexKey) batchOriginTxIndexKey() {}
-
-func (this BatchOriginTxBatchDenomIndexKey) WithBatchDenom(batch_denom string) BatchOriginTxBatchDenomIndexKey {
-	this.vs = []interface{}{batch_denom}
-	return this
-}
-
 type batchOriginTxTable struct {
 	table ormtable.Table
 }
@@ -1621,6 +1608,120 @@ func NewBatchOriginTxTable(db ormtable.Schema) (BatchOriginTxTable, error) {
 	return batchOriginTxTable{table}, nil
 }
 
+type BatchContractTable interface {
+	Insert(ctx context.Context, batchContract *BatchContract) error
+	Update(ctx context.Context, batchContract *BatchContract) error
+	Save(ctx context.Context, batchContract *BatchContract) error
+	Delete(ctx context.Context, batchContract *BatchContract) error
+	Has(ctx context.Context, batch_key uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	Get(ctx context.Context, batch_key uint64) (*BatchContract, error)
+	List(ctx context.Context, prefixKey BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error)
+	ListRange(ctx context.Context, from, to BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BatchContractIndexKey) error
+	DeleteRange(ctx context.Context, from, to BatchContractIndexKey) error
+
+	doNotImplement()
+}
+
+type BatchContractIterator struct {
+	ormtable.Iterator
+}
+
+func (i BatchContractIterator) Value() (*BatchContract, error) {
+	var batchContract BatchContract
+	err := i.UnmarshalMessage(&batchContract)
+	return &batchContract, err
+}
+
+type BatchContractIndexKey interface {
+	id() uint32
+	values() []interface{}
+	batchContractIndexKey()
+}
+
+// primary key starting index..
+type BatchContractPrimaryKey = BatchContractBatchKeyIndexKey
+
+type BatchContractBatchKeyIndexKey struct {
+	vs []interface{}
+}
+
+func (x BatchContractBatchKeyIndexKey) id() uint32             { return 0 }
+func (x BatchContractBatchKeyIndexKey) values() []interface{}  { return x.vs }
+func (x BatchContractBatchKeyIndexKey) batchContractIndexKey() {}
+
+func (this BatchContractBatchKeyIndexKey) WithBatchKey(batch_key uint64) BatchContractBatchKeyIndexKey {
+	this.vs = []interface{}{batch_key}
+	return this
+}
+
+type batchContractTable struct {
+	table ormtable.Table
+}
+
+func (this batchContractTable) Insert(ctx context.Context, batchContract *BatchContract) error {
+	return this.table.Insert(ctx, batchContract)
+}
+
+func (this batchContractTable) Update(ctx context.Context, batchContract *BatchContract) error {
+	return this.table.Update(ctx, batchContract)
+}
+
+func (this batchContractTable) Save(ctx context.Context, batchContract *BatchContract) error {
+	return this.table.Save(ctx, batchContract)
+}
+
+func (this batchContractTable) Delete(ctx context.Context, batchContract *BatchContract) error {
+	return this.table.Delete(ctx, batchContract)
+}
+
+func (this batchContractTable) Has(ctx context.Context, batch_key uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, batch_key)
+}
+
+func (this batchContractTable) Get(ctx context.Context, batch_key uint64) (*BatchContract, error) {
+	var batchContract BatchContract
+	found, err := this.table.PrimaryKey().Get(ctx, &batchContract, batch_key)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &batchContract, nil
+}
+
+func (this batchContractTable) List(ctx context.Context, prefixKey BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error) {
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
+	return BatchContractIterator{it}, err
+}
+
+func (this batchContractTable) ListRange(ctx context.Context, from, to BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error) {
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
+	return BatchContractIterator{it}, err
+}
+
+func (this batchContractTable) DeleteBy(ctx context.Context, prefixKey BatchContractIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this batchContractTable) DeleteRange(ctx context.Context, from, to BatchContractIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
+}
+
+func (this batchContractTable) doNotImplement() {}
+
+var _ BatchContractTable = batchContractTable{}
+
+func NewBatchContractTable(db ormtable.Schema) (BatchContractTable, error) {
+	table := db.GetTable(&BatchContract{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&BatchContract{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return batchContractTable{table}, nil
+}
+
 type StateStore interface {
 	CreditTypeTable() CreditTypeTable
 	ClassTable() ClassTable
@@ -1633,6 +1734,7 @@ type StateStore interface {
 	BatchBalanceTable() BatchBalanceTable
 	BatchSupplyTable() BatchSupplyTable
 	BatchOriginTxTable() BatchOriginTxTable
+	BatchContractTable() BatchContractTable
 
 	doNotImplement()
 }
@@ -1649,6 +1751,7 @@ type stateStore struct {
 	batchBalance    BatchBalanceTable
 	batchSupply     BatchSupplyTable
 	batchOriginTx   BatchOriginTxTable
+	batchContract   BatchContractTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -1693,6 +1796,10 @@ func (x stateStore) BatchSupplyTable() BatchSupplyTable {
 
 func (x stateStore) BatchOriginTxTable() BatchOriginTxTable {
 	return x.batchOriginTx
+}
+
+func (x stateStore) BatchContractTable() BatchContractTable {
+	return x.batchContract
 }
 
 func (stateStore) doNotImplement() {}
@@ -1755,6 +1862,11 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	batchContractTable, err := NewBatchContractTable(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return stateStore{
 		creditTypeTable,
 		classTable,
@@ -1767,5 +1879,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		batchBalanceTable,
 		batchSupplyTable,
 		batchOriginTxTable,
+		batchContractTable,
 	}, nil
 }
