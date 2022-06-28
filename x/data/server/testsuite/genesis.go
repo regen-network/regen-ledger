@@ -86,7 +86,7 @@ func (s *GenesisTestSuite) TestInitGenesis() {
 	bz, err := json.Marshal(wrapper)
 	require.NoError(err)
 	wrapper = map[string]json.RawMessage{}
-	wrapper["data"] = bz
+	wrapper[data.ModuleName] = bz
 
 	_, err = s.fixture.InitGenesis(s.genesisCtx.Context, wrapper)
 	require.NoError(err)
