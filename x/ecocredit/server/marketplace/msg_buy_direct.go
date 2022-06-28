@@ -28,7 +28,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, order.SellOrderId)
 		if err != nil {
-			return nil, fmt.Errorf("%s: sell order with id %d: %w", orderIndex, order.SellOrderId, err)
+			return nil, sdkerrors.ErrNotFound.Wrapf("%s: sell order with id %d", orderIndex, order.SellOrderId)
 		}
 
 		// check if disable auto-retire is required
@@ -58,7 +58,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		// check that bid price and ask price denoms match
 		market, err := k.stateStore.MarketTable().Get(ctx, sellOrder.MarketId)
 		if err != nil {
-			return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
+			return nil, sdkerrors.ErrNotFound.Wrapf("market id %d", sellOrder.MarketId)
 		}
 		if order.BidPrice.Denom != market.BankDenom {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
@@ -70,7 +70,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		// check that bid price >= sell price
 		sellOrderAskAmount, ok := sdk.NewIntFromString(sellOrder.AskAmount)
 		if !ok {
-			return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskAmount, sdk.Int{})
+			return nil, sdkerrors.ErrInvalidType.Wrapf("could not convert %s to %T", sellOrder.AskAmount, sdk.Int{})
 		}
 		sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderAskAmount}
 		if sellOrderAskAmount.GT(order.BidPrice.Amount) {
