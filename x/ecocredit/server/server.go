@@ -5,23 +5,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
-	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
-
-var ModuleSchema = ormdb.ModuleSchema{
-	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
-	},
-	Prefix: []byte{ecocredit.ORMPrefix},
-}
 
 type serverImpl struct {
 	storeKey sdk.StoreKey
@@ -68,7 +59,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
-	s.db, err = ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	s.db, err = ormutil.NewStoreKeyDB(ecocredit.ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}

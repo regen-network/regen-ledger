@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
@@ -22,7 +23,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/stretchr/testify/require"
 )
@@ -46,7 +46,7 @@ func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.stateStore, err = basketv1.NewStateStore(s.db)
 	assert.NilError(t, err)
