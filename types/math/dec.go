@@ -83,7 +83,7 @@ func NewPositiveDecFromString(s string) (Dec, error) {
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
-	if !d.IsPositive() {
+	if !d.IsPositive() || !d.IsFinite() {
 		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
 	return d, nil
@@ -246,16 +246,24 @@ func (x Dec) Equal(y Dec) bool {
 	return x.dec.Cmp(&y.dec) == 0
 }
 
+// IsZero returns true if the decimal is zero.
 func (x Dec) IsZero() bool {
 	return x.dec.IsZero()
 }
 
+// IsNegative returns true if the decimal is negative.
 func (x Dec) IsNegative() bool {
 	return x.dec.Negative && !x.dec.IsZero()
 }
 
+// IsPositive returns true if the decimal is positive.
 func (x Dec) IsPositive() bool {
 	return !x.dec.Negative && !x.dec.IsZero()
+}
+
+// IsFinite returns true if the decimal is finite.
+func (x Dec) IsFinite() bool {
+	return x.dec.Form == apd.Finite
 }
 
 // NumDecimalPlaces returns the number of decimal places in x.
