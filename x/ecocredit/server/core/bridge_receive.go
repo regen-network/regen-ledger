@@ -23,7 +23,9 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return nil, err
 	}
 
+	var event *core.EventBridgeReceive
 	var response *core.MsgBridgeReceiveResponse
+
 	// if no project was found, create one + issue batch
 	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
@@ -40,7 +42,10 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			Issuer:    req.Issuer,
 			ProjectId: projectRes.ProjectId,
 			Issuance: []*core.BatchIssuance{
-				{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+				{
+					Recipient:      req.Batch.Recipient,
+					TradableAmount: req.Batch.Amount,
+				},
 			},
 			Metadata:  req.Batch.Metadata,
 			StartDate: req.Batch.StartDate,
@@ -52,7 +57,14 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		if err != nil {
 			return nil, err
 		}
-		response = &core.MsgBridgeReceiveResponse{BatchDenom: batchRes.BatchDenom, ProjectId: projectRes.ProjectId}
+		event = &core.EventBridgeReceive{
+			BatchDenom: batchRes.BatchDenom,
+			ProjectId:  projectRes.ProjectId,
+		}
+		response = &core.MsgBridgeReceiveResponse{
+			BatchDenom: batchRes.BatchDenom,
+			ProjectId:  projectRes.ProjectId,
+		}
 	} else {
 		batch, err := k.getBatchFromBridgeReq(ctx, req.Batch, project.Id, bridgeServiceAddr)
 		if err != nil {
@@ -64,7 +76,10 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 				Issuer:     req.Issuer,
 				BatchDenom: batch.Denom,
 				Issuance: []*core.BatchIssuance{
-					{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+					{
+						Recipient:      req.Batch.Recipient,
+						TradableAmount: req.Batch.Amount,
+					},
 				},
 				OriginTx: req.OriginTx,
 				Note:     req.Note,
@@ -72,14 +87,24 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			if err != nil {
 				return nil, err
 			}
-			response = &core.MsgBridgeReceiveResponse{BatchDenom: batch.Denom, ProjectId: project.Id}
+			event = &core.EventBridgeReceive{
+				BatchDenom: batch.Denom,
+				ProjectId:  project.Id,
+			}
+			response = &core.MsgBridgeReceiveResponse{
+				BatchDenom: batch.Denom,
+				ProjectId:  project.Id,
+			}
 		} else {
 			// batch was nil, so we need to create one.
 			res, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
 				Issuer:    req.Issuer,
 				ProjectId: project.Id,
 				Issuance: []*core.BatchIssuance{
-					{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+					{
+						Recipient:      req.Batch.Recipient,
+						TradableAmount: req.Batch.Amount,
+					},
 				},
 				Metadata:  req.Batch.Metadata,
 				StartDate: req.Batch.StartDate,
@@ -91,10 +116,21 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			if err != nil {
 				return nil, err
 			}
-			response = &core.MsgBridgeReceiveResponse{BatchDenom: res.BatchDenom, ProjectId: project.Id}
+			event = &core.EventBridgeReceive{
+				BatchDenom: res.BatchDenom,
+				ProjectId:  project.Id,
+			}
+			response = &core.MsgBridgeReceiveResponse{
+				BatchDenom: res.BatchDenom,
+				ProjectId:  project.Id,
+			}
 		}
 	}
-	// TODO: emit event?
+
+	if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(event); err != nil {
+		return nil, err
+	}
+
 	return response, nil
 }
 
