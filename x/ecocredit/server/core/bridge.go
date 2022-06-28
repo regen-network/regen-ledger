@@ -27,6 +27,9 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 			return nil, err // we already know the batch exists from Cancel
 		}
 
+		// if no batch contract entry is found then we error because we only support
+		// bridging credits from credit batches that were created as a result of a
+		// bridge operation (i.e. only previously bridged credits)
 		batchContract, err := k.stateStore.BatchContractTable().Get(ctx, batch.Key)
 		if err != nil {
 			if err == ormerrors.NotFound {

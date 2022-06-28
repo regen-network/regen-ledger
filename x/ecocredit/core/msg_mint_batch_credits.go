@@ -97,10 +97,10 @@ func validateOriginTx(o *OriginTx, required bool) error {
 		return errBadReq.Wrap("origin_tx.source must be at most 32 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 	if len(o.Contract) > 0 && !isValidEthereumAddress(o.Contract) {
-		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", o.Contract)
+		return sdkerrors.ErrInvalidAddress.Wrapf("origin_tx.contract must be a valid ethereum address")
 	}
 	if len(o.Note) > MaxNoteLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(o.Note), MaxNoteLength)
+		return sdkerrors.ErrInvalidRequest.Wrapf("origin_tx.note must be at most %d characters long", MaxNoteLength)
 	}
 	return nil
 }
