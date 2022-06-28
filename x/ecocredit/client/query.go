@@ -52,11 +52,6 @@ func QueryCmd(name string) *cobra.Command {
 	return cmd
 }
 
-func qflags(cmd *cobra.Command) *cobra.Command {
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
 // QueryClassesCmd returns a query command that lists all credit classes.
 func QueryClassesCmd() *cobra.Command {
 	cmd := &cobra.Command{
