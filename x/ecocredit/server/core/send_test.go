@@ -18,10 +18,10 @@ func TestSend_Valid(t *testing.T) {
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
 
-	_, err := s.k.SendBulk(s.ctx, &core.MsgSendBulk{
+	_, err := s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
-		Credits: []*core.MsgSendBulk_SendCredits{
+		Credits: []*core.MsgSend_SendCredits{
 			{BatchDenom: batchDenom, TradableAmount: "2.51"},
 			{BatchDenom: batchDenom, RetiredAmount: "1.30", RetirementJurisdiction: "US-OR"},
 		},
@@ -61,20 +61,20 @@ func TestSend_Errors(t *testing.T) {
 	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	// test sending more than user balance
-	_, err := s.k.SendBulk(s.ctx, &core.MsgSendBulk{
+	_, err := s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
-		Credits: []*core.MsgSendBulk_SendCredits{
+		Credits: []*core.MsgSend_SendCredits{
 			{BatchDenom: batchDenom, TradableAmount: "1000000"},
 		},
 	})
 	assert.ErrorContains(t, err, "insufficient funds")
 
 	// test sending more precise than the credit type
-	_, err = s.k.SendBulk(s.ctx, &core.MsgSendBulk{
+	_, err = s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
-		Credits: []*core.MsgSendBulk_SendCredits{
+		Credits: []*core.MsgSend_SendCredits{
 			{BatchDenom: batchDenom, TradableAmount: "10.325092385"},
 		},
 	})

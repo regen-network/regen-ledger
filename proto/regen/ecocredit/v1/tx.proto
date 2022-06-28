@@ -56,13 +56,8 @@ service Msg {
   // only the credit batch issuer can seal a credit batch.
   rpc SealBatch(MsgSealBatch) returns (MsgSealBatchResponse);
 
-  // SendBulk sends a specified amount of tradable credits from the credit
-  // owner's account to another account. Sent credits can either remain tradable
-  // or be retired upon receipt.
-  rpc SendBulk(MsgSendBulk) returns (MsgSendBulkResponse);
-
-  // Send sends a specified amount of a single credit type from the owner's
-  // account to another account. Sent credits can either remain tradable or be 
+  // Send sends a specified amount of tradable credits from the credit owner's
+  // account to another account. Sent credits can either remain tradable or be
   // retired upon receipt.
   rpc Send(MsgSend) returns (MsgSendResponse);
 
@@ -107,8 +102,8 @@ service Msg {
   // bridge event handled by an external bridge service.
   rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 
-  // BridgeReceive processes credits being sent from an external registry or
-  // network to Regen Ledger.
+  // BridgeReceive processes credits being sent from an external registry or network to
+  // Regen Ledger.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 }
 
@@ -284,36 +279,6 @@ message MsgSealBatchResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {
-  // sender is the address of the account sending credits.
-  string sender = 1;
-
-  // recipient is the address of the account receiving credits.
-  string recipient = 2;
-
-  // batch_denom is the unique identifier of the credit batch.
-  string batch_denom = 3;
-
-  // amount is the amount of credits in this transfer that can be
-  // traded by the recipient. The number of decimal places must be less than
-  // or equal to the credit type precision.
-  string amount = 4;
-
-  // retirement_jurisdiction is the jurisdiction of the recipient and is an
-  // indicator that the credits should be retired upon receipt. A jurisdiction 
-  // has the format:
-  // <country-code>[-<sub-national-code>[ <postal-code>]]
-  // The country-code and sub-national-code must conform to ISO 3166-2 and the
-  // postal-code can be up to 64 alphanumeric characters. Only the
-  // country-code is required, while the sub-national-code and postal-code are
-  // optional and can be added for increased precision.
-  string retirement_jurisdiction = 5;
-}
-
-// MsgSendResponse is the Msg/Send response type.
-message MsgSendResponse {}
-
-// MsgSendBulk is the Msg/SendBulk request type.
-message MsgSendBulk {
 
   // sender is the address of the account sending credits.
   string sender = 1;
@@ -353,8 +318,8 @@ message MsgSendBulk {
   }
 }
 
-// MsgSendBulkResponse is the Msg/SendBulk response type.
-message MsgSendBulkResponse {}
+// MsgSendResponse is the Msg/Send response type.
+message MsgSendResponse {}
 
 // MsgRetire is the Msg/Retire request type.
 message MsgRetire {

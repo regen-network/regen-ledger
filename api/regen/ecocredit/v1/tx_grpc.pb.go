@@ -60,13 +60,9 @@ type MsgClient interface {
 	// minted to the credit batch. A sealed credit batch cannot be unsealed and
 	// only the credit batch issuer can seal a credit batch.
 	SealBatch(ctx context.Context, in *MsgSealBatch, opts ...grpc.CallOption) (*MsgSealBatchResponse, error)
-	// SendBulk sends a specified amount of tradable credits from the credit
-	// owner's account to another account. Sent credits can either remain tradable
-	// or be retired upon receipt.
-	SendBulk(ctx context.Context, in *MsgSendBulk, opts ...grpc.CallOption) (*MsgSendBulkResponse, error)
-	// Send sends a specified amount of tradable credits from the credit
-	// owner's account to another account. Sent credits can either remain tradable
-	// or be retired upon receipt.
+	// Send sends a specified amount of tradable credits from the credit owner's
+	// account to another account. Sent credits can either remain tradable or be
+	// retired upon receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	// Retire retires a specified amount of tradable credits, removing the amount
 	// from the credit owner's tradable balance and adding it to their retired
@@ -96,8 +92,8 @@ type MsgClient interface {
 	// Bridge cancels a specified amount of tradable credits and emits a special
 	// bridge event handled by an external bridge service.
 	Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
-	// BridgeReceive processes credits being sent from an external registry or
-	// network to Regen Ledger.
+	// BridgeReceive processes credits being sent from an external registry or network to
+	// Regen Ledger.
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 }
 
@@ -148,15 +144,6 @@ func (c *msgClient) MintBatchCredits(ctx context.Context, in *MsgMintBatchCredit
 func (c *msgClient) SealBatch(ctx context.Context, in *MsgSealBatch, opts ...grpc.CallOption) (*MsgSealBatchResponse, error) {
 	out := new(MsgSealBatchResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/SealBatch", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SendBulk(ctx context.Context, in *MsgSendBulk, opts ...grpc.CallOption) (*MsgSendBulkResponse, error) {
-	out := new(MsgSendBulkResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/SendBulk", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -295,13 +282,9 @@ type MsgServer interface {
 	// minted to the credit batch. A sealed credit batch cannot be unsealed and
 	// only the credit batch issuer can seal a credit batch.
 	SealBatch(context.Context, *MsgSealBatch) (*MsgSealBatchResponse, error)
-	// SendBulk sends a specified amount of tradable credits from the credit
-	// owner's account to another account. Sent credits can either remain tradable
-	// or be retired upon receipt.
-	SendBulk(context.Context, *MsgSendBulk) (*MsgSendBulkResponse, error)
-	// Send sends a specified amount of tradable credits from the credit
-	// owner's account to another account. Sent credits can either remain tradable
-	// or be retired upon receipt.
+	// Send sends a specified amount of tradable credits from the credit owner's
+	// account to another account. Sent credits can either remain tradable or be
+	// retired upon receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
 	// Retire retires a specified amount of tradable credits, removing the amount
 	// from the credit owner's tradable balance and adding it to their retired
@@ -331,8 +314,8 @@ type MsgServer interface {
 	// Bridge cancels a specified amount of tradable credits and emits a special
 	// bridge event handled by an external bridge service.
 	Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error)
-	// BridgeReceive processes credits being sent from an external registry or
-	// network to Regen Ledger.
+	// BridgeReceive processes credits being sent from an external registry or network to
+	// Regen Ledger.
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
@@ -355,9 +338,6 @@ func (UnimplementedMsgServer) MintBatchCredits(context.Context, *MsgMintBatchCre
 }
 func (UnimplementedMsgServer) SealBatch(context.Context, *MsgSealBatch) (*MsgSealBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SealBatch not implemented")
-}
-func (UnimplementedMsgServer) SendBulk(context.Context, *MsgSendBulk) (*MsgSendBulkResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendBulk not implemented")
 }
 func (UnimplementedMsgServer) Send(context.Context, *MsgSend) (*MsgSendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
@@ -488,24 +468,6 @@ func _Msg_SealBatch_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).SealBatch(ctx, req.(*MsgSealBatch))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SendBulk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSendBulk)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SendBulk(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Msg/SendBulk",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SendBulk(ctx, req.(*MsgSendBulk))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -716,10 +678,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SealBatch",
 			Handler:    _Msg_SealBatch_Handler,
-		},
-		{
-			MethodName: "SendBulk",
-			Handler:    _Msg_SendBulk_Handler,
 		},
 		{
 			MethodName: "Send",

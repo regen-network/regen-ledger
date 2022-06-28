@@ -313,11 +313,14 @@ Parameters:
 			if err != nil {
 				return err
 			}
+			credit := core.MsgSend_SendCredits{
+				TradableAmount: args[0],
+				BatchDenom:     args[1],
+			}
 			msg := core.MsgSend{
-				Sender:     clientCtx.GetFromAddress().String(),
-				Amount:     args[0],
-				BatchDenom: args[1],
-				Recipient:  args[2],
+				Sender:    clientCtx.GetFromAddress().String(),
+				Recipient: args[2],
+				Credits:   []*core.MsgSend_SendCredits{&credit},
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -366,7 +369,7 @@ Note: "retirement_jurisdiction" is only required when "retired_amount" is positi
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
-			msg := core.MsgSendBulk{
+			msg := core.MsgSend{
 				Sender:    clientCtx.GetFromAddress().String(),
 				Recipient: args[0],
 				Credits:   credits,
