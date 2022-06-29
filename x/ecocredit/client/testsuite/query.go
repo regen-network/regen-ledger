@@ -15,22 +15,22 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	val2 := s.network.Validators[1]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+	classId := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
-	s.Require().NoError(err)
-	classId2, err := s.createClass(clientCtx, &core.MsgCreateClass{
+
+	classId2 := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
-	s.Require().NoError(err)
+
 	classIds := [2]string{classId, classId2}
 
 	testCases := []struct {
@@ -99,11 +99,11 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "hi",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	}
-	classId, err := s.createClass(clientCtx, class)
-	s.Require().NoError(err)
+
+	classId := s.createClass(clientCtx, class)
 
 	testCases := []struct {
 		name           string
@@ -427,7 +427,6 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
 
 	testCases := []struct {
 		name                   string
@@ -451,7 +450,7 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 		},
 		{
 			name:                   "valid",
-			args:                   []string{batchDenom, val.Address.String()},
+			args:                   []string{s.batchDenom, val.Address.String()},
 			expectErr:              false,
 			expectedTradableAmount: "100",
 			expectedRetiredAmount:  "0.000001",
@@ -482,7 +481,6 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
 
 	testCases := []struct {
 		name           string
@@ -504,7 +502,7 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 		},
 		{
 			name:      "valid credit batch",
-			args:      []string{batchDenom},
+			args:      []string{s.batchDenom},
 			expectErr: false,
 		},
 	}
@@ -606,7 +604,8 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 			name: "valid within pagination",
 			args: []string{
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
-				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				// TODO: #1113
+				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 			},
 		},
 	}
@@ -751,14 +750,13 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 	clientCtx.OutputFormat = "JSON"
 	require := s.Require()
 
-	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+	classId := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
-		CreditTypeAbbrev: validCreditTypeAbbrev,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
-	require.NoError(err)
 
 	testCases := []struct {
 		name           string

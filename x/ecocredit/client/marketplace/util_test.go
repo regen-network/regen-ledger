@@ -1,4 +1,4 @@
-package client
+package marketplace
 
 import (
 	"testing"
@@ -6,49 +6,57 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-func TestParseMsgCreateBatch(t *testing.T) {
-	clientCtx := client.Context{}.WithCodec(&codec.ProtoCodec{})
-
+func TestParseSellOrders(t *testing.T) {
+	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
 	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
 	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `{
-		"issuer": "regen1",
-		"project_id": "C01-001",
-		"issuance": [
-			{
-				"recipient": "regen2",
-				"tradable_amount": "10",
-				"retired_amount": "2.5",
-				"retirement_jurisdiction": "US-WA"
-			}
-		],
-		"metadata": "metadata",
-		"start_date": "2020-01-01T00:00:00Z",
-		"end_date": "2021-01-01T00:00:00Z"
-	}`).Name()
+	validJson := testutil.WriteToNewTempFile(t, `[
+		{
+			"batch_denom": "C01-001-20200101-20210101-001",
+			"quantity": "10",
+			"ask_price": {
+				"denom": "regen",
+				"amount": "10"
+			},
+			"disable_auto_retire": true
+		},
+		{
+			"batch_denom": "C01-001-20200101-20210101-002",
+			"quantity": "20",
+			"ask_price": {
+				"denom": "regen",
+				"amount": "20"
+			},
+			"expiration": "2022-01-01T00:00:00Z"
+		}
+	]`).Name()
 
-	startDate := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
-	endDate := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
+	expiration := time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC)
 
 	testCases := []struct {
 		name      string
 		file      string
 		expErr    bool
 		expErrMsg string
-		expRes    *core.MsgCreateBatch
+		expRes    []*marketplace.MsgSell_Order
 	}{
 		{
 			name:      "empty file path",
 			file:      "",
 			expErr:    true,
 			expErrMsg: "no such file or directory",
+		},
+		{
+			name:      "empty json object",
+			file:      emptyJson,
+			expErr:    true,
+			expErrMsg: "cannot unmarshal object",
 		},
 		{
 			name:      "invalid json format",
@@ -63,29 +71,28 @@ func TestParseMsgCreateBatch(t *testing.T) {
 			expErrMsg: "duplicate key",
 		},
 		{
-			name: "valid test",
+			name: "valid",
 			file: validJson,
-			expRes: &core.MsgCreateBatch{
-				Issuer:    "regen1",
-				ProjectId: "C01-001",
-				Issuance: []*core.BatchIssuance{
-					{
-						Recipient:              "regen2",
-						TradableAmount:         "10",
-						RetiredAmount:          "2.5",
-						RetirementJurisdiction: "US-WA",
-					},
+			expRes: []*marketplace.MsgSell_Order{
+				{
+					BatchDenom:        "C01-001-20200101-20210101-001",
+					Quantity:          "10",
+					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(10)},
+					DisableAutoRetire: true,
 				},
-				Metadata:  "metadata",
-				StartDate: &startDate,
-				EndDate:   &endDate,
+				{
+					BatchDenom: "C01-001-20200101-20210101-002",
+					Quantity:   "20",
+					AskPrice:   &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(20)},
+					Expiration: &expiration,
+				},
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res, err := parseMsgCreateBatch(clientCtx, tc.file)
+			res, err := parseSellOrders(tc.file)
 			if tc.expErr {
 				require.Error(t, err)
 				require.ErrorContains(t, err, tc.expErrMsg)
@@ -97,18 +104,119 @@ func TestParseMsgCreateBatch(t *testing.T) {
 	}
 }
 
-func TestParseSendCredits(t *testing.T) {
+func TestParseSellUpdates(t *testing.T) {
 	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
 	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
 	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
 	validJson := testutil.WriteToNewTempFile(t, `[
 		{
-			"batch_denom": "C01-001-20210101-20210101-001",
-			"tradable_amount": "10"
+			"sell_order_id": 1,
+			"new_quantity": "10",
+			"new_ask_price": {
+				"denom": "regen",
+				"amount": "10"
+			},
+			"disable_auto_retire": true
 		},
 		{
-			"batch_denom": "C01-001-20210101-20210101-002",
-			"retired_amount": "2.5",
+			"sell_order_id": 2,
+			"new_quantity": "20",
+			"new_ask_price": {
+				"denom": "regen",
+				"amount": "20"
+			},
+			"new_expiration": "2022-01-01T00:00:00Z"
+		}
+	]`).Name()
+
+	expiration := time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	testCases := []struct {
+		name      string
+		file      string
+		expErr    bool
+		expErrMsg string
+		expRes    []*marketplace.MsgUpdateSellOrders_Update
+	}{
+		{
+			name:      "empty file path",
+			file:      "",
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name:      "empty json object",
+			file:      emptyJson,
+			expErr:    true,
+			expErrMsg: "cannot unmarshal object",
+		},
+		{
+			name:      "invalid json format",
+			file:      invalidJson,
+			expErr:    true,
+			expErrMsg: "invalid character",
+		},
+		{
+			name:      "duplicate json keys",
+			file:      duplicateJson,
+			expErr:    true,
+			expErrMsg: "duplicate key",
+		},
+		{
+			name: "valid",
+			file: validJson,
+			expRes: []*marketplace.MsgUpdateSellOrders_Update{
+				{
+					SellOrderId:       1,
+					NewQuantity:       "10",
+					NewAskPrice:       &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(10)},
+					DisableAutoRetire: true,
+				},
+				{
+					SellOrderId:   2,
+					NewQuantity:   "20",
+					NewAskPrice:   &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(20)},
+					NewExpiration: &expiration,
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, err := parseSellUpdates(tc.file)
+			if tc.expErr {
+				require.Error(t, err)
+				require.ErrorContains(t, err, tc.expErrMsg)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expRes, res)
+			}
+		})
+	}
+}
+
+func TestParseBuyOrders(t *testing.T) {
+	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJson := testutil.WriteToNewTempFile(t, `[
+		{
+			"sell_order_id": 1,
+			"quantity": "10",
+			"bid_price": {
+				"denom": "regen",
+				"amount": "10"
+			},
+			"disable_auto_retire": true
+		},
+		{
+			"sell_order_id": 2,
+			"quantity": "20",
+			"bid_price": {
+				"denom": "regen",
+				"amount": "20"
+			},
 			"retirement_jurisdiction": "US-WA"
 		}
 	]`).Name()
@@ -118,7 +226,7 @@ func TestParseSendCredits(t *testing.T) {
 		file      string
 		expErr    bool
 		expErrMsg string
-		expRes    []*core.MsgSend_SendCredits
+		expRes    []*marketplace.MsgBuyDirect_Order
 	}{
 		{
 			name:      "empty file path",
@@ -145,16 +253,19 @@ func TestParseSendCredits(t *testing.T) {
 			expErrMsg: "duplicate key",
 		},
 		{
-			name: "valid test",
+			name: "valid",
 			file: validJson,
-			expRes: []*core.MsgSend_SendCredits{
+			expRes: []*marketplace.MsgBuyDirect_Order{
 				{
-					BatchDenom:     "C01-001-20210101-20210101-001",
-					TradableAmount: "10",
+					SellOrderId:       1,
+					Quantity:          "10",
+					BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(10)},
+					DisableAutoRetire: true,
 				},
 				{
-					BatchDenom:             "C01-001-20210101-20210101-002",
-					RetiredAmount:          "2.5",
+					SellOrderId:            2,
+					Quantity:               "20",
+					BidPrice:               &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(20)},
 					RetirementJurisdiction: "US-WA",
 				},
 			},
@@ -163,83 +274,7 @@ func TestParseSendCredits(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res, err := parseSendCredits(tc.file)
-			if tc.expErr {
-				require.Error(t, err)
-				require.ErrorContains(t, err, tc.expErrMsg)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tc.expRes, res)
-			}
-		})
-	}
-}
-
-func TestParseCredits(t *testing.T) {
-	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `[
-		{
-			"batch_denom": "C01-001-20210101-20210101-001",
-			"amount": "10"
-		},
-		{
-			"batch_denom": "C01-001-20210101-20210101-002",
-			"amount": "2.5"
-		}
-	]`).Name()
-
-	testCases := []struct {
-		name      string
-		file      string
-		expErr    bool
-		expErrMsg string
-		expRes    []*core.Credits
-	}{
-		{
-			name:      "empty file path",
-			file:      "",
-			expErr:    true,
-			expErrMsg: "no such file or directory",
-		},
-		{
-			name:      "empty json object",
-			file:      emptyJson,
-			expErr:    true,
-			expErrMsg: "cannot unmarshal object",
-		},
-		{
-			name:      "invalid file format",
-			file:      invalidJson,
-			expErr:    true,
-			expErrMsg: "invalid character",
-		},
-		{
-			name:      "duplicate json keys",
-			file:      duplicateJson,
-			expErr:    true,
-			expErrMsg: "duplicate key",
-		},
-		{
-			name: "valid test",
-			file: validJson,
-			expRes: []*core.Credits{
-				{
-					BatchDenom: "C01-001-20210101-20210101-001",
-					Amount:     "10",
-				},
-				{
-					BatchDenom: "C01-001-20210101-20210101-002",
-					Amount:     "2.5",
-				},
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			res, err := parseCredits(tc.file)
+			res, err := parseBuyOrders(tc.file)
 			if tc.expErr {
 				require.Error(t, err)
 				require.ErrorContains(t, err, tc.expErrMsg)
