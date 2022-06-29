@@ -3,6 +3,7 @@ package core
 import (
 	"testing"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -14,10 +15,19 @@ func TestBridge_Valid(t *testing.T) {
 	_, _, batchDenom := s.setupClassProjectBatch(t)
 	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
 
+	// TODO: refactor setup / migrate tests to gherkin/gocuke
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, batchDenom)
+	assert.NilError(s.t, err)
+
+	assert.NilError(s.t, s.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: batch.Key,
+		Contract: "0x0",
+	}))
+
 	// Supply -> tradable: 10.5 , retired: 10.5
 	// s.addr balance -> tradable 10.5 , retired 10.5
 
-	_, err := s.k.Bridge(s.ctx, &core.MsgBridge{
+	_, err = s.k.Bridge(s.ctx, &core.MsgBridge{
 		Owner: s.addr.String(),
 		Credits: []*core.Credits{
 			{

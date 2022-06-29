@@ -42,8 +42,8 @@ func (s *bridgeSuite) Before(t gocuke.TestingT) {
 	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.tradableAmount = "10"
 	s.target = "polygon"
-	s.contract = "0x0e65079a29d7793ab5ca500c2d88e60ee99ba606"
-	s.recipient = "0x0e65079a29d7793ab5ca500c2d88e60ee99ba606"
+	s.contract = "0x0000000000000000000000000000000000000001"
+	s.recipient = "0x0000000000000000000000000000000000000002"
 	s.credits = []*core.Credits{
 		{
 			BatchDenom: s.batchDenom,

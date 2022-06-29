@@ -993,10 +993,8 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			BatchDenom: batch.Denom,
 			Issuance:   generateBatchIssuance(r, accs),
 			OriginTx: &core.OriginTx{
+				Source: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
 				Id:     simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
-				Source: "polygon",
-				// TODO: #1225
-				//Contract: "0x06012c8cf97bead5deae237070f9587f8e7a266d",
 			},
 			Note: simtypes.RandStringOfLength(r, 5),
 		}
