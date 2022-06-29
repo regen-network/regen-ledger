@@ -35,7 +35,7 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x64",
+			Id:     "0x12345",
 			Source: "polygon",
 		},
 		ClassId: "C01",
@@ -80,7 +80,7 @@ func TestBridgeReceive_ProjectNoBatch(t *testing.T) {
 			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x64",
+			Id:     "0x12345",
 			Source: "polygon",
 		},
 		ClassId: "C01",
@@ -127,7 +127,7 @@ func TestBridgeReceive_None(t *testing.T) {
 			Metadata:     "foo",
 		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x64",
+			Id:     "0x12345",
 			Source: "polygon",
 		},
 		ClassId: "C01",
@@ -183,7 +183,7 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x64",
+			Id:     "0x12345",
 			Source: "polygon",
 		},
 		ClassId: "C01",
@@ -241,7 +241,7 @@ func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
 			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x64",
+			Id:     "0x12345",
 			Source: "polygon",
 		},
 		ClassId: "C01",

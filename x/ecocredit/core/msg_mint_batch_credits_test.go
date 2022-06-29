@@ -22,12 +22,6 @@ func TestMsgMintBatchCredits(t *testing.T) {
 		{"invalid batch denom", "invalid batch denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}},
 		{"missing origin tx", "origin tx cannot be empty",
 			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom}},
-
-		{"good-no-note", "",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx,
-				Issuance: batchIssuances}},
-		{"good-note", "",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx}},
 	}
 	for _, tc := range tcs {
 		err := tc.m.ValidateBasic()
