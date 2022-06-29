@@ -152,6 +152,23 @@ func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeRe
 		if err != nil {
 			return nil, err
 		}
+
+		// check the contract provided in origin tx matches the batch contract
+		//batchContract, err := k.stateStore.BatchContractTable().Get(ctx, batch.Key)
+		//if err != nil {
+		//	if ormerrors.NotFound.Is(err) {
+		//		// if contract for credit batch not found, skip this batch so that
+		//		// we can create a new credit batch for the contract provided
+		//		continue
+		//	}
+		//	return nil, err
+		//}
+		// if credit batch does not have a matching contract, skip this batch so
+		// that we can create a new credit batch for the contract provided
+		//if batchContract.Contract != contractAddress {
+		//	continue
+		//}
+
 		// the timestamp stored in the batch is more granular than the date in the denom representation, so we match here.
 		if batch.StartDate.AsTime().UTC().Equal(req.StartDate.UTC()) &&
 			batch.EndDate.AsTime().UTC().Equal(req.EndDate.UTC()) &&

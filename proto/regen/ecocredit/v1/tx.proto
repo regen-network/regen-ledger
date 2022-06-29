@@ -98,12 +98,17 @@ service Msg {
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
 
-  // Bridge cancels a specified amount of tradable credits and emits a special
-  // bridge event handled by an external bridge service.
+  // Bridge processes credits being sent to another chain or registry. When
+  // credits are sent to another chain or registry, the credits are cancelled
+  // and an event is emitted to be handled by an external bridge service.
   rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 
-  // BridgeReceive processes credits being sent from an external registry or
-  // network to Regen Ledger.
+  // BridgeReceive processes credits being sent from another chain or registry.
+  // When credits are sent from another chain or registry, and the credits have
+  // the same vintage (or monitoring period) as an existing credit batch, the
+  // credits will be dynamically minted to the existing credit batch. When the
+  // credits do not have the same vintage (or monitoring period) as an existing
+  // credit batch, the credits will be issued in a new credit batch.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 }
 
@@ -466,11 +471,8 @@ message MsgBridge {
   // recipient is the address of the account receiving the bridged credits.
   string recipient = 3;
 
-  // recipient is the address of the contract handling the bridged credits.
-  string contract = 4;
-
   // credits specifies a credit batch and the number of credits being bridged.
-  repeated Credits credits = 5;
+  repeated Credits credits = 4;
 }
 
 // MsgBridgeResponse is the Msg/Bridge response type.

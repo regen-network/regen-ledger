@@ -13,7 +13,6 @@ func TestBridge_Valid(t *testing.T) {
 	s := setupBase(t)
 	_, _, batchDenom := s.setupClassProjectBatch(t)
 	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
-	contract := "0x06012c8cf97bead5deae237070f9587f8e7a266d"
 
 	// Supply -> tradable: 10.5 , retired: 10.5
 	// s.addr balance -> tradable 10.5 , retired 10.5
@@ -28,7 +27,6 @@ func TestBridge_Valid(t *testing.T) {
 		},
 		Target:    "polygon",
 		Recipient: recipient,
-		Contract:  contract,
 	})
 	assert.NilError(t, err)
 

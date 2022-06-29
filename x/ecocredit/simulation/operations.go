@@ -1147,7 +1147,6 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 		msg := &core.MsgBridge{
 			Target:    "polygon",
 			Recipient: "0x323b5d4c32345ced77393b3530b1eed0f346429d",
-			Contract:  "0x06012c8cf97bead5deae237070f9587f8e7a266d",
 			Owner:     owner,
 			Credits: []*core.Credits{
 				{

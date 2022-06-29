@@ -13,7 +13,6 @@ func TestMsgBridge(t *testing.T) {
 
 	addr1 := testutil.GenAddress()
 	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
-	contract := "0x06012c8cf97bead5deae237070f9587f8e7a266d"
 
 	tests := map[string]struct {
 		src    MsgBridge
@@ -29,7 +28,6 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 				Target:    "polygon",
-				Contract:  contract,
 				Recipient: recipient,
 			},
 			expErr: false,
@@ -44,7 +42,6 @@ func TestMsgBridge(t *testing.T) {
 				},
 				Target:    "polygon",
 				Recipient: recipient,
-				Contract:  contract,
 			},
 			expErr: true,
 		},
@@ -109,7 +106,6 @@ func TestMsgBridge(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Contract:  contract,
 				Recipient: recipient,
 			},
 			expErr: true,
@@ -137,8 +133,7 @@ func TestMsgBridge(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Target:   "polygon",
-				Contract: contract,
+				Target: "polygon",
 			},
 			expErr: true,
 		},
@@ -153,7 +148,6 @@ func TestMsgBridge(t *testing.T) {
 				},
 				Target:    "polygon",
 				Recipient: addr1,
-				Contract:  contract,
 			},
 			expErr: true,
 		},
@@ -168,7 +162,6 @@ func TestMsgBridge(t *testing.T) {
 				},
 				Target:    "polygon1",
 				Recipient: recipient,
-				Contract:  contract,
 			},
 			expErr: true,
 		},
