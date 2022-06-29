@@ -31,6 +31,9 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	if err := ValidateClassId(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
+	if m.OriginTx == nil {
+		sdkerrors.ErrInvalidRequest.Wrap("origin tx cannot be empty")
+	}
 	if err := m.OriginTx.Validate(); err != nil {
 		return err
 	}

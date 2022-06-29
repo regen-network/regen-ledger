@@ -68,6 +68,14 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 			errMsg: sdkerrors.ErrInvalidAddress.Error(),
 		},
 		{
+			name: "invalid: null origin tx",
+			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
+				validMsg.OriginTx = nil
+				return validMsg
+			},
+			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("origin tx cannot be empty").Error(),
+		},
+		{
 			name: "invalid: null batch",
 			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
 				validMsg.Batch = nil
