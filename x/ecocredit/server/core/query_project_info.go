@@ -29,6 +29,7 @@ func (k Keeper) Project(ctx context.Context, request *core.QueryProjectRequest) 
 		ClassId:      class.Id,
 		Jurisdiction: project.Jurisdiction,
 		Metadata:     project.Metadata,
+		ReferenceId:  project.ReferenceId,
 	}
 
 	return &core.QueryProjectResponse{Project: &info}, nil

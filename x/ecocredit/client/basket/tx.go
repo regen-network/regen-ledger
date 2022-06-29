@@ -9,16 +9,15 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 const (
-	FlagExponent               = "exponent"
 	FlagDisableAutoRetire      = "disable-auto-retire"
 	FlagCreditTypeAbbreviation = "credit-type-abbreviation"
 	FlagAllowedClasses         = "allowed-classes"
@@ -26,9 +25,11 @@ const (
 	FlagStartDateWindow        = "start-date-window"
 	FlagBasketFee              = "basket-fee"
 	FlagDenomDescription       = "description"
+	FlagRetirementJurisdiction = "retirement-jurisdiction"
+	FlagRetireOnTake           = "retire-on-take"
 )
 
-func TxCreateBasket() *cobra.Command {
+func TxCreateBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-basket [name]",
 		Short: "Creates a bank denom that wraps credits",
@@ -155,8 +156,6 @@ Flags:
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
-
 	// command flags
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
 	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type abbreviation (e.g. \"C\")")
@@ -170,16 +169,17 @@ Flags:
 	cmd.MarkFlagRequired(FlagCreditTypeAbbreviation)
 	cmd.MarkFlagRequired(FlagAllowedClasses)
 
-	return cmd
+	return txFlags(cmd)
 }
 
-func TxPutInBasket() *cobra.Command {
+func TxPutInBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "put-in-basket [basket_denom] [credits_json_file]",
+		Use:   "put-in-basket [basket_denom] [credits]",
 		Short: "add credits to the basket",
 		Long: strings.TrimSpace(`add credits to the basket.
 Parameters:
 		basket_denom: basket identifier
+		credits: path to JSON file containing credits to put in the basket
 Flags:
 		from: account address of the owner
 		`),
@@ -208,7 +208,7 @@ Where the credits.json file contains:
 
 			credits, err := parseBasketCredits(args[1])
 			if err != nil {
-				return err
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
 			msg := basket.MsgPut{
@@ -225,17 +225,10 @@ Where the credits.json file contains:
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
+	return txFlags(cmd)
 }
 
-const (
-	FlagRetirementJurisdiction = "retirement-jurisdiction"
-	FlagRetireOnTake           = "retire-on-take"
-)
-
-func TxTakeFromBasket() *cobra.Command {
+func TxTakeFromBasketCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "take-from-basket [basket_denom] [amount]",
 		Short: "Takes credits from a basket",
@@ -289,9 +282,8 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take true --reti
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "jurisdiction for the credits which will be used only if --retire-on-take flag is true")
 	cmd.Flags().Bool(FlagRetireOnTake, false, "dictates whether the ecocredits received in exchange for the basket tokens will be received as retired or tradable credits")
 
-	return cmd
+	return txFlags(cmd)
 }
