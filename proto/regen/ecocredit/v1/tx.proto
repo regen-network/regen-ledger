@@ -102,8 +102,8 @@ service Msg {
   // bridge event handled by an external bridge service.
   rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 
-  // BridgeReceive processes credits being sent from an external registry or network to
-  // Regen Ledger.
+  // BridgeReceive processes credits being sent from an external registry or
+  // network to Regen Ledger.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 }
 

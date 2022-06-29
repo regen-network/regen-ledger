@@ -183,8 +183,9 @@ message EventAddCreditType {
   string abbreviation = 1;
 }
 
-// EventBridge is emitted emitted when credits are bridged to another chain.
+// EventBridge is emitted when credits are bridged to another chain.
 message EventBridge {
+
   // target is the target chain.
   string target = 1;
 
@@ -193,4 +194,19 @@ message EventBridge {
 
   // contract is the contract address.
   string contract = 3;
+
+  // amount is the amount of credits.
+  string amount = 4;
+}
+
+// EventBridgeReceive is emitted when credits are bridged from another chain.
+message EventBridgeReceive {
+
+  // project_id is the unique identifier of the project that was either created
+  // or the existing project within which the credit batch exists.
+  string project_id = 1;
+
+  // batch_denom is the unique identifier of the credit batch either created
+  // or within which the credits were dynamically minted.
+  string batch_denom = 2;
 }
