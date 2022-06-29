@@ -26,6 +26,7 @@ func TestQuery_Project(t *testing.T) {
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
+		ReferenceId:  "R01",
 	}
 
 	// insert project
@@ -39,6 +40,7 @@ func TestQuery_Project(t *testing.T) {
 	assert.Equal(t, "C01", res.Project.ClassId)
 	assert.Equal(t, project.Jurisdiction, res.Project.Jurisdiction)
 	assert.Equal(t, project.Metadata, res.Project.Metadata)
+	assert.Equal(t, project.ReferenceId, res.Project.ReferenceId)
 
 	// query project by unknown project id
 	_, err = s.k.Project(s.ctx, &core.QueryProjectRequest{ProjectId: "F01"})
