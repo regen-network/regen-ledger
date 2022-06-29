@@ -31,11 +31,8 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	if err := ValidateClassId(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	if err := validateOriginTx(m.OriginTx, true); err != nil {
+	if err := m.OriginTx.Validate(); err != nil {
 		return err
-	}
-	if len(m.Note) > MaxNoteLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", len(m.Note), MaxNoteLength)
 	}
 
 	// batch validation
