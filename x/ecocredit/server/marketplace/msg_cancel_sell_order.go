@@ -20,7 +20,7 @@ func (k Keeper) CancelSellOrder(ctx context.Context, req *marketplace.MsgCancelS
 
 	sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, req.SellOrderId)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("sell order with id %d", req.SellOrderId)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("sell order with id %d: %s", req.SellOrderId, err.Error())
 	}
 
 	if !sellerAcc.Equals(sdk.AccAddress(sellOrder.Seller)) {

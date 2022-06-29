@@ -28,7 +28,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, order.SellOrderId)
 		if err != nil {
-			return nil, sdkerrors.ErrNotFound.Wrapf("%s: sell order with id %d", orderIndex, order.SellOrderId)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s: sell order with id %d: %s", orderIndex, order.SellOrderId, err.Error())
 		}
 
 		// check if disable auto-retire is required
@@ -58,7 +58,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		// check that bid price and ask price denoms match
 		market, err := k.stateStore.MarketTable().Get(ctx, sellOrder.MarketId)
 		if err != nil {
-			return nil, sdkerrors.ErrNotFound.Wrapf("market id %d", sellOrder.MarketId)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("market id %d: %s", sellOrder.MarketId, err.Error())
 		}
 		if order.BidPrice.Denom != market.BankDenom {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
