@@ -50,7 +50,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return err
 	}
 
-	// origin tx is optional when creating a credit batch
+	// origin tx is not required when creating a credit batch
 	if m.OriginTx != nil {
 		if err := m.OriginTx.Validate(); err != nil {
 			return err

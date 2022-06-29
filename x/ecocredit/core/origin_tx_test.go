@@ -40,7 +40,7 @@ func TestOriginTxValidate(t *testing.T) {
 		{
 			"empty source",
 			"origin_tx.source must be",
-			OriginTx{Id: "0x64"},
+			OriginTx{Id: "0x12345"},
 		},
 		{
 			"source must start with alphanumeric",
