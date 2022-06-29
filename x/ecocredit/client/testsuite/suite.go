@@ -239,9 +239,9 @@ func (s *IntegrationTestSuite) setupGenesis() {
 }
 
 func (s *IntegrationTestSuite) setupTestAccounts() {
-	// create validator account
+	// create secondary account
 	info, _, err := s.val.ClientCtx.Keyring.NewMnemonic(
-		"validator",
+		"addr2",
 		keyring.English,
 		sdk.FullFundraiserPath,
 		keyring.DefaultBIP39Passphrase,
@@ -255,9 +255,9 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 	// set secondary account
 	s.addr2 = sdk.AccAddress(info.GetPubKey().Address())
 
-	// fund the secondary account
-	s.fundAccount(s.val.ClientCtx, s.val.Address, s.addr2, sdk.Coins{
-		sdk.NewInt64Coin(s.cfg.BondDenom, 20000000000000000),
+	// fund secondary account
+	s.fundAccount(s.val.ClientCtx, s.addr1, s.addr2, sdk.Coins{
+		sdk.NewInt64Coin(s.cfg.BondDenom, 100000000),
 	})
 }
 
@@ -270,14 +270,20 @@ func (s *IntegrationTestSuite) commonTxFlags() []string {
 }
 
 func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sdk.AccAddress, coins sdk.Coins) {
-	_, err := banktestutil.MsgSendExec(
+	require := s.Require()
+
+	out, err := banktestutil.MsgSendExec(
 		clientCtx,
 		from,
 		to,
 		coins,
 		s.commonTxFlags()...,
 	)
-	s.Require().NoError(err)
+	require.NoError(err)
+
+	var res sdk.TxResponse
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
 }
 
 func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (classId string) {
@@ -297,6 +303,8 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
+
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&core.EventCreateClass{}) {
 			for _, attr := range e.Attributes {
@@ -329,6 +337,8 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
+
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&core.EventCreateProject{}) {
 			for _, attr := range e.Attributes {
@@ -363,6 +373,8 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.Zero(res.Code, res.RawLog)
+
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
 			for _, attr := range e.Attributes {
