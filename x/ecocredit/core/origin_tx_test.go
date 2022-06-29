@@ -40,13 +40,13 @@ func TestOriginTxValidate(t *testing.T) {
 		{
 			"empty source",
 			"origin_tx.source must be",
-			OriginTx{Id: "0x123"},
+			OriginTx{Id: "0x64"},
 		},
 		{
 			"source must start with alphanumeric",
 			"origin_tx.source must be",
 			OriginTx{
-				Id:     "0x123",
+				Id:     "0x64",
 				Source: "-foo",
 			},
 		},
@@ -54,7 +54,7 @@ func TestOriginTxValidate(t *testing.T) {
 			"source contains invalid characters",
 			"origin_tx.source must be",
 			OriginTx{
-				Id:     "0x123",
+				Id:     "0x64",
 				Source: "foo!",
 			},
 		},
@@ -62,7 +62,7 @@ func TestOriginTxValidate(t *testing.T) {
 			"source too long",
 			"origin_tx.source must be",
 			OriginTx{
-				Id:     "0x123",
+				Id:     "0x64",
 				Source: randstr.String(33)},
 		},
 		{
@@ -70,7 +70,7 @@ func TestOriginTxValidate(t *testing.T) {
 			"origin_tx.contract must",
 			OriginTx{
 				Source:   "polygon",
-				Id:       "0x123",
+				Id:       "0x64",
 				Contract: "foo",
 			},
 		},
@@ -79,7 +79,7 @@ func TestOriginTxValidate(t *testing.T) {
 			"origin_tx.note must",
 			OriginTx{
 				Source: "polygon",
-				Id:     "0x123",
+				Id:     "0x64",
 				Note:   randstr.String(513),
 			},
 		},

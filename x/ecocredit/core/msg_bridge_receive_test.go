@@ -14,7 +14,7 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 	t.Parallel()
 	validStart, validEnd := time.Now(), time.Date(2022, time.June, 25, 0, 0, 0, 0, time.Local)
 	validOriginTx := OriginTx{
-		Id:     "0x12345",
+		Id:     "0x64",
 		Source: "polygon",
 	}
 	_, _, accAddr := testdata.KeyTestPubAddr()
