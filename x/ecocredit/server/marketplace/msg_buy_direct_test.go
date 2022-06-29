@@ -233,6 +233,24 @@ func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a
 	s.createSellOrders(2)
 }
 
+func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
+	id, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	s.singleBuyOrderExpectCalls()
+
+	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+		Buyer: s.alice.String(),
+		Orders: []*marketplace.MsgBuyDirect_Order{
+			{
+				SellOrderId: id,
+				Quantity:    s.quantity,
+				BidPrice:    &s.bidPrice,
+			},
+		},
+	})
+}
+
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
