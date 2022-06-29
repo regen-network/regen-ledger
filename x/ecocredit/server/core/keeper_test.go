@@ -126,6 +126,11 @@ func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId
 		ProjectKey:   pKey,
 		NextSequence: 2,
 	}))
+	err = s.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: bKey,
+		Contract: "0x0",
+	})
+	assert.NilError(t, err)
 
 	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchKey:        bKey,

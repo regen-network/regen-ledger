@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -992,8 +993,10 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			BatchDenom: batch.Denom,
 			Issuance:   generateBatchIssuance(r, accs),
 			OriginTx: &core.OriginTx{
-				Source: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
 				Id:     simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
+				Source: "polygon",
+				// TODO: #1225
+				//Contract: "0x06012c8cf97bead5deae237070f9587f8e7a266d",
 			},
 			Note: simtypes.RandStringOfLength(r, 5),
 		}
@@ -1175,7 +1178,36 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, "fee error"), nil, err
+		}
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		acc := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
+
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{acc.GetAccountNumber()},
+			[]uint64{acc.GetSequence()},
+			account.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			if !strings.Contains(err.Error(), "only credits previously bridged from another chain") {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, "unable to deliver tx"), nil, err
+			}
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
