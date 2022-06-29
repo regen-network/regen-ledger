@@ -2,6 +2,7 @@ Feature: Msg/BuyDirect
 
   Credits can be bought directly:
   - when the sell order exists
+  - when the buyer is not the seller
   - when the bid denom matches the sell denom
   - when the buyer has a bank balance greater than or equal to the total cost
   - when the buyer provides a bid price greater than or equal to the ask price
@@ -29,6 +30,21 @@ Feature: Msg/BuyDirect
     Scenario: the sell order does not exist
       When bob attempts to buy credits with sell order id "1"
       Then expect the error "orders[0]: sell order with id 1: not found"
+
+  Rule: The buyer must not be the seller
+
+    Background:
+      Given a credit type
+
+    Scenario: the buyer is not the seller
+      Given alice created a sell order with id "1"
+      When bob attempts to buy credits with sell order id "1"
+      Then expect no error
+
+    Scenario: the buyer is the seller
+      Given alice created a sell order with id "1"
+      When alice attempts to buy credits with sell order id "1"
+      Then expect the error "orders[0]: buyer account cannot be the same as seller account: unauthorized"
 
   Rule: The bid denom must match the sell denom
 

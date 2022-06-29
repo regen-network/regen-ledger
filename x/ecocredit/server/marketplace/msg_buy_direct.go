@@ -31,6 +31,13 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 			return nil, fmt.Errorf("%s: sell order with id %d: %w", orderIndex, order.SellOrderId, err)
 		}
 
+		// check if buyer account is equal to seller account
+		if buyerAcc.Equals(sdk.AccAddress(sellOrder.Seller)) {
+			return nil, sdkerrors.ErrUnauthorized.Wrapf(
+				"%s: buyer account cannot be the same as seller account", orderIndex,
+			)
+		}
+
 		// check if disable auto-retire is required
 		if order.DisableAutoRetire && !sellOrder.DisableAutoRetire {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
