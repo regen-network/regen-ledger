@@ -20,12 +20,15 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 	}
 
 	sdkCtx := types.UnwrapSDKContext(ctx)
-	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventBridge{
-		Target:    req.Target,
-		Recipient: req.Recipient,
-		Contract:  req.Contract,
-	}); err != nil {
-		return nil, err
+	for _, credit := range req.Credits {
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventBridge{
+			Target:    req.Target,
+			Recipient: req.Recipient,
+			Contract:  req.Contract,
+			Amount:    credit.Amount,
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	return &core.MsgBridgeResponse{}, nil
