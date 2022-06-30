@@ -298,6 +298,7 @@ Example JSON:
 // TxSendCmd returns a transaction command that sends credits from one account
 // to another.
 func TxSendCmd() *cobra.Command {
+	var retireTo string = ""
 	cmd := &cobra.Command{
 		Use:   "send [amount] [batch_denom] [recipient]",
 		Short: "Sends credits from the transaction author (--from) to the recipient",
@@ -313,9 +314,17 @@ Parameters:
 			if err != nil {
 				return err
 			}
+			tradableAmount := args[0]
+			retiredAmount := "0"
+			if len(retireTo) > 0 {
+				tradableAmount = "0"
+				retiredAmount = args[0]
+			}
 			credit := core.MsgSend_SendCredits{
-				TradableAmount: args[0],
-				BatchDenom:     args[1],
+				TradableAmount:         tradableAmount,
+				BatchDenom:             args[1],
+				RetiredAmount:          retiredAmount,
+				RetirementJurisdiction: retireTo,
 			}
 			msg := core.MsgSend{
 				Sender:    clientCtx.GetFromAddress().String(),
@@ -325,6 +334,7 @@ Parameters:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+	cmd.Flags().StringVar(&retireTo, "retire-to", "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
 	return txFlags(cmd)
 }
 
