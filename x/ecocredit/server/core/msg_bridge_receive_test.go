@@ -42,7 +42,7 @@ func TestBridgeReceive(t *testing.T) {
 func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
-	s.bob = s.addr // TODO
+	s.bob = s.addr // TODO: #893
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
 	s.projectId = "C01-001"
@@ -101,8 +101,6 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsFromContract(a string) 
 		},
 		OriginTx: s.originTx,
 	})
-
-	require.NoError(s.t, s.err)
 }
 
 func (s *bridgeReceiveSuite) ExpectTotalCreditBatches(a string) {

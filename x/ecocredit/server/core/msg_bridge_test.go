@@ -3,6 +3,7 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -21,8 +22,8 @@ type bridgeSuite struct {
 	batchDenom       string
 	batchKey         uint64
 	tradableAmount   string
-	target           string
 	contract         string
+	target           string
 	recipient        string
 	credits          []*core.Credits
 	res              *core.MsgBridgeResponse
@@ -42,8 +43,8 @@ func (s *bridgeSuite) Before(t gocuke.TestingT) {
 	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.tradableAmount = "10"
 	s.target = "polygon"
-	s.contract = "0x0000000000000000000000000000000000000001"
-	s.recipient = "0x0000000000000000000000000000000000000002"
+	s.contract = "0x01"
+	s.recipient = "0x02"
 	s.credits = []*core.Credits{
 		{
 			BatchDenom: s.batchDenom,
@@ -66,12 +67,37 @@ func (s *bridgeSuite) ACreditBatchExistsWithoutABatchContractEntry() {
 	s.creditBatchSetup()
 }
 
-func (s *bridgeSuite) AliceOwnsCreditsFromTheCreditBatch() {
+func (s *bridgeSuite) AliceOwnsTradableCreditsFromTheCreditBatch() {
 	err := s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
 		BatchKey:       s.batchKey,
 		Address:        s.alice,
 		TradableAmount: s.tradableAmount,
 	})
+	require.NoError(s.t, err)
+}
+
+func (s *bridgeSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
+	balance := &api.BatchBalance{}
+	err := jsonpb.UnmarshalString(a.Content, balance)
+	require.NoError(s.t, err)
+
+	balance.BatchKey = s.batchKey
+	balance.Address = s.alice
+
+	// Save because the balance may already exist from setup
+	err = s.stateStore.BatchBalanceTable().Save(s.ctx, balance)
+	require.NoError(s.t, err)
+}
+
+func (s *bridgeSuite) TheBatchSupply(a gocuke.DocString) {
+	supply := &api.BatchSupply{}
+	err := jsonpb.UnmarshalString(a.Content, supply)
+	require.NoError(s.t, err)
+
+	supply.BatchKey = s.batchKey
+
+	// Save because the supply may already exist from setup
+	err = s.stateStore.BatchSupplyTable().Save(s.ctx, supply)
 	require.NoError(s.t, err)
 }
 
@@ -90,6 +116,31 @@ func (s *bridgeSuite) ExpectNoError() {
 
 func (s *bridgeSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
+}
+
+func (s *bridgeSuite) ExpectAliceBatchBalance(a gocuke.DocString) {
+	expected := &api.BatchBalance{}
+	err := jsonpb.UnmarshalString(a.Content, expected)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.alice, s.batchKey)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.EscrowedAmount, balance.EscrowedAmount)
+}
+
+func (s *bridgeSuite) ExpectBatchSupply(a gocuke.DocString) {
+	expected := &api.BatchSupply{}
+	err := jsonpb.UnmarshalString(a.Content, expected)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BatchSupplyTable().Get(s.ctx, s.batchKey)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 }
 
 // bare minimum setup for a credit batch

@@ -26,10 +26,11 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	var event *core.EventBridgeReceive
 	var response *core.MsgBridgeReceiveResponse
 
-	// batch with matching contract exists, and therefore project exists, so
+	// if batch with matching contract exists, and therefore project exists,
 	// we dynamically mint credits to the existing credit batch, otherwise we
-	// search for an existing project and create a new credit batch under the
-	// existing project or create a new project and a new credit batch
+	// search for an existing project based on the project information provided
+	// and either create a new credit batch under an existing project or create
+	// a new project and then a new credit batch under the new project
 	if batchContract != nil {
 
 		// get batch information (specifically batch denom)
@@ -94,7 +95,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 				return nil, err
 			}
 
-			// set the project id
+			// set project id using the new project id
 			project = &api.Project{Id: projectRes.ProjectId}
 		}
 

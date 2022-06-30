@@ -65,6 +65,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 			Address:        owner,
 			TradableAmount: userBalTradable.String(),
 			RetiredAmount:  userBalance.RetiredAmount,
+			EscrowedAmount: userBalance.EscrowedAmount,
 		}); err != nil {
 			return nil, err
 		}
