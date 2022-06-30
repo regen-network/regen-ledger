@@ -1209,7 +1209,7 @@ Example Output:
 
 ### Balance
 
-The `Balance` endpoint allows users to query the balance (both tradable and retired) of a given credit batch for a given account.
+The `Balance` endpoint allows users to query the balance (tradable, retired and escrowed) of a given credit batch for a given account.
 
 ```bash
 regen.ecocredit.v1.Query/Balance
@@ -1228,8 +1228,49 @@ Example Output:
 
 ```bash
 {
-  "tradableAmount": "10",
-  "retiredAmount": "30"
+  "balance": {
+    "address": "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+    "batch_denom": "C02-001-20210101-20250101-001",
+    "tradable_amount": "92.0",
+    "retired_amount": "97",
+    "escrowed_amount": "30.0"
+  }
+}
+```
+
+### Balances
+
+The `Balances` endpoint allows users to query the balances (tradable, retired and escrowed) for a given account.
+
+```bash
+regen.ecocredit.v1.Query/Balances
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"account":"regen1.."}' \
+    localhost:9090 \
+    regen.ecocredit.v1.Query/Balances
+```
+
+Example Output:
+
+```bash
+{
+  "balances": [
+    {
+      "address": "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+      "batchDenom": "C02-001-20210101-20250101-001",
+      "tradableAmount": "92.0",
+      "retiredAmount": "97",
+      "escrowedAmount": "30.0"
+    }
+  ],
+  "pagination": {
+    "nextKey": "BwEJABQDulMR5S+lTY8VaafpDwxlg7jx3AAF"
+  }
 }
 ```
 
@@ -1238,24 +1279,25 @@ Example Output:
 The `Supply` endpoint allows users to query the tradable and retired supply of a credit batch.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/Supply
+regen.ecocredit.v1.Query/Supply
 ```
 
 Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"batch_denom": "C01-20200101-20210101-001"}' \
+    -d '{"batch_denom": "C02-001-20210101-20250101-001"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/Supply
+    regen.ecocredit.v1.Query/Supply
 ```
 
 Example Output:
 
 ```bash
 {
-  "tradableSupply": "20",
-  "retiredSupply": "30"
+  "tradableSupply": "722",
+  "retiredSupply": "158",
+  "cancelledAmount": "0"
 }
 ```
 
@@ -1264,7 +1306,7 @@ Example Output:
 The `CreditTypes` endpoint allows users to query the list of allowed types that credit classes can have.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/CreditTypes
+regen.ecocredit.v1.Query/CreditTypes
 ```
 
 Example:
@@ -1272,7 +1314,7 @@ Example:
 ```bash
 grpcurl -plaintext \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/CreditTypes
+    regen.ecocredit.v1.Query/CreditTypes
 ```
 
 Example Output:
@@ -1281,12 +1323,50 @@ Example Output:
 {
   "creditTypes": [
     {
-      "name": "carbon",
       "abbreviation": "C",
+      "name": "carbon",
       "unit": "metric ton CO2 equivalent",
       "precision": 6
     }
   ]
+}
+```
+
+### Params
+
+The `Params` endpoint allows users to query ecocredit module params.
+
+```bash
+regen.ecocredit.v1.Query/Params
+```
+
+Example:
+
+```bash
+grpcurl -plaintext localhost:9090 regen.ecocredit.v1.Query/Params
+```
+
+Example Output:
+
+```bash
+{
+  "params": {
+    "creditClassFee": [
+      {
+        "denom": "uregen",
+        "amount": "20000000"
+      }
+    ],
+    "basketFee": [
+      {
+        "denom": "uregen",
+        "amount": "1000000000"
+      }
+    ],
+    "allowedClassCreators": [
+      "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm"
+    ]
+  }
 }
 ```
 
@@ -1539,7 +1619,7 @@ A user can query the `ecocredit` module using REST endpoints.
 The `classes` endpoint allows users to query all credit classes.
 
 ```bash
-/regen/ecocredit/v1alpha1/classes
+/regen/ecocredit/v1/classes
 ```
 
 Example:
