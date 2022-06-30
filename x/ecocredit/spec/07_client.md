@@ -684,7 +684,7 @@ A user can query the `ecocredit` module using gRPC endpoints.
 The `Classes` endpoint allows users to query all credit classes.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/Classes
+regen.ecocredit.v1.Query/Classes
 ```
 
 Example:
@@ -692,7 +692,7 @@ Example:
 ```bash
 grpcurl -plaintext \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/Classes
+    regen.ecocredit.v1.Query/Classes
 ```
 
 Example Output:
@@ -701,33 +701,21 @@ Example Output:
 {
   "classes": [
     {
-      "classId": "C01",
-      "admin": "regen1..",
-      "issuers": [
-        "regen1.."
-      ],
-      "metadata": "cmVnZW4=",
-      "creditType": {
-        "name": "carbon",
-        "abbreviation": "C",
-        "unit": "metric ton CO2 equivalent",
-        "precision": 6
-      },
-      "numBatches": "1"
+      "id": "C01",
+      "admin": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "creditTypeAbbrev": "C"
     }
-  ],
-  "pagination": {
-    "total": "1"
-  }
+  ]
 }
 ```
 
-### ClassInfo
+### Class
 
-The `ClassInfo` endpoint allows users to query for information on a credit class.
+The `Class` endpoint allows users to query for information on a credit class.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/ClassInfo
+regen.ecocredit.v1.Query/Class
 ```
 
 Example:
@@ -736,37 +724,368 @@ Example:
 grpcurl -plaintext \
     -d '{"class_id":"C01"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/ClassInfo
+    regen.ecocredit.v1.Query/ClassInfo
 ```
 
 Example Output:
 
 ```bash
 {
-  "info": {
-    "classId": "C01",
-    "admin": "regen1..",
-    "issuers": [
-      "regen1.."
-    ],
-    "metadata": "cmVnZW4=",
-    "creditType": {
-      "name": "carbon",
-      "abbreviation": "C",
-      "unit": "metric ton CO2 equivalent",
-      "precision": 6
-    },
-    "numBatches": "1"
+  "class": {
+    "id": "C01",
+    "admin": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+    "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+    "creditTypeAbbrev": "C"
   }
 }
 ```
+
+### ClassesByAdmin
+
+The `ClassesByAdmin` endpoint allows users to query for all credit classes by admin.
+
+```bash
+regen.ecocredit.v1.Query/ClassesByAdmin
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"admin":"regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm"}' \
+    localhost:9090 \
+    regen.ecocredit.v1.Query/ClassesByAdmin
+```
+
+Example Output:
+
+```bash
+{
+  "classes": [
+    {
+      "id": "C01",
+      "admin": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "creditTypeAbbrev": "C"
+    }
+  ]
+}
+```
+
+### ClassIssuers
+
+The `ClassIssuers` endpoint allows users to query addresses of the issuers for a credit class.
+
+
+```bash
+regen.ecocredit.v1.Query/ClassIssuers
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"class_id":"C01"}' \
+    localhost:9090 \
+    regen.ecocredit.v1.Query/ClassIssuers
+```
+
+Example Output:
+
+```bash
+{
+  "issuers": [
+    "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn"
+  ]
+}
+```
+
+### Projects
+
+The `Projects` endpoint allows users to query all projects.
+
+```bash
+regen.ecocredit.v1.Query/Projects
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.v1.Query/Projects
+```
+
+Example Output:
+
+```bash
+{
+  "projects": [
+    {
+      "id": "C01-001",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "CD-MN"
+    },
+    {
+      "id": "C01-002",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "KE"
+    }
+  ]
+}
+```
+
+### ProjectsByClass
+
+The `ProjectsByClass` endpoint allows users to query all projects.
+
+```bash
+regen.ecocredit.v1.Query/ProjectsByClass
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"class_id":"C01"}'
+    localhost:9090 \
+    regen.ecocredit.v1.Query/ProjectsByClass
+```
+
+Example Output:
+
+```bash
+{
+  "projects": [
+    {
+      "id": "C01-001",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "CD-MN"
+    },
+    {
+      "id": "C01-002",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "KE"
+    }
+  ]
+}
+```
+
+### ProjectsByReferenceId
+
+The `ProjectsByReferenceId` endpoint allows users to query projects by reference id.
+
+```bash
+regen.ecocredit.v1.Query/ProjectsByReferenceId
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"reference_id":"VERRA01"}'
+    localhost:9090 \
+    regen.ecocredit.v1.Query/ProjectsByReferenceId
+```
+
+Example Output:
+
+```bash
+{
+  "projects": [
+    {
+      "id": "C01-001",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "CD-MN",
+      "reference_id":"VERRA01"
+    },
+    {
+      "id": "C01-002",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "KE".
+      "reference_id":"VERRA01"
+    }
+  ]
+}
+```
+
+### ProjectsByAdmin
+
+The `ProjectsByAdmin` endpoint allows users to query projects by admin.
+
+```bash
+regen.ecocredit.v1.Query/ProjectsByAdmin
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"admin":"regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn"}'
+    localhost:9090 \
+    regen.ecocredit.v1.Query/ProjectsByAdmin
+```
+
+Example Output:
+
+```bash
+{
+  "projects": [
+    {
+      "id": "C01-001",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "CD-MN",
+      "reference_id":"VERRA01"
+    },
+    {
+      "id": "C01-002",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "classId": "C01",
+      "jurisdiction": "KE".
+      "reference_id":"VERRA01"
+    }
+  ]
+}
+```
+
+### Project
+
+The `Project` endpoint allows users to query for information on a project.
+
+```bash
+regen.ecocredit.v1.Query/Project
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"project_id":"C01-001"}'
+    localhost:9090 \
+    regen.ecocredit.v1.Query/Project
+```
+
+Example Output:
+
+```bash
+{
+  "project": {
+    "id": "C01-001",
+    "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+    "classId": "C01",
+    "jurisdiction": "CD-MN"
+  }
+}
+```
+
 
 ### Batches
 
 The `Batches` endpoint allows users to query for all batches in the given credit class.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/Batches
+regen.ecocredit.v1.Query/Batches
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"pagination":{"limit":"2"}}' \
+    localhost:9090 \
+    regen.ecocredit.v1.Query/Batches
+```
+
+Example Output:
+
+```bash
+{
+  "batches": [
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-001",
+      "metadata": "regen:13toVgyewRosPA4FVy4wWJgk7JGYc5K7TtE1nHaaHQJgvb6bBLtBBTC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:25Z"
+    },
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-002",
+      "metadata": "regen:13toVgbuejJuARiL27Js3Ek3bw3cFrpCN89agNL7pPksUjwQdLWnJRC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:31Z"
+    }
+  ],
+  "pagination": {
+    "nextKey": "BwEFAAAC"
+  }
+}
+```
+
+### BatchesByIssuer
+
+The `BatchesByIssuer` endpoint allows users to query for credit batches issued from a given issuer address.
+
+```bash
+regen.ecocredit.v1.Query/BatchesByIssuer
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"issuer":"regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn"}' \
+    localhost:9090 \
+    regen.ecocredit.v1.Query/BatchesByIssuer
+```
+
+Example Output:
+
+```bash
+{
+  "batches": [
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-001",
+      "metadata": "regen:13toVgyewRosPA4FVy4wWJgk7JGYc5K7TtE1nHaaHQJgvb6bBLtBBTC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:25Z"
+    },
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-002",
+      "metadata": "regen:13toVgbuejJuARiL27Js3Ek3bw3cFrpCN89agNL7pPksUjwQdLWnJRC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:31Z"
+    }
+  ],
+  "pagination": {
+    "nextKey": "BwEFAAAC"
+  }
+}
+```
+
+### BatchesByClass
+
+The `BatchesByClass` endpoint allows users to query credit batches issued from a given class.
+
+```bash
+regen.ecocredit.v1.Query/BatchesByClass
 ```
 
 Example:
@@ -775,62 +1094,115 @@ Example:
 grpcurl -plaintext \
     -d '{"class_id":"C01"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/Batches
+    regen.ecocredit.v1.Query/BatchesByClass
 ```
 
 Example Output:
 
 ```bash
 {
-  "info": {
-    "classId": "C01",
-    "admin": "regen1..",
-    "issuers": [
-      "regen1.."
-    ],
-    "metadata": "cmVnZW4=",
-    "creditType": {
-      "name": "carbon",
-      "abbreviation": "C",
-      "unit": "metric ton CO2 equivalent",
-      "precision": 6
+  "batches": [
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-001",
+      "metadata": "regen:13toVgyewRosPA4FVy4wWJgk7JGYc5K7TtE1nHaaHQJgvb6bBLtBBTC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:25Z"
     },
-    "numBatches": "1"
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-002",
+      "metadata": "regen:13toVgbuejJuARiL27Js3Ek3bw3cFrpCN89agNL7pPksUjwQdLWnJRC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:31Z"
+    }
+  ],
+  "pagination": {
+    "nextKey": "BwEFAAAC"
   }
 }
 ```
 
-### BatchInfo
+### BatchesByProject
 
-The `BatchInfo` endpoint allows users to query for information on a credit batch.
+The `BatchesByProject` endpoint allows users to query credit batches issued from a given project.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/BatchInfo
+regen.ecocredit.v1.Query/BatchesByProject
 ```
 
 Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"batch_denom": "C01-20200101-20210101-001"}' \
+    -d '{"project_id":"C01-001"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/BatchInfo
+    regen.ecocredit.v1.Query/BatchesByProject
 ```
 
 Example Output:
 
 ```bash
 {
-  "info": {
-    "classId": "C01",
-    "batchDenom": "C01-20200101-20210101-001",
-    "issuer": "regen1..",
-    "totalAmount": "50",
-    "metadata": "cmVnZW4=",
-    "amountCancelled": "10",
-    "startDate": "2020-01-01T00:00:00Z",
-    "endDate": "2021-01-01T00:00:00Z",
-    "projectLocation": "AA-BB 12345"
+  "batches": [
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-001",
+      "metadata": "regen:13toVgyewRosPA4FVy4wWJgk7JGYc5K7TtE1nHaaHQJgvb6bBLtBBTC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:25Z"
+    },
+    {
+      "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "projectId": "C01-001",
+      "denom": "C01-001-20150101-20151231-002",
+      "metadata": "regen:13toVgbuejJuARiL27Js3Ek3bw3cFrpCN89agNL7pPksUjwQdLWnJRC.rdf",
+      "startDate": "2015-01-01T00:00:00Z",
+      "endDate": "2015-12-31T00:00:00Z",
+      "issuanceDate": "2022-05-06T01:33:31Z"
+    }
+  ],
+  "pagination": {
+    "nextKey": "BwEFAAAC"
+  }
+}
+```
+
+### Batch
+
+The `Batch` endpoint allows users to query for information on a credit batch.
+
+```bash
+regen.ecocredit.v1.Query/Batch
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"batch_denom": "C01-001-20150101-20151231-001"}' \
+    localhost:9090 \
+    regen.ecocredit.v1.Query/Batch
+```
+
+Example Output:
+
+```bash
+{
+  "batch": {
+    "issuer": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+    "projectId": "C01-001",
+    "denom": "C01-001-20150101-20151231-001",
+    "metadata": "regen:13toVgyewRosPA4FVy4wWJgk7JGYc5K7TtE1nHaaHQJgvb6bBLtBBTC.rdf",
+    "startDate": "2015-01-01T00:00:00Z",
+    "endDate": "2015-12-31T00:00:00Z",
+    "issuanceDate": "2022-05-06T01:33:25Z"
   }
 }
 ```
@@ -840,7 +1212,7 @@ Example Output:
 The `Balance` endpoint allows users to query the balance (both tradable and retired) of a given credit batch for a given account.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/Balance
+regen.ecocredit.v1.Query/Balance
 ```
 
 Example:
@@ -849,7 +1221,7 @@ Example:
 grpcurl -plaintext \
     -d '{"batch_denom": "C01-20200101-20210101-001", "account":"regen1.."}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/Balance
+    regen.ecocredit.v1.Query/Balance
 ```
 
 Example Output:
