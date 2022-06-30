@@ -177,7 +177,6 @@ func (s *bridgeReceiveSuite) ExpectTotalProjects(a string) {
 	require.Equal(s.t, expTotal, total)
 }
 
-// bare minimum setup for a credit class
 func (s *bridgeReceiveSuite) creditClassSetup() {
 	// TODO: Save for now but credit type should not exist prior to unit test #893
 	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
@@ -200,7 +199,6 @@ func (s *bridgeReceiveSuite) creditClassSetup() {
 	s.classKey = cKey
 }
 
-// bare minimum setup for a project
 func (s *bridgeReceiveSuite) projectSetup() {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:          s.projectId,
@@ -218,7 +216,6 @@ func (s *bridgeReceiveSuite) projectSetup() {
 	s.projectKey = pKey
 }
 
-// bare minimum setup for a credit batch
 func (s *bridgeReceiveSuite) creditBatchSetup() {
 	// the credit batch is always open for Msg/BridgeReceive tests and specific cases
 	// when closed are handled in tests for Msg/CreateBatch and Msg/MintBatchCredits

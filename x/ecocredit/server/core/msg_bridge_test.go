@@ -143,7 +143,6 @@ func (s *bridgeSuite) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 }
 
-// bare minimum setup for a credit batch
 func (s *bridgeSuite) creditBatchSetup() {
 	// TODO: Save for now but credit type should not exist prior to unit test #893
 	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
