@@ -17,7 +17,7 @@ Feature: Msg/Bridge
       Given a credit batch exists without a batch contract entry
       And alice owns tradable credits from the credit batch
       When alice attempts to bridge credits from the credit batch
-      Then expect the error "only credits previously bridged from another chain are supported at this time: invalid request"
+      Then expect the error "only credits previously bridged from another chain are supported: invalid request"
 
   Rule: The credits are cancelled and the owner balance is updated
 

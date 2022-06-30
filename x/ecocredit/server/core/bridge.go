@@ -36,7 +36,7 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 		if err != nil {
 			if err == ormerrors.NotFound {
 				return nil, sdkerrors.ErrInvalidRequest.Wrap(
-					"only credits previously bridged from another chain are supported at this time",
+					"only credits previously bridged from another chain are supported",
 				)
 			}
 			return nil, err
