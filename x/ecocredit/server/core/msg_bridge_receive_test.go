@@ -22,6 +22,7 @@ type bridgeReceiveSuite struct {
 	creditTypeAbbrev string
 	classId          string
 	projectId        string
+	projectKey       uint64
 	referenceId      string
 	batchDenom       string
 	batchKey         uint64
@@ -81,6 +82,12 @@ func (s *bridgeReceiveSuite) ACreditBatchExistsWithContract(a string) {
 	require.NoError(s.t, err)
 }
 
+func (s *bridgeReceiveSuite) AProjectExistsWithReferenceId(a string) {
+	s.referenceId = a
+
+	s.projectSetup()
+}
+
 func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsFromContract(a string) {
 	//s.originTx.Contract = a // TODO: #1225
 
@@ -89,6 +96,26 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsFromContract(a string) 
 		ClassId: s.classId,
 		Project: &core.MsgBridgeReceive_Project{
 			ReferenceId:  s.referenceId,
+			Jurisdiction: s.tradableAmount,
+			Metadata:     s.metadata,
+		},
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.bob.String(),
+			Amount:    s.tradableAmount,
+			StartDate: s.startDate,
+			EndDate:   s.endDate,
+			Metadata:  s.metadata,
+		},
+		OriginTx: s.originTx,
+	})
+}
+
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithProjectReferenceId(a string) {
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
+		Issuer:  s.alice.String(),
+		ClassId: s.classId,
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  a,
 			Jurisdiction: s.tradableAmount,
 			Metadata:     s.metadata,
 		},
@@ -119,8 +146,24 @@ func (s *bridgeReceiveSuite) ExpectTotalCreditBatches(a string) {
 	require.Equal(s.t, expTotal, total)
 }
 
-// bare minimum setup for a credit batch
-func (s *bridgeReceiveSuite) creditBatchSetup() {
+func (s *bridgeReceiveSuite) ExpectTotalProjects(a string) {
+	expTotal, err := strconv.ParseUint(a, 10, 64)
+	require.NoError(s.t, err)
+
+	it, err := s.k.stateStore.ProjectTable().List(s.ctx, api.ProjectPrimaryKey{})
+	require.NoError(s.t, err)
+
+	var total uint64
+	for it.Next() {
+		total++
+	}
+	it.Close()
+
+	require.Equal(s.t, expTotal, total)
+}
+
+// bare minimum setup for a project
+func (s *bridgeReceiveSuite) projectSetup() {
 	// TODO: Save for now but credit type should not exist prior to unit test #893
 	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
@@ -140,8 +183,9 @@ func (s *bridgeReceiveSuite) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectId,
-		ClassKey: cKey,
+		Id:          s.projectId,
+		ClassKey:    cKey,
+		ReferenceId: s.referenceId,
 	})
 	require.NoError(s.t, err)
 
@@ -151,22 +195,33 @@ func (s *bridgeReceiveSuite) creditBatchSetup() {
 	})
 	require.NoError(s.t, err)
 
+	s.projectKey = pKey
+}
+
+// bare minimum setup for a credit batch
+func (s *bridgeReceiveSuite) creditBatchSetup() {
+	s.projectSetup()
+
+	// the credit batch is always open for Msg/BridgeReceive tests and specific cases
+	// when closed are handled in tests for Msg/CreateBatch and Msg/MintBatchCredits
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		Issuer:     s.alice,
-		ProjectKey: pKey,
+		ProjectKey: s.projectKey,
 		Denom:      s.batchDenom,
 		Open:       true,
 	})
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey:       bKey,
-		TradableAmount: "0",
+		BatchKey:        bKey,
+		TradableAmount:  "0",
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
 	})
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
-		ProjectKey:   pKey,
+		ProjectKey:   s.projectKey,
 		NextSequence: 2,
 	})
 	require.NoError(s.t, err)

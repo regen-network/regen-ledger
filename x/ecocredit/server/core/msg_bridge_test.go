@@ -170,8 +170,10 @@ func (s *bridgeSuite) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey:       bKey,
-		TradableAmount: s.tradableAmount,
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
 	})
 	require.NoError(s.t, err)
 
