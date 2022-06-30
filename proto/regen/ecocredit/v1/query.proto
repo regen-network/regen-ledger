@@ -189,7 +189,10 @@ service Query {
 
   // CreditType queries credit type information by abbreviation.
   rpc CreditType(QueryCreditTypeRequest) returns (QueryCreditTypeResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1/credit-types/{abbreviation}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/credit-type/{abbreviation}"
+      additional_bindings : [ {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"} ]
+    };
   }
 }
 
