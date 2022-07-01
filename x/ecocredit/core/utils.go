@@ -153,6 +153,19 @@ func ValidateJurisdiction(jurisdiction string) error {
 	return nil
 }
 
+// GetClassIdFromProjectId returns the credit class ID in a project ID.
+func GetClassIdFromProjectId(projectId string) string {
+	var s strings.Builder
+	for _, r := range projectId {
+		if r != '-' {
+			s.WriteRune(r)
+			continue
+		}
+		break
+	}
+	return s.String()
+}
+
 // GetClassIdFromBatchDenom returns the credit class ID in a batch denom.
 func GetClassIdFromBatchDenom(denom string) string {
 	var s strings.Builder
