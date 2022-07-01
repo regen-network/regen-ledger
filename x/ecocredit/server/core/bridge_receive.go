@@ -173,9 +173,10 @@ func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeRe
 	return nil, nil
 }
 
-// getProjectFromBridgeReq attempts to get a project from state given the request.
-// The first project seen in the iterator is returned.
-// If no projects are found, nil is returned for both values.
+// getProjectFromBridgeReq attempts to get a project from state given the request. No more than
+// one project will ever be returned because we enforce uniqueness on non-empty reference id within
+// the scope of a credit class (we do this at the message server level and not the ORM level because
+// reference id is optional). If no project is found, nil is returned for both values.
 func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project, classId string) (*api.Project, error) {
 	class, err := k.stateStore.ClassTable().GetById(ctx, classId)
 	if err != nil {
@@ -189,7 +190,9 @@ func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridge
 		return nil, err
 	}
 
-	// we only want the first project that matches the reference ID, so we do not loop here.
+	// we only want the first project that matches the reference ID, so we do not loop here. We enforce
+	// uniqueness for a non-empty reference id at the message service level so as long as the reference
+	// id is not empty (verified in validate basic), no more than one project will ever be returned.
 	var project *api.Project
 	if it.Next() {
 		var err error
@@ -199,5 +202,6 @@ func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridge
 		}
 	}
 	it.Close()
+
 	return project, nil
 }
