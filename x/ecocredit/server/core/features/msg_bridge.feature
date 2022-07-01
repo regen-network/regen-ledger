@@ -31,7 +31,7 @@ Feature: Msg/Bridge
         "escrowed_amount": "0"
       }
       """
-      When alice attempts to bridge credits from the credit batch
+      When alice attempts to bridge credit amount "10" from the credit batch
       Then expect alice batch balance
       """
       {
@@ -47,7 +47,7 @@ Feature: Msg/Bridge
 
     Scenario: the total supply is updated
       Given a credit batch exists with a batch contract entry
-      And alice owns tradable credits from the credit batch
+      And alice owns tradable credit amount "10" from the credit batch
       And the batch supply
       """
       {
@@ -56,7 +56,7 @@ Feature: Msg/Bridge
         "cancelled_amount": "0"
       }
       """
-      When alice attempts to bridge credits from the credit batch
+      When alice attempts to bridge credit amount "10" from the credit batch
       Then expect batch supply
       """
       {

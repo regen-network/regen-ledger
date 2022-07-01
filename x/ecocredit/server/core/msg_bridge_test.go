@@ -76,6 +76,15 @@ func (s *bridgeSuite) AliceOwnsTradableCreditsFromTheCreditBatch() {
 	require.NoError(s.t, err)
 }
 
+func (s *bridgeSuite) AliceOwnsTradableCreditAmountFromTheCreditBatch(a string) {
+	err := s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
+		BatchKey:       s.batchKey,
+		Address:        s.alice,
+		TradableAmount: a,
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *bridgeSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
 	balance := &api.BatchBalance{}
 	err := jsonpb.UnmarshalString(a.Content, balance)
@@ -107,6 +116,20 @@ func (s *bridgeSuite) AliceAttemptsToBridgeCreditsFromTheCreditBatch() {
 		Target:    s.target,
 		Recipient: s.recipient,
 		Credits:   s.credits,
+	})
+}
+
+func (s *bridgeSuite) AliceAttemptsToBridgeCreditAmountFromTheCreditBatch(a string) {
+	s.res, s.err = s.k.Bridge(s.ctx, &core.MsgBridge{
+		Owner:     s.alice.String(),
+		Target:    s.target,
+		Recipient: s.recipient,
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
 	})
 }
 
