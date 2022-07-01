@@ -57,7 +57,6 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 				},
 			},
 			OriginTx: req.OriginTx,
-			Note:     req.Note,
 		})
 		if err != nil {
 			return nil, err
@@ -115,7 +114,6 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			EndDate:   req.Batch.EndDate,
 			Open:      true,
 			OriginTx:  req.OriginTx,
-			Note:      req.Note,
 		})
 		if err != nil {
 			return nil, err

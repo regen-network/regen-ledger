@@ -49,8 +49,12 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	if err := validateBatchIssuances(m.Issuance); err != nil {
 		return err
 	}
-	if err := validateOriginTx(m.OriginTx, false); err != nil {
-		return err
+
+	// origin tx is not required when creating a credit batch
+	if m.OriginTx != nil {
+		if err := m.OriginTx.Validate(); err != nil {
+			return err
+		}
 	}
 
 	return nil
