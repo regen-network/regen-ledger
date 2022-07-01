@@ -16,13 +16,9 @@ import (
 
 type createProjectSuite struct {
 	*baseSuite
-	alice            sdk.AccAddress
-	creditTypeAbbrev string
-	classId          string
-	classKey         uint64
-	projectId        string
-	res              *core.MsgCreateProjectResponse
-	err              error
+	alice sdk.AccAddress
+	res   *core.MsgCreateProjectResponse
+	err   error
 }
 
 func TestCreateProject(t *testing.T) {
@@ -32,9 +28,6 @@ func TestCreateProject(t *testing.T) {
 func (s *createProjectSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
-	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.projectId = "C01-001"
 }
 
 func (s *createProjectSuite) ACreditTypeWithAbbreviation(a string) {
