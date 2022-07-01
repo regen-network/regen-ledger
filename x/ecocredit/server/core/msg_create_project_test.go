@@ -141,8 +141,8 @@ func (s *createProjectSuite) ExpectProjectWithProjectId(a string) {
 	require.Equal(s.t, a, project.Id)
 }
 
-func (s *createProjectSuite) getProjectSequence(a string) uint64 {
-	str := strings.Split(a, "-")
+func (s *createProjectSuite) getProjectSequence(projectId string) uint64 {
+	str := strings.Split(projectId, "-")
 	seq, err := strconv.ParseUint(str[1], 10, 32)
 	require.NoError(s.t, err)
 	return seq
