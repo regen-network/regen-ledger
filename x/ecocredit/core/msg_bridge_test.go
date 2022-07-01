@@ -15,11 +15,12 @@ func TestMsgBridge(t *testing.T) {
 	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
 
 	tests := map[string]struct {
-		src    MsgBridge
-		expErr bool
+		msg       MsgBridge
+		expErr    bool
+		expErrMsg string
 	}{
 		"valid msg": {
-			src: MsgBridge{
+			msg: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -33,7 +34,7 @@ func TestMsgBridge(t *testing.T) {
 			expErr: false,
 		},
 		"invalid msg without owner": {
-			src: MsgBridge{
+			msg: MsgBridge{
 				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
@@ -43,10 +44,11 @@ func TestMsgBridge(t *testing.T) {
 				Target:    "polygon",
 				Recipient: recipient,
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "empty address string is not allowed",
 		},
-		"invalid msg with wrong owner address": {
-			src: MsgBridge{
+		"invalid msg with invalid owner address": {
+			msg: MsgBridge{
 				Owner: "wrong owner",
 				Credits: []*Credits{
 					{
@@ -55,16 +57,18 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "decoding bech32 failed",
 		},
 		"invalid msg without credits": {
-			src: MsgBridge{
+			msg: MsgBridge{
 				Owner: addr1,
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "credits should not be empty",
 		},
 		"invalid msg without Credits.BatchDenom": {
-			src: MsgBridge{
+			msg: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -72,10 +76,11 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "invalid batch denom",
 		},
 		"invalid msg without Credits.Amount": {
-			src: MsgBridge{
+			msg: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -83,10 +88,11 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "invalid decimal string",
 		},
-		"invalid msg with wrong Credits.Amount": {
-			src: MsgBridge{
+		"invalid msg with invalid Credits.Amount": {
+			msg: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -95,10 +101,11 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "invalid decimal string",
 		},
 		"invalid msg without bridge target": {
-			src: MsgBridge{
+			msg: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -108,51 +115,11 @@ func TestMsgBridge(t *testing.T) {
 				},
 				Recipient: recipient,
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "expected polygon",
 		},
-		"invalid msg without bridge contract": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:    "polygon",
-				Recipient: recipient,
-			},
-			expErr: true,
-		},
-		"invalid msg without bridge recipient address": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target: "polygon",
-			},
-			expErr: true,
-		},
-		"invalid bridge recipient address": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:    "polygon",
-				Recipient: addr1,
-			},
-			expErr: true,
-		},
-		"invalid bridge target": {
-			src: MsgBridge{
+		"invalid msg with invalid bridge target": {
+			msg: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -163,17 +130,45 @@ func TestMsgBridge(t *testing.T) {
 				Target:    "polygon1",
 				Recipient: recipient,
 			},
-			expErr: true,
+			expErr:    true,
+			expErrMsg: "expected polygon",
+		},
+		"invalid msg without bridge recipient address": {
+			msg: MsgBridge{
+				Owner: addr1,
+				Credits: []*Credits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
+					},
+				},
+				Target: "polygon",
+			},
+			expErr:    true,
+			expErrMsg: "not a valid ethereum address",
+		},
+		"invalid msg with invalid bridge recipient address": {
+			msg: MsgBridge{
+				Owner: addr1,
+				Credits: []*Credits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
+					},
+				},
+				Target:    "polygon",
+				Recipient: addr1,
+			},
+			expErr:    true,
+			expErrMsg: "not a valid ethereum address",
 		},
 	}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
-
-			err := test.src.ValidateBasic()
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := test.msg.ValidateBasic()
 			if test.expErr {
-				require.Error(t, err)
+				require.ErrorContains(t, err, test.expErrMsg)
 			} else {
 				require.NoError(t, err)
 			}
