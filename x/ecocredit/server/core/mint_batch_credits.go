@@ -28,9 +28,15 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
 	}
 
-	if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
-		Id:     req.OriginTx.Id,
-		Source: req.OriginTx.Source,
+	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = k.stateStore.OriginTxIndexTable().Insert(ctx, &api.OriginTxIndex{
+		ClassKey: project.ClassKey,
+		Id:       req.OriginTx.Id,
+		Source:   req.OriginTx.Source,
 	}); err != nil {
 		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)

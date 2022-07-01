@@ -6084,27 +6084,29 @@ func (x *fastReflection_BatchSupply) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_BatchOriginTx        protoreflect.MessageDescriptor
-	fd_BatchOriginTx_id     protoreflect.FieldDescriptor
-	fd_BatchOriginTx_source protoreflect.FieldDescriptor
+	md_OriginTxIndex           protoreflect.MessageDescriptor
+	fd_OriginTxIndex_class_key protoreflect.FieldDescriptor
+	fd_OriginTxIndex_id        protoreflect.FieldDescriptor
+	fd_OriginTxIndex_source    protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_state_proto_init()
-	md_BatchOriginTx = File_regen_ecocredit_v1_state_proto.Messages().ByName("BatchOriginTx")
-	fd_BatchOriginTx_id = md_BatchOriginTx.Fields().ByName("id")
-	fd_BatchOriginTx_source = md_BatchOriginTx.Fields().ByName("source")
+	md_OriginTxIndex = File_regen_ecocredit_v1_state_proto.Messages().ByName("OriginTxIndex")
+	fd_OriginTxIndex_class_key = md_OriginTxIndex.Fields().ByName("class_key")
+	fd_OriginTxIndex_id = md_OriginTxIndex.Fields().ByName("id")
+	fd_OriginTxIndex_source = md_OriginTxIndex.Fields().ByName("source")
 }
 
-var _ protoreflect.Message = (*fastReflection_BatchOriginTx)(nil)
+var _ protoreflect.Message = (*fastReflection_OriginTxIndex)(nil)
 
-type fastReflection_BatchOriginTx BatchOriginTx
+type fastReflection_OriginTxIndex OriginTxIndex
 
-func (x *BatchOriginTx) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_BatchOriginTx)(x)
+func (x *OriginTxIndex) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_OriginTxIndex)(x)
 }
 
-func (x *BatchOriginTx) slowProtoReflect() protoreflect.Message {
+func (x *OriginTxIndex) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -6116,43 +6118,43 @@ func (x *BatchOriginTx) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_BatchOriginTx_messageType fastReflection_BatchOriginTx_messageType
-var _ protoreflect.MessageType = fastReflection_BatchOriginTx_messageType{}
+var _fastReflection_OriginTxIndex_messageType fastReflection_OriginTxIndex_messageType
+var _ protoreflect.MessageType = fastReflection_OriginTxIndex_messageType{}
 
-type fastReflection_BatchOriginTx_messageType struct{}
+type fastReflection_OriginTxIndex_messageType struct{}
 
-func (x fastReflection_BatchOriginTx_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_BatchOriginTx)(nil)
+func (x fastReflection_OriginTxIndex_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_OriginTxIndex)(nil)
 }
-func (x fastReflection_BatchOriginTx_messageType) New() protoreflect.Message {
-	return new(fastReflection_BatchOriginTx)
+func (x fastReflection_OriginTxIndex_messageType) New() protoreflect.Message {
+	return new(fastReflection_OriginTxIndex)
 }
-func (x fastReflection_BatchOriginTx_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_BatchOriginTx
+func (x fastReflection_OriginTxIndex_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_OriginTxIndex
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_BatchOriginTx) Descriptor() protoreflect.MessageDescriptor {
-	return md_BatchOriginTx
+func (x *fastReflection_OriginTxIndex) Descriptor() protoreflect.MessageDescriptor {
+	return md_OriginTxIndex
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_BatchOriginTx) Type() protoreflect.MessageType {
-	return _fastReflection_BatchOriginTx_messageType
+func (x *fastReflection_OriginTxIndex) Type() protoreflect.MessageType {
+	return _fastReflection_OriginTxIndex_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_BatchOriginTx) New() protoreflect.Message {
-	return new(fastReflection_BatchOriginTx)
+func (x *fastReflection_OriginTxIndex) New() protoreflect.Message {
+	return new(fastReflection_OriginTxIndex)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_BatchOriginTx) Interface() protoreflect.ProtoMessage {
-	return (*BatchOriginTx)(x)
+func (x *fastReflection_OriginTxIndex) Interface() protoreflect.ProtoMessage {
+	return (*OriginTxIndex)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -6160,16 +6162,22 @@ func (x *fastReflection_BatchOriginTx) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_BatchOriginTx) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_OriginTxIndex) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.ClassKey != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ClassKey)
+		if !f(fd_OriginTxIndex_class_key, value) {
+			return
+		}
+	}
 	if x.Id != "" {
 		value := protoreflect.ValueOfString(x.Id)
-		if !f(fd_BatchOriginTx_id, value) {
+		if !f(fd_OriginTxIndex_id, value) {
 			return
 		}
 	}
 	if x.Source != "" {
 		value := protoreflect.ValueOfString(x.Source)
-		if !f(fd_BatchOriginTx_source, value) {
+		if !f(fd_OriginTxIndex_source, value) {
 			return
 		}
 	}
@@ -6186,17 +6194,19 @@ func (x *fastReflection_BatchOriginTx) Range(f func(protoreflect.FieldDescriptor
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_BatchOriginTx) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_OriginTxIndex) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.id":
+	case "regen.ecocredit.v1.OriginTxIndex.class_key":
+		return x.ClassKey != uint64(0)
+	case "regen.ecocredit.v1.OriginTxIndex.id":
 		return x.Id != ""
-	case "regen.ecocredit.v1.BatchOriginTx.source":
+	case "regen.ecocredit.v1.OriginTxIndex.source":
 		return x.Source != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchOriginTx"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTxIndex"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.BatchOriginTx does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.OriginTxIndex does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6206,17 +6216,19 @@ func (x *fastReflection_BatchOriginTx) Has(fd protoreflect.FieldDescriptor) bool
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BatchOriginTx) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_OriginTxIndex) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.id":
+	case "regen.ecocredit.v1.OriginTxIndex.class_key":
+		x.ClassKey = uint64(0)
+	case "regen.ecocredit.v1.OriginTxIndex.id":
 		x.Id = ""
-	case "regen.ecocredit.v1.BatchOriginTx.source":
+	case "regen.ecocredit.v1.OriginTxIndex.source":
 		x.Source = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchOriginTx"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTxIndex"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.BatchOriginTx does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.OriginTxIndex does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6226,19 +6238,22 @@ func (x *fastReflection_BatchOriginTx) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_BatchOriginTx) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_OriginTxIndex) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.id":
+	case "regen.ecocredit.v1.OriginTxIndex.class_key":
+		value := x.ClassKey
+		return protoreflect.ValueOfUint64(value)
+	case "regen.ecocredit.v1.OriginTxIndex.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.BatchOriginTx.source":
+	case "regen.ecocredit.v1.OriginTxIndex.source":
 		value := x.Source
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchOriginTx"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTxIndex"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.BatchOriginTx does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.OriginTxIndex does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -6252,17 +6267,19 @@ func (x *fastReflection_BatchOriginTx) Get(descriptor protoreflect.FieldDescript
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BatchOriginTx) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_OriginTxIndex) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.id":
+	case "regen.ecocredit.v1.OriginTxIndex.class_key":
+		x.ClassKey = value.Uint()
+	case "regen.ecocredit.v1.OriginTxIndex.id":
 		x.Id = value.Interface().(string)
-	case "regen.ecocredit.v1.BatchOriginTx.source":
+	case "regen.ecocredit.v1.OriginTxIndex.source":
 		x.Source = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchOriginTx"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTxIndex"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.BatchOriginTx does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.OriginTxIndex does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6276,44 +6293,48 @@ func (x *fastReflection_BatchOriginTx) Set(fd protoreflect.FieldDescriptor, valu
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BatchOriginTx) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_OriginTxIndex) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.id":
-		panic(fmt.Errorf("field id of message regen.ecocredit.v1.BatchOriginTx is not mutable"))
-	case "regen.ecocredit.v1.BatchOriginTx.source":
-		panic(fmt.Errorf("field source of message regen.ecocredit.v1.BatchOriginTx is not mutable"))
+	case "regen.ecocredit.v1.OriginTxIndex.class_key":
+		panic(fmt.Errorf("field class_key of message regen.ecocredit.v1.OriginTxIndex is not mutable"))
+	case "regen.ecocredit.v1.OriginTxIndex.id":
+		panic(fmt.Errorf("field id of message regen.ecocredit.v1.OriginTxIndex is not mutable"))
+	case "regen.ecocredit.v1.OriginTxIndex.source":
+		panic(fmt.Errorf("field source of message regen.ecocredit.v1.OriginTxIndex is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchOriginTx"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTxIndex"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.BatchOriginTx does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.OriginTxIndex does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_BatchOriginTx) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_OriginTxIndex) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.id":
+	case "regen.ecocredit.v1.OriginTxIndex.class_key":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "regen.ecocredit.v1.OriginTxIndex.id":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.BatchOriginTx.source":
+	case "regen.ecocredit.v1.OriginTxIndex.source":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchOriginTx"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTxIndex"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.BatchOriginTx does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.OriginTxIndex does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_BatchOriginTx) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_OriginTxIndex) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.BatchOriginTx", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.OriginTxIndex", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -6321,7 +6342,7 @@ func (x *fastReflection_BatchOriginTx) WhichOneof(d protoreflect.OneofDescriptor
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_BatchOriginTx) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_OriginTxIndex) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -6332,7 +6353,7 @@ func (x *fastReflection_BatchOriginTx) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BatchOriginTx) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_OriginTxIndex) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -6344,7 +6365,7 @@ func (x *fastReflection_BatchOriginTx) SetUnknown(fields protoreflect.RawFields)
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_BatchOriginTx) IsValid() bool {
+func (x *fastReflection_OriginTxIndex) IsValid() bool {
 	return x != nil
 }
 
@@ -6354,9 +6375,9 @@ func (x *fastReflection_BatchOriginTx) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_OriginTxIndex) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*BatchOriginTx)
+		x := input.Message.Interface().(*OriginTxIndex)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -6368,6 +6389,9 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
+		if x.ClassKey != 0 {
+			n += 1 + runtime.Sov(uint64(x.ClassKey))
+		}
 		l = len(x.Id)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -6386,7 +6410,7 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*BatchOriginTx)
+		x := input.Message.Interface().(*OriginTxIndex)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -6410,14 +6434,19 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 			copy(dAtA[i:], x.Source)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Source)))
 			i--
-			dAtA[i] = 0x12
+			dAtA[i] = 0x1a
 		}
 		if len(x.Id) > 0 {
 			i -= len(x.Id)
 			copy(dAtA[i:], x.Id)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Id)))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x12
+		}
+		if x.ClassKey != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ClassKey))
+			i--
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -6430,7 +6459,7 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*BatchOriginTx)
+		x := input.Message.Interface().(*OriginTxIndex)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -6462,13 +6491,32 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: BatchOriginTx: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OriginTxIndex: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: BatchOriginTx: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OriginTxIndex: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
+				}
+				x.ClassKey = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ClassKey |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 				}
@@ -6500,7 +6548,7 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 				}
 				x.Id = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 2:
+			case 3:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
 				}
@@ -7280,23 +7328,31 @@ func (x *BatchSupply) GetCancelledAmount() string {
 	return ""
 }
 
-// BatchOriginTx indexes the transaction ID from batch mint operations in order
-// to prevent double minting errors.
-type BatchOriginTx struct {
+// OriginTxIndex indexes the transaction ID and source from the OriginTx
+// included in Msg/CreateBatch and Msg/MintBatchCredits to prevent double
+// minting errors. The index is scoped to a credit class (it includes the
+// class_key) to prevent malicious credit class issuers from blocking any
+// bridge operations taking place within another credit class.
+type OriginTxIndex struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// class_key is the table row identifier of the credit class within which the
+	// credits were issued or minted. The class_key is included within the index
+	// to prevent malicious credit class issuers from blocking bridge operations
+	// taking place within another credit class.
+	ClassKey uint64 `protobuf:"varint,1,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
 	// id is the transaction ID of an originating transaction or operation
 	// based on a type (i.e. transaction ID, serial number).
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// source is the source chain or registry of the transaction originating
 	// the mint process (e.g. polygon, ethereum, verra).
-	Source string `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
+	Source string `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
 }
 
-func (x *BatchOriginTx) Reset() {
-	*x = BatchOriginTx{}
+func (x *OriginTxIndex) Reset() {
+	*x = OriginTxIndex{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -7304,25 +7360,32 @@ func (x *BatchOriginTx) Reset() {
 	}
 }
 
-func (x *BatchOriginTx) String() string {
+func (x *OriginTxIndex) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BatchOriginTx) ProtoMessage() {}
+func (*OriginTxIndex) ProtoMessage() {}
 
-// Deprecated: Use BatchOriginTx.ProtoReflect.Descriptor instead.
-func (*BatchOriginTx) Descriptor() ([]byte, []int) {
+// Deprecated: Use OriginTxIndex.ProtoReflect.Descriptor instead.
+func (*OriginTxIndex) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *BatchOriginTx) GetId() string {
+func (x *OriginTxIndex) GetClassKey() uint64 {
+	if x != nil {
+		return x.ClassKey
+	}
+	return 0
+}
+
+func (x *OriginTxIndex) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *BatchOriginTx) GetSource() string {
+func (x *OriginTxIndex) GetSource() string {
 	if x != nil {
 		return x.Source
 	}
@@ -7462,26 +7525,28 @@ var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
 	0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x61, 0x6e, 0x63, 0x65,
 	0x6c, 0x6c, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x3a, 0x15, 0xf2, 0x9e, 0xd3, 0x8e,
 	0x03, 0x0f, 0x0a, 0x0b, 0x0a, 0x09, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x6b, 0x65, 0x79, 0x18,
-	0x0a, 0x22, 0x4e, 0x0a, 0x0d, 0x42, 0x61, 0x74, 0x63, 0x68, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e,
-	0x54, 0x78, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
-	0x69, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x3a, 0x15, 0xf2, 0x9e, 0xd3, 0x8e,
-	0x03, 0x0f, 0x0a, 0x0b, 0x0a, 0x09, 0x69, 0x64, 0x2c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18,
-	0x0b, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74,
-	0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74,
-	0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65,
-	0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca,
-	0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x0a, 0x22, 0x75, 0x0a, 0x0d, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78, 0x49, 0x6e, 0x64,
+	0x65, 0x78, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65, 0x79, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4b, 0x65, 0x79, 0x12,
+	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12,
+	0x16, 0x0a, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x3a, 0x1f, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x19, 0x0a,
+	0x15, 0x0a, 0x13, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65, 0x79, 0x2c, 0x69, 0x64, 0x2c,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x0b, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45,
+	0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -7508,7 +7573,7 @@ var file_regen_ecocredit_v1_state_proto_goTypes = []interface{}{
 	(*BatchSequence)(nil),         // 7: regen.ecocredit.v1.BatchSequence
 	(*BatchBalance)(nil),          // 8: regen.ecocredit.v1.BatchBalance
 	(*BatchSupply)(nil),           // 9: regen.ecocredit.v1.BatchSupply
-	(*BatchOriginTx)(nil),         // 10: regen.ecocredit.v1.BatchOriginTx
+	(*OriginTxIndex)(nil),         // 10: regen.ecocredit.v1.OriginTxIndex
 	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
 }
 var file_regen_ecocredit_v1_state_proto_depIdxs = []int32{
@@ -7649,7 +7714,7 @@ func file_regen_ecocredit_v1_state_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_state_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BatchOriginTx); i {
+			switch v := v.(*OriginTxIndex); i {
 			case 0:
 				return &v.state
 			case 1:

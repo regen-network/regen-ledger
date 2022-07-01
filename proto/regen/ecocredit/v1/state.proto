@@ -269,19 +269,28 @@ message BatchSupply {
   string cancelled_amount = 4;
 }
 
-// BatchOriginTx indexes the transaction ID from batch mint operations in order
-// to prevent double minting errors.
-message BatchOriginTx {
+// OriginTxIndex indexes the transaction ID and source from the OriginTx
+// included in Msg/CreateBatch and Msg/MintBatchCredits to prevent double
+// minting errors. The index is scoped to a credit class (it includes the
+// class_key) to prevent malicious credit class issuers from blocking any
+// bridge operations taking place within another credit class.
+message OriginTxIndex {
   option (cosmos.orm.v1alpha1.table) = {
     id : 11,
-    primary_key : {fields : "id,source"}
+    primary_key : {fields : "class_key,id,source"}
   };
+
+  // class_key is the table row identifier of the credit class within which the
+  // credits were issued or minted. The class_key is included within the index
+  // to prevent malicious credit class issuers from blocking bridge operations
+  // taking place within another credit class.
+  uint64 class_key = 1;
 
   // id is the transaction ID of an originating transaction or operation
   // based on a type (i.e. transaction ID, serial number).
-  string id = 1;
+  string id = 2;
 
   // source is the source chain or registry of the transaction originating
   // the mint process (e.g. polygon, ethereum, verra).
-  string source = 2;
+  string source = 3;
 }

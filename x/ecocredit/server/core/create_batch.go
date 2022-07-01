@@ -21,12 +21,12 @@ import (
 func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*core.MsgCreateBatchResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	projectInfo, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
+	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}
 
-	classInfo, err := k.stateStore.ClassTable().Get(ctx, projectInfo.ClassKey)
+	class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 	if err != nil {
 		return nil, err
 	}
@@ -36,17 +36,17 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	err = k.assertClassIssuer(ctx, classInfo.Key, issuer)
+	err = k.assertClassIssuer(ctx, class.Key, issuer)
 	if err != nil {
 		return nil, err
 	}
 
-	batchSeqNo, err := k.getBatchSeqNo(ctx, projectInfo.Key)
+	batchSeqNo, err := k.getBatchSeqNo(ctx, project.Key)
 	if err != nil {
 		return nil, err
 	}
 
-	batchDenom, err := core.FormatBatchDenom(projectInfo.Id, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := core.FormatBatchDenom(project.Id, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	startDate, endDate := timestamppb.New(*req.StartDate), timestamppb.New(*req.EndDate)
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	batchKey, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
-		ProjectKey:   projectInfo.Key,
+		ProjectKey:   project.Key,
 		Issuer:       issuer,
 		Denom:        batchDenom,
 		Metadata:     req.Metadata,
@@ -66,7 +66,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	creditType, err := k.stateStore.CreditTypeTable().Get(ctx, classInfo.CreditTypeAbbrev)
+	creditType, err := k.stateStore.CreditTypeTable().Get(ctx, class.CreditTypeAbbrev)
 	if err != nil {
 		return nil, err
 	}
@@ -189,9 +189,10 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	if req.OriginTx != nil {
-		if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
-			Id:     req.OriginTx.Id,
-			Source: req.OriginTx.Source,
+		if err = k.stateStore.OriginTxIndexTable().Insert(ctx, &api.OriginTxIndex{
+			ClassKey: project.ClassKey,
+			Id:       req.OriginTx.Id,
+			Source:   req.OriginTx.Source,
 		}); err != nil {
 			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
