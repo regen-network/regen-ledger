@@ -47,3 +47,21 @@ Feature: Msg/MintBatchCredits
       }
       """
       Then expect the error "credits already issued with tx id: 0x0: invalid request"
+
+    Scenario: the origin tx is unique within credit class
+      Given an origin tx index
+      """
+      {
+        "class_key": 2,
+        "id": "0x0",
+        "source": "polygon"
+      }
+      """
+      When alice attempts to mint credits with origin tx
+      """
+      {
+        "id": "0x0",
+        "source": "polygon"
+      }
+      """
+      Then expect no error
