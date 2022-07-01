@@ -37,37 +37,13 @@ func (s *createProjectSuite) Before(t gocuke.TestingT) {
 	s.projectId = "C01-001"
 }
 
-func (s *createProjectSuite) ACreditType() {
+func (s *createProjectSuite) ACreditTypeWithAbbreviation(a string) {
 	// TODO: Save for now but credit type should not exist prior to unit test #893
 	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
-		Abbreviation: s.creditTypeAbbrev,
-		Name:         s.creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-}
-
-func (s *createProjectSuite) ACreditTypeWithAbbreviation(a string) {
-	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: a,
 		Name:         a,
 	})
 	require.NoError(s.t, err)
-}
-
-func (s *createProjectSuite) ACreditClassWithIssuerAlice() {
-	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
-		ClassKey: cKey,
-		Issuer:   s.alice,
-	})
-	require.NoError(s.t, err)
-
-	s.classKey = cKey
 }
 
 func (s *createProjectSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
@@ -121,18 +97,23 @@ func (s *createProjectSuite) AProjectWithProjectId(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *createProjectSuite) AProjectWithReferenceId(a string) {
-	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:          s.projectId,
-		ClassKey:    s.classKey,
-		ReferenceId: a,
+func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
+	classId := core.GetClassIdFromProjectId(a)
+
+	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classId)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+		Id:          a,
+		ClassKey:    class.Key,
+		ReferenceId: b,
 	})
 	require.NoError(s.t, err)
 
-	seq := s.getProjectSequence(s.projectId)
+	seq := s.getProjectSequence(a)
 
 	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
-		ClassKey:     s.classKey,
+		ClassKey:     class.Key,
 		NextSequence: seq + 1,
 	})
 	require.NoError(s.t, err)
@@ -145,16 +126,20 @@ func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassId(a string) 
 	})
 }
 
-func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithReferenceId(a string) {
+func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassIdAndReferenceId(a, b string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:       s.alice.String(),
-		ClassId:     s.classId,
-		ReferenceId: a,
+		ClassId:     a,
+		ReferenceId: b,
 	})
 }
 
 func (s *createProjectSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *createProjectSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createProjectSuite) ExpectProjectWithProjectId(a string) {

@@ -92,7 +92,7 @@ func (k Keeper) genProjectID(ctx context.Context, classKey uint64, classID strin
 // ORM level because reference id is optional and therefore multiple projects within the scope
 // of a credit class can have an empty reference id (see BridgeReceive for more information)
 func (k Keeper) verifyReferenceId(ctx context.Context, classKey uint64, referenceId string) error {
-	if referenceId != "" {
+	if referenceId == "" {
 		// reference id is optional so an empty reference id is valid
 		return nil
 	}
@@ -107,7 +107,7 @@ func (k Keeper) verifyReferenceId(ctx context.Context, classKey uint64, referenc
 		total++
 	}
 	it.Close()
-	if total > 1 {
+	if total > 0 {
 		return sdkerrors.ErrInvalidRequest.Wrapf(
 			"a project with reference id %s already exists within this credit class", referenceId,
 		)
