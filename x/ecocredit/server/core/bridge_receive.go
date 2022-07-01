@@ -177,7 +177,7 @@ func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeRe
 // of the credit class. No more than one project will be returned when we list the projects based on
 // class id and reference id because we enforce uniqueness on non-empty reference ids within the scope
 // of a credit class (and we do this at the message server level and not the ORM level because reference
-// id is optional). If no project is found, nil is returned for both values.
+// id is optional when using Msg/CreateProject). If no project is found, nil is returned for both values.
 func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project, classId string) (*api.Project, error) {
 	class, err := k.stateStore.ClassTable().GetById(ctx, classId)
 	if err != nil {
