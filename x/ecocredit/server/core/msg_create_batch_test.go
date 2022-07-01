@@ -166,7 +166,7 @@ func (s *createBatchSuite) AnOriginTxIndex(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithProjectIdStartDateEndDate(a, b, c string) {
+func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithProjectIdStartDateAndEndDate(a, b, c string) {
 	startDate, err := types.ParseDate("start date", b)
 	require.NoError(s.t, err)
 

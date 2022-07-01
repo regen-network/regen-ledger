@@ -12,10 +12,10 @@ Feature: Msg/MintBatchCredits
       And a credit class with issuer alice
       And a project
 
-#    Scenario: the credit batch is closed
-#      Given a credit batch with open "false" and issuer alice
-#      When alice attempts to mint credits
-#      Then expect the error "unable to mint credits: credits cannot be minted in a closed batch: invalid request"
+    Scenario: the credit batch is closed
+      Given a credit batch with open "false" and issuer alice
+      When alice attempts to mint credits
+      Then expect the error "unable to mint credits: credits cannot be minted in a closed batch: invalid request"
 
     Scenario: the credit batch is open
       Given a credit batch with open "true" and issuer alice

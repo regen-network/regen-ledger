@@ -13,7 +13,7 @@ Feature: Msg/CreateBatch
       And a credit class with class id "A01" and issuer alice
       And a project with project id "A01-001"
       And a credit batch with denom "A01-001-20200101-20210101-001"
-      When alice attempts to create a credit batch with project id "A01-001" start date "2020-01-01" end date "2021-01-01"
+      When alice attempts to create a credit batch with project id "A01-001" start date "2020-01-01" and end date "2021-01-01"
       Then expect credit batch with denom "A01-001-20200101-20210101-002"
 
     Scenario: multiple credit batches from different projects
@@ -24,7 +24,7 @@ Feature: Msg/CreateBatch
       And a credit type with abbreviation "B"
       And a credit class with class id "B01" and issuer alice
       And a project with project id "B01-001"
-      When alice attempts to create a credit batch with project id "B01-001" start date "2020-01-01" end date "2021-01-01"
+      When alice attempts to create a credit batch with project id "B01-001" start date "2020-01-01" and end date "2021-01-01"
       Then expect credit batch with denom "B01-001-20200101-20210101-001"
 
   Rule: The origin tx must be unique within the scope of the credit class
