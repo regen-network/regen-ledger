@@ -221,11 +221,6 @@ message MsgCreateBatch {
   // issuing credits and should only be set when bridging assets from another
   // chain or registry as a result of a bridge operation.
   OriginTx origin_tx = 8;
-
-  // note is a reference note for accounting that should only be set when
-  // bridging assets from another chain or registry as a result of a bridge
-  // operation and will be stored in state as a field of BatchOriginTx.
-  string note = 9;
 }
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
@@ -253,11 +248,6 @@ message MsgMintBatchCredits {
   // origin_tx is the transaction from another chain or registry that triggered
   // the minting of credits.
   OriginTx origin_tx = 4;
-
-  // note is a reference note for accounting that should only be set when
-  // bridging assets from another chain or registry as a result of a bridge
-  // operation and will be stored in state as a field of BatchOriginTx.
-  string note = 5;
 }
 
 // MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
@@ -495,9 +485,6 @@ message MsgBridgeReceive {
   // origin_tx is a reference to a transaction which caused the transfer from
   // another chain or registry.
   OriginTx origin_tx = 5;
-
-  // note is an arbitrary note to include in the origin tx.
-  string note = 6;
 
   // Batch defines the credit batch information for the bridged credits. This
   // information will be used to create a credit batch or to dynamically mint
