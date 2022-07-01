@@ -140,7 +140,7 @@ func (s *createBatchSuite) AProjectWithProjectId(a string) {
 	s.projectKey = pKey
 }
 
-func (s *createBatchSuite) ACreditBatchWithBatchDenom(a string) {
+func (s *createBatchSuite) ACreditBatchWithDenom(a string) {
 	err := s.k.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		Denom:      a,
 		ProjectKey: s.projectKey,
@@ -154,6 +154,15 @@ func (s *createBatchSuite) ACreditBatchWithBatchDenom(a string) {
 		ProjectKey:   s.projectKey,
 		NextSequence: seq + 1,
 	})
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) AnOriginTxIndex(a gocuke.DocString) {
+	originTxIndex := &api.OriginTxIndex{}
+	err := jsonpb.UnmarshalString(a.Content, originTxIndex)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.OriginTxIndexTable().Insert(s.ctx, originTxIndex)
 	require.NoError(s.t, err)
 }
 
@@ -176,8 +185,26 @@ func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithProjectIdStartDa
 		StartDate: &startDate,
 		EndDate:   &endDate,
 	})
+}
 
-	require.NoError(s.t, s.err)
+func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithOriginTx(a gocuke.DocString) {
+	originTx := &core.OriginTx{}
+	err := jsonpb.UnmarshalString(a.Content, originTx)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: s.projectId,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.alice.String(),
+				TradableAmount: s.tradableAmount,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  originTx,
+	})
 }
 
 func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithTheIssuance(a gocuke.DocString) {
@@ -193,6 +220,14 @@ func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithTheIssuance(a go
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 	})
+}
+
+func (s *createBatchSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *createBatchSuite) ExpectCreditBatchWithDenom(a string) {

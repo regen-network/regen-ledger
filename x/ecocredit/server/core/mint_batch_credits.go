@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,7 +26,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 	}
 
 	if err := k.assertCanMintBatch(issuer, batch); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
+		return nil, fmt.Errorf("unable to mint credits: %s", err.Error())
 	}
 
 	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)

@@ -2,6 +2,7 @@ Feature: Msg/CreateBatch
 
   Credits can be issued in batches:
   - when the issuer is an approved credit class issuer
+  - when the origin tx is unique within the scope of a credit class
   - the recipient batch balance is updated
   - ...
 
@@ -11,7 +12,7 @@ Feature: Msg/CreateBatch
       Given a credit type with abbreviation "A"
       And a credit class with class id "A01" and issuer alice
       And a project with project id "A01-001"
-      And a credit batch with batch denom "A01-001-20200101-20210101-001"
+      And a credit batch with denom "A01-001-20200101-20210101-001"
       When alice attempts to create a credit batch with project id "A01-001" start date "2020-01-01" end date "2021-01-01"
       Then expect credit batch with denom "A01-001-20200101-20210101-002"
 
@@ -19,12 +20,55 @@ Feature: Msg/CreateBatch
       Given a credit type with abbreviation "A"
       And a credit class with class id "A01" and issuer alice
       And a project with project id "A01-001"
-      And a credit batch with batch denom "A01-001-20200101-20210101-001"
+      And a credit batch with denom "A01-001-20200101-20210101-001"
       And a credit type with abbreviation "B"
       And a credit class with class id "B01" and issuer alice
       And a project with project id "B01-001"
       When alice attempts to create a credit batch with project id "B01-001" start date "2020-01-01" end date "2021-01-01"
       Then expect credit batch with denom "B01-001-20200101-20210101-001"
+
+  Rule: The origin tx must be unique within the scope of the credit class
+
+    Background:
+      Given a credit type
+      And a credit class with issuer alice
+      And a project
+
+    Scenario: the origin tx is not unique within credit class
+      Given an origin tx index
+      """
+      {
+        "class_key": 1,
+        "id": "0x0",
+        "source": "polygon"
+      }
+      """
+      When alice attempts to create a credit batch with origin tx
+      """
+      {
+        "id": "0x0",
+        "source": "polygon"
+      }
+      """
+      Then expect the error "credits already issued with tx id: 0x0: invalid request"
+
+    Scenario: the origin tx is unique within the credit class
+      Given an origin tx index
+      """
+      {
+        "class_key": 2,
+        "id": "0x0",
+        "source": "polygon"
+      }
+      """
+      When alice attempts to create a credit batch with origin tx
+      """
+      {
+        "id": "0x0",
+        "source": "polygon"
+      }
+      """
+      Then expect no error
 
   Rule: The recipient batch balance is updated
 
