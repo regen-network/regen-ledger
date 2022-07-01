@@ -62,7 +62,7 @@ func (s *createProjectSuite) AProjectSequenceForCreditClass(a, b string) {
 	nextSequence, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
+	err = s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
 		ClassKey:     class.Key,
 		NextSequence: nextSequence,
 	})
@@ -83,6 +83,7 @@ func (s *createProjectSuite) AProjectWithProjectId(a string) {
 
 	seq := s.getProjectSequence(a)
 
+	// Save because project sequence may already exist
 	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
 		ClassKey:     class.Key,
 		NextSequence: seq + 1,
@@ -105,6 +106,7 @@ func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
 
 	seq := s.getProjectSequence(a)
 
+	// Save because project sequence may already exist
 	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
 		ClassKey:     class.Key,
 		NextSequence: seq + 1,
