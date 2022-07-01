@@ -63,9 +63,9 @@ func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 	s.endDate = &endDate
 
 	s.originTx = &core.OriginTx{
-		Id:     "0x0",
-		Source: "polygon",
-		// Contract: s.contract, // TODO: #1225
+		Id:       "0x0",
+		Source:   "polygon",
+		Contract: s.contract,
 	}
 }
 
@@ -104,7 +104,7 @@ func (s *bridgeReceiveSuite) ACreditBatchWithContract(a string) {
 }
 
 func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsFromContract(a string) {
-	//s.originTx.Contract = a // TODO: #1225
+	s.originTx.Contract = a
 
 	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
 		Issuer:  s.alice.String(),

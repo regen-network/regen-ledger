@@ -40,8 +40,9 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x12345",
-			Source: "polygon",
+			Id:       "0x12345",
+			Source:   "polygon",
+			Contract: "0x0",
 		},
 		ClassId: "C01",
 	}

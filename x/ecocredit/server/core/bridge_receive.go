@@ -13,10 +13,8 @@ import (
 
 // BridgeReceive bridges credits received from another chain.
 func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (*core.MsgBridgeReceiveResponse, error) {
-	originTxContract := "0x0" // TODO: #1225
-
 	// check if batch contract entry exists
-	batchContract, err := k.stateStore.BatchContractTable().GetByContract(ctx, originTxContract)
+	batchContract, err := k.stateStore.BatchContractTable().GetByContract(ctx, req.OriginTx.Contract)
 	if err != nil {
 		if !ormerrors.NotFound.Is(err) {
 			return nil, err
