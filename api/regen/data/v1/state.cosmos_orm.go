@@ -470,24 +470,11 @@ func (this ResolverUrlIndexKey) WithUrl(url string) ResolverUrlIndexKey {
 	return this
 }
 
-type ResolverManagerIndexKey struct {
-	vs []interface{}
-}
-
-func (x ResolverManagerIndexKey) id() uint32            { return 2 }
-func (x ResolverManagerIndexKey) values() []interface{} { return x.vs }
-func (x ResolverManagerIndexKey) resolverIndexKey()     {}
-
-func (this ResolverManagerIndexKey) WithManager(manager []byte) ResolverManagerIndexKey {
-	this.vs = []interface{}{manager}
-	return this
-}
-
 type ResolverUrlManagerIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverUrlManagerIndexKey) id() uint32            { return 3 }
+func (x ResolverUrlManagerIndexKey) id() uint32            { return 2 }
 func (x ResolverUrlManagerIndexKey) values() []interface{} { return x.vs }
 func (x ResolverUrlManagerIndexKey) resolverIndexKey()     {}
 
@@ -542,7 +529,7 @@ func (this resolverTable) Get(ctx context.Context, id uint64) (*Resolver, error)
 }
 
 func (this resolverTable) HasByUrlManager(ctx context.Context, url string, manager []byte) (found bool, err error) {
-	return this.table.GetIndexByID(3).(ormtable.UniqueIndex).Has(ctx,
+	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
 		url,
 		manager,
 	)
@@ -550,7 +537,7 @@ func (this resolverTable) HasByUrlManager(ctx context.Context, url string, manag
 
 func (this resolverTable) GetByUrlManager(ctx context.Context, url string, manager []byte) (*Resolver, error) {
 	var resolver Resolver
-	found, err := this.table.GetIndexByID(3).(ormtable.UniqueIndex).Get(ctx, &resolver,
+	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &resolver,
 		url,
 		manager,
 	)
