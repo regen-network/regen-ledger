@@ -1,16 +1,18 @@
 #
-# This codecov.yml is the default configuration for
-# all repositories on Codecov. You may adjust the settings
-# below in your own codecov.yml in your repository.
+# Codecov Docs:
+# https://docs.codecov.com/docs
+#
+# Codecov Report:
+# https://app.codecov.io/gh/regen-network/regen-ledger
 #
 coverage:
   precision: 2
   round: down
-  range: 75...100
+  range: 80...100
   status:
     project:
       default:
-        target: 75%
+        target: 80%
         threshold: 1%
       app:
         paths:
@@ -39,3 +41,4 @@ ignore:
   - "**/*.cosmos_orm.go"
   - "**/*.pb.go"
   - "**/*.pb.gw.go"
+  - "statik.go"
