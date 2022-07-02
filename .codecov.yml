@@ -8,11 +8,10 @@
 coverage:
   precision: 2
   round: down
-  range: 80...100
+  range: 70...100
   status:
     project:
       default:
-        target: 90%
         threshold: 1%
       app:
         paths:
