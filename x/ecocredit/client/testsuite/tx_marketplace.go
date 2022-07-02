@@ -275,7 +275,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 	require := s.Require()
 
-	buyer := s.addr1.String()
+	buyer := s.addr2.String()
 
 	sellOrderId := fmt.Sprint(s.sellOrderId)
 	bidPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10).String()
@@ -326,7 +326,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 				"10",
 				bidPrice,
 				"true",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, "addr2"),
 			},
 		},
 		{
@@ -364,7 +364,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 	require := s.Require()
 
-	buyer := s.addr1.String()
+	buyer := s.addr2.String()
 
 	bidPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
@@ -451,7 +451,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 			name: "valid from key-name",
 			args: []string{
 				validJson,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, "addr2"),
 			},
 		},
 		{
