@@ -270,7 +270,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"admin":"regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn"}'
+    -d '{"admin":"regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn"}' \
     localhost:9090 \
     regen.ecocredit.v1.Query/ProjectsByAdmin
 ```
