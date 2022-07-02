@@ -2,7 +2,7 @@
 # Codecov Docs:
 # https://docs.codecov.com/docs
 #
-# Codecov Report:
+# Codecov Reports:
 # https://app.codecov.io/gh/regen-network/regen-ledger
 #
 coverage:
@@ -17,24 +17,23 @@ coverage:
       app:
         paths:
           - "app/"
+      types:
+        paths:
+          - "types/"
       data:
         paths:
           - "x/data/"
       ecocredit:
         paths:
           - "x/ecocredit/"
-      types:
-        paths:
-          - "types/"
     changes: false
 
 comment:
-  layout: "reach, diff, flags, files"
+  layout: "diff, flags, files"
   behavior: default
   require_changes: true
 
 ignore:
-  - "contrib"
   - "docs"
   - "scripts"
   - "**/simulation"
