@@ -13,14 +13,14 @@ func TestMsgBridge(t *testing.T) {
 
 	addr1 := testutil.GenAddress()
 	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
+	contract := "0x06012c8cf97bead5deae237070f9587f8e7a266d"
 
 	tests := map[string]struct {
-		msg       MsgBridge
-		expErr    bool
-		expErrMsg string
+		src    MsgBridge
+		expErr bool
 	}{
 		"valid msg": {
-			msg: MsgBridge{
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -29,12 +29,13 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 				Target:    "polygon",
+				Contract:  contract,
 				Recipient: recipient,
 			},
 			expErr: false,
 		},
 		"invalid msg without owner": {
-			msg: MsgBridge{
+			src: MsgBridge{
 				Credits: []*Credits{
 					{
 						BatchDenom: batchDenom,
@@ -43,12 +44,12 @@ func TestMsgBridge(t *testing.T) {
 				},
 				Target:    "polygon",
 				Recipient: recipient,
+				Contract:  contract,
 			},
-			expErr:    true,
-			expErrMsg: "empty address string is not allowed",
+			expErr: true,
 		},
-		"invalid msg with invalid owner address": {
-			msg: MsgBridge{
+		"invalid msg with wrong owner address": {
+			src: MsgBridge{
 				Owner: "wrong owner",
 				Credits: []*Credits{
 					{
@@ -57,18 +58,16 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr:    true,
-			expErrMsg: "decoding bech32 failed",
+			expErr: true,
 		},
 		"invalid msg without credits": {
-			msg: MsgBridge{
+			src: MsgBridge{
 				Owner: addr1,
 			},
-			expErr:    true,
-			expErrMsg: "credits should not be empty",
+			expErr: true,
 		},
 		"invalid msg without Credits.BatchDenom": {
-			msg: MsgBridge{
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -76,11 +75,10 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr:    true,
-			expErrMsg: "invalid batch denom",
+			expErr: true,
 		},
 		"invalid msg without Credits.Amount": {
-			msg: MsgBridge{
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -88,11 +86,10 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr:    true,
-			expErrMsg: "invalid decimal string",
+			expErr: true,
 		},
-		"invalid msg with invalid Credits.Amount": {
-			msg: MsgBridge{
+		"invalid msg with wrong Credits.Amount": {
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -101,11 +98,10 @@ func TestMsgBridge(t *testing.T) {
 					},
 				},
 			},
-			expErr:    true,
-			expErrMsg: "invalid decimal string",
+			expErr: true,
 		},
 		"invalid msg without bridge target": {
-			msg: MsgBridge{
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -113,13 +109,13 @@ func TestMsgBridge(t *testing.T) {
 						Amount:     "10",
 					},
 				},
+				Contract:  contract,
 				Recipient: recipient,
 			},
-			expErr:    true,
-			expErrMsg: "expected polygon",
+			expErr: true,
 		},
-		"invalid msg with invalid bridge target": {
-			msg: MsgBridge{
+		"invalid msg without bridge contract": {
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -127,14 +123,13 @@ func TestMsgBridge(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Target:    "polygon1",
+				Target:    "polygon",
 				Recipient: recipient,
 			},
-			expErr:    true,
-			expErrMsg: "expected polygon",
+			expErr: true,
 		},
 		"invalid msg without bridge recipient address": {
-			msg: MsgBridge{
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -142,13 +137,13 @@ func TestMsgBridge(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Target: "polygon",
+				Target:   "polygon",
+				Contract: contract,
 			},
-			expErr:    true,
-			expErrMsg: "not a valid ethereum address",
+			expErr: true,
 		},
-		"invalid msg with invalid bridge recipient address": {
-			msg: MsgBridge{
+		"invalid bridge recipient address": {
+			src: MsgBridge{
 				Owner: addr1,
 				Credits: []*Credits{
 					{
@@ -158,17 +153,34 @@ func TestMsgBridge(t *testing.T) {
 				},
 				Target:    "polygon",
 				Recipient: addr1,
+				Contract:  contract,
 			},
-			expErr:    true,
-			expErrMsg: "not a valid ethereum address",
+			expErr: true,
+		},
+		"invalid bridge target": {
+			src: MsgBridge{
+				Owner: addr1,
+				Credits: []*Credits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
+					},
+				},
+				Target:    "polygon1",
+				Recipient: recipient,
+				Contract:  contract,
+			},
+			expErr: true,
 		},
 	}
 
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			err := test.msg.ValidateBasic()
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			t.Parallel()
+
+			err := test.src.ValidateBasic()
 			if test.expErr {
-				require.ErrorContains(t, err, test.expErrMsg)
+				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
 			}
