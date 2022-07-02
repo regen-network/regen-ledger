@@ -12,7 +12,7 @@ coverage:
   status:
     project:
       default:
-        target: 80%
+        target: 90%
         threshold: 1%
       app:
         paths:
@@ -34,8 +34,6 @@ comment:
   require_changes: true
 
 ignore:
-  - "docs"
-  - "scripts"
   - "**/mocks"
   - "**/simulation"
   - "**/*.cosmos_orm.go"
