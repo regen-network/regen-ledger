@@ -13,11 +13,11 @@ import (
 
 // BridgeReceive bridges credits received from another chain.
 func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (*core.MsgBridgeReceiveResponse, error) {
-	// get class information (specifically class key)
+	// check class id and get class information (specifically class key)
 	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		if ormerrors.NotFound.Is(err) {
-			return nil, err // TODO
+			return nil, sdkerrors.ErrNotFound.Wrapf("credit class with id %s", req.ClassId)
 		}
 		return nil, err
 	}

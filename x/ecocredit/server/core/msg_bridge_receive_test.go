@@ -73,7 +73,7 @@ func (s *bridgeReceiveSuite) ACreditClass() {
 	s.creditClassSetup()
 }
 
-func (s *bridgeReceiveSuite) ACreditClassWithClassId(a string) {
+func (s *bridgeReceiveSuite) ACreditClassWithId(a string) {
 	s.classId = a
 
 	s.creditClassSetup()
@@ -104,9 +104,27 @@ func (s *bridgeReceiveSuite) ACreditBatchWithContract(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsFromContract(a string) {
-	s.originTx.Contract = a
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassId(a string) {
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
+		Issuer:  s.alice.String(),
+		ClassId: a,
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  s.referenceId,
+			Jurisdiction: s.tradableAmount,
+			Metadata:     s.metadata,
+		},
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.bob.String(),
+			Amount:    s.tradableAmount,
+			StartDate: s.startDate,
+			EndDate:   s.endDate,
+			Metadata:  s.metadata,
+		},
+		OriginTx: s.originTx,
+	})
+}
 
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithContract(a string) {
 	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
 		Issuer:  s.alice.String(),
 		ClassId: s.classId,
@@ -122,7 +140,11 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsFromContract(a string) 
 			EndDate:   s.endDate,
 			Metadata:  s.metadata,
 		},
-		OriginTx: s.originTx,
+		OriginTx: &core.OriginTx{
+			Id:       s.originTx.Id,
+			Source:   s.originTx.Source,
+			Contract: a,
+		},
 	})
 }
 
@@ -144,6 +166,14 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassIdAndProjectRe
 		},
 		OriginTx: s.originTx,
 	})
+}
+
+func (s *bridgeReceiveSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *bridgeReceiveSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *bridgeReceiveSuite) ExpectTotalCreditBatches(a string) {
