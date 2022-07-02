@@ -6,27 +6,36 @@
 coverage:
   precision: 2
   round: down
-  range: 70...100
-
+  range: 75...100
   status:
-    # Learn more at https://codecov.io/docs#yaml_default_commit_status
     project:
       default:
-        threshold: 1% # allow this much decrease on project
+        target: 75%
+        threshold: 1%
+      app:
+        paths:
+          - "app/"
+      data:
+        paths:
+          - "x/data/"
+      ecocredit:
+        paths:
+          - "x/ecocredit/"
+      types:
+        paths:
+          - "types/"
     changes: false
 
 comment:
-  layout: "header, diff, flags"
-  behavior: default  # update if exists else create new
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: true
 
 ignore:
-  - "docs"
-  - "*.md"
-  - "*.org"
-  - "build"
-  - "tests/*"
   - "contrib"
+  - "docs"
+  - "scripts"
+  - "**/simulation"
+  - "**/*.cosmos_orm.go"
   - "**/*.pb.go"
   - "**/*.pb.gw.go"
-  - "scripts"
-  
