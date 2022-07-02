@@ -18,6 +18,7 @@ type bridgeSuite struct {
 	alice            sdk.AccAddress
 	creditTypeAbbrev string
 	classId          string
+	classKey         uint64
 	projectId        string
 	batchDenom       string
 	batchKey         uint64
@@ -58,6 +59,7 @@ func (s *bridgeSuite) ACreditBatchExistsWithABatchContractEntry() {
 
 	err := s.k.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
 		BatchKey: s.batchKey,
+		ClassKey: s.classKey,
 		Contract: s.contract,
 	})
 	require.NoError(s.t, err)
@@ -178,6 +180,8 @@ func (s *bridgeSuite) creditBatchSetup() {
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
+
+	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:       s.projectId,

@@ -21,12 +21,12 @@ import (
 func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*core.MsgCreateBatchResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	projectInfo, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
+	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}
 
-	classInfo, err := k.stateStore.ClassTable().Get(ctx, projectInfo.ClassKey)
+	classInfo, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 	if err != nil {
 		return nil, err
 	}
@@ -41,12 +41,12 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	batchSeqNo, err := k.getBatchSeqNo(ctx, projectInfo.Key)
+	batchSeqNo, err := k.getBatchSeqNo(ctx, project.Key)
 	if err != nil {
 		return nil, err
 	}
 
-	batchDenom, err := core.FormatBatchDenom(projectInfo.Id, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := core.FormatBatchDenom(project.Id, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	startDate, endDate := timestamppb.New(*req.StartDate), timestamppb.New(*req.EndDate)
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	batchKey, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
-		ProjectKey:   projectInfo.Key,
+		ProjectKey:   project.Key,
 		Issuer:       issuer,
 		Denom:        batchDenom,
 		Metadata:     req.Metadata,
@@ -203,6 +203,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		if len(req.OriginTx.Contract) != 0 {
 			err = k.stateStore.BatchContractTable().Insert(ctx, &api.BatchContract{
 				BatchKey: batchKey,
+				ClassKey: project.ClassKey,
 				Contract: req.OriginTx.Contract,
 			})
 			if err != nil {

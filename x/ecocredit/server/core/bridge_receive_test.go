@@ -21,6 +21,7 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 
 	assert.NilError(s.t, s.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
 		BatchKey: batch.Key,
+		ClassKey: 1, // only one credit class is created using setupBridgeTest // TODO: rewrite using gherkin
 		Contract: "0x0",
 	}))
 

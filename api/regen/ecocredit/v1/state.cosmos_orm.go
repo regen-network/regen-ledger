@@ -1616,9 +1616,9 @@ type BatchContractTable interface {
 	Has(ctx context.Context, batch_key uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, batch_key uint64) (*BatchContract, error)
-	HasByContract(ctx context.Context, contract string) (found bool, err error)
-	// GetByContract returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByContract(ctx context.Context, contract string) (*BatchContract, error)
+	HasByClassKeyContract(ctx context.Context, class_key uint64, contract string) (found bool, err error)
+	// GetByClassKeyContract returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByClassKeyContract(ctx context.Context, class_key uint64, contract string) (*BatchContract, error)
 	List(ctx context.Context, prefixKey BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error)
 	ListRange(ctx context.Context, from, to BatchContractIndexKey, opts ...ormlist.Option) (BatchContractIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BatchContractIndexKey) error
@@ -1659,16 +1659,21 @@ func (this BatchContractBatchKeyIndexKey) WithBatchKey(batch_key uint64) BatchCo
 	return this
 }
 
-type BatchContractContractIndexKey struct {
+type BatchContractClassKeyContractIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchContractContractIndexKey) id() uint32             { return 1 }
-func (x BatchContractContractIndexKey) values() []interface{}  { return x.vs }
-func (x BatchContractContractIndexKey) batchContractIndexKey() {}
+func (x BatchContractClassKeyContractIndexKey) id() uint32             { return 1 }
+func (x BatchContractClassKeyContractIndexKey) values() []interface{}  { return x.vs }
+func (x BatchContractClassKeyContractIndexKey) batchContractIndexKey() {}
 
-func (this BatchContractContractIndexKey) WithContract(contract string) BatchContractContractIndexKey {
-	this.vs = []interface{}{contract}
+func (this BatchContractClassKeyContractIndexKey) WithClassKey(class_key uint64) BatchContractClassKeyContractIndexKey {
+	this.vs = []interface{}{class_key}
+	return this
+}
+
+func (this BatchContractClassKeyContractIndexKey) WithClassKeyContract(class_key uint64, contract string) BatchContractClassKeyContractIndexKey {
+	this.vs = []interface{}{class_key, contract}
 	return this
 }
 
@@ -1708,15 +1713,17 @@ func (this batchContractTable) Get(ctx context.Context, batch_key uint64) (*Batc
 	return &batchContract, nil
 }
 
-func (this batchContractTable) HasByContract(ctx context.Context, contract string) (found bool, err error) {
+func (this batchContractTable) HasByClassKeyContract(ctx context.Context, class_key uint64, contract string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		class_key,
 		contract,
 	)
 }
 
-func (this batchContractTable) GetByContract(ctx context.Context, contract string) (*BatchContract, error) {
+func (this batchContractTable) GetByClassKeyContract(ctx context.Context, class_key uint64, contract string) (*BatchContract, error) {
 	var batchContract BatchContract
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &batchContract,
+		class_key,
 		contract,
 	)
 	if err != nil {

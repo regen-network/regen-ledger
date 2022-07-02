@@ -98,6 +98,7 @@ func (s *bridgeReceiveSuite) ACreditBatchWithContract(a string) {
 
 	err := s.k.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
 		BatchKey: s.batchKey,
+		ClassKey: s.classKey,
 		Contract: a,
 	})
 	require.NoError(s.t, err)
