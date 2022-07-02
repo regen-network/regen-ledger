@@ -1370,12 +1370,190 @@ Example Output:
 }
 ```
 
+### Basket
+
+The `Basket` endpoint allows users to query for information on basket.
+
+```bash
+regen.ecocredit.basket.v1.Query/Basket
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"basket_denom": "1"}' \
+    localhost:9090 \
+    regen.ecocredit.basket.v1.Query/Basket
+```
+
+Example Output:
+
+```bash
+{
+  "basket": {
+      "id": "1",
+      "basketDenom": "eco.uC.rNCT",
+      "name": "rNCT",
+      "disableAutoRetire": false,
+      "creditTypeAbbrev": "C",
+      "dateCriteria": {
+        "minStartDate": null,
+        "startDateWindow": "315576000s"
+      },
+      "exponent": 6
+  },
+  "basketInfo": {
+      "basketDenom": "eco.uC.rNCT",
+      "name": "rNCT",
+      "disableAutoRetire": false,
+      "creditRypeAbbrev": "C",
+      "dateCriteria": {
+        "minStartDate": null,
+        "startDateWindow": "315576000s"
+      },
+      "exponent": 6,
+      "curator": "regenabc..."
+  },
+  "classes": ["C01", "C02"]  
+}
+```
+
+### Baskets
+
+The `Baskets` endpoint allows users to query all basket.
+
+```bash
+regen.ecocredit.basket.v1.Query/Baskets
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.basket.v1.Query/Baskets
+```
+
+Example Output:
+
+```bash
+{
+  "baskets": [
+    {
+      "id": "1",
+      "basketDenom": "eco.uC.rNCT",
+      "name": "rNCT",
+      "disableAutoRetire": false,
+      "creditTypeAbbrev": "C",
+      "dateCriteria": {
+        "minStartDate": null,
+        "startDateWindow": "315576000s"
+      },
+      "exponent": 6
+    }
+  ],
+  "basketsInfo": [
+    {
+      "basketDenom": "eco.uC.rNCT",
+      "name": "rNCT",
+      "disableAutoRetire": false,
+      "creditTypeAbbrev": "C",
+      "dateCriteria": {
+        "minStartDate": null,
+        "startDateWindow": "315576000s"
+      },
+      "exponent": 6,
+      "curator": "regenabc..."
+    }
+  ]
+}
+```
+
+### BasketBalance
+
+The `BasketBalance` endpoint allows users to query the balance of a specific credit batch in the basket.
+
+```bash
+regen.ecocredit.basket.v1.Query/BasketBalance
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"basket_denom": "eco.uC.rNCT", "batch_denom": "C02-001-20210101-20250101-001"}' \
+    localhost:9090 \
+    regen.ecocredit.basket.v1.Query/BasketBalance
+```
+
+Example Output:
+
+```bash
+{
+  "balance": "11947.698895"
+}
+```
+
+
+### BasketBalances
+
+The `BasketBalances` endpoint allows users to query the balance of each credit batch in the basket.
+
+```bash
+regen.ecocredit.basket.v1.Query/BasketBalances
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"basket_denom": "eco.uC.rNCT"}' \
+    localhost:9090 \
+    regen.ecocredit.basket.v1.Query/BasketBalances
+```
+
+Example Output:
+
+```bash
+{
+  "balances": [
+    {
+      "basketId": "1",
+      "batchDenom": "C01-20190101-20210101-008",
+      "balance": "1",
+      "batchStartDate": "2019-01-01T00:00:00Z"
+    },
+    {
+      "basketId": "1",
+      "batchDenom": "C02-20210909-20220101-002",
+      "balance": "1",
+      "batchStartDate": "2021-09-09T00:00:00Z"
+    }
+  ],
+  "pagination": null,
+  "balancesInfo":[
+    {
+      "batchDenom": "C02-20210909-20220101-002",
+      "balance": "1"
+    },
+    {
+      "batchDenom": "C01-20190101-20210101-008",
+      "balance": "1"
+    }
+  ]
+}
+```
+
+
+
+
 ### SellOrder
 
 The `SellOrder` endpoint allows users to query for information on a sell order.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/SellOrder
+regen.ecocredit.marketplace.v1.Query/SellOrder
 ```
 
 Example:
@@ -1384,7 +1562,7 @@ Example:
 grpcurl -plaintext \
     -d '{"sell_order_id": "1"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/SellOrder
+    regen.ecocredit.marketplace.v1.Query/SellOrder
 ```
 
 Example Output:
@@ -1392,14 +1570,13 @@ Example Output:
 ```bash
 {
   "sellOrder": {
-    "orderId": "1",
-    "owner": "regen1..",
+    "id": "1",
+    "seller": "regen1..",
     "batchDenom": "C01-20200101-20210101-001",
     "quantity": "2",
-    "askPrice": {
-      "denom": "stake",
-      "amount": "100"
-    }
+    "askDenom": "uregen",
+    "DisableAutoRetire": false,
+    "expiration": null
   }
 }
 ```
@@ -1409,7 +1586,7 @@ Example Output:
 The `SellOrders` endpoint allows users to query all sell orders.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/SellOrders
+regen.ecocredit.marketplace.v1.Query/SellOrders
 ```
 
 Example:
@@ -1417,7 +1594,7 @@ Example:
 ```bash
 grpcurl -plaintext \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/SellOrders
+    regen.ecocredit.marketplace.v1.Query/SellOrders
 ```
 
 Example Output:
@@ -1426,14 +1603,13 @@ Example Output:
 {
   "sellOrders": [
     {
-      "orderId": "1",
-      "owner": "regen1..",
+      "id": "1",
+      "seller": "regen1..",
       "batchDenom": "C01-20200101-20210101-001",
       "quantity": "2",
-      "askPrice": {
-        "denom": "stake",
-        "amount": "100"
-      }
+      "askDenom": "uregen",
+      "DisableAutoRetire": false,
+      "expiration": null
     }
   ],
   "pagination": {
@@ -1442,51 +1618,12 @@ Example Output:
 }
 ```
 
-### SellOrdersByAddress
+### SellOrdersByBatch
 
-The `SellOrdersByAddress` endpoint allows users to query sell orders by owner address.
-
-```bash
-regen.ecocredit.v1alpha1.Query/SellOrdersByAddress
-```
-
-Example:
+The `SellOrdersByBatch` endpoint allows users to query sell orders by batch denom.
 
 ```bash
-grpcurl -plaintext \
-    -d '{"address": "regen1.."}' \
-    localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/SellOrdersByAddress
-```
-
-Example Output:
-
-```bash
-{
-  "sellOrders": [
-    {
-      "orderId": "1",
-      "owner": "regen1..",
-      "batchDenom": "C01-20200101-20210101-001",
-      "quantity": "2",
-      "askPrice": {
-        "denom": "stake",
-        "amount": "100"
-      }
-    }
-  ],
-  "pagination": {
-    "total": "1"
-  }
-}
-```
-
-### SellOrdersByBatchDenom
-
-The `SellOrdersByBatchDenom` endpoint allows users to query sell orders by credit batch denom.
-
-```bash
-regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom
+regen.ecocredit.marketplace.v1.Query/SellOrdersByBatch
 ```
 
 Example:
@@ -1495,7 +1632,7 @@ Example:
 grpcurl -plaintext \
     -d '{"batch_denom": "C01-20200101-20210101-001"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom
+    regen.ecocredit.v1alpha1.Query/SellOrdersByBatch
 ```
 
 Example Output:
@@ -1504,14 +1641,13 @@ Example Output:
 {
   "sellOrders": [
     {
-      "orderId": "1",
-      "owner": "regen1..",
+      "id": "1",
+      "seller": "regen1..",
       "batchDenom": "C01-20200101-20210101-001",
       "quantity": "2",
-      "askPrice": {
-        "denom": "stake",
-        "amount": "100"
-      }
+      "askDenom": "uregen",
+      "DisableAutoRetire": false,
+      "expiration": null
     }
   ],
   "pagination": {
@@ -1520,80 +1656,50 @@ Example Output:
 }
 ```
 
-### BuyOrder
+### SellOrdersBySeller
 
-The `BuyOrder` endpoint allows users to query for information on a buy order.
+The `SellOrdersBySeller` endpoint allows users to query sell orders by seller address.
 
 ```bash
-regen.ecocredit.v1alpha1.Query/BuyOrder
+regen.ecocredit.marketplace.v1.Query/SellOrdersBySeller
 ```
 
 Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"buy_order_id": "1"}' \
+    -d '{"batch_denom": "C01-20200101-20210101-001"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/BuyOrder
+    regen.ecocredit.marketplace.v1.Query/SellOrdersBySeller
 ```
 
 Example Output:
 
 ```bash
-# not yet implemented
+{
+  "sellOrders": [
+    {
+      "id": "1",
+      "seller": "regen1..",
+      "batchDenom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "askDenom": "uregen",
+      "DisableAutoRetire": false,
+      "expiration": null
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
 ```
 
-### BuyOrders
+### AllowedDenoms
 
-The `BuyOrders` endpoint allows users to query all buy orders.
-
-```bash
-regen.ecocredit.v1alpha1.Query/BuyOrders
-```
-
-Example:
+The `AllowedDenoms` endpoint allows users to query all allowed denoms.
 
 ```bash
-grpcurl -plaintext \
-    localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/BuyOrders
-```
-
-Example Output:
-
-```bash
-# not yet implemented
-```
-
-### BuyOrdersByAddress
-
-The `BuyOrdersByAddress` endpoint allows users to query buy orders by buyer address.
-
-```bash
-regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress
-```
-
-Example:
-
-```bash
-grpcurl -plaintext \
-    -d '{"address": "regen1.."}' \
-    localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress
-```
-
-Example Output:
-
-```bash
-# not yet implemented
-```
-
-### AllowedAskDenoms
-
-The `AllowedAskDenoms` endpoint allows users to query all allowed ask denoms.
-
-```bash
-regen.ecocredit.v1alpha1.Query/AllowedAskDenoms
+regen.ecocredit.marketplace.v1.Query/AllowedDenoms
 ```
 
 Example:
@@ -1601,13 +1707,21 @@ Example:
 ```bash
 grpcurl -plaintext \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/AllowedAskDenoms
+    regen.ecocredit.marketplace.v1.Query/AllowedDenoms
 ```
 
 Example Output:
 
 ```bash
-# not yet implemented
+{
+  "allowedDenoms": [
+    {
+      "bankDenom": "uregen",
+      "displayDenom": "regen",
+      "exponent": 6
+    }
+  ]
+}
 ```
 
 ## REST
@@ -1625,7 +1739,7 @@ The `classes` endpoint allows users to query all credit classes.
 Example:
 
 ```bash
-curl localhost:1317/regen/ecocredit/v1alpha1/classes
+curl localhost:1317/regen/ecocredit/v1/classes
 ```
 
 Example Output:
@@ -1634,19 +1748,10 @@ Example Output:
 {
   "classes": [
     {
-      "class_id": "C01",
-      "admin": "regen1..",
-      "issuers": [
-        "regen1.."
-      ],
-      "metadata": "cmVnZW4=",
-      "credit_type": {
-        "name": "carbon",
-        "abbreviation": "C",
-        "unit": "metric ton CO2 equivalent",
-        "precision": 6
-      },
-      "num_batches": "1"
+      "id": "C01",
+      "admin": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "creditTypeAbbrev": "C"
     }
   ],
   "pagination": {
@@ -1656,39 +1761,167 @@ Example Output:
 }
 ```
 
-### classes
+### classes/admin
 
-The `classes` endpoint allows users to query for information on a credit class.
+The `classes/admin` endpoint allows users to query credit classes by admin.
 
 ```bash
-/regen/ecocredit/v1alpha1/classes/{class_id}
+/regen/ecocredit/v1/classes/admin/{admin}
+/regen/ecocredit/v1/classes-by-admin/{admin}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/ecocredit/v1alpha1/classes/C01
+curl localhost:1317/regen/ecocredit/v1/classes/admin/regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm
 ```
 
 Example Output:
 
 ```bash
 {
-  "info": {
-    "class_id": "C01",
-    "admin": "regen1..",
-    "issuers": [
-      "regen1.."
-    ],
-    "metadata": "cmVnZW4=",
-    "credit_type": {
-      "name": "carbon",
-      "abbreviation": "C",
-      "unit": "metric ton CO2 equivalent",
-      "precision": 6
-    },
-    "num_batches": "1"
+  "classes": [
+    {
+      "id": "C01",
+      "admin": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "credit_type_abbrev": "C"
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
   }
+}
+```
+
+### class
+
+The `class` endpoint allows users to query information on credit class.
+
+```bash
+/regen/ecocredit/v1/class/{class_id}
+/regen/ecocredit/v1/classes/{class_id}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/classes/C01
+```
+
+Example Output:
+
+```bash
+{
+  "class": {
+      "id": "C01",
+      "admin": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "creditTypeAbbrev": "C"
+    }
+}
+```
+
+### class-issuers
+
+The `class-issuers` endpoint allows users to query addresses of the issuers for a credit class.
+
+```bash
+/regen/ecocredit/v1/class-issuers/{class_id}
+/regen/ecocredit/v1/classes/{class_id}/issuers
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/classes/C01/issuers
+```
+
+Example Output:
+
+```bash
+{
+  "issuers": [
+      "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm"
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
+```
+
+### projects
+
+The `projects` endpoint allows users to query all projects.
+
+```bash
+/regen/ecocredit/v1/projects
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/projects
+```
+
+Example Output:
+
+```bash
+{
+  "projects": [
+    {
+      "id": "C01-001",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "class_id": "C01",
+      "jurisdiction": "CD-MN",
+      "metadata": "metadata",
+      "reference_id": "R01"
+    }
+  ]
+}
+```
+
+### projects-by-class
+
+The `projects-by-class` endpoint allows users to query all projects within a credit class.
+
+```bash
+/rege/ecocredit/v1/projects-by-class/{class_id}
+/rege/ecocredit/v1/projects/class/{class_id}
+/rege/ecocredit/v1/projects/classes/{class_id}/projects
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/projects-by-class/C01
+```
+
+Example Output:
+
+```bash
+{
+  "projects": [
+    {
+      "id": "C01-001",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "class_id": "C01",
+      "jurisdiction": "CD-MN",
+      "metadata": "",
+      "reference_id": ""
+    },
+    {
+      "id": "C01-002",
+      "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+      "class_id": "C01",
+      "jurisdiction": "KE",
+      "metadata": "",
+      "reference_id": ""
+    }
+  ],
+  "pagination": null
 }
 ```
 
