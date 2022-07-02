@@ -36,8 +36,9 @@ comment:
 ignore:
   - "docs"
   - "scripts"
+  - "**/mocks"
   - "**/simulation"
   - "**/*.cosmos_orm.go"
   - "**/*.pb.go"
   - "**/*.pb.gw.go"
-  - "statik.go"
+  - "**/statik.go"
