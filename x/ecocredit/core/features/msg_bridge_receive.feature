@@ -97,12 +97,12 @@ Feature: MsgBridgeReceive
       "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "class_id": "C01",
       "project": {
-        "reference_id": "foooooooooooooooooooooooooooooooo"
+        "reference_id": "[mock-string-33]"
       }
     }
     """
     When the message is validated
-    Then expect the error "project reference id: limit exceeded"
+    Then expect the error "project reference id: max length 32: limit exceeded"
 
   Scenario: an error is returned if project jurisdiction is empty
     Given the message
@@ -147,6 +147,22 @@ Feature: MsgBridgeReceive
     """
     When the message is validated
     Then expect the error "project metadata cannot be empty: invalid request"
+
+  Scenario: an error is returned if project metadata is too long
+    Given the message
+    """
+    {
+      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "class_id": "C01",
+      "project": {
+        "reference_id": "VCS-001",
+        "jurisdiction": "US-WA",
+        "metadata": "[mock-string-257]"
+      }
+    }
+    """
+    When the message is validated
+    Then expect the error "project metadata: max length 256: limit exceeded"
 
   Scenario: an error is returned if batch is empty
     Given the message
@@ -323,6 +339,29 @@ Feature: MsgBridgeReceive
     """
     When the message is validated
     Then expect the error "batch metadata cannot be empty: invalid request"
+
+  Scenario: an error is returned if batch metadata is too long
+    Given the message
+    """
+    {
+      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "class_id": "C01",
+      "project": {
+        "reference_id": "VCS-001",
+        "jurisdiction": "US-WA",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      },
+      "batch": {
+        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "amount": "100",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z",
+        "metadata": "[mock-string-257]"
+      }
+    }
+    """
+    When the message is validated
+    Then expect the error "batch metadata: max length 256: limit exceeded"
 
   Scenario: an error is returned if origin tx is empty
     Given the message

@@ -1,8 +1,15 @@
 package eth
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
-func IsValidEthereumAddress(address string) bool {
-	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
-	return re.MatchString(address)
+var (
+	RegexAddress = `0x[0-9a-fA-F]{40}`
+)
+
+func IsValidAddress(addr string) bool {
+	re := regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexAddress))
+	return re.MatchString(addr)
 }

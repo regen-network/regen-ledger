@@ -20,7 +20,7 @@ func (o *OriginTx) Validate() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.source must be at most 32 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 
-	if len(o.Contract) > 0 && !eth.IsValidEthereumAddress(o.Contract) {
+	if len(o.Contract) > 0 && !eth.IsValidAddress(o.Contract) {
 		return sdkerrors.ErrInvalidAddress.Wrapf("origin_tx.contract must be a valid ethereum address")
 	}
 

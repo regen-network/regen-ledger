@@ -42,7 +42,7 @@ func (m *MsgBridge) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("recipient cannot be empty")
 	}
 
-	if !eth.IsValidEthereumAddress(m.Recipient) {
+	if !eth.IsValidAddress(m.Recipient) {
 		return sdkerrors.ErrInvalidAddress.Wrap("recipient must be a valid ethereum address")
 	}
 

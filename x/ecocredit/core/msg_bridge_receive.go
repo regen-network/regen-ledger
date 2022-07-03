@@ -50,7 +50,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 
 	if len(m.Project.ReferenceId) > MaxReferenceIdLength {
-		return ecocredit.ErrMaxLimit.Wrap("project reference id")
+		return ecocredit.ErrMaxLimit.Wrapf("project reference id: max length %d", MaxReferenceIdLength)
 	}
 
 	if m.Project.Jurisdiction == "" {
@@ -66,7 +66,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 
 	if len(m.Project.Metadata) > MaxMetadataLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("project_metadata length (%d) exceeds max metadata length: %d", len(m.Project.Metadata), MaxMetadataLength)
+		return ecocredit.ErrMaxLimit.Wrapf("project metadata: max length %d", MaxMetadataLength)
 	}
 
 	// batch validation
@@ -104,7 +104,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 
 	if len(m.Batch.Metadata) > MaxMetadataLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("batch metadata length (%d) exceeds max metadata length: %d", len(m.Batch.Metadata), MaxMetadataLength)
+		return ecocredit.ErrMaxLimit.Wrapf("batch metadata: max length %d", MaxMetadataLength)
 	}
 
 	// origin tx validation
@@ -114,7 +114,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 
 	// specific to MsgBridgeReceive
-	if !eth.IsValidEthereumTxHash(m.OriginTx.Id) {
+	if !eth.IsValidTxHash(m.OriginTx.Id) {
 		return sdkerrors.ErrInvalidRequest.Wrap("origin tx id must be a valid ethereum transaction hash")
 	}
 
