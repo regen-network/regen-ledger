@@ -16,6 +16,16 @@ import (
 var errBadReq = sdkerrors.ErrInvalidRequest
 
 const (
+	// BridgePolygon is currently the only allowed target when calling
+	// Msg/Bridge and the only allowed source (provided within OriginTx)
+	// when calling Msg/BridgeReceive. This value is not required as the
+	// source within basic OriginTx validation, allowing for manual bridge
+	// operations to be performed from other sources with Msg/CreateBatch
+	// and Msg/MintBatchCredits.
+	// TODO: remove after we introduce governance gated chains
+	// https://github.com/regen-network/regen-ledger/issues/1119
+	BridgePolygon = "polygon"
+
 	// MaxMetadataLength defines the max length of the metadata bytes field
 	// for the credit-class & credit-batch.
 	MaxMetadataLength = 256
