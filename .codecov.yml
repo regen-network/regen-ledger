@@ -38,4 +38,5 @@ ignore:
   - "**/*.cosmos_orm.go"
   - "**/*.pb.go"
   - "**/*.pb.gw.go"
+  - "**/*.pulsar.go"
   - "**/statik.go"
