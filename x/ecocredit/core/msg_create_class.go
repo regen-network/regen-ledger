@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -23,45 +25,57 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateClass) ValidateBasic() error {
-
-	if len(m.Metadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
-	}
-
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.Wrap(err, "admin")
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
 	if len(m.Issuers) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
 	}
 
-	if len(m.CreditTypeAbbrev) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("must specify a credit type abbreviation")
-	}
-
 	duplicateMap := make(map[string]bool)
-	for _, issuer := range m.Issuers {
+	for i, issuer := range m.Issuers {
+		issuerIndex := fmt.Sprintf("issuers[%d]", i)
 
 		if _, err := sdk.AccAddressFromBech32(issuer); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			return sdkerrors.ErrInvalidAddress.Wrapf("%s: %s", issuerIndex, err)
 		}
 
 		if _, ok := duplicateMap[issuer]; ok {
-			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate issuer %s", issuer)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: duplicate address %s", issuerIndex, issuer)
 		}
+
 		duplicateMap[issuer] = true
 	}
 
+	if len(m.Metadata) > MaxMetadataLength {
+		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
+	}
+
+	if m.CreditTypeAbbrev == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("credit type abbreviation cannot be empty")
+	}
+
+	if err := ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+		return err
+	}
+
 	if m.Fee != nil {
-		if m.Fee.Amount.IsZero() {
-			return sdkerrors.ErrInsufficientFee.Wrap("must specify nonzero fee")
+		if m.Fee.Denom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("fee denom cannot be empty")
 		}
+
 		if err := sdk.ValidateDenom(m.Fee.Denom); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s", err.Error())
 		}
-	} else {
-		return sdkerrors.ErrInvalidRequest.Wrap("fee must be specified")
+
+		if m.Fee.Amount.IsNil() {
+			return sdkerrors.ErrInvalidRequest.Wrap("fee amount cannot be empty")
+		}
+
+		if !m.Fee.Amount.IsPositive() {
+			return sdkerrors.ErrInsufficientFee.Wrap("fee amount must be positive")
+		}
 	}
 
 	return nil

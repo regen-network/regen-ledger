@@ -4,103 +4,50 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-
-	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
+type msgCreateProject struct {
+	t   gocuke.TestingT
+	msg *MsgCreateProject
+	err error
+}
+
 func TestMsgCreateProject(t *testing.T) {
-	t.Parallel()
-	admin := testutil.GenAddress()
+	gocuke.NewRunner(t, &msgCreateProject{}).Path("./features/msg_create_project.feature").Run()
+}
 
-	testCases := []struct {
-		name   string
-		src    MsgCreateProject
-		expErr bool
-	}{
-		{
-			"valid msg without reference id",
-			MsgCreateProject{
-				Admin:        admin,
-				ClassId:      "A00",
-				Metadata:     "hello",
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			false,
-		},
-		{
-			"invalid admin",
-			MsgCreateProject{
-				Admin:        "invalid address",
-				ClassId:      "A00",
-				Metadata:     "hello",
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			true,
-		},
-		{
-			"invalid class id",
-			MsgCreateProject{
-				Admin:        admin,
-				ClassId:      "ABCD",
-				Metadata:     "hello",
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			true,
-		},
-		{
-			"invalid project jurisdiction",
-			MsgCreateProject{
-				Admin:        admin,
-				ClassId:      "A01",
-				Metadata:     "hello",
-				Jurisdiction: "abcd",
-			},
-			true,
-		},
-		{
-			"invalid: metadata is too large",
-			MsgCreateProject{
-				Admin:        admin,
-				ClassId:      "A01",
-				Metadata:     strings.Repeat("x", 288),
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			true,
-		},
-		{
-			"invalid: reference id is too large",
-			MsgCreateProject{
-				Admin:        admin,
-				ClassId:      "A01",
-				Metadata:     "metadata",
-				Jurisdiction: "AB-CDE FG1 345",
-				ReferenceId:  strings.Repeat("x", MaxReferenceIdLength+1),
-			},
-			true,
-		},
-		{
-			"valid: with reference id",
-			MsgCreateProject{
-				Admin:        admin,
-				ClassId:      "A01",
-				Metadata:     "metadata",
-				Jurisdiction: "AB-CDE FG1 345",
-				ReferenceId:  strings.Repeat("x", 10),
-			},
-			false,
-		},
+func (s *msgCreateProject) Before(t gocuke.TestingT) {
+	s.t = t
+}
+
+func (s *msgCreateProject) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgCreateProject{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgCreateProject) TheMessageIsValidated() {
+	s.checkAndSetMockValues()
+
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgCreateProject) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgCreateProject) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *msgCreateProject) checkAndSetMockValues() {
+	if strings.Contains(s.msg.Metadata, "[mock-string-257]") {
+		s.msg.Metadata = strings.Repeat("x", 257)
 	}
-
-	for _, test := range testCases {
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
+	if strings.Contains(s.msg.ReferenceId, "[mock-string-33]") {
+		s.msg.ReferenceId = strings.Repeat("x", 33)
 	}
 }

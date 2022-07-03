@@ -458,10 +458,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 				RetiredAmount:          r2,
 				RetirementJurisdiction: "",
 			},
-			{
-				Recipient:              addr5,
-				RetirementJurisdiction: "",
-			},
 		},
 	})
 	s.Require().NoError(err)
