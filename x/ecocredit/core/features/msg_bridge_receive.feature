@@ -469,6 +469,33 @@ Feature: MsgBridgeReceive
     When the message is validated
     Then expect the error "origin tx contract cannot be empty: invalid request"
 
-  # Note: if contract is provided, origin tx validation checks for valid ethereum address
+
+  Scenario: an error is returned if origin tx contract is not a valid ethereum address
+    Given the message
+    """
+    {
+      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "class_id": "C01",
+      "project": {
+        "reference_id": "VCS-001",
+        "jurisdiction": "US-WA",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      },
+      "batch": {
+        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "amount": "100",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      },
+      "origin_tx": {
+        "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
+        "source": "polygon",
+        "contract": "foo"
+      }
+    }
+    """
+    When the message is validated
+    Then expect the error "origin_tx.contract must be a valid ethereum address: invalid address"
 
   # Note: additional validation for origin tx covered in origin_tx_test.go
