@@ -23,6 +23,32 @@ Feature: MsgMintBatchCredits
     When the message is validated
     Then expect no error
 
+  Scenario: a valid message with multiple issuance items
+    Given the message
+    """
+    {
+      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "batch_denom": "C01-001-20200101-20210101-001",
+      "issuance": [
+        {
+          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "tradable_amount": "100"
+        },
+        {
+          "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+          "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ],
+      "origin_tx": {
+        "id": "0001-000001-000100-VCS-VCU-003-VER-US-0003-01012020-31122020-1",
+        "source": "verra"
+      }
+    }
+    """
+    When the message is validated
+    Then expect no error
+
   Scenario: an error is returned if issuer is empty
     Given the message
     """

@@ -22,7 +22,7 @@ Feature: MsgCreateBatch
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message without issuance retired amount
+  Scenario: a valid message with multiple issuance items
     Given the message
     """
     {
@@ -37,26 +37,6 @@ Feature: MsgCreateBatch
           "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
-        }
-      ],
-      "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-      "start_date": "2020-01-01T00:00:00Z",
-      "end_date": "2021-01-01T00:00:00Z"
-    }
-    """
-    When the message is validated
-    Then expect no error
-
-  Scenario: a valid message with multiple issuance items
-    Given the message
-    """
-    {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "project_id": "C01-001",
-      "issuance": [
-        {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-          "tradable_amount": "100"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
