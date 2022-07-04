@@ -182,7 +182,7 @@ Example Output:
 
 ### ProjectsByClass
 
-The `ProjectsByClass` endpoint allows users to query all projects.
+The `ProjectsByClass` endpoint allows users to query all projects by credit class.
 
 ```bash
 regen.ecocredit.v1.Query/ProjectsByClass
@@ -192,7 +192,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"class_id":"C01"}'
+    -d '{"class_id":"C01"}' \
     localhost:9090 \
     regen.ecocredit.v1.Query/ProjectsByClass
 ```
@@ -230,7 +230,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"reference_id":"VERRA01"}'
+    -d '{"reference_id":"R01"}' \
     localhost:9090 \
     regen.ecocredit.v1.Query/ProjectsByReferenceId
 ```
@@ -245,14 +245,14 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
       "jurisdiction": "CD-MN",
-      "reference_id":"VERRA01"
+      "reference_id":"R01"
     },
     {
       "id": "C01-002",
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
       "jurisdiction": "KE".
-      "reference_id":"VERRA01"
+      "reference_id":"R01"
     }
   ]
 }
@@ -285,14 +285,12 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
       "jurisdiction": "CD-MN",
-      "reference_id":"VERRA01"
     },
     {
       "id": "C01-002",
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
       "jurisdiction": "KE".
-      "reference_id":"VERRA01"
     }
   ]
 }
@@ -310,7 +308,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"project_id":"C01-001"}'
+    -d '{"project_id":"C01-001"}' \
     localhost:9090 \
     regen.ecocredit.v1.Query/Project
 ```
@@ -331,7 +329,7 @@ Example Output:
 
 ### Batches
 
-The `Batches` endpoint allows users to query for all batches in the given credit class.
+The `Batches` endpoint allows users to query for all batches.
 
 ```bash
 regen.ecocredit.v1.Query/Batches
@@ -873,7 +871,6 @@ Example Output:
       "batchStartDate": "2021-09-09T00:00:00Z"
     }
   ],
-  "pagination": null,
   "balancesInfo":[
     {
       "batchDenom": "C02-20210909-20220101-002",
@@ -972,7 +969,7 @@ Example:
 grpcurl -plaintext \
     -d '{"batch_denom": "C01-20200101-20210101-001"}' \
     localhost:9090 \
-    regen.ecocredit.v1alpha1.Query/SellOrdersByBatch
+    regen.ecocredit.marketplace.v1.Query/SellOrdersByBatch
 ```
 
 Example Output:
@@ -1633,7 +1630,7 @@ Example Output:
   "batch_denom": "C01-001-20150101-20151231-001",
   "tradable_amount": "10",
   "retired_amount": "30",
-  "escrowed_amount: "10"
+  "escrowed_amount": "10"
 }
 ```
 
@@ -1896,7 +1893,6 @@ Example Output:
   ]
 }
 ```
-
 
 ### sell-orders
 
