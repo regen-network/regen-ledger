@@ -12,7 +12,7 @@ Feature: MsgUpdateProjectMetadata
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message without metadata
+  Scenario: a valid message removing metadata
     Given the message
     """
     {
