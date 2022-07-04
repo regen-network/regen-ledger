@@ -22,13 +22,13 @@ func (s *batchIssuance) Before(t gocuke.TestingT) {
 	s.t = t
 }
 
-func (s *batchIssuance) TheMessage(a gocuke.DocString) {
+func (s *batchIssuance) TheBatchIssuance(a gocuke.DocString) {
 	s.issuance = &BatchIssuance{}
 	err := jsonpb.UnmarshalString(a.Content, s.issuance)
 	require.NoError(s.t, err)
 }
 
-func (s *batchIssuance) TheMessageIsValidated() {
+func (s *batchIssuance) TheBatchIssuanceIsValidated() {
 	s.err = s.issuance.Validate()
 }
 
