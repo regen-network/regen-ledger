@@ -45,7 +45,7 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 		issuanceIndex := fmt.Sprintf("issuance[%d]", i)
 
 		if err := issuance.Validate(); err != nil {
-			return fmt.Errorf("%s: %s", issuanceIndex, err)
+			return sdkerrors.Wrapf(err, "%s", issuanceIndex)
 		}
 	}
 

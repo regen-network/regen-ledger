@@ -1,8 +1,6 @@
 package core
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -21,14 +19,14 @@ func (i *BatchIssuance) Validate() error {
 
 	if i.TradableAmount != "" {
 		if _, err := math.NewNonNegativeDecFromString(i.TradableAmount); err != nil {
-			return fmt.Errorf("tradable amount: %s", err)
+			return sdkerrors.Wrap(err, "tradable amount")
 		}
 	}
 
 	if i.RetiredAmount != "" {
 		retiredAmount, err := math.NewNonNegativeDecFromString(i.RetiredAmount)
 		if err != nil {
-			return fmt.Errorf("retired amount: %s", err)
+			return sdkerrors.Wrap(err, "retired amount")
 		}
 
 		if !retiredAmount.IsZero() {
@@ -37,7 +35,7 @@ func (i *BatchIssuance) Validate() error {
 			}
 
 			if err = ValidateJurisdiction(i.RetirementJurisdiction); err != nil {
-				return fmt.Errorf("retirement jurisdiction: %s", err)
+				return sdkerrors.Wrap(err, "retirement jurisdiction")
 			}
 		}
 	}
