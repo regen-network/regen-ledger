@@ -124,6 +124,9 @@ func (s *createBatchSuite) AliceHasCreatedACreditClassWithCreditType(a string) {
 	coinFee := sdk.Coins{fee}
 	utils.ExpectParamGet(&coinFee, s.paramsKeeper, core.KeyCreditClassFee, 1)
 
+	// TODO: temp fix: use of CreateClass within CreateBatch tests removed in #1226
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(fee).AnyTimes()
+
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).AnyTimes()
 
 	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).AnyTimes()
