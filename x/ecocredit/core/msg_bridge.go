@@ -58,7 +58,7 @@ func (m *MsgBridge) ValidateBasic() error {
 		}
 
 		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
-			return fmt.Errorf("%s: %s", creditIndex, err)
+			return sdkerrors.Wrapf(err, "%s", creditIndex)
 		}
 
 		if credit.Amount == "" {
@@ -66,7 +66,7 @@ func (m *MsgBridge) ValidateBasic() error {
 		}
 
 		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
-			return fmt.Errorf("%s: amount: %s", creditIndex, err)
+			return sdkerrors.Wrapf(err, "%s: amount", creditIndex)
 		}
 	}
 
