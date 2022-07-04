@@ -284,10 +284,4 @@ message BatchOriginTx {
   // source is the source chain or registry of the transaction originating
   // the mint process (e.g. polygon, ethereum, verra).
   string source = 2;
-
-  // note is a reference note for accounting that is passed to an event.
-  string note = 3;
-
-  // batch_denom is the denom of the credit batch.
-  string batch_denom = 4;
 }

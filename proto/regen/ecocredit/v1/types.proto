@@ -88,6 +88,17 @@ message OriginTx {
   // source is the source chain or registry of the transaction originating the
   // mint process (e.g. polygon, ethereum, verra).
   string source = 2;
+
+  // contract is the address of the contract on the source chain that was
+  // executed when creating the transaction. This address will be stored in
+  // state separately from the origin tx and on a per credit batch basis to be
+  // used when sending credits back to the source chain. This field can be left
+  // blank if credits are bridged from a non-contract-based source.
+  string contract = 3;
+
+  // note is a reference note for accounting that will be included in an event
+  // emitted from either Msg/CreateBatch or Msg/MintBatchCredits.
+  string note = 4;
 }
 
 // CreditTypeProposal is a gov Content type for adding a credit type.

@@ -995,7 +995,6 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 				Source: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
 				Id:     simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
 			},
-			Note: simtypes.RandStringOfLength(r, 5),
 		}
 
 		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, issuerAddr, TypeMsgUpdateClassIssuers)
