@@ -688,7 +688,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "0.0001",
 			jurisdiction:  "",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction cannot be empty",
 		},
 		{
 			name:              "can retire a small amount of credits",

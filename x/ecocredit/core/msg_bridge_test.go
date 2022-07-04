@@ -24,7 +24,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},
@@ -38,7 +38,7 @@ func TestMsgBridge(t *testing.T) {
 			src: MsgBridge{
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},
@@ -53,7 +53,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: "wrong owner",
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},
@@ -82,7 +82,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 					},
 				},
 			},
@@ -93,7 +93,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "abc",
 					},
 				},
@@ -105,7 +105,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},
@@ -119,7 +119,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},
@@ -133,7 +133,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},
@@ -147,7 +147,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},
@@ -162,7 +162,7 @@ func TestMsgBridge(t *testing.T) {
 				Owner: addr1,
 				Credits: []*Credits{
 					{
-						BatchDenom: batchDenom,
+						BatchDenom: "C01-001-20200101-20210101-001",
 						Amount:     "10",
 					},
 				},

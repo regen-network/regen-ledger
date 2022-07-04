@@ -1,73 +1,50 @@
 package core
 
 import (
+	"strings"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/tendermint/tendermint/libs/rand"
-	"gotest.tools/v3/assert"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
 )
 
-func TestMsgUpdateProjectMetadata_ValidateBasic(t *testing.T) {
-	addr := sdk.AccAddress("addr1").String()
-	type fields struct {
-		Admin       string
-		NewMetadata string
-		ProjectId   string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		errMsg string
-	}{
-		{
-			name: "valid",
-			fields: fields{
-				Admin:       addr,
-				NewMetadata: "new meta data",
-				ProjectId:   "C01-001",
-			},
-		},
-		{
-			name: "invalid admin addr",
-			fields: fields{
-				Admin: "foo",
-			},
-			errMsg: sdkerrors.ErrInvalidAddress.Error(),
-		},
-		{
-			name: "metadata too long",
-			fields: fields{
-				Admin:       addr,
-				NewMetadata: rand.Str(MaxMetadataLength + 1),
-			},
-			errMsg: ecocredit.ErrMaxLimit.Error(),
-		},
-		{
-			name: "invalid project id",
-			fields: fields{
-				Admin:       addr,
-				NewMetadata: "new metadata",
-				ProjectId:   "001",
-			},
-			errMsg: "invalid project id",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := MsgUpdateProjectMetadata{
-				Admin:       tt.fields.Admin,
-				NewMetadata: tt.fields.NewMetadata,
-				ProjectId:   tt.fields.ProjectId,
-			}
-			if len(tt.errMsg) == 0 {
-				assert.NilError(t, m.ValidateBasic())
-			} else {
-				assert.ErrorContains(t, m.ValidateBasic(), tt.errMsg)
-			}
-		})
+type msgUpdateProjectMetadata struct {
+	t   gocuke.TestingT
+	msg *MsgUpdateProjectMetadata
+	err error
+}
+
+func TestMsgUpdateProjectMetadata(t *testing.T) {
+	gocuke.NewRunner(t, &msgUpdateProjectMetadata{}).Path("./features/msg_update_project_metadata.feature").Run()
+}
+
+func (s *msgUpdateProjectMetadata) Before(t gocuke.TestingT) {
+	s.t = t
+}
+
+func (s *msgUpdateProjectMetadata) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgUpdateProjectMetadata{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgUpdateProjectMetadata) TheMessageIsValidated() {
+	s.checkAndSetMockValues()
+
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgUpdateProjectMetadata) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgUpdateProjectMetadata) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *msgUpdateProjectMetadata) checkAndSetMockValues() {
+	if strings.Contains(s.msg.NewMetadata, "[mock-string-257]") {
+		s.msg.NewMetadata = strings.Repeat("x", 257)
 	}
 }
