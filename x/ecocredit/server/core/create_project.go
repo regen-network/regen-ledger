@@ -102,12 +102,8 @@ func (k Keeper) verifyReferenceId(ctx context.Context, classKey uint64, referenc
 	if err != nil {
 		return err
 	}
-	var total int
+        defer it.Close()
 	if it.Next() {
-		total++
-	}
-	it.Close()
-	if total > 0 {
 		return sdkerrors.ErrInvalidRequest.Wrapf(
 			"a project with reference id %s already exists within this credit class", referenceId,
 		)
