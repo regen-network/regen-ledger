@@ -860,20 +860,20 @@ Example Output:
   "balances": [
     {
       "basketId": "1",
-      "batchDenom": "C01-20190101-20210101-008",
+      "batchDenom": "C01-001-20190101-20210101-008",
       "balance": "1",
       "batchStartDate": "2019-01-01T00:00:00Z"
     },
     {
       "basketId": "1",
-      "batchDenom": "C02-20210909-20220101-002",
+      "batchDenom": "C02-001-20210909-20220101-002",
       "balance": "1",
       "batchStartDate": "2021-09-09T00:00:00Z"
     }
   ],
   "balancesInfo":[
     {
-      "batchDenom": "C02-20210909-20220101-002",
+      "batchDenom": "C02-001-20210909-20220101-002",
       "balance": "1"
     },
     {
@@ -967,7 +967,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"batch_denom": "C01-20200101-20210101-001"}' \
+    -d '{"batch_denom": "C01-001-20200101-20210101-001"}' \
     localhost:9090 \
     regen.ecocredit.marketplace.v1.Query/SellOrdersByBatch
 ```
@@ -979,8 +979,8 @@ Example Output:
   "sellOrders": [
     {
       "id": "1",
-      "seller": "regen1..",
-      "batchDenom": "C01-20200101-20210101-001",
+      "seller": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "batchDenom": "C01-001-20200101-20210101-001",
       "quantity": "2",
       "askDenom": "uregen",
       "DisableAutoRetire": false,
@@ -1005,7 +1005,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"batch_denom": "C01-20200101-20210101-001"}' \
+    -d '{"seller": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm"}' \
     localhost:9090 \
     regen.ecocredit.marketplace.v1.Query/SellOrdersBySeller
 ```
@@ -1017,8 +1017,8 @@ Example Output:
   "sellOrders": [
     {
       "id": "1",
-      "seller": "regen1..",
-      "batchDenom": "C01-20200101-20210101-001",
+      "seller": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "batchDenom": "C01-001-20200101-20210101-001",
       "quantity": "2",
       "askDenom": "uregen",
       "DisableAutoRetire": false,
@@ -1213,8 +1213,8 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "class_id": "C01",
       "jurisdiction": "CD-MN",
-      "metadata": "metadata",
-      "reference_id": "R01"
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     }
   ]
 }
@@ -1232,7 +1232,7 @@ The `projects-by-reference-id` endpoint allows users to query all projects by re
 Example:
 
 ```bash
-curl localhost:1317/regen/ecocredit/v1/projects-by-reference-id/R01
+curl localhost:1317/regen/ecocredit/v1/projects-by-reference-id/VCS-001
 ```
 
 Example Output:
@@ -1245,16 +1245,16 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "class_id": "C01",
       "jurisdiction": "CD-MN",
-      "metadata": "",
-      "reference_id": "R01"
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     },
     {
       "id": "C01-002",
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "class_id": "C01",
       "jurisdiction": "KE",
-      "metadata": "",
-      "reference_id": "R01"
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     }
   ],
   "pagination": {
@@ -1304,7 +1304,7 @@ Example Output:
   ],
   "pagination": {
     "next_key": null,
-    "total: 4
+    "total: "2"
   }
 }
 ```
@@ -1348,7 +1348,7 @@ Example Output:
   ],
   "pagination": {
     "next_key": null,
-    "total: 2
+    "total": "2"
   }
 }
 ```
@@ -1626,7 +1626,7 @@ Example Output:
 
 ```bash
 {
-  "address": "regen1....",
+  "address": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
   "batch_denom": "C01-001-20150101-20151231-001",
   "tradable_amount": "10",
   "retired_amount": "30",
@@ -1869,13 +1869,13 @@ Example Output:
   "balances": [
     {
       "basket_id": "1",
-      "batch_denom": "C01-20190101-20210101-008",
+      "batch_denom": "C01-001-20190101-20210101-008",
       "balance": "1",
       "batch_start_date": "2019-01-01T00:00:00Z"
     },
     {
       "basket_id": "1",
-      "batch_denom": "C02-20210909-20220101-002",
+      "batch_denom": "C02-001-20210909-20220101-002",
       "balance": "1",
       "batch_start_date": "2021-09-09T00:00:00Z"
     }
@@ -1883,11 +1883,11 @@ Example Output:
   "pagination": null,
   "balances_info":[
     {
-      "batch_denom": "C02-20210909-20220101-002",
+      "batch_denom": "C02-001-20210909-20220101-002",
       "balance": "1"
     },
     {
-      "batch_denom": "C01-20190101-20210101-008",
+      "batch_denom": "C01-001-20190101-20210101-008",
       "balance": "1"
     }
   ]
@@ -1915,8 +1915,8 @@ Example Output:
   "sell_orders": [
     {
       "id": "1",
-      "seller": "regen1..",
-      "batch_denom": "C01-20200101-20210101-001",
+      "seller": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "batch_denom": "C01-001-20200101-20210101-001",
       "quantity": "2",
       "ask_denom": "stake",
       "ask_amount": "100",
@@ -1953,8 +1953,8 @@ Example Output:
   "sell_orders": [
     {
       "id": "1",
-      "seller": "regen1..",
-      "batch_denom": "C01-20200101-20210101-001",
+      "seller": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "batch_denom": "C01-001-20200101-20210101-001",
       "quantity": "2",
       "ask_denom": "stake",
       "ask_amount": "100",
@@ -1991,8 +1991,8 @@ Example Output:
   "sell_orders": [
     {
       "id": "1",
-      "seller": "regen1..",
-      "batch_denom": "C01-20200101-20210101-001",
+      "seller": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+      "batch_denom": "C01-001-20200101-20210101-001",
       "quantity": "2",
       "ask_denom": "stake",
       "ask_amount": "100",
