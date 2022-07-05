@@ -34,7 +34,7 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 		// bridge operation (i.e. only previously bridged credits)
 		batchContract, err := k.stateStore.BatchContractTable().Get(ctx, batch.Key)
 		if err != nil {
-			if err == ormerrors.NotFound {
+			if ormerrors.IsNotFound(err) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrap(
 					"only credits previously bridged from another chain are supported",
 				)
