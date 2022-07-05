@@ -29,10 +29,8 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 	}
 
 	if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
-		Id:         req.OriginTx.Id,
-		Source:     req.OriginTx.Source,
-		Note:       req.Note,
-		BatchDenom: req.BatchDenom,
+		Id:     req.OriginTx.Id,
+		Source: req.OriginTx.Source,
 	}); err != nil {
 		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)

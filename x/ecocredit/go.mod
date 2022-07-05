@@ -27,7 +27,6 @@ require (
 	google.golang.org/protobuf v1.27.1
 	gotest.tools/v3 v3.1.0
 	pgregory.net/rapid v0.4.7
-	sigs.k8s.io/yaml v1.2.0
 )
 
 require (
