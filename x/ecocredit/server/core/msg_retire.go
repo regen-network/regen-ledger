@@ -44,7 +44,9 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 
 		userTradableBalance, err = math.SafeSubBalance(userTradableBalance, amtToRetire)
 		if err != nil {
-			return nil, err
+			return nil, ecocredit.ErrInsufficientCredits.Wrapf(
+				"tradable balance: %s, retire amount %s", decs[1], amtToRetire,
+			)
 		}
 		userRetiredBalance, err := math.NewNonNegativeFixedDecFromString(userBalance.RetiredAmount, creditType.Precision)
 		if err != nil {

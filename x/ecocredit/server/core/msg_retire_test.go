@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -20,6 +21,7 @@ type retire struct {
 	classId          string
 	classKey         uint64
 	projectId        string
+	projectKey       uint64
 	batchDenom       string
 	batchKey         uint64
 	tradableAmount   string
@@ -41,8 +43,76 @@ func (s *retire) Before(t gocuke.TestingT) {
 	s.tradableAmount = "10"
 }
 
+func (s *retire) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
+	precision, err := strconv.ParseUint(b, 10, 32)
+	require.NoError(s.t, err)
+
+	// TODO: Save for now but credit type should not exist prior to unit test #893
+	err = s.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+		Abbreviation: a,
+		Precision:    uint32(precision),
+	})
+	require.NoError(s.t, err)
+
+	s.creditTypeAbbrev = a
+}
+
 func (s *retire) ACreditBatch() {
 	s.creditBatchSetup()
+}
+
+func (s *retire) ACreditBatchWithDenom(a string) {
+	s.projectSetup()
+
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: s.projectKey,
+		Denom:      a,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
+
+	s.batchKey = bKey
+}
+
+func (s *retire) ACreditBatchFromCreditClassWithCreditType(a string) {
+	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id:               s.classId,
+		CreditTypeAbbrev: a,
+	})
+	require.NoError(s.t, err)
+
+	s.classKey = cKey
+
+	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id:       s.projectId,
+		ClassKey: cKey,
+	})
+	require.NoError(s.t, err)
+
+	s.projectKey = pKey
+
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: s.projectKey,
+		Denom:      s.batchDenom,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
+
+	s.batchKey = bKey
 }
 
 func (s *retire) AliceHasTheBatchBalance(a gocuke.DocString) {
@@ -61,6 +131,18 @@ func (s *retire) AliceHasTheBatchBalance(a gocuke.DocString) {
 func (s *retire) AliceOwnsTradableCreditAmount(a string) {
 	err := s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
 		BatchKey:       s.batchKey,
+		Address:        s.alice,
+		TradableAmount: a,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *retire) AliceOwnsTradableCreditAmountFromBatchDenom(a, b string) {
+	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, b)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
+		BatchKey:       batch.Key,
 		Address:        s.alice,
 		TradableAmount: a,
 	})
@@ -91,6 +173,26 @@ func (s *retire) AliceAttemptsToRetireCreditAmount(a string) {
 	})
 }
 
+func (s *retire) AliceAttemptsToRetireCreditAmountFromBatchDenom(a, b string) {
+	s.res, s.err = s.k.Retire(s.ctx, &core.MsgRetire{
+		Owner: s.alice.String(),
+		Credits: []*core.Credits{
+			{
+				BatchDenom: b,
+				Amount:     a,
+			},
+		},
+	})
+}
+
+func (s *retire) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *retire) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
 func (s *retire) ExpectAliceBatchBalance(a gocuke.DocString) {
 	expected := &api.BatchBalance{}
 	err := jsonpb.UnmarshalString(a.Content, expected)
@@ -116,7 +218,7 @@ func (s *retire) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 }
 
-func (s *retire) creditBatchSetup() {
+func (s *retire) projectSetup() {
 	// TODO: Save for now but credit type should not exist prior to unit test #893
 	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
@@ -137,8 +239,14 @@ func (s *retire) creditBatchSetup() {
 	})
 	require.NoError(s.t, err)
 
+	s.projectKey = pKey
+}
+
+func (s *retire) creditBatchSetup() {
+	s.projectSetup()
+
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: pKey,
+		ProjectKey: s.projectKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)

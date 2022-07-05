@@ -81,7 +81,7 @@ func (s *cancel) ACreditBatchWithDenom(a string) {
 	s.batchKey = bKey
 }
 
-func (s *cancel) ACreditBatchWithCreditType(a string) {
+func (s *cancel) ACreditBatchFromCreditClassWithCreditType(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               s.classId,
 		CreditTypeAbbrev: a,
@@ -136,6 +136,7 @@ func (s *cancel) AliceOwnsTradableCreditAmount(a string) {
 	})
 	require.NoError(s.t, err)
 }
+
 func (s *cancel) AliceOwnsTradableCreditAmountFromBatchDenom(a, b string) {
 	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, b)
 	require.NoError(s.t, err)

@@ -37,7 +37,7 @@ Feature: Msg/Cancel
 
     Background:
       Given a credit type with abbreviation "C" and precision "6"
-      And a credit batch with credit type "C"
+      And a credit batch from credit class with credit type "C"
       And alice owns tradable credit amount "10"
 
     Scenario Outline: the decimal places in amount is less than or equal to credit type precision
