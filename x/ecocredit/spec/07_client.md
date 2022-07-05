@@ -285,12 +285,16 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
       "jurisdiction": "CD-MN",
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     },
     {
       "id": "C01-002",
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
-      "jurisdiction": "KE".
+      "jurisdiction": "KE",
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     }
   ]
 }
@@ -321,7 +325,9 @@ Example Output:
     "id": "C01-001",
     "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
     "classId": "C01",
-    "jurisdiction": "CD-MN"
+    "jurisdiction": "CD-MN",
+    "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+    "reference_id": "VCS-001"
   }
 }
 ```
@@ -1290,16 +1296,16 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "class_id": "C01",
       "jurisdiction": "CD-MN",
-      "metadata": "",
-      "reference_id": ""
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     },
     {
       "id": "C01-002",
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "class_id": "C01",
       "jurisdiction": "KE",
-      "metadata": "",
-      "reference_id": ""
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     }
   ],
   "pagination": {
@@ -1334,16 +1340,16 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "class_id": "C01",
       "jurisdiction": "CD-MN",
-      "metadata": "",
-      "reference_id": ""
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     },
     {
       "id": "C01-002",
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "class_id": "C01",
       "jurisdiction": "KE",
-      "metadata": "",
-      "reference_id": ""
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     }
   ],
   "pagination": {
@@ -1377,8 +1383,8 @@ Example Output:
     "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
     "class_id": "C01",
     "jurisdiction": "CD-MN",
-    "metadata": "",
-    "reference_id": ""
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
   }
 }
 ```
