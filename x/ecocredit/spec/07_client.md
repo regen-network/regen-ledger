@@ -230,7 +230,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"reference_id":"R01"}' \
+    -d '{"reference_id":"VCS-001"}' \
     localhost:9090 \
     regen.ecocredit.v1.Query/ProjectsByReferenceId
 ```
@@ -245,14 +245,16 @@ Example Output:
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
       "jurisdiction": "CD-MN",
-      "reference_id":"R01"
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     },
     {
       "id": "C01-002",
       "admin": "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
       "classId": "C01",
       "jurisdiction": "KE".
-      "reference_id":"R01"
+      "metadata": "regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf",
+      "reference_id": "VCS-001"
     }
   ]
 }
