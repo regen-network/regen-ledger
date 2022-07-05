@@ -32,11 +32,11 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		// check if fee is empty
 		if msg.Fee == nil {
 			if len(allowedFees) > 1 {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 					"fee cannot be empty: must be one of %s", allowedFees,
 				)
 			} else {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 					"fee cannot be empty: must be %s", allowedFees,
 				)
 			}

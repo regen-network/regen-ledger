@@ -72,12 +72,12 @@ Feature: Msg/Create
     Scenario: basket fee not provided and allowed basket fee set (single fee)
       Given allowed basket fee "20regen"
       When alice attempts to create a basket with no fee
-      Then expect the error "fee cannot be empty: must be 20regen: invalid request"
+      Then expect the error "fee cannot be empty: must be 20regen: insufficient fee"
 
     Scenario: basket fee not provided and allowed basket fee set (multiple fees)
       Given allowed basket fee "20regen,20atom"
       When alice attempts to create a basket with no fee
-      Then expect the error "fee cannot be empty: must be one of 20atom,20regen: invalid request"
+      Then expect the error "fee cannot be empty: must be one of 20atom,20regen: insufficient fee"
 
   Rule: The basket fee must be greater than or equal to an allowed basket fee
 
