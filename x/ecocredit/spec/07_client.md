@@ -908,8 +908,8 @@ Example Output:
 {
   "sellOrder": {
     "id": "1",
-    "seller": "regen1..",
-    "batchDenom": "C01-20200101-20210101-001",
+    "seller": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm",
+    "batchDenom": "C01-001-20200101-20210101-001",
     "quantity": "2",
     "askDenom": "uregen",
     "DisableAutoRetire": false,
