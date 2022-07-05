@@ -808,3 +808,59 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name:           "missing args",
+			args:           []string{},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:           "too many args",
+			args:           []string{"abcde", "abcde"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "valid credit type",
+			args:      []string{"C"},
+			expectErr: false,
+		},
+		{
+			name:           "unknown credit type",
+			args:           []string{"CD"},
+			expectErr:      true,
+			expectedErrMsg: "not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.QueryCreditTypeCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res core.QueryCreditTypeResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(res.CreditType.Abbreviation, "C")
+				s.Require().Equal(res.CreditType.Precision, uint32(6))
+				s.Require().Equal(res.CreditType.Name, "carbon")
+			}
+		})
+	}
+}

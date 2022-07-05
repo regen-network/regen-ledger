@@ -2,7 +2,6 @@ package marketplace
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -21,7 +20,7 @@ func (k Keeper) CancelSellOrder(ctx context.Context, req *marketplace.MsgCancelS
 
 	sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, req.SellOrderId)
 	if err != nil {
-		return nil, fmt.Errorf("sell order with id %d: %w", req.SellOrderId, err)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("sell order with id %d: %s", req.SellOrderId, err.Error())
 	}
 
 	if !sellerAcc.Equals(sdk.AccAddress(sellOrder.Seller)) {
