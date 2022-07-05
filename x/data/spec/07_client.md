@@ -8,128 +8,13 @@ A user can query and interact with the `data` module using the CLI.
 
 The `query` commands allow users to query `data` state.
 
-```bash
-regen query data --help
-```
-
-#### by-iri
-
-The `by-iri` command allows users to query anchored data based on its content hash (i.e. IRI).
-
-```bash
-regen query data by-iri [iri] [flags]
-```
-
-Example:
-
-```bash
-regen query data by-iri regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
-```
-
-Example Output:
-
-```bash
-entry:
-  hash:
-    graph:
-      canonicalization_algorithm: GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015
-      digest_algorithm: DIGEST_ALGORITHM_BLAKE2B_256
-      hash: YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=
-      merkle_tree: GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
-  iri: regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
-  timestamp: "2022-01-01T00:00:00.000000000Z"
-```
-
-#### by-signer
-
-The `by-signer` command allows users to query anchored data based on a signer.
-
-```bash
-regen query data by-signer [signer] [flags]
-```
-
-Example:
-
-```bash
-regen query data by-signer regen1..
-```
-
-Example Output:
-
-```bash
-entries:
-- hash:
-    graph:
-      canonicalization_algorithm: GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015
-      digest_algorithm: DIGEST_ALGORITHM_BLAKE2B_256
-      hash: YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=
-      merkle_tree: GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
-  iri: regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
-  timestamp: "2022-01-01T00:00:00.000000000Z"
-pagination:
-  next_key: null
-  total: "1"
-```
-
-#### signers
-
-The `signers` command allows users to query signers based on a content hash (i.e. IRI).
-
-```bash
-regen query data signers [iri] [flags]
-```
-
-Example:
-
-```bash
-regen query data signers regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
-```
-
-Example Output:
-
-```bash
-pagination:
-  next_key: null
-  total: "1"
-signers:
-- regen1..
-```
+For examples on how to query state using CLI, see the data module [Query commands](https://docs.regen.network/commands/regen_query_data.html) documentation.
 
 ### Transactions
 
 The `tx` commands allow users to interact with the `data` module.
 
-```bash
-regen tx data --help
-```
-
-#### anchor
-
-The `anchor` command allows users to anchor data to the blockchain based on its content hash (i.e. IRI).
-
-```bash
-regen tx data anchor [iri] [flags]
-```
-
-Example:
-
-```bash
-regen tx data anchor regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf --from regen1..
-```
-
-#### sign
-
-The `sign` command allows users to sign anchored data on the blockchain.
-
-```bash
-regen tx data sign [iri] [flags]
-```
-
-Example:
-
-```bash
-regen tx data sign regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf --from regen1..
-```
+For examples on how to submit transactions using CLI, see the data module [Transaction commands](https://docs.regen.network/commands/regen_tx_data.html) documentation.
 
 ## gRPC
 
