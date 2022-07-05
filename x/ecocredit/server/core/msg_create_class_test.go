@@ -63,7 +63,7 @@ func (s *createClassSuite) AliceIsAnApprovedCreditClassCreator() {
 	s.params.AllowedClassCreators = append(s.params.AllowedClassCreators, s.alice.String())
 }
 
-func (s *createClassSuite) ACreditClassFee(a string) {
+func (s *createClassSuite) AllowedCreditClassFee(a string) {
 	creditClassFee, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
 
