@@ -15,6 +15,7 @@ func TestUtils(t *testing.T) {
 	t.Run("TestInvalidProjectId", rapid.MakeCheck(testInvalidProjectId))
 	t.Run("TestFormatBatchDenom", rapid.MakeCheck(testFormatBatchDenom))
 	t.Run("TestInvalidBatchDenom", rapid.MakeCheck(testInvalidBatchDenom))
+	t.Run("TestGetClassIdFromProjectId", rapid.MakeCheck(testGetClassIdFromProjectId))
 	t.Run("TestGetClassIdFromBatchDenom", rapid.MakeCheck(testGetClassIdFromBatchDenom))
 	t.Run("GetCreditTypeAbbrevFromClassId", rapid.MakeCheck(testGetCreditTypeAbbrevFromClassId))
 }
@@ -77,6 +78,18 @@ func testFormatBatchDenom(t *rapid.T) {
 func testInvalidBatchDenom(t *rapid.T) {
 	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom").(string)
 	require.Error(t, ValidateBatchDenom(batchDenom))
+}
+
+func testGetClassIdFromProjectId(t *rapid.T) {
+	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
+	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
+	projectSeq := rapid.Uint64().Draw(t, "projectSeq").(uint64)
+
+	classId := FormatClassId(creditType.Abbreviation, classSeq)
+	projectId := FormatProjectId(classId, projectSeq)
+
+	result := GetClassIdFromProjectId(projectId)
+	require.Equal(t, classId, result)
 }
 
 func testGetClassIdFromBatchDenom(t *rapid.T) {
