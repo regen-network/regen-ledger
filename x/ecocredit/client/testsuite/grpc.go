@@ -552,3 +552,17 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
 	s.Require().Equal(core.DefaultParams(), *res.Params)
 }
+
+func (s *IntegrationTestSuite) TestCreditType() {
+	require := s.Require()
+
+	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, coreRoute, "C")
+	resp, err := rest.GetRequest(url)
+	require.NoError(err)
+
+	var res core.QueryCreditTypeResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.Equal(res.CreditType.Abbreviation, "C")
+	require.Equal(res.CreditType.Precision, uint32(6))
+}

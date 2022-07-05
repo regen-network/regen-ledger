@@ -29,7 +29,7 @@ Feature: Msg/BuyDirect
 
     Scenario: the sell order does not exist
       When bob attempts to buy credits with sell order id "1"
-      Then expect the error "orders[0]: sell order with id 1: not found"
+      Then expect the error "orders[0]: sell order with id 1: not found: invalid request"
 
   Rule: The buyer must not be the seller
 
