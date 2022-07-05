@@ -38,7 +38,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 
 		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.TradableAmount)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 		amtToRetire, userTradableBalance := decs[0], decs[1]
 

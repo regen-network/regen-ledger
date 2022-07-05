@@ -70,7 +70,7 @@ Feature: Msg/Send
 
     Scenario: the decimal places in tradable amount is greater than credit type precision
       When alice attempts to send credits to bob with tradable amount "9.1234567"
-      Then expect the error "9.1234567 exceeds maximum decimal places: 6"
+      Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
     Scenario Outline: the decimal places in retired amount is less than or equal to credit type precision
       When alice attempts to send credits to bob with retired amount "<amount>"
@@ -83,7 +83,7 @@ Feature: Msg/Send
 
     Scenario: the decimal places in retired amount is greater than credit type precision
       When alice attempts to send credits to bob with retired amount "9.1234567"
-      Then expect the error "9.1234567 exceeds maximum decimal places: 6"
+      Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
   Rule: The sender balance is updated
 

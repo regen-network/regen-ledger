@@ -83,7 +83,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	decs, err := utils.GetNonNegativeFixedDecs(precision, toBalance.TradableAmount, toBalance.RetiredAmount, fromBalance.TradableAmount, fromBalance.RetiredAmount, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
 	if err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	toTradableBalance, toRetiredBalance,
 		fromTradableBalance, fromRetiredBalance,

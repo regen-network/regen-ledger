@@ -56,7 +56,7 @@ Feature: Msg/Cancel
 
     Scenario: the decimal places in amount is greater than credit type precision
       When alice attempts to cancel credit amount "9.1234567"
-      Then expect the error "9.1234567 exceeds maximum decimal places: 6"
+      Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
   Rule: The owner balance is updated
 
