@@ -591,7 +591,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"account":"regen1.."}' \
+    -d '{"account":"regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg"}' \
     localhost:9090 \
     regen.ecocredit.v1.Query/Balances
 ```
