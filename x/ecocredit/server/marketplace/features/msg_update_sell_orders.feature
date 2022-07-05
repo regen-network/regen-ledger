@@ -25,7 +25,7 @@ Feature: Msg/UpdateSellOrders
 
     Scenario: the sell order does not exist
       When alice attempts to update the sell order with id "1"
-      Then expect the error "updates[0]: sell order with id 1: not found"
+      Then expect the error "updates[0]: sell order with id 1: not found: invalid request"
 
   Rule: The user must be the seller of the sell order
 
