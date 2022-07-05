@@ -137,14 +137,14 @@ func (s *retire) AliceOwnsTradableCreditAmount(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *retire) AliceOwnsTradableCreditAmountFromBatchDenom(a, b string) {
-	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, b)
+func (s *retire) AliceOwnsTradableCreditsWithBatchDenom(a string) {
+	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, a)
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
 		BatchKey:       batch.Key,
 		Address:        s.alice,
-		TradableAmount: a,
+		TradableAmount: s.tradableAmount,
 	})
 	require.NoError(s.t, err)
 }
@@ -173,13 +173,13 @@ func (s *retire) AliceAttemptsToRetireCreditAmount(a string) {
 	})
 }
 
-func (s *retire) AliceAttemptsToRetireCreditAmountFromBatchDenom(a, b string) {
+func (s *retire) AliceAttemptsToRetireCreditsWithBatchDenom(a string) {
 	s.res, s.err = s.k.Retire(s.ctx, &core.MsgRetire{
 		Owner: s.alice.String(),
 		Credits: []*core.Credits{
 			{
-				BatchDenom: b,
-				Amount:     a,
+				BatchDenom: a,
+				Amount:     s.tradableAmount,
 			},
 		},
 	})

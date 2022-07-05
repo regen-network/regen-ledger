@@ -12,12 +12,12 @@ Feature: Msg/Send
 
     Scenario: the credit batch exists
       Given a credit batch with denom "C01-001-20200101-20210101-001"
-      And alice owns tradable credit amount "10" and batch denom "C01-001-20200101-20210101-001"
-      When alice attempts to send credits with tradable amount "10" and batch denom "C01-001-20200101-20210101-001"
+      And alice owns tradable credits with batch denom "C01-001-20200101-20210101-001"
+      When alice attempts to send credits to bob with batch denom "C01-001-20200101-20210101-001"
       Then expect no error
 
     Scenario: the credit batch does not exist
-      When alice attempts to send credits with tradable amount "10" and batch denom "C01-001-20200101-20210101-001"
+      When alice attempts to send credits to bob with batch denom "C01-001-20200101-20210101-001"
       Then expect the error "could not get batch with denom C01-001-20200101-20210101-001: not found: invalid request"
 
   Rule: The sender must have a tradable credit balance greater that or equal to the amount to send
@@ -27,7 +27,7 @@ Feature: Msg/Send
       And alice owns tradable credit amount "10"
 
     Scenario Outline: sender has tradable balance greater than or equal to tradable amount to send
-      When alice attempts to send credits with tradable amount "<amount>"
+      When alice attempts to send credits to bob with tradable amount "<amount>"
       Then expect no error
 
       Examples:
@@ -36,11 +36,11 @@ Feature: Msg/Send
         | equal to     | 10     |
 
     Scenario: sender has tradable balance less than tradable amount to send
-      When alice attempts to send credits with tradable amount "15"
+      When alice attempts to send credits to bob with tradable amount "15"
       Then expect the error "tradable balance: 10, send tradable amount 15: insufficient credit balance"
 
     Scenario Outline: sender has tradable balance greater than or equal to retired amount to send
-      When alice attempts to send credits with retired amount "<amount>"
+      When alice attempts to send credits to bob with retired amount "<amount>"
       Then expect no error
 
       Examples:
@@ -49,7 +49,7 @@ Feature: Msg/Send
         | equal to     | 10     |
 
     Scenario: sender has retired balance less than retired amount to send
-      When alice attempts to send credits with retired amount "15"
+      When alice attempts to send credits to bob with retired amount "15"
       Then expect the error "tradable balance: 10, send retired amount 15: insufficient credit balance"
 
   Rule: The decimal places in amount to send must not exceed credit type precision
@@ -60,7 +60,7 @@ Feature: Msg/Send
       And alice owns tradable credit amount "10"
 
     Scenario Outline: the decimal places in tradable amount is less than or equal to credit type precision
-      When alice attempts to send credits with tradable amount "<amount>"
+      When alice attempts to send credits to bob with tradable amount "<amount>"
       Then expect no error
 
       Examples:
@@ -69,11 +69,11 @@ Feature: Msg/Send
         | equal to    | 9.123456 |
 
     Scenario: the decimal places in tradable amount is greater than credit type precision
-      When alice attempts to send credits with tradable amount "9.1234567"
+      When alice attempts to send credits to bob with tradable amount "9.1234567"
       Then expect the error "9.1234567 exceeds maximum decimal places: 6"
 
     Scenario Outline: the decimal places in retired amount is less than or equal to credit type precision
-      When alice attempts to send credits with retired amount "<amount>"
+      When alice attempts to send credits to bob with retired amount "<amount>"
       Then expect no error
 
       Examples:
@@ -82,7 +82,7 @@ Feature: Msg/Send
         | equal to    | 9.123456 |
 
     Scenario: the decimal places in retired amount is greater than credit type precision
-      When alice attempts to send credits with retired amount "9.1234567"
+      When alice attempts to send credits to bob with retired amount "9.1234567"
       Then expect the error "9.1234567 exceeds maximum decimal places: 6"
 
   Rule: The sender balance is updated
@@ -99,7 +99,7 @@ Feature: Msg/Send
         "escrowed_amount": "0"
       }
       """
-      When alice attempts to send credits with tradable amount "10"
+      When alice attempts to send credits to bob with tradable amount "10"
       Then expect alice batch balance
       """
       {
@@ -118,7 +118,7 @@ Feature: Msg/Send
         "escrowed_amount": "0"
       }
       """
-      When alice attempts to send credits with retired amount "10"
+      When alice attempts to send credits to bob with retired amount "10"
       Then expect alice batch balance
       """
       {
@@ -189,7 +189,7 @@ Feature: Msg/Send
         "cancelled_amount": "0"
       }
       """
-      When alice attempts to send credits with retired amount "10"
+      When alice attempts to send credits to bob with retired amount "10"
       Then expect batch supply
       """
       {
@@ -210,7 +210,7 @@ Feature: Msg/Send
         "cancelled_amount": "0"
       }
       """
-      When alice attempts to send credits with retired amount "10"
+      When alice attempts to send credits to bob with retired amount "10"
       Then expect batch supply
       """
       {

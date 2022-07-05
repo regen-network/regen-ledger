@@ -11,12 +11,12 @@ Feature: Msg/Cancel
 
     Scenario: the credit batch exists
       Given a credit batch with denom "C01-001-20200101-20210101-001"
-      And alice owns tradable credit amount "10" from batch denom "C01-001-20200101-20210101-001"
-      When alice attempts to cancel credit amount "10" from batch denom "C01-001-20200101-20210101-001"
+      And alice owns tradable credits with batch denom "C01-001-20200101-20210101-001"
+      When alice attempts to cancel credits with batch denom "C01-001-20200101-20210101-001"
       Then expect no error
 
     Scenario: the credit batch does not exist
-      When alice attempts to cancel credit amount "10" from batch denom "C01-001-20200101-20210101-001"
+      When alice attempts to cancel credits with batch denom "C01-001-20200101-20210101-001"
       Then expect the error "could not get batch with denom C01-001-20200101-20210101-001: not found: invalid request"
 
   Rule: The owner must have a tradable credit balance greater that or equal to the amount to cancel

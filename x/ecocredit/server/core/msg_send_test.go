@@ -152,14 +152,14 @@ func (s *send) AliceOwnsTradableCreditAmount(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *send) AliceOwnsTradableCreditAmountAndBatchDenom(a, b string) {
-	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, b)
+func (s *send) AliceOwnsTradableCreditsWithBatchDenom(a string) {
+	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, a)
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
 		BatchKey:       batch.Key,
 		Address:        s.alice,
-		TradableAmount: a,
+		TradableAmount: s.tradableAmount,
 	})
 	require.NoError(s.t, err)
 }
@@ -174,32 +174,6 @@ func (s *send) TheBatchSupply(a gocuke.DocString) {
 	// Save because the supply may already exist from setup
 	err = s.stateStore.BatchSupplyTable().Save(s.ctx, supply)
 	require.NoError(s.t, err)
-}
-
-func (s *send) AliceAttemptsToSendCreditsWithTradableAmount(a string) {
-	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
-		Sender:    s.alice.String(),
-		Recipient: s.bob.String(),
-		Credits: []*core.MsgSend_SendCredits{
-			{
-				BatchDenom:     s.batchDenom,
-				TradableAmount: a,
-			},
-		},
-	})
-}
-
-func (s *send) AliceAttemptsToSendCreditsWithRetiredAmount(a string) {
-	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
-		Sender:    s.alice.String(),
-		Recipient: s.bob.String(),
-		Credits: []*core.MsgSend_SendCredits{
-			{
-				BatchDenom:    s.batchDenom,
-				RetiredAmount: a,
-			},
-		},
-	})
 }
 
 func (s *send) AliceAttemptsToSendCreditsToBobWithTradableAmount(a string) {
@@ -228,13 +202,14 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmount(a string) {
 	})
 }
 
-func (s *send) AliceAttemptsToSendCreditsWithTradableAmountAndBatchDenom(a, b string) {
+func (s *send) AliceAttemptsToSendCreditsToBobWithBatchDenom(a string) {
 	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
-		Sender: s.alice.String(),
+		Sender:    s.alice.String(),
+		Recipient: s.bob.String(),
 		Credits: []*core.MsgSend_SendCredits{
 			{
-				BatchDenom:     b,
-				TradableAmount: a,
+				BatchDenom:     a,
+				TradableAmount: s.tradableAmount,
 			},
 		},
 	})
