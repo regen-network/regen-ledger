@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -21,6 +22,7 @@ type send struct {
 	classId          string
 	classKey         uint64
 	projectId        string
+	projectKey       uint64
 	batchDenom       string
 	batchKey         uint64
 	tradableAmount   string
@@ -43,8 +45,76 @@ func (s *send) Before(t gocuke.TestingT) {
 	s.tradableAmount = "10"
 }
 
+func (s *send) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
+	precision, err := strconv.ParseUint(b, 10, 32)
+	require.NoError(s.t, err)
+
+	// TODO: Save for now but credit type should not exist prior to unit test #893
+	err = s.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+		Abbreviation: a,
+		Precision:    uint32(precision),
+	})
+	require.NoError(s.t, err)
+
+	s.creditTypeAbbrev = a
+}
+
 func (s *send) ACreditBatch() {
 	s.creditBatchSetup()
+}
+
+func (s *send) ACreditBatchWithDenom(a string) {
+	s.projectSetup()
+
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: s.projectKey,
+		Denom:      a,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
+
+	s.batchKey = bKey
+}
+
+func (s *send) ACreditBatchFromCreditClassWithCreditType(a string) {
+	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id:               s.classId,
+		CreditTypeAbbrev: a,
+	})
+	require.NoError(s.t, err)
+
+	s.classKey = cKey
+
+	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id:       s.projectId,
+		ClassKey: cKey,
+	})
+	require.NoError(s.t, err)
+
+	s.projectKey = pKey
+
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: s.projectKey,
+		Denom:      s.batchDenom,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
+
+	s.batchKey = bKey
 }
 
 func (s *send) AliceHasTheBatchBalance(a gocuke.DocString) {
@@ -57,15 +127,6 @@ func (s *send) AliceHasTheBatchBalance(a gocuke.DocString) {
 
 	// Save because the balance may already exist from setup
 	err = s.stateStore.BatchBalanceTable().Save(s.ctx, balance)
-	require.NoError(s.t, err)
-}
-
-func (s *send) AliceOwnsTradableCreditAmount(a string) {
-	err := s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey:       s.batchKey,
-		Address:        s.alice,
-		TradableAmount: a,
-	})
 	require.NoError(s.t, err)
 }
 
@@ -82,6 +143,27 @@ func (s *send) BobHasTheBatchBalance(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *send) AliceOwnsTradableCreditAmount(a string) {
+	err := s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
+		BatchKey:       s.batchKey,
+		Address:        s.alice,
+		TradableAmount: a,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *send) AliceOwnsTradableCreditAmountAndBatchDenom(a, b string) {
+	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, b)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
+		BatchKey:       batch.Key,
+		Address:        s.alice,
+		TradableAmount: a,
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *send) TheBatchSupply(a gocuke.DocString) {
 	supply := &api.BatchSupply{}
 	err := jsonpb.UnmarshalString(a.Content, supply)
@@ -93,6 +175,33 @@ func (s *send) TheBatchSupply(a gocuke.DocString) {
 	err = s.stateStore.BatchSupplyTable().Save(s.ctx, supply)
 	require.NoError(s.t, err)
 }
+
+func (s *send) AliceAttemptsToSendCreditsWithTradableAmount(a string) {
+	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
+		Sender:    s.alice.String(),
+		Recipient: s.bob.String(),
+		Credits: []*core.MsgSend_SendCredits{
+			{
+				BatchDenom:     s.batchDenom,
+				TradableAmount: a,
+			},
+		},
+	})
+}
+
+func (s *send) AliceAttemptsToSendCreditsWithRetiredAmount(a string) {
+	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
+		Sender:    s.alice.String(),
+		Recipient: s.bob.String(),
+		Credits: []*core.MsgSend_SendCredits{
+			{
+				BatchDenom:    s.batchDenom,
+				RetiredAmount: a,
+			},
+		},
+	})
+}
+
 func (s *send) AliceAttemptsToSendCreditsToBobWithTradableAmount(a string) {
 	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.alice.String(),
@@ -117,6 +226,26 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmount(a string) {
 			},
 		},
 	})
+}
+
+func (s *send) AliceAttemptsToSendCreditsWithTradableAmountAndBatchDenom(a, b string) {
+	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
+		Sender: s.alice.String(),
+		Credits: []*core.MsgSend_SendCredits{
+			{
+				BatchDenom:     b,
+				TradableAmount: a,
+			},
+		},
+	})
+}
+
+func (s *send) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *send) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }
 
 func (s *send) ExpectAliceBatchBalance(a gocuke.DocString) {
@@ -157,7 +286,7 @@ func (s *send) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 }
 
-func (s *send) creditBatchSetup() {
+func (s *send) projectSetup() {
 	// TODO: Save for now but credit type should not exist prior to unit test #893
 	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
@@ -178,8 +307,14 @@ func (s *send) creditBatchSetup() {
 	})
 	require.NoError(s.t, err)
 
+	s.projectKey = pKey
+}
+
+func (s *send) creditBatchSetup() {
+	s.projectSetup()
+
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: pKey,
+		ProjectKey: s.projectKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)

@@ -19,17 +19,22 @@ Feature: Msg/Retire
       When alice attempts to retire credit amount "10" from batch denom "C01-001-20200101-20210101-001"
       Then expect the error "could not get batch with denom C01-001-20200101-20210101-001: not found: invalid request"
 
-  Rule: The owner must have a tradable credit balance greater that or equal to the amount to retire
+  Rule: The owner must have a tradable credit balance greater than or equal to the amount to retire
 
     Background:
       Given a credit batch
       And alice owns tradable credit amount "10"
 
-    Scenario: the credit batch exists
-      When alice attempts to retire credit amount "10"
+    Scenario Outline: tradable balance greater than or equal to amount to retire
+      When alice attempts to retire credit amount "<amount>"
       Then expect no error
 
-    Scenario: the credit batch does not exist
+      Examples:
+        | description | amount |
+        | less than   | 5      |
+        | equal to    | 10     |
+
+    Scenario: tradable balance less than amount to retire
       When alice attempts to retire credit amount "15"
       Then expect the error "tradable balance: 10, retire amount 15: insufficient credit balance"
 

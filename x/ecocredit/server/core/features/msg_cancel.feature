@@ -25,11 +25,16 @@ Feature: Msg/Cancel
       Given a credit batch
       And alice owns tradable credit amount "10"
 
-    Scenario: the credit batch exists
-      When alice attempts to cancel credit amount "10"
+    Scenario Outline: tradable balance greater than or equal to amount to cancel
+      When alice attempts to cancel credit amount "<amount>"
       Then expect no error
 
-    Scenario: the credit batch does not exist
+      Examples:
+        | description | amount |
+        | less than   | 5      |
+        | equal to    | 10     |
+
+    Scenario: tradable balance less than amount to cancel
       When alice attempts to cancel credit amount "15"
       Then expect the error "tradable balance: 10, cancel amount 15: insufficient credit balance"
 

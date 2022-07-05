@@ -93,7 +93,9 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	if !sendAmtTradable.IsZero() {
 		fromTradableBalance, err = math.SafeSubBalance(fromTradableBalance, sendAmtTradable)
 		if err != nil {
-			return err
+			return ecocredit.ErrInsufficientCredits.Wrapf(
+				"tradable balance: %s, send tradable amount %s", decs[2], sendAmtTradable,
+			)
 		}
 		toTradableBalance, err = toTradableBalance.Add(sendAmtTradable)
 		if err != nil {
@@ -106,7 +108,9 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		didRetire = true
 		fromTradableBalance, err = math.SafeSubBalance(fromTradableBalance, sendAmtRetired)
 		if err != nil {
-			return err
+			return ecocredit.ErrInsufficientCredits.Wrapf(
+				"tradable balance: %s, send retired amount %s", decs[2], sendAmtRetired,
+			)
 		}
 		toRetiredBalance, err = toRetiredBalance.Add(sendAmtRetired)
 		if err != nil {
