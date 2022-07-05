@@ -30,9 +30,9 @@ Feature: Msg/Retire
       Then expect no error
 
       Examples:
-        | description | amount |
-        | less than   | 5      |
-        | equal to    | 10     |
+        | description  | amount |
+        | greater than | 5      |
+        | equal to     | 10     |
 
     Scenario: tradable balance less than amount to retire
       When alice attempts to retire credit amount "15"

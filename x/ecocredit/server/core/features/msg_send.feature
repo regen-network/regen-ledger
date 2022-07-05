@@ -31,9 +31,9 @@ Feature: Msg/Send
       Then expect no error
 
       Examples:
-        | description | amount |
-        | less than   | 5      |
-        | equal to    | 10     |
+        | description  | amount |
+        | greater than | 5      |
+        | equal to     | 10     |
 
     Scenario: sender has tradable balance less than tradable amount to send
       When alice attempts to send credits with tradable amount "15"
@@ -44,9 +44,9 @@ Feature: Msg/Send
       Then expect no error
 
       Examples:
-        | description | amount |
-        | less than   | 5      |
-        | equal to    | 10     |
+        | description  | amount |
+        | greater than | 5      |
+        | equal to     | 10     |
 
     Scenario: sender has retired balance less than retired amount to send
       When alice attempts to send credits with retired amount "15"

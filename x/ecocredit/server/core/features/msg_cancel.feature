@@ -30,9 +30,9 @@ Feature: Msg/Cancel
       Then expect no error
 
       Examples:
-        | description | amount |
-        | less than   | 5      |
-        | equal to    | 10     |
+        | description  | amount |
+        | greater than | 5      |
+        | equal to     | 10     |
 
     Scenario: tradable balance less than amount to cancel
       When alice attempts to cancel credit amount "15"
