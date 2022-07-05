@@ -77,6 +77,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			Address:        owner,
 			TradableAmount: userTradableBalance.String(),
 			RetiredAmount:  userRetiredBalance.String(),
+			EscrowedAmount: userBalance.EscrowedAmount,
 		}); err != nil {
 			return nil, err
 		}

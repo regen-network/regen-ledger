@@ -75,6 +75,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 				Address:        to,
 				TradableAmount: "0",
 				RetiredAmount:  "0",
+				EscrowedAmount: "0",
 			}
 		} else {
 			return err
@@ -126,6 +127,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		Address:        to,
 		TradableAmount: toTradableBalance.String(),
 		RetiredAmount:  toRetiredBalance.String(),
+		EscrowedAmount: toBalance.EscrowedAmount,
 	}); err != nil {
 		return err
 	}
@@ -136,6 +138,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		Address:        from,
 		TradableAmount: fromTradableBalance.String(),
 		RetiredAmount:  fromRetiredBalance.String(),
+		EscrowedAmount: fromBalance.EscrowedAmount,
 	}); err != nil {
 		return err
 	}
