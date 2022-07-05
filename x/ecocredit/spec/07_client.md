@@ -723,7 +723,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"basket_denom": "1"}' \
+    -d '{"basket_denom": "eco.uC.rNCT"}' \
     localhost:9090 \
     regen.ecocredit.basket.v1.Query/Basket
 ```
