@@ -383,7 +383,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	acc5 := s.signers[7]
 	addr5 := acc5.String()
 
-	// create class with insufficient credit balance and it should fail
+	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            admin.String(),
 		Issuers:          []string{issuer1, issuer2},
@@ -394,7 +394,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Error(err)
 	s.Require().Nil(createClsRes)
 
-	// create class with sufficient credit balance and it should succeed
+	// create class with sufficient funds and it should succeed
 	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*core.DefaultCreditClassFee.Int64())))
 	adminBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 
