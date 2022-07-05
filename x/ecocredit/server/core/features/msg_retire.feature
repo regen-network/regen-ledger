@@ -8,7 +8,7 @@ Feature: Msg/Retire
   Rule: The owner balance is updated
 
     Scenario: the owner balance is updated
-      Given a credit batch exists
+      Given a credit batch
       And alice has the batch balance
       """
       {
@@ -32,7 +32,7 @@ Feature: Msg/Retire
   Rule: The batch supply is updated
 
     Scenario: the batch supply is updated
-      Given a credit batch exists
+      Given a credit batch
       And alice owns tradable credit amount "10"
       And the batch supply
       """

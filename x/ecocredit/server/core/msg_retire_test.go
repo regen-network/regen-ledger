@@ -41,7 +41,7 @@ func (s *retire) Before(t gocuke.TestingT) {
 	s.tradableAmount = "10"
 }
 
-func (s *retire) ACreditBatchExists() {
+func (s *retire) ACreditBatch() {
 	s.creditBatchSetup()
 }
 
