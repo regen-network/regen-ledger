@@ -805,7 +805,7 @@ Example Output:
         "startDateWindow": "315576000s"
       },
       "exponent": 6,
-      "curator": "regenabc..."
+      "curator": "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm"
     }
   ]
 }
