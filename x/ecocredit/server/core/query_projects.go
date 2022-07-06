@@ -44,6 +44,7 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 			ClassId:      class.Id,
 			Jurisdiction: project.Jurisdiction,
 			Metadata:     project.Metadata,
+			ReferenceId:  project.ReferenceId,
 		}
 
 		projects = append(projects, &info)

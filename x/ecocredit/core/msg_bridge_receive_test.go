@@ -38,7 +38,6 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 		Project:  &validProject,
 		OriginTx: &validOriginTx,
 		ClassId:  "C01",
-		Note:     "some note",
 	}
 
 	resetMsg := func() MsgBridgeReceive {
@@ -67,6 +66,14 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidAddress.Error(),
+		},
+		{
+			name: "invalid: null origin tx",
+			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
+				validMsg.OriginTx = nil
+				return validMsg
+			},
+			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("origin tx cannot be empty").Error(),
 		},
 		{
 			name: "invalid: null batch",
@@ -174,14 +181,6 @@ func TestMsgBridgeReceive_ValidateBasic(t *testing.T) {
 				return validMsg
 			},
 			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("batch_metadata length (%d) exceeds max metadata length: %d", MaxMetadataLength+1, MaxMetadataLength).Error(),
-		},
-		{
-			name: "invalid: note length",
-			getMsg: func(validMsg MsgBridgeReceive) MsgBridgeReceive {
-				validMsg.Note = strings.Repeat("X", MaxNoteLength+1)
-				return validMsg
-			},
-			errMsg: sdkerrors.ErrInvalidRequest.Wrapf("note length (%d) exceeds max length: %d", MaxNoteLength+1, MaxNoteLength).Error(),
 		},
 		{
 			name: "invalid: class Id",

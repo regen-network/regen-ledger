@@ -23,7 +23,9 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		return nil, err
 	}
 
+	var event *core.EventBridgeReceive
 	var response *core.MsgBridgeReceiveResponse
+
 	// if no project was found, create one + issue batch
 	if project == nil {
 		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
@@ -40,19 +42,28 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 			Issuer:    req.Issuer,
 			ProjectId: projectRes.ProjectId,
 			Issuance: []*core.BatchIssuance{
-				{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+				{
+					Recipient:      req.Batch.Recipient,
+					TradableAmount: req.Batch.Amount,
+				},
 			},
 			Metadata:  req.Batch.Metadata,
 			StartDate: req.Batch.StartDate,
 			EndDate:   req.Batch.EndDate,
 			Open:      true,
 			OriginTx:  req.OriginTx,
-			Note:      req.Note,
 		})
 		if err != nil {
 			return nil, err
 		}
-		response = &core.MsgBridgeReceiveResponse{BatchDenom: batchRes.BatchDenom, ProjectId: projectRes.ProjectId}
+		event = &core.EventBridgeReceive{
+			BatchDenom: batchRes.BatchDenom,
+			ProjectId:  projectRes.ProjectId,
+		}
+		response = &core.MsgBridgeReceiveResponse{
+			BatchDenom: batchRes.BatchDenom,
+			ProjectId:  projectRes.ProjectId,
+		}
 	} else {
 		batch, err := k.getBatchFromBridgeReq(ctx, req.Batch, project.Id, bridgeServiceAddr)
 		if err != nil {
@@ -64,37 +75,59 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 				Issuer:     req.Issuer,
 				BatchDenom: batch.Denom,
 				Issuance: []*core.BatchIssuance{
-					{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+					{
+						Recipient:      req.Batch.Recipient,
+						TradableAmount: req.Batch.Amount,
+					},
 				},
 				OriginTx: req.OriginTx,
-				Note:     req.Note,
 			})
 			if err != nil {
 				return nil, err
 			}
-			response = &core.MsgBridgeReceiveResponse{BatchDenom: batch.Denom, ProjectId: project.Id}
+			event = &core.EventBridgeReceive{
+				BatchDenom: batch.Denom,
+				ProjectId:  project.Id,
+			}
+			response = &core.MsgBridgeReceiveResponse{
+				BatchDenom: batch.Denom,
+				ProjectId:  project.Id,
+			}
 		} else {
 			// batch was nil, so we need to create one.
 			res, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
 				Issuer:    req.Issuer,
 				ProjectId: project.Id,
 				Issuance: []*core.BatchIssuance{
-					{Recipient: req.Batch.Recipient, TradableAmount: req.Batch.Amount},
+					{
+						Recipient:      req.Batch.Recipient,
+						TradableAmount: req.Batch.Amount,
+					},
 				},
 				Metadata:  req.Batch.Metadata,
 				StartDate: req.Batch.StartDate,
 				EndDate:   req.Batch.EndDate,
 				Open:      true,
 				OriginTx:  req.OriginTx,
-				Note:      req.Note,
 			})
 			if err != nil {
 				return nil, err
 			}
-			response = &core.MsgBridgeReceiveResponse{BatchDenom: res.BatchDenom, ProjectId: project.Id}
+			event = &core.EventBridgeReceive{
+				BatchDenom: res.BatchDenom,
+				ProjectId:  project.Id,
+			}
+			response = &core.MsgBridgeReceiveResponse{
+				BatchDenom: res.BatchDenom,
+				ProjectId:  project.Id,
+			}
 		}
 	}
-	// TODO: emit event?
+
+	if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(event); err != nil {
+		return nil, err
+	}
+
 	return response, nil
 }
 
@@ -140,9 +173,11 @@ func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeRe
 	return nil, nil
 }
 
-// getProjectFromBridgeReq attempts to get a project from state given the request.
-// The first project seen in the iterator is returned.
-// If no projects are found, nil is returned for both values.
+// getProjectFromBridgeReq attempts to find a project with a matching reference id within the scope
+// of the credit class. No more than one project will be returned when we list the projects based on
+// class id and reference id because we enforce uniqueness on non-empty reference ids within the scope
+// of a credit class (and we do this at the message server level and not the ORM level because reference
+// id is optional when using Msg/CreateProject). If no project is found, nil is returned for both values.
 func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project, classId string) (*api.Project, error) {
 	class, err := k.stateStore.ClassTable().GetById(ctx, classId)
 	if err != nil {
@@ -156,7 +191,9 @@ func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridge
 		return nil, err
 	}
 
-	// we only want the first project that matches the reference ID, so we do not loop here.
+	// we only want the first project that matches the reference ID, so we do not loop here. We enforce
+	// uniqueness for a non-empty reference id at the message service level so as long as the reference
+	// id is not empty (verified in validate basic), no more than one project will ever be returned.
 	var project *api.Project
 	if it.Next() {
 		var err error
@@ -166,5 +203,6 @@ func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridge
 		}
 	}
 	it.Close()
+
 	return project, nil
 }

@@ -25,7 +25,7 @@ func TestQuery_ResolversByURL(t *testing.T) {
 	require.NoError(t, err)
 	err = s.server.stateStore.ResolverTable().Insert(s.ctx, &api.Resolver{
 		Url:     url,
-		Manager: s.addrs[0],
+		Manager: s.addrs[1],
 	})
 	require.NoError(t, err)
 
