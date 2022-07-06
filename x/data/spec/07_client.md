@@ -20,12 +20,12 @@ For examples on how to submit transactions using CLI, see the data module [Trans
 
 A user can query the `data` module using gRPC endpoints.
 
-### ByIRI
+### AnchorByIRI
 
-The `ByIRI` endpoint allows users to query anchored data by the content hash (i.e. IRI).
+The `AnchorByIRI` endpoint allows users to query anchored data by the content hash (i.e. IRI).
 
 ```bash
-regen.data.v1alpha2.Query/ByIRI
+regen.data.v1.Query/AnchorByIRI
 ```
 
 Example:
@@ -34,19 +34,20 @@ Example:
 grpcurl -plaintext \
     -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
     localhost:9090 \
-    regen.data.v1alpha2.Query/ByIRI
+    regen.data.v1.Query/AnchorByIRI
 ```
 
 Example Output:
 
 ```bash
 {
-  "entry": {
-    "hash": {
+  "anchor": {
+    "contentHash": {
       "graph": {
         "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
         "digestAlgorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
-        "canonicalizationAlgorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+        "canonicalizationAlgorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+        "markleTree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
       }
     },
     "iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
