@@ -95,12 +95,10 @@ Feature: MsgBridgeReceive
     """
     {
       "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "class_id": "C01",
-      "project": {
-        "reference_id": "[mock-string-33]"
-      }
+      "class_id": "C01"
     }
     """
+    And a project reference id of length "33"
     When the message is validated
     Then expect the error "project reference id: max length 32: limit exceeded"
 
@@ -156,11 +154,11 @@ Feature: MsgBridgeReceive
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
-        "jurisdiction": "US-WA",
-        "metadata": "[mock-string-257]"
+        "jurisdiction": "US-WA"
       }
     }
     """
+    And project metadata of length "257"
     When the message is validated
     Then expect the error "project metadata: max length 256: limit exceeded"
 
@@ -355,11 +353,11 @@ Feature: MsgBridgeReceive
         "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
-        "end_date": "2021-01-01T00:00:00Z",
-        "metadata": "[mock-string-257]"
+        "end_date": "2021-01-01T00:00:00Z"
       }
     }
     """
+    And batch metadata of length "257"
     When the message is validated
     Then expect the error "batch metadata: max length 256: limit exceeded"
 

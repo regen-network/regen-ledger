@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
@@ -29,9 +30,29 @@ func (s *msgBridgeReceive) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgBridgeReceive) TheMessageIsValidated() {
-	s.checkAndSetMockValues()
+func (s *msgBridgeReceive) AProjectReferenceIdOfLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
 
+	s.msg.Project = &MsgBridgeReceive_Project{}
+	s.msg.Project.ReferenceId = strings.Repeat("x", int(length))
+}
+
+func (s *msgBridgeReceive) ProjectMetadataOfLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Project.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *msgBridgeReceive) BatchMetadataOfLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Batch.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *msgBridgeReceive) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
@@ -41,20 +62,4 @@ func (s *msgBridgeReceive) ExpectTheError(a string) {
 
 func (s *msgBridgeReceive) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgBridgeReceive) checkAndSetMockValues() {
-	if s.msg.Project != nil {
-		if strings.Contains(s.msg.Project.ReferenceId, "[mock-string-33]") {
-			s.msg.Project.ReferenceId = strings.Repeat("x", 33)
-		}
-		if strings.Contains(s.msg.Project.Metadata, "[mock-string-257]") {
-			s.msg.Project.Metadata = strings.Repeat("x", 257)
-		}
-	}
-	if s.msg.Batch != nil {
-		if strings.Contains(s.msg.Batch.Metadata, "[mock-string-257]") {
-			s.msg.Batch.Metadata = strings.Repeat("x", 257)
-		}
-	}
 }
