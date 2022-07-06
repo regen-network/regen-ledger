@@ -19,6 +19,12 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 	project, batch := setupBridgeTest(s, projectRefId)
 	recipient := testutil.GenAddress()
 
+	assert.NilError(s.t, s.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: batch.Key,
+		ClassKey: 1, // only one credit class is created using setupBridgeTest // TODO: rewrite using gherkin
+		Contract: "0x0",
+	}))
+
 	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
 	msg := core.MsgBridgeReceive{
 		Issuer: s.addr.String(),
@@ -35,8 +41,9 @@ func TestBridgeReceive_ProjectAndBatchExist(t *testing.T) {
 			Metadata:     project.Metadata,
 		},
 		OriginTx: &core.OriginTx{
-			Id:     "0x12345",
-			Source: "polygon",
+			Id:       "0x12345",
+			Source:   "polygon",
+			Contract: "0x0",
 		},
 		ClassId: "C01",
 	}
@@ -194,66 +201,6 @@ func TestBridgeReceive_MultipleProjects(t *testing.T) {
 	assert.Equal(t, res.ProjectId, project.Id)
 	assertProjectBridged(t, msg.Project, project)
 	assertBatchBridged(t, msg.Batch, batch)
-}
-
-func TestBridgeReceive_ChoosesOldestBatch(t *testing.T) {
-	t.Parallel()
-	refId := "VCS-001"
-	s := setupBase(t)
-	project, batch := setupBridgeTest(s, refId)
-
-	// set up a 2nd batch with same data as first, but an older issuance date.
-	// the method should pick this first.
-	oldTime := batch.IssuanceDate.AsTime().Add(time.Hour * -3)
-	denom2 := batch.Denom[:len(batch.Denom)-1] + "2" // the previous batch denom but -002 instead of -001
-	batch2 := &api.Batch{
-		Issuer:       s.addr,
-		ProjectKey:   batch.ProjectKey,
-		Denom:        denom2,
-		Metadata:     batch.Metadata,
-		StartDate:    batch.StartDate,
-		EndDate:      batch.EndDate,
-		IssuanceDate: timestamppb.New(oldTime),
-		Open:         true,
-	}
-	b2key, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, batch2)
-	assert.NilError(t, err)
-	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey:        b2key,
-		TradableAmount:  "1",
-		RetiredAmount:   "1",
-		CancelledAmount: "1",
-	}))
-
-	start, end := batch.StartDate.AsTime(), batch.EndDate.AsTime()
-	msg := &core.MsgBridgeReceive{
-		Issuer: s.addr.String(),
-		Batch: &core.MsgBridgeReceive_Batch{
-			Recipient: s.addr.String(),
-			Amount:    "3",
-			StartDate: &start,
-			EndDate:   &end,
-			Metadata:  batch.Metadata,
-		},
-		Project: &core.MsgBridgeReceive_Project{
-			ReferenceId:  project.ReferenceId,
-			Jurisdiction: project.Jurisdiction,
-			Metadata:     project.Metadata,
-		},
-		OriginTx: &core.OriginTx{
-			Id:     "0x12345",
-			Source: "polygon",
-		},
-		ClassId: "C01",
-	}
-
-	res, err := s.k.BridgeReceive(s.ctx, msg)
-	assert.NilError(t, err)
-	// ensure the 2nd batch was picked, since it was manually set to be an older issuance date than the first.
-	assert.Equal(t, res.BatchDenom, batch2.Denom)
-	assertBatchBridged(t, msg.Batch, batch2)
-	assertProjectBridged(t, msg.Project, project)
-
 }
 
 func assertProjectBridged(t *testing.T, bridgedProject *core.MsgBridgeReceive_Project, project *api.Project) {
