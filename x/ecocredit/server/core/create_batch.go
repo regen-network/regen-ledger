@@ -199,6 +199,18 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			}
 			return nil, err
 		}
+
+		// insert batch contract mapping if contract is provided
+		if len(req.OriginTx.Contract) != 0 {
+			err = k.stateStore.BatchContractTable().Insert(ctx, &api.BatchContract{
+				BatchKey: batchKey,
+				ClassKey: project.ClassKey,
+				Contract: req.OriginTx.Contract,
+			})
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{

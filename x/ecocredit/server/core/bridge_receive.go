@@ -2,8 +2,8 @@ package core
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -13,34 +13,103 @@ import (
 
 // BridgeReceive bridges credits received from another chain.
 func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (*core.MsgBridgeReceiveResponse, error) {
-	bridgeServiceAddr, err := sdk.AccAddressFromBech32(req.Issuer)
+	// check class id and get class information (specifically class key)
+	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
+		if ormerrors.NotFound.Is(err) {
+			return nil, sdkerrors.ErrNotFound.Wrapf("credit class with id %s", req.ClassId)
+		}
 		return nil, err
 	}
 
-	project, err := k.getProjectFromBridgeReq(ctx, req.Project, req.ClassId)
+	// check if batch contract entry exists
+	batchContract, err := k.stateStore.BatchContractTable().GetByClassKeyContract(ctx, class.Key, req.OriginTx.Contract)
 	if err != nil {
-		return nil, err
+		if !ormerrors.NotFound.Is(err) {
+			return nil, err
+		}
 	}
 
 	var event *core.EventBridgeReceive
 	var response *core.MsgBridgeReceiveResponse
 
-	// if no project was found, create one + issue batch
-	if project == nil {
-		projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
-			Admin:        req.Issuer,
-			ClassId:      req.ClassId,
-			Metadata:     req.Project.Metadata,
-			Jurisdiction: req.Project.Jurisdiction,
-			ReferenceId:  req.Project.ReferenceId,
+	// if batch contract entry with matching contract exists, and therefore a
+	// project exists, dynamically mint credits to the existing credit batch,
+	// otherwise search for an existing project based on credit class id and
+	// project reference id and, if the project exists, create a credit batch
+	// under the existing project, otherwise, create a new project and then a
+	// new credit batch under the new project
+	if batchContract != nil {
+
+		// get batch information (specifically batch denom)
+		batch, err := k.stateStore.BatchTable().Get(ctx, batchContract.BatchKey)
+		if err != nil {
+			return nil, err
+		}
+
+		// get project information (specifically project id)
+		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
+		if err != nil {
+			return nil, err
+		}
+
+		// mint credits to the existing credit batch
+		_, err = k.MintBatchCredits(ctx, &core.MsgMintBatchCredits{
+			Issuer:     req.Issuer,
+			BatchDenom: batch.Denom,
+			Issuance: []*core.BatchIssuance{
+				{
+					Recipient:      req.Batch.Recipient,
+					TradableAmount: req.Batch.Amount,
+				},
+			},
+			OriginTx: req.OriginTx,
 		})
 		if err != nil {
 			return nil, err
 		}
+
+		// set bridge receive event
+		event = &core.EventBridgeReceive{
+			BatchDenom: batch.Denom,
+			ProjectId:  project.Id,
+		}
+
+		// set bridge receive response
+		response = &core.MsgBridgeReceiveResponse{
+			BatchDenom: batch.Denom,
+			ProjectId:  project.Id,
+		}
+	} else {
+
+		// attempt to find existing project based on credit class and reference id
+		project, err := k.getProjectFromBridgeReq(ctx, req.Project, req.ClassId)
+		if err != nil {
+			return nil, err
+		}
+
+		// if no project exists that matches the credit class and project reference
+		// id, then we create a new project with the information provided
+		if project == nil {
+			projectRes, err := k.CreateProject(ctx, &core.MsgCreateProject{
+				Admin:        req.Issuer,
+				ClassId:      req.ClassId,
+				Metadata:     req.Project.Metadata,
+				Jurisdiction: req.Project.Jurisdiction,
+				ReferenceId:  req.Project.ReferenceId,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			// set project id using the new project id
+			project = &api.Project{Id: projectRes.ProjectId}
+		}
+
+		// create a new credit batch with the information provided
 		batchRes, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
 			Issuer:    req.Issuer,
-			ProjectId: projectRes.ProjectId,
+			ProjectId: project.Id,
 			Issuance: []*core.BatchIssuance{
 				{
 					Recipient:      req.Batch.Recipient,
@@ -56,71 +125,17 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 		if err != nil {
 			return nil, err
 		}
+
+		// set bridge receive event
 		event = &core.EventBridgeReceive{
 			BatchDenom: batchRes.BatchDenom,
-			ProjectId:  projectRes.ProjectId,
-		}
-		response = &core.MsgBridgeReceiveResponse{
-			BatchDenom: batchRes.BatchDenom,
-			ProjectId:  projectRes.ProjectId,
-		}
-	} else {
-		batch, err := k.getBatchFromBridgeReq(ctx, req.Batch, project.Id, bridgeServiceAddr)
-		if err != nil {
-			return nil, err
+			ProjectId:  project.Id,
 		}
 
-		if batch != nil {
-			_, err = k.MintBatchCredits(ctx, &core.MsgMintBatchCredits{
-				Issuer:     req.Issuer,
-				BatchDenom: batch.Denom,
-				Issuance: []*core.BatchIssuance{
-					{
-						Recipient:      req.Batch.Recipient,
-						TradableAmount: req.Batch.Amount,
-					},
-				},
-				OriginTx: req.OriginTx,
-			})
-			if err != nil {
-				return nil, err
-			}
-			event = &core.EventBridgeReceive{
-				BatchDenom: batch.Denom,
-				ProjectId:  project.Id,
-			}
-			response = &core.MsgBridgeReceiveResponse{
-				BatchDenom: batch.Denom,
-				ProjectId:  project.Id,
-			}
-		} else {
-			// batch was nil, so we need to create one.
-			res, err := k.CreateBatch(ctx, &core.MsgCreateBatch{
-				Issuer:    req.Issuer,
-				ProjectId: project.Id,
-				Issuance: []*core.BatchIssuance{
-					{
-						Recipient:      req.Batch.Recipient,
-						TradableAmount: req.Batch.Amount,
-					},
-				},
-				Metadata:  req.Batch.Metadata,
-				StartDate: req.Batch.StartDate,
-				EndDate:   req.Batch.EndDate,
-				Open:      true,
-				OriginTx:  req.OriginTx,
-			})
-			if err != nil {
-				return nil, err
-			}
-			event = &core.EventBridgeReceive{
-				BatchDenom: res.BatchDenom,
-				ProjectId:  project.Id,
-			}
-			response = &core.MsgBridgeReceiveResponse{
-				BatchDenom: res.BatchDenom,
-				ProjectId:  project.Id,
-			}
+		// set bridge receive response
+		response = &core.MsgBridgeReceiveResponse{
+			BatchDenom: batchRes.BatchDenom,
+			ProjectId:  project.Id,
 		}
 	}
 
@@ -129,48 +144,6 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 	}
 
 	return response, nil
-}
-
-// getBatchFromBridgeReq attempts to retrieve a batch from state given the request.
-// In the event that multiple batches are matched, the batch with the oldest issuance date is selected.
-// When no batches are found, nil is returned for both return values.
-func (k Keeper) getBatchFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Batch, projectId string, bridgeAddr sdk.AccAddress) (*api.Batch, error) {
-	// batches are matched on their denom, iterating over all batches within the <ProjectId>-<StartDate>-<EndDate> range.
-	// any batches in that iterator that were created by the same issuer and have matching metadata, are added to the slice.
-	// idx will be of form C01-001-20210107-20210125-" catching all batches with that project Id and in the date range.
-	batchIdx := fmt.Sprintf("%s-%s-%s-", projectId, req.StartDate.UTC().Format("20060102"), req.EndDate.UTC().Format("20060102"))
-	bIt, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(batchIdx))
-	if err != nil {
-		return nil, err
-	}
-	batches := make([]*api.Batch, 0)
-	for bIt.Next() {
-		batch, err := bIt.Value()
-		if err != nil {
-			return nil, err
-		}
-		// the timestamp stored in the batch is more granular than the date in the denom representation, so we match here.
-		if batch.StartDate.AsTime().UTC().Equal(req.StartDate.UTC()) &&
-			batch.EndDate.AsTime().UTC().Equal(req.EndDate.UTC()) &&
-			batch.Metadata == req.Metadata &&
-			sdk.AccAddress(batch.Issuer).Equals(bridgeAddr) {
-			batches = append(batches, batch)
-		}
-	}
-	bIt.Close()
-
-	if len(batches) == 1 {
-		return batches[0], nil
-	} else if len(batches) > 1 {
-		oldestIssuedBatch := batches[0]
-		for i := 1; i < len(batches); i++ {
-			if oldestIssuedBatch.IssuanceDate.AsTime().UTC().After(batches[i].IssuanceDate.AsTime().UTC()) {
-				oldestIssuedBatch = batches[i]
-			}
-		}
-		return oldestIssuedBatch, nil
-	}
-	return nil, nil
 }
 
 // getProjectFromBridgeReq attempts to find a project with a matching reference id within the scope
