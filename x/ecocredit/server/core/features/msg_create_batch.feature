@@ -88,32 +88,32 @@ Feature: Msg/CreateBatch
       """
       {
         "class_key": 1,
-        "id": "0x0",
+        "id": "0x64",
         "source": "polygon"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
       """
       {
-        "id": "0x0",
+        "id": "0x64",
         "source": "polygon"
       }
       """
-      Then expect the error "credits already issued with tx id: 0x0: invalid request"
+      Then expect the error "credits already issued with tx id: 0x64: invalid request"
 
     Scenario: the origin tx is unique within the credit class
       Given an origin tx index
       """
       {
         "class_key": 2,
-        "id": "0x0",
+        "id": "0x64",
         "source": "polygon"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
       """
       {
-        "id": "0x0",
+        "id": "0x64",
         "source": "polygon"
       }
       """
@@ -132,18 +132,18 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 2,
         "class_key": 1,
-        "contract": "0x0"
+        "contract": "0x40"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
       """
       {
-        "id": "0x0",
+        "id": "0x64",
         "source": "polygon",
-        "contract": "0x0"
+        "contract": "0x40"
       }
       """
-      Then expect the error "credit batch with contract already exists: 0x0: invalid request"
+      Then expect the error "credit batch with contract already exists: 0x40: invalid request"
 
     Scenario: the contract is unique within the credit class
       Given a batch contract
@@ -151,15 +151,15 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 2,
         "class_key": 2,
-        "contract": "0x0"
+        "contract": "0x40"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
       """
       {
-        "id": "0x0",
+        "id": "0x64",
         "source": "polygon",
-        "contract": "0x0"
+        "contract": "0x40"
       }
       """
       Then expect no error
