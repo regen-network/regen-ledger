@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // ToIRI converts the ContentHash to an IRI (internationalized URI) using the regen IRI scheme.
@@ -18,7 +19,7 @@ func (ch ContentHash) ToIRI() (string, error) {
 	} else if chg := ch.GetGraph(); chg != nil {
 		return chg.ToIRI()
 	}
-	return "", fmt.Errorf("invalid %T", ch)
+	return "", sdkerrors.ErrInvalidType.Wrapf("invalid %T", ch)
 }
 
 const (
@@ -76,7 +77,7 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 func (mt RawMediaType) ToExtension() (string, error) {
 	ext, ok := mediaExtensionTypeToString[mt]
 	if !ok {
-		return "", fmt.Errorf("missing extension for %T %s", mt, mt)
+		return "", sdkerrors.ErrInvalidRequest.Wrapf("missing extension for %T %s", mt, mt)
 	}
 
 	return ext, nil

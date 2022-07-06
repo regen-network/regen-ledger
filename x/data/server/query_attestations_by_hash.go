@@ -21,7 +21,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return nil, err
 	}
 
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)

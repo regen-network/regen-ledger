@@ -39,6 +39,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryProjectsByAdminCmd(),
 		QueryProjectCmd(),
 		QueryParamsCmd(),
+		QueryCreditTypeCmd(),
 		basketcli.QueryBasketCmd(),
 		basketcli.QueryBasketsCmd(),
 		basketcli.QueryBasketBalanceCmd(),
@@ -573,4 +574,28 @@ regen q ecocredit projects-by-admin regenx1v44.. --limit 10
 	flags.AddPaginationFlagsToCmd(cmd, "projects-by-admin")
 
 	return qflags(cmd)
+}
+
+// QueryCreditTypeCmd returns a query command that retrieves credit type
+// information by abbreviation.
+func QueryCreditTypeCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "credit-type [abbreviation]",
+		Short: "Retrieve credit type info",
+		Example: `
+regen q ecocredit credit-type BIO
+regen query ecocredit credit-type BIO
+		`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.CreditType(cmd.Context(), &core.QueryCreditTypeRequest{
+				Abbreviation: args[0],
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	})
 }
