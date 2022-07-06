@@ -83,7 +83,7 @@ Feature: Msg/CreateBatch
       And a credit class with class id "C01" and issuer alice
       And a project with project id "C01-001"
 
-    Scenario: the origin tx is not unique within credit class
+    Scenario: the origin tx is not unique within the credit class
       Given an origin tx index
       """
       {
@@ -321,12 +321,12 @@ Feature: Msg/CreateBatch
       And a project with project id "C01-001"
       And a project with project id "C01-002"
 
-    Scenario: the class sequence is updated
+    Scenario: the batch sequence is updated
       Given a batch sequence with project id "C01-001" and next sequence "1"
       When alice attempts to create a batch with project id "C01-001"
       Then expect batch sequence with project id "C01-001" and next sequence "2"
 
-    Scenario: the class sequence is not updated
+    Scenario: the batch sequence is not updated
       Given a batch sequence with project id "C01-001" and next sequence "1"
       When alice attempts to create a batch with project id "C01-002"
       Then expect batch sequence with project id "C01-001" and next sequence "1"
@@ -369,7 +369,7 @@ Feature: Msg/CreateBatch
       And a credit class with class id "C01" and issuer alice
       And a project with project id "C01-001"
 
-    Scenario: the batch properties are added
+    Scenario: the batch contract mapping is added
       When alice attempts to create a batch with project id "C01-001" and origin tx
       """
       {
@@ -396,7 +396,7 @@ Feature: Msg/CreateBatch
       And a credit class with class id "C01" and issuer alice
       And a project with project id "C01-001"
 
-    Scenario: the batch properties are added
+    Scenario: the response includes the batch denom
       When alice attempts to create a batch with project id "C01-001"
       Then expect the response
       """
