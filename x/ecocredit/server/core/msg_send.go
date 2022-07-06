@@ -75,6 +75,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 				Address:        to,
 				TradableAmount: "0",
 				RetiredAmount:  "0",
+				EscrowedAmount: "0",
 			}
 		} else {
 			return err
@@ -82,7 +83,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	decs, err := utils.GetNonNegativeFixedDecs(precision, toBalance.TradableAmount, toBalance.RetiredAmount, fromBalance.TradableAmount, fromBalance.RetiredAmount, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
 	if err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	toTradableBalance, toRetiredBalance,
 		fromTradableBalance, fromRetiredBalance,
@@ -92,7 +93,9 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	if !sendAmtTradable.IsZero() {
 		fromTradableBalance, err = math.SafeSubBalance(fromTradableBalance, sendAmtTradable)
 		if err != nil {
-			return err
+			return ecocredit.ErrInsufficientCredits.Wrapf(
+				"tradable balance: %s, send tradable amount %s", decs[2], sendAmtTradable,
+			)
 		}
 		toTradableBalance, err = toTradableBalance.Add(sendAmtTradable)
 		if err != nil {
@@ -105,7 +108,9 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		didRetire = true
 		fromTradableBalance, err = math.SafeSubBalance(fromTradableBalance, sendAmtRetired)
 		if err != nil {
-			return err
+			return ecocredit.ErrInsufficientCredits.Wrapf(
+				"tradable balance: %s, send retired amount %s", decs[2], sendAmtRetired,
+			)
 		}
 		toRetiredBalance, err = toRetiredBalance.Add(sendAmtRetired)
 		if err != nil {
@@ -126,6 +131,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		Address:        to,
 		TradableAmount: toTradableBalance.String(),
 		RetiredAmount:  toRetiredBalance.String(),
+		EscrowedAmount: toBalance.EscrowedAmount,
 	}); err != nil {
 		return err
 	}
@@ -136,6 +142,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		Address:        from,
 		TradableAmount: fromTradableBalance.String(),
 		RetiredAmount:  fromRetiredBalance.String(),
+		EscrowedAmount: fromBalance.EscrowedAmount,
 	}); err != nil {
 		return err
 	}
