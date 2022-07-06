@@ -89,11 +89,17 @@ type MsgClient interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
-	// Bridge cancels a specified amount of tradable credits and emits a special
-	// bridge event handled by an external bridge service.
+	// Bridge processes credits being sent back to the source chain. When credits
+	// are sent back to the source chain, the credits are cancelled and an event
+	// is emitted to be handled by an external bridge service.
 	Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
-	// BridgeReceive processes credits being sent from an external registry or
-	// network to Regen Ledger.
+	// BridgeReceive processes credits being sent from another chain. When the
+	// credits are sent from the same vintage as an existing credit batch within
+	// the scope of the provided credit class, the credits will be minted to the
+	// existing credit batch, otherwise the credits will be issued in a new credit
+	// batch. The new credit batch will be created under an existing project if a
+	// project with a matching reference id already exists within the scope of the
+	// credit class, otherwise a new project will be created.
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 }
 
@@ -311,11 +317,17 @@ type MsgServer interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
-	// Bridge cancels a specified amount of tradable credits and emits a special
-	// bridge event handled by an external bridge service.
+	// Bridge processes credits being sent back to the source chain. When credits
+	// are sent back to the source chain, the credits are cancelled and an event
+	// is emitted to be handled by an external bridge service.
 	Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error)
-	// BridgeReceive processes credits being sent from an external registry or
-	// network to Regen Ledger.
+	// BridgeReceive processes credits being sent from another chain. When the
+	// credits are sent from the same vintage as an existing credit batch within
+	// the scope of the provided credit class, the credits will be minted to the
+	// existing credit batch, otherwise the credits will be issued in a new credit
+	// batch. The new credit batch will be created under an existing project if a
+	// project with a matching reference id already exists within the scope of the
+	// credit class, otherwise a new project will be created.
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
