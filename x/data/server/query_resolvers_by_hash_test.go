@@ -97,7 +97,7 @@ func TestQuery_ResolversByHash(t *testing.T) {
 	_, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{
 		ContentHash: &data.ContentHash{},
 	})
-	require.EqualError(t, err, "invalid data.ContentHash: invalid request")
+	require.EqualError(t, err, "invalid data.ContentHash: invalid type")
 
 	// query resolvers with content hash that has not been anchored
 	_, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{
