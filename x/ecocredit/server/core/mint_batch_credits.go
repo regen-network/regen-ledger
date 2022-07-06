@@ -21,16 +21,22 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err)
 	}
 
-	if err := k.assertCanMintBatch(issuer, batch); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
+	if err = k.assertCanMintBatch(issuer, batch); err != nil {
+		return nil, sdkerrors.Wrap(err, "unable to mint credits")
 	}
 
-	if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
-		Id:     req.OriginTx.Id,
-		Source: req.OriginTx.Source,
+	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = k.stateStore.OriginTxIndexTable().Insert(ctx, &api.OriginTxIndex{
+		ClassKey: project.ClassKey,
+		Id:       req.OriginTx.Id,
+		Source:   req.OriginTx.Source,
 	}); err != nil {
 		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)

@@ -991,7 +991,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		ClassId:      s.classId,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
-		ReferenceId:  s.projectReferenceId,
+		ReferenceId:  "VCS-002",
 	})
 
 	// create new project in order to not interfere with other tests
@@ -1000,7 +1000,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		ClassId:      s.classId,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
-		ReferenceId:  s.projectReferenceId,
+		ReferenceId:  "VCS-003",
 	})
 
 	// create new project in order to not interfere with other tests
@@ -1009,7 +1009,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		ClassId:      s.classId,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
-		ReferenceId:  s.projectReferenceId,
+		ReferenceId:  "VCS-004",
 	})
 
 	testCases := []struct {

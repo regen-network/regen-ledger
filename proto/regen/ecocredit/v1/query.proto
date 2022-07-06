@@ -186,6 +186,14 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/params";
   }
+
+  // CreditType queries credit type information by abbreviation.
+  rpc CreditType(QueryCreditTypeRequest) returns (QueryCreditTypeResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/credit-type/{abbreviation}"
+      additional_bindings : [ {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"} ]
+    };
+  }
 }
 
 // QueryClassesRequest is the Query/Classes request type.
@@ -522,6 +530,20 @@ message QueryParamsResponse {
 
   // params defines the parameters of the ecocredit module.
   Params params = 1;
+}
+
+// QueryCreditTypeRequest is the Query/CreditType request type
+message QueryCreditTypeRequest {
+
+  // abbreviation is the abbreviation of the credit type.
+  string abbreviation = 1;
+}
+
+// QueryCreditTypeResponse is the Query/CreditType response type
+message QueryCreditTypeResponse {
+
+  // credit_type is the fetched credit type.
+  CreditType credit_type = 1;
 }
 
 // ClassInfo is the human-readable credit class information.
