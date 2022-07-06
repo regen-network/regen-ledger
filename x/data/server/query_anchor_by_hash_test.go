@@ -59,7 +59,7 @@ func TestQuery_AnchorByHash(t *testing.T) {
 	_, err = s.server.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: &data.ContentHash{},
 	})
-	require.EqualError(t, err, "invalid data.ContentHash: invalid request")
+	require.EqualError(t, err, "invalid data.ContentHash: invalid type")
 
 	// query data anchor with content hash that has not been anchored
 	_, err = s.server.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{

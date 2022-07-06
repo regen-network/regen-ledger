@@ -414,6 +414,9 @@ type ResolverTable interface {
 	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*Resolver, error)
+	HasByUrlManager(ctx context.Context, url string, manager []byte) (found bool, err error)
+	// GetByUrlManager returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByUrlManager(ctx context.Context, url string, manager []byte) (*Resolver, error)
 	List(ctx context.Context, prefixKey ResolverIndexKey, opts ...ormlist.Option) (ResolverIterator, error)
 	ListRange(ctx context.Context, from, to ResolverIndexKey, opts ...ormlist.Option) (ResolverIterator, error)
 	DeleteBy(ctx context.Context, prefixKey ResolverIndexKey) error
@@ -467,16 +470,21 @@ func (this ResolverUrlIndexKey) WithUrl(url string) ResolverUrlIndexKey {
 	return this
 }
 
-type ResolverManagerIndexKey struct {
+type ResolverUrlManagerIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverManagerIndexKey) id() uint32            { return 2 }
-func (x ResolverManagerIndexKey) values() []interface{} { return x.vs }
-func (x ResolverManagerIndexKey) resolverIndexKey()     {}
+func (x ResolverUrlManagerIndexKey) id() uint32            { return 2 }
+func (x ResolverUrlManagerIndexKey) values() []interface{} { return x.vs }
+func (x ResolverUrlManagerIndexKey) resolverIndexKey()     {}
 
-func (this ResolverManagerIndexKey) WithManager(manager []byte) ResolverManagerIndexKey {
-	this.vs = []interface{}{manager}
+func (this ResolverUrlManagerIndexKey) WithUrl(url string) ResolverUrlManagerIndexKey {
+	this.vs = []interface{}{url}
+	return this
+}
+
+func (this ResolverUrlManagerIndexKey) WithUrlManager(url string, manager []byte) ResolverUrlManagerIndexKey {
+	this.vs = []interface{}{url, manager}
 	return this
 }
 
@@ -511,6 +519,28 @@ func (this resolverTable) Has(ctx context.Context, id uint64) (found bool, err e
 func (this resolverTable) Get(ctx context.Context, id uint64) (*Resolver, error) {
 	var resolver Resolver
 	found, err := this.table.PrimaryKey().Get(ctx, &resolver, id)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &resolver, nil
+}
+
+func (this resolverTable) HasByUrlManager(ctx context.Context, url string, manager []byte) (found bool, err error) {
+	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
+		url,
+		manager,
+	)
+}
+
+func (this resolverTable) GetByUrlManager(ctx context.Context, url string, manager []byte) (*Resolver, error) {
+	var resolver Resolver
+	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &resolver,
+		url,
+		manager,
+	)
 	if err != nil {
 		return nil, err
 	}

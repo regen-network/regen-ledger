@@ -36,5 +36,5 @@ func TestQuery_ConvertHashToIRI(t *testing.T) {
 	_, err = s.server.ConvertHashToIRI(s.ctx, &data.ConvertHashToIRIRequest{
 		ContentHash: &data.ContentHash{},
 	})
-	require.EqualError(t, err, "invalid data.ContentHash: invalid request")
+	require.EqualError(t, err, "invalid data.ContentHash: invalid type")
 }

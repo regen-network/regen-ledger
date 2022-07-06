@@ -59,10 +59,6 @@ func (m *MsgBridge) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", m.Recipient)
 	}
 
-	if !isValidEthereumAddress(m.Contract) {
-		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", m.Contract)
-	}
-
 	return nil
 }
 
