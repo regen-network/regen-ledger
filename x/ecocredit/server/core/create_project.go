@@ -35,6 +35,12 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		return nil, err
 	}
 
+	// check if non-empty reference id is unique within the scope of the credit class
+	err = k.verifyReferenceId(ctx, classInfo.Key, req.ReferenceId)
+	if err != nil {
+		return nil, err
+	}
+
 	if err = k.stateStore.ProjectTable().Insert(ctx, &api.Project{
 		Id:           projectID,
 		Admin:        adminAddress,
@@ -79,4 +85,29 @@ func (k Keeper) genProjectID(ctx context.Context, classKey uint64, classID strin
 	}
 
 	return core.FormatProjectId(classID, nextSeq), nil
+}
+
+// verifyReferenceId prevents multiple projects from having the same reference id within the
+// scope of a credit class. We verify this here at the message server level rather than at the
+// ORM level because reference id is optional and therefore multiple projects within the scope
+// of a credit class can have an empty reference id (see BridgeReceive for more information)
+func (k Keeper) verifyReferenceId(ctx context.Context, classKey uint64, referenceId string) error {
+	if referenceId == "" {
+		// reference id is optional so an empty reference id is valid
+		return nil
+	}
+
+	key := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(classKey, referenceId)
+	it, err := k.stateStore.ProjectTable().List(ctx, key)
+	if err != nil {
+		return err
+	}
+        defer it.Close()
+	if it.Next() {
+		return sdkerrors.ErrInvalidRequest.Wrapf(
+			"a project with reference id %s already exists within this credit class", referenceId,
+		)
+	}
+
+	return nil
 }
