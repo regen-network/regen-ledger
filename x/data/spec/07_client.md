@@ -56,6 +56,74 @@ Example Output:
 }
 ```
 
+### AnchorByHash
+
+The `AnchorByHash` endpoint allows users to query a data anchor by the ContentHash of the data
+
+```bash
+regen.data.v1.Query/AnchorByHash
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"contentHash": {
+        "graph": {
+          "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+          "digestAlgorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+          "canonicalizationAlgorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+        }
+      }
+    }' \
+    localhost:9090 \
+    regen.data.v1.Query/AnchorByHash
+```
+
+Example Output:
+
+```bash
+{
+  "anchor": {
+    "iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+    "contentHash": {
+      "graph": {
+        "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+        "digestAlgorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+        "canonicalizationAlgorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+      }
+    },
+    "timestamp": "2022-07-06T11:54:58.464341467Z"
+  }
+}
+```
+
+### AttestationsByAttestor
+
+The `AttestationsByAttestor` endpoint allows users to query data attestations by an attestor.
+
+```bash
+regen.data.v1.Query/AttestationsByAttestor
+```
+
+Example:
+
+```bash
+{
+  "anchor": {
+    "iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+    "contentHash": {
+      "graph": {
+        "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+        "digestAlgorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+        "canonicalizationAlgorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+      }
+    },
+    "timestamp": "2022-07-06T11:54:58.464341467Z"
+  }
+}
+```
+
 ### BySigner
 
 The `BySigner` endpoint allows users to query anchored data by signer.
