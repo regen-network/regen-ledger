@@ -38,13 +38,15 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 
 		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.TradableAmount)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 		amtToRetire, userTradableBalance := decs[0], decs[1]
 
 		userTradableBalance, err = math.SafeSubBalance(userTradableBalance, amtToRetire)
 		if err != nil {
-			return nil, err
+			return nil, ecocredit.ErrInsufficientCredits.Wrapf(
+				"tradable balance: %s, retire amount %s", decs[1], amtToRetire,
+			)
 		}
 		userRetiredBalance, err := math.NewNonNegativeFixedDecFromString(userBalance.RetiredAmount, creditType.Precision)
 		if err != nil {
@@ -77,6 +79,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			Address:        owner,
 			TradableAmount: userTradableBalance.String(),
 			RetiredAmount:  userRetiredBalance.String(),
+			EscrowedAmount: userBalance.EscrowedAmount,
 		}); err != nil {
 			return nil, err
 		}

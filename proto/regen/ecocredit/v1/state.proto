@@ -294,3 +294,30 @@ message OriginTxIndex {
   // the mint process (e.g. polygon, ethereum, verra).
   string source = 3;
 }
+
+// BatchContract stores the contract address from which credits were bridged
+// when credits are bridged from a contract-based chain, therefore ensuring
+// that each credit batch corresponds to a single contract and credits that
+// have been bridged will always be bridged back to the original contract.
+message BatchContract {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 12,
+    primary_key : {fields : "batch_key"}
+    index : {id : 1, fields : "class_key,contract", unique : true}
+  };
+
+  // batch_key is the table row identifier of the credit batch used internally
+  // for efficient lookups. This links an external contract to a credit batch.
+  uint64 batch_key = 1;
+
+  // class_key is the table row identifier of the credit class within which the
+  // credit batch exists. A contract is unique within the scope of a credit class
+  // to prevent malicious credit class issuers from blocking bridge operations
+  // taking place within another credit class.
+  uint64 class_key = 2;
+
+  // contract is the address of the contract on the source chain that was
+  // executed when creating the transaction. This address will be used when
+  // sending credits back to the source chain.
+  string contract = 3;
+}
