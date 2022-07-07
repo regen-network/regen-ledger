@@ -4,7 +4,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d",
       "credits": [
@@ -22,7 +22,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d",
       "credits": [
@@ -62,7 +62,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -72,7 +72,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "foo"
     }
     """
@@ -83,7 +83,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon"
     }
     """
@@ -94,7 +94,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "foo"
     }
@@ -106,7 +106,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d"
     }
@@ -118,7 +118,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d",
       "credits": [
@@ -133,7 +133,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d",
       "credits": [
@@ -150,7 +150,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d",
       "credits": [
@@ -167,7 +167,7 @@ Feature: MsgBridge
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "target": "polygon",
       "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d",
       "credits": [

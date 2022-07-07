@@ -4,7 +4,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -12,7 +12,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -50,7 +50,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -60,7 +60,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "foo"
     }
     """
@@ -71,7 +71,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01"
     }
     """
@@ -82,7 +82,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {}
     }
@@ -94,7 +94,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01"
     }
     """
@@ -106,7 +106,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001"
@@ -120,7 +120,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -135,7 +135,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -150,7 +150,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -166,7 +166,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -182,7 +182,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -199,7 +199,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -218,7 +218,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -226,7 +226,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       }
     }
     """
@@ -237,7 +237,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -245,7 +245,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "-100"
       }
     }
@@ -257,7 +257,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -265,7 +265,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100"
       }
     }
@@ -277,7 +277,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -285,7 +285,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z"
       }
@@ -298,7 +298,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -306,7 +306,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2021-01-01T00:00:00Z",
         "end_date": "2020-01-01T00:00:00Z"
@@ -320,7 +320,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -328,7 +328,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z"
@@ -342,7 +342,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -350,7 +350,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z"
@@ -365,7 +365,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -373,7 +373,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -389,7 +389,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -397,7 +397,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -416,7 +416,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -424,7 +424,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -444,7 +444,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -452,7 +452,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -472,7 +472,7 @@ Feature: MsgBridgeReceive
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "project": {
         "reference_id": "VCS-001",
@@ -480,7 +480,7 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "batch": {
-        "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",

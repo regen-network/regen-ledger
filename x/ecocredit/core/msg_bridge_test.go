@@ -6,6 +6,8 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgBridge struct {
@@ -20,6 +22,11 @@ func TestMsgBridge(t *testing.T) {
 
 func (s *msgBridge) Before(t gocuke.TestingT) {
 	s.t = t
+
+	// TODO: move to base suite setup #1243
+	// set custom regen prefix
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }
 
 func (s *msgBridge) TheMessage(a gocuke.DocString) {
