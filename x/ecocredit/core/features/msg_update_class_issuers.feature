@@ -4,13 +4,13 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "add_issuers": [
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
       ],
       "remove_issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ]
     }
     """
@@ -21,10 +21,10 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "remove_issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ]
     }
     """
@@ -35,10 +35,10 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "add_issuers": [
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
       ]
     }
     """
@@ -67,7 +67,7 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -77,7 +77,7 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "foo"
     }
     """
@@ -88,7 +88,7 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01"
     }
     """
@@ -99,7 +99,7 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "add_issuers": [
         "foo"
@@ -113,11 +113,11 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "add_issuers": [
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
       ]
     }
     """
@@ -128,7 +128,7 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "remove_issuers": [
         "foo"
@@ -142,11 +142,11 @@ Feature: MsgUpdateClassIssuers
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "remove_issuers": [
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
       ]
     }
     """

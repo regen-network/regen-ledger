@@ -4,7 +4,7 @@ Feature: MsgSealBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "batch_denom": "C01-001-20200101-20210101-001"
     }
     """
@@ -33,7 +33,7 @@ Feature: MsgSealBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -43,7 +43,7 @@ Feature: MsgSealBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "batch_denom": "foo"
     }
     """

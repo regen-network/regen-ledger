@@ -1,12 +1,15 @@
 package core
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgCancel struct {
@@ -21,6 +24,10 @@ func TestMsgCancel(t *testing.T) {
 
 func (s *msgCancel) Before(t gocuke.TestingT) {
 	s.t = t
+
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }
 
 func (s *msgCancel) TheMessage(a gocuke.DocString) {
@@ -29,9 +36,14 @@ func (s *msgCancel) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgCancel) TheMessageIsValidated() {
-	s.checkAndSetMockValues()
+func (s *msgCancel) AReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
 
+	s.msg.Reason = strings.Repeat("x", int(length))
+}
+
+func (s *msgCancel) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
@@ -41,10 +53,4 @@ func (s *msgCancel) ExpectTheError(a string) {
 
 func (s *msgCancel) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgCancel) checkAndSetMockValues() {
-	if strings.Contains(s.msg.Reason, "[mock-string-513]") {
-		s.msg.Reason = strings.Repeat("x", 513)
-	}
 }

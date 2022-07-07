@@ -4,9 +4,9 @@ Feature: MsgUpdateProjectAdmin
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
-      "new_admin": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+      "new_admin": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
     }
     """
     When the message is validated
@@ -34,7 +34,7 @@ Feature: MsgUpdateProjectAdmin
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -44,7 +44,7 @@ Feature: MsgUpdateProjectAdmin
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "foo"
     }
     """
@@ -55,7 +55,7 @@ Feature: MsgUpdateProjectAdmin
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001"
     }
     """
@@ -66,7 +66,7 @@ Feature: MsgUpdateProjectAdmin
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "new_admin": "foo"
     }
@@ -78,9 +78,9 @@ Feature: MsgUpdateProjectAdmin
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
-      "new_admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "new_admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated

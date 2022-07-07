@@ -4,7 +4,7 @@ Feature: MsgUpdateClassMetadata
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "new_metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
     }
@@ -16,7 +16,7 @@ Feature: MsgUpdateClassMetadata
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01"
     }
     """
@@ -45,7 +45,7 @@ Feature: MsgUpdateClassMetadata
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -55,7 +55,7 @@ Feature: MsgUpdateClassMetadata
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "foo"
     }
     """
@@ -66,10 +66,10 @@ Feature: MsgUpdateClassMetadata
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "class_id": "C01",
-      "new_metadata": "[mock-string-257]"
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "class_id": "C01"
     }
     """
+    And new metadata with length "257"
     When the message is validated
     Then expect the error "metadata: max length 256: limit exceeded"

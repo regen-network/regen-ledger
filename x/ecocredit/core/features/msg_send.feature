@@ -4,8 +4,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -23,8 +23,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -63,7 +63,7 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -73,7 +73,7 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "recipient": "foo"
     }
     """
@@ -84,8 +84,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
     }
     """
     When the message is validated
@@ -95,8 +95,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {}
       ]
@@ -109,8 +109,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "foo"
@@ -125,8 +125,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001"
@@ -141,8 +141,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -158,8 +158,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -175,8 +175,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -192,8 +192,8 @@ Feature: MsgSend
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
