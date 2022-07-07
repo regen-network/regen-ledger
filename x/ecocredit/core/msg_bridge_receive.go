@@ -5,6 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
+	"github.com/regen-network/regen-ledger/types/eth"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -24,58 +25,112 @@ func (m MsgBridgeReceive) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridgeReceive) ValidateBasic() error {
-	// top level fields validation
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrap("issuer")
+		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
+
+	if m.ClassId == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
+	}
+
 	if err := ValidateClassId(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	if m.OriginTx == nil {
-		sdkerrors.ErrInvalidRequest.Wrap("origin tx cannot be empty")
+
+	// project validation
+
+	if m.Project == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("project cannot be empty")
 	}
+
+	if m.Project.ReferenceId == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("project reference id cannot be empty")
+	}
+
+	if len(m.Project.ReferenceId) > MaxReferenceIdLength {
+		return ecocredit.ErrMaxLimit.Wrapf("project reference id: max length %d", MaxReferenceIdLength)
+	}
+
+	if m.Project.Jurisdiction == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("project jurisdiction cannot be empty")
+	}
+
+	if err := ValidateJurisdiction(m.Project.Jurisdiction); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	if m.Project.Metadata == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("project metadata cannot be empty")
+	}
+
+	if len(m.Project.Metadata) > MaxMetadataLength {
+		return ecocredit.ErrMaxLimit.Wrapf("project metadata: max length %d", MaxMetadataLength)
+	}
+
+	// batch validation
+
+	if m.Batch == nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("batch cannot be empty")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.Batch.Recipient); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrapf("batch recipient: %s", err)
+	}
+
+	if m.Batch.Amount == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch amount cannot be empty")
+	}
+
+	if _, err := math.NewPositiveDecFromString(m.Batch.Amount); err != nil {
+		return sdkerrors.Wrap(err, "batch amount")
+	}
+
+	if m.Batch.StartDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch start date cannot be empty")
+	}
+
+	if m.Batch.EndDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch end date cannot be empty")
+	}
+
+	if m.Batch.StartDate.After(*m.Batch.EndDate) {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch start date cannot be after batch end date")
+	}
+
+	if m.Batch.Metadata == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch metadata cannot be empty")
+	}
+
+	if len(m.Batch.Metadata) > MaxMetadataLength {
+		return ecocredit.ErrMaxLimit.Wrapf("batch metadata: max length %d", MaxMetadataLength)
+	}
+
+	// origin tx validation
+
+	if m.OriginTx == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin tx cannot be empty")
+	}
+
+	// specific to MsgBridgeReceive
+	if !eth.IsValidTxHash(m.OriginTx.Id) {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin tx id must be a valid ethereum transaction hash")
+	}
+
+	// specific to MsgBridgeReceive
+	if m.OriginTx.Source != BridgePolygon {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin tx source must be polygon")
+	}
+
+	// specific to MsgBridgeReceive
+	if m.OriginTx.Contract == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin tx contract cannot be empty")
+	}
+
+	// basic origin tx validation (includes valid ethereum contract address if contract is not empty)
 	if err := m.OriginTx.Validate(); err != nil {
 		return err
 	}
 
-	// batch validation
-	if m.Batch == nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("batch cannot be empty")
-	}
-	batch := m.Batch
-	if _, err := sdk.AccAddressFromBech32(batch.Recipient); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrap("recipient")
-	}
-	if _, err := math.NewPositiveDecFromString(batch.Amount); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-	if batch.StartDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("start_date is required")
-	}
-	if batch.EndDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("end_date is required")
-	}
-	if batch.StartDate.After(*batch.EndDate) {
-		return sdkerrors.ErrInvalidRequest.Wrap("start_date must be a time before end_date")
-	}
-	if len(batch.Metadata) > MaxMetadataLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("batch metadata length (%d) exceeds max metadata length: %d", len(batch.Metadata), MaxMetadataLength)
-	}
-
-	// project validation
-	if m.Project == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("project cannot be empty")
-	}
-	project := m.Project
-	if len(project.ReferenceId) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("reference_id is required")
-	}
-	if err := ValidateJurisdiction(project.Jurisdiction); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-	if len(project.Metadata) > MaxMetadataLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("project_metadata length (%d) exceeds max metadata length: %d", len(project.Metadata), MaxMetadataLength)
-	}
 	return nil
 }
 
