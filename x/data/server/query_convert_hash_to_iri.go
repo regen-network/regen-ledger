@@ -16,7 +16,7 @@ func (s serverImpl) ConvertHashToIRI(_ context.Context, request *data.ConvertHas
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return nil, err
 	}
 
 	return &data.ConvertHashToIRIResponse{

@@ -15,7 +15,7 @@ Feature: Msg/CancelSellOrder
 
     Scenario: sell order does not exist
       When alice attempts to cancel the sell order with id "1"
-      Then expect the error "sell order with id 1: not found"
+      Then expect the error "sell order with id 1: not found: invalid request"
 
   Rule: The user must be the owner of the sell order
 
