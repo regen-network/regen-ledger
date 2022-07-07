@@ -35,11 +35,10 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 					"fee cannot be empty: must be one of %s", allowedFees,
 				)
-			} else {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee cannot be empty: must be %s", allowedFees,
-				)
 			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee cannot be empty: must be %s", allowedFees,
+			)
 		}
 
 		// In the next version of the basket package, the fee provided will be
@@ -48,16 +47,15 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		fee := msg.Fee[0]
 
 		// check if provided fee is greater than or equal to any coin in allowedFees
-		if !fee.Amount.GTE(allowedFees.AmountOf(fee.Denom)) {
+		if !msg.Fee.IsAnyGTE(allowedFees) {
 			if len(allowedFees) > 1 {
 				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 					"fee must be one of %s, got %s", allowedFees, fee,
 				)
-			} else {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee must be %s, got %s", allowedFees, fee,
-				)
 			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee must be %s, got %s", allowedFees, fee,
+			)
 		}
 
 		// only check and charge the minimum fee amount

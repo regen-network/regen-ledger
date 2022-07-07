@@ -247,12 +247,12 @@ func (s *createClassSuite) createClassExpectCalls() {
 
 	if len(s.params.CreditClassFee) == 1 {
 		expectedFee = s.params.CreditClassFee[0]
-		expectedFees = sdk.NewCoins(expectedFee)
+		expectedFees = sdk.Coins{expectedFee}
 	}
 
 	if len(s.params.CreditClassFee) == 2 {
 		expectedFee = s.params.CreditClassFee[1]
-		expectedFees = sdk.NewCoins(expectedFee)
+		expectedFees = sdk.Coins{expectedFee}
 	}
 
 	s.bankKeeper.EXPECT().

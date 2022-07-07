@@ -230,12 +230,12 @@ func (s *createSuite) createExpectCalls() {
 
 	if len(s.params.BasketFee) == 1 {
 		expectedFee = s.params.BasketFee[0]
-		expectedFees = sdk.NewCoins(expectedFee)
+		expectedFees = sdk.Coins{expectedFee}
 	}
 
 	if len(s.params.BasketFee) == 2 {
 		expectedFee = s.params.BasketFee[1]
-		expectedFees = sdk.NewCoins(expectedFee)
+		expectedFees = sdk.Coins{expectedFee}
 	}
 
 	s.bankKeeper.EXPECT().

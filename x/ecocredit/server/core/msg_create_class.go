@@ -41,24 +41,25 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 					"fee cannot be empty: must be one of %s", allowedFees,
 				)
-			} else {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee cannot be empty: must be %s", allowedFees,
-				)
 			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee cannot be empty: must be %s", allowedFees,
+			)
 		}
 
+		// convert fee to multiple coins for verification
+		coins := sdk.Coins{*req.Fee}
+
 		// check if fee is greater than or equal to any coin in allowedFees
-		if !req.Fee.Amount.GTE(allowedFees.AmountOf(req.Fee.Denom)) {
+		if !coins.IsAnyGTE(allowedFees) {
 			if len(allowedFees) > 1 {
 				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 					"fee must be one of %s, got %s", allowedFees, req.Fee,
 				)
-			} else {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee must be %s, got %s", allowedFees, req.Fee,
-				)
 			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee must be %s, got %s", allowedFees, req.Fee,
+			)
 		}
 
 		// only check and charge the minimum fee amount
