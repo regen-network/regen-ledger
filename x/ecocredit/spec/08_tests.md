@@ -268,41 +268,17 @@ If a user tries to transfer 20 credits and their tradable balance is less than 2
 - WHEN - user tries to transfer 20 credits
 - THEN - transaction fails, credits are NOT transferred
 
-If a user tries to transfer credits and the user provides a valid recipient address, then the transaction is successful and the credits are transferred.
+If a user tries to transfer credits and the user provides a batch denom that exists, then the transaction is successful and the credits are transferred.
 
-- GIVEN - user provides a valid recipient address
+- GIVEN - user provides a batch denom that exists
 - WHEN - user tries to transfer credits
 - THEN - transaction is successful, credits are transferred
 
-If a user tries to transfer credits and the user provides an invalid recipient address, then the transaction fails and the credits are NOT transferred.
+If a user tries to transfer credits and the user provides a batch denom that does not exist, then the transaction fails and the credits are NOT transferred.
 
-- GIVEN - user provides an invalid recipient address
+- GIVEN - user provides a batch denom that does not exist
 - WHEN - user tries to transfer credits
 - THEN - transaction fails, credits are NOT transferred
-
-If a user tries to transfer credits and the user provides a valid batch denomination, then the transaction is successful and the credits are transferred.
-
-- GIVEN - user provides a valid batch denomination
-- WHEN - user tries to transfer credits
-- THEN - transaction is successful, credits are transferred
-
-If a user tries to transfer credits and the user provides an invalid batch denomination, then the transaction fails and the credits are NOT transferred.
-
-- GIVEN - user provides an invalid batch denomination
-- WHEN - user tries to transfer credits
-- THEN - transaction fails, credits are NOT transferred
-
-If a user tries to retire 20 credits upon transfer and the user provides a retirement location, then the transaction is successful and the credits are transferred and retired.
-
-- GIVEN - user provides a retirement location
-- WHEN - user tries to retire 20 credits upon transfer
-- THEN - transaction is successful, credits are transferred and retired
-
-If a user tries to retire 20 credits upon transfer and the user does NOT provide a retirement location, then the transaction fails and the credits are NOT transferred or retired.
-
-- GIVEN - user provides a retirement location
-- WHEN - user tries to retire 20 credits upon transfer
-- THEN - transaction fails, credits are NOT transferred or retired
 
 ### Retire Credits
 
@@ -318,15 +294,15 @@ If a user tries to retire 20 credits and their tradable balance is less than 20 
 - WHEN - user tries to retire 20 credits
 - THEN - transaction fails, credits are NOT retired
 
-If a user tries to retire credits and the user provides a valid batch denomination, then the transaction is successful and the credits are retired.
+If a user tries to retire credits and the user provides a batch denom that exists, then the transaction is successful and the credits are retired.
 
-- GIVEN - user provides a valid batch denomination
+- GIVEN - user provides a batch denom that exists
 - WHEN - user tries to retire credits
 - THEN - transaction is successful, credits are retired
 
-If a user tries to retire credits and the user provides an invalid batch denomination, then the transaction fails and the credits are NOT retired.
+If a user tries to retire credits and the user provides a batch denom that does not exist, then the transaction fails and the credits are NOT retired.
 
-- GIVEN - user provides an invalid batch denomination
+- GIVEN - user provides a batch denom that does not exist
 - WHEN - user tries to retire credits
 - THEN - transaction fails, credits are NOT retired
 
@@ -344,14 +320,14 @@ If a user tries to cancel 20 credits and their credit balance is less than 20 cr
 - WHEN - user tries to cancel 20 credits
 - THEN - transaction fails, credits are NOT cancelled
 
-If a user tries to cancel credits and the user provides a valid batch denomination, then the transaction is successful and the credits are cancelled.
+If a user tries to cancel credits and the user provides a batch denom that exists, then the transaction is successful and the credits are cancelled.
 
-- GIVEN - user provides a valid batch denomination
+- GIVEN - user provides a batch denom that exists
 - WHEN - user tries to cancel credits
 - THEN - transaction is successful, credits are cancelled
 
-If a user tries to cancel credits and the user provides an invalid batch denomination, then the transaction fails and the credits are NOT cancelled.
+If a user tries to cancel credits and the user provides a batch denom that does not exist, then the transaction fails and the credits are NOT cancelled.
 
-- GIVEN - user provides an invalid batch denomination
+- GIVEN - user provides a batch denom that does not exist
 - WHEN - user tries to cancel credits
 - THEN - transaction fails, credits are NOT cancelled

@@ -23,8 +23,7 @@ func TestMsgBridge(t *testing.T) {
 func (s *msgBridge) Before(t gocuke.TestingT) {
 	s.t = t
 
-	// TODO: move to base suite setup #1243
-	// set custom regen prefix
+	// TODO: move to init function in the root directory of the module #1243
 	cfg := sdk.GetConfig()
 	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }

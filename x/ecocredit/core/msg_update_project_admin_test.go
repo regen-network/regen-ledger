@@ -3,77 +3,45 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"gotest.tools/v3/assert"
 )
 
-func TestMsgUpdateProjectAdmin_ValidateBasic(t *testing.T) {
-	addr := sdk.AccAddress("addr1").String()
-	addr2 := sdk.AccAddress("addr2").String()
-	type fields struct {
-		Admin     string
-		NewAdmin  string
-		ProjectId string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		errMsg string
-	}{
-		{
-			name: "valid",
-			fields: fields{
-				Admin:     addr,
-				NewAdmin:  addr2,
-				ProjectId: "C01-001",
-			},
-		},
-		{
-			name: "invalid admin",
-			fields: fields{
-				Admin: "foo",
-			},
-			errMsg: sdkerrors.ErrInvalidAddress.Error(),
-		},
-		{
-			name: "invalid new admin",
-			fields: fields{
-				Admin:    addr,
-				NewAdmin: "foo",
-			},
-			errMsg: sdkerrors.ErrInvalidAddress.Error(),
-		},
-		{
-			name: "cannot have same address",
-			fields: fields{
-				Admin:    addr,
-				NewAdmin: addr,
-			},
-			errMsg: sdkerrors.ErrInvalidRequest.Wrap("new_admin and admin addresses cannot be the same").Error(),
-		},
-		{
-			name: "invalid project id",
-			fields: fields{
-				Admin:     addr,
-				NewAdmin:  addr2,
-				ProjectId: "001",
-			},
-			errMsg: "invalid project id",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := MsgUpdateProjectAdmin{
-				Admin:     tt.fields.Admin,
-				NewAdmin:  tt.fields.NewAdmin,
-				ProjectId: tt.fields.ProjectId,
-			}
-			if len(tt.errMsg) == 0 {
-				assert.NilError(t, m.ValidateBasic())
-			} else {
-				assert.ErrorContains(t, m.ValidateBasic(), tt.errMsg)
-			}
-		})
-	}
+type msgUpdateProjectAdmin struct {
+	t   gocuke.TestingT
+	msg *MsgUpdateProjectAdmin
+	err error
+}
+
+func TestMsgUpdateProjectAdmin(t *testing.T) {
+	gocuke.NewRunner(t, &msgUpdateProjectAdmin{}).Path("./features/msg_update_project_admin.feature").Run()
+}
+
+func (s *msgUpdateProjectAdmin) Before(t gocuke.TestingT) {
+	s.t = t
+
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
+
+func (s *msgUpdateProjectAdmin) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgUpdateProjectAdmin{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgUpdateProjectAdmin) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgUpdateProjectAdmin) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgUpdateProjectAdmin) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
