@@ -42,10 +42,8 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	for i, issuance := range m.Issuance {
-		issuanceIndex := fmt.Sprintf("issuance[%d]", i)
-
 		if err := issuance.Validate(); err != nil {
-			return sdkerrors.Wrapf(err, "%s", issuanceIndex)
+			return sdkerrors.Wrapf(err, "issuance[%d]", i)
 		}
 	}
 
