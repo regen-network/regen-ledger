@@ -348,7 +348,7 @@ A user can query the `data` module using REST endpoints.
 
 ### anchor-by-iri
 
-The `anchor-by-iri` endpoint allows users to query anchored data by the content hash (i.e. IRI).
+The `anchor-by-iri` endpoint allows users to query a data anchor by the IRI of the data.
 
 ```bash
 /regen/data/v1/anchor-by-iri/{iri}
