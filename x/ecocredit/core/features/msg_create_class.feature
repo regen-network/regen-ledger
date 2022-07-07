@@ -4,9 +4,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "C",
@@ -23,10 +23,10 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "C",
@@ -43,9 +43,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "C"
@@ -76,7 +76,7 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -86,7 +86,7 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
         "foo"
       ]
@@ -99,23 +99,23 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ]
     }
     """
     When the message is validated
-    Then expect the error "issuers[1]: duplicate address cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27: invalid request"
+    Then expect the error "issuers[1]: duplicate address regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6: invalid request"
 
   Scenario: an error is returned if metadata is exceeds 256 characters
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "[mock-string-257]"
     }
@@ -127,9 +127,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
     }
@@ -141,9 +141,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "foobar"
@@ -156,9 +156,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "C",
@@ -172,9 +172,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "C",
@@ -190,9 +190,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "C",
@@ -208,9 +208,9 @@ Feature: MsgCreateClass
     Given the message
     """
     {
-      "admin": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "credit_type_abbrev": "C",

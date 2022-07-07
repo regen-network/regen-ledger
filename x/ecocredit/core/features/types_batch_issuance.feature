@@ -4,7 +4,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "tradable_amount": "100",
       "retired_amount": "100",
       "retirement_jurisdiction": "US-WA"
@@ -17,7 +17,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "retired_amount": "100",
       "retirement_jurisdiction": "US-WA"
     }
@@ -29,7 +29,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "tradable_amount": "100"
     }
     """
@@ -58,7 +58,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the batch issuance is validated
@@ -68,7 +68,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "tradable_amount": "-100"
     }
     """
@@ -79,7 +79,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "retired_amount": "-100"
     }
     """
@@ -90,7 +90,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "retired_amount": "100"
     }
     """
@@ -101,7 +101,7 @@ Feature: BatchIssuance
     Given the batch issuance
     """
     {
-      "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "retired_amount": "100",
       "retirement_jurisdiction": "foo"
     }

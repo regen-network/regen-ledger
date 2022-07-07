@@ -4,11 +4,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -26,15 +26,15 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100"
         },
         {
-          "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+          "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
@@ -51,11 +51,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -74,11 +74,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -118,7 +118,7 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -128,7 +128,7 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "foo"
     }
     """
@@ -139,7 +139,7 @@ Feature: MsgCreateBatch
    Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": []
     }
@@ -151,7 +151,7 @@ Feature: MsgCreateBatch
    Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {}
@@ -167,11 +167,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -187,11 +187,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -207,11 +207,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -228,11 +228,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -250,11 +250,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -273,11 +273,11 @@ Feature: MsgCreateBatch
     Given the message
     """
     {
-      "issuer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
       "issuance": [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"

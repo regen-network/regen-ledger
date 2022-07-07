@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
@@ -21,6 +22,10 @@ func TestMsgCreateClass(t *testing.T) {
 
 func (s *msgCreateClass) Before(t gocuke.TestingT) {
 	s.t = t
+
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }
 
 func (s *msgCreateClass) TheMessage(a gocuke.DocString) {
