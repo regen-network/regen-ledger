@@ -1,20 +1,14 @@
 package core
 
 import (
-	"regexp"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/regen-network/regen-ledger/types/eth"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-)
-
-// TODO: remove after we open governance changes for bridge target
-// https://github.com/regen-network/regen-ledger/issues/1119
-
-const (
-	BRIDGE_TARGET string = "polygon"
 )
 
 var _ legacytx.LegacyMsg = &MsgBridge{}
@@ -32,31 +26,48 @@ func (m MsgBridge) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridge) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.Wrap(err, "owner")
+		return sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
+	}
+
+	if m.Target == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("target cannot be empty")
+	}
+
+	if m.Target != BridgePolygon {
+		return sdkerrors.ErrInvalidRequest.Wrapf("target must be %s", BridgePolygon)
+	}
+
+	if m.Recipient == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("recipient cannot be empty")
+	}
+
+	if !eth.IsValidAddress(m.Recipient) {
+		return sdkerrors.ErrInvalidAddress.Wrap("recipient must be a valid ethereum address")
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}
 
-	for _, credit := range m.Credits {
+	for i, credit := range m.Credits {
+		creditIndex := fmt.Sprintf("credits[%d]", i)
+
+		if credit.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom cannot be empty", creditIndex)
+		}
+
 		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
-			return err
+			return sdkerrors.Wrapf(err, "%s", creditIndex)
+		}
+
+		if credit.Amount == "" {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: amount cannot be empty", creditIndex)
 		}
 
 		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
-			return err
+			return sdkerrors.Wrapf(err, "%s: amount", creditIndex)
 		}
-	}
-
-	if m.Target != BRIDGE_TARGET {
-		return sdkerrors.ErrInvalidRequest.Wrapf("expected %s got %s", BRIDGE_TARGET, m.Target)
-	}
-
-	if !isValidEthereumAddress(m.Recipient) {
-		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", m.Recipient)
 	}
 
 	return nil
@@ -66,9 +77,4 @@ func (m *MsgBridge) ValidateBasic() error {
 func (m *MsgBridge) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}
-}
-
-func isValidEthereumAddress(address string) bool {
-	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
-	return re.MatchString(address)
 }
