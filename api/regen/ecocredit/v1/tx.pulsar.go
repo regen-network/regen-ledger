@@ -14935,9 +14935,9 @@ func (x *fastReflection_MsgBridgeResponse) ProtoMethods() *protoiface.Methods {
 var (
 	md_MsgBridgeReceive           protoreflect.MessageDescriptor
 	fd_MsgBridgeReceive_issuer    protoreflect.FieldDescriptor
-	fd_MsgBridgeReceive_batch     protoreflect.FieldDescriptor
-	fd_MsgBridgeReceive_project   protoreflect.FieldDescriptor
 	fd_MsgBridgeReceive_class_id  protoreflect.FieldDescriptor
+	fd_MsgBridgeReceive_project   protoreflect.FieldDescriptor
+	fd_MsgBridgeReceive_batch     protoreflect.FieldDescriptor
 	fd_MsgBridgeReceive_origin_tx protoreflect.FieldDescriptor
 )
 
@@ -14945,9 +14945,9 @@ func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
 	md_MsgBridgeReceive = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgBridgeReceive")
 	fd_MsgBridgeReceive_issuer = md_MsgBridgeReceive.Fields().ByName("issuer")
-	fd_MsgBridgeReceive_batch = md_MsgBridgeReceive.Fields().ByName("batch")
-	fd_MsgBridgeReceive_project = md_MsgBridgeReceive.Fields().ByName("project")
 	fd_MsgBridgeReceive_class_id = md_MsgBridgeReceive.Fields().ByName("class_id")
+	fd_MsgBridgeReceive_project = md_MsgBridgeReceive.Fields().ByName("project")
+	fd_MsgBridgeReceive_batch = md_MsgBridgeReceive.Fields().ByName("batch")
 	fd_MsgBridgeReceive_origin_tx = md_MsgBridgeReceive.Fields().ByName("origin_tx")
 }
 
@@ -15022,9 +15022,9 @@ func (x *fastReflection_MsgBridgeReceive) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if x.Batch != nil {
-		value := protoreflect.ValueOfMessage(x.Batch.ProtoReflect())
-		if !f(fd_MsgBridgeReceive_batch, value) {
+	if x.ClassId != "" {
+		value := protoreflect.ValueOfString(x.ClassId)
+		if !f(fd_MsgBridgeReceive_class_id, value) {
 			return
 		}
 	}
@@ -15034,9 +15034,9 @@ func (x *fastReflection_MsgBridgeReceive) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if x.ClassId != "" {
-		value := protoreflect.ValueOfString(x.ClassId)
-		if !f(fd_MsgBridgeReceive_class_id, value) {
+	if x.Batch != nil {
+		value := protoreflect.ValueOfMessage(x.Batch.ProtoReflect())
+		if !f(fd_MsgBridgeReceive_batch, value) {
 			return
 		}
 	}
@@ -15063,12 +15063,12 @@ func (x *fastReflection_MsgBridgeReceive) Has(fd protoreflect.FieldDescriptor) b
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.MsgBridgeReceive.issuer":
 		return x.Issuer != ""
-	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
-		return x.Batch != nil
-	case "regen.ecocredit.v1.MsgBridgeReceive.project":
-		return x.Project != nil
 	case "regen.ecocredit.v1.MsgBridgeReceive.class_id":
 		return x.ClassId != ""
+	case "regen.ecocredit.v1.MsgBridgeReceive.project":
+		return x.Project != nil
+	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
+		return x.Batch != nil
 	case "regen.ecocredit.v1.MsgBridgeReceive.origin_tx":
 		return x.OriginTx != nil
 	default:
@@ -15089,12 +15089,12 @@ func (x *fastReflection_MsgBridgeReceive) Clear(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.MsgBridgeReceive.issuer":
 		x.Issuer = ""
-	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
-		x.Batch = nil
-	case "regen.ecocredit.v1.MsgBridgeReceive.project":
-		x.Project = nil
 	case "regen.ecocredit.v1.MsgBridgeReceive.class_id":
 		x.ClassId = ""
+	case "regen.ecocredit.v1.MsgBridgeReceive.project":
+		x.Project = nil
+	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
+		x.Batch = nil
 	case "regen.ecocredit.v1.MsgBridgeReceive.origin_tx":
 		x.OriginTx = nil
 	default:
@@ -15116,15 +15116,15 @@ func (x *fastReflection_MsgBridgeReceive) Get(descriptor protoreflect.FieldDescr
 	case "regen.ecocredit.v1.MsgBridgeReceive.issuer":
 		value := x.Issuer
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
-		value := x.Batch
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.ecocredit.v1.MsgBridgeReceive.project":
-		value := x.Project
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "regen.ecocredit.v1.MsgBridgeReceive.class_id":
 		value := x.ClassId
 		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.MsgBridgeReceive.project":
+		value := x.Project
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
+		value := x.Batch
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "regen.ecocredit.v1.MsgBridgeReceive.origin_tx":
 		value := x.OriginTx
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
@@ -15150,12 +15150,12 @@ func (x *fastReflection_MsgBridgeReceive) Set(fd protoreflect.FieldDescriptor, v
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.MsgBridgeReceive.issuer":
 		x.Issuer = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
-		x.Batch = value.Message().Interface().(*MsgBridgeReceive_Batch)
-	case "regen.ecocredit.v1.MsgBridgeReceive.project":
-		x.Project = value.Message().Interface().(*MsgBridgeReceive_Project)
 	case "regen.ecocredit.v1.MsgBridgeReceive.class_id":
 		x.ClassId = value.Interface().(string)
+	case "regen.ecocredit.v1.MsgBridgeReceive.project":
+		x.Project = value.Message().Interface().(*MsgBridgeReceive_Project)
+	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
+		x.Batch = value.Message().Interface().(*MsgBridgeReceive_Batch)
 	case "regen.ecocredit.v1.MsgBridgeReceive.origin_tx":
 		x.OriginTx = value.Message().Interface().(*OriginTx)
 	default:
@@ -15178,16 +15178,16 @@ func (x *fastReflection_MsgBridgeReceive) Set(fd protoreflect.FieldDescriptor, v
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgBridgeReceive) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
-		if x.Batch == nil {
-			x.Batch = new(MsgBridgeReceive_Batch)
-		}
-		return protoreflect.ValueOfMessage(x.Batch.ProtoReflect())
 	case "regen.ecocredit.v1.MsgBridgeReceive.project":
 		if x.Project == nil {
 			x.Project = new(MsgBridgeReceive_Project)
 		}
 		return protoreflect.ValueOfMessage(x.Project.ProtoReflect())
+	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
+		if x.Batch == nil {
+			x.Batch = new(MsgBridgeReceive_Batch)
+		}
+		return protoreflect.ValueOfMessage(x.Batch.ProtoReflect())
 	case "regen.ecocredit.v1.MsgBridgeReceive.origin_tx":
 		if x.OriginTx == nil {
 			x.OriginTx = new(OriginTx)
@@ -15212,14 +15212,14 @@ func (x *fastReflection_MsgBridgeReceive) NewField(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.MsgBridgeReceive.issuer":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
-		m := new(MsgBridgeReceive_Batch)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "regen.ecocredit.v1.MsgBridgeReceive.class_id":
+		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgBridgeReceive.project":
 		m := new(MsgBridgeReceive_Project)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.ecocredit.v1.MsgBridgeReceive.class_id":
-		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.MsgBridgeReceive.batch":
+		m := new(MsgBridgeReceive_Batch)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "regen.ecocredit.v1.MsgBridgeReceive.origin_tx":
 		m := new(OriginTx)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
@@ -15296,16 +15296,16 @@ func (x *fastReflection_MsgBridgeReceive) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.Batch != nil {
-			l = options.Size(x.Batch)
+		l = len(x.ClassId)
+		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.Project != nil {
 			l = options.Size(x.Project)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.ClassId)
-		if l > 0 {
+		if x.Batch != nil {
+			l = options.Size(x.Batch)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.OriginTx != nil {
@@ -15355,10 +15355,17 @@ func (x *fastReflection_MsgBridgeReceive) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x2a
 		}
-		if len(x.ClassId) > 0 {
-			i -= len(x.ClassId)
-			copy(dAtA[i:], x.ClassId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassId)))
+		if x.Batch != nil {
+			encoded, err := options.Marshal(x.Batch)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0x22
 		}
@@ -15376,17 +15383,10 @@ func (x *fastReflection_MsgBridgeReceive) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if x.Batch != nil {
-			encoded, err := options.Marshal(x.Batch)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+		if len(x.ClassId) > 0 {
+			i -= len(x.ClassId)
+			copy(dAtA[i:], x.ClassId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassId)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -15480,9 +15480,9 @@ func (x *fastReflection_MsgBridgeReceive) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Batch", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 				}
-				var msglen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -15492,27 +15492,23 @@ func (x *fastReflection_MsgBridgeReceive) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					msglen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if msglen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + msglen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.Batch == nil {
-					x.Batch = &MsgBridgeReceive_Batch{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Batch); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
+				x.ClassId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -15552,9 +15548,9 @@ func (x *fastReflection_MsgBridgeReceive) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Batch", wireType)
 				}
-				var stringLen uint64
+				var msglen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -15564,23 +15560,27 @@ func (x *fastReflection_MsgBridgeReceive) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					msglen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if msglen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + msglen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ClassId = string(dAtA[iNdEx:postIndex])
+				if x.Batch == nil {
+					x.Batch = &MsgBridgeReceive_Batch{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Batch); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
 				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
@@ -18757,13 +18757,13 @@ type MsgBridgeReceive struct {
 
 	// issuer is the account address of the service bridging the credits.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// batch defines the credit batch information for the bridged credits.
-	Batch *MsgBridgeReceive_Batch `protobuf:"bytes,2,opt,name=batch,proto3" json:"batch,omitempty"`
-	// project defines the project information for the bridged credits.
-	Project *MsgBridgeReceive_Project `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
 	// class_id is the unique identifier of the credit class within which the
 	// project and credit batch already exist or will be created.
-	ClassId string `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// project defines the project information for the bridged credits.
+	Project *MsgBridgeReceive_Project `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	// batch defines the credit batch information for the bridged credits.
+	Batch *MsgBridgeReceive_Batch `protobuf:"bytes,4,opt,name=batch,proto3" json:"batch,omitempty"`
 	// origin_tx is a reference to a transaction which caused the transfer from
 	// another chain or registry.
 	OriginTx *OriginTx `protobuf:"bytes,5,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
@@ -18796,11 +18796,11 @@ func (x *MsgBridgeReceive) GetIssuer() string {
 	return ""
 }
 
-func (x *MsgBridgeReceive) GetBatch() *MsgBridgeReceive_Batch {
+func (x *MsgBridgeReceive) GetClassId() string {
 	if x != nil {
-		return x.Batch
+		return x.ClassId
 	}
-	return nil
+	return ""
 }
 
 func (x *MsgBridgeReceive) GetProject() *MsgBridgeReceive_Project {
@@ -18810,11 +18810,11 @@ func (x *MsgBridgeReceive) GetProject() *MsgBridgeReceive_Project {
 	return nil
 }
 
-func (x *MsgBridgeReceive) GetClassId() string {
+func (x *MsgBridgeReceive) GetBatch() *MsgBridgeReceive_Batch {
 	if x != nil {
-		return x.ClassId
+		return x.Batch
 	}
-	return ""
+	return nil
 }
 
 func (x *MsgBridgeReceive) GetOriginTx() *OriginTx {
@@ -19272,17 +19272,17 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xd2, 0x04,
 	0x0a, 0x10, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69,
 	0x76, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x40, 0x0a, 0x05, 0x62, 0x61,
-	0x74, 0x63, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x2e,
-	0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x05, 0x62, 0x61, 0x74, 0x63, 0x68, 0x12, 0x46, 0x0a, 0x07,
-	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65,
-	0x69, 0x76, 0x65, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x07, 0x70, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64,
-	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12,
+	0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c,
+	0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c,
+	0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42,
+	0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x2e, 0x50, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x52, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x40, 0x0a,
+	0x05, 0x62, 0x61, 0x74, 0x63, 0x68, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
+	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69,
+	0x76, 0x65, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x05, 0x62, 0x61, 0x74, 0x63, 0x68, 0x12,
 	0x39, 0x0a, 0x09, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x5f, 0x74, 0x78, 0x18, 0x05, 0x20, 0x01,
 	0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
 	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78,
@@ -19488,8 +19488,8 @@ var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
 	37, // 8: regen.ecocredit.v1.MsgRetire.credits:type_name -> regen.ecocredit.v1.Credits
 	37, // 9: regen.ecocredit.v1.MsgCancel.credits:type_name -> regen.ecocredit.v1.Credits
 	37, // 10: regen.ecocredit.v1.MsgBridge.credits:type_name -> regen.ecocredit.v1.Credits
-	31, // 11: regen.ecocredit.v1.MsgBridgeReceive.batch:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Batch
-	32, // 12: regen.ecocredit.v1.MsgBridgeReceive.project:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Project
+	32, // 11: regen.ecocredit.v1.MsgBridgeReceive.project:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Project
+	31, // 12: regen.ecocredit.v1.MsgBridgeReceive.batch:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Batch
 	36, // 13: regen.ecocredit.v1.MsgBridgeReceive.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
 	35, // 14: regen.ecocredit.v1.MsgBridgeReceive.Batch.start_date:type_name -> google.protobuf.Timestamp
 	35, // 15: regen.ecocredit.v1.MsgBridgeReceive.Batch.end_date:type_name -> google.protobuf.Timestamp
