@@ -116,10 +116,10 @@ Feature: MsgCreateClass
       "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "issuers": [
         "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-      ],
-      "metadata": "[mock-string-257]"
+      ]
     }
     """
+    And metadata with length "257"
     When the message is validated
     Then expect the error "metadata: max length 256: limit exceeded"
 

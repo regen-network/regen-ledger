@@ -98,7 +98,7 @@ Feature: MsgBridgeReceive
       "class_id": "C01"
     }
     """
-    And a project reference id of length "33"
+    And a project reference id with length "33"
     When the message is validated
     Then expect the error "project reference id: max length 32: limit exceeded"
 
@@ -158,7 +158,7 @@ Feature: MsgBridgeReceive
       }
     }
     """
-    And project metadata of length "257"
+    And project metadata with length "257"
     When the message is validated
     Then expect the error "project metadata: max length 256: limit exceeded"
 
@@ -357,7 +357,7 @@ Feature: MsgBridgeReceive
       }
     }
     """
-    And batch metadata of length "257"
+    And batch metadata with length "257"
     When the message is validated
     Then expect the error "batch metadata: max length 256: limit exceeded"
 

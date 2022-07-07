@@ -176,10 +176,10 @@ Feature: MsgCreateBatch
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
-      ],
-      "metadata": "[mock-string-257]"
+      ]
     }
     """
+    And metadata with length "257"
     When the message is validated
     Then expect the error "metadata: max length 256: limit exceeded"
 

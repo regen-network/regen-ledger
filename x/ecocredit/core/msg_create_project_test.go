@@ -1,13 +1,15 @@
 package core
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgCreateProject struct {
@@ -34,9 +36,21 @@ func (s *msgCreateProject) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgCreateProject) TheMessageIsValidated() {
-	s.checkAndSetMockValues()
+func (s *msgCreateProject) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
 
+	s.msg.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *msgCreateProject) AReferenceIdWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.ReferenceId = strings.Repeat("x", int(length))
+}
+
+func (s *msgCreateProject) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
@@ -46,13 +60,4 @@ func (s *msgCreateProject) ExpectTheError(a string) {
 
 func (s *msgCreateProject) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgCreateProject) checkAndSetMockValues() {
-	if strings.Contains(s.msg.Metadata, "[mock-string-257]") {
-		s.msg.Metadata = strings.Repeat("x", 257)
-	}
-	if strings.Contains(s.msg.ReferenceId, "[mock-string-33]") {
-		s.msg.ReferenceId = strings.Repeat("x", 33)
-	}
 }

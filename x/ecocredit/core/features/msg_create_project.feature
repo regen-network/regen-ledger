@@ -84,10 +84,10 @@ Feature: MsgCreateProject
     """
     {
       "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "class_id": "C01",
-      "metadata": "[mock-string-257]"
+      "class_id": "C01"
     }
     """
+    And metadata with length "257"
     When the message is validated
     Then expect the error "metadata: max length 256: limit exceeded"
 
@@ -123,9 +123,9 @@ Feature: MsgCreateProject
       "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "class_id": "C01",
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-      "jurisdiction": "US-WA",
-      "reference_id": "[mock-string-33]"
+      "jurisdiction": "US-WA"
     }
     """
+    And a reference id with length "33"
     When the message is validated
     Then expect the error "reference id: max length 32: limit exceeded"

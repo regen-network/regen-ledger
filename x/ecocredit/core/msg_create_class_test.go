@@ -1,13 +1,15 @@
 package core
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgCreateClass struct {
@@ -34,9 +36,14 @@ func (s *msgCreateClass) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgCreateClass) TheMessageIsValidated() {
-	s.checkAndSetMockValues()
+func (s *msgCreateClass) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
 
+	s.msg.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *msgCreateClass) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
@@ -46,10 +53,4 @@ func (s *msgCreateClass) ExpectTheError(a string) {
 
 func (s *msgCreateClass) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgCreateClass) checkAndSetMockValues() {
-	if strings.Contains(s.msg.Metadata, "[mock-string-257]") {
-		s.msg.Metadata = strings.Repeat("x", 257)
-	}
 }
