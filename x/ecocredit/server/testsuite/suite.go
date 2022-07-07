@@ -533,7 +533,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			owner:         addr4,
 			toCancel:      "101",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't cancel with a higher precision than the credit type",
@@ -576,7 +576,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			owner:         addr4,
 			toCancel:      "1",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:               "can cancel from account with positive retired balance",
@@ -653,7 +653,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "10.371",
 			jurisdiction:  "AF",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't use more precision than the credit type allows (6)",
@@ -725,7 +725,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "1",
 			jurisdiction:  "AF-BDS",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 	}
 
@@ -797,7 +797,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "10",
 			jurisdiction:  "AF",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't send more retired than is tradable",
@@ -805,7 +805,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "2000",
 			jurisdiction:  "AF",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't send to an invalid country",
@@ -876,7 +876,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "1",
 			expectErr:     true,
 			jurisdiction:  "AF",
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 	}
 

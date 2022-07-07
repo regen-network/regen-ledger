@@ -33,7 +33,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
 		if err != nil {
-			return nil, fmt.Errorf("%s: sell order with id %d: %s", updateIndex, update.SellOrderId, err)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s: sell order with id %d: %s", updateIndex, update.SellOrderId, err.Error())
 		}
 
 		sellOrderAddr := sdk.AccAddress(sellOrder.Seller)

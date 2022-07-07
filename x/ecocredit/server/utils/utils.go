@@ -2,10 +2,10 @@ package utils
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -17,7 +17,7 @@ func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, deno
 	classId := core.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassTable().GetById(ctx, classId)
 	if err != nil {
-		return nil, fmt.Errorf("could not get class with ID %s: %w", classId, err)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with ID %s: %s", classId, err.Error())
 	}
 	return store.CreditTypeTable().Get(ctx, classInfo.CreditTypeAbbrev)
 }
