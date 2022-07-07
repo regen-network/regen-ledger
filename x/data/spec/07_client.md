@@ -22,7 +22,7 @@ A user can query the `data` module using gRPC endpoints.
 
 ### AnchorByIRI
 
-The `AnchorByIRI` endpoint allows users to query anchored data by the content hash (i.e. IRI).
+The `AnchorByIRI` endpoint allows users to query a data anchor by the IRI of the data.
 
 ```bash
 regen.data.v1.Query/AnchorByIRI
