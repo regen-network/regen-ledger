@@ -187,15 +187,15 @@ Feature: Msg/CreateClass
       When alice attempts to create a credit class with issuers
       """
       [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
       ]
       """
       Then expect class issuers
       """
       [
-        "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-        "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+        "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
       ]
       """
 
