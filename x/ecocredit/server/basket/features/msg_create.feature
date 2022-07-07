@@ -134,7 +134,7 @@ Feature: Msg/Create
     Scenario: admin balance is less than allowed basket fee amount
       Given alice has a token balance "10regen"
       When alice attempts to create a basket with fee "20regen"
-      Then expect the error "insufficient balance for bank denom regen: insufficient funds"
+      Then expect the error "insufficient balance 10 for bank denom regen: insufficient funds"
 
   Rule: The basket must include a credit type that exists
 

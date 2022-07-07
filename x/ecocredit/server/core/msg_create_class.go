@@ -48,11 +48,8 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 			}
 		}
 
-		// convert fee to multiple coins for verification
-		coins := sdk.Coins{*req.Fee}
-
 		// check if fee is greater than or equal to any coin in allowedFees
-		if !coins.IsAnyGTE(allowedFees) {
+		if !req.Fee.Amount.GTE(allowedFees.AmountOf(req.Fee.Denom)) {
 			if len(allowedFees) > 1 {
 				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 					"fee must be one of %s, got %s", allowedFees, req.Fee,
@@ -74,7 +71,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		adminBalance := k.bankKeeper.GetBalance(sdkCtx, adminAddress, minimumFee.Denom)
 		if adminBalance.IsNil() || adminBalance.IsLT(minimumFee) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
-				"insufficient balance for bank denom %s", minimumFee.Denom,
+				"insufficient balance %s for bank denom %s", adminBalance.Amount, minimumFee.Denom,
 			)
 		}
 

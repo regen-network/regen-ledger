@@ -48,14 +48,14 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		fee := msg.Fee[0]
 
 		// check if provided fee is greater than or equal to any coin in allowedFees
-		if !msg.Fee.IsAnyGTE(allowedFees) {
+		if !fee.Amount.GTE(allowedFees.AmountOf(fee.Denom)) {
 			if len(allowedFees) > 1 {
 				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee must be one of %s, got %s", allowedFees, msg.Fee,
+					"fee must be one of %s, got %s", allowedFees, fee,
 				)
 			} else {
 				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee must be %s, got %s", allowedFees, msg.Fee,
+					"fee must be %s, got %s", allowedFees, fee,
 				)
 			}
 		}
@@ -70,7 +70,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, minimumFee.Denom)
 		if curatorBalance.IsNil() || curatorBalance.IsLT(minimumFee) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
-				"insufficient balance for bank denom %s", minimumFee.Denom,
+				"insufficient balance %s for bank denom %s", curatorBalance.Amount, minimumFee.Denom,
 			)
 		}
 

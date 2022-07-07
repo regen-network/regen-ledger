@@ -159,7 +159,7 @@ Feature: Msg/CreateClass
     Scenario: admin balance is less than credit class fee amount
       Given alice has a token balance "10regen"
       When alice attempts to create a credit class with fee "20regen"
-      Then expect the error "insufficient balance for bank denom regen: insufficient funds"
+      Then expect the error "insufficient balance 10 for bank denom regen: insufficient funds"
 
   Rule: The class sequence is updated
 
