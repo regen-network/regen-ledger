@@ -7,7 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -59,8 +58,6 @@ func interBlockCacheOpt() func(*baseapp.BaseApp) {
 	return baseapp.SetInterBlockCache(store.NewCommitKVStoreCacheManager())
 }
 
-var emptyWasmOpts []wasm.Option = nil
-
 func TestFullAppSimulation(t *testing.T) {
 	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
 	if skip {
@@ -73,7 +70,7 @@ func TestFullAppSimulation(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, emptyWasmOpts, fauxMerkleModeOpt)
+	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, appName, app.Name())
 
 	// run randomized simulation
@@ -113,7 +110,7 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, emptyWasmOpts, fauxMerkleModeOpt)
+	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
@@ -143,7 +140,7 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, emptyWasmOpts, fauxMerkleModeOpt)
+	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, appName, newApp.Name())
 
 	var genesisState GenesisState
@@ -201,7 +198,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, emptyWasmOpts, fauxMerkleModeOpt)
+	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, "regen", app.Name())
 
 	// Run randomized simulation
@@ -236,7 +233,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, emptyWasmOpts, fauxMerkleModeOpt)
+	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, "regen", newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{
@@ -287,7 +284,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, emptyWasmOpts, interBlockCacheOpt())
+			app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), simapp.EmptyAppOptions{}, interBlockCacheOpt())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

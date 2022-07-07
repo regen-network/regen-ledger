@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -25,7 +24,6 @@ func NewRegenAppConstructor(val network.Validator) servertypes.Application {
 		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 		app.MakeEncodingConfig(),
 		simapp.EmptyAppOptions{},
-		[]wasm.Option{},
 		baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 		baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 	)

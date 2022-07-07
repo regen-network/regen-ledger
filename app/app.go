@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
@@ -41,7 +40,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -205,16 +203,10 @@ type RegenApp struct {
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 
-	// nolint
-	wasmKeeper wasm.Keeper
-
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedIBCMockKeeper  capabilitykeeper.ScopedKeeper
-
-	// nolint
-	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	mm *module.Manager
@@ -231,16 +223,12 @@ type RegenApp struct {
 
 	// module configurator
 	configurator module.Configurator
-
-	// wasm
-	wasmCfg wasm.Config
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
 func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
 	homePath string, invCheckPeriod uint, encodingConfig simappparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
-	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
 
 	// TODO: Remove cdc legacyAmino in favor of appCodec once all modules are migrated.
@@ -402,7 +390,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
-	app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath, appOpts, wasmOpts)
+	app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath, appOpts)
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
@@ -555,7 +543,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	anteHandler, err := app.setCustomAnteHandler(encodingConfig, keys[wasm.StoreKey], &app.wasmCfg)
+	anteHandler, err := app.setCustomAnteHandler(encodingConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -697,7 +685,6 @@ func (app *RegenApp) SimulationManager() *module.SimulationManager {
 func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
-	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 	// Register new tendermint queries routes from grpc-gateway.

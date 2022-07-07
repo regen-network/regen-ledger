@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -204,7 +202,7 @@ func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Ke
 	return nil
 }
 
-func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey, _ *wasm.Config) (sdk.AnteHandler, error) {
+func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig) (sdk.AnteHandler, error) {
 	return ante.NewAnteHandler(
 		ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
@@ -221,8 +219,7 @@ func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 }
 
 func (app *RegenApp) setCustomKeepers(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string,
-	_ servertypes.AppOptions,
-	_ []wasm.Option) {
+	_ servertypes.AppOptions) {
 }
 
 func setCustomOrderInitGenesis() []string {

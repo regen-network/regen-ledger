@@ -25,9 +25,6 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
-
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/core"
@@ -39,60 +36,25 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
 		gov.NewAppModuleBasic(
 			append(
-				wasmclient.ProposalHandlers,
 				paramsclient.ProposalHandler, distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 				core.CreditTypeProposalHandler, marketplace.AllowDenomProposalHandler,
 			)...,
 		),
-		wasm.AppModuleBasic{},
 		group.Module{},
 	}
 }
 
 func setCustomKVStoreKeys() []string {
-	return []string{wasm.StoreKey}
+	return []string{}
 }
 
 func setCustomMaccPerms() map[string][]string {
-	return map[string][]string{
-		wasm.ModuleName: {authtypes.Burner},
-	}
+	return map[string][]string{}
 }
 
 func (app *RegenApp) setCustomKeepers(bApp *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec,
-	govRouter govtypes.Router, homePath string, appOpts servertypes.AppOptions,
-	wasmOpts []wasm.Option) {
-	wasmDir := filepath.Join(homePath, "wasm")
-	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
-	if err != nil {
-		panic(fmt.Sprintf("error while reading wasm config: %s", err))
-	}
-
-	app.wasmCfg = wasmConfig
-
-	// The last arguments can contain custom message handlers, and custom query handlers,
-	// if we want to allow any custom callbacks
-	supportedFeatures := "iterator,staking,stargate"
-	app.wasmKeeper = wasm.NewKeeper(
-		appCodec,
-		keys[wasm.StoreKey],
-		app.GetSubspace(wasm.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.StakingKeeper,
-		app.DistrKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.scopedWasmKeeper,
-		app.TransferKeeper,
-		app.MsgServiceRouter(),
-		app.GRPCQueryRouter(),
-		wasmDir,
-		wasmConfig,
-		supportedFeatures,
-		wasmOpts...,
-	)
+	govRouter govtypes.Router, homePath string, appOpts servertypes.AppOptions) {
 }
 
 // setCustomModules registers new modules with the server module manager.
@@ -121,47 +83,23 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 func (app *RegenApp) registerUpgradeHandlers() {}
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
-	return []module.AppModule{
-		wasm.NewAppModule(app.appCodec, &app.wasmKeeper, app.StakingKeeper),
-	}
+	return []module.AppModule{}
 }
 
 func setCustomOrderInitGenesis() []string {
-	return []string{
-		// wasm after ibc transfer
-		wasm.ModuleName,
-	}
+	return []string{}
 }
 
 func setCustomOrderBeginBlocker() []string {
-	return []string{
-		wasm.ModuleName,
-	}
+	return []string{}
 }
 
 func setCustomOrderEndBlocker() []string {
-	return []string{
-		wasm.ModuleName,
-	}
+	return []string{}
 }
 
-func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig,
-	wasmKey *sdk.KVStoreKey, wasmCfg *wasm.Config) (sdk.AnteHandler, error) {
-	return NewAnteHandler(
-		HandlerOptions{
-			HandlerOptions: ante.HandlerOptions{
-				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
-				FeegrantKeeper:  app.FeeGrantKeeper,
-				SignModeHandler: encCfg.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-			},
-			IBCChannelKeeper:  app.IBCKeeper.ChannelKeeper,
-			WasmConfig:        wasmCfg,
-			TXCounterStoreKey: wasmKey,
-		},
-	)
-
+func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig) (sdk.AnteHandler, error) {
+	return nil
 }
 
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
@@ -175,9 +113,7 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 }
 
 func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {
-	paramsKeeper.Subspace(wasm.ModuleName)
 }
 
 func (app *RegenApp) initializeCustomScopedKeepers() {
-	app.scopedWasmKeeper = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 }

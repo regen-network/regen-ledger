@@ -7,13 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -169,7 +166,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
-	wasm.AddModuleInitFlags(startCmd)
 }
 
 func queryCommand() *cobra.Command {
@@ -248,18 +244,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 		panic(err)
 	}
 
-	var wasmOpts []wasm.Option
-	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
-		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
-	}
-
 	return app.NewRegenApp(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		app.MakeEncodingConfig(), // Ideally, we would reuse the one created by NewRootCmd.
 		appOpts,
-		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
@@ -289,15 +279,14 @@ func createRegenappAndExport(
 		return servertypes.ExportedApp{}, errors.New("application home is not set")
 	}
 
-	var emptyWasmOpts []wasm.Option
 	if height != -1 {
-		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts, emptyWasmOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts)
 
 		if err := regenApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts, emptyWasmOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts)
 	}
 
 	return regenApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
