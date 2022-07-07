@@ -296,13 +296,13 @@ Example JSON:
 	return txFlags(cmd)
 }
 
-// TxSendCmd returns a transaction command that sends credits from one account
+// TxSendCmd returns a transaction command that sends credits from a single batch from one account
 // to another.
 func TxSendCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "send [amount] [batch_denom] [recipient]",
-		Short: "Sends credits from the transaction author (--from) to the recipient",
-		Long: `Sends credits from the transaction author (--from) to the recipient.
+		Short: "Sends credits from a single batch from the transaction author (--from) to the recipient",
+		Long: `Sends credits from a single batch from the transaction author (--from) to the recipient.
 
 Parameters:
   amount: amount to send
@@ -343,13 +343,13 @@ Parameters:
 	return txFlags(cmd)
 }
 
-// TxSendBulkCmd returns a transaction command that sends credits from one account
-// to another.
+// TxSendBulkCmd returns a transaction command that can send credits from multiple batches from one account
+// to another
 func TxSendBulkCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "send-bulk [recipient] [credits]",
-		Short: "Sends credits from the transaction author (--from) to the recipient",
-		Long: `Sends credits from the transaction author (--from) to the recipient.
+		Short: "Sends credits from multiple batches from the transaction author (--from) to the recipient",
+		Long: `Sends credits from multiple batches from the transaction author (--from) to the recipient.
 
 Parameters:
   recipient: recipient address
