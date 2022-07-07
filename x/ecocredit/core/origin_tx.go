@@ -4,6 +4,8 @@ import (
 	"regexp"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/regen-network/regen-ledger/types/eth"
 )
 
 var reOriginTxId = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,127}$`)
@@ -18,7 +20,7 @@ func (o *OriginTx) Validate() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.source must be at most 32 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 
-	if len(o.Contract) > 0 && !isValidEthereumAddress(o.Contract) {
+	if len(o.Contract) > 0 && !eth.IsValidAddress(o.Contract) {
 		return sdkerrors.ErrInvalidAddress.Wrapf("origin_tx.contract must be a valid ethereum address")
 	}
 

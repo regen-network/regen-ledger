@@ -44,12 +44,14 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}
 		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, batchSupply.TradableAmount, userBalance.TradableAmount, batchSupply.CancelledAmount)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 		amtToCancelDec, supplyTradable, userBalTradable, cancelledDec := decs[0], decs[1], decs[2], decs[3]
 		userBalTradable, err = math.SafeSubBalance(userBalTradable, amtToCancelDec)
 		if err != nil {
-			return nil, err
+			return nil, ecocredit.ErrInsufficientCredits.Wrapf(
+				"tradable balance: %s, cancel amount %s", decs[2], amtToCancelDec,
+			)
 		}
 		supplyTradable, err = math.SafeSubBalance(supplyTradable, amtToCancelDec)
 		if err != nil {

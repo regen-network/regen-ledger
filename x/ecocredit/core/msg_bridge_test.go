@@ -3,187 +3,46 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgBridge struct {
+	t   gocuke.TestingT
+	msg *MsgBridge
+	err error
+}
+
 func TestMsgBridge(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgBridge{}).Path("./features/msg_bridge.feature").Run()
+}
 
-	addr1 := testutil.GenAddress()
-	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
-	contract := "0x06012c8cf97bead5deae237070f9587f8e7a266d"
+func (s *msgBridge) Before(t gocuke.TestingT) {
+	s.t = t
 
-	tests := map[string]struct {
-		src    MsgBridge
-		expErr bool
-	}{
-		"valid msg": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:    "polygon",
-				Contract:  contract,
-				Recipient: recipient,
-			},
-			expErr: false,
-		},
-		"invalid msg without owner": {
-			src: MsgBridge{
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:    "polygon",
-				Recipient: recipient,
-				Contract:  contract,
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong owner address": {
-			src: MsgBridge{
-				Owner: "wrong owner",
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without credits": {
-			src: MsgBridge{
-				Owner: addr1,
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.BatchDenom": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						Amount: "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.Amount": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong Credits.Amount": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "abc",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without bridge target": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Contract:  contract,
-				Recipient: recipient,
-			},
-			expErr: true,
-		},
-		"invalid msg without bridge contract": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:    "polygon",
-				Recipient: recipient,
-			},
-			expErr: true,
-		},
-		"invalid msg without bridge recipient address": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:   "polygon",
-				Contract: contract,
-			},
-			expErr: true,
-		},
-		"invalid bridge recipient address": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:    "polygon",
-				Recipient: addr1,
-				Contract:  contract,
-			},
-			expErr: true,
-		},
-		"invalid bridge target": {
-			src: MsgBridge{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Target:    "polygon1",
-				Recipient: recipient,
-				Contract:  contract,
-			},
-			expErr: true,
-		},
-	}
+	// TODO: move to base suite setup #1243
+	// set custom regen prefix
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgBridge) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgBridge{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgBridge) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgBridge) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgBridge) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

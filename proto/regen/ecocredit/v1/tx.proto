@@ -478,15 +478,15 @@ message MsgBridgeReceive {
   // issuer is the account address of the service bridging the credits.
   string issuer = 1;
 
-  // batch defines the credit batch information for the bridged credits.
-  Batch batch = 2;
+  // class_id is the unique identifier of the credit class within which the
+  // project and credit batch already exist or will be created.
+  string class_id = 2;
 
   // project defines the project information for the bridged credits.
   Project project = 3;
 
-  // class_id is the unique identifier of the credit class within which the
-  // project and credit batch already exist or will be created.
-  string class_id = 4;
+  // batch defines the credit batch information for the bridged credits.
+  Batch batch = 4;
 
   // origin_tx is a reference to a transaction which caused the transfer from
   // another chain or registry.
