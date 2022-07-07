@@ -66,7 +66,7 @@ Feature: Msg/CreateClass
       When alice attempts to create a credit class
       Then expect no error
 
-    # No failing scenario - credit class fee is not required if minimum credit class fee is not set
+    # no failing scenario - credit class fee is not required if minimum credit class fee is not set
 
   Rule: The credit class fee must match a credit class fee denom
 

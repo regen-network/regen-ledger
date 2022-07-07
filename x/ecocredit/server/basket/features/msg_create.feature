@@ -41,7 +41,7 @@ Feature: Msg/Create
       When alice attempts to create a basket with no fee
       Then expect no error
 
-    # No failing scenario - basket fee is not required if basket fee is not set
+    # no failing scenario - basket fee is not required if allowed basket fee is not set
 
   Rule: The basket fee must match an allowed basket fee denom
 
