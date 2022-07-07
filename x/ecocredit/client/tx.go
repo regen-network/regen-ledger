@@ -29,6 +29,7 @@ const (
 	FlagRemoveIssuers string = "remove-issuers"
 	FlagReferenceId   string = "reference-id"
 	FlagIssuer        string = "issuer"
+	FlagRetireTo      string = "retire-to"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -298,7 +299,6 @@ Example JSON:
 // TxSendCmd returns a transaction command that sends credits from one account
 // to another.
 func TxSendCmd() *cobra.Command {
-	var retireTo string = ""
 	cmd := &cobra.Command{
 		Use:   "send [amount] [batch_denom] [recipient]",
 		Short: "Sends credits from the transaction author (--from) to the recipient",
@@ -308,9 +308,14 @@ Parameters:
   amount: amount to send
   batch_denom: batch denomination
   recipient: recipient address`,
-		Args: cobra.ExactArgs(3),
+		Example: "regen tx ecocredit send 20 regen18xvpj53vaupyfejpws5sktv5lnas5xj2phm3cf C01-001-20200403-20210405-001 --from myKey",
+		Args:    cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			retireTo, err := cmd.Flags().GetString(FlagRetireTo)
 			if err != nil {
 				return err
 			}
@@ -334,7 +339,7 @@ Parameters:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	cmd.Flags().StringVar(&retireTo, "retire-to", "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
+	cmd.Flags().String(FlagRetireTo, "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
 	return txFlags(cmd)
 }
 
