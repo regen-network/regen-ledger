@@ -109,7 +109,10 @@ regen.data.v1.Query/AttestationsByAttestor
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"attestor": "regen1k82wewrfkhdmegw6uxrgwwzrsd7593t8tej2d5"}' 127.0.0.1:9090 regen.data.v1.Query/AttestationsByAttestor
+grpcurl -plaintext \
+    -d '{"attestor": "regen1k82wewrfkhdmegw6uxrgwwzrsd7593t8tej2d5"}' \
+    127.0.0.1:9090 \
+    regen.data.v1.Query/AttestationsByAttestor
 ```
 
 Example Output:
