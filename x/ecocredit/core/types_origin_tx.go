@@ -12,8 +12,16 @@ var reOriginTxId = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,127}$`)
 var reOriginTxSource = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,31}$`)
 
 func (o *OriginTx) Validate() error {
+	if o.Id == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.id cannot be empty")
+	}
+
 	if !reOriginTxId.MatchString(o.Id) {
 		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.id must be at most 128 characters long, valid characters: alpha-numberic, space, '-' or '_'")
+	}
+
+	if o.Source == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.source cannot be empty")
 	}
 
 	if !reOriginTxSource.MatchString(o.Source) {

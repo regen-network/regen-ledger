@@ -22,57 +22,15 @@ If a user tries to create a credit class and their address is NOT on the list of
 - WHEN - user tries to create a credit class
 - THEN - transaction is successful, credit class is created
 
-If a user tries to create a credit class and the user provides a valid credit type (credit type is included in the list of approved credit types), then the transaction is successful and the credit class is created.
+If a user tries to create a credit class and the user provides a credit type that exists, then the transaction is successful and the credit class is created.
 
 - GIVEN - user provides a valid credit type
 - WHEN - user tries to create a credit class
 - THEN - transaction is successful, credit class is created
 
-If a user tries to create a credit class and the user provide an invalid credit type (credit type is NOT included in the list of approved credit types), then the transaction fails and the credit class is NOT created.
+If a user tries to create a credit class and the user provide a credit type that does not exist, then the transaction fails and the credit class is NOT created.
 
 - GIVEN - user provides an invalid credit type
-- WHEN - user tries to create a credit class
-- THEN - transaction fails, credit class is NOT created
-
-If a user tries to create a credit class and the user provides metadata that is base64 encoded, then the transaction is successful and the credit class is created.
-
-- GIVEN - user provides metadata that is base64 encoded
-- WHEN - user tries to create a credit class
-- THEN - transaction is successful, credit class is created
-
-If a user tries to create a credit class and the user provides metadata that is NOT base64 encoded, then the transaction fails and the credit class is NOT created.
-
-- GIVEN - user provides metadata that is NOT base64 encoded
-- WHEN - user tries to create a credit class
-- THEN - transaction fails, credit class is NOT created
-
-If a user tries to create a credit class and the user provides metadata that is less than 256 bytes, then the transaction is successful and the credit class is created.
-
-- GIVEN - user provides metadata that is less than 256 bytes
-- WHEN - user tries to create a credit class
-- THEN - transaction is successful, credit class is created
-
-If a user tries to create a credit class and the user provides metadata that is equal to 256 bytes, then the transaction is successful and the credit class is created.
-
-- GIVEN - user provides metadata that is equal to 256 bytes
-- WHEN - user tries to create a credit class
-- THEN - transaction is successful, credit class is created
-
-If a user tries to create a credit class and the user provides metadata that is more than 256 bytes, then the transaction fails and the credit class is NOT created.
-
-- GIVEN - user provides metadata that is more than 256 bytes
-- WHEN - user tries to create a credit class
-- THEN - transaction fails, credit class is NOT created
-
-If a user tries to create a credit class and the user provides a valid issuer address, then the transaction is successful and the credit class is created.
-
-- GIVEN - user provides a valid issuer address
-- WHEN - user tries to create a credit class
-- THEN - transaction successful, credit class is created
-
-If a user tries to create a credit class and the user provides an invalid issuer address, then the transaction fails and the credit class is NOT created.
-
-- GIVEN - user provides an invalid issuer address
 - WHEN - user tries to create a credit class
 - THEN - transaction fails, credit class is NOT created
 
@@ -102,75 +60,15 @@ If a user tries to create a project and the issuer is NOT on the list of approve
 - WHEN - user tries to create a project
 - THEN - transaction fails, project is NOT created
 
-If a user tries to create a project and the credit class is a valid credit class, then the transaction is successful and the project is created.
+If a user tries to create a project and the credit class exists, then the transaction is successful and the project is created.
 
-- GIVEN - credit class is a valid credit class
+- GIVEN - credit class exists
 - WHEN - user tries to create a project
 - THEN - transaction is successful, project is created
 
-If a user tries to create a project and the credit class is NOT a valid credit class, then the transaction fails and the project is NOT created.
+If a user tries to create a project and the credit class does NOT exist, then the transaction fails and the project is NOT created.
 
-- GIVEN - credit class is NOT a valid credit class
-- WHEN - user tries to create a project
-- THEN - transaction fails, project is NOT created
-
-If a user tries to create a project and the project location is a valid location, then the transaction is successful and the project is created.
-
-- GIVEN - project location is a valid location
-- WHEN - user tries to create a project
-- THEN - transaction is successful, project is created
-
-If a user tries to create a project and the project location is NOT a valid location, then the transaction fails and the project is NOT created.
-
-- GIVEN - project location is NOT a valid location
-- WHEN - user tries to create a project
-- THEN - transaction fails, project is NOT created
-
-If a user tries to create a project and the project id is a valid project id, then the transaction is successful and the project is created.
-
-- GIVEN - project id is a valid project id
-- WHEN - user tries to create a project
-- THEN - transaction is successful, project is created
-
-If a user tries to create a project and the project id is NOT a valid project id, then the transaction fails and the project is NOT created.
-
-- GIVEN - project id is NOT a valid project id
-- WHEN - user tries to create a project
-- THEN - transaction fails, project is NOT created
-
-If a user tries to create a project and the project id already exists, then the transaction fails and the project is NOT created.
-
-- GIVEN - project id already exists
-- WHEN - user tries to create a project
-- THEN - transaction fails, project is NOT created
-
-If a user tries to create a project and the user provides metadata that is base64 encoded, then the transaction is successful and the project is created.
-
-- GIVEN - user provides metadata that is base64 encoded
-- WHEN - user tries to create a project
-- THEN - transaction is successful, project is created
-
-If a user tries to create a project and the user provides metadata that is NOT base64 encoded, then the transaction fails and the project is NOT created.
-
-- GIVEN - user provides metadata that is NOT base64 encoded
-- WHEN - user tries to create a project
-- THEN - transaction fails, project is NOT created
-
-If a user tries to create a project and the user provides metadata that is less than 256 bytes, then the transaction is successful and the project is created.
-
-- GIVEN - user provides metadata that is less than 256 bytes
-- WHEN - user tries to create a project
-- THEN - transaction is successful, project is created
-
-If a user tries to create a project and the user provides metadata that is equal to 256 bytes, then the transaction is successful and the project is created.
-
-- GIVEN - user provides metadata that is equal to 256 bytes
-- WHEN - user tries to create a project
-- THEN - transaction is successful, project is created
-
-If a user tries to create a project and the user provides metadata that is more than 256 bytes, then the transaction fails and the project is NOT created.
-
-- GIVEN - user provides metadata that is more than 256 bytes
+- GIVEN - credit class does NOT exist
 - WHEN - user tries to create a project
 - THEN - transaction fails, project is NOT created
 
@@ -188,69 +86,15 @@ If a user tries to create a credit batch and their account address is NOT on the
 - WHEN - user tries to create a credit batch
 - THEN - transaction fails, credit batch is NOT created
 
-If a user tries to create a credit batch and the user provides a valid recipient address, then the transaction is successful and the credit batch is created.
-
-- GIVEN - user provides a valid recipient address
-- WHEN - user tries to create a credit batch
-- THEN - transaction is successful, credit batch is created
-
-If a user tries to create a credit batch and the user provides an invalid recipient address, then the transaction fails and the credit batch is NOT created.
-
-- GIVEN - user provides an invalid recipient address
-- WHEN - user tries to create a credit batch
-- THEN - transaction fails, credit batch is NOT created
-
-If a user tries to create a credit batch and the user provides metadata that is less than 256 bytes, then the transaction is successful and the credit batch is created.
-
-- GIVEN - user provides metadata that is less than 256 bytes
-- WHEN - user tries to create a credit batch
-- THEN - transaction is successful, credit batch is created
-
-If a user tries to create a credit batch and the user provides metadata that is equal to 256 bytes, then the transaction is successful and the credit batch is created.
-
-- GIVEN - user provides metadata that is equal to 256 bytes
-- WHEN - user tries to create a credit batch
-- THEN - transaction is successful, credit batch is created
-
-If a user tries to create a credit batch and the user provides metadata that is more than 256 bytes, then the transaction fails and the credit batch is NOT created.
-
-- GIVEN - user provides metadata that is more than 256 bytes
-- WHEN - user tries to create a credit batch
-- THEN - transaction fails, credit batch is NOT created
-
-If a user tries to create a credit batch and the user provides a valid project, then the transaction is successful and the credit batch is created.
+If a user tries to create a credit batch and the user provides a project that exists, then the transaction is successful and the credit batch is created.
 
 - GIVEN - user provides a valid project
 - WHEN - user tries to create a credit batch
 - THEN - transaction successful, credit batch is created
 
-If a user tries to create a credit batch and the user provides an invalid project, then the transaction fails and the credit batch is NOT created.
+If a user tries to create a credit batch and the user provides a project that does not exist, then the transaction fails and the credit batch is NOT created.
 
 - GIVEN - user provides an invalid project
-- WHEN - user tries to create a credit batch
-- THEN - transaction fails, credit batch is NOT created
-
-If a user tries to create a credit batch and the user provides a valid start and end date, then the transaction is successful and the credit batch is created.
-
-- GIVEN - user provides a valid start and end date
-- WHEN - user tries to create a credit batch
-- THEN - transaction is successful, credit batch is created
-
-If a user tries to create a credit batch and the user provides an invalid start and end date, then the transaction fails and the credit batch is NOT created.
-
-- GIVEN - user provides an invalid start and end date
-- WHEN - user tries to create a credit batch
-- THEN - transaction fails, credit batch is NOT created
-
-If a user tries to create a credit batch and the user includes retired credits with a retirement location, then the transaction is successful and the credit batch is created.
-
-- GIVEN - user includes retired credits with a retirement location
-- WHEN - user tries to create a credit batch
-- THEN - transaction is successful, credit batch is created
-
-If a user tries to create a credit batch and the user includes retired credits without a retirement location, then the transaction fails and the credit batch is NOT created.
-
-- GIVEN - user includes retired credits without a retirement location
 - WHEN - user tries to create a credit batch
 - THEN - transaction fails, credit batch is NOT created
 
