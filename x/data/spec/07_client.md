@@ -111,7 +111,7 @@ Example:
 ```bash
 grpcurl -plaintext \
     -d '{"attestor": "regen1k82wewrfkhdmegw6uxrgwwzrsd7593t8tej2d5"}' \
-    127.0.0.1:9090 \
+    localhost:9090 \
     regen.data.v1.Query/AttestationsByAttestor
 ```
 
@@ -140,7 +140,10 @@ regen.data.v1.Query/AttestationsByIRI
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' 127.0.0.1:9090 regen.data.v1.Query/AttestationsByIRI
+grpcurl -plaintext \ 
+    -d '{"iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
+    localhost:9090 \
+    regen.data.v1.Query/AttestationsByIRI
 ```
 
 Example Output:
@@ -168,7 +171,18 @@ regen.data.v1.Query/AttestationsByHash
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"content_hash": {"graph": {"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="}}}' 127.0.0.1:9090 regen.data.v1.Query/AttestationsByHash
+grpcurl -plaintext \
+    -d '{
+        "content_hash": {
+          "graph": {
+            "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+            "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+            "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="
+          }
+        }
+    }' \
+    localhost:9090 \
+    regen.data.v1.Query/AttestationsByHash
 ```
 
 Example Output:
@@ -196,7 +210,10 @@ regen.data.v1.Query/Resolver
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"id":1}' 127.0.0.1:9090 regen.data.v1.Query/Resolver
+grpcurl -plaintext \
+    -d '{"id":1}' \
+    localhost:9090 \
+    regen.data.v1.Query/Resolver
 ```
 
 Example Output:
@@ -222,7 +239,10 @@ regen.data.v1.Query/ResolversByIRI
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' 127.0.0.1:9090 regen.data.v1.Query/ResolversByIRI
+grpcurl -plaintext \
+  -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
+  localhost:9090 \
+  regen.data.v1.Query/ResolversByIRI
 ```
 
 Example Output:
@@ -250,7 +270,18 @@ regen.data.v1.Query/ResolversByHash
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"content_hash":{"graph":{"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' 127.0.0.1:9090 regen.data.v1.Query/ResolversByHash
+grpcurl -plaintext \
+    -d '{
+      "content_hash":{
+        "graph":{
+          "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+          "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+          "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+        }
+      }
+    }' \
+    localhost:9090 \
+    regen.data.v1.Query/ResolversByHash
 ```
 
 Example Output:
@@ -278,7 +309,10 @@ regen.data.v1.Query/ResolversByURL
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"url":"http://foo.bar"}' 127.0.0.1:9090 regen.data.v1.Query/ResolversByURL
+grpcurl -plaintext \
+    -d '{"url":"http://foo.bar"}' \
+    localhost:9090 \
+    regen.data.v1.Query/ResolversByURL
 ```
 
 Example Output:
@@ -306,7 +340,10 @@ regen.data.v1.Query/ConvertIRIToHash
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' 127.0.0.1:9090 regen.data.v1.Query/ConvertIRIToHash
+grpcurl -plaintext \
+    -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
+    localhost:9090 \
+    regen.data.v1.Query/ConvertIRIToHash
 ```
 
 Example Output:
@@ -334,7 +371,18 @@ regen.data.v1.ConvertHashToIRI
 Example:
 
 ```bash
-grpcurl -plaintext -d '{"content_hash": {"graph": {"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' 127.0.0.1:9090 regen.data.v1.Query/ConvertHashToIRI
+grpcurl -plaintext \
+    -d '{
+      "content_hash": {
+        "graph": {
+          "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+          "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+          "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+        }
+      }
+    }' \
+    localhost:9090 \
+    regen.data.v1.Query/ConvertHashToIRI
 ```
 
 Example Output:
@@ -396,7 +444,10 @@ The `anchor-by-hash` allows users to query a data anchor by the ContentHash of t
 Example:
 
 ```bash
-curl -d '{"content_hash": {"graph": {"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="}}}' -H 'Content-Type: application/json' localhost:1317/regen/data/v1/anchors/hash
+curl \
+    -d '{"content_hash": {"graph": {"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="}}}' \
+    -H 'Content-Type: application/json' \
+    localhost:1317/regen/data/v1/anchors/hash
 ```
 
 Example Output:
@@ -491,7 +542,10 @@ The `attestations-by-hash` allows users to query data attestations by the Conten
 Example:
 
 ```bash
-curl -d '{"content_hash": {"graph": {"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="}}}' -H 'Content-Type: application/json' localhost:1317/regen/data/v1/attestations/hash
+curl \
+    -d '{"content_hash": {"graph": {"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="}}}' \
+    -H 'Content-Type: application/json' \
+    localhost:1317/regen/data/v1/attestations/hash
 ```
 
 Example Output:
@@ -580,7 +634,10 @@ of the data.
 Example:
 
 ```bash
-curl -d '{"content_hash":{"graph":{"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' -H 'Content-Type: application/json' localhost:1317/regen/data/v1/resolvers/hash
+curl \
+    -d '{"content_hash":{"graph":{"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' \
+    -H 'Content-Type: application/json' \
+    localhost:1317/regen/data/v1/resolvers/hash
 ```
 
 Example Output:
@@ -610,7 +667,10 @@ The `resolvers-by-url` allows users to query resolvers by URL.
 Example:
 
 ```bash
-curl -d '{"url":"http://foo.bar"}' -H 'Content-Type: application/json' localhost:1317/regen/data/v1/resolvers/url
+curl \
+    -d '{"url":"http://foo.bar"}' \
+    -H 'Content-Type: application/json' \
+    localhost:1317/regen/data/v1/resolvers/url
 ```
 
 Example Output:
@@ -639,7 +699,7 @@ The `convertIRI-to-hash` allows users to convert IRI to a ContentHash.
 Example:
 
 ```bash
-curl localhost:1317//regen/data/v1/convert-iri-to-hash/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v1/convert-iri-to-hash/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 
@@ -670,7 +730,10 @@ The `convert-hash-to-IRI` endpoint allows users to convert ContentHash to an IRI
 Example:
 
 ```bash
-curl -d '{"content_hash": {"raw": null,"graph": {"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm":"DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' -H 'Content-Type: application/json' localhost:1317/regen/data/v1/convert-hash-to-iri
+curl \
+    -d '{"content_hash": {"raw": null,"graph": {"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm":"DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' \
+    -H 'Content-Type: application/json' \
+    localhost:1317/regen/data/v1/convert-hash-to-iri
 ```
 
 Example Output:
