@@ -1,253 +1,56 @@
 package core
 
 import (
+	"strconv"
 	"strings"
 	"testing"
-	"time"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgCreateBatch struct {
+	t   gocuke.TestingT
+	msg *MsgCreateBatch
+	err error
+}
+
 func TestMsgCreateBatch(t *testing.T) {
-	t.Parallel()
-	issuer := testutil.GenAddress()
-	addr2 := testutil.GenAddress()
+	gocuke.NewRunner(t, &msgCreateBatch{}).Path("./features/msg_create_batch.feature").Run()
+}
 
-	startDate := time.Unix(10000, 10000).UTC()
-	endDate := time.Unix(10000, 10050).UTC()
+func (s *msgCreateBatch) Before(t gocuke.TestingT) {
+	s.t = t
 
-	tests := map[string]struct {
-		src    MsgCreateBatch
-		expErr bool
-	}{
-		"valid msg": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient:              addr2,
-						TradableAmount:         "1000",
-						RetiredAmount:          "50",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-				Metadata: "hello",
-			},
-			expErr: false,
-		},
-		"valid msg with minimal fields": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-			},
-			expErr: false,
-		},
-		"invalid with  wrong issuer": {
-			src: MsgCreateBatch{
-				Issuer:    "wrongIssuer",
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-			},
-			expErr: true,
-		},
-		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient:              addr2,
-						RetiredAmount:          "50",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid msg with wrong Issuance.TradableAmount": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient:      addr2,
-						TradableAmount: "abc",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"valid msg without Issuance.RetiredAmount (assumes zero by default)": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient: addr2,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid msg with wrong Issuance.RetiredAmount": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient:     addr2,
-						RetiredAmount: "abc",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong Issuance.RetirementJurisdiction": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient:              addr2,
-						RetiredAmount:          "50",
-						RetirementJurisdiction: "wrong jurisdiction",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without Issuance.RetirementJurisdiction": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient:     addr2,
-						RetiredAmount: "50",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without issuer": {
-			src: MsgCreateBatch{
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Metadata:  "hello",
-			},
-			expErr: true,
-		},
-		"invalid msg without class id": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Metadata:  "hello",
-			},
-			expErr: true,
-		},
-		"invalid msg without start date": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				EndDate:   &endDate,
-				Metadata:  "hello",
-			},
-			expErr: true,
-		},
-		"invalid msg without enddate": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				Metadata:  "hello",
-			},
-			expErr: true,
-		},
-		"invalid msg with enddate < startdate": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &endDate,
-				EndDate:   &startDate,
-				Metadata:  "hello",
-			},
-			expErr: true,
-		},
-		"invalid with wrong recipient": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						Recipient:              "wrongRecipient",
-						RetiredAmount:          "50",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without recipient address": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*BatchIssuance{
-					{
-						RetiredAmount:          "50",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid metadata maxlength is exceeded": {
-			src: MsgCreateBatch{
-				Issuer:    issuer,
-				ProjectId: "C01-001",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Metadata:  strings.Repeat("x", 288),
-			},
-			expErr: true,
-		},
-	}
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgCreateBatch) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgCreateBatch{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgCreateBatch) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *msgCreateBatch) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgCreateBatch) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgCreateBatch) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
