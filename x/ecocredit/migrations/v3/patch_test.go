@@ -312,7 +312,7 @@ func TestRedwoodMigrations(t *testing.T) {
 		Metadata:   []byte("cmVnZW46MTN0b1ZnbzVDQ21Ra1BKRHdMZWd0ZjRVMWVzVzVycnRXcHdxRTZuU2RwMWhhOVc4OFJmdWY1TS5yZGY="),
 		CreditType: &v3.CreditType{Name: "carbon", Abbreviation: "C", Precision: 6, Unit: "metric ton CO2 equivalent"},
 		Issuers:    []string{"cosmos1wjul39t07ds68xasfc4mw8yszwappktmmrhqwn", "cosmos1df675r9vnf7pdedn4sf26svdsem3ugavhyscr7"},
-		NumBatches: 9,
+		NumBatches: 38,
 	})
 	require.NoError(t, err)
 
