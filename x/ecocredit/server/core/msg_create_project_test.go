@@ -72,28 +72,6 @@ func (s *createProjectSuite) AProjectSequenceWithClassIdAndNextSequence(a, b str
 	require.NoError(s.t, err)
 }
 
-func (s *createProjectSuite) AProjectWithProjectId(a string) {
-	classId := core.GetClassIdFromProjectId(a)
-
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classId)
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       a,
-		ClassKey: class.Key,
-	})
-	require.NoError(s.t, err)
-
-	seq := s.getProjectSequence(a)
-
-	// Save because project sequence may already exist
-	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
-		ClassKey:     class.Key,
-		NextSequence: seq + 1,
-	})
-	require.NoError(s.t, err)
-}
-
 func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
 	classId := core.GetClassIdFromProjectId(a)
 
@@ -176,12 +154,6 @@ func (s *createProjectSuite) ExpectProjectSequenceWithClassIdAndNextSequence(a s
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, nextSequence, projectSequence.NextSequence)
-}
-
-func (s *createProjectSuite) ExpectProjectWithProjectId(a string) {
-	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, a)
-	require.NoError(s.t, err)
-	require.Equal(s.t, a, project.Id)
 }
 
 func (s *createProjectSuite) ExpectProjectProperties(a gocuke.DocString) {
