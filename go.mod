@@ -16,8 +16,8 @@ require (
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1
-	github.com/tendermint/tendermint v0.34.15
-	github.com/tendermint/tm-db v0.6.7
+	github.com/tendermint/tendermint v0.34.20-rc0
+	github.com/tendermint/tm-db v0.6.6
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf // indirect
 )
@@ -135,8 +135,6 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
-
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 // replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1 //TODO: uncomment once we tag SDK regen fork 
@@ -150,8 +148,6 @@ replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
 replace github.com/regen-network/regen-ledger/x/group => ./x/group
 
 replace github.com/regen-network/regen-ledger/api => ./api
-
-replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
