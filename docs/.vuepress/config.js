@@ -104,6 +104,14 @@ module.exports = {
             '/ledger/infrastructure/interfaces',
           ],
         },
+        {
+          title: 'Migration Guides',
+          collapsable: false,
+          children: [
+            '/ledger/migrations/',
+            '/ledger/migrations/v4.0-migration',
+          ],
+        },
       ],
       '/modules/': [
         {
@@ -177,12 +185,12 @@ module.exports = {
           ]
         },
         {
-          title: 'Migrations',
+          title: 'Upgrade Guides',
           collapsable: false,
           children: [
-            '/validators/migrations/upgrade',
-            '/validators/migrations/v2.0-upgrade',
-            '/validators/migrations/v3.0-upgrade',
+            '/validators/upgrades/',
+            '/validators/upgrades/v2.0-upgrade',
+            '/validators/upgrades/v3.0-upgrade',
           ],
         },
       ],
