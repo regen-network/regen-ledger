@@ -3,52 +3,45 @@ package core
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgUpdateClassIssuers struct {
+	t   gocuke.TestingT
+	msg *MsgUpdateClassIssuers
+	err error
+}
+
 func TestMsgUpdateClassIssuers(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgUpdateClassIssuers{}).Path("./features/msg_update_class_issuers.feature").Run()
+}
 
-	a1 := testutil.GenAddress()
-	a2 := testutil.GenAddress()
+func (s *msgUpdateClassIssuers) Before(t gocuke.TestingT) {
+	s.t = t
 
-	tests := map[string]struct {
-		src    MsgUpdateClassIssuers
-		expErr bool
-	}{
-		"valid": {
-			src:    MsgUpdateClassIssuers{Admin: a2, ClassId: "C01", AddIssuers: []string{a1}, RemoveIssuers: []string{a2}},
-			expErr: false,
-		},
-		"invalid: no issuers": {
-			src:    MsgUpdateClassIssuers{Admin: a2, ClassId: "C01"},
-			expErr: true,
-		},
-		"invalid: no class ID": {
-			src:    MsgUpdateClassIssuers{Admin: a2, ClassId: "", AddIssuers: []string{a1}},
-			expErr: true,
-		},
-		"invalid: bad admin address": {
-			src:    MsgUpdateClassIssuers{Admin: "//????.!", ClassId: "C01", AddIssuers: []string{a1}},
-			expErr: true,
-		},
-		"invalid: bad class ID": {
-			src:    MsgUpdateClassIssuers{Admin: a1, ClassId: "s.1%?#%", AddIssuers: []string{a1}},
-			expErr: true,
-		},
-	}
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgUpdateClassIssuers) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgUpdateClassIssuers{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgUpdateClassIssuers) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgUpdateClassIssuers) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgUpdateClassIssuers) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

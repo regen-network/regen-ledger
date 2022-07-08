@@ -19,20 +19,24 @@ func (m MsgUpdateClassAdmin) GetSignBytes() []byte {
 }
 
 func (m *MsgUpdateClassAdmin) ValidateBasic() error {
-	if m.Admin == m.NewAdmin {
-		return sdkerrors.ErrInvalidAddress.Wrap("new admin should be a different address from the signer")
-	}
-
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
-		return sdkerrors.ErrInvalidAddress
+	if m.ClassId == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
 	}
 
 	if err := ValidateClassId(m.ClassId); err != nil {
 		return err
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrapf("new admin: %s", err)
+	}
+
+	if m.Admin == m.NewAdmin {
+		return sdkerrors.ErrInvalidRequest.Wrap("admin and new admin cannot be the same")
 	}
 
 	return nil

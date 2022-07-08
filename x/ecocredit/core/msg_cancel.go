@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -23,27 +22,26 @@ func (m MsgCancel) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCancel) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.Wrap(err, "owner")
+		return sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err)
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}
 
-	for _, credit := range m.Credits {
-		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
-			return err
-		}
-
-		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
-			return err
+	for i, credits := range m.Credits {
+		if err := credits.Validate(); err != nil {
+			return sdkerrors.Wrapf(err, "credits[%d]", i)
 		}
 	}
 
 	if len(m.Reason) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("reason is required")
+		return sdkerrors.ErrInvalidRequest.Wrap("reason cannot be empty")
+	}
+
+	if len(m.Reason) > MaxNoteLength {
+		return ecocredit.ErrMaxLimit.Wrapf("reason: max length %d", MaxNoteLength)
 	}
 
 	return nil

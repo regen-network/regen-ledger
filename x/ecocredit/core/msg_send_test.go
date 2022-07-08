@@ -3,195 +3,45 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgSend struct {
+	t   gocuke.TestingT
+	msg *MsgSend
+	err error
+}
+
 func TestMsgSend(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgSend{}).Path("./features/msg_send.feature").Run()
+}
 
-	addr1 := testutil.GenAddress()
-	addr2 := testutil.GenAddress()
+func (s *msgSend) Before(t gocuke.TestingT) {
+	s.t = t
 
-	tests := map[string]struct {
-		src    MsgSend
-		expErr bool
-	}{
-		"valid msg": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:             batchDenom,
-						TradableAmount:         "10",
-						RetiredAmount:          "10",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid msg with Credits.RetiredAmount negative value": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:     "some_denom",
-						TradableAmount: "10",
-						RetiredAmount:  "-10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without credits": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-			},
-			expErr: true,
-		},
-		"invalid msg without sender": {
-			src: MsgSend{
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:             "some_denom",
-						TradableAmount:         "10",
-						RetiredAmount:          "10",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without recipient": {
-			src: MsgSend{
-				Sender: addr1,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:             "some_denom",
-						TradableAmount:         "10",
-						RetiredAmount:          "10",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.BatchDenom": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						TradableAmount:         "10",
-						RetiredAmount:          "10",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.TradableAmount set": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:             "some_denom",
-						RetiredAmount:          "10",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.RetiredAmount set": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:             "some_denom",
-						TradableAmount:         "10",
-						RetirementJurisdiction: "ST-UVW XY Z12",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.RetirementJurisdiction": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:     "some_denom",
-						TradableAmount: "10",
-						RetiredAmount:  "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"valid msg without Credits.RetirementJurisdiction(When RetiredAmount is zero)": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:     batchDenom,
-						TradableAmount: "10",
-						RetiredAmount:  "0",
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid msg with wrong sender": {
-			src: MsgSend{
-				Sender:    "wrongSender",
-				Recipient: addr2,
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:     "some_denom",
-						TradableAmount: "10",
-						RetiredAmount:  "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong recipient": {
-			src: MsgSend{
-				Sender:    addr1,
-				Recipient: "wrongRecipient",
-				Credits: []*MsgSend_SendCredits{
-					{
-						BatchDenom:     "some_denom",
-						TradableAmount: "10",
-						RetiredAmount:  "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgSend) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgSend{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgSend) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgSend) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgSend) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
