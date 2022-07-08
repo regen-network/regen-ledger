@@ -19,7 +19,7 @@ func TestOriginTxValidate(t *testing.T) {
 	}{
 		{
 			"empty id",
-			"origin_tx.id must be",
+			"origin_tx.id cannot be empty",
 			OriginTx{},
 		},
 		{
@@ -39,7 +39,7 @@ func TestOriginTxValidate(t *testing.T) {
 		},
 		{
 			"empty source",
-			"origin_tx.source must be",
+			"origin_tx.source cannot be empty",
 			OriginTx{Id: "0x12345"},
 		},
 		{

@@ -18,40 +18,61 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	var fee sdk.Coins
-	k.paramsKeeper.Get(sdkCtx, core.KeyBasketFee, &fee)
+	var allowedFees sdk.Coins
+	k.paramsKeeper.Get(sdkCtx, core.KeyBasketFee, &allowedFees)
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
 		return nil, err
 	}
 
-	// In the next version of the basket package, this field will be updated to
-	// a single Coin rather than a list of Coins. In the meantime, the message
-	// will fail basic validation if more than one Coin is provided and only the
-	// minimum fee is checked against the balance of the curator account, sent
-	// to the basket submodule, and then burned by the basket submodule.
-	if len(fee) > 0 {
+	// only check and charge fee if allowed fees is not empty
+	if len(allowedFees) > 0 {
 
-		// check if single coin in msg.Fee is greater than or equal to any coin in fee
-		if !msg.Fee.IsAnyGTE(fee) {
-			if len(fee) > 1 {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee one of %s, got %s", fee, msg.Fee)
-			} else {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
+		// check if fee is empty
+		if msg.Fee == nil {
+			if len(allowedFees) > 1 {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+					"fee cannot be empty: must be one of %s", allowedFees,
+				)
 			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee cannot be empty: must be %s", allowedFees,
+			)
 		}
 
+		// In the next version of the basket package, the fee provided will be
+		// updated to a single Coin rather than a list of Coins. In the meantime,
+		// the message will fail basic validation if more than one Coin is provided.
+		fee := msg.Fee[0]
+
+		// check if provided fee is greater than or equal to any coin in allowedFees
+		if !msg.Fee.IsAnyGTE(allowedFees) {
+			if len(allowedFees) > 1 {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+					"fee must be one of %s, got %s", allowedFees, fee,
+				)
+			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee must be %s, got %s", allowedFees, fee,
+			)
+		}
+
+		// only check and charge the minimum fee amount
 		minimumFee := sdk.Coin{
-			Denom:  msg.Fee[0].Denom,
-			Amount: fee.AmountOf(msg.Fee[0].Denom),
+			Denom:  fee.Denom,
+			Amount: allowedFees.AmountOf(fee.Denom),
 		}
 
+		// check curator balance against minimum fee
 		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, minimumFee.Denom)
 		if curatorBalance.IsNil() || curatorBalance.IsLT(minimumFee) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", minimumFee.Denom)
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
+				"insufficient balance %s for bank denom %s", curatorBalance.Amount, minimumFee.Denom,
+			)
 		}
 
+		// convert minimum fee to multiple coins for processing
 		minimumFees := sdk.Coins{minimumFee}
 
 		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, minimumFees)
