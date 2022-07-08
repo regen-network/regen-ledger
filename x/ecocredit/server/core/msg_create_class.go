@@ -29,21 +29,58 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	}
 
 	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-	var fee sdk.Coins
-	k.paramsKeeper.Get(sdkCtx, core.KeyCreditClassFee, &fee)
+	var allowedFees sdk.Coins
+	k.paramsKeeper.Get(sdkCtx, core.KeyCreditClassFee, &allowedFees)
 
-	feeAmt := fee.AmountOf(req.Fee.Denom)
-	if feeAmt.IsZero() {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in credit class fees", req.Fee.Denom)
-	}
-	if req.Fee.Amount.LT(feeAmt) {
-		return nil, sdkerrors.ErrInsufficientFee.Wrapf("expected %v%s for fee, got %v", feeAmt, req.Fee.Denom, req.Fee)
-	}
+	// only check and charge fee if allowed fees is not empty
+	if allowedFees.Len() > 0 {
 
-	// Charge the admin a fee to create the credit class
-	err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{sdk.Coin{Denom: req.Fee.Denom, Amount: feeAmt}})
-	if err != nil {
-		return nil, err
+		// check if fee is empty
+		if req.Fee == nil {
+			if len(allowedFees) > 1 {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+					"fee cannot be empty: must be one of %s", allowedFees,
+				)
+			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee cannot be empty: must be %s", allowedFees,
+			)
+		}
+
+		// convert fee to multiple coins for verification
+		coins := sdk.Coins{*req.Fee}
+
+		// check if fee is greater than or equal to any coin in allowedFees
+		if !coins.IsAnyGTE(allowedFees) {
+			if len(allowedFees) > 1 {
+				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+					"fee must be one of %s, got %s", allowedFees, req.Fee,
+				)
+			}
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee must be %s, got %s", allowedFees, req.Fee,
+			)
+		}
+
+		// only check and charge the minimum fee amount
+		minimumFee := sdk.Coin{
+			Denom:  req.Fee.Denom,
+			Amount: allowedFees.AmountOf(req.Fee.Denom),
+		}
+
+		// check admin balance against minimum fee
+		adminBalance := k.bankKeeper.GetBalance(sdkCtx, adminAddress, minimumFee.Denom)
+		if adminBalance.IsNil() || adminBalance.IsLT(minimumFee) {
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
+				"insufficient balance %s for bank denom %s", adminBalance.Amount, minimumFee.Denom,
+			)
+		}
+
+		// send coins from account to module and then burn the coins
+		err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{minimumFee})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	creditType, err := k.stateStore.CreditTypeTable().Get(goCtx, req.CreditTypeAbbrev)

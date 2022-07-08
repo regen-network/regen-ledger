@@ -23,31 +23,42 @@ func (m MsgCreateBatch) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBatch) ValidateBasic() error {
-
-	if len(m.Metadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("credit batch metadata")
-	}
-
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.Wrap(err, "issuer")
+		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
 
-	if m.StartDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("must provide a start date for the credit batch")
-	}
-	if m.EndDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("must provide an end date for the credit batch")
-	}
-	if m.EndDate.Before(*m.StartDate) {
-		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
+	if m.ProjectId == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("project id cannot be empty")
 	}
 
 	if err := ValidateProjectId(m.ProjectId); err != nil {
 		return err
 	}
 
-	if err := validateBatchIssuances(m.Issuance); err != nil {
-		return err
+	if len(m.Issuance) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("issuance cannot be empty")
+	}
+
+	for i, issuance := range m.Issuance {
+		if err := issuance.Validate(); err != nil {
+			return sdkerrors.Wrapf(err, "issuance[%d]", i)
+		}
+	}
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
+	}
+
+	if m.StartDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("start date cannot be empty")
+	}
+
+	if m.EndDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("end date cannot be empty")
+	}
+
+	if m.StartDate.After(*m.EndDate) {
+		return sdkerrors.ErrInvalidRequest.Wrap("start date cannot be after end date")
 	}
 
 	// origin tx is not required when creating a credit batch

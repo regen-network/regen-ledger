@@ -3,32 +3,45 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func TestMsgMintBatchCredits(t *testing.T) {
-	t.Parallel()
-	require := require.New(t)
-	issuer := testutil.GenAddress()
+type msgMintBatchCredits struct {
+	t   gocuke.TestingT
+	msg *MsgMintBatchCredits
+	err error
+}
 
-	tcs := []struct {
-		name string
-		err  string
-		m    MsgMintBatchCredits
-	}{
-		{"invalid issuer", "issuer", MsgMintBatchCredits{Issuer: "invalid"}},
-		{"invalid batch denom", "invalid batch denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}},
-		{"missing origin tx", "origin tx cannot be empty",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: "C01-001-20200101-20210101-001"}},
-	}
-	for _, tc := range tcs {
-		err := tc.m.ValidateBasic()
-		if tc.err == "" {
-			require.NoError(err, tc.name)
-		} else {
-			require.ErrorContains(err, tc.err, tc.name)
-		}
-	}
+func TestMsgMintBatchCredits(t *testing.T) {
+	gocuke.NewRunner(t, &msgMintBatchCredits{}).Path("./features/msg_mint_batch_credits.feature").Run()
+}
+
+func (s *msgMintBatchCredits) Before(t gocuke.TestingT) {
+	s.t = t
+
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
+
+func (s *msgMintBatchCredits) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgMintBatchCredits{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgMintBatchCredits) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgMintBatchCredits) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgMintBatchCredits) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

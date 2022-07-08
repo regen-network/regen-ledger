@@ -1,140 +1,56 @@
 package core
 
 import (
-	"math/rand"
+	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var (
-	s = rand.NewSource(1)
-	r = rand.New(s)
-)
+type msgCreateClass struct {
+	t   gocuke.TestingT
+	msg *MsgCreateClass
+	err error
+}
 
 func TestMsgCreateClass(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgCreateClass{}).Path("./features/msg_create_class.feature").Run()
+}
 
-	addr1 := testutil.GenAddress()
-	addr2 := testutil.GenAddress()
+func (s *msgCreateClass) Before(t gocuke.TestingT) {
+	s.t = t
 
-	validFee := &sdk.Coin{
-		Denom:  "regen",
-		Amount: sdk.NewInt(10),
-	}
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
 
-	tests := map[string]struct {
-		src    MsgCreateClass
-		expErr bool
-	}{
-		"valid msg": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				Issuers:          []string{addr1, addr2},
-				CreditTypeAbbrev: "C",
-				Metadata:         "hello",
-				Fee:              validFee,
-			},
-			expErr: false,
-		},
-		"valid msg without metadata": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1, addr2},
-				Fee:              validFee,
-			},
-			expErr: false,
-		},
-		"invalid without admin": {
-			src:    MsgCreateClass{},
-			expErr: true,
-		},
-		"invalid without issuers": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				CreditTypeAbbrev: "C",
-			},
-			expErr: true,
-		},
-		"invalid with wrong issuers": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				CreditTypeAbbrev: "C",
-				Issuers:          []string{"xyz", "xyz1"},
-			},
-			expErr: true,
-		},
-		"invalid with wrong admin": {
-			src: MsgCreateClass{
-				Admin:            "wrongAdmin",
-				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1, addr2},
-			},
-			expErr: true,
-		},
-		"invalid with no credit type": {
-			src: MsgCreateClass{
-				Admin:   addr1,
-				Issuers: []string{addr1, addr2},
-			},
-			expErr: true,
-		},
-		"invalid metadata maxlength is exceeded": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1, addr2},
-				Metadata:         strings.Repeat("x", 288),
-			},
-			expErr: true,
-		},
-		"invalid bad fee denom": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1},
-				Metadata:         "foo",
-				Fee:              &sdk.Coin{Denom: "k,vm.zkx,cvzxk", Amount: sdk.NewInt(10)},
-			},
-			expErr: true,
-		},
-		"invalid bad fee amount": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1},
-				Metadata:         "foo",
-				Fee:              &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(0)},
-			},
-			expErr: true,
-		},
-		"invalid duplicate issuer": {
-			src: MsgCreateClass{
-				Admin:            addr1,
-				Issuers:          []string{addr1, addr2, addr1},
-				CreditTypeAbbrev: "C",
-				Metadata:         "hello",
-				Fee:              validFee,
-			},
-			expErr: true,
-		},
-	}
+func (s *msgCreateClass) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgCreateClass{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgCreateClass) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+	s.msg.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *msgCreateClass) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgCreateClass) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgCreateClass) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
