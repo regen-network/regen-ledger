@@ -3,139 +3,45 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgRetire struct {
+	t   gocuke.TestingT
+	msg *MsgRetire
+	err error
+}
+
 func TestMsgRetire(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgRetire{}).Path("./features/msg_retire.feature").Run()
+}
 
-	addr1 := testutil.GenAddress()
+func (s *msgRetire) Before(t gocuke.TestingT) {
+	s.t = t
 
-	tests := map[string]struct {
-		src    MsgRetire
-		expErr bool
-	}{
-		"valid msg": {
-			src: MsgRetire{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			expErr: false,
-		},
-		"invalid msg without holder": {
-			src: MsgRetire{
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong holder address": {
-			src: MsgRetire{
-				Owner: "wrong owner",
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			expErr: true,
-		},
-		"invalid msg without credits": {
-			src: MsgRetire{
-				Owner:        addr1,
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.BatchDenom": {
-			src: MsgRetire{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						Amount: "10",
-					},
-				},
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.Amount": {
-			src: MsgRetire{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-					},
-				},
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong Credits.Amount": {
-			src: MsgRetire{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "abc",
-					},
-				},
-				Jurisdiction: "AB-CDE FG1 345",
-			},
-			expErr: true,
-		},
-		"invalid msg without jurisdiction": {
-			src: MsgRetire{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong jurisdiction": {
-			src: MsgRetire{
-				Owner: addr1,
-				Credits: []*Credits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-				Jurisdiction: "wrongJurisdiction",
-			},
-			expErr: true,
-		},
-	}
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgRetire) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgRetire{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgRetire) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgRetire) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgRetire) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

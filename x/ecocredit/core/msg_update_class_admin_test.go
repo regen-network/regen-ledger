@@ -3,53 +3,45 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgUpdateClassAdmin struct {
+	t   gocuke.TestingT
+	msg *MsgUpdateClassAdmin
+	err error
+}
+
 func TestMsgUpdateClassAdmin(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgUpdateClassAdmin{}).Path("./features/msg_update_class_admin.feature").Run()
+}
 
-	admin := testutil.GenAddress()
-	newAdmin := testutil.GenAddress()
+func (s *msgUpdateClassAdmin) Before(t gocuke.TestingT) {
+	s.t = t
 
-	tests := map[string]struct {
-		src    MsgUpdateClassAdmin
-		expErr bool
-	}{
-		"valid": {
-			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: newAdmin, ClassId: "C01"},
-			expErr: false,
-		},
-		"invalid: same address": {
-			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: admin, ClassId: "C01"},
-			expErr: true,
-		},
-		"invalid: bad ClassID": {
-			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: newAdmin, ClassId: "asl;dfjkdjk???fgs;dfljgk"},
-			expErr: true,
-		},
-		"invalid: bad admin addr": {
-			src:    MsgUpdateClassAdmin{Admin: "?!@%)(87", NewAdmin: newAdmin, ClassId: "C02"},
-			expErr: true,
-		},
-		"invalid: bad NewAdmin addr": {
-			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: "?!?@%?@$#6", ClassId: "C02"},
-			expErr: true,
-		},
-	}
+	// TODO: move to init function in the root directory of the module #1243
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgUpdateClassAdmin) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgUpdateClassAdmin{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgUpdateClassAdmin) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgUpdateClassAdmin) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgUpdateClassAdmin) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

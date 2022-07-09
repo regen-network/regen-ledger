@@ -25,8 +25,7 @@ func TestMsgBridgeReceive(t *testing.T) {
 func (s *msgBridgeReceive) Before(t gocuke.TestingT) {
 	s.t = t
 
-	// TODO: move to base suite setup #1243
-	// set custom regen prefix
+	// TODO: move to init function in the root directory of the module #1243
 	cfg := sdk.GetConfig()
 	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }
@@ -37,7 +36,7 @@ func (s *msgBridgeReceive) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *msgBridgeReceive) AProjectReferenceIdOfLength(a string) {
+func (s *msgBridgeReceive) AProjectReferenceIdWithLength(a string) {
 	length, err := strconv.ParseInt(a, 10, 64)
 	require.NoError(s.t, err)
 
@@ -45,14 +44,14 @@ func (s *msgBridgeReceive) AProjectReferenceIdOfLength(a string) {
 	s.msg.Project.ReferenceId = strings.Repeat("x", int(length))
 }
 
-func (s *msgBridgeReceive) ProjectMetadataOfLength(a string) {
+func (s *msgBridgeReceive) ProjectMetadataWithLength(a string) {
 	length, err := strconv.ParseInt(a, 10, 64)
 	require.NoError(s.t, err)
 
 	s.msg.Project.Metadata = strings.Repeat("x", int(length))
 }
 
-func (s *msgBridgeReceive) BatchMetadataOfLength(a string) {
+func (s *msgBridgeReceive) BatchMetadataWithLength(a string) {
 	length, err := strconv.ParseInt(a, 10, 64)
 	require.NoError(s.t, err)
 

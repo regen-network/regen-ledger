@@ -24,39 +24,51 @@ func (m MsgSend) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSend) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return sdkerrors.Wrap(err, "sender")
+		return sdkerrors.ErrInvalidAddress.Wrapf("sender: %s", err)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Recipient); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidAddress.Wrapf("recipient: %s", err)
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}
 
-	for _, credit := range m.Credits {
-		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
+	for _, credits := range m.Credits {
+		if credits.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("batch denom cannot be empty")
+		}
+
+		if err := ValidateBatchDenom(credits.BatchDenom); err != nil {
 			return err
 		}
 
-		if _, err := math.NewNonNegativeDecFromString(credit.TradableAmount); err != nil {
+		if credits.TradableAmount == "" && credits.RetiredAmount == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("tradable amount or retired amount required")
+		}
+
+		if _, err := math.NewNonNegativeDecFromString(credits.TradableAmount); err != nil {
 			return err
 		}
 
-		retiredAmount, err := math.NewNonNegativeDecFromString(credit.RetiredAmount)
+		retiredAmount, err := math.NewNonNegativeDecFromString(credits.RetiredAmount)
 		if err != nil {
 			return err
 		}
 
 		if !retiredAmount.IsZero() {
-			if err = ValidateJurisdiction(credit.RetirementJurisdiction); err != nil {
+			if credits.RetirementJurisdiction == "" {
+				return sdkerrors.ErrInvalidRequest.Wrap("retirement jurisdiction required")
+			}
+
+			if err = ValidateJurisdiction(credits.RetirementJurisdiction); err != nil {
 				return err
 			}
 		}
 	}
+
 	return nil
 }
 

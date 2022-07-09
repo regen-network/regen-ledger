@@ -21,14 +21,16 @@ import (
 type createBatchSuite struct {
 	*baseSuite
 	alice            sdk.AccAddress
+	bob              sdk.AccAddress
 	creditTypeAbbrev string
 	classId          string
 	classKey         uint64
 	projectId        string
 	projectKey       uint64
+	batchKey         uint64
+	tradableAmount   string
 	startDate        *time.Time
 	endDate          *time.Time
-	tradableAmount   string
 	res              *core.MsgCreateBatchResponse
 	err              error
 }
@@ -40,9 +42,11 @@ func TestCreateBatch(t *testing.T) {
 func (s *createBatchSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
+	s.bob = s.addr2
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
 	s.projectId = "C01-001"
+	s.tradableAmount = "10"
 
 	startDate, err := types.ParseDate("start date", "2020-01-01")
 	require.NoError(s.t, err)
@@ -52,22 +56,28 @@ func (s *createBatchSuite) Before(t gocuke.TestingT) {
 
 	s.startDate = &startDate
 	s.endDate = &endDate
-	s.tradableAmount = "50"
-}
-
-func (s *createBatchSuite) ACreditType() {
-	// TODO: Save for now but credit type should not exist prior to unit test #893
-	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
-		Abbreviation: s.creditTypeAbbrev,
-		Name:         s.creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
 }
 
 func (s *createBatchSuite) ACreditTypeWithAbbreviation(a string) {
-	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+	// TODO: Save for now but credit type should not exist prior to unit test #893
+	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
 		Abbreviation: a,
 		Name:         a,
+	})
+	require.NoError(s.t, err)
+
+	s.creditTypeAbbrev = a
+}
+
+func (s *createBatchSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string) {
+	precision, err := strconv.ParseUint(b, 10, 32)
+	require.NoError(s.t, err)
+
+	// TODO: Save for now but credit type should not exist prior to unit test #893
+	err = s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+		Abbreviation: a,
+		Name:         a,
+		Precision:    uint32(precision),
 	})
 	require.NoError(s.t, err)
 
@@ -108,14 +118,6 @@ func (s *createBatchSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	s.classKey = cKey
 }
 
-func (s *createBatchSuite) AProject() {
-	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       s.projectId,
-		ClassKey: s.classKey,
-	})
-	require.NoError(s.t, err)
-}
-
 func (s *createBatchSuite) AProjectWithProjectId(a string) {
 	classId := core.GetClassIdFromProjectId(a)
 
@@ -140,33 +142,69 @@ func (s *createBatchSuite) AProjectWithProjectId(a string) {
 	s.projectKey = pKey
 }
 
-func (s *createBatchSuite) ACreditBatchWithDenom(a string) {
-	err := s.k.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		Denom:      a,
-		ProjectKey: s.projectKey,
-	})
+func (s *createBatchSuite) ABatchSequenceWithProjectIdAndNextSequence(a string, b string) {
+	project, err := s.stateStore.ProjectTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)
 
-	seq := s.getBatchSequence(a)
+	nextSequence, err := strconv.ParseUint(b, 10, 64)
+	require.NoError(s.t, err)
 
-	// Save because batch sequence may already exist
-	err = s.k.stateStore.BatchSequenceTable().Save(s.ctx, &api.BatchSequence{
-		ProjectKey:   s.projectKey,
-		NextSequence: seq + 1,
+	err = s.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
+		ProjectKey:   project.Key,
+		NextSequence: nextSequence,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *createBatchSuite) AnOriginTxIndex(a gocuke.DocString) {
-	originTxIndex := &api.OriginTxIndex{}
-	err := jsonpb.UnmarshalString(a.Content, originTxIndex)
+	var originTxIndex api.OriginTxIndex
+	err := jsonpb.UnmarshalString(a.Content, &originTxIndex)
 	require.NoError(s.t, err)
 
-	err = s.k.stateStore.OriginTxIndexTable().Insert(s.ctx, originTxIndex)
+	err = s.k.stateStore.OriginTxIndexTable().Insert(s.ctx, &originTxIndex)
 	require.NoError(s.t, err)
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithProjectIdStartDateAndEndDate(a, b, c string) {
+func (s *createBatchSuite) ABatchContract(a gocuke.DocString) {
+	var batchContract api.BatchContract
+	err := jsonpb.UnmarshalString(a.Content, &batchContract)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchContractTable().Insert(s.ctx, &batchContract)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectId(a string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.bob.String(),
+				TradableAmount: s.tradableAmount,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+	})
+}
+
+func (s *createBatchSuite) BobAttemptsToCreateABatchWithProjectId(a string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.bob.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.alice.String(),
+				TradableAmount: s.tradableAmount,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+	})
+}
+
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdStartDateAndEndDate(a, b, c string) {
 	startDate, err := types.ParseDate("start date", b)
 	require.NoError(s.t, err)
 
@@ -178,7 +216,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithProjectIdStartDa
 		ProjectId: a,
 		Issuance: []*core.BatchIssuance{
 			{
-				Recipient:      s.alice.String(),
+				Recipient:      s.bob.String(),
 				TradableAmount: s.tradableAmount,
 			},
 		},
@@ -187,38 +225,83 @@ func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithProjectIdStartDa
 	})
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithOriginTx(a gocuke.DocString) {
-	originTx := &core.OriginTx{}
-	err := jsonpb.UnmarshalString(a.Content, originTx)
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndTradableAmount(a, b string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.bob.String(),
+				TradableAmount: b,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+	})
+}
+
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndRetiredAmount(a, b string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:     s.bob.String(),
+				RetiredAmount: b,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+	})
+}
+
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndOriginTx(a string, b gocuke.DocString) {
+	var originTx core.OriginTx
+	err := jsonpb.UnmarshalString(b.Content, &originTx)
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.alice.String(),
-		ProjectId: s.projectId,
+		ProjectId: a,
 		Issuance: []*core.BatchIssuance{
 			{
-				Recipient:      s.alice.String(),
+				Recipient:      s.bob.String(),
 				TradableAmount: s.tradableAmount,
 			},
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
-		OriginTx:  originTx,
+		OriginTx:  &originTx,
 	})
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateACreditBatchWithTheIssuance(a gocuke.DocString) {
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndIssuance(a string, b gocuke.DocString) {
 	var issuance []*core.BatchIssuance
 	// unmarshal with json because issuance array is not a proto message
-	err := json.Unmarshal([]byte(a.Content), &issuance)
+	err := json.Unmarshal([]byte(b.Content), &issuance)
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.alice.String(),
-		ProjectId: s.projectId,
+		ProjectId: a,
 		Issuance:  issuance,
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+	})
+}
+
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProperties(a gocuke.DocString) {
+	var msg core.MsgCreateBatch
+	err := jsonpb.UnmarshalString(a.Content, &msg)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: msg.ProjectId,
+		Issuance:  msg.Issuance,
+		Metadata:  msg.Metadata,
+		StartDate: msg.StartDate,
+		EndDate:   msg.EndDate,
 	})
 }
 
@@ -230,15 +313,13 @@ func (s *createBatchSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *createBatchSuite) ExpectCreditBatchWithDenom(a string) {
-	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, a)
-	require.NoError(s.t, err)
-	require.Equal(s.t, a, batch.Denom)
+func (s *createBatchSuite) ExpectErrorContains(a string) {
+	require.ErrorContains(s.t, s.err, a)
 }
 
 func (s *createBatchSuite) ExpectRecipientBatchBalanceWithAddress(a string, b gocuke.DocString) {
-	expected := &api.BatchBalance{}
-	err := jsonpb.UnmarshalString(b.Content, expected)
+	var expected api.BatchBalance
+	err := jsonpb.UnmarshalString(b.Content, &expected)
 	require.NoError(s.t, err)
 
 	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, s.res.BatchDenom)
@@ -255,16 +336,70 @@ func (s *createBatchSuite) ExpectRecipientBatchBalanceWithAddress(a string, b go
 	require.Equal(s.t, expected.EscrowedAmount, balance.EscrowedAmount)
 }
 
+func (s *createBatchSuite) ExpectBatchSupply(a gocuke.DocString) {
+	var expected api.BatchSupply
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, s.res.BatchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BatchSupplyTable().Get(s.ctx, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.CancelledAmount, balance.CancelledAmount)
+}
+
+func (s *createBatchSuite) ExpectBatchSequenceWithProjectIdAndNextSequence(a string, b string) {
+	nextSequence, err := strconv.ParseUint(b, 10, 64)
+	require.NoError(s.t, err)
+
+	project, err := s.stateStore.ProjectTable().GetById(s.ctx, a)
+	require.NoError(s.t, err)
+
+	batchSequence, err := s.stateStore.BatchSequenceTable().Get(s.ctx, project.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, nextSequence, batchSequence.NextSequence)
+}
+
+func (s *createBatchSuite) ExpectBatchProperties(a gocuke.DocString) {
+	var expected core.Batch
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, expected.Denom)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.Metadata, batch.Metadata)
+	require.Equal(s.t, expected.StartDate.Seconds, batch.StartDate.Seconds)
+	require.Equal(s.t, expected.EndDate.Seconds, batch.EndDate.Seconds)
+}
+
+func (s *createBatchSuite) ExpectBatchContract(a gocuke.DocString) {
+	var expected core.BatchContract
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batchContract, err := s.stateStore.BatchContractTable().GetByClassKeyContract(s.ctx, s.classKey, expected.Contract)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.BatchKey, batchContract.BatchKey)
+}
+
+func (s *createBatchSuite) ExpectTheResponse(a gocuke.DocString) {
+	var res core.MsgCreateBatchResponse
+	err := jsonpb.UnmarshalString(a.Content, &res)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, &res, s.res)
+}
+
 func (s *createBatchSuite) getProjectSequence(projectId string) uint64 {
 	str := strings.Split(projectId, "-")
 	seq, err := strconv.ParseUint(str[1], 10, 32)
-	require.NoError(s.t, err)
-	return seq
-}
-
-func (s *createBatchSuite) getBatchSequence(batchDenom string) uint64 {
-	str := strings.Split(batchDenom, "-")
-	seq, err := strconv.ParseUint(str[4], 10, 32)
 	require.NoError(s.t, err)
 	return seq
 }
