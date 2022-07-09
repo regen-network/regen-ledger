@@ -22,10 +22,6 @@ func TestBatchIssuance(t *testing.T) {
 
 func (s *batchIssuance) Before(t gocuke.TestingT) {
 	s.t = t
-
-	// TODO: move to init function in the root directory of the module #1243
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }
 
 func (s *batchIssuance) TheBatchIssuance(a gocuke.DocString) {
