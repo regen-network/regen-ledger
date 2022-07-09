@@ -345,12 +345,6 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 	}{
 		{
 			name:      "missing args",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 3 arg(s), received 1",
-		},
-		{
-			name:      "missing args",
 			args:      []string{"foo", "bar"},
 			expErr:    true,
 			expErrMsg: "Error: accepts 3 arg(s), received 2",
@@ -359,7 +353,7 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 			name:      "too many args",
 			args:      []string{"foo", "bar", "baz", "foobarbaz"},
 			expErr:    true,
-			expErrMsg: "Error: accepts 2 arg(s), received 3",
+			expErrMsg: "Error: accepts 3 arg(s), received 4",
 		},
 		{
 			name: "missing from flag",
@@ -387,7 +381,7 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 				s.batchDenom,
 				recipient,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
-				fmt.Sprintf("--retire-to=%s", retirementJurisdiction),
+				fmt.Sprintf("--%s=%s", coreclient.FlagRetirementJurisdiction, retirementJurisdiction),
 			},
 		},
 	}

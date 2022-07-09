@@ -20,16 +20,16 @@ import (
 )
 
 const (
-	FlagProjectId     string = "project-id"
-	FlagIssuances     string = "issuances"
-	FlagStartDate     string = "start-date"
-	FlagEndDate       string = "end-date"
-	FlagMetadata      string = "metadata"
-	FlagAddIssuers    string = "add-issuers"
-	FlagRemoveIssuers string = "remove-issuers"
-	FlagReferenceId   string = "reference-id"
-	FlagIssuer        string = "issuer"
-	FlagRetireTo      string = "retire-to"
+	FlagProjectId              string = "project-id"
+	FlagIssuances              string = "issuances"
+	FlagStartDate              string = "start-date"
+	FlagEndDate                string = "end-date"
+	FlagMetadata               string = "metadata"
+	FlagAddIssuers             string = "add-issuers"
+	FlagRemoveIssuers          string = "remove-issuers"
+	FlagReferenceId            string = "reference-id"
+	FlagIssuer                 string = "issuer"
+	FlagRetirementJurisdiction string = "retirement-jurisdiction"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -304,6 +304,8 @@ func TxSendCmd() *cobra.Command {
 		Short: "Sends credits from a single batch from the transaction author (--from) to the recipient",
 		Long: `Sends credits from a single batch from the transaction author (--from) to the recipient.
 
+By default, the credits will be sent as tradeable. Use the --retirement-jurisdiction flag to retire the credits to the recipient address.
+
 Parameters:
   amount: amount to send
   batch_denom: batch denomination
@@ -315,7 +317,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			retireTo, err := cmd.Flags().GetString(FlagRetireTo)
+			retireTo, err := cmd.Flags().GetString(FlagRetirementJurisdiction)
 			if err != nil {
 				return err
 			}
@@ -339,7 +341,7 @@ Parameters:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	cmd.Flags().String(FlagRetireTo, "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
+	cmd.Flags().String(FlagRetirementJurisdiction, "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
 	return txFlags(cmd)
 }
 
