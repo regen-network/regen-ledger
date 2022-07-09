@@ -63,6 +63,7 @@ func patchMainnet(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDeno
 
 func patchRedwood(ctx context.Context, ss api.StateStore,
 	basketStore basketapi.StateStore, oldBatchDenomToNewDenomMap map[string]string) error {
+	fmt.Println(oldBatchDenomToNewDenomMap)
 	// project location -> reference-id
 	// FR              -> "" // TODO: add reference-id
 	// US              -> ""
@@ -76,6 +77,8 @@ func patchRedwood(ctx context.Context, ss api.StateStore,
 	locationToReferenceIdMap["AU-NSW 2453"] = ""
 	locationToReferenceIdMap["KE"] = ""
 	locationToReferenceIdMap["US-FL 98765"] = ""
+
+	fmt.Println("one")
 
 	// add reference id to existing projects
 	if err := addReferenceIds(ctx, ss, locationToReferenceIdMap); err != nil {
@@ -170,6 +173,7 @@ func patchRedwood(ctx context.Context, ss api.StateStore,
 	batchIdToIssuanceDateMap["C01-20170613-20230622-013"] = "2022-06-16T17:47:30Z"
 	batchIdToIssuanceDateMap["C01-20180507-20240607-033"] = "2022-06-28T18:08:34Z"
 
+	fmt.Println("two")
 	// update issuance date for credit batches
 	if err := updateBatchIssueanceDate(ctx, ss, oldBatchDenomToNewDenomMap, batchIdToIssuanceDateMap); err != nil {
 		return err
@@ -184,10 +188,12 @@ func patchRedwood(ctx context.Context, ss api.StateStore,
 	basketNameToCuratorMap["rNCT"] = "regen1df675r9vnf7pdedn4sf26svdsem3ugavgxmy46"
 	basketNameToCuratorMap["NCT"] = "regen1df675r9vnf7pdedn4sf26svdsem3ugavgxmy46"
 	basketNameToCuratorMap["TYLER"] = "regen1yqr0pf38v9j7ah79wmkacau5mdspsc7l0sjeva"
+	fmt.Println("three")
 	if err := updateBasketCurator(ctx, ss, basketStore, basketNameToCuratorMap); err != nil {
 		return err
 	}
 
+	fmt.Println("all")
 	return nil
 }
 
@@ -223,7 +229,7 @@ func addReferenceIds(ctx context.Context, ss api.StateStore, locationToReference
 
 		project.ReferenceId, ok = locationToReferenceIdMap[project.Jurisdiction]
 		if !ok {
-			return fmt.Errorf("reference id is not exist for %s", project.Jurisdiction)
+			return fmt.Errorf("reference id is not exist for %s jurisdiction", project.Jurisdiction)
 		}
 
 		if err := ss.ProjectTable().Update(ctx, project); err != nil {
