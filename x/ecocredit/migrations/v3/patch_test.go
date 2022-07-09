@@ -2,7 +2,6 @@ package v3_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -190,7 +189,6 @@ func TestMainnetMigrations(t *testing.T) {
 	require.Equal(t, res1.Metadata, "")
 	require.Equal(t, res1.Jurisdiction, "CD-MN")
 	require.Equal(t, res1.ClassKey, uint64(1))
-	fmt.Println(res1)
 
 	res1, err = ss.ProjectTable().Get(ctx, 2)
 	require.NoError(t, err)
@@ -1118,17 +1116,16 @@ func TestRedwoodMigrations(t *testing.T) {
 
 	// verify batch sequence table migration
 	// project C01-001 contains 30 credit batches ==> expected nextBatchId is 31
-	// project C01-002 contains 2 credit batch ==> expected nextBatchId is 3
-	// project C01-003 contains 2 credit batch ==> expected nextBatchId is 3
-	// project C01-004 contains 1 credit batch ==> expected nextBatchId is 2
-	// project C01-005 contains 1 credit batch ==> expected nextBatchId is 2
-	// project C01-006 contains 1 credit batch ==> expected nextBatchId is 2
-	// project C01-007 contains 1 credit batch ==> expected nextBatchId is 2
+	// project C01-002 contains 2 credit batches  ==> expected nextBatchId is 3
+	// project C01-003 contains 2 credit batches  ==> expected nextBatchId is 3
+	// project C01-004 contains 1 credit batch    ==> expected nextBatchId is 2
+	// project C01-005 contains 1 credit batch    ==> expected nextBatchId is 2
+	// project C01-006 contains 1 credit batch    ==> expected nextBatchId is 2
+	// project C01-007 contains 1 credit batch    ==> expected nextBatchId is 2
 	res4, err := ss.BatchSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res4)
 	require.Equal(t, res4.ProjectKey, uint64(1))
-	fmt.Println(res4.NextSequence)
 	require.Equal(t, res4.NextSequence, uint64(31))
 
 	res4, err = ss.BatchSequenceTable().Get(ctx, 2)
@@ -1226,24 +1223,24 @@ func TestRedwoodMigrations(t *testing.T) {
 	assertProjectReferenceId(t, ctx, ss, "C04-002", "US", "")
 
 	// batch issuance dates
-	//  C01-20170101-20180101-005  ->  "2022-03-30T07:46:01Z"
-	//  C01-20170101-20180101-006  ->  "2022-03-30T07:51:12Z"
-	//  C01-20170101-20180101-007  ->  "2022-03-30T15:04:30Z"
-	//  C01-20180101-20200101-001  ->  "2022-02-09T09:10:02Z"
-	//  C01-20180909-20200101-004  ->  "2022-03-08T17:25:23Z"
-	//  C01-20190101-20191231-009  ->  "2022-05-11T11:35:30Z"
-	//  C01-20190101-20210101-002  ->  "2022-02-14T09:07:25Z"
-	//  C01-20190101-20210101-008  ->  "2022-04-22T16:32:09Z"
-	//  C01-20210909-20220101-003  ->  "2022-03-08T17:18:19Z"
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-001-20170101-20180101-001", "2022-03-30T07:46:01Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-001-20170101-20180101-002", "2022-03-30T07:51:12Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-001-20170101-20180101-003", "2022-03-30T15:04:30Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-002-20180101-20200101-001", "2022-02-09T09:10:02Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-003-20180909-20200101-001", "2022-03-08T17:25:23Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-004-20190101-20191231-001", "2022-05-11T11:35:30Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-001-20190101-20210101-004", "2022-02-14T09:07:25Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-005-20190101-20210101-001", "2022-04-22T16:32:09Z")
-	// assertBatchIssuanceDate(t, ctx, ss, "C01-001-20210909-20220101-005", "2022-03-08T17:18:19Z")
+	// C01-18540707-19870212-034  ->  "2022-06-28T18:10:53Z"
+	// C01-19900103-19990103-032  ->  "2022-06-28T08:36:25Z"
+	// C01-20130604-20130605-038  ->  "2022-06-30T07:16:34Z"
+	// C01-20140604-20200603-036  ->  "2022-06-29T08:45:12Z"
+	// C01-20170101-20180101-005  ->  "2022-03-30T07:46:01Z"
+	// C01-20190101-20191231-009  ->  "2022-05-11T11:35:30Z"
+	// C01-20190101-20210101-002  ->  "2022-02-14T09:07:25Z"
+	// C01-20190101-20210101-008  ->  "2022-04-22T16:32:09Z"
+	// C01-20210909-20220101-003  ->  "2022-03-08T17:18:19Z"
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-18540707-19870212-001", "2022-06-28T18:10:53Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-002-19900103-19990103-001", "2022-06-28T08:36:25Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20130604-20130605-002", "2022-06-30T07:16:34Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-002-20140604-20200603-002", "2022-06-29T08:45:12Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20170101-20180101-003", "2022-03-30T07:46:01Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-006-20190101-20191231-001", "2022-05-11T11:35:30Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20190101-20210101-029", "2022-02-14T09:07:25Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-007-20190101-20210101-001", "2022-04-22T16:32:09Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20210909-20220101-030", "2022-03-08T17:18:19Z")
 
 	//  C02-20200909-20210909-001  ->  "2022-03-08T13:00:50Z"
 	//  C02-20210909-20220101-002  ->  "2022-03-08T17:17:20Z"
