@@ -81,7 +81,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		// get and set decimal values of tradable amount and retired amount
 		decs, err := utils.GetNonNegativeFixedDecs(maxDecimalPlaces, issuance.TradableAmount, issuance.RetiredAmount)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 		tradableAmount, retiredAmount := decs[0], decs[1]
 
@@ -195,7 +195,9 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			Source:   req.OriginTx.Source,
 		}); err != nil {
 			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+					"credits already issued with tx id: %s", req.OriginTx.Id,
+				)
 			}
 			return nil, err
 		}
@@ -208,6 +210,11 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 				Contract: req.OriginTx.Contract,
 			})
 			if err != nil {
+				if ormerrors.UniqueKeyViolation.Is(err) {
+					return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+						"credit batch with contract already exists: %s", req.OriginTx.Contract,
+					)
+				}
 				return nil, err
 			}
 		}
