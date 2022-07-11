@@ -332,6 +332,82 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 	require := s.Require()
 
 	sender := s.addr1.String()
+	amount := "10"
+	retirementJurisdiction := "US-WA"
+
+	recipient := s.addr2.String()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 3 arg(s), received 2",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar", "baz", "foobarbaz"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 3 arg(s), received 4",
+		},
+		{
+			name: "missing from flag",
+			args: []string{
+				amount,
+				s.batchDenom,
+				recipient,
+			},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s) \"from\" not set",
+		},
+		{
+			name: "valid tradeable",
+			args: []string{
+				amount,
+				s.batchDenom,
+				recipient,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
+			},
+		},
+		{
+			name: "valid retire",
+			args: []string{
+				amount,
+				s.batchDenom,
+				recipient,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
+				fmt.Sprintf("--%s=%s", coreclient.FlagRetirementJurisdiction, retirementJurisdiction),
+			},
+		},
+	}
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.TxSendCmd()
+			args := append(tc.args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
+	require := s.Require()
+
+	sender := s.addr1.String()
 	recipient := s.addr2.String()
 
 	// using json package because array is not a proto message
@@ -441,7 +517,7 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxSendCmd()
+			cmd := coreclient.TxSendBulkCmd()
 			args := append(tc.args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {

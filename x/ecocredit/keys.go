@@ -19,8 +19,8 @@ const (
 
 var ModuleSchema = ormapi.ModuleSchemaDescriptor{
 	SchemaFile: []*ormapi.ModuleSchemaDescriptor_FileEntry{
-		{Id: 1, ProtoFileName: api.File_regen_ecocredit_v1_state_proto.Path()},
-		{Id: 2, ProtoFileName: basketapi.File_regen_ecocredit_basket_v1_state_proto.Path()},
+		{Id: 1, ProtoFileName: basketapi.File_regen_ecocredit_basket_v1_state_proto.Path()},
+		{Id: 2, ProtoFileName: api.File_regen_ecocredit_v1_state_proto.Path()},
 		{Id: 3, ProtoFileName: marketApi.File_regen_ecocredit_marketplace_v1_state_proto.Path()},
 	},
 	Prefix: []byte{ORMPrefix},
