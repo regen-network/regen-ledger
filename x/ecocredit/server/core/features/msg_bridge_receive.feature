@@ -2,29 +2,43 @@ Feature: Msg/BridgeReceive
 
   Credits can be bridged from another chain:
   - when the credit class exists
-  - when the credit batch exists
   - when the issuer is the issuer of the credit batch
   - when a project from the same class with the same reference id does not exist
   - when a batch from the same class with the same contract does not exist
-  - the credit batch is added using the information provided
   - the project is added using the information provided
+  - the credit batch is added using the information provided
   - the recipient batch balance is updated
   - the batch supply is updated
 
+  # see Msg/CreateProject, Msg/CreateBatch, and Msg/MintBatchCredits for additional tests
+
   Rule: The credit class must exist
 
-    Scenario: credit class does not exist
-      When alice attempts to bridge credits with class id "C01"
-      Then expect the error "credit class with id C01: not found"
+    Background:
+      Given a credit class with id "C01"
 
     Scenario: credit class exists
-      Given a credit class with id "C01"
       When alice attempts to bridge credits with class id "C01"
       Then expect no error
 
-  Rule: The credit batch must exist
+    Scenario: credit class does not exist
+      When alice attempts to bridge credits with class id "C02"
+      Then expect the error "credit class with id C02: not found"
 
   Rule: The issuer must be the issuer of the credit batch
+
+    Background:
+      Given a credit class
+      And a project
+      And a credit batch with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606" and issuer alice
+
+    Scenario: the issuer is not the credit batch issuer
+      When alice attempts to bridge credits with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+      Then expect no error
+
+    Scenario: the issuer is the credit batch issuer
+      When bob attempts to bridge credits with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+      Then expect the error "only the account that issued the batch can mint additional credits: unauthorized"
 
   Rule: A new project is created if a project from the same class with the same reference id does not exist
 
@@ -61,10 +75,86 @@ Feature: Msg/BridgeReceive
       When alice attempts to bridge credits with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
       Then expect total credit batches "1"
 
+  Rule: The project is added using the information provided
+
+    Scenario: the project properties are added
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+      When alice attempts to bridge credits with project properties
+      """
+      {
+        "reference_id": "VCS-001",
+        "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
+        "jurisdiction": "US-WA"
+      }
+      """
+      Then expect project properties
+      """
+      {
+        "id": "C01-001",
+        "reference_id": "VCS-001",
+        "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
+        "jurisdiction": "US-WA"
+      }
+      """
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
   Rule: The credit batch is added using the information provided
 
-  Rule: The project is added using the information provided
+    Scenario: the batch properties are added
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+      When alice attempts to bridge credits with batch properties
+      """
+      {
+        "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z"
+      }
+      """
+      Then expect batch properties
+      """
+      {
+        "denom": "C01-001-20200101-20210101-001",
+        "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z"
+      }
+      """
+
+    # no failing scenario - state transitions only occur upon successful message execution
 
   Rule: The recipient batch balance is updated
 
+    Scenario: balance updated from issuance with single item
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+      When alice attempts to bridge credits to bob with tradable amount "10"
+      Then expect bob batch balance
+      """
+      {
+        "tradable_amount": "10",
+        "retired_amount": "0",
+        "escrowed_amount": "0"
+      }
+      """
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
   Rule: The batch supply is updated
+
+    Scenario: supply updated from issuance
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+      When alice attempts to bridge credits to bob with tradable amount "10"
+      Then expect batch supply
+      """
+      {
+        "tradable_amount": "10",
+        "retired_amount": "0",
+        "cancelled_amount": "0"
+      }
+      """
+
+    # no failing scenario - state transitions only occur upon successful message execution

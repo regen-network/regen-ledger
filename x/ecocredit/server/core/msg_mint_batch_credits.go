@@ -25,7 +25,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 	}
 
 	if err = k.assertCanMintBatch(issuer, batch); err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to mint credits")
+		return nil, err
 	}
 
 	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)

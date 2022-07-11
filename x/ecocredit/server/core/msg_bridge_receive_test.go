@@ -2,9 +2,11 @@ package core
 
 import (
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -25,6 +27,7 @@ type bridgeReceiveSuite struct {
 	projectId        string
 	projectKey       uint64
 	referenceId      string
+	jurisdiction     string
 	batchDenom       string
 	batchKey         uint64
 	tradableAmount   string
@@ -48,10 +51,11 @@ func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
 	s.projectId = "C01-001"
+	s.jurisdiction = "US-WA"
 	s.referenceId = "VCS-001"
 	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.tradableAmount = "10"
-	s.contract = "0x0000000000000000000000000000000000000001"
+	s.contract = "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
 
 	startDate, err := types.ParseDate("start date", "2020-01-01")
 	require.NoError(s.t, err)
@@ -63,10 +67,20 @@ func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 	s.endDate = &endDate
 
 	s.originTx = &core.OriginTx{
-		Id:       "0x0",
+		Id:       "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
 		Source:   "polygon",
 		Contract: s.contract,
 	}
+}
+
+func (s *bridgeReceiveSuite) ACreditTypeWithAbbreviation(a string) {
+	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+		Abbreviation: a,
+		Name:         a,
+	})
+	require.NoError(s.t, err)
+
+	s.creditTypeAbbrev = a
 }
 
 func (s *bridgeReceiveSuite) ACreditClass() {
@@ -79,8 +93,48 @@ func (s *bridgeReceiveSuite) ACreditClassWithId(a string) {
 	s.creditClassSetup()
 }
 
+func (s *bridgeReceiveSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
+	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id:               a,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
+		ClassKey: cKey,
+		Issuer:   s.alice,
+	})
+	require.NoError(s.t, err)
+
+	s.classKey = cKey
+}
+
 func (s *bridgeReceiveSuite) AProject() {
 	s.projectSetup()
+}
+
+func (s *bridgeReceiveSuite) AProjectWithProjectId(a string) {
+	classId := core.GetClassIdFromProjectId(a)
+
+	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classId)
+	require.NoError(s.t, err)
+
+	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id:       a,
+		ClassKey: class.Key,
+	})
+	require.NoError(s.t, err)
+
+	seq := s.getProjectSequence(a)
+
+	// Save because project sequence may already exist
+	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
+		ClassKey:     class.Key,
+		NextSequence: seq + 1,
+	})
+	require.NoError(s.t, err)
+
+	s.projectKey = pKey
 }
 
 func (s *bridgeReceiveSuite) AProjectWithReferenceId(a string) {
@@ -104,13 +158,24 @@ func (s *bridgeReceiveSuite) ACreditBatchWithContract(a string) {
 	require.NoError(s.t, err)
 }
 
+func (s *bridgeReceiveSuite) ACreditBatchWithContractAndIssuerAlice(a string) {
+	s.creditBatchSetup()
+
+	err := s.k.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: s.batchKey,
+		ClassKey: s.classKey,
+		Contract: a,
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassId(a string) {
 	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
 		Issuer:  s.alice.String(),
 		ClassId: a,
 		Project: &core.MsgBridgeReceive_Project{
 			ReferenceId:  s.referenceId,
-			Jurisdiction: s.tradableAmount,
+			Jurisdiction: s.jurisdiction,
 			Metadata:     s.metadata,
 		},
 		Batch: &core.MsgBridgeReceive_Batch{
@@ -130,7 +195,31 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithContract(a string) 
 		ClassId: s.classId,
 		Project: &core.MsgBridgeReceive_Project{
 			ReferenceId:  s.referenceId,
-			Jurisdiction: s.tradableAmount,
+			Jurisdiction: s.jurisdiction,
+			Metadata:     s.metadata,
+		},
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.bob.String(),
+			Amount:    s.tradableAmount,
+			StartDate: s.startDate,
+			EndDate:   s.endDate,
+			Metadata:  s.metadata,
+		},
+		OriginTx: &core.OriginTx{
+			Id:       s.originTx.Id,
+			Source:   s.originTx.Source,
+			Contract: a,
+		},
+	})
+}
+
+func (s *bridgeReceiveSuite) BobAttemptsToBridgeCreditsWithContract(a string) {
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
+		Issuer:  s.bob.String(),
+		ClassId: s.classId,
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  s.referenceId,
+			Jurisdiction: s.jurisdiction,
 			Metadata:     s.metadata,
 		},
 		Batch: &core.MsgBridgeReceive_Batch{
@@ -154,7 +243,7 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassIdAndProjectRe
 		ClassId: a,
 		Project: &core.MsgBridgeReceive_Project{
 			ReferenceId:  b,
-			Jurisdiction: s.tradableAmount,
+			Jurisdiction: s.jurisdiction,
 			Metadata:     s.metadata,
 		},
 		Batch: &core.MsgBridgeReceive_Batch{
@@ -166,6 +255,80 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassIdAndProjectRe
 		},
 		OriginTx: s.originTx,
 	})
+}
+
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithProjectProperties(a gocuke.DocString) {
+	var project core.MsgBridgeReceive_Project
+	err := jsonpb.UnmarshalString(a.Content, &project)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
+		Issuer:  s.alice.String(),
+		ClassId: s.classId,
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  project.ReferenceId,
+			Jurisdiction: project.Jurisdiction,
+			Metadata:     project.Metadata,
+		},
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.bob.String(),
+			Amount:    s.tradableAmount,
+			StartDate: s.startDate,
+			EndDate:   s.endDate,
+			Metadata:  s.metadata,
+		},
+		OriginTx: s.originTx,
+	})
+
+	require.NoError(s.t, s.err)
+}
+
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithBatchProperties(a gocuke.DocString) {
+	var batch core.MsgBridgeReceive_Batch
+	err := jsonpb.UnmarshalString(a.Content, &batch)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
+		Issuer:  s.alice.String(),
+		ClassId: s.classId,
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  s.referenceId,
+			Jurisdiction: s.jurisdiction,
+			Metadata:     s.metadata,
+		},
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.bob.String(),
+			Amount:    s.tradableAmount,
+			StartDate: batch.StartDate,
+			EndDate:   batch.EndDate,
+			Metadata:  batch.Metadata,
+		},
+		OriginTx: s.originTx,
+	})
+
+	require.NoError(s.t, s.err)
+}
+
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsToBobWithTradableAmount(a string) {
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
+		Issuer:  s.alice.String(),
+		ClassId: s.classId,
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  s.referenceId,
+			Jurisdiction: s.jurisdiction,
+			Metadata:     s.metadata,
+		},
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.bob.String(),
+			Amount:    a,
+			StartDate: s.startDate,
+			EndDate:   s.endDate,
+			Metadata:  s.metadata,
+		},
+		OriginTx: s.originTx,
+	})
+
+	require.NoError(s.t, s.err)
 }
 
 func (s *bridgeReceiveSuite) ExpectNoError() {
@@ -206,6 +369,64 @@ func (s *bridgeReceiveSuite) ExpectTotalProjects(a string) {
 	it.Close()
 
 	require.Equal(s.t, expTotal, total)
+}
+
+func (s *bridgeReceiveSuite) ExpectProjectProperties(a gocuke.DocString) {
+	var expected core.Project
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.ProjectTable().GetById(s.ctx, expected.Id)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.ReferenceId, batch.ReferenceId)
+	require.Equal(s.t, expected.Metadata, batch.Metadata)
+	require.Equal(s.t, expected.Jurisdiction, batch.Jurisdiction)
+}
+
+func (s *bridgeReceiveSuite) ExpectBatchProperties(a gocuke.DocString) {
+	var expected core.Batch
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, expected.Denom)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.Metadata, batch.Metadata)
+	require.Equal(s.t, expected.StartDate.Seconds, batch.StartDate.Seconds)
+	require.Equal(s.t, expected.EndDate.Seconds, batch.EndDate.Seconds)
+}
+
+func (s *bridgeReceiveSuite) ExpectBobBatchBalance(a gocuke.DocString) {
+	var expected api.BatchBalance
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, s.res.BatchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.bob, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.EscrowedAmount, balance.EscrowedAmount)
+}
+
+func (s *bridgeReceiveSuite) ExpectBatchSupply(a gocuke.DocString) {
+	var expected api.BatchSupply
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, s.res.BatchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BatchSupplyTable().Get(s.ctx, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.CancelledAmount, balance.CancelledAmount)
 }
 
 func (s *bridgeReceiveSuite) creditClassSetup() {
@@ -273,4 +494,11 @@ func (s *bridgeReceiveSuite) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	s.batchKey = bKey
+}
+
+func (s *bridgeReceiveSuite) getProjectSequence(projectId string) uint64 {
+	str := strings.Split(projectId, "-")
+	seq, err := strconv.ParseUint(str[1], 10, 32)
+	require.NoError(s.t, err)
+	return seq
 }

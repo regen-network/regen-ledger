@@ -1,7 +1,6 @@
 package core
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -16,6 +15,7 @@ import (
 type sealBatch struct {
 	*baseSuite
 	alice            sdk.AccAddress
+	bob              sdk.AccAddress
 	creditTypeAbbrev string
 	classId          string
 	classKey         uint64
@@ -34,21 +34,90 @@ func TestSealBatch(t *testing.T) {
 func (s *sealBatch) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
+	s.bob = s.addr2
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
 	s.projectId = "C01-001"
 	s.batchDenom = "C01-001-20200101-20210101-001"
 }
 
-func (s *sealBatch) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
-	precision, err := strconv.ParseUint(b, 10, 32)
-	require.NoError(s.t, err)
-
-	err = s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+func (s *sealBatch) ACreditTypeWithAbbreviation(a string) {
+	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: a,
-		Precision:    uint32(precision),
+		Name:         a,
 	})
 	require.NoError(s.t, err)
 
 	s.creditTypeAbbrev = a
+}
+
+func (s *sealBatch) ACreditClassWithIdAndIssuerAlice(a string) {
+	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id:               a,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
+		ClassKey: cKey,
+		Issuer:   s.alice,
+	})
+	require.NoError(s.t, err)
+
+	s.classKey = cKey
+}
+
+func (s *sealBatch) AProjectWithId(a string) {
+	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id:       a,
+		ClassKey: s.classKey,
+	})
+	require.NoError(s.t, err)
+
+	s.projectKey = pKey
+}
+
+func (s *sealBatch) ACreditBatchWithDenomAndIssuerAlice(a string) {
+	projectId := core.GetProjectIdFromBatchDenom(a)
+
+	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectId)
+	require.NoError(s.t, err)
+
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: project.Key,
+		Issuer:     s.alice,
+		Denom:      a,
+		Open:       true,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  "0",
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *sealBatch) AliceAttemptsToSealBatchWithDenom(a string) {
+	s.res, s.err = s.k.SealBatch(s.ctx, &core.MsgSealBatch{
+		Issuer:     s.alice.String(),
+		BatchDenom: a,
+	})
+}
+
+func (s *sealBatch) BobAttemptsToSealBatchWithDenom(a string) {
+	s.res, s.err = s.k.SealBatch(s.ctx, &core.MsgSealBatch{
+		Issuer:     s.bob.String(),
+		BatchDenom: a,
+	})
+}
+
+func (s *sealBatch) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *sealBatch) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }

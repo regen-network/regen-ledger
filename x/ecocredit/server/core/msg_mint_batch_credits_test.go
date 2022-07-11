@@ -18,6 +18,7 @@ import (
 type mintBatchCredits struct {
 	*baseSuite
 	alice            sdk.AccAddress
+	bob              sdk.AccAddress
 	creditTypeAbbrev string
 	classId          string
 	classKey         uint64
@@ -37,12 +38,13 @@ func TestMintBatchCredits(t *testing.T) {
 func (s *mintBatchCredits) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
+	s.bob = s.addr2
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
 	s.projectId = "C01-001"
 	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.originTx = &core.OriginTx{
-		Id:     "0x0",
+		Id:     "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
 		Source: "polygon",
 	}
 }
@@ -53,6 +55,32 @@ func (s *mintBatchCredits) ACreditType() {
 		Name:         s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) ACreditTypeWithAbbreviation(a string) {
+	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+		Abbreviation: a,
+		Name:         a,
+	})
+	require.NoError(s.t, err)
+
+	s.creditTypeAbbrev = a
+}
+
+func (s *mintBatchCredits) ACreditClassWithIdAndIssuerAlice(a string) {
+	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id:               a,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
+		ClassKey: cKey,
+		Issuer:   s.alice,
+	})
+	require.NoError(s.t, err)
+
+	s.classKey = cKey
 }
 
 func (s *mintBatchCredits) ACreditClassWithIssuerAlice() {
@@ -79,6 +107,57 @@ func (s *mintBatchCredits) AProject() {
 	require.NoError(s.t, err)
 
 	s.projectKey = pKey
+}
+
+func (s *mintBatchCredits) AProjectWithId(a string) {
+	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id:       a,
+		ClassKey: s.classKey,
+	})
+	require.NoError(s.t, err)
+
+	s.projectKey = pKey
+}
+
+func (s *mintBatchCredits) ACreditBatchWithIssuerAlice() {
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: s.projectKey,
+		Issuer:     s.alice,
+		Denom:      s.batchDenom,
+		Open:       true,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) ACreditBatchWithDenomAndIssuerAlice(a string) {
+	projectId := core.GetProjectIdFromBatchDenom(a)
+
+	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectId)
+	require.NoError(s.t, err)
+
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: project.Key,
+		Issuer:     s.alice,
+		Denom:      a,
+		Open:       true,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *mintBatchCredits) ACreditBatchWithOpenAndIssuerAlice(a string) {
@@ -123,8 +202,50 @@ func (s *mintBatchCredits) AliceAttemptsToMintCredits() {
 		BatchDenom: s.batchDenom,
 		Issuance: []*core.BatchIssuance{
 			{
+				Recipient:      s.bob.String(),
+				TradableAmount: s.tradableAmount,
+			},
+		},
+		OriginTx: s.originTx,
+	})
+}
+
+func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenom(a string) {
+	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
+		Issuer:     s.alice.String(),
+		BatchDenom: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.bob.String(),
+				TradableAmount: s.tradableAmount,
+			},
+		},
+		OriginTx: s.originTx,
+	})
+}
+
+func (s *mintBatchCredits) BobAttemptsToMintCreditsWithBatchDenom(a string) {
+	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
+		Issuer:     s.bob.String(),
+		BatchDenom: a,
+		Issuance: []*core.BatchIssuance{
+			{
 				Recipient:      s.alice.String(),
 				TradableAmount: s.tradableAmount,
+			},
+		},
+		OriginTx: s.originTx,
+	})
+}
+
+func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithRecipientBobAndTradableAmount(a string) {
+	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
+		Issuer:     s.alice.String(),
+		BatchDenom: s.batchDenom,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.bob.String(),
+				TradableAmount: a,
 			},
 		},
 		OriginTx: s.originTx,
@@ -141,7 +262,7 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithOriginTx(a gocuke.DocSt
 		BatchDenom: s.batchDenom,
 		Issuance: []*core.BatchIssuance{
 			{
-				Recipient:      s.alice.String(),
+				Recipient:      s.bob.String(),
 				TradableAmount: s.tradableAmount,
 			},
 		},
@@ -155,6 +276,38 @@ func (s *mintBatchCredits) ExpectNoError() {
 
 func (s *mintBatchCredits) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
+}
+
+func (s *mintBatchCredits) ExpectBobBatchBalance(a gocuke.DocString) {
+	var expected api.BatchBalance
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.bob, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.EscrowedAmount, balance.EscrowedAmount)
+}
+
+func (s *mintBatchCredits) ExpectBatchSupply(a gocuke.DocString) {
+	var expected api.BatchSupply
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BatchSupplyTable().Get(s.ctx, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.CancelledAmount, balance.CancelledAmount)
 }
 
 func (s *mintBatchCredits) getBatchSequence(batchDenom string) uint64 {
