@@ -24,18 +24,15 @@ type bridgeReceiveSuite struct {
 	creditTypeAbbrev string
 	classId          string
 	classKey         uint64
-	projectId        string
 	projectKey       uint64
 	referenceId      string
+	metadata         string
 	jurisdiction     string
-	batchDenom       string
 	batchKey         uint64
 	tradableAmount   string
 	startDate        *time.Time
 	endDate          *time.Time
 	originTx         *core.OriginTx
-	metadata         string
-	contract         string
 	res              *core.MsgBridgeReceiveResponse
 	err              error
 }
@@ -48,14 +45,11 @@ func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
-	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
-	s.projectId = "C01-001"
 	s.jurisdiction = "US-WA"
 	s.referenceId = "VCS-001"
-	s.batchDenom = "C01-001-20200101-20210101-001"
+	s.metadata = "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf"
 	s.tradableAmount = "10"
-	s.contract = "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
 
 	startDate, err := types.ParseDate("start date", "2020-01-01")
 	require.NoError(s.t, err)
@@ -69,7 +63,7 @@ func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 	s.originTx = &core.OriginTx{
 		Id:       "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
 		Source:   "polygon",
-		Contract: s.contract,
+		Contract: "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606",
 	}
 }
 

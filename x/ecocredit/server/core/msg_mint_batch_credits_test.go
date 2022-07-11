@@ -20,9 +20,7 @@ type mintBatchCredits struct {
 	alice            sdk.AccAddress
 	bob              sdk.AccAddress
 	creditTypeAbbrev string
-	classId          string
 	classKey         uint64
-	projectId        string
 	projectKey       uint64
 	batchDenom       string
 	originTx         *core.OriginTx
@@ -39,10 +37,6 @@ func (s *mintBatchCredits) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
-	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.projectId = "C01-001"
-	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.originTx = &core.OriginTx{
 		Id:     "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
 		Source: "polygon",
@@ -106,6 +100,8 @@ func (s *mintBatchCredits) ACreditBatchWithDenomAndIssuerAlice(a string) {
 		CancelledAmount: "0",
 	})
 	require.NoError(s.t, err)
+
+	s.batchDenom = a
 }
 
 func (s *mintBatchCredits) ACreditBatchWithDenomOpenAndIssuerAlice(a, b string) {
@@ -120,7 +116,7 @@ func (s *mintBatchCredits) ACreditBatchWithDenomOpenAndIssuerAlice(a, b string) 
 	})
 	require.NoError(s.t, err)
 
-	seq := s.getBatchSequence(s.batchDenom)
+	seq := s.getBatchSequence(a)
 
 	err = s.k.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
 		ProjectKey:   s.projectKey,
@@ -135,6 +131,8 @@ func (s *mintBatchCredits) ACreditBatchWithDenomOpenAndIssuerAlice(a, b string) 
 		CancelledAmount: "0",
 	})
 	require.NoError(s.t, err)
+
+	s.batchDenom = a
 }
 
 func (s *mintBatchCredits) AnOriginTxIndex(a gocuke.DocString) {

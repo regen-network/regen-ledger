@@ -17,12 +17,7 @@ type sealBatch struct {
 	alice            sdk.AccAddress
 	bob              sdk.AccAddress
 	creditTypeAbbrev string
-	classId          string
 	classKey         uint64
-	projectId        string
-	projectKey       uint64
-	batchDenom       string
-	batchKey         uint64
 	res              *core.MsgSealBatchResponse
 	err              error
 }
@@ -35,10 +30,6 @@ func (s *sealBatch) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2
-	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.projectId = "C01-001"
-	s.batchDenom = "C01-001-20200101-20210101-001"
 }
 
 func (s *sealBatch) ACreditTypeWithAbbreviation(a string) {
@@ -68,13 +59,11 @@ func (s *sealBatch) ACreditClassWithIdAndIssuerAlice(a string) {
 }
 
 func (s *sealBatch) AProjectWithId(a string) {
-	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:       a,
 		ClassKey: s.classKey,
 	})
 	require.NoError(s.t, err)
-
-	s.projectKey = pKey
 }
 
 func (s *sealBatch) ACreditBatchWithDenomAndIssuerAlice(a string) {
