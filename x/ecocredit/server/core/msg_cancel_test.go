@@ -47,8 +47,7 @@ func (s *cancel) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
 	precision, err := strconv.ParseUint(b, 10, 32)
 	require.NoError(s.t, err)
 
-	// TODO: Save for now but credit type should not exist prior to unit test #893
-	err = s.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+	err = s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: a,
 		Precision:    uint32(precision),
 	})
@@ -219,8 +218,7 @@ func (s *cancel) ExpectBatchSupply(a gocuke.DocString) {
 }
 
 func (s *cancel) projectSetup() {
-	// TODO: Save for now but credit type should not exist prior to unit test #893
-	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)

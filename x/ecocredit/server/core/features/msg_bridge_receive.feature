@@ -2,8 +2,14 @@ Feature: Msg/BridgeReceive
 
   Credits can be bridged from another chain:
   - when the credit class exists
-  - a new credit batch is created if a batch contract entry does not exist
-  - a new project is created if a project from the same class with the same reference id does not exist
+  - when the credit batch exists
+  - when the issuer is the issuer of the credit batch
+  - when a project from the same class with the same reference id does not exist
+  - when a batch from the same class with the same contract does not exist
+  - the credit batch is added using the information provided
+  - the project is added using the information provided
+  - the recipient batch balance is updated
+  - the batch supply is updated
 
   Rule: The credit class must exist
 
@@ -16,21 +22,9 @@ Feature: Msg/BridgeReceive
       When alice attempts to bridge credits with class id "C01"
       Then expect no error
 
-  Rule: A new credit batch is created if a batch contract entry does not exist
+  Rule: The credit batch must exist
 
-    Background:
-      Given a credit class
-      And a project
-
-    Scenario: batch contract entry does not exist
-      Given a credit batch with no contract
-      When alice attempts to bridge credits with contract "0x0"
-      Then expect total credit batches "2"
-
-    Scenario: batch contract entry exists
-      Given a credit batch with contract "0x0"
-      When alice attempts to bridge credits with contract "0x0"
-      Then expect total credit batches "1"
+  Rule: The issuer must be the issuer of the credit batch
 
   Rule: A new project is created if a project from the same class with the same reference id does not exist
 
@@ -50,3 +44,27 @@ Feature: Msg/BridgeReceive
     Scenario: a project from the same class with the same reference id
       When alice attempts to bridge credits with class id "C01" and project reference id "VCS-001"
       Then expect total projects "1"
+
+  Rule: A new credit batch is created if batch from the same class with the same contract does not exist
+
+    Background:
+      Given a credit class
+      And a project
+
+    Scenario: batch contract entry does not exist
+      Given a credit batch with no contract
+      When alice attempts to bridge credits with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+      Then expect total credit batches "2"
+
+    Scenario: batch contract entry exists
+      Given a credit batch with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+      When alice attempts to bridge credits with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+      Then expect total credit batches "1"
+
+  Rule: The credit batch is added using the information provided
+
+  Rule: The project is added using the information provided
+
+  Rule: The recipient batch balance is updated
+
+  Rule: The batch supply is updated

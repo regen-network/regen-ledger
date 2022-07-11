@@ -2,8 +2,10 @@ Feature: Msg/MintBatchCredits
 
   Credits can be dynamically minted to an existing credit batch:
   - when the credit batch is open
-  - when the origin tx id and source is unique within the scope of a credit class
-  - ...
+  - when the origin tx id and source is unique within the scope of the credit class
+  - when the contract is unique within the scope of the credit class
+  - the recipient batch balance is updated
+  - the batch supply is updated
 
   Rule: The credit batch must be open
 
@@ -65,3 +67,6 @@ Feature: Msg/MintBatchCredits
       }
       """
       Then expect no error
+
+  Rule: The contract must be unique within the scope of the credit class
+

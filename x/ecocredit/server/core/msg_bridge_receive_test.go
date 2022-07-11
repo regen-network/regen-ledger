@@ -44,7 +44,7 @@ func TestBridgeReceive(t *testing.T) {
 func (s *bridgeReceiveSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
-	s.bob = s.addr // TODO: #893
+	s.bob = s.addr2
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
 	s.projectId = "C01-001"
@@ -209,7 +209,7 @@ func (s *bridgeReceiveSuite) ExpectTotalProjects(a string) {
 }
 
 func (s *bridgeReceiveSuite) creditClassSetup() {
-	// TODO: Save for now but credit type should not exist prior to unit test #893
+	// Save because credit type may already exist from credit class setup
 	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 	})

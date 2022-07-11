@@ -48,8 +48,7 @@ func (s *mintBatchCredits) Before(t gocuke.TestingT) {
 }
 
 func (s *mintBatchCredits) ACreditType() {
-	// TODO: Save for now but credit type should not exist prior to unit test #893
-	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Name:         s.creditTypeAbbrev,
 	})

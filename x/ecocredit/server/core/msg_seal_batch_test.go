@@ -1,76 +1,54 @@
 package core
 
 import (
+	"strconv"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"gotest.tools/v3/assert"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func TestSealBatch_Valid(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	_, _, batchDenom := s.setupClassProjectBatch(t)
-	setupSealBatchTest(s, batchDenom)
-
-	_, err := s.k.SealBatch(s.ctx, &core.MsgSealBatch{
-		Issuer:     s.addr.String(),
-		BatchDenom: batchDenom,
-	})
-	assert.NilError(t, err)
-
-	batchAfter, err := s.stateStore.BatchTable().GetByDenom(s.ctx, batchDenom)
-	assert.NilError(t, err)
-	assert.Equal(t, false, batchAfter.Open)
+type sealBatch struct {
+	*baseSuite
+	alice            sdk.AccAddress
+	creditTypeAbbrev string
+	classId          string
+	classKey         uint64
+	projectId        string
+	projectKey       uint64
+	batchDenom       string
+	batchKey         uint64
+	res              *core.MsgSealBatchResponse
+	err              error
 }
 
-func TestSealBatch_NoOp(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	_, _, batchDenom := s.setupClassProjectBatch(t)
-
-	_, err := s.k.SealBatch(s.ctx, &core.MsgSealBatch{
-		Issuer:     s.addr.String(),
-		BatchDenom: batchDenom,
-	})
-	assert.NilError(t, err)
+func TestSealBatch(t *testing.T) {
+	gocuke.NewRunner(t, &sealBatch{}).Path("./features/msg_seal_batch.feature").Run()
 }
 
-func TestSealBatch_Unauthorized(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	_, _, batchDenom := s.setupClassProjectBatch(t)
-	setupSealBatchTest(s, batchDenom)
-
-	notIssuer := sdk.AccAddress("foobar")
-
-	_, err := s.k.SealBatch(s.ctx, &core.MsgSealBatch{
-		Issuer:     notIssuer.String(),
-		BatchDenom: batchDenom,
-	})
-
-	assert.ErrorContains(t, err, sdkerrors.ErrUnauthorized.Error())
+func (s *sealBatch) Before(t gocuke.TestingT) {
+	s.baseSuite = setupBase(t)
+	s.alice = s.addr
+	s.creditTypeAbbrev = "C"
+	s.classId = "C01"
+	s.projectId = "C01-001"
+	s.batchDenom = "C01-001-20200101-20210101-001"
 }
 
-func TestSealBatch_NotFound(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	s.setupClassProjectBatch(t)
+func (s *sealBatch) ACreditTypeWithAbbreviationAndPrecision(a, b string) {
+	precision, err := strconv.ParseUint(b, 10, 32)
+	require.NoError(s.t, err)
 
-	_, err := s.k.SealBatch(s.ctx, &core.MsgSealBatch{
-		Issuer:     s.addr.String(),
-		BatchDenom: "C02-00000000-00000000-001",
+	err = s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+		Abbreviation: a,
+		Precision:    uint32(precision),
 	})
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-}
+	require.NoError(s.t, err)
 
-func setupSealBatchTest(s *baseSuite, batchDenom string) {
-	batchBefore, err := s.stateStore.BatchTable().GetByDenom(s.ctx, batchDenom)
-	assert.NilError(s.t, err)
-	batchBefore.Open = true
-	assert.NilError(s.t, s.stateStore.BatchTable().Update(s.ctx, batchBefore))
+	s.creditTypeAbbrev = a
 }
