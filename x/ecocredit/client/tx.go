@@ -20,15 +20,16 @@ import (
 )
 
 const (
-	FlagProjectId     string = "project-id"
-	FlagIssuances     string = "issuances"
-	FlagStartDate     string = "start-date"
-	FlagEndDate       string = "end-date"
-	FlagMetadata      string = "metadata"
-	FlagAddIssuers    string = "add-issuers"
-	FlagRemoveIssuers string = "remove-issuers"
-	FlagReferenceId   string = "reference-id"
-	FlagIssuer        string = "issuer"
+	FlagProjectId              string = "project-id"
+	FlagIssuances              string = "issuances"
+	FlagStartDate              string = "start-date"
+	FlagEndDate                string = "end-date"
+	FlagMetadata               string = "metadata"
+	FlagAddIssuers             string = "add-issuers"
+	FlagRemoveIssuers          string = "remove-issuers"
+	FlagReferenceId            string = "reference-id"
+	FlagIssuer                 string = "issuer"
+	FlagRetirementJurisdiction string = "retirement-jurisdiction"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -46,6 +47,7 @@ func TxCmd(name string) *cobra.Command {
 		TxGenBatchJSONCmd(),
 		TxCreateBatchCmd(),
 		TxSendCmd(),
+		TxSendBulkCmd(),
 		TxRetireCmd(),
 		TxCancelCmd(),
 		TxUpdateClassMetadataCmd(),
@@ -294,13 +296,62 @@ Example JSON:
 	return txFlags(cmd)
 }
 
-// TxSendCmd returns a transaction command that sends credits from one account
+// TxSendCmd returns a transaction command that sends credits from a single batch from one account
 // to another.
 func TxSendCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "send [recipient] [credits]",
-		Short: "Sends credits from the transaction author (--from) to the recipient",
-		Long: `Sends credits from the transaction author (--from) to the recipient.
+		Use:   "send [amount] [batch_denom] [recipient]",
+		Short: "Sends credits from a single batch from the transaction author (--from) to the recipient",
+		Long: `Sends credits from a single batch from the transaction author (--from) to the recipient.
+
+By default, the credits will be sent as tradeable. Use the --retirement-jurisdiction flag to retire the credits to the recipient address.
+
+Parameters:
+  amount: amount to send
+  batch_denom: batch denomination
+  recipient: recipient address`,
+		Example: "regen tx ecocredit send 20 regen18xvpj53vaupyfejpws5sktv5lnas5xj2phm3cf C01-001-20200403-20210405-001 --from myKey",
+		Args:    cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			retireTo, err := cmd.Flags().GetString(FlagRetirementJurisdiction)
+			if err != nil {
+				return err
+			}
+			tradableAmount := args[0]
+			retiredAmount := "0"
+			if len(retireTo) > 0 {
+				tradableAmount = "0"
+				retiredAmount = args[0]
+			}
+			credit := core.MsgSend_SendCredits{
+				TradableAmount:         tradableAmount,
+				BatchDenom:             args[1],
+				RetiredAmount:          retiredAmount,
+				RetirementJurisdiction: retireTo,
+			}
+			msg := core.MsgSend{
+				Sender:    clientCtx.GetFromAddress().String(),
+				Recipient: args[2],
+				Credits:   []*core.MsgSend_SendCredits{&credit},
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+	cmd.Flags().String(FlagRetirementJurisdiction, "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
+	return txFlags(cmd)
+}
+
+// TxSendBulkCmd returns a transaction command that can send credits from multiple batches from one account
+// to another
+func TxSendBulkCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "send-bulk [recipient] [credits]",
+		Short: "Sends credits from multiple batches from the transaction author (--from) to the recipient",
+		Long: `Sends credits from multiple batches from the transaction author (--from) to the recipient.
 
 Parameters:
   recipient: recipient address
