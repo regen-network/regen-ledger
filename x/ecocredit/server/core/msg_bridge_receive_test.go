@@ -83,17 +83,7 @@ func (s *bridgeReceiveSuite) ACreditTypeWithAbbreviation(a string) {
 	s.creditTypeAbbrev = a
 }
 
-func (s *bridgeReceiveSuite) ACreditClass() {
-	s.creditClassSetup()
-}
-
-func (s *bridgeReceiveSuite) ACreditClassWithId(a string) {
-	s.classId = a
-
-	s.creditClassSetup()
-}
-
-func (s *bridgeReceiveSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
+func (s *bridgeReceiveSuite) ACreditClassWithIdAndIssuerAlice(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
@@ -109,63 +99,80 @@ func (s *bridgeReceiveSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	s.classKey = cKey
 }
 
-func (s *bridgeReceiveSuite) AProject() {
-	s.projectSetup()
-}
-
-func (s *bridgeReceiveSuite) AProjectWithProjectId(a string) {
-	classId := core.GetClassIdFromProjectId(a)
-
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classId)
-	require.NoError(s.t, err)
-
+func (s *bridgeReceiveSuite) AProjectWithId(a string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:       a,
-		ClassKey: class.Key,
+		ClassKey: s.classKey,
 	})
 	require.NoError(s.t, err)
 
 	seq := s.getProjectSequence(a)
 
-	// Save because project sequence may already exist
-	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
-		ClassKey:     class.Key,
+	s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
+		ClassKey:     s.classKey,
 		NextSequence: seq + 1,
 	})
-	require.NoError(s.t, err)
 
 	s.projectKey = pKey
 }
 
-func (s *bridgeReceiveSuite) AProjectWithReferenceId(a string) {
-	s.referenceId = a
-
-	s.projectSetup()
-}
-
-func (s *bridgeReceiveSuite) ACreditBatchWithNoContract() {
-	s.creditBatchSetup()
-}
-
-func (s *bridgeReceiveSuite) ACreditBatchWithContract(a string) {
-	s.creditBatchSetup()
-
-	err := s.k.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
-		BatchKey: s.batchKey,
-		ClassKey: s.classKey,
-		Contract: a,
+func (s *bridgeReceiveSuite) AProjectWithIdAndReferenceId(a, b string) {
+	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id:          a,
+		ClassKey:    s.classKey,
+		ReferenceId: b,
 	})
 	require.NoError(s.t, err)
+
+	seq := s.getProjectSequence(a)
+
+	s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
+		ClassKey:     s.classKey,
+		NextSequence: seq + 1,
+	})
+
+	s.projectKey = pKey
 }
 
-func (s *bridgeReceiveSuite) ACreditBatchWithContractAndIssuerAlice(a string) {
-	s.creditBatchSetup()
+func (s *bridgeReceiveSuite) ACreditBatchWithDenomAndIssuerAlice(a string) {
+	projectId := core.GetProjectIdFromBatchDenom(a)
 
-	err := s.k.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
-		BatchKey: s.batchKey,
-		ClassKey: s.classKey,
-		Contract: a,
+	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectId)
+	require.NoError(s.t, err)
+
+	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: project.Key,
+		Issuer:     s.alice,
+		Denom:      a,
+		Open:       true, // always true for bridge tests unless specified
 	})
+	require.NoError(s.t, err)
+
+	seq := s.getBatchSequence(a)
+
+	err = s.k.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
+		ProjectKey:   project.Key,
+		NextSequence: seq + 1,
+	})
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  s.tradableAmount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+	})
+	require.NoError(s.t, err)
+
+	s.batchKey = bKey
+}
+
+func (s *bridgeReceiveSuite) TheBatchContract(a gocuke.DocString) {
+	var batchContract api.BatchContract
+	err := jsonpb.UnmarshalString(a.Content, &batchContract)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.BatchContractTable().Insert(s.ctx, &batchContract)
 	require.NoError(s.t, err)
 }
 
@@ -180,6 +187,26 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassId(a string) {
 		},
 		Batch: &core.MsgBridgeReceive_Batch{
 			Recipient: s.bob.String(),
+			Amount:    s.tradableAmount,
+			StartDate: s.startDate,
+			EndDate:   s.endDate,
+			Metadata:  s.metadata,
+		},
+		OriginTx: s.originTx,
+	})
+}
+
+func (s *bridgeReceiveSuite) BobAttemptsToBridgeCreditsWithClassId(a string) {
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
+		Issuer:  s.bob.String(),
+		ClassId: a,
+		Project: &core.MsgBridgeReceive_Project{
+			ReferenceId:  s.referenceId,
+			Jurisdiction: s.jurisdiction,
+			Metadata:     s.metadata,
+		},
+		Batch: &core.MsgBridgeReceive_Batch{
+			Recipient: s.alice.String(),
 			Amount:    s.tradableAmount,
 			StartDate: s.startDate,
 			EndDate:   s.endDate,
@@ -237,7 +264,7 @@ func (s *bridgeReceiveSuite) BobAttemptsToBridgeCreditsWithContract(a string) {
 	})
 }
 
-func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassIdAndProjectReferenceId(a string, b string) {
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassIdAndProjectReferenceId(a, b string) {
 	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
 		Issuer:  s.alice.String(),
 		ClassId: a,
@@ -339,6 +366,10 @@ func (s *bridgeReceiveSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
+func (s *bridgeReceiveSuite) ExpectErrorContains(a string) {
+	require.ErrorContains(s.t, s.err, a)
+}
+
 func (s *bridgeReceiveSuite) ExpectTotalCreditBatches(a string) {
 	expTotal, err := strconv.ParseUint(a, 10, 64)
 	require.NoError(s.t, err)
@@ -429,76 +460,16 @@ func (s *bridgeReceiveSuite) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.CancelledAmount, balance.CancelledAmount)
 }
 
-func (s *bridgeReceiveSuite) creditClassSetup() {
-	// Save because credit type may already exist from credit class setup
-	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
-		Abbreviation: s.creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-
-	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
-		ClassKey: cKey,
-		Issuer:   s.alice,
-	})
-	require.NoError(s.t, err)
-
-	s.classKey = cKey
-}
-
-func (s *bridgeReceiveSuite) projectSetup() {
-	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:          s.projectId,
-		ClassKey:    s.classKey,
-		ReferenceId: s.referenceId,
-	})
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
-		ClassKey:     s.classKey,
-		NextSequence: pKey + 1,
-	})
-	require.NoError(s.t, err)
-
-	s.projectKey = pKey
-}
-
-func (s *bridgeReceiveSuite) creditBatchSetup() {
-	// the credit batch is always open for Msg/BridgeReceive tests and specific cases
-	// when closed are handled in tests for Msg/CreateBatch and Msg/MintBatchCredits
-	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		Issuer:     s.alice,
-		ProjectKey: s.projectKey,
-		Denom:      s.batchDenom,
-		Open:       true,
-	})
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey:        bKey,
-		TradableAmount:  "0",
-		RetiredAmount:   "0",
-		CancelledAmount: "0",
-	})
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
-		ProjectKey:   s.projectKey,
-		NextSequence: bKey + 1,
-	})
-	require.NoError(s.t, err)
-
-	s.batchKey = bKey
-}
-
 func (s *bridgeReceiveSuite) getProjectSequence(projectId string) uint64 {
 	str := strings.Split(projectId, "-")
 	seq, err := strconv.ParseUint(str[1], 10, 32)
+	require.NoError(s.t, err)
+	return seq
+}
+
+func (s *bridgeReceiveSuite) getBatchSequence(batchDenom string) uint64 {
+	str := strings.Split(batchDenom, "-")
+	seq, err := strconv.ParseUint(str[4], 10, 32)
 	require.NoError(s.t, err)
 	return seq
 }
