@@ -28,18 +28,18 @@ Feature: Msg/MintBatchCredits
   Rule: The credit batch must be open
 
     Background:
-      Given a credit type
-      And a credit class with issuer alice
-      And a project
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And a project with id "C01-001"
 
     Scenario: the credit batch is closed
-      Given a credit batch with open "false" and issuer alice
-      When alice attempts to mint credits
+      Given a credit batch with denom "C01-001-20200101-20210101-001" open "false" and issuer alice
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001"
       Then expect the error "credits cannot be minted in a closed batch: invalid request"
 
     Scenario: the credit batch is open
-      Given a credit batch with open "true" and issuer alice
-      When alice attempts to mint credits
+      Given a credit batch with denom "C01-001-20200101-20210101-001" open "true" and issuer alice
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001"
       Then expect no error
 
   Rule: The issuer must be the issuer of the credit batch
@@ -61,10 +61,10 @@ Feature: Msg/MintBatchCredits
   Rule: The origin tx must be unique within the scope of the credit class
 
     Background:
-      Given a credit type
-      And a credit class with issuer alice
-      And a project
-      And a credit batch with open "true" and issuer alice
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And a project with id "C01-001"
+      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
 
     Scenario: the origin tx is not unique within credit class
       Given an origin tx index
@@ -75,7 +75,7 @@ Feature: Msg/MintBatchCredits
         "source": "polygon"
       }
       """
-      When alice attempts to mint credits with origin tx
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" and origin tx
       """
       {
         "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
@@ -93,7 +93,7 @@ Feature: Msg/MintBatchCredits
         "source": "polygon"
       }
       """
-      When alice attempts to mint credits with origin tx
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" and origin tx
       """
       {
         "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
@@ -105,11 +105,11 @@ Feature: Msg/MintBatchCredits
   Rule: The recipient batch balance is updated
 
     Scenario: balance updated from issuance with single item
-      Given a credit type
-      And a credit class with issuer alice
-      And a project
-      And a credit batch with issuer alice
-      When alice attempts to mint credits with recipient bob and tradable amount "10"
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And a project with id "C01-001"
+      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" recipient bob and tradable amount "10"
       Then expect bob batch balance
       """
       {
@@ -124,11 +124,11 @@ Feature: Msg/MintBatchCredits
   Rule: The batch supply is updated
 
     Scenario: supply updated from issuance
-      Given a credit type
-      And a credit class with issuer alice
-      And a project
-      And a credit batch with issuer alice
-      When alice attempts to mint credits with recipient bob and tradable amount "10"
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And a project with id "C01-001"
+      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" and tradable amount "10"
       Then expect batch supply
       """
       {

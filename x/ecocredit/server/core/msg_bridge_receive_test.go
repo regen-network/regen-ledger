@@ -144,7 +144,7 @@ func (s *bridgeReceiveSuite) ACreditBatchWithDenomAndIssuerAlice(a string) {
 		ProjectKey: project.Key,
 		Issuer:     s.alice,
 		Denom:      a,
-		Open:       true, // always true for bridge tests unless specified
+		Open:       true, // always true unless specified
 	})
 	require.NoError(s.t, err)
 
@@ -158,7 +158,7 @@ func (s *bridgeReceiveSuite) ACreditBatchWithDenomAndIssuerAlice(a string) {
 
 	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchKey:        bKey,
-		TradableAmount:  s.tradableAmount,
+		TradableAmount:  "0",
 		RetiredAmount:   "0",
 		CancelledAmount: "0",
 	})

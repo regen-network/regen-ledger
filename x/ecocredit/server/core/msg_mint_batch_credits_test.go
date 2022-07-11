@@ -49,14 +49,6 @@ func (s *mintBatchCredits) Before(t gocuke.TestingT) {
 	}
 }
 
-func (s *mintBatchCredits) ACreditType() {
-	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
-		Abbreviation: s.creditTypeAbbrev,
-		Name:         s.creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-}
-
 func (s *mintBatchCredits) ACreditTypeWithAbbreviation(a string) {
 	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: a,
@@ -83,32 +75,6 @@ func (s *mintBatchCredits) ACreditClassWithIdAndIssuerAlice(a string) {
 	s.classKey = cKey
 }
 
-func (s *mintBatchCredits) ACreditClassWithIssuerAlice() {
-	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
-		ClassKey: cKey,
-		Issuer:   s.alice,
-	})
-	require.NoError(s.t, err)
-
-	s.classKey = cKey
-}
-
-func (s *mintBatchCredits) AProject() {
-	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectId,
-		ClassKey: s.classKey,
-	})
-	require.NoError(s.t, err)
-
-	s.projectKey = pKey
-}
-
 func (s *mintBatchCredits) AProjectWithId(a string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:       a,
@@ -117,24 +83,6 @@ func (s *mintBatchCredits) AProjectWithId(a string) {
 	require.NoError(s.t, err)
 
 	s.projectKey = pKey
-}
-
-func (s *mintBatchCredits) ACreditBatchWithIssuerAlice() {
-	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: s.projectKey,
-		Issuer:     s.alice,
-		Denom:      s.batchDenom,
-		Open:       true,
-	})
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey:        bKey,
-		TradableAmount:  s.tradableAmount,
-		RetiredAmount:   "0",
-		CancelledAmount: "0",
-	})
-	require.NoError(s.t, err)
 }
 
 func (s *mintBatchCredits) ACreditBatchWithDenomAndIssuerAlice(a string) {
@@ -147,42 +95,44 @@ func (s *mintBatchCredits) ACreditBatchWithDenomAndIssuerAlice(a string) {
 		ProjectKey: project.Key,
 		Issuer:     s.alice,
 		Denom:      a,
-		Open:       true,
+		Open:       true, // always true unless specified
 	})
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchKey:        bKey,
-		TradableAmount:  s.tradableAmount,
+		TradableAmount:  "0",
 		RetiredAmount:   "0",
 		CancelledAmount: "0",
 	})
 	require.NoError(s.t, err)
 }
 
-func (s *mintBatchCredits) ACreditBatchWithOpenAndIssuerAlice(a string) {
-	open, err := strconv.ParseBool(a)
+func (s *mintBatchCredits) ACreditBatchWithDenomOpenAndIssuerAlice(a, b string) {
+	open, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		Issuer:     s.alice,
-		Denom:      s.batchDenom,
+		Denom:      a,
 		ProjectKey: s.projectKey,
 		Open:       open,
 	})
 	require.NoError(s.t, err)
 
-	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey: bKey,
+	seq := s.getBatchSequence(s.batchDenom)
+
+	err = s.k.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
+		ProjectKey:   s.projectKey,
+		NextSequence: seq + 1,
 	})
 	require.NoError(s.t, err)
 
-	seq := s.getBatchSequence(s.batchDenom)
-
-	// Save because batch sequence may already exist
-	err = s.k.stateStore.BatchSequenceTable().Save(s.ctx, &api.BatchSequence{
-		ProjectKey:   s.projectKey,
-		NextSequence: seq + 1,
+	err = s.k.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        bKey,
+		TradableAmount:  "0",
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
 	})
 	require.NoError(s.t, err)
 }
@@ -194,20 +144,6 @@ func (s *mintBatchCredits) AnOriginTxIndex(a gocuke.DocString) {
 
 	err = s.k.stateStore.OriginTxIndexTable().Insert(s.ctx, originTxIndex)
 	require.NoError(s.t, err)
-}
-
-func (s *mintBatchCredits) AliceAttemptsToMintCredits() {
-	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
-		Issuer:     s.alice.String(),
-		BatchDenom: s.batchDenom,
-		Issuance: []*core.BatchIssuance{
-			{
-				Recipient:      s.bob.String(),
-				TradableAmount: s.tradableAmount,
-			},
-		},
-		OriginTx: s.originTx,
-	})
 }
 
 func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenom(a string) {
@@ -238,28 +174,14 @@ func (s *mintBatchCredits) BobAttemptsToMintCreditsWithBatchDenom(a string) {
 	})
 }
 
-func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithRecipientBobAndTradableAmount(a string) {
-	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
-		Issuer:     s.alice.String(),
-		BatchDenom: s.batchDenom,
-		Issuance: []*core.BatchIssuance{
-			{
-				Recipient:      s.bob.String(),
-				TradableAmount: a,
-			},
-		},
-		OriginTx: s.originTx,
-	})
-}
-
-func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithOriginTx(a gocuke.DocString) {
+func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomAndOriginTx(a string, b gocuke.DocString) {
 	originTx := &core.OriginTx{}
-	err := jsonpb.UnmarshalString(a.Content, originTx)
+	err := jsonpb.UnmarshalString(b.Content, originTx)
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     s.alice.String(),
-		BatchDenom: s.batchDenom,
+		BatchDenom: a,
 		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:      s.bob.String(),
@@ -267,6 +189,34 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithOriginTx(a gocuke.DocSt
 			},
 		},
 		OriginTx: originTx,
+	})
+}
+
+func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomAndTradableAmount(a, b string) {
+	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
+		Issuer:     s.alice.String(),
+		BatchDenom: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.bob.String(),
+				TradableAmount: b,
+			},
+		},
+		OriginTx: s.originTx,
+	})
+}
+
+func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomRecipientBobAndTradableAmount(a, b string) {
+	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
+		Issuer:     s.alice.String(),
+		BatchDenom: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.bob.String(),
+				TradableAmount: b,
+			},
+		},
+		OriginTx: s.originTx,
 	})
 }
 
