@@ -59,8 +59,7 @@ func (s *createBatchSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *createBatchSuite) ACreditTypeWithAbbreviation(a string) {
-	// TODO: Save for now but credit type should not exist prior to unit test #893
-	err := s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: a,
 		Name:         a,
 	})
@@ -73,8 +72,7 @@ func (s *createBatchSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b s
 	precision, err := strconv.ParseUint(b, 10, 32)
 	require.NoError(s.t, err)
 
-	// TODO: Save for now but credit type should not exist prior to unit test #893
-	err = s.k.stateStore.CreditTypeTable().Save(s.ctx, &api.CreditType{
+	err = s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: a,
 		Name:         a,
 		Precision:    uint32(precision),

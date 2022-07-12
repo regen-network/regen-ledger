@@ -13,6 +13,12 @@ func TestQuery_CreditTypes(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t) // setupBase gives us 1 default credit type, we add another here for testing
 	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton CO2 equivalent",
+		Precision:    6,
+	}))
+	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: "BIO",
 		Name:         "biodiversity",
 		Unit:         "acres",
