@@ -18,7 +18,7 @@ builds:
       - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
     flags:
       - -mod=readonly
-      - -tags="netgo ledger muslc"
+      - -tags="netgo ledger"
       - -trimpath
     ldflags:
       - -s -w
@@ -39,7 +39,7 @@ builds:
 #      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
 #    flags:
 #      - -mod=readonly
-#      - -tags="netgo ledger muslc"
+#      - -tags="netgo ledger"
 #      - -trimpath
 #    ldflags:
 #      - -s -w
@@ -62,7 +62,7 @@ builds:
       - linux
     flags:
       - -mod=readonly
-      - -tags="netgo ledger muslc"
+      - -tags="netgo ledger"
       - -trimpath
     ldflags:
       - -s -w
@@ -81,7 +81,7 @@ builds:
 #      - linux
 #    flags:
 #      - -mod=readonly
-#      - -tags="netgo ledger muslc"
+#      - -tags="netgo ledger"
 #      - -trimpath
 #    ldflags:
 #      - -s -w
@@ -104,7 +104,7 @@ builds:
 #      - windows
 #    flags:
 #      - -mod=readonly
-#      - -tags="netgo ledger muslc"
+#      - -tags="netgo ledger"
 #      - -trimpath
 #    ldflags:
 #      - -s -w

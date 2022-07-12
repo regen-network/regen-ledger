@@ -157,5 +157,5 @@ replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 
-// Mock wasmd module and then remove replace directive as part of experimental build
+// Mock wasmd module removed in experimental build
 replace github.com/CosmWasm/wasmd => ./mock/wasmd

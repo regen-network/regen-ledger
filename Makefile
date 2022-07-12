@@ -140,13 +140,15 @@ all: build
 install: go.sum go-version
 	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
 
-build: go.sum go-version
+build: go.sum go-version experimental
 	@mkdir -p $(BUILD_DIR)
-	@if $(EXPERIMENTAL) ; then ./scripts/experimental.sh; fi
 	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_DIR)
 
 build-linux:
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
+
+experimental:
+	@if $(EXPERIMENTAL) ; then ./scripts/experimental.sh; fi
 
 clean:
 	rm -rf $(BUILD_DIR)
