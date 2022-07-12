@@ -17,10 +17,14 @@ func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *core.MsgUpdatePr
 	}
 	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+			"could not get project with id %s: %s", req.ProjectId, err,
+		)
 	}
 	if !sdk.AccAddress(project.Admin).Equals(admin) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not the admin of project %s", req.Admin, req.ProjectId)
+		return nil, sdkerrors.ErrUnauthorized.Wrapf(
+			"%s is not the admin of project %s", req.Admin, req.ProjectId,
+		)
 	}
 	project.Metadata = req.NewMetadata
 	if err := k.stateStore.ProjectTable().Update(ctx, project); err != nil {

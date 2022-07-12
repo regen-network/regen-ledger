@@ -1,44 +1,40 @@
 Feature: CreateProject
 
   Projects can be created:
-  - when the creator is an approved credit class issuer
+  - when the credit class exists
+  - when the admin is an allowed credit class issuer
   - when the non-empty reference id is unique within the scope of the credit class
-  - ...
+  - the project sequence is updated
+  - the project properties are added
+  - the response includes the project id
 
-  Rule: A project id is always unique
+  Rule: The credit class must exist
 
-    Scenario: multiple projects from the same credit class
-      Given a credit type with abbreviation "A"
-      And a credit class with class id "A01" and issuer alice
-      And a project with project id "A01-001"
-      When alice attempts to create a project with class id "A01"
-      Then expect project with project id "A01-002"
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
 
-    Scenario: multiple projects from different credit classes
-      Given a credit type with abbreviation "A"
-      And a credit type with abbreviation "B"
-      And a credit class with class id "A01" and issuer alice
-      And a credit class with class id "B01" and issuer alice
-      And a project with project id "A01-001"
-      And a project with project id "B01-001"
-      When alice attempts to create a project with class id "B01"
-      Then expect project with project id "B01-002"
+    Scenario: the credit class exists
+      When alice attempts to create a project with class id "C01"
+      Then expect no error
 
-    Scenario Outline: project id is formatted correctly
-      Given a credit type with abbreviation "A"
-      And a credit class with class id "A01" and issuer alice
-      And a project sequence "<next_sequence>" for credit class "A01"
-      When alice attempts to create a project with class id "A01"
-      Then expect project with project id "<project_id>"
+    Scenario: the credit class does not exist
+      When alice attempts to create a project with class id "C02"
+      Then expect the error "could not get class with id C02: not found: invalid request"
 
-      Examples:
-        | next_sequence | project_id  |
-        | 1             | A01-001     |
-        | 2             | A01-002     |
-        | 10            | A01-010     |
-        | 100           | A01-100     |
-        | 1000          | A01-1000    |
-        | 10000         | A01-10000   |
+  Rule: The admin must be an allowed credit class issuer
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+
+    Scenario: the issuer is an allowed credit class issuer
+      When alice attempts to create a project with class id "C01"
+      Then expect no error
+
+    Scenario: the issuer is not an allowed credit class issuer
+      When bob attempts to create a project with class id "C01"
+      Then expect error contains "is not an issuer for the class: unauthorized"
 
   Rule: A non-empty reference id must be unique within the scope of a credit class
 
@@ -60,3 +56,67 @@ Feature: CreateProject
       Given a project with project id "C01-001" and reference id "VCS-001"
       When alice attempts to create a project with class id "C01" and reference id "VCS-001"
       Then expect the error "a project with reference id VCS-001 already exists within this credit class: invalid request"
+
+  Rule: the project sequence is updated
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+      And a credit class with class id "C02" and issuer alice
+
+    Scenario: the project sequence is updated
+      Given a project sequence with class id "C01" and next sequence "1"
+      When alice attempts to create a project with class id "C01"
+      Then expect project sequence with class id "C01" and next sequence "2"
+
+    Scenario: the project sequence is not updated
+      Given a project sequence with class id "C01" and next sequence "1"
+      When alice attempts to create a project with class id "C02"
+      Then expect project sequence with class id "C01" and next sequence "1"
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: the project properties are added
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+
+    Scenario: the project properties are added
+      When alice attempts to create a project with properties
+      """
+      {
+        "class_id": "C01",
+        "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
+        "jurisdiction": "US-WA",
+        "reference_id": "VCS-001"
+      }
+      """
+      Then expect project properties
+      """
+      {
+        "id": "C01-001",
+        "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
+        "jurisdiction": "US-WA",
+        "reference_id": "VCS-001"
+      }
+      """
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: the response includes the project id
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+
+    Scenario: the response includes the project id
+      When alice attempts to create a project with class id "C01"
+      Then expect the response
+      """
+      {
+        "project_id": "C01-001"
+      }
+      """
+
+    # no failing scenario - response should always be empty when message execution fails
