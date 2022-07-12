@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/cosmos/cosmos-sdk v0.46.0-rc2
-	github.com/cosmos/ibc-go/v2 v2.0.2
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.12.0 // indirect
 	github.com/rakyll/statik v0.1.7

@@ -1,6 +1,3 @@
-//go:build !experimental
-// +build !experimental
-
 // DONTCOVER
 
 package app
@@ -41,9 +38,11 @@ import (
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler,
-			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-			ecocreditcore.CreditTypeProposalHandler, marketplace.AllowDenomProposalHandler,
+			[]govclient.ProposalHandler{
+				paramsclient.ProposalHandler, distrclient.ProposalHandler,
+				upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler,
+				ecocreditcore.CreditTypeProposalHandler, marketplace.AllowDenomProposalHandler,
+			},
 		),
 	}
 }
