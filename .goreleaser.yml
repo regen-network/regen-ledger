@@ -26,8 +26,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl"
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
 #  - id: regen-darwin-arm64
 #    binary: regen
@@ -48,8 +47,7 @@ builds:
 #      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
 #      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
 #      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-#      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl"
+#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
   - id: regen-linux-amd64
     binary: regen
@@ -72,8 +70,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
 #  - id: regen-linux-arm64
 #    binary: regen
@@ -92,8 +89,7 @@ builds:
 #      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
 #      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
 #      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-#      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
+#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
 #  - id: regen-windows-amd64
 #    binary: regen
@@ -116,8 +112,7 @@ builds:
 #      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
 #      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
 #      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc
-#      - -linkmode=external -extldflags "-L/home/runner/work -lwasmvm_muslc -Wl,-z,muldefs"
+#      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
 archives:
   - id: regen
