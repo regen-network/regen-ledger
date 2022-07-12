@@ -3,17 +3,18 @@ package wasm
 import (
 	"encoding/json"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
+
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm/types"
 )
@@ -26,7 +27,7 @@ var (
 type AppModuleBasic struct{}
 
 func (a AppModuleBasic) Name() string {
-	return ""
+	return ModuleName
 }
 
 func (a AppModuleBasic) RegisterLegacyAminoCodec(*codec.LegacyAmino) {}
@@ -117,16 +118,12 @@ func (a AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorU
 	return []abci.ValidatorUpdate{}
 }
 
-func NewAppModule(
-	codec.Codec,
-	*Keeper,
-	types.StakingKeeper,
-) AppModule {
+func NewAppModule(_ codec.Codec, _ *Keeper, _ types.StakingKeeper) AppModule {
 	return AppModule{}
 }
 
-func AddModuleInitFlags(*cobra.Command) {}
+func AddModuleInitFlags(_ *cobra.Command) {}
 
-func ReadWasmConfig(opts servertypes.AppOptions) (types.WasmConfig, error) {
+func ReadWasmConfig(_ servertypes.AppOptions) (types.WasmConfig, error) {
 	return types.WasmConfig{}, nil
 }
