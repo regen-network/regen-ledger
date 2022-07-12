@@ -104,7 +104,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		if threshold > 3 {
 			threshold = 3
 		}
-
 		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
 			append(
 				[]string{
@@ -1328,7 +1327,6 @@ func (s *IntegrationTestSuite) TestTxVote() {
 
 	validTxFileName := getTxSendFileName(s, s.groupAccounts[1].Address, val.Address.String())
 	for i := 0; i < 2; i++ {
-
 		out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
 			append(
 				[]string{
