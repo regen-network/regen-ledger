@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -19,12 +18,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-var CreditTypeProposalHandler = govclient.NewProposalHandler(TxCreditTypeProposalCmd, func(context client.Context) rest.ProposalRESTHandler {
-	return rest.ProposalRESTHandler{
-		SubRoute: "",
-		Handler:  nil,
-	}
-})
+var CreditTypeProposalHandler = govclient.NewProposalHandler(TxCreditTypeProposalCmd)
 
 func TxCreditTypeProposalCmd() *cobra.Command {
 	cmd := &cobra.Command{

@@ -13,18 +13,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-var AllowDenomProposalHandler = govclient.NewProposalHandler(TxAllowDenomProposal, func(context client.Context) rest.ProposalRESTHandler {
-	return rest.ProposalRESTHandler{
-		SubRoute: "",
-		Handler:  nil,
-	}
-})
+var AllowDenomProposalHandler = govclient.NewProposalHandler(TxAllowDenomProposal)
 
 func TxAllowDenomProposal() *cobra.Command {
 	cmd := &cobra.Command{
