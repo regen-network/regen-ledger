@@ -117,7 +117,6 @@ func (a AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorU
 	return []abci.ValidatorUpdate{}
 }
 
-// NewAppModule creates a new AppModule object
 func NewAppModule(
 	codec.Codec,
 	*Keeper,

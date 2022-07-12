@@ -137,7 +137,7 @@ endif
 
 all: build
 
-install: go.sum go-version
+install: go.sum go-version experimental
 	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
 
 build: go.sum go-version experimental
@@ -148,7 +148,7 @@ build-linux:
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
 
 experimental:
-	@if $(EXPERIMENTAL) ; then ./scripts/experimental.sh; fi
+	@if $(EXPERIMENTAL); then ./scripts/experimental.sh; fi
 
 clean:
 	rm -rf $(BUILD_DIR)
