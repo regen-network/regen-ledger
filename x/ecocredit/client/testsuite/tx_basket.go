@@ -247,6 +247,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				s.basketDenom,
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
 			},
 		},
 		{
@@ -255,6 +257,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				s.basketDenom,
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
 			},
 		},
 		{
@@ -264,6 +268,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
 			},
 		},
 	}

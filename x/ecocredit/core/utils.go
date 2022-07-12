@@ -189,6 +189,23 @@ func GetClassIdFromBatchDenom(denom string) string {
 	return s.String()
 }
 
+// GetProjectIdFromBatchDenom returns the credit project ID in a batch denom.
+func GetProjectIdFromBatchDenom(denom string) string {
+	var s strings.Builder
+	c := 0
+	for _, r := range denom {
+		if r == '-' {
+			c++
+		}
+		if r != '-' || c != 2 {
+			s.WriteRune(r)
+			continue
+		}
+		break
+	}
+	return s.String()
+}
+
 // GetCreditTypeAbbrevFromClassId returns the credit type abbreviation in a credit class id
 func GetCreditTypeAbbrevFromClassId(classId string) string {
 	var s strings.Builder
