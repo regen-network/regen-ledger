@@ -10,13 +10,14 @@ import (
 	"sort"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/regen-network/regen-ledger/x/data"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -34,7 +35,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
@@ -97,8 +97,10 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		// value will be the same value as is on regen-1 and regen-redwood-1 at the time of
 		// the upgrade; the value will be reset to empty for unsupported chains)
 		ecocreditSubspace, _ := app.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
-		if chainId == mainnet || chainId == redwood {
+		if chainId == mainnet {
 			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
+		} else if chainId == redwood {
+			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 2e7)))
 		} else {
 			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.Coins{})
 		}
