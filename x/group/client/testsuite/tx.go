@@ -1,7 +1,6 @@
 package testsuite
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strconv"
 	"strings"
@@ -106,16 +105,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			threshold = 3
 		}
 
-		// using the same arguments for multiple transactions generates the
-		// same transaction hash and causes "tx already in mempool"
-		metadata := base64.StdEncoding.EncodeToString([]byte{byte(i)})
-
 		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
 			append(
 				[]string{
 					val.Address.String(),
 					"1",
-					metadata,
+					validMetadata,
 					fmt.Sprintf("{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"%d\", \"timeout\":\"30000s\"}", threshold),
 				},
 				commonFlags...,
@@ -1150,7 +1145,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 					s.groupAccounts[0].Address,
 					val.Address.String(),
 					validTxFileName,
-					"MA==",
+					"",
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				},
 				commonFlags...,
@@ -1167,7 +1162,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 					s.groupAccounts[0].Address,
 					val.Address.String(),
 					validTxFileName,
-					"MQ==",
+					"",
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 					fmt.Sprintf("--%s=try", client.FlagExec),
 				},
@@ -1185,7 +1180,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 					s.groupAccounts[3].Address,
 					val.Address.String(),
 					validTxFileName2,
-					"Mg==",
+					"",
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 					fmt.Sprintf("--%s=try", client.FlagExec),
 				},
@@ -1203,7 +1198,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 					s.groupAccounts[0].Address,
 					val.Address.String(),
 					validTxFileName,
-					"Mw==",
+					"",
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
@@ -1331,14 +1326,8 @@ func (s *IntegrationTestSuite) TestTxVote() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	var txResp = sdk.TxResponse{}
-
 	validTxFileName := getTxSendFileName(s, s.groupAccounts[1].Address, val.Address.String())
-	for i := 0; i < 3; i++ {
-
-		// using the same arguments for multiple transactions generates the
-		// same transaction hash and causes "tx already in mempool"
-		metadata := base64.StdEncoding.EncodeToString([]byte{byte(i)})
+	for i := 0; i < 2; i++ {
 
 		out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
 			append(
@@ -1346,15 +1335,13 @@ func (s *IntegrationTestSuite) TestTxVote() {
 					s.groupAccounts[1].Address,
 					val.Address.String(),
 					validTxFileName,
-					metadata,
+					"",
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				},
 				commonFlags...,
 			),
 		)
 		s.Require().NoError(err, out.String())
-		s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-		s.Require().Equal(uint32(0), txResp.Code, out.String())
 	}
 
 	testCases := []struct {
