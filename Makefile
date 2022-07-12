@@ -18,6 +18,7 @@ endif
 SDK_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
+EXPERIMENTAL ?= false
 LEDGER_ENABLED ?= true
 DB_BACKEND ?= goleveldb
 
@@ -140,7 +141,8 @@ install: go.sum go-version
 	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
 
 build: go.sum go-version
-	mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
+	@if $(EXPERIMENTAL) ; then ./scripts/experimental.sh; fi
 	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_DIR)
 
 build-linux:
