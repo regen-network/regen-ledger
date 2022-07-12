@@ -22,7 +22,7 @@ func TestSimAppExportAndBlockedAddrs(t *testing.T) {
 			"ensure that all module account addresses are properly blocked in bank keeper")
 	}
 
-	genesisState := NewDefaultGenesisState(encCfg.Marshaler)
+	genesisState := NewDefaultGenesisState(encCfg.Codec)
 	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
 	require.NoError(t, err)
 

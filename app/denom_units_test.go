@@ -23,7 +23,7 @@ func TestDenomUnitsMigration(t *testing.T) {
 
 	regenApp := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{},
 		DefaultNodeHome, 0, encCfg, simapp.EmptyAppOptions{}, nil)
-	bz := NewDefaultGenesisState(encCfg.Marshaler)
+	bz := NewDefaultGenesisState(encCfg.Codec)
 	stateBytes, err := json.MarshalIndent(bz, "", " ")
 	require.NoError(t, err)
 

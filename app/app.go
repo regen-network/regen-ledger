@@ -31,6 +31,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -142,8 +143,8 @@ var (
 			stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 			govtypes.ModuleName:            {authtypes.Burner},
 			// ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner}, // TODO: enable ibc
-			ecocredit.ModuleName:           {authtypes.Burner},
-			basket.BasketSubModuleName:     {authtypes.Burner, authtypes.Minter},
+			ecocredit.ModuleName:       {authtypes.Burner},
+			basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 		}
 
 		for k, v := range setCustomMaccPerms() {
@@ -190,10 +191,10 @@ type RegenApp struct {
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
 	// IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly // TODO: enable ibc
-	EvidenceKeeper   evidencekeeper.Keeper
+	EvidenceKeeper evidencekeeper.Keeper
 	// TransferKeeper   ibctransferkeeper.Keeper // TODO: enable ibc
-	FeeGrantKeeper   feegrantkeeper.Keeper
-	AuthzKeeper      authzkeeper.Keeper
+	FeeGrantKeeper feegrantkeeper.Keeper
+	AuthzKeeper    authzkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	// ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -239,7 +240,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, capabilitytypes.StoreKey, feegrant.StoreKey,
-			authzkeeper.StoreKey,  // TODO: add ibchost.StoreKey, ibctransfertypes.StoreKey,
+			authzkeeper.StoreKey, // TODO: add ibchost.StoreKey, ibctransfertypes.StoreKey,
 		}, setCustomKVStoreKeys()...)...,
 	)
 
@@ -301,7 +302,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.GetSubspace(crisistypes.ModuleName), invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
 	)
 
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
+	// set the governance module account as the authority for conducting upgrades
+	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String())
 	app.registerUpgradeHandlers()
 
 	// register the staking hooks
@@ -316,11 +319,11 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// )
 
 	// register the proposal types
-	govRouter := govv1beta1.NewRouter
+	govRouter := govv1beta1.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper))
 		// AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
 	// Create Transfer Keepers
@@ -354,7 +357,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.FeeGrantKeeper = feegrantKeeper
 
 	authzKeeper := authzkeeper.NewKeeper(
-		keys[authzkeeper.StoreKey], appCodec, app.MsgServiceRouter(),
+		keys[authzkeeper.StoreKey], appCodec, app.MsgServiceRouter(), app.AccountKeeper,
 	)
 	app.AuthzKeeper = authzKeeper
 
@@ -378,14 +381,16 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
 
 	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewProposalHandler(ecocreditModule.Keeper))
+
+	govConfig := govtypes.DefaultConfig()
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, govRouter,
+		&stakingKeeper, govRouter, app.MsgServiceRouter(), govConfig,
 	)
 
 	app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath, appOpts)
 
-	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	app.mm = module.NewManager(
 		append([]module.AppModule{
@@ -399,7 +404,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 			crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
 			gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
-			mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
+			mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil),
 			slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
@@ -505,27 +510,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	app.sm = module.NewSimulationManager(
-		append([]module.AppModuleSimulation{
-			auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
-			bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
-			capability.NewAppModule(appCodec, *app.CapabilityKeeper),
-			gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
-			mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
-			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-			slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-			params.NewAppModule(app.ParamsKeeper),
-			evidence.NewAppModule(app.EvidenceKeeper),
-			feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-			// authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry), // enable after updating sdk version v0.46
-			// ibc.NewAppModule(app.IBCKeeper),
-			// transferModule,
-			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
-			data.NewModule(app.AccountKeeper, app.BankKeeper),
-		}, app.setCustomSimulationManager()...)...,
-	)
-
+	overrideModules := map[string]module.AppModuleSimulation{
+		authtypes.ModuleName: auth.NewAppModule(app.appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
+	}
+	app.sm = module.NewSimulationManagerFromAppModules(app.mm.Modules, overrideModules)
 	app.sm.RegisterStoreDecoders()
 
 	// initialize stores
@@ -536,14 +524,28 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	anteHandler, err := app.setCustomAnteHandler(encodingConfig)
+	app.SetEndBlocker(app.EndBlocker)
+
+	anteHandler, err := app.setCustomAnteHandler(encodingConfig.TxConfig)
 	if err != nil {
 		panic(err)
 	}
-
 	app.SetAnteHandler(anteHandler)
 
-	app.SetEndBlocker(app.EndBlocker)
+	// In v0.46, the SDK introduces _postHandlers_. PostHandlers are like
+	// antehandlers, but are run _after_ the `runMsgs` execution. They are also
+	// defined as a chain, and have the same signature as antehandlers.
+	//
+	// In baseapp, postHandlers are run in the same store branch as `runMsgs`,
+	// meaning that both `runMsgs` and `postHandler` state will be committed if
+	// both are successful, and both will be reverted if any of the two fails.
+	//
+	// The SDK exposes a default empty postHandlers chain.
+	//
+	// Please note that changing any of the anteHandler or postHandler chain is
+	// likely to be a state-machine breaking change, which needs a coordinated
+	// upgrade.
+	app.setPostHandler()
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
@@ -561,12 +563,23 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	return app
 }
 
+func (app *RegenApp) setPostHandler() {
+	postHandler, err := posthandler.NewPostHandler(
+		posthandler.HandlerOptions{},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	app.SetPostHandler(postHandler)
+}
+
 // MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
 // Regenapp. It is useful for tests and clients who do not want to construct the
 // full Regenapp
 func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
 	config := MakeEncodingConfig()
-	return config.Marshaler, config.Amino
+	return config.Codec, config.Amino
 }
 
 // Name returns the name of the App
@@ -698,8 +711,8 @@ func (app *RegenApp) RegisterTxService(clientCtx client.Context) {
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *RegenApp) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(
-		app.BaseApp.GRPCQueryRouter(),
 		clientCtx,
+		app.BaseApp.GRPCQueryRouter(),
 		app.interfaceRegistry,
 		app.Query,
 	)
