@@ -102,7 +102,7 @@ func (k Keeper) verifyReferenceId(ctx context.Context, classKey uint64, referenc
 	if err != nil {
 		return err
 	}
-        defer it.Close()
+	defer it.Close()
 	if it.Next() {
 		return sdkerrors.ErrInvalidRequest.Wrapf(
 			"a project with reference id %s already exists within this credit class", referenceId,
