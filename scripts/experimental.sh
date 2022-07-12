@@ -2,7 +2,7 @@
 
 echo "Updating go.mod and go.sum to support experimental build..."
 
-search="replace github.com/CosmWasm/wasmd => ./mock/wasmd"
+search="replace github.com/CosmWasm/wasmd => ./mocks/wasmd"
 replace="// replace directive removed as a result of experimental.sh"
 
 sed -i "s|$search|$replace|" go.mod

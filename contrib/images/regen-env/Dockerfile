@@ -4,7 +4,7 @@ WORKDIR /work
 
 COPY go.mod go.sum /work/
 COPY api/go.mod api/go.sum /work/api/
-COPY mock/wasmd/go.mod mock/wasmd/go.sum /work/mock/wasmd/
+COPY mocks/wasmd/go.mod mocks/wasmd/go.sum /work/mocks/wasmd/
 COPY types/go.mod types/go.sum /work/types/
 COPY x/ecocredit/go.mod x/ecocredit/go.sum /work/x/ecocredit/
 COPY x/group/go.mod x/group/go.sum /work/x/group/

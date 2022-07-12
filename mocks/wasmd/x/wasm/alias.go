@@ -6,7 +6,12 @@ import (
 )
 
 const (
-	StoreKey = types.StoreKey
+	ModuleName = types.ModuleName
+	StoreKey   = types.StoreKey
+)
+
+var (
+	NewKeeper = keeper.NewKeeper
 )
 
 type (
