@@ -2,7 +2,7 @@
 
 echo "Cleaning up go.mod from experimental build..."
 
-search="// replace directive removed as a result of experimental.sh"
+search="// replace github.com/CosmWasm/wasmd => ./mocks/wasmd"
 replace="replace github.com/CosmWasm/wasmd => ./mocks/wasmd"
 
 # using -i.bak makes this compatible with both GNU and BSD/Mac
