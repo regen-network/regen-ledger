@@ -3,7 +3,7 @@ package orm_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
 	"pgregory.net/rapid"
 
@@ -29,7 +29,7 @@ func (m *sequenceMachine) Init(t *rapid.T) {
 	m.ctx = orm.NewMockContext()
 
 	// Create primary key table
-	storeKey := sdk.NewKVStoreKey("test")
+	storeKey := storetypes.NewKVStoreKey("test")
 	seq := orm.NewSequence(storeKey, 0x1)
 	m.seq = &seq
 

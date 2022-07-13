@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"reflect"
 
+	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
-	"github.com/cosmos/cosmos-sdk/store/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var _ Indexable = &tableBuilder{}
@@ -321,7 +320,7 @@ func (a table) Import(ctx HasKVStore, data interface{}, _ uint64) error {
 type typeSafeIterator struct {
 	ctx       HasKVStore
 	rowGetter RowGetter
-	it        types.Iterator
+	it        storetypes.Iterator
 }
 
 func (i typeSafeIterator) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {

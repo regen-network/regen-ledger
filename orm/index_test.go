@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/types/errors"
@@ -20,7 +21,7 @@ var _, _ orm.Indexable = &nilStoreKeyBuilder{}, &nilRowGetterBuilder{}
 
 type nilStoreKeyBuilder struct{}
 
-func (b *nilStoreKeyBuilder) StoreKey() sdk.StoreKey { return nil }
+func (b *nilStoreKeyBuilder) StoreKey() storetypes.StoreKey { return nil }
 func (b *nilStoreKeyBuilder) RowGetter() orm.RowGetter {
 	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
 }
@@ -29,8 +30,8 @@ func (b *nilStoreKeyBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteIntercepto
 
 type nilRowGetterBuilder struct{}
 
-func (b *nilRowGetterBuilder) StoreKey() sdk.StoreKey {
-	return sdk.NewKVStoreKey("test")
+func (b *nilRowGetterBuilder) StoreKey() storetypes.StoreKey {
+	return storetypes.NewKVStoreKey("test")
 }
 func (b *nilRowGetterBuilder) RowGetter() orm.RowGetter {
 	return nil
@@ -41,7 +42,7 @@ func (b *nilRowGetterBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteIntercept
 func TestNewIndex(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
-	storeKey := sdk.NewKVStoreKey("test")
+	storeKey := storetypes.NewKVStoreKey("test")
 	const (
 		testTablePrefix = iota
 		testTableSeqPrefix
@@ -103,7 +104,7 @@ func TestNewIndex(t *testing.T) {
 func TestIndexPrefixScan(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
-	storeKey := sdk.NewKVStoreKey("test")
+	storeKey := storetypes.NewKVStoreKey("test")
 	const (
 		testTablePrefix = iota
 		testTableSeqPrefix
@@ -310,7 +311,7 @@ func TestUniqueIndex(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
-	storeKey := sdk.NewKVStoreKey("test")
+	storeKey := storetypes.NewKVStoreKey("test")
 
 	tableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, cdc)
 	require.NoError(t, err)

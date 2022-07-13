@@ -6,16 +6,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 // indexer creates and modifies the second MultiKeyIndex based on the operations and changes on the primary object.
 type indexer interface {
-	OnCreate(store sdk.KVStore, rowID RowID, value interface{}) error
-	OnDelete(store sdk.KVStore, rowID RowID, value interface{}) error
-	OnUpdate(store sdk.KVStore, rowID RowID, newValue, oldValue interface{}) error
+	OnCreate(store storetypes.KVStore, rowID RowID, value interface{}) error
+	OnDelete(store storetypes.KVStore, rowID RowID, value interface{}) error
+	OnUpdate(store storetypes.KVStore, rowID RowID, newValue, oldValue interface{}) error
 }
 
 var _ Index = &MultiKeyIndex{}
@@ -23,7 +23,7 @@ var _ Index = &MultiKeyIndex{}
 // MultiKeyIndex is an index where multiple entries can point to the same underlying object as opposite to a unique index
 // where only one entry is allowed.
 type MultiKeyIndex struct {
-	storeKey    sdk.StoreKey
+	storeKey    storetypes.StoreKey
 	prefix      byte
 	rowGetter   RowGetter
 	indexer     indexer

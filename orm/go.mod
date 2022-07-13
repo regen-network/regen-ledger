@@ -1,8 +1,9 @@
 module github.com/regen-network/regen-ledger/orm
 
-go 1.17
+go 1.18
 
 require (
+	cosmossdk.io/errors v1.0.0-beta.7
 	github.com/cosmos/cosmos-sdk v0.46.0-rc2
 	github.com/gogo/protobuf v1.3.3
 	github.com/stretchr/testify v1.7.5
@@ -11,7 +12,6 @@ require (
 )
 
 require (
-	cosmossdk.io/errors v1.0.0-beta.7 // indirect
 	cosmossdk.io/math v1.0.0-beta.2 // indirect
 	github.com/armon/go-metrics v0.3.11 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -84,7 +84,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
-
-// replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.44.2-regen-1
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

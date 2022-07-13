@@ -2,13 +2,13 @@ package orm
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 var _ Indexable = &PrimaryKeyTableBuilder{}
 
 // NewPrimaryKeyTableBuilder creates a builder to setup a PrimaryKeyTable object.
-func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, cdc codec.Codec) (*PrimaryKeyTableBuilder, error) {
+func NewPrimaryKeyTableBuilder(prefixData byte, storeKey storetypes.StoreKey, model PrimaryKeyed, cdc codec.Codec) (*PrimaryKeyTableBuilder, error) {
 	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, cdc)
 	if err != nil {
 		return nil, err

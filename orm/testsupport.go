@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/store/gaskv"
 	"github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	dbm "github.com/tendermint/tm-db"
 )
@@ -24,11 +25,11 @@ func NewMockContext() *MockContext {
 	}
 }
 
-func (m MockContext) KVStore(key sdk.StoreKey) sdk.KVStore {
+func (m MockContext) KVStore(key storetypes.StoreKey) storetypes.KVStore {
 	if s := m.store.GetCommitKVStore(key); s != nil {
 		return s
 	}
-	m.store.MountStoreWithDB(key, sdk.StoreTypeIAVL, m.db)
+	m.store.MountStoreWithDB(key, storetypes.StoreTypeIAVL, m.db)
 	if err := m.store.LoadLatestVersion(); err != nil {
 		panic(err)
 	}
@@ -72,6 +73,13 @@ func (d debuggingGasMeter) String() string {
 	return d.g.String()
 }
 
+func (d debuggingGasMeter) GasRemaining() types.Gas {
+	if d.g.IsPastLimit() {
+		return 0
+	}
+	return d.g.Limit() - d.g.GasConsumed()
+}
+
 type GasCountingMockContext struct {
 	parent   HasKVStore
 	GasMeter sdk.GasMeter
@@ -80,11 +88,11 @@ type GasCountingMockContext struct {
 func NewGasCountingMockContext(parent HasKVStore) *GasCountingMockContext {
 	return &GasCountingMockContext{
 		parent:   parent,
-		GasMeter: &debuggingGasMeter{sdk.NewInfiniteGasMeter()},
+		GasMeter: &debuggingGasMeter{storetypes.NewInfiniteGasMeter()},
 	}
 }
 
-func (g GasCountingMockContext) KVStore(key sdk.StoreKey) sdk.KVStore {
+func (g GasCountingMockContext) KVStore(key storetypes.StoreKey) storetypes.KVStore {
 	return gaskv.NewStore(g.parent.KVStore(key), g.GasMeter, types.KVGasConfig())
 }
 
@@ -93,7 +101,7 @@ func (g GasCountingMockContext) GasConsumed() types.Gas {
 }
 
 func (g *GasCountingMockContext) ResetGasMeter() {
-	g.GasMeter = sdk.NewInfiniteGasMeter()
+	g.GasMeter = storetypes.NewInfiniteGasMeter()
 }
 
 type AlwaysPanicKVStore struct{}

@@ -2,14 +2,14 @@ package orm_test
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
 type GroupKeeper struct {
-	key                      sdk.StoreKey
+	key                      storetypes.StoreKey
 	groupTable               orm.AutoUInt64Table
 	groupByAdminIndex        orm.Index
 	groupMemberTable         orm.PrimaryKeyTable
@@ -31,7 +31,7 @@ var (
 	GroupMemberByWeightIndexPrefix byte = 0x9
 )
 
-func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Codec) GroupKeeper {
+func NewGroupKeeper(storeKey storetypes.StoreKey, cdc codec.Codec) GroupKeeper {
 	k := GroupKeeper{key: storeKey}
 
 	groupTableBuilder, err := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)

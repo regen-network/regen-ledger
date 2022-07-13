@@ -9,6 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -29,7 +30,7 @@ var (
 
 // HasKVStore is a subset of the cosmos-sdk context defined for loose coupling and simpler test setups.
 type HasKVStore interface {
-	KVStore(key sdk.StoreKey) sdk.KVStore
+	KVStore(key storetypes.StoreKey) sdk.KVStore
 }
 
 // Unique identifier of a persistent table.
@@ -119,7 +120,7 @@ type Iterator interface {
 // Indexable types are used to setup new tables.
 // This interface provides a set of functions that can be called by indexes to register and interact with the tables.
 type Indexable interface {
-	StoreKey() sdk.StoreKey
+	StoreKey() storetypes.StoreKey
 	RowGetter() RowGetter
 	AddAfterSetInterceptor(interceptor AfterSetInterceptor)
 	AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor)
@@ -136,7 +137,7 @@ type AfterDeleteInterceptor func(ctx HasKVStore, rowID RowID, value codec.ProtoM
 type RowGetter func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error
 
 // NewTypeSafeRowGetter returns a `RowGetter` with type check on the dest parameter.
-func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.Codec) RowGetter {
+func NewTypeSafeRowGetter(storeKey storetypes.StoreKey, prefixKey byte, model reflect.Type, cdc codec.Codec) RowGetter {
 	return func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
 		if len(rowID) == 0 {
 			return errors.Wrap(ErrArgument, "key must not be nil")

@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/assert"
@@ -19,11 +20,11 @@ func TestBuilder(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
-	storeKey := sdk.NewKVStoreKey("test")
+	storeKey := storetypes.NewKVStoreKey("test")
 
 	testCases := []struct {
 		name        string
-		storeKey    sdk.StoreKey
+		storeKey    storetypes.StoreKey
 		model       codec.ProtoMarshaler
 		expectErr   bool
 		expectedErr string
@@ -104,7 +105,7 @@ func TestCreate(t *testing.T) {
 			interfaceRegistry := types.NewInterfaceRegistry()
 			cdc := codec.NewProtoCodec(interfaceRegistry)
 
-			storeKey := sdk.NewKVStoreKey("test")
+			storeKey := storetypes.NewKVStoreKey("test")
 			const anyPrefix = 0x10
 			tableBuilder, err := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 			require.NoError(t, err)
@@ -159,7 +160,7 @@ func TestUpdate(t *testing.T) {
 			interfaceRegistry := types.NewInterfaceRegistry()
 			cdc := codec.NewProtoCodec(interfaceRegistry)
 
-			storeKey := sdk.NewKVStoreKey("test")
+			storeKey := storetypes.NewKVStoreKey("test")
 			const anyPrefix = 0x10
 			tableBuilder, err := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 			require.NoError(t, err)

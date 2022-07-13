@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -13,11 +13,11 @@ var sequenceStorageKey = []byte{0x1}
 
 // sequence is a persistent unique key generator based on a counter.
 type Sequence struct {
-	storeKey sdk.StoreKey
+	storeKey storetypes.StoreKey
 	prefix   byte
 }
 
-func NewSequence(storeKey sdk.StoreKey, prefix byte) Sequence {
+func NewSequence(storeKey storetypes.StoreKey, prefix byte) Sequence {
 	return Sequence{
 		prefix:   prefix,
 		storeKey: storeKey,
