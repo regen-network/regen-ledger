@@ -4,11 +4,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func RegisterTypes(registry codectypes.InterfaceRegistry) {
-	registry.RegisterImplementations((*govtypes.Content)(nil), &CreditTypeProposal{})
+	registry.RegisterImplementations((*govv1beta1.Content)(nil), &CreditTypeProposal{})
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 

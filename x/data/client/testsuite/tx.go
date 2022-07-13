@@ -68,7 +68,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	s.addr1 = sdk.AccAddress(info1.GetPubKey().Address())
+	pk, err := info1.GetPubKey()
+	s.Require().NoError(err)
+	s.addr1 = sdk.AccAddress(pk.Address())
 	_, err = banktestutil.MsgSendExec(
 		s.val.ClientCtx,
 		s.val.Address,
@@ -78,7 +80,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 
-	s.addr2 = sdk.AccAddress(info2.GetPubKey().Address())
+	pk, err = info2.GetPubKey()
+	s.Require().NoError(err)
+	s.addr2 = sdk.AccAddress(pk.Address())
 	_, err = banktestutil.MsgSendExec(
 		s.val.ClientCtx,
 		s.val.Address,

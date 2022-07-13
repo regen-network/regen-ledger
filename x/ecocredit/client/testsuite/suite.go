@@ -253,7 +253,9 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 	s.addr1 = s.val.Address
 
 	// set secondary account
-	s.addr2 = sdk.AccAddress(info.GetPubKey().Address())
+	pk, err := info.GetPubKey()
+	s.Require().NoError(err)
+	s.addr2 = sdk.AccAddress(pk.Address())
 
 	// fund secondary account
 	s.fundAccount(s.val.ClientCtx, s.addr1, s.addr2, sdk.Coins{
