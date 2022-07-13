@@ -9,17 +9,12 @@ import (
 )
 
 var (
-	// This is a value of 20 REGEN
-	DefaultCreditClassFeeTokens = sdk.NewInt(2e7)
-	DefaultBasketCreationFee    = sdk.NewInt(2e7)
-	KeyCreditClassFee           = []byte("CreditClassFee")
-	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
-	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
-	KeyCreditTypes              = []byte("CreditTypes")
-	KeyBasketCreationFee        = []byte("BasketCreationFee")
+	KeyCreditClassFee       = []byte("CreditClassFee")
+	KeyAllowedClassCreators = []byte("AllowedClassCreators")
+	KeyAllowlistEnabled     = []byte("AllowlistEnabled")
+	KeyCreditTypes          = []byte("CreditTypes")
+	KeyBasketCreationFee    = []byte("BasketCreationFee")
 )
-
-const GasCostPerIteration = uint64(10)
 
 const (
 	PRECISION uint32 = 6
