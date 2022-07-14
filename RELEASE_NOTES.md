@@ -16,7 +16,7 @@ For more information about projects, check out the [ecocredit module documentati
 
 The ecocredit module includes a new marketplace submodule that supports a simple storefront model for creating sell orders and purchasing credits directly from those sell orders. When a sell order is created, the credits being sold are held in escrow. The default behavior is to have credits auto-retired upon sale but the seller has the option to disable auto-retirement. When a sell order has auto-retirement disabled, the buyer can choose to receive the purchased credits in a retired or tradable state.
 
-Credit owners can only list credits for sale with a token denom that is on an "allowed denom" list specific to the marketplace and controlled through on-chain governance. The allowed denom list will be empty at the time of the upgrade and the community will be able to submit proposals to add allowed denoms following the upgrade. See this discussion for more information.
+Credit owners can only list credits for sale with a token denom that is on an "allowed denom" list specific to the marketplace and controlled through on-chain governance. The allowed denom list will be empty at the time of the upgrade and the community will be able to submit proposals to add allowed denoms following the upgrade. See [this discussion](https://forum.regen.network/discussion/4959-adding-tokens-to-the-regen-ledger-currency-allow-list) for more information.
 
 For more information about marketplace functionality, check out the [ecocredit module documentation](https://docs.regen.network/modules/ecocredit/).
 
