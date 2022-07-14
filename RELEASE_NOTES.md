@@ -6,7 +6,7 @@ The new features made available in Regen Ledger `v4.0.0` are as follows:
 
 ### On-Chain Projects
 
-We've updated the core functionality of the ecocredit module to support on-chain projects. This means on-the-ground project developers providing ecosystem services will now be represented as on-chain entities and information about each project will be stored separate from the credit batch and each credit batch will store the associated project ID.
+We've updated the core functionality of the ecocredit module to support on-chain projects. This means on-the-ground project developers providing ecosystem services will now be represented as on-chain entities and information about each project will be stored separate from the credit batch and each credit batch will be linked to the associated project.
 
 In this initial implementation, projects exist within credit classes and only an approved issuer of a given credit class can create a project associated with that credit class. The issuer of the credit class becomes the project admin when the project is created and can then reassign the admin role to any address.
 
@@ -14,7 +14,7 @@ For more information about projects, check out the [ecocredit module documentati
 
 ### Marketplace Functionality
 
-The ecocredit module includes a new marketplace submodule that supports a simple storefront model for creating sell orders and purchasing credits directly from those sell orders. When a sell order is created, the credits being sold are held in escrow. The default behavior is to have credits auto-retired upon sale but the seller has the option to disable auto-retirement and the buyer has the option to disable auto-retirement if the seller has disabled auto-retirement.
+The ecocredit module includes a new marketplace submodule that supports a simple storefront model for creating sell orders and purchasing credits directly from those sell orders. When a sell order is created, the credits being sold are held in escrow. The default behavior is to have credits auto-retired upon sale but the seller has the option to disable auto-retirement and the buyer has the option to disable auto-retirement if auto-retirement is disabled in the sell order.
 
 Credit owners can only list credits for sale with a token denom that is on an "allowed denom" list specific to the marketplace and controlled through on-chain governance. The allowed denom list will be empty at the time of the upgrade and the community will be able to submit proposals to add allowed denoms following the upgrade. See this discussion for more information.
 
@@ -32,21 +32,23 @@ For more information about the data module, check out the [data module documenta
 
 ### Cross-Chain Credits
 
-Over the past few months, we have been working alongside the Toucan team to develop a bridge service that will enable bridging ecosystem service credits to/from the Polygon blockchain. The initial use case of the bridge service will be to bridge Toucan's TCO2 tokens to Regen Ledger for use in our upcoming NCT basket.
+Over the past few months, we have been working alongside the [Toucan](https://toucan.earth/) team to develop a bridge service that will enable bridging ecosystem service credits to/from the Polygon blockchain. The initial use case of the bridge service will be to bridge Toucan's TCO2 tokens to Regen Ledger for use in our NCT basket.
 
 In support of these efforts, we have added functionality in Regen Ledger v4.0 to support dynamic batch minting that enables bridged assets from the same vintage to be minted to a pre-existing credit batch. Each credit batch will be "sealed" by default so that credit batches with credits issued natively on Regen Ledger can remain immutable.
 
-When credits are bridged from Regen to Polygon, the credits will be cancelled, indicating that the credits have moved to another chain or registry. The functionality to support bridging assets will be included in Regen Ledger v4.0 but the bridge service itself will be launched separately.
+When credits are bridged from Regen to Polygon, the credits will be cancelled, indicating that the credits have moved to another chain or registry. The bridge service will then read the event emitted from the execution of the bridge message and process the bridge request.
+
+The functionality to support bridging assets is included in Regen Ledger v4.0 but the bridge service itself will be launched separately.
 
 ## Improvements
 
 ### Improved Storage
 
-Regen Ledger v4.0 makes use of an ORM storage model implemented within the orm package within Cosmos SDK that acts as an abstraction layer over the existing KV store. The orm package enables the creation of database tables with primary and secondary keys. This abstraction layer provides support for efficient lookups and will improve the velocity of feature development.
+Regen Ledger v4.0 makes use of an ORM storage model implemented within the orm module within Cosmos SDK that acts as an abstraction layer over the existing KV store. The orm module enables the creation of database tables with primary and secondary keys. This abstraction layer provides support for efficient lookups and will improve the velocity of feature development.
 
 ### Improved API Naming
 
-Regen Ledger v4.0 includes a significant number of minor API changes intended to provide more consistent naming throughout the project and to provide an overall better user experience. The API is defined in proto files that are now available on Buf Schema Registry.
+Regen Ledger v4.0 includes a significant number of minor API changes intended to provide more consistent naming throughout the project and to provide an overall better user experience. The API is defined in proto files that are now available on [Buf Schema Registry](https://buf.build/regen/regen-ledger).
 
 ## Additional Changes
 
@@ -72,12 +74,12 @@ C01-001-20200101-20210101-001
 
 ## Changelog
 
-[link]
+For a full list of changes since Regen Ledger v3.0, please see [CHANGELOG.md](./CHANGELOG.md).
 
 ## Validator Upgrade Guide
 
-[link]
+An upgrade guide for validators is available at [Upgrade Guide v4.0](https://docs.regen.network/validators/upgrades/v4.0-upgrade.html).
 
 ## Developer Migration Guide
 
-[link]
+A migration guide for application developers is available at [Migration Guide v4.0](https://docs.regen.network/ledger/migrations/v4.0-migration.html).
