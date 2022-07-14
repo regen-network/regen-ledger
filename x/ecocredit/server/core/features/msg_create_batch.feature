@@ -176,14 +176,14 @@ Feature: Msg/CreateBatch
       """
       [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
       ]
       """
-      Then expect recipient batch balance with address "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      Then expect recipient batch balance with address "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
       """
       {
         "tradable_amount": "100",
@@ -197,20 +197,20 @@ Feature: Msg/CreateBatch
       """
       [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         },
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
       ]
       """
-      Then expect recipient batch balance with address "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      Then expect recipient batch balance with address "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
       """
       {
         "tradable_amount": "200",
@@ -224,20 +224,20 @@ Feature: Msg/CreateBatch
       """
       [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         },
         {
-          "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+          "recipient": "regen1c3lpjaq0ytdtsrnjqzmtj3hceavl8fe2vtkj7f",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
       ]
       """
-      Then expect recipient batch balance with address "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      Then expect recipient batch balance with address "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
       """
       {
         "tradable_amount": "100",
@@ -245,7 +245,7 @@ Feature: Msg/CreateBatch
         "escrowed_amount": "0"
       }
       """
-      And expect recipient batch balance with address "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"
+      And expect recipient batch balance with address "regen1c3lpjaq0ytdtsrnjqzmtj3hceavl8fe2vtkj7f"
       """
       {
         "tradable_amount": "100",
@@ -268,7 +268,7 @@ Feature: Msg/CreateBatch
       """
       [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
@@ -289,13 +289,13 @@ Feature: Msg/CreateBatch
       """
       [
         {
-          "recipient": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         },
         {
-          "recipient": "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3",
+          "recipient": "regen1c3lpjaq0ytdtsrnjqzmtj3hceavl8fe2vtkj7f",
           "tradable_amount": "100",
           "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"

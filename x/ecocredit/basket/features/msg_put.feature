@@ -4,7 +4,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "eco.uC.NCT",
       "credits": [
         {
@@ -39,7 +39,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
     }
     """
     When the message is validated
@@ -49,7 +49,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "foo"
     }
     """
@@ -60,7 +60,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "eco.uC.NCT"
     }
     """
@@ -71,7 +71,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "eco.uC.NCT",
       "credits": [
         {}
@@ -85,7 +85,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "eco.uC.NCT",
       "credits": [
         {
@@ -101,7 +101,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "eco.uC.NCT",
       "credits": [
         {
@@ -117,7 +117,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "eco.uC.NCT",
       "credits": [
         {
@@ -134,7 +134,7 @@ Feature: MsgPut
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "basket_denom": "eco.uC.NCT",
       "credits": [
         {
