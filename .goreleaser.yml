@@ -136,6 +136,7 @@ brews:
       owner: regen-network
       name: regen-ledger
       branch: homebrew-taps
+    folder: "{{ .Tag }}"
     homepage: "https://www.regen.network/"
     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
     test: |
