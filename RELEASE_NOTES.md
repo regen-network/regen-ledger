@@ -6,7 +6,7 @@ The new features made available in Regen Ledger `v4.0.0` are as follows:
 
 ### On-Chain Projects
 
-We've updated the core functionality of the ecocredit module to support on-chain projects. This means on-the-ground project developers providing ecosystem services will now be represented as on-chain entities and information about each project will be stored separate from the credit batch and each credit batch will be linked to the associated project.
+We've updated the core functionality of the ecocredit module to support on-chain projects. This means on-the-ground project developers providing ecosystem services will now be represented as on-chain entities. Information about each project will be stored separate from the credit batch and each credit batch will be linked to the associated project.
 
 In this initial implementation, projects exist within credit classes and only an approved issuer of a given credit class can create a project associated with that credit class. The issuer of the credit class becomes the project admin when the project is created and can then reassign the admin role to any address.
 
@@ -14,7 +14,7 @@ For more information about projects, check out the [ecocredit module documentati
 
 ### Marketplace Functionality
 
-The ecocredit module includes a new marketplace submodule that supports a simple storefront model for creating sell orders and purchasing credits directly from those sell orders. When a sell order is created, the credits being sold are held in escrow. The default behavior is to have credits auto-retired upon sale but the seller has the option to disable auto-retirement and the buyer has the option to disable auto-retirement if auto-retirement is disabled in the sell order.
+The ecocredit module includes a new marketplace submodule that supports a simple storefront model for creating sell orders and purchasing credits directly from those sell orders. When a sell order is created, the credits being sold are held in escrow. The default behavior is to have credits auto-retired upon sale but the seller has the option to disable auto-retirement. When a sell order has auto-retirement disabled, the buyer can choose to receive the purchased credits in a retired or tradable state.
 
 Credit owners can only list credits for sale with a token denom that is on an "allowed denom" list specific to the marketplace and controlled through on-chain governance. The allowed denom list will be empty at the time of the upgrade and the community will be able to submit proposals to add allowed denoms following the upgrade. See this discussion for more information.
 
