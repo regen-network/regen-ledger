@@ -5,38 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-<!-- TODO: consolidate v4.0.0 pre-releases with official release once available -->
-
-### x/ecocredit
-
-#### Added
-
-- [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Add reusable `Credits` type.
-- [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Add additional bindings for query endpoints
-
-#### Changed
-
-- [#1167](https://github.com/regen-network/regen-ledger/pull/1167) Update basket fee to be burned upon basket creation
-- [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Update `Query/Projects` to `Query/ProjectsByClass`
-- [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Update `Msg/Bridge` to use reusable `Credits` type
-- [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Update `Msg/Cancel` to use reusable `Credits` type
-- [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Update `Msg/Retire` to use reusable `Credits` type
-- [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `issuer` to `admin` in `Msg/CreateProject`
-- [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `metadata` to `new_metadata` in `Msg/UpdateClassMetadata`
-
-#### Removed
-
-- [#1177](https://github.com/regen-network/regen-ledger/pull/1177) Remove exponent from `create-basket` command
-
-#### Fixed
-
-- [#1180](https://github.com/regen-network/regen-ledger/pull/1180) Fix batch dates and project IDs in `regen-1` state migrations
-
-## [v4.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-beta1) - 2022-06-03
-
-<!-- TODO: consolidate v4.0.0 pre-releases with official release once available -->
+## [v4.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-rc1) - 2022-07-15
 
 ### General
 
@@ -81,6 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption to consume for each iteration
 - [#946](https://github.com/regen-network/regen-ledger/pull/946) Remove use of `oneof` to support legacy Amino signing
 - [#1128](https://github.com/regen-network/regen-ledger/pull/1128) Remove unique constrains on resolver URL
+- [#1177](https://github.com/regen-network/regen-ledger/pull/1177) Remove exponent from `create-basket` command
+- [#1180](https://github.com/regen-network/regen-ledger/pull/1180) Fix batch dates and project IDs in `regen-1` state migrations
 
 ### x/ecocredit
 
@@ -142,6 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1148](https://github.com/regen-network/regen-ledger/pull/1148) Add marketplace `EventBuyDirect`
 - [#1148](https://github.com/regen-network/regen-ledger/pull/1148) Add marketplace `EventCancel`
 - [#1141](https://github.com/regen-network/regen-ledger/pull/1141) Add `Query/ProjectsByAdmin`
+- [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Add reusable `Credits` type.
+- [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Add additional bindings for query endpoints
 
 #### Changed
 
@@ -196,6 +169,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename marketplace `owner` to `seller`
 - [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename `account` to `address`
 - [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename `holder` to `owner`
+- [#1167](https://github.com/regen-network/regen-ledger/pull/1167) Update basket fee to be burned upon basket creation
+- [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Update `Query/Projects` to `Query/ProjectsByClass`
+- [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Update `Msg/Bridge` to use reusable `Credits` type
+- [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Update `Msg/Cancel` to use reusable `Credits` type
+- [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Update `Msg/Retire` to use reusable `Credits` type
+- [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `issuer` to `admin` in `Msg/CreateProject`
+- [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `metadata` to `new_metadata` in `Msg/UpdateClassMetadata`
 
 #### Removed
 
