@@ -13,15 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#720](https://github.com/regen-network/regen-ledger/pull/720) Add begin and end blocker support to module server
 - [#783](https://github.com/regen-network/regen-ledger/pull/783) Add `BigInt` conversion method to `Dec` interface 
+- [#1255](https://github.com/regen-network/regen-ledger/pull/1255) Add arm and windows package builds to release build
 
 #### Changed
 
 - [#1088](https://github.com/regen-network/regen-ledger/pull/1088) Update all modules to Go `1.18`
 - [#1131](https://github.com/regen-network/regen-ledger/pull/1131) Update app module version to `v4`
+- [#1097](https://github.com/regen-network/regen-ledger/pull/1097) Update `make` commands and build options
 
 #### Fixed
 
-- [#685](https://github.com/regen-network/regen-ledger/pull/685) Update swagger-gen to include ibc-go swagger docs
+- [#685](https://github.com/regen-network/regen-ledger/pull/685) Fix swagger-gen to include ibc-go swagger docs
+- [#1210](https://github.com/regen-network/regen-ledger/pull/1210) Fix `PositiveDecimalFromString` to error if not finite
 
 ### x/data
 
@@ -35,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1051](https://github.com/regen-network/regen-ledger/pull/1051) Add `EventDefineResolver` and `EventRegisterResolver`
 - [#1107](https://github.com/regen-network/regen-ledger/pull/1107) Add commands and endpoints for IRI/ContentHash conversion
 - [#1132](https://github.com/regen-network/regen-ledger/pull/1132) Add `Query/ResolversByURL`
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Add post endpoints to all `ByHash` queries  
+- [#1219](https://github.com/regen-network/regen-ledger/pull/1219) Add unique constraints on resolver url and manager
 
 #### Changed
 
@@ -44,6 +49,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#970](https://github.com/regen-network/regen-ledger/pull/970) Update data module to use `cosmos-sdk/orm`
 - [#969](https://github.com/regen-network/regen-ledger/pull/971) Update `Msg/Attest` to single attestor and multiple pieces of data
 - [#1014](https://github.com/regen-network/regen-ledger/pull/1014) Update `hash` field names to `content_hash` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `Query/ByIRI` to `Query/AnchorByIRI` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `Query/ByHash` to `Query/AnchorByHash` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `Query/AttestorsByIRI` to `Query/AttestationsByIRI` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `Query/AttestorsByHash` to `Query/AttestationsByHash` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `ContentEntry` to `AnchorInfo` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `AttestorEntry` to `AttestorInfo` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `Query/IRIByHash` to `Query/ConvertHashToIRI` 
+- [#1156](https://github.com/regen-network/regen-ledger/pull/1156) Update `Query/HashByIRI` to `Query/ConvertIRIToHash` 
 
 #### Fixed
 
@@ -115,6 +128,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1141](https://github.com/regen-network/regen-ledger/pull/1141) Add `Query/ProjectsByAdmin`
 - [#1160](https://github.com/regen-network/regen-ledger/pull/1160) Add reusable `Credits` type.
 - [#1168](https://github.com/regen-network/regen-ledger/pull/1168) Add additional bindings for query endpoints
+- [#1178](https://github.com/regen-network/regen-ledger/pull/1178) Add `Query/Projects`
+- [#1174](https://github.com/regen-network/regen-ledger/pull/1174) Add `Msg/BridgeReceive`
+- [#1197](https://github.com/regen-network/regen-ledger/pull/1197) Add alternative bindings for marketplace queries
+- [#1198](https://github.com/regen-network/regen-ledger/pull/1198) Add alternative bindings for basket queries
+- [#1205](https://github.com/regen-network/regen-ledger/pull/1205) Add basket denom units migration
+- [#1209](https://github.com/regen-network/regen-ledger/pull/1209) Add regen metadata units migration
+- [#1213](https://github.com/regen-network/regen-ledger/pull/1213) Add simpler version of `send` command
+- [#1218](https://github.com/regen-network/regen-ledger/pull/1218) Add restriction on buyer being seller
+- [#1224](https://github.com/regen-network/regen-ledger/pull/1224) Add `EventBridgeReceive` and `EventBridge`
+- [#1225](https://github.com/regen-network/regen-ledger/pull/1225) Add `note` and `contract` to `OriginTx`
+- [#1226](https://github.com/regen-network/regen-ledger/pull/1226) Add `BatchContract` to map batch to contract
+- [#1229](https://github.com/regen-network/regen-ledger/pull/1229) Add `class_key` to `OriginTxIndex`
 
 #### Changed
 
@@ -176,6 +201,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Update `Msg/Retire` to use reusable `Credits` type
 - [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `issuer` to `admin` in `Msg/CreateProject`
 - [#1161](https://github.com/regen-network/regen-ledger/pull/1161) Rename `metadata` to `new_metadata` in `Msg/UpdateClassMetadata`
+- [#1192](https://github.com/regen-network/regen-ledger/pull/1192) Rename `tradable_supply` to `tradable_amount`
+- [#1192](https://github.com/regen-network/regen-ledger/pull/1192) Rename `retired_supply` to `retired_amount`
+- [#1197](https://github.com/regen-network/regen-ledger/pull/1197) Rename `SellOrdersByBatchDenom` to `SellOrdersByBatch`
+- [#1199](https://github.com/regen-network/regen-ledger/pull/1199) Update ecocredit commands to consistently use json
+- [#1200](https://github.com/regen-network/regen-ledger/pull/1200) Update basic validation for basket denom
+- [#1213](https://github.com/regen-network/regen-ledger/pull/1213) Rename `send` command to `send-bulk`
 
 #### Removed
 
@@ -189,6 +220,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption for each iteration
 - [#1135](https://github.com/regen-network/regen-ledger/pull/1135) Deprecate basket exponent and use credit type precision
 - [#1144](https://github.com/regen-network/regen-ledger/pull/1144) Fix `MsgCreateBatch` issuance with same recipient
+- [#1194](https://github.com/regen-network/regen-ledger/pull/1194) Fix start and end date in batch denom to always use UTC
+- [#1195](https://github.com/regen-network/regen-ledger/pull/1195) Fix genesis validation to include basket balances
+- [#1202](https://github.com/regen-network/regen-ledger/pull/1202) Fix order of storing basket token denominations
+- [#1220](https://github.com/regen-network/regen-ledger/pull/1220) Add project reference id to `Query/Project` response
+- [#1234](https://github.com/regen-network/regen-ledger/pull/1234) Fix `CreateClassFee` implementation if not required
 
 ### orm
 
