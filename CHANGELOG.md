@@ -190,7 +190,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `Retired` to `RetiredAmount`
 - [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `Escrowed` to `EscrowedAmount`
 - [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `AskPrice` to `AskAmount`
-- [#1123](https://github.com/regen-network/regen-ledger/pull/1123) Rename `AskPrice` to `AskAmount`
 - [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename marketplace `owner` to `seller`
 - [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename `account` to `address`
 - [#1153](https://github.com/regen-network/regen-ledger/pull/1153) Rename `holder` to `owner`
