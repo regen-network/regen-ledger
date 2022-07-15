@@ -15,10 +15,24 @@ import (
 
 var errBadReq = sdkerrors.ErrInvalidRequest
 
-// MaxMetadataLength defines the max length of the metadata bytes field
-// for the credit-class & credit-batch.
-// TODO: This could be used as params once x/params is upgraded to use protobuf
-const MaxMetadataLength = 256
+const (
+	// BridgePolygon is currently the only allowed target when calling
+	// Msg/Bridge and the only allowed source (provided within OriginTx)
+	// when calling Msg/BridgeReceive. This value is not required as the
+	// source within basic OriginTx validation, allowing for manual bridge
+	// operations to be performed from other sources with Msg/CreateBatch
+	// and Msg/MintBatchCredits.
+	// TODO: remove after we introduce governance gated chains
+	// https://github.com/regen-network/regen-ledger/issues/1119
+	BridgePolygon = "polygon"
+
+	// MaxMetadataLength defines the max length of the metadata bytes field
+	// for the credit-class & credit-batch.
+	MaxMetadataLength = 256
+
+	// MaxNoteLength defines the max length for note fields.
+	MaxNoteLength = 512
+)
 
 var (
 	RegexClassId      = `[A-Z]{1,3}[0-9]{2,}`
@@ -85,10 +99,10 @@ func FormatBatchDenom(projectId string, batchSeqNo uint64, startDate, endDate *t
 		projectId,
 
 		// Start Date as YYYYMMDD
-		startDate.Format("20060102"),
+		startDate.UTC().Format("20060102"),
 
 		// End Date as YYYYMMDD
-		endDate.Format("20060102"),
+		endDate.UTC().Format("20060102"),
 
 		// Batch sequence number padded to at least three digits
 		batchSeqNo,
@@ -149,11 +163,41 @@ func ValidateJurisdiction(jurisdiction string) error {
 	return nil
 }
 
+// GetClassIdFromProjectId returns the credit class ID in a project ID.
+func GetClassIdFromProjectId(projectId string) string {
+	var s strings.Builder
+	for _, r := range projectId {
+		if r != '-' {
+			s.WriteRune(r)
+			continue
+		}
+		break
+	}
+	return s.String()
+}
+
 // GetClassIdFromBatchDenom returns the credit class ID in a batch denom.
 func GetClassIdFromBatchDenom(denom string) string {
 	var s strings.Builder
 	for _, r := range denom {
 		if r != '-' {
+			s.WriteRune(r)
+			continue
+		}
+		break
+	}
+	return s.String()
+}
+
+// GetProjectIdFromBatchDenom returns the credit project ID in a batch denom.
+func GetProjectIdFromBatchDenom(denom string) string {
+	var s strings.Builder
+	c := 0
+	for _, r := range denom {
+		if r == '-' {
+			c++
+		}
+		if r != '-' || c != 2 {
 			s.WriteRune(r)
 			continue
 		}

@@ -4,18 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	types2 "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-const (
-	marketplaceRoute = "regen/ecocredit/marketplace/v1"
-	basketRoute      = "regen/ecocredit/basket/v1"
-	coreRoute        = "regen/ecocredit/v1"
-)
+const coreRoute = "regen/ecocredit/v1"
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
 	testCases := []struct {
@@ -130,7 +123,9 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects?pagination.countTotal=true",
+				// TODO: #1113
+				// "%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
 			),
@@ -232,7 +227,9 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects-by-reference-id/%s?pagination.countTotal=true",
+				// TODO: #1113
+				// "%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
 				s.projectReferenceId,
@@ -539,8 +536,8 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
-			require.NotEmpty(res.RetiredSupply)
-			require.NotEmpty(res.TradableSupply)
+			require.NotEmpty(res.RetiredAmount)
+			require.NotEmpty(res.TradableAmount)
 		})
 	}
 }
@@ -556,206 +553,16 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	s.Require().Equal(core.DefaultParams(), *res.Params)
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrder() {
-	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
-	expiration, err := types2.ParseDate("expiration", "2090-10-10")
-	s.Require().NoError(err)
-	orderIds, err := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
-		Seller: s.addr1.String(),
-		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-		},
-	})
-	s.Require().NoError(err)
-	orderId := orderIds[0]
-
-	testCases := []struct {
-		name string
-		url  string
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/%s/sell-orders/%d", s.val.APIAddress, marketplaceRoute, orderId),
-		},
-	}
-
+func (s *IntegrationTestSuite) TestCreditType() {
 	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
 
-			var res marketplace.QuerySellOrderResponse
-			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
-			require.NoError(err)
-			require.NotNil(res.SellOrder)
-			require.Equal(res.SellOrder.Quantity, "10")
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQuerySellOrders() {
-	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
-	expiration, err := types2.ParseDate("expiration", "2090-10-10")
-	s.Require().NoError(err)
-	_, err = s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
-		Seller: s.addr1.String(),
-		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-		},
-	})
-	s.Require().NoError(err)
-
-	testCases := []struct {
-		name     string
-		url      string
-		expItems int
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/%s/sell-orders", s.val.APIAddress, marketplaceRoute),
-			-1,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/%s/sell-orders?pagination.limit=2", s.val.APIAddress, marketplaceRoute),
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var res marketplace.QuerySellOrdersResponse
-			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
-			require.NoError(err)
-			require.NotNil(res.SellOrders)
-			if tc.expItems > 0 {
-				require.Len(res.SellOrders, tc.expItems)
-			} else {
-				require.Greater(len(res.SellOrders), 0)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
-	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
-	expiration, err := types2.ParseDate("expiration", "2090-10-10")
-	s.Require().NoError(err)
-	_, err = s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
-		Seller: s.addr1.String(),
-		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-		},
-	})
-	s.Require().NoError(err)
-
-	testCases := []struct {
-		name     string
-		url      string
-		expItems int
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/%s/sell-orders/batch-denom/%s", s.val.APIAddress, marketplaceRoute, s.batchDenom),
-			-1,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/%s/sell-orders/batch-denom/%s?pagination.limit=2", s.val.APIAddress, marketplaceRoute, s.batchDenom),
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err, err)
-			var res marketplace.QuerySellOrdersByBatchDenomResponse
-			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
-			require.NoError(err, err)
-			require.NotNil(res.SellOrders)
-			if tc.expItems > 0 {
-				require.Len(res.SellOrders, tc.expItems)
-			} else {
-				require.Greater(len(res.SellOrders), 0)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
-	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
-	expiration, err := types2.ParseDate("expiration", "2090-10-10")
-	s.Require().NoError(err)
-	_, err = s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
-		Seller: s.addr1.String(),
-		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-			{BatchDenom: s.batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
-		},
-	})
-	s.Require().NoError(err)
-
-	testCases := []struct {
-		name     string
-		url      string
-		expItems int
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/%s/sell-orders/seller/%s", s.val.APIAddress, marketplaceRoute, s.addr1),
-			-1,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/%s/sell-orders/seller/%s?pagination.limit=2", s.val.APIAddress, marketplaceRoute, s.addr1),
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-			var res marketplace.QuerySellOrdersBySellerResponse
-			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
-			require.NoError(err)
-			require.NotNil(res.SellOrders)
-
-			if tc.expItems > 0 {
-				require.Len(res.SellOrders, tc.expItems)
-			} else {
-				require.Greater(len(res.SellOrders), 0)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
-	url := fmt.Sprintf("%s/%s/allowed-denoms?pagination.count_total=true", s.val.APIAddress, marketplaceRoute)
+	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, coreRoute, "C")
 	resp, err := rest.GetRequest(url)
-	s.Require().NoError(err)
+	require.NoError(err)
 
-	var res marketplace.QueryAllowedDenomsResponse
-	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
-	s.Require().Equal(uint64(len(s.allowedDenoms)), res.Pagination.Total)
-	for _, d := range res.AllowedDenoms {
-		s.Require().Contains(s.allowedDenoms, d.BankDenom)
-	}
+	var res core.QueryCreditTypeResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.Equal(res.CreditType.Abbreviation, "C")
+	require.Equal(res.CreditType.Precision, uint32(6))
 }

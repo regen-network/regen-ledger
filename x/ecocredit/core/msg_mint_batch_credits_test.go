@@ -3,72 +3,39 @@ package core
 import (
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	"github.com/thanhpk/randstr"
-
-	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
-func TestMsgMintBatchCredits(t *testing.T) {
-	t.Parallel()
-	require := require.New(t)
-	issuer := testutil.GenAddress()
-
-	tcs := []struct {
-		name string
-		err  string
-		m    MsgMintBatchCredits
-	}{
-		{"invalid issuer", "issuer", MsgMintBatchCredits{Issuer: "invalid"}},
-		{"invalid batch denom", "invalid batch denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}},
-		{"invalid note", "note must",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, Note: randstr.String(514)}},
-		{"missing origin tx", "origin_tx is required",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom}},
-
-		{"good-no-note", "",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx,
-				Issuance: batchIssuances}},
-		{"good-note", "",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx,
-				Note: randstr.String(300), Issuance: batchIssuances}},
-	}
-	for _, tc := range tcs {
-		err := tc.m.ValidateBasic()
-		if tc.err == "" {
-			require.NoError(err, tc.name)
-		} else {
-			require.ErrorContains(err, tc.err, tc.name)
-		}
-	}
+type msgMintBatchCredits struct {
+	t   gocuke.TestingT
+	msg *MsgMintBatchCredits
+	err error
 }
 
-func TestValidateOriginTx(t *testing.T) {
-	t.Parallel()
-	require := require.New(t)
-	tcs := []struct {
-		name string
-		err  string
-		o    OriginTx
-	}{
-		{"empty id", "origin_tx.id must be",
-			OriginTx{}},
-		{"wrong id", "origin_tx.id must be",
-			OriginTx{Id: "---"}},
-		{"empty source", "origin_tx.source must be",
-			OriginTx{Id: "0x123"}},
-		{"wrong source", "origin_tx.source must be",
-			OriginTx{Id: "0x123", Source: "*xxx"}},
-		{"good1", "", OriginTx{Source: "polygon", Id: "0x123"}},
-		{"good2", "", OriginTx{Source: "ethereum", Id: "0x123"}},
-	}
+func TestMsgMintBatchCredits(t *testing.T) {
+	gocuke.NewRunner(t, &msgMintBatchCredits{}).Path("./features/msg_mint_batch_credits.feature").Run()
+}
 
-	for _, tc := range tcs {
-		err := validateOriginTx(&tc.o, true)
-		if tc.err == "" {
-			require.NoError(err, tc.name)
-		} else {
-			require.ErrorContains(err, tc.err, tc.name)
-		}
-	}
+func (s *msgMintBatchCredits) Before(t gocuke.TestingT) {
+	s.t = t
+}
+
+func (s *msgMintBatchCredits) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgMintBatchCredits{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgMintBatchCredits) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgMintBatchCredits) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgMintBatchCredits) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

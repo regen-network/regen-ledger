@@ -7,33 +7,38 @@ package app
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
@@ -69,32 +74,107 @@ func setCustomOrderEndBlocker() []string {
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
-
-	// mainnet upgrade handler
 	const upgradeName = "v4.0.0"
+	const mainnet = "regen-1"
+	const redwood = "regen-redwood-1"
+
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		chainId := ctx.ChainID()
+
 		// run state migrations for sdk modules
 		toVersion, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		if err != nil {
 			return nil, err
 		}
 
-		// run x/ecocredit state migrations
+		// run state migrations for x/ecocredit module
 		if err := app.smm.RunMigrations(ctx, app.AppCodec()); err != nil {
 			return nil, err
 		}
 		toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
 
+		// update x/ecocredit basket fee param (the basket fee param key has changed but the
+		// value will be the same value as is on regen-1 and regen-redwood-1 at the time of
+		// the upgrade; the value will be reset to empty for unsupported chains)
+		ecocreditSubspace, _ := app.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
+		if chainId == mainnet {
+			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
+		} else if chainId == redwood {
+			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 2e7)))
+		} else {
+			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.Coins{})
+		}
+
 		// recover funds for community member (regen-1 governance proposal #11)
-		if ctx.ChainID() == "regen-1" {
+		if chainId == mainnet {
 			if err := recoverFunds(ctx, app.AccountKeeper, app.BankKeeper); err != nil {
 				return nil, err
 			}
 		}
 
+		// add name and symbol to regen denom metadata
+		if chainId == mainnet || chainId == redwood {
+			if err := migrateDenomMetadata(ctx, app.BankKeeper); err != nil {
+				return nil, err
+			}
+		}
+
+		// update denom unit order for all tokens (fixes basket token order)
+		migrateDenomUnits(ctx, app.BankKeeper)
+
 		return toVersion, nil
 	})
 
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(err)
+	}
+
+	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				data.ModuleName,
+			},
+		}
+
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
+}
+
+// migrateDenomMetadata adds missing denom metadata to the REGEN token
+func migrateDenomMetadata(ctx sdk.Context, bk bankkeeper.Keeper) error {
+	denom := "uregen"
+	metadata, found := bk.GetDenomMetaData(ctx, denom)
+	if !found {
+		return fmt.Errorf("no metadata found for %s denom", denom)
+	}
+
+	metadata.Name = "Regen"
+	metadata.Symbol = "REGEN"
+	bk.SetDenomMetaData(ctx, metadata)
+
+	return nil
+}
+
+// migrateDenomUnits update basket metadata denom units list in ascending order
+func migrateDenomUnits(ctx sdk.Context, bk bankkeeper.Keeper) {
+	metadataList := make([]banktypes.Metadata, 0)
+	bk.IterateAllDenomMetaData(ctx, func(m banktypes.Metadata) bool {
+		metadata := m
+		denomUnits := metadata.DenomUnits
+		sort.Slice(denomUnits, func(i, j int) bool {
+			return denomUnits[i].Exponent < denomUnits[j].Exponent
+		})
+
+		metadata.DenomUnits = denomUnits
+		metadataList = append(metadataList, metadata)
+		return false
+	})
+
+	for _, metadata := range metadataList {
+		bk.SetDenomMetaData(ctx, metadata)
+	}
 }
 
 func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {

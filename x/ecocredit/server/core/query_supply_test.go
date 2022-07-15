@@ -37,8 +37,8 @@ func TestQuery_Supply(t *testing.T) {
 	// valid query
 	res, err := s.k.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 	assert.NilError(t, err)
-	assert.Equal(t, tradable, res.TradableSupply)
-	assert.Equal(t, retired, res.RetiredSupply)
+	assert.Equal(t, tradable, res.TradableAmount)
+	assert.Equal(t, retired, res.RetiredAmount)
 	assert.Equal(t, cancelled, res.CancelledAmount)
 
 	// bad denom query

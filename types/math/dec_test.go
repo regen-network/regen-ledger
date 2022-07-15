@@ -598,6 +598,18 @@ func floatDecimalPlaces(t *rapid.T, f float64) uint32 {
 	}
 }
 
+func TestIsFinite(t *testing.T) {
+	a, err := NewDecFromString("1.5")
+	require.NoError(t, err)
+
+	require.True(t, a.IsFinite())
+
+	b, err := NewDecFromString("NaN")
+	require.NoError(t, err)
+
+	require.False(t, b.IsFinite())
+}
+
 func TestReduce(t *testing.T) {
 	a, err := NewDecFromString("1.30000")
 	require.NoError(t, err)

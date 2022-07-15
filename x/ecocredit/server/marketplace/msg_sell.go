@@ -51,7 +51,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}
 
 		// verify expiration is in the future
-		if order.Expiration != nil && !order.Expiration.After(sdkCtx.BlockTime()) {
+		if order.Expiration != nil && !order.Expiration.UTC().After(sdkCtx.BlockTime()) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 				"%s: expiration must be in the future: %s", orderIndex, order.Expiration,
 			)

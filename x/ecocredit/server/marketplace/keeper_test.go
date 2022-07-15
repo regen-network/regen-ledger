@@ -41,15 +41,14 @@ type baseSuite struct {
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
-	addr         sdk.AccAddress // TODO: addr1 (#922 / #1042)
-	addr2        sdk.AccAddress
+	addrs        []sdk.AccAddress
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
 }
 
-func setupBase(t gocuke.TestingT) *baseSuite {
+func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
@@ -77,8 +76,10 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper)
 
 	// set test accounts
-	_, _, s.addr = testdata.KeyTestPubAddr() // TODO: addr1 (#922 / #1042)
-	_, _, s.addr2 = testdata.KeyTestPubAddr()
+	for i := 0; i < numAddresses; i++ {
+		var _, _, addr = testdata.KeyTestPubAddr()
+		s.addrs = append(s.addrs, addr)
+	}
 
 	return s
 }
@@ -170,6 +171,7 @@ func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoAp
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
+	assert.Check(s.t, len(s.addrs) > 0, "When calling `testSellSetup`, the base suite must have a non-empty `addrs`.")
 	assert.NilError(s.t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
@@ -179,7 +181,7 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 
 	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               classId,
-		Admin:            s.addr,
+		Admin:            s.addrs[0],
 		Metadata:         "",
 		CreditTypeAbbrev: creditType.Abbreviation,
 	}))
@@ -203,7 +205,7 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 	}))
 	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		BatchKey:       1,
-		Address:        s.addr,
+		Address:        s.addrs[0],
 		TradableAmount: "100",
 		RetiredAmount:  "100",
 		EscrowedAmount: "0",

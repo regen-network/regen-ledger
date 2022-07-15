@@ -21,7 +21,7 @@ func TestParamChanges(t *testing.T) {
 	}{
 		{"ecocredit/CreditClassFee", "CreditClassFee", "[{\"denom\":\"stake\",\"amount\":\"6\"}]", "ecocredit"},
 		{"ecocredit/AllowlistEnabled", "AllowlistEnabled", "true", "ecocredit"},
-		{"ecocredit/AllowedClassCreators", "AllowedClassCreators", "[\"cosmos10z82e5ztmrm4pujgummvmr7aqjzwlp6ga9ams9\"]", "ecocredit"},
+		{"ecocredit/AllowedClassCreators", "AllowedClassCreators", "[\"regen10z82e5ztmrm4pujgummvmr7aqjzwlp6gz8k8xp\"]", "ecocredit"},
 	}
 
 	paramChanges := simulation.ParamChanges()

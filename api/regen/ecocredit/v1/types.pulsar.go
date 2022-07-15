@@ -1921,9 +1921,11 @@ func (x *fastReflection_BatchIssuance) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_OriginTx        protoreflect.MessageDescriptor
-	fd_OriginTx_id     protoreflect.FieldDescriptor
-	fd_OriginTx_source protoreflect.FieldDescriptor
+	md_OriginTx          protoreflect.MessageDescriptor
+	fd_OriginTx_id       protoreflect.FieldDescriptor
+	fd_OriginTx_source   protoreflect.FieldDescriptor
+	fd_OriginTx_contract protoreflect.FieldDescriptor
+	fd_OriginTx_note     protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -1931,6 +1933,8 @@ func init() {
 	md_OriginTx = File_regen_ecocredit_v1_types_proto.Messages().ByName("OriginTx")
 	fd_OriginTx_id = md_OriginTx.Fields().ByName("id")
 	fd_OriginTx_source = md_OriginTx.Fields().ByName("source")
+	fd_OriginTx_contract = md_OriginTx.Fields().ByName("contract")
+	fd_OriginTx_note = md_OriginTx.Fields().ByName("note")
 }
 
 var _ protoreflect.Message = (*fastReflection_OriginTx)(nil)
@@ -2010,6 +2014,18 @@ func (x *fastReflection_OriginTx) Range(f func(protoreflect.FieldDescriptor, pro
 			return
 		}
 	}
+	if x.Contract != "" {
+		value := protoreflect.ValueOfString(x.Contract)
+		if !f(fd_OriginTx_contract, value) {
+			return
+		}
+	}
+	if x.Note != "" {
+		value := protoreflect.ValueOfString(x.Note)
+		if !f(fd_OriginTx_note, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -2029,6 +2045,10 @@ func (x *fastReflection_OriginTx) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Id != ""
 	case "regen.ecocredit.v1.OriginTx.source":
 		return x.Source != ""
+	case "regen.ecocredit.v1.OriginTx.contract":
+		return x.Contract != ""
+	case "regen.ecocredit.v1.OriginTx.note":
+		return x.Note != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTx"))
@@ -2049,6 +2069,10 @@ func (x *fastReflection_OriginTx) Clear(fd protoreflect.FieldDescriptor) {
 		x.Id = ""
 	case "regen.ecocredit.v1.OriginTx.source":
 		x.Source = ""
+	case "regen.ecocredit.v1.OriginTx.contract":
+		x.Contract = ""
+	case "regen.ecocredit.v1.OriginTx.note":
+		x.Note = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTx"))
@@ -2070,6 +2094,12 @@ func (x *fastReflection_OriginTx) Get(descriptor protoreflect.FieldDescriptor) p
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.OriginTx.source":
 		value := x.Source
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.OriginTx.contract":
+		value := x.Contract
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.OriginTx.note":
+		value := x.Note
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -2095,6 +2125,10 @@ func (x *fastReflection_OriginTx) Set(fd protoreflect.FieldDescriptor, value pro
 		x.Id = value.Interface().(string)
 	case "regen.ecocredit.v1.OriginTx.source":
 		x.Source = value.Interface().(string)
+	case "regen.ecocredit.v1.OriginTx.contract":
+		x.Contract = value.Interface().(string)
+	case "regen.ecocredit.v1.OriginTx.note":
+		x.Note = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTx"))
@@ -2119,6 +2153,10 @@ func (x *fastReflection_OriginTx) Mutable(fd protoreflect.FieldDescriptor) proto
 		panic(fmt.Errorf("field id of message regen.ecocredit.v1.OriginTx is not mutable"))
 	case "regen.ecocredit.v1.OriginTx.source":
 		panic(fmt.Errorf("field source of message regen.ecocredit.v1.OriginTx is not mutable"))
+	case "regen.ecocredit.v1.OriginTx.contract":
+		panic(fmt.Errorf("field contract of message regen.ecocredit.v1.OriginTx is not mutable"))
+	case "regen.ecocredit.v1.OriginTx.note":
+		panic(fmt.Errorf("field note of message regen.ecocredit.v1.OriginTx is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.OriginTx"))
@@ -2135,6 +2173,10 @@ func (x *fastReflection_OriginTx) NewField(fd protoreflect.FieldDescriptor) prot
 	case "regen.ecocredit.v1.OriginTx.id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.OriginTx.source":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.OriginTx.contract":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.OriginTx.note":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -2213,6 +2255,14 @@ func (x *fastReflection_OriginTx) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		l = len(x.Contract)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Note)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -2241,6 +2291,20 @@ func (x *fastReflection_OriginTx) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Note) > 0 {
+			i -= len(x.Note)
+			copy(dAtA[i:], x.Note)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Note)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.Contract) > 0 {
+			i -= len(x.Contract)
+			copy(dAtA[i:], x.Contract)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Contract)))
+			i--
+			dAtA[i] = 0x1a
 		}
 		if len(x.Source) > 0 {
 			i -= len(x.Source)
@@ -2368,6 +2432,70 @@ func (x *fastReflection_OriginTx) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				x.Source = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Contract", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Contract = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Note", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Note = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -3188,6 +3316,15 @@ type OriginTx struct {
 	// source is the source chain or registry of the transaction originating the
 	// mint process (e.g. polygon, ethereum, verra).
 	Source string `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
+	// contract is the address of the contract on the source chain that was
+	// executed when creating the transaction. This address will be stored in
+	// state separately from the origin tx and on a per credit batch basis to be
+	// used when sending credits back to the source chain. This field can be left
+	// blank if credits are bridged from a non-contract-based source.
+	Contract string `protobuf:"bytes,3,opt,name=contract,proto3" json:"contract,omitempty"`
+	// note is a reference note for accounting that will be included in an event
+	// emitted from either Msg/CreateBatch or Msg/MintBatchCredits.
+	Note string `protobuf:"bytes,4,opt,name=note,proto3" json:"note,omitempty"`
 }
 
 func (x *OriginTx) Reset() {
@@ -3220,6 +3357,20 @@ func (x *OriginTx) GetId() string {
 func (x *OriginTx) GetSource() string {
 	if x != nil {
 		return x.Source
+	}
+	return ""
+}
+
+func (x *OriginTx) GetContract() string {
+	if x != nil {
+		return x.Contract
+	}
+	return ""
+}
+
+func (x *OriginTx) GetNote() string {
+	if x != nil {
+		return x.Note
 	}
 	return ""
 }
@@ -3328,10 +3479,13 @@ var file_regen_ecocredit_v1_types_proto_rawDesc = []byte{
 	0x37, 0x0a, 0x17, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x6a, 0x75,
 	0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x16, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x4a, 0x75, 0x72, 0x69,
-	0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x32, 0x0a, 0x08, 0x4f, 0x72, 0x69, 0x67,
+	0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x62, 0x0a, 0x08, 0x4f, 0x72, 0x69, 0x67,
 	0x69, 0x6e, 0x54, 0x78, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x02, 0x69, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x22, 0x93, 0x01, 0x0a,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x12, 0x1a, 0x0a, 0x08,
+	0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
+	0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x6f, 0x74, 0x65,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x22, 0x93, 0x01, 0x0a,
 	0x12, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x50, 0x72, 0x6f, 0x70, 0x6f,
 	0x73, 0x61, 0x6c, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73,

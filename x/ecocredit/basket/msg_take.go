@@ -32,8 +32,8 @@ func (m MsgTake) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("basket denom cannot be empty")
 	}
 
-	if err := sdk.ValidateDenom(m.BasketDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid basket denom", m.BasketDenom)
+	if err := ValidateBasketDenom(m.BasketDenom); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.Amount) == 0 {
@@ -50,12 +50,22 @@ func (m MsgTake) ValidateBasic() error {
 	}
 
 	if m.RetireOnTake {
-		if len(m.RetirementJurisdiction) == 0 {
+		// retirement_location is deprecated but still supported
+		if len(m.RetirementLocation) == 0 && len(m.RetirementJurisdiction) == 0 {
 			return sdkerrors.ErrInvalidRequest.Wrap("retirement jurisdiction cannot be empty if retire on take is true")
 		}
 
-		if err := core.ValidateJurisdiction(m.RetirementJurisdiction); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		// retirement_location is deprecated but still supported
+		if len(m.RetirementLocation) != 0 {
+			if err := core.ValidateJurisdiction(m.RetirementLocation); err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
+		}
+
+		if len(m.RetirementJurisdiction) != 0 {
+			if err := core.ValidateJurisdiction(m.RetirementJurisdiction); err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
 		}
 	}
 

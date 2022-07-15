@@ -70,7 +70,7 @@ type basketServer struct {
 }
 
 var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFeeTokens}
+	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFee}
 )
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
@@ -83,9 +83,9 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	// set the denom regex for basket coins
+	// TODO: remove after updating to cosmos-sdk v0.46 #857
 	sdk.SetCoinDenomRegex(func() string {
-		return basket.RegexBasketDenom
+		return types.CoinDenomRegex
 	})
 
 	s.fixture = s.fixtureFactory.Setup()
@@ -395,7 +395,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*core.DefaultCreditClassFeeTokens.Int64())))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*core.DefaultCreditClassFee.Int64())))
 	adminBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 
 	createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
@@ -458,10 +458,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 				RetiredAmount:          r2,
 				RetirementJurisdiction: "",
 			},
-			{
-				Recipient:              addr5,
-				RetirementJurisdiction: "",
-			},
 		},
 	})
 	s.Require().NoError(err)
@@ -512,8 +508,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	querySupplyRes, err := s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 	s.Require().NoError(err)
 	s.Require().NotNil(querySupplyRes)
-	s.Require().Equal(tSupply0, querySupplyRes.TradableSupply)
-	s.Require().Equal(rSupply0, querySupplyRes.RetiredSupply)
+	s.Require().Equal(tSupply0, querySupplyRes.TradableAmount)
+	s.Require().Equal(rSupply0, querySupplyRes.RetiredAmount)
 
 	// cancel credits
 	cancelCases := []struct {
@@ -533,7 +529,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			owner:         addr4,
 			toCancel:      "101",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't cancel with a higher precision than the credit type",
@@ -576,7 +572,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			owner:         addr4,
 			toCancel:      "1",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:               "can cancel from account with positive retired balance",
@@ -624,8 +620,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableSupply)
-				s.assertDecStrEqual(rSupply0, querySupplyRes.RetiredSupply)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(rSupply0, querySupplyRes.RetiredAmount)
 				s.assertDecStrEqual(tc.expAmountCancelled, querySupplyRes.CancelledAmount)
 
 				// query batch
@@ -653,7 +649,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "10.371",
 			jurisdiction:  "AF",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't use more precision than the credit type allows (6)",
@@ -688,7 +684,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "0.0001",
 			jurisdiction:  "",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction cannot be empty",
 		},
 		{
 			name:              "can retire a small amount of credits",
@@ -725,7 +721,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "1",
 			jurisdiction:  "AF-BDS",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 	}
 
@@ -763,8 +759,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableSupply)
-				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
 			}
 		})
 	}
@@ -797,7 +793,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "10",
 			jurisdiction:  "AF",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't send more retired than is tradable",
@@ -805,7 +801,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "2000",
 			jurisdiction:  "AF",
 			expectErr:     true,
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:          "can't send to an invalid country",
@@ -876,7 +872,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "1",
 			expectErr:     true,
 			jurisdiction:  "AF",
-			expErrMessage: "insufficient funds",
+			expErrMessage: "insufficient credit balance",
 		},
 	}
 
@@ -926,8 +922,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableSupply)
-				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
+				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
 			}
 		})
 	}
@@ -987,7 +983,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the creator account
-			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFeeTokens)))
+			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFee)))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
 				Admin:            tc.creatorAcc.String(),

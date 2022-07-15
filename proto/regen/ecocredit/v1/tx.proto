@@ -98,9 +98,19 @@ service Msg {
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
 
-  // Bridge cancels a specified amount of tradable credits and emits a special
-  // bridge event handled by an external bridge service.
+  // Bridge processes credits being sent back to the source chain. When credits
+  // are sent back to the source chain, the credits are cancelled and an event
+  // is emitted to be handled by an external bridge service.
   rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
+
+  // BridgeReceive processes credits being sent from another chain. When the
+  // credits are sent from the same vintage as an existing credit batch within
+  // the scope of the provided credit class, the credits will be minted to the
+  // existing credit batch, otherwise the credits will be issued in a new credit
+  // batch. The new credit batch will be created under an existing project if a
+  // project with a matching reference id already exists within the scope of the
+  // credit class, otherwise a new project will be created.
+  rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -217,11 +227,6 @@ message MsgCreateBatch {
   // issuing credits and should only be set when bridging assets from another
   // chain or registry as a result of a bridge operation.
   OriginTx origin_tx = 8;
-
-  // note is a reference note for accounting that should only be set when
-  // bridging assets from another chain or registry as a result of a bridge
-  // operation and will be stored in state as a field of BatchOriginTx.
-  string note = 9;
 }
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
@@ -249,11 +254,6 @@ message MsgMintBatchCredits {
   // origin_tx is the transaction from another chain or registry that triggered
   // the minting of credits.
   OriginTx origin_tx = 4;
-
-  // note is a reference note for accounting that should only be set when
-  // bridging assets from another chain or registry as a result of a bridge
-  // operation and will be stored in state as a field of BatchOriginTx.
-  string note = 5;
 }
 
 // MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
@@ -469,5 +469,76 @@ message MsgBridge {
   repeated Credits credits = 5;
 }
 
-// MsgBridgeResponse is the Msg/MsgBridge response type.
+// MsgBridgeResponse is the Msg/Bridge response type.
 message MsgBridgeResponse {}
+
+// MsgBridgeReceive is the Msg/BridgeReceive request type.
+message MsgBridgeReceive {
+
+  // issuer is the account address of the service bridging the credits.
+  string issuer = 1;
+
+  // class_id is the unique identifier of the credit class within which the
+  // project and credit batch already exist or will be created.
+  string class_id = 2;
+
+  // project defines the project information for the bridged credits.
+  Project project = 3;
+
+  // batch defines the credit batch information for the bridged credits.
+  Batch batch = 4;
+
+  // origin_tx is a reference to a transaction which caused the transfer from
+  // another chain or registry.
+  OriginTx origin_tx = 5;
+
+  // Batch defines the credit batch information for the bridged credits. This
+  // information will be used to create a credit batch or to dynamically mint
+  // credits to an existing credit batch.
+  message Batch {
+
+    // recipient is the recipient of the bridged credits.
+    string recipient = 1;
+
+    // amount is the amount of credits being bridged.
+    string amount = 2;
+
+    // start_date is the beginning of the period during which this credit batch
+    // was quantified and verified.
+    google.protobuf.Timestamp start_date = 3 [ (gogoproto.stdtime) = true ];
+
+    // end_date is the end of the period during which this credit batch was
+    // quantified and verified.
+    google.protobuf.Timestamp end_date = 4 [ (gogoproto.stdtime) = true ];
+
+    // metadata is the metadata for the credit batch.
+    string metadata = 5;
+  }
+
+  // Project defines the project information for the bridged credits. This
+  // information will be used to find an existing project or to create a new
+  // project if a project with the same reference id does not already exist.
+  message Project {
+
+    // reference_id is the reference id of the project.
+    string reference_id = 1;
+
+    // jurisdiction is the project jurisdiction.
+    string jurisdiction = 2;
+
+    // metadata is the metadata for the project.
+    string metadata = 3;
+  }
+}
+
+// MsgBridgeReceiveResponse is the Msg/BridgeReceive response type.
+message MsgBridgeReceiveResponse {
+
+  // batch_denom is the unique identifier of the credit batch either created
+  // or within which the credits were dynamically minted.
+  string batch_denom = 1;
+
+  // project_id is the unique identifier of the project that was either created
+  // or the existing project within which the credit batch exists.
+  string project_id = 2;
+}

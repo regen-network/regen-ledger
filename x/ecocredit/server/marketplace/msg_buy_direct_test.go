@@ -39,9 +39,9 @@ func TestBuyDirect(t *testing.T) {
 }
 
 func (s *buyDirectSuite) Before(t gocuke.TestingT) {
-	s.baseSuite = setupBase(t)
-	s.alice = s.addr
-	s.bob = s.addr2
+	s.baseSuite = setupBase(t, 2)
+	s.alice = s.addrs[0]
+	s.bob = s.addrs[1]
 	s.aliceBankBalance = sdk.Coin{
 		Denom:  "regen",
 		Amount: sdk.NewInt(100),
@@ -231,6 +231,24 @@ func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
 
 	s.createSellOrders(2)
+}
+
+func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
+	id, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	s.singleBuyOrderExpectCalls()
+
+	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+		Buyer: s.alice.String(),
+		Orders: []*marketplace.MsgBuyDirect_Order{
+			{
+				SellOrderId: id,
+				Quantity:    s.quantity,
+				BidPrice:    &s.bidPrice,
+			},
+		},
+	})
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
