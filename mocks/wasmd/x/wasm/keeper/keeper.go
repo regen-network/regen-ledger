@@ -3,7 +3,7 @@ package keeper
 import (
 	"github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -13,7 +13,7 @@ type Keeper struct{}
 
 func NewKeeper(
 	codec.Codec,
-	sdk.StoreKey,
+	storetypes.StoreKey,
 	paramtypes.Subspace,
 	types.AccountKeeper,
 	types.BankKeeper,

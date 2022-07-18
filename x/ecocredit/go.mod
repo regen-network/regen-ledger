@@ -163,12 +163,8 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-// replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
-
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/regen-network/regen-ledger/types => ../../types
-
-// replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
 replace github.com/regen-network/regen-ledger/api => ../../api
