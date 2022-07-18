@@ -31,10 +31,6 @@ func TestCreateClass(t *testing.T) {
 }
 
 func (s *createClassSuite) Before(t gocuke.TestingT) {
-	// TODO: move to init function in the root directory of the module #1243
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("regen", "regenpub")
-
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.creditTypeAbbrev = "C"

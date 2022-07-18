@@ -4,7 +4,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -19,7 +19,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "description": "Nature-Based Carbon Token",
       "credit_type_abbrev": "C",
@@ -35,7 +35,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "disable_auto_retire": <disable-auto-retire>,
       "credit_type_abbrev": "C",
@@ -56,7 +56,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -78,7 +78,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -117,7 +117,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
     }
     """
     When the message is validated
@@ -127,7 +127,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "1CT"
     }
     """
@@ -138,7 +138,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "C T"
     }
     """
@@ -149,7 +149,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "CT"
     }
     """
@@ -160,7 +160,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "CARBONTOKEN"
     }
     """
@@ -171,7 +171,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
     }
@@ -183,7 +183,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT"
     }
     """
@@ -194,7 +194,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "foobar"
     }
@@ -206,7 +206,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C"
     }
@@ -218,7 +218,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -233,7 +233,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -248,7 +248,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -270,7 +270,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -288,7 +288,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -306,7 +306,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -324,7 +324,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -344,7 +344,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [
@@ -365,7 +365,7 @@ Feature: MsgCreate
     Given the message
     """
     {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "name": "NCT",
       "credit_type_abbrev": "C",
       "allowed_classes": [

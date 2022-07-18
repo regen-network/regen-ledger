@@ -29,11 +29,6 @@ import (
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
 )
 
-func init() {
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("regen", "regenpub")
-}
-
 func TestMainnetMigrations(t *testing.T) {
 	ecocreditKey := sdk.NewKVStoreKey("ecocredit")
 	tecocreditKey := sdk.NewTransientStoreKey("transient_test")

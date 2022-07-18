@@ -4,7 +4,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": "1",
@@ -25,7 +25,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": "1",
@@ -55,7 +55,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": "1",
@@ -94,7 +94,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
     }
     """
     When the message is validated
@@ -104,7 +104,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {}
       ]
@@ -117,7 +117,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1
@@ -132,7 +132,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
@@ -148,7 +148,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
@@ -164,7 +164,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
@@ -181,7 +181,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
@@ -200,7 +200,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
@@ -219,7 +219,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
@@ -239,7 +239,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
@@ -259,7 +259,7 @@ Feature: MsgBuyDirect
     Given the message
     """
     {
-      "buyer": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "sell_order_id": 1,
