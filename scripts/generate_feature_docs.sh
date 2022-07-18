@@ -28,14 +28,14 @@ for file in $(find ./x/data -path -prune -o -name '*.feature'); do
     fi
     data_server_count+=1
     data_readme+="- [$name](./server/$name.html)\n"
-    gherkin2markdown "$file" > "$data_server_dir/$name.md"
+    "$GOBIN/gherkin2markdown" "$file" > "$data_server_dir/$name.md"
   else
     if [[ $data_types_count == 0 ]]; then
       data_readme+="## Types\n\n"
     fi
     data_types_count+=1
     data_readme+="- [$name](./types/$name.html)\n"
-    gherkin2markdown "$file" > "$data_types_dir/$name.md"
+    "$GOBIN/gherkin2markdown" "$file" > "$data_types_dir/$name.md"
   fi
 done
 
@@ -63,14 +63,14 @@ for file in $(find ./x/ecocredit -path -prune -o -name '*.feature'); do
     fi
     eco_server_count+=1
     eco_readme+="- [$name](./server/$name.html)\n"
-    gherkin2markdown "$file" > "$eco_server_dir/$name.md"
+    "$GOBIN/gherkin2markdown" "$file" > "$eco_server_dir/$name.md"
   else
     if [[ $eco_types_count == 0 ]]; then
       eco_readme+="## Types\n\n"
     fi
     eco_types_count+=1
     eco_readme+="- [$name](./types/$name.html)\n"
-    gherkin2markdown "$file" > "$eco_types_dir/$name.md"
+    "$GOBIN/gherkin2markdown" "$file" > "$eco_types_dir/$name.md"
   fi
 done
 
