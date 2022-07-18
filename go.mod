@@ -3,9 +3,11 @@ module github.com/regen-network/regen-ledger/v4
 go 1.18
 
 require (
+	github.com/CosmWasm/wasmd v0.22.0
 	github.com/cosmos/cosmos-sdk v0.46.0-rc2
+	github.com/cosmos/ibc-go/v2 v2.0.2
 	github.com/gorilla/mux v1.8.0
-	github.com/prometheus/client_golang v1.12.2 // indirect
+	github.com/prometheus/client_golang v1.12.1
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
@@ -32,6 +34,7 @@ require (
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/99designs/keyring v1.1.6 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
+	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
 	github.com/armon/go-metrics v0.3.11 // indirect
 	github.com/aws/aws-sdk-go v1.40.45 // indirect
@@ -162,8 +165,6 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-// replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1 //TODO: uncomment once we tag SDK regen fork
-
 replace github.com/regen-network/regen-ledger/types => ./types
 
 replace github.com/regen-network/regen-ledger/x/data => ./x/data
@@ -177,3 +178,6 @@ replace github.com/regen-network/regen-ledger/api => ./api
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
+
+// Mock wasmd module removed in experimental build
+replace github.com/CosmWasm/wasmd => ./mocks/wasmd

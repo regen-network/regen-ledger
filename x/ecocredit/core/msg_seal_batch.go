@@ -23,10 +23,14 @@ func (m MsgSealBatch) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSealBatch) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Issuer)
-	if err != nil {
-		return sdkerrors.Wrap(err, "malformed issuer address")
+	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
+
+	if m.BatchDenom == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch denom cannot be empty")
+	}
+
 	return ValidateBatchDenom(m.BatchDenom)
 }
 

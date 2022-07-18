@@ -20,7 +20,11 @@ func (m MsgUpdateClassMetadata) GetSignBytes() []byte {
 
 func (m *MsgUpdateClassMetadata) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
+
+	if m.ClassId == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
 	}
 
 	if err := ValidateClassId(m.ClassId); err != nil {
@@ -28,7 +32,7 @@ func (m *MsgUpdateClassMetadata) ValidateBasic() error {
 	}
 
 	if len(m.NewMetadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
+		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
 	}
 
 	return nil

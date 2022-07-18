@@ -4,7 +4,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -24,7 +24,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -45,7 +45,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -66,7 +66,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -112,7 +112,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
     }
     """
     When the message is validated
@@ -122,7 +122,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {}
       ]
@@ -135,7 +135,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1
@@ -150,7 +150,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -166,7 +166,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -182,7 +182,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -199,7 +199,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -218,7 +218,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,
@@ -237,7 +237,7 @@ Feature: MsgUpdateSellOrders
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "updates": [
         {
           "sell_order_id": 1,

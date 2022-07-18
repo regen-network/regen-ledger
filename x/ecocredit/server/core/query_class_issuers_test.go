@@ -6,6 +6,8 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -56,4 +58,13 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Issuers))
 	assert.Equal(t, uint64(3), res.Pagination.Total)
+}
+
+func genAddrs(x int) []types.AccAddress {
+	addrs := make([]types.AccAddress, x)
+	for i := 0; i < x; i++ {
+		_, _, addr := testdata.KeyTestPubAddr()
+		addrs[i] = addr
+	}
+	return addrs
 }

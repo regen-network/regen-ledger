@@ -25,9 +25,12 @@ func (m MsgCreateProject) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateProject) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrap("admin")
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
+	}
+
+	if m.ClassId == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
 	}
 
 	if err := ValidateClassId(m.ClassId); err != nil {
@@ -35,7 +38,11 @@ func (m *MsgCreateProject) ValidateBasic() error {
 	}
 
 	if len(m.Metadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("create project metadata")
+		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
+	}
+
+	if m.Jurisdiction == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("jurisdiction cannot be empty")
 	}
 
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
@@ -43,7 +50,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 	}
 
 	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIdLength {
-		return ecocredit.ErrMaxLimit.Wrap("reference id")
+		return ecocredit.ErrMaxLimit.Wrapf("reference id: max length %d", MaxReferenceIdLength)
 	}
 
 	return nil
