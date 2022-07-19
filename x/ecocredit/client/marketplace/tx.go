@@ -248,7 +248,7 @@ Example JSON:
 // TxCancelSellOrderCmd returns a transaction command that cancels sell order.
 func TxCancelSellOrderCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cancel-sell-order [orde-id]",
+		Use:   "cancel-sell-order [order-id]",
 		Short: "Cancel existing sell orders with transaction author (--from) as seller",
 		Long:  "Cancel existing sell orders with transaction author (--from) as seller",
 		Example: `regen tx ecocredit cancel-sell-order 1`,
