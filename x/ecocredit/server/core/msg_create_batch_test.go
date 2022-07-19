@@ -15,6 +15,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -293,14 +294,8 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProperties(a gocuke.Do
 	err := jsonpb.UnmarshalString(a.Content, &msg)
 	require.NoError(s.t, err)
 
-	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
-		Issuer:    s.alice.String(),
-		ProjectId: msg.ProjectId,
-		Issuance:  msg.Issuance,
-		Metadata:  msg.Metadata,
-		StartDate: msg.StartDate,
-		EndDate:   msg.EndDate,
-	})
+	msg.Issuer = s.alice.String()
+	s.res, s.err = s.k.CreateBatch(s.ctx, &msg)
 }
 
 func (s *createBatchSuite) ExpectNoError() {
@@ -371,9 +366,16 @@ func (s *createBatchSuite) ExpectBatchProperties(a gocuke.DocString) {
 	batch, err := s.stateStore.BatchTable().GetByDenom(s.ctx, expected.Denom)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, expected.Metadata, batch.Metadata)
-	require.Equal(s.t, expected.StartDate.Seconds, batch.StartDate.Seconds)
-	require.Equal(s.t, expected.EndDate.Seconds, batch.EndDate.Seconds)
+	coreBatch := new(core.Batch)
+	require.NoError(s.t, ormutil.PulsarToGogoSlow(batch, coreBatch))
+
+	// set the properties that get set during state machine execution.
+	expected.Key = coreBatch.Key
+	expected.ProjectKey = coreBatch.ProjectKey
+	expected.Issuer = coreBatch.Issuer
+	expected.IssuanceDate = coreBatch.IssuanceDate
+
+	require.Equal(s.t, expected, *coreBatch)
 }
 
 func (s *createBatchSuite) ExpectBatchContract(a gocuke.DocString) {
