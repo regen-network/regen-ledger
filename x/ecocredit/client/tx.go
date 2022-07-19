@@ -63,6 +63,7 @@ func TxCmd(name string) *cobra.Command {
 		marketplacecli.TxUpdateSellOrdersCmd(),
 		marketplacecli.TxBuyDirectCmd(),
 		marketplacecli.TxBuyDirectBatchCmd(),
+		marketplacecli.TxCancelSellOrderCmd(),
 	)
 	return cmd
 }
