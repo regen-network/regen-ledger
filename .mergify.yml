@@ -15,3 +15,19 @@ pull_request_rules:
       backport:
         branches:
           - release/v2.0.x
+  - name: backport patches to v3.0.x branch
+    conditions:
+      - base=master
+      - label=backport/v3.0.x
+    actions:
+      backport:
+        branches:
+          - release/v3.0.x
+  - name: backport patches to v4.0.x branch
+    conditions:
+      - base=master
+      - label=backport/v4.0.x
+    actions:
+      backport:
+        branches:
+          - release/v4.0.x

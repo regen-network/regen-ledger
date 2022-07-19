@@ -46,7 +46,7 @@ func TestRandomizedGenState(t *testing.T) {
 	var params core.Params
 	simState.Cdc.MustUnmarshalJSON(wrapper[proto.MessageName(&core.Params{})], &params)
 
-	require.Equal(t, params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
+	require.Equal(t, params.AllowedClassCreators, []string{"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"})
 	require.Equal(t, params.AllowlistEnabled, true)
 	require.Equal(t, params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(9))))
 	require.Equal(t, params.AllowlistEnabled, true)

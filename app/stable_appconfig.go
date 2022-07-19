@@ -17,7 +17,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -75,43 +74,53 @@ func setCustomOrderEndBlocker() []string {
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
-
-	// mainnet upgrade handler
 	const upgradeName = "v4.0.0"
+	const mainnet = "regen-1"
+	const redwood = "regen-redwood-1"
+
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		chainId := ctx.ChainID()
+
 		// run state migrations for sdk modules
 		toVersion, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		if err != nil {
 			return nil, err
 		}
 
-		// run x/ecocredit state migrations
+		// run state migrations for x/ecocredit module
 		if err := app.smm.RunMigrations(ctx, app.AppCodec()); err != nil {
 			return nil, err
 		}
 		toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
 
 		// update x/ecocredit basket fee param (the basket fee param key has changed but the
-		// value will be the same value as is on regen-1 at the time of the upgrade)
+		// value will be the same value as is on regen-1 and regen-redwood-1 at the time of
+		// the upgrade; the value will be reset to empty for unsupported chains)
 		ecocreditSubspace, _ := app.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
-		ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
+		if chainId == mainnet {
+			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
+		} else if chainId == redwood {
+			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 2e7)))
+		} else {
+			ecocreditSubspace.Set(ctx, core.KeyBasketFee, sdk.Coins{})
+		}
 
 		// recover funds for community member (regen-1 governance proposal #11)
-		if ctx.ChainID() == "regen-1" {
+		if chainId == mainnet {
 			if err := recoverFunds(ctx, app.AccountKeeper, app.BankKeeper); err != nil {
 				return nil, err
 			}
 		}
 
 		// add name and symbol to regen denom metadata
-		if err := migrateDenomMetadata(ctx, app.BankKeeper); err != nil {
-			return nil, err
+		if chainId == mainnet || chainId == redwood {
+			if err := migrateDenomMetadata(ctx, app.BankKeeper); err != nil {
+				return nil, err
+			}
 		}
 
-		// update denom unit order for basket tokens
-		if ctx.ChainID() == "regen-redwood-1" {
-			migrateDenomUnits(ctx, app.BankKeeper)
-		}
+		// update denom unit order for all tokens (fixes basket token order)
+		migrateDenomUnits(ctx, app.BankKeeper)
 
 		return toVersion, nil
 	})
@@ -133,6 +142,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 	}
 }
 
+// migrateDenomMetadata adds missing denom metadata to the REGEN token
 func migrateDenomMetadata(ctx sdk.Context, bk bankkeeper.Keeper) error {
 	denom := "uregen"
 	metadata, found := bk.GetDenomMetaData(ctx, denom)

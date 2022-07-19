@@ -4,7 +4,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -24,7 +24,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -45,7 +45,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -66,7 +66,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -112,7 +112,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
     }
     """
     When the message is validated
@@ -122,7 +122,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {}
       ]
@@ -135,7 +135,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "foo"
@@ -150,7 +150,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001"
@@ -165,7 +165,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -181,7 +181,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -197,7 +197,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -214,7 +214,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -233,7 +233,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -252,7 +252,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",

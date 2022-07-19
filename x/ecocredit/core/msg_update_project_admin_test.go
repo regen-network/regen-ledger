@@ -6,8 +6,6 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgUpdateProjectAdmin struct {
@@ -22,10 +20,6 @@ func TestMsgUpdateProjectAdmin(t *testing.T) {
 
 func (s *msgUpdateProjectAdmin) Before(t gocuke.TestingT) {
 	s.t = t
-
-	// TODO: move to init function in the root directory of the module #1243
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }
 
 func (s *msgUpdateProjectAdmin) TheMessage(a gocuke.DocString) {
