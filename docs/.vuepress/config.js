@@ -141,6 +141,10 @@ module.exports = {
             '/modules/ecocredit/05_events',
             '/modules/ecocredit/06_types',
             '/modules/ecocredit/07_client',
+            {
+              title: 'Features',
+              path: '/modules/ecocredit/features/',
+            },
           ],
         },
         {
@@ -159,6 +163,10 @@ module.exports = {
             '/modules/data/05_events',
             '/modules/data/06_types',
             '/modules/data/07_client',
+            {
+              title: 'Features',
+              path: '/modules/data/features/',
+            },
           ],
         },
       ],
