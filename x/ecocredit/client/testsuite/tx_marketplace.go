@@ -524,7 +524,7 @@ func (s *IntegrationTestSuite) TestTxCancelSellOrder() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.TxSellCmd()
+			cmd := marketplaceclient.TxCancelSellOrderCmd()
 			args := append(tc.args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
