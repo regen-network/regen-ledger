@@ -1,6 +1,7 @@
 package marketplace
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -235,6 +236,37 @@ Example JSON:
 			msg := marketplace.MsgBuyDirect{
 				Buyer:  clientCtx.GetFromAddress().String(),
 				Orders: orders,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+// TxCancelSellOrderCmd returns a transaction command that cancels sell order.
+func TxCancelSellOrderCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "cancel-sell-order [order-id]",
+		Short: "Cancel existing sell orders with transaction author (--from) as seller",
+		Long:  "Cancel existing sell orders with transaction author (--from) as seller",
+		Example: `regen tx ecocredit cancel-sell-order 1`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid order id: %s", err)
+			}
+
+			msg := marketplace.MsgCancelSellOrder{
+				Seller:      clientCtx.GetFromAddress().String(),
+				SellOrderId: id,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
