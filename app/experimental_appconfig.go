@@ -28,11 +28,9 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
-	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -46,7 +44,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			)...,
 		),
 		wasm.AppModuleBasic{},
-		group.Module{},
 	}
 }
 
@@ -101,19 +98,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	/* New Module Wiring START */
 	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
-	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
-
-	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
-	// use a separate newModules from the global NewModules here because we need to pass state into the group module
-	newModules := []moduletypes.Module{
-		groupModule,
-	}
-	err := newModuleManager.RegisterModules(newModules)
-	if err != nil {
-		panic(err)
-	}
-	// END HACK
-
 	/* New Module Wiring END */
 	return newModuleManager
 }
@@ -165,13 +149,7 @@ func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig,
 }
 
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
-	return []module.AppModuleSimulation{
-		group.Module{
-			Registry:      app.interfaceRegistry,
-			BankKeeper:    app.BankKeeper,
-			AccountKeeper: app.AccountKeeper,
-		},
-	}
+	return []module.AppModuleSimulation{}
 }
 
 func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {
