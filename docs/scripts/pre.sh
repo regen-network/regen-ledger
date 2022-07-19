@@ -19,4 +19,8 @@ mkdir -p commands
 
 cp README_commands.md commands/README.md
 
-go run ../scripts/generate-cli-docs.go
+go run ../scripts/generate_cli_docs.go
+
+# module feature documentation
+
+(cd .. ; ./scripts/generate_feature_docs.sh)
