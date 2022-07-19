@@ -98,10 +98,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	/* New Module Wiring START */
 	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
-	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
-
-	// END HACK
-
 	/* New Module Wiring END */
 	return newModuleManager
 }
