@@ -2,7 +2,8 @@
 
 set -eo pipefail
 
-go install github.com/raviqqe/gherkin2markdown@latest
+# NOTE: fork of github.com/raviqqe/gherkin2markdown with Rule support
+go install github.com/ryanchristo/gherkin2markdown@latest
 
 echo "Generating data feature docs..."
 
