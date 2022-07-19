@@ -251,9 +251,7 @@ func TxCancelSellOrderCmd() *cobra.Command {
 		Use:   "cancel-sell-order [orde-id]",
 		Short: "Cancel existing sell orders with transaction author (--from) as seller",
 		Long:  "Cancel existing sell orders with transaction author (--from) as seller",
-		Example: `
-regen tx ecocredit cancel-sell-order 1
-		`,
+		Example: `regen tx ecocredit cancel-sell-order 1`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
