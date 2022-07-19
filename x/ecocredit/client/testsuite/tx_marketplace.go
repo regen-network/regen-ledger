@@ -481,3 +481,62 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestTxCancelSellOrder() {
+	require := s.Require()
+
+	seller := s.addr1.String()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name: "missing from flag",
+			args: []string{
+				fmt.Sprintf("%d", s.sellOrderId),
+			},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s) \"from\" not set",
+		},
+		{
+			name: "valid",
+			args: []string{
+				fmt.Sprintf("%d", s.sellOrderId),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := marketplaceclient.TxCancelSellOrderCmd()
+			args := append(tc.args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}
