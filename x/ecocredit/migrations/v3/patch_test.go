@@ -1260,7 +1260,7 @@ func TestRedwoodMigrations(t *testing.T) {
 func assertBasketCurator(t *testing.T, ctx context.Context, ss basketapi.StateStore, name, curator string) {
 	basket, err := ss.BasketTable().GetByName(ctx, name)
 	require.NoError(t, err)
-	require.Equal(t, string(basket.Curator), curator)
+	require.Equal(t, sdk.AccAddress(basket.Curator).String(), curator)
 }
 
 func assertBatchIssuanceDate(t *testing.T, ctx context.Context, ss api.StateStore, denom, exp string) {
