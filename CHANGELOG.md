@@ -29,8 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 
-- [#1281](https://github.com/regen-network/regen-ledger/pull/1281) Fix curator address in state migrations
 - [#1278](https://github.com/regen-network/regen-ledger/pull/1278) Fix `open` not set in `Msg/CreateBatch`
+- [#1281](https://github.com/regen-network/regen-ledger/pull/1281) Fix curator address in state migrations
+- [#1284](https://github.com/regen-network/regen-ledger/pull/1284) Fix basket state migration
 
 ## [v4.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-rc1) - 2022-07-15
 
