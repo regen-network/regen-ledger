@@ -198,7 +198,11 @@ func updateBasketCurator(ctx context.Context, ss api.StateStore, basketStore bas
 		if err != nil {
 			return err
 		}
-		basket.Curator = sdk.AccAddress(curator)
+		basket.Curator, err = sdk.AccAddressFromBech32(curator)
+		if err != nil {
+			return err
+		}
+
 		if err := basketStore.BasketTable().Update(ctx, basket); err != nil {
 			return err
 		}
