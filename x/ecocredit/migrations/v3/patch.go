@@ -45,12 +45,21 @@ func patchMainnet(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDeno
 	//  C01-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
 	//  C01-20150101-20151231-003  -  "2022-05-06T01:33:25Z"
 	//  C01-20150101-20151231-004  -  "2022-05-06T01:33:31Z"
+	//  C01-20150101-20151231-005  -  "2022-06-17T00:04:31Z"
+	//  C01-20190101-20191231-006  -  "2022-06-17T00:04:37Z"
+	//  C01-20150101-20151231-008  -  "2022-06-17T00:04:51Z"
+	//  C01-20150101-20151231-007  -  "2022-06-17T00:04:43Z"
 
 	batchIdToIssuanceDateMap := make(map[string]string)
 	batchIdToIssuanceDateMap["C01-20190101-20191231-001"] = "2022-05-06T01:33:13Z"
 	batchIdToIssuanceDateMap["C01-20190101-20191231-002"] = "2022-05-06T01:33:19Z"
 	batchIdToIssuanceDateMap["C01-20150101-20151231-003"] = "2022-05-06T01:33:25Z"
 	batchIdToIssuanceDateMap["C01-20150101-20151231-004"] = "2022-05-06T01:33:31Z"
+	batchIdToIssuanceDateMap["C01-20150101-20151231-005"] = "2022-06-17T00:04:31Z"
+	batchIdToIssuanceDateMap["C01-20190101-20191231-006"] = "2022-06-17T00:04:37Z"
+	batchIdToIssuanceDateMap["C01-20150101-20151231-008"] = "2022-06-17T00:04:51Z"
+	batchIdToIssuanceDateMap["C01-20150101-20151231-007"] = "2022-06-17T00:04:43Z"
+
 	// update issuance date for credit batches
 	if err := updateBatchIssueanceDate(ctx, ss, oldBatchDenomToNewDenomMap, batchIdToIssuanceDateMap); err != nil {
 		return err
@@ -255,6 +264,7 @@ func updateBatchIssueanceDate(ctx context.Context, ss api.StateStore,
 		if err != nil {
 			return err
 		}
+
 		batch.IssuanceDate = timestamppb.New(parsed)
 		if err := ss.BatchTable().Update(ctx, batch); err != nil {
 			return err
