@@ -324,8 +324,48 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return err
 	}
 
+	// migrate basket state
+	if err = migrateBasketState(basketStore, ctx, oldBatchDenomToNewDenomMap); err != nil {
+		return err
+	}
+
 	if err := patchMigrate(ctx, sdkCtx, ss, basketStore, oldBatchDenomToNewDenomMap); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+// migrateBasketState updates basket balance old batch denom to new batch denom.
+func migrateBasketState(basketStore basketapi.StateStore, ctx context.Context, oldBatchDenomToNewDenomMap map[string]string) error {
+	var balances []*basketapi.BasketBalance
+	itr, err := basketStore.BasketBalanceTable().List(ctx, basketapi.BasketBalancePrimaryKey{})
+	if err != nil {
+		return err
+	}
+
+	for itr.Next() {
+		bBalance, err := itr.Value()
+		if err != nil {
+			return err
+		}
+
+		balances = append(balances, bBalance)
+	}
+	itr.Close()
+
+	for i := 0; i < len(balances); i++ {
+		if err := basketStore.BasketBalanceTable().Delete(ctx, balances[i]); err != nil {
+			return err
+		}
+	}
+
+	for i := 0; i < len(balances); i++ {
+		update := balances[i]
+		update.BatchDenom = oldBatchDenomToNewDenomMap[update.BatchDenom]
+		if err := basketStore.BasketBalanceTable().Insert(ctx, update); err != nil {
+			return err
+		}
 	}
 
 	return nil
