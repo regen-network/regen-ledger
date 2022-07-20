@@ -13,14 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1274](https://github.com/regen-network/regen-ledger/pull/1274) Add `cancel-sell-order` command
 
-<<<<<<< HEAD
-=======
 #### Fixed
 
 - [#1281](https://github.com/regen-network/regen-ledger/pull/1281) Fix curator address in state migrations
 - [#1278](https://github.com/regen-network/regen-ledger/pull/1278) Fix `open` not set in `Msg/CreateBatch`
 
->>>>>>> 4e24986 (fix(x/ecocredit): basket curator migration (#1281))
 ## [v4.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-rc1) - 2022-07-15
 
 ### General
