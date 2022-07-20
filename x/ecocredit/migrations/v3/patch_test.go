@@ -74,7 +74,7 @@ func TestMainnetMigrations(t *testing.T) {
 		Metadata:   []byte("regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf"),
 		CreditType: &v3.CreditType{Name: "carbon", Abbreviation: "C", Precision: 6, Unit: "metric ton CO2 equivalent"},
 		Issuers:    []string{"regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn"},
-		NumBatches: 4,
+		NumBatches: 8,
 	})
 	require.NoError(t, err)
 
@@ -132,6 +132,66 @@ func TestMainnetMigrations(t *testing.T) {
 		StartDate:       startDate1,
 		EndDate:         endDate1,
 		ProjectLocation: "KE",
+	})
+	require.NoError(t, err)
+
+	startDate2, endDate2, err := v3.ParseBatchDenom("C01-20150101-20151231-005")
+	require.NoError(t, err)
+	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
+		ClassId:         "C01",
+		BatchDenom:      "C01-20150101-20151231-005",
+		Issuer:          "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+		TotalAmount:     "16",
+		Metadata:        []byte("cmVnZW46MTN0b1ZnZktFdTdkbVVDc2Y2cGZYS2VXZE5FYUNBbjhyaFlCNDVncEp6b2F6UTFqRXBSeWFwYi5yZGY="),
+		AmountCancelled: "0",
+		StartDate:       startDate2,
+		EndDate:         endDate2,
+		ProjectLocation: "CD-MN",
+	})
+	require.NoError(t, err)
+
+	startDate2, endDate2, err = v3.ParseBatchDenom("C01-20190101-20191231-006")
+	require.NoError(t, err)
+	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
+		ClassId:         "C01",
+		BatchDenom:      "C01-20190101-20191231-006",
+		Issuer:          "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+		TotalAmount:     "31",
+		Metadata:        []byte("cmVnZW46MTN0b1ZoQVFDYk1jMkxKbTQ0QVYxZW5hcWkyN21STWtSalBKbVZHZFcxMUM0cWNLdWhybkdQQS5yZGY="),
+		AmountCancelled: "0",
+		StartDate:       startDate2,
+		EndDate:         endDate2,
+		ProjectLocation: "KE",
+	})
+	require.NoError(t, err)
+
+	startDate2, endDate2, err = v3.ParseBatchDenom("C01-20150101-20151231-007")
+	require.NoError(t, err)
+	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
+		ClassId:         "C01",
+		BatchDenom:      "C01-20150101-20151231-007",
+		Issuer:          "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+		TotalAmount:     "51",
+		Metadata:        []byte("cmVnZW46MTN0b1ZoYXpZWGcyTHlRN1RYekVrQkRzWWkzd0V5VXppNTZaQjZEZ21iSEd5TGo5Z1V2ZldIbi5yZGY="),
+		AmountCancelled: "0",
+		StartDate:       startDate2,
+		EndDate:         endDate2,
+		ProjectLocation: "CD-MN",
+	})
+	require.NoError(t, err)
+
+	startDate2, endDate2, err = v3.ParseBatchDenom("C01-20150101-20151231-008")
+	require.NoError(t, err)
+	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
+		ClassId:         "C01",
+		BatchDenom:      "C01-20150101-20151231-008",
+		Issuer:          "regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn",
+		TotalAmount:     "512",
+		Metadata:        []byte("cmVnZW46MTN0b1ZnczhYaUU1TWNHeE5oZjRoYjRGNnB4aVJ6UUtYWHdOTmJiQ3MyVlNEbThCV2k5NGRRQi5yZGY="),
+		AmountCancelled: "0",
+		StartDate:       startDate2,
+		EndDate:         endDate2,
+		ProjectLocation: "CD-MN",
 	})
 	require.NoError(t, err)
 
@@ -221,19 +281,19 @@ func TestMainnetMigrations(t *testing.T) {
 	require.Equal(t, res3.NextSequence, uint64(2))
 
 	// verify batch sequence table migration
-	// project C0101 contains two credit batch ==> expected nextBatchId is 3
-	// project C0102 contains two credit batch ==> expected nextBatchId is 3
+	// project C0101 contains five credit batch ==> expected nextBatchId is 6
+	// project C0102 contains three credit batch ==> expected nextBatchId is 4
 	res4, err := ss.BatchSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res4)
 	require.Equal(t, res4.ProjectKey, uint64(1))
-	require.Equal(t, res4.NextSequence, uint64(3))
+	require.Equal(t, res4.NextSequence, uint64(6))
 
 	res4, err = ss.BatchSequenceTable().Get(ctx, 2)
 	require.NoError(t, err)
 	require.NotNil(t, res4)
 	require.Equal(t, res4.ProjectKey, uint64(2))
-	require.Equal(t, res4.NextSequence, uint64(3))
+	require.Equal(t, res4.NextSequence, uint64(4))
 
 	// verify credit types migration
 	carbon, err := ss.CreditTypeTable().Get(ctx, "C")
@@ -258,10 +318,18 @@ func TestMainnetMigrations(t *testing.T) {
 	//  C01-001-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
 	//  C01-002-20190101-20191231-001  -  "2022-05-06T01:33:25Z"
 	//  C01-002-20190101-20191231-002  -  "2022-05-06T01:33:31Z"
+	// C01-001-20150101-20151231-003   -  "2022-06-17T00:04:31Z"
+	// C01-001-20150101-20151231-004   -  "2022-06-17T00:04:43Z"
+	// C01-001-20150101-20151231-005   -  "2022-06-17T00:04:51Z"
+	// C01-002-20190101-20191231-003   -  "2022-06-17T00:04:37Z"
 	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20150101-20151231-001", "2022-05-06T01:33:25Z")
 	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20150101-20151231-002", "2022-05-06T01:33:31Z")
 	assertBatchIssuanceDate(t, ctx, ss, "C01-002-20190101-20191231-001", "2022-05-06T01:33:13Z")
 	assertBatchIssuanceDate(t, ctx, ss, "C01-002-20190101-20191231-002", "2022-05-06T01:33:19Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20150101-20151231-003", "2022-06-17T00:04:31Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20150101-20151231-004", "2022-06-17T00:04:43Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20150101-20151231-005", "2022-06-17T00:04:51Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-002-20190101-20191231-003", "2022-06-17T00:04:37Z")
 }
 
 func TestRedwoodMigrations(t *testing.T) {
