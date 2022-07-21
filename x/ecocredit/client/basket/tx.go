@@ -53,7 +53,7 @@ Flags:
     cutoff for batch start dates when adding new credits to the basket.
 - basket-fee: the fee that the curator will pay to create the basket. It must be >= the
     required Params.basket_creation_fee. We include the fee explicitly here so that the
-    curator explicitly acknowledges paying this fee and is not surprised to learn that the
+    curator explicitly acknowledges paying this fee and is not surprised to learn that they
     paid a big fee and didn't know beforehand.
 - description: the description to be used in the basket coin's bank denom metadata.`),
 		Example: `regen tx ecocredit create-basket NCT --credit-type-abbrev C --allowed_classes C01,C02 basket-fee 100000000uregen description "NCT basket"`,
@@ -229,13 +229,13 @@ func TxTakeFromBasketCmd() *cobra.Command {
 Parameters:
 
 - basket-denom:  denom identifying basket from which we redeem credits.
-- amount:        amount is a positive integer number of basket tokens to convert into credits.
+- amount:        number of basket tokens to convert into credits.
 
 Flags:
 
-- retirement-jurisdiction: retirement jurisdiction is the optional retirement jurisdiction
+- retirement-jurisdiction: optional retirement jurisdiction
     for the credits which will be used only if --retire-on-take flag is true.
-- retire-on-take: retire on take is a boolean that dictates whether the ecocredits received
+- retire-on-take: boolean that dictates whether the ecocredits received
     in exchange for the basket tokens will be received as retired or tradable credits.
 		
 		`),
