@@ -28,7 +28,7 @@ func (k Keeper) BasketBalance(ctx context.Context, request *baskettypes.QueryBas
 	balance, err := k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, request.BatchDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			return nil, sdkerrors.Wrapf(err, "basket %s balance not found for batch %s", request.BasketDenom, request.BasketDenom)
+			return &baskettypes.QueryBasketBalanceResponse{Balance: "0"}, nil
 		}
 		return nil, sdkerrors.Wrapf(err, "failed to get basket balance for %s", request.BasketDenom)
 	}

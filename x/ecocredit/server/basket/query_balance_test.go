@@ -38,9 +38,26 @@ func TestKeeper_BasketBalance(t *testing.T) {
 	require.Equal(t, balance, res.Balance)
 
 	// bad query
-	res, err = s.k.BasketBalance(s.ctx, &baskettypes.QueryBasketBalanceRequest{
+	_, err = s.k.BasketBalance(s.ctx, &baskettypes.QueryBasketBalanceRequest{
 		BasketDenom: batchDenom,
 		BatchDenom:  basketDenom,
 	})
 	require.Error(t, err)
+
+	// add another basket
+	basketDenom = "foo1"
+	basketName := "foo1.bar"
+	err = s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
+		BasketDenom: basketDenom,
+		Name:        basketName,
+	})
+	require.NoError(t, err)
+
+	// expect empty basket balance
+	res, err = s.k.BasketBalance(s.ctx, &baskettypes.QueryBasketBalanceRequest{
+		BasketDenom: basketDenom,
+		BatchDenom:  batchDenom,
+	})
+	require.NoError(t, err)
+	require.Equal(t, res.Balance, "0")
 }
