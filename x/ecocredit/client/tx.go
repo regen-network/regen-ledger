@@ -181,7 +181,7 @@ func TxGenBatchJSONCmd() *cobra.Command {
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
-Required Flags:
+Parameters:
 
 - issuer:          the account address of the credit batch issuer
 - project-id:      the ID of the project
