@@ -459,7 +459,7 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBalanceCmd()
+			cmd := coreclient.QueryBatchBalanceCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -509,7 +509,7 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QuerySupplyCmd()
+			cmd := coreclient.QueryBatchSupplyCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)

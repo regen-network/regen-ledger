@@ -18,7 +18,7 @@ import (
 
 var (
 	classId       = "C01"
-	batchDenom    = "C01-20200101-20200201-001"
+	batchDenom    = "C01-001-20200101-20200201-001"
 	start, end    = timestamppb.Now(), timestamppb.Now()
 	validAskDenom = sdk.DefaultBondDenom
 	ask           = sdk.NewInt64Coin(validAskDenom, 10)
