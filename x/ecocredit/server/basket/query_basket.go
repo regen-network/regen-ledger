@@ -6,7 +6,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -19,7 +22,10 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
-		return nil, err
+		if ormerrors.IsNotFound(err) {
+			return nil, sdkerrors.Wrapf(err, "basket %s not found", request.BasketDenom)
+		}
+		return nil, sdkerrors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
 	}
 
 	basketGogo := &baskettypes.Basket{}

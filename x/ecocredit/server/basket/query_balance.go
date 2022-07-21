@@ -6,6 +6,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -16,12 +19,18 @@ func (k Keeper) BasketBalance(ctx context.Context, request *baskettypes.QueryBas
 
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
-		return nil, err
+		if ormerrors.IsNotFound(err) {
+			return nil, sdkerrors.Wrapf(err, "basket %s not found", request.BasketDenom)
+		}
+		return nil, sdkerrors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
 	}
 
 	balance, err := k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, request.BatchDenom)
 	if err != nil {
-		return nil, err
+		if ormerrors.IsNotFound(err) {
+			return nil, sdkerrors.Wrapf(err, "basket %s balance not found for batch %s", request.BasketDenom, request.BasketDenom)
+		}
+		return nil, sdkerrors.Wrapf(err, "failed to get basket balance for %s", request.BasketDenom)
 	}
 
 	return &baskettypes.QueryBasketBalanceResponse{Balance: balance.Balance}, nil
