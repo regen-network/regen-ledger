@@ -14,14 +14,11 @@ import (
 // QuerySellOrderCmd returns a query command that retrieves information for a given sell order.
 func QuerySellOrderCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sell-order [sell_order_id]",
-		Short: "Retrieve information for a given sell order",
-		Long:  `Retrieve information for a given sell order`,
-		Example: `
-regen q ecocredit sell-order 1
-regen q ecocredit sell-order 1 --output json
-		`,
-		Args: cobra.ExactArgs(1),
+		Use:     "sell-order [sell-order-id]",
+		Short:   "Retrieve information for a given sell order",
+		Long:    "Retrieve information for a given sell order.",
+		Example: "regen q ecocredit sell-order 1",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
 			if err != nil {
@@ -52,12 +49,10 @@ regen q ecocredit sell-order 1 --output json
 func QuerySellOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-orders",
-		Short: "List all sell orders with pagination",
-		Long:  `Retrieve sell orders with pagination`,
-		Example: `
-regen q sell-orders
-regen q sell-orders --limit 10 --offset 2
-		`,
+		Short: "List all sell orders",
+		Long:  `List all sell orders with optional pagination flags.`,
+		Example: `regen q sell-orders
+regen q sell-orders --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
@@ -90,12 +85,10 @@ regen q sell-orders --limit 10 --offset 2
 func QuerySellOrdersBySellerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-orders-by-seller [seller]",
-		Short: "List all sell orders by seller address with pagination",
-		Long:  `Retrieve sell orders by seller address with pagination`,
-		Example: `
-regen q ecocredit sell-orders-by-seller regen1fv85...zkfu
-regen q ecocredit sell-orders-by-seller regen1fv85...zkfu --limit 10 --offset 2
-		`,
+		Short: "List all sell orders by seller",
+		Long:  `List all sell orders by seller with optional pagination flags.`,
+		Example: `regen q ecocredit sell-orders-by-seller regen18xvpj53vaupyfejpws5sktv5lnas5xj2phm3cf
+regen q ecocredit sell-orders-by-seller regen18xvpj53vaupyfejpws5sktv5lnas5xj2phm3cf --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
@@ -129,12 +122,10 @@ regen q ecocredit sell-orders-by-seller regen1fv85...zkfu --limit 10 --offset 2
 func QuerySellOrdersByBatchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-orders-by-batch [batch_denom]",
-		Short: "List all sell orders by batch denom with pagination",
-		Long:  "Retrieve sell orders by batch by denom with pagination",
-		Example: `
-regen q ecocredit sell-orders-by-batch C01-001-20210101-20210201-001
-regen q ecocredit sell-orders-by-batch C01-001-20210101-20210201-001 --limit 10 --offset 2
-		`,
+		Short: "List all sell orders by batch denom",
+		Long:  "List all sell orders by batch by denom with optional pagination flags.",
+		Example: `regen q ecocredit sell-orders-by-batch C01-001-20200101-20210101-001
+regen q ecocredit sell-orders-by-batch C01-001-20200101-20210101-001 --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
@@ -167,12 +158,10 @@ regen q ecocredit sell-orders-by-batch C01-001-20210101-20210201-001 --limit 10 
 func QueryAllowedDenomsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "allowed-denoms",
-		Short: "List all allowed denoms with pagination",
-		Long:  "Retrieve allowed denoms with pagination",
-		Example: `
-regen q ecocredit allowed-denoms
-regen q ecocredit allowed-denoms --limit 10 --offset 2
-		`,
+		Short: "List all allowed denoms",
+		Long:  "List all allowed denoms with optional pagination flags.",
+		Example: `regen q ecocredit allowed-denoms
+regen q ecocredit allowed-denoms --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
