@@ -36,8 +36,8 @@ Example JSON:
     "batch_denom": "C01-001-20200101-20210101-001",
     "quantity": "5",
     "ask_price": {
-		"denom": "uregen",
-		"amount" "100000000"
+      "denom": "uregen",
+      "amount" "100000000"
 	},
     "disable_auto_retire": "true"
   },
@@ -45,8 +45,8 @@ Example JSON:
     "batch_denom": "C01-001-20200101-20210101-002",
     "quantity": "10",
     "ask_price": {
-		"denom": "uregen",
-		"amount" "100000000"
+      "denom": "uregen",
+      "amount" "100000000"
 	},
     "disable_auto_retire": false,
     "expiration": "2024-01-01T00:00:00Z"
@@ -97,8 +97,8 @@ Example JSON:
     "sell_order_id": 1,
     "new_quantity": "5",
     "new_ask_price": {
-		"denom": "uregen",
-		"amount" "100000000"
+      "denom": "uregen",
+      "amount" "100000000"
 	},
     "disable_auto_retire": true
   },
@@ -106,8 +106,8 @@ Example JSON:
     "sell_order_id": 2,
     "new_quantity": "10",
     "new_ask_price": {
-		"denom": "uregen",
-		"amount" "100000000"
+      "denom": "uregen",
+      "amount" "100000000"
 	},
     "disable_auto_retire": false,
     "new_expiration": "2024-01-01T00:00:00Z"
