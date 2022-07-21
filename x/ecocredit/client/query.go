@@ -439,7 +439,7 @@ func QueryBatchSupplyCmd() *cobra.Command {
 // approved credit types.
 func QueryCreditTypesCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:     "types",
+		Use:     "credit-types",
 		Short:   "List all credit types",
 		Long:    "List all credit types.",
 		Example: "regen q ecocredit types",
