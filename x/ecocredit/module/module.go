@@ -32,6 +32,7 @@ import (
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
@@ -102,7 +103,19 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	}
 
 	params := coretypes.DefaultParams()
-	err = coretypes.MergeParamsIntoTarget(cdc, &params, jsonTarget)
+	err = genesis.MergeParamsIntoTarget(cdc, &params, jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	creditTypes := coretypes.DefaultCreditTypes()
+	err = genesis.MergeCreditTypesIntoTarget(creditTypes, jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	allowedDenoms := marketplacetypes.DefaultAllowedDenoms()
+	err = genesis.MergeAllowedDenomsIntoTarget(allowedDenoms, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
@@ -145,7 +158,7 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return fmt.Errorf("failed to unmarshal %s params state: %w", ecocredit.ModuleName, err)
 	}
 
-	return coretypes.ValidateGenesis(bz, params)
+	return genesis.ValidateGenesis(bz, params)
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
