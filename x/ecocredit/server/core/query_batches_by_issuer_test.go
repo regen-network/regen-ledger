@@ -48,7 +48,7 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		Issuer: s.addr,
-		Denom:  "C01-20200101-20210101-002",
+		Denom:  "C01-001-20200101-20210101-002",
 	}))
 
 	// query batches by issuer s.addr

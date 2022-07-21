@@ -74,7 +74,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	return s
 }
 
-// setupClassProjectBatch setups a class "C01", a project "C01-001", a batch "C01-20200101-20210101-01", and a
+// setupClassProjectBatch setups a class "C01", a project "C01-001", a batch "C01-001-20200101-20210101-01", and a
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId, batchDenom string) {
 	var err error
