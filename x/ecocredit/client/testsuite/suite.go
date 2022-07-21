@@ -396,7 +396,7 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	cmd := basketclient.TxCreateBasketCmd()
 	args := []string{
 		msg.Name,
-		fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, msg.CreditTypeAbbrev),
+		fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, msg.CreditTypeAbbrev),
 		fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, strings.Join(msg.AllowedClasses, ",")),
 		fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, msg.Fee),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Curator),

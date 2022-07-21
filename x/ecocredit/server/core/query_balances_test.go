@@ -18,9 +18,9 @@ func TestQuery_Balances(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	bKey1, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C01-20200101-20220101-001"})
+	bKey1, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C01-001-20200101-20220101-001"})
 	assert.NilError(t, err)
-	bKey2, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C02-20200101-20220101-001"})
+	bKey2, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C02-001-20200101-20220101-001"})
 	assert.NilError(t, err)
 
 	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: bKey1, TradableAmount: "15", RetiredAmount: "15", EscrowedAmount: "15"}
