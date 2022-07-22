@@ -12,7 +12,7 @@ func DefaultParams() Params {
 	)
 }
 
-// DefaultCreditTypes returns a default set of parameters.
+// DefaultCreditTypes returns a default set of credit types.
 func DefaultCreditTypes() []CreditType {
 	return []CreditType{
 		{
