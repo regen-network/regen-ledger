@@ -3,7 +3,8 @@ package marketplace
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
@@ -18,34 +19,54 @@ func TestQuery_SellOrder(t *testing.T) {
 	s := setupBase(t, 1)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
-	// make a sell order
-	order := api.SellOrder{
-		Seller:            s.addrs[0],
-		BatchKey:          1,
-		Quantity:          "15.32",
-		MarketId:          1,
-		AskAmount:         "100",
-		DisableAutoRetire: false,
-		Expiration:        nil,
-		Maker:             false,
+	expiration, err := types.ParseDate("expiration", "2030-01-01")
+	require.NoError(s.t, err)
+
+	// make a sell order (with expiration)
+	order1 := api.SellOrder{
+		Seller:     s.addrs[0],
+		BatchKey:   1,
+		Quantity:   "15.32",
+		MarketId:   1,
+		AskAmount:  "100",
+		Expiration: timestamppb.New(expiration),
 	}
-	id, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &order)
-	assert.NilError(t, err)
+	id1, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &order1)
+	require.NoError(t, err)
 
-	var gogoOrder marketplace.SellOrder
-	assert.NilError(t, ormutil.PulsarToGogoSlow(&order, &gogoOrder))
+	// make a sell order (no expiration)
+	order2 := api.SellOrder{
+		Seller:    s.addrs[0],
+		BatchKey:  1,
+		Quantity:  "15.32",
+		MarketId:  1,
+		AskAmount: "100",
+	}
+	id2, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &order2)
+	require.NoError(t, err)
 
-	res, err := s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: id})
-	assert.NilError(t, err)
-	assert.Equal(t, s.addrs[0].String(), res.SellOrder.Seller)
-	assert.Equal(t, batchDenom, res.SellOrder.BatchDenom)
-	assert.Equal(t, order.Quantity, res.SellOrder.Quantity)
-	assert.Equal(t, ask.Denom, res.SellOrder.AskDenom)
-	assert.Equal(t, order.AskAmount, res.SellOrder.AskAmount)
-	assert.Equal(t, order.DisableAutoRetire, res.SellOrder.DisableAutoRetire)
-	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(order.Expiration), res.SellOrder.Expiration)
+	var gogoOrder1 marketplace.SellOrder
+	require.NoError(t, ormutil.PulsarToGogoSlow(&order1, &gogoOrder1))
+
+	var gogoOrder2 marketplace.SellOrder
+	require.NoError(t, ormutil.PulsarToGogoSlow(&order2, &gogoOrder2))
+
+	res1, err := s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: id1})
+	require.NoError(t, err)
+	require.Equal(t, s.addrs[0].String(), res1.SellOrder.Seller)
+	require.Equal(t, batchDenom, res1.SellOrder.BatchDenom)
+	require.Equal(t, order1.Quantity, res1.SellOrder.Quantity)
+	require.Equal(t, ask.Denom, res1.SellOrder.AskDenom)
+	require.Equal(t, order1.AskAmount, res1.SellOrder.AskAmount)
+	require.Equal(t, order1.DisableAutoRetire, res1.SellOrder.DisableAutoRetire)
+	require.Equal(t, types.ProtobufToGogoTimestamp(order1.Expiration), res1.SellOrder.Expiration)
+
+	res2, err := s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: id2})
+	require.NoError(t, err)
+	require.True(t, res2.SellOrder.Expiration.Equal(nil))
+	require.Equal(t, types.ProtobufToGogoTimestamp(order2.Expiration), res2.SellOrder.Expiration)
 
 	// invalid order id should fail
 	_, err = s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: 404})
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+	require.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
