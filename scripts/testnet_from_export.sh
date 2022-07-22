@@ -104,7 +104,7 @@ keys=(
   "validators"
 )
 
-# copy single node state to json files
+# copy single node network state to json files
 for i in "${!keys[@]}"; do
 
   # simple var
@@ -119,7 +119,7 @@ done
 # overwrite node genesis file with state export
 cp "$export" "$node_genesis"
 
-# add single node state to node genesis file
+# add single node network state to node genesis file
 for i in "${!keys[@]}"; do
 
   # simple var
@@ -130,7 +130,7 @@ for i in "${!keys[@]}"; do
     # 1) add balance for validator account
 
     # append balances from single node network state
-    cat <<< $(jq --argfile v "$tmp_dir/$k.json" '.'"${keys[$i]}"' += $v' "$node_genesis") > "$node_genesis"
+    cat <<< $(jq --argfile v "$tmp_dir/$k.json" '.'"$k"' += $v' "$node_genesis") > "$node_genesis"
 
     # 2) update balance for "bonded tokens pool"
 
@@ -140,7 +140,7 @@ for i in "${!keys[@]}"; do
     # get balance amount for "bonded tokens pool"
     b1=$(jq "[.${k}[]|select(.address==$a1)][0].coins[]|select(.denom==$bond_denom).amount" "$node_genesis" | tr -d '"')
 
-    # add validator stake amount to balance amount
+    # add new validator stake amount to balance amount
     coins='[{"amount": "'$(( "$b1" + "$amount" ))'", "denom": '$bond_denom'}]'
 
     # create json object for account balance with deleted bond denom balance
@@ -149,7 +149,7 @@ for i in "${!keys[@]}"; do
     # update account balance with updated bond denom balance
     json=$(jq '.coins = '"$coins"'' <<< "$json")
 
-    # delete account balance
+    # delete old account balance
     cat <<< $(jq 'del(.'"$k"'[]|select(.address=='"$a1"'))' "$node_genesis") > "$node_genesis"
 
     # add updated account balance
@@ -169,7 +169,7 @@ for i in "${!keys[@]}"; do
     # get supply amount for bond denom from single node network state
     a1=$(jq "[.${k}[]|select(.denom==$bond_denom)][0].amount" "$tmp_genesis" | tr -d '"')
 
-    # get supply amount for bond denom from state export
+    # get supply amount for bond denom from node genesis
     a2=$(jq "[.${k}[]|select(.denom==$bond_denom)][0].amount" "$node_genesis" | tr -d '"')
 
     # set new supply for bond denom
@@ -206,7 +206,7 @@ for i in "${!keys[@]}"; do
   else
 
     # append single node network state values
-    cat <<< $(jq --argfile v "$tmp_dir/$k.json" '.'"${keys[$i]}"' += $v' "$node_genesis") > "$node_genesis"
+    cat <<< $(jq --argfile v "$tmp_dir/$k.json" '.'"$k"' += $v' "$node_genesis") > "$node_genesis"
 
   fi
 done
