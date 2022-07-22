@@ -67,5 +67,5 @@ func TestKeeper_BasketClasses(t *testing.T) {
 		BasketDenom: "unknown",
 	})
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "basket unknown not found")
+	require.ErrorContains(t, err, "basket unknown not found")
 }
