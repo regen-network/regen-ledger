@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -19,6 +20,11 @@ func TestKeeper_BasketBalance(t *testing.T) {
 	balance := "5.3"
 	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
+	})
+	require.NoError(t, err)
+
+	err = s.coreStore.BatchTable().Insert(s.ctx, &coreapi.Batch{
+		Denom: batchDenom,
 	})
 	require.NoError(t, err)
 
