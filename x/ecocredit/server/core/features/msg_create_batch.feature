@@ -347,7 +347,8 @@ Feature: Msg/CreateBatch
         "project_id": "C01-001",
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
-        "end_date": "2021-01-01T00:00:00Z"
+        "end_date": "2021-01-01T00:00:00Z",
+        "open": true
       }
       """
       Then expect batch properties
@@ -356,7 +357,8 @@ Feature: Msg/CreateBatch
         "denom": "C01-001-20200101-20210101-001",
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
-        "end_date": "2021-01-01T00:00:00Z"
+        "end_date": "2021-01-01T00:00:00Z",
+        "open": true
       }
       """
 

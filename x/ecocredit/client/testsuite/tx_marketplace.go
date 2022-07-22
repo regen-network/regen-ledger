@@ -465,7 +465,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 	}
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.TxBuyDirectBatchCmd()
+			cmd := marketplaceclient.TxBuyDirectBulkCmd()
 			args := append(tc.args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {

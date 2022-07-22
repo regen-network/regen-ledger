@@ -21,11 +21,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased v4.0]
 
+### types
+
+#### Fixed
+
+- [#1292](https://github.com/regen-network/regen-ledger/pull/1292) Fix nil timestamp and duration conversion
+
 ### x/ecocredit
 
 #### Added
 
 - [#1274](https://github.com/regen-network/regen-ledger/pull/1274) Add `cancel-sell-order` command
+
+#### Changed
+
+- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `types` query command to `credit-types`
+- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `balance` query command to `batch-balance`
+- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `supply` query command to `batch-supply`
+- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `buy-direct-batch` transaction command to `buy-direct-bulk`
+
+#### Fixed
+
+- [#1278](https://github.com/regen-network/regen-ledger/pull/1278) Fix `open` not set in `Msg/CreateBatch`
+- [#1281](https://github.com/regen-network/regen-ledger/pull/1281) Fix curator address in state migrations
+- [#1284](https://github.com/regen-network/regen-ledger/pull/1284) Fix basket state migration
 
 ## [v4.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-rc1) - 2022-07-15
 

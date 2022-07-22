@@ -176,6 +176,19 @@ func TestMigrations(t *testing.T) {
 	basketStore, err := basketapi.NewStateStore(ormdb)
 	require.Nil(t, err)
 
+	require.NoError(t, basketStore.BasketBalanceTable().Insert(ormCtx, &basketapi.BasketBalance{
+		BasketId:       1,
+		BatchDenom:     bd1,
+		Balance:        "100",
+		BatchStartDate: nil,
+	}))
+	require.NoError(t, basketStore.BasketBalanceTable().Insert(ormCtx, &basketapi.BasketBalance{
+		BasketId:       2,
+		BatchDenom:     bd2,
+		Balance:        "100",
+		BatchStartDate: nil,
+	}))
+
 	err = v3.MigrateState(sdkCtx, ecocreditKey, encCfg.Marshaler, ss, basketStore, paramStore)
 	require.NoError(t, err)
 
@@ -330,6 +343,18 @@ func TestMigrations(t *testing.T) {
 	bz = store.Get(tradableSKey1)
 	require.Nil(t, bz)
 
+	// verify basket denom migration
+	bBalance, err := basketStore.BasketBalanceTable().Get(ormCtx, 1, expbd1)
+	require.NoError(t, err)
+	require.Equal(t, bBalance.BatchDenom, expbd1)
+	require.Equal(t, bBalance.Balance, "100")
+	require.Equal(t, bBalance.BasketId, uint64(1))
+
+	bBalance, err = basketStore.BasketBalanceTable().Get(ormCtx, 2, expbd2)
+	require.NoError(t, err)
+	require.Equal(t, bBalance.BatchDenom, expbd2)
+	require.Equal(t, bBalance.Balance, "100")
+	require.Equal(t, bBalance.BasketId, uint64(2))
 }
 
 func formatBatchDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDate *time.Time) string {
