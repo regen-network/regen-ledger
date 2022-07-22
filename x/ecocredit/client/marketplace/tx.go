@@ -21,30 +21,37 @@ const (
 // TxSellCmd returns a transaction command that creates sell orders.
 func TxSellCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sell [orders]",
+		Use:   "sell [orders-json]",
 		Short: "Creates new sell orders with transaction author (--from) as seller",
 		Long: `Creates new sell orders with transaction author (--from) as seller.
 
 Parameters:
-  orders:  path to JSON file containing orders to create
+
+- orders-json:  path to JSON file containing orders to create
 
 Example JSON:
+
 [
   {
-    "batch_denom": "C01-20210101-20210201-001",
+    "batch_denom": "C01-001-20200101-20210101-001",
     "quantity": "5",
-    "ask_price": "100regen",
+    "ask_price": {
+      "denom": "uregen",
+      "amount" "100000000"
+	},
     "disable_auto_retire": "true"
   },
   {
-    "batch_denom": "C01-20210101-20210201-002",
+    "batch_denom": "C01-001-20200101-20210101-002",
     "quantity": "10",
-    "ask_price": "80regen",
+    "ask_price": {
+      "denom": "uregen",
+      "amount" "100000000"
+	},
     "disable_auto_retire": false,
-    "expiration": "2024-01-01"
+    "expiration": "2024-01-01T00:00:00Z"
   }
-]
-		`,
+]`,
 		Args:    cobra.ExactArgs(1),
 		Example: "regen tx ecocredit sell orders.json",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -75,30 +82,37 @@ Example JSON:
 // TxUpdateSellOrdersCmd returns a transaction command that creates sell orders.
 func TxUpdateSellOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-sell-orders [updates]",
+		Use:   "update-sell-orders [updates-json]",
 		Short: "Updates existing sell orders with transaction author (--from) as seller",
 		Long: `Updates existing sell orders with transaction author (--from) as seller.
 
 Parameters:
-  updates:  path to JSON file containing orders to update
+
+- updates-json:  path to JSON file containing orders to update
 
 Example JSON:
+
 [
   {
     "sell_order_id": 1,
-    "quantity": "5",
-    "ask_price": "100regen",
-    "disable_auto_retire": "true"
+    "new_quantity": "5",
+    "new_ask_price": {
+      "denom": "uregen",
+      "amount" "100000000"
+	},
+    "disable_auto_retire": true
   },
   {
     "sell_order_id": 2,
-    "quantity": "10",
-    "ask_price": "80regen",
+    "new_quantity": "10",
+    "new_ask_price": {
+      "denom": "uregen",
+      "amount" "100000000"
+	},
     "disable_auto_retire": false,
-    "expiration": "2024-01-01"
+    "new_expiration": "2024-01-01T00:00:00Z"
   }
-]
-		`,
+]`,
 		Args:    cobra.ExactArgs(1),
 		Example: "regen tx ecocredit update-sell-orders updates.json",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -129,12 +143,16 @@ Example JSON:
 // TxBuyDirectCmd returns a transaction command for a single direct buy order.
 func TxBuyDirectCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "buy-direct [sell_order_id] [quantity] [bid_price] [disable_auto_retire] [flags]",
+		Use:   "buy-direct [sell-order-id] [quantity] [bid-price] [disable-auto-retire] [flags]",
 		Short: "Buy ecocredits from a specific sell order",
-		Long: "Purchase ecocredits from a specific sell order. DisableAutoRetire can be set to false to retire the credits immediately upon purchase." +
-			"When set to true, credits will be received in a tradable state, IF AND ONLY IF the sell order also has auto retire disabled. " +
-			"NOTE: The bid price is the price paid PER credit. The total cost will be quantity * bid_price.",
-		Example: "regen tx ecocredit buy-direct 194 300 40regen true --retirement-jurisdiction=US-NY",
+		Long: `Purchase ecocredits from a specific sell order.
+
+DisableAutoRetire can be set to false to retire the credits immediately
+upon purchase. When set to true, credits will be received in a tradable
+state, IF AND ONLY IF the sell order also has auto retire disabled.
+
+NOTE: The bid price is the price paid PER credit. The total cost will be quantity * bid_price.`,
+		Example: `regen tx ecocredit buy-direct 1 300 10000000uregen true --retirement-jurisdiction "US-WA 98225"`,
 		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -185,17 +203,19 @@ func TxBuyDirectCmd() *cobra.Command {
 	return txFlags(cmd)
 }
 
-// TxBuyDirectBatchCmd returns a transaction command for a batch direct buy order using a json file.
-func TxBuyDirectBatchCmd() *cobra.Command {
+// TxBuyDirectBulkCmd returns a transaction command for a batch direct buy order using a json file.
+func TxBuyDirectBulkCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "buy-direct-batch [orders]",
+		Use:   "buy-direct-bulk [orders-json]",
 		Short: "Buy ecocredits from multiple sell orders",
-		Long: "Batch purchase ecocredits using a json file. DisableAutoRetire can be set to false to " +
-			"retire the credits immediately upon purchase. When set to true, credits will be received in a tradable state, " +
-			"IF AND ONLY IF the sell order also has auto retire disabled. NOTE: The bid price is the price paid PER credit. " +
-			"The total cost will be quantity * bid_price.",
-		Example: `
-regen tx ecocredit buy-direct-batch orders.json
+		Long: `Purchase ecocredits from multiple sell orders.
+
+DisableAutoRetire can be set to false to retire the credits immediately
+upon purchase. When set to true, credits will be received in a tradable
+state, IF AND ONLY IF the sell order also has auto retire disabled.
+
+NOTE: The bid price is the price paid PER credit. The total cost will be quantity * bid_price.`,
+		Example: `regen tx ecocredit buy-direct-bulk orders.json
 
 Example JSON:
 [
@@ -219,8 +239,7 @@ Example JSON:
     "disable_auto_retire": false,
     "retirement_jurisdiction": "US-NY"
   }
-]
-		`,
+]`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -248,11 +267,11 @@ Example JSON:
 // TxCancelSellOrderCmd returns a transaction command that cancels sell order.
 func TxCancelSellOrderCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cancel-sell-order [order-id]",
-		Short: "Cancel existing sell orders with transaction author (--from) as seller",
-		Long:  "Cancel existing sell orders with transaction author (--from) as seller",
-		Example: `regen tx ecocredit cancel-sell-order 1`,
-		Args: cobra.ExactArgs(1),
+		Use:     "cancel-sell-order [order-id]",
+		Short:   "Cancel existing sell orders with transaction author (--from) as seller",
+		Long:    "Cancel existing sell orders with transaction author (--from) as seller",
+		Example: "regen tx ecocredit cancel-sell-order 1",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

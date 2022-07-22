@@ -15,7 +15,7 @@ func QueryBasketCmd() *cobra.Command {
 		Use:     "basket [basket-denom]",
 		Short:   "Gets the info for a basket",
 		Long:    "Retrieves the information for a basket given a specific basket denom",
-		Example: "regen q ecocredit basket SOMEBASKET",
+		Example: "regen q ecocredit basket eco.uC.NCT",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -46,7 +46,7 @@ func QueryBasketsCmd() *cobra.Command {
 		Long:  "Retrieves all baskets currently in state, with optional pagination",
 		Example: `
 regen q ecocredit baskets
-regen q ecocredit baskets --offset 1 --limit 10
+regen q ecocredit baskets --limit 10 --offset 10
 		`,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -82,7 +82,7 @@ func QueryBasketBalanceCmd() *cobra.Command {
 		Short: "Retrieves the balance of a credit batch in the basket",
 		Long:  "Retrieves the balance of a credit batch in the basket",
 		Example: `
-regen q ecocredit basket-balance BASKET C01-20210101-20220101-001
+regen q ecocredit basket-balance eco.uC.NCT C01-001-20210101-20220101-001
 		`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -116,8 +116,8 @@ func QueryBasketBalancesCmd() *cobra.Command {
 		Short: "Retrieves the balance of each credit batch for the given basket denom",
 		Long:  "Retrieves the balance of each credit batch for the given basket denom",
 		Example: `
-regen q ecocredit basket-balances BASKET1
-regen q ecocredit basket-balances BASKET1 --offset 1 --limit 10
+regen q ecocredit basket-balances eco.uC.NCT
+regen q ecocredit basket-balances eco.uC.NCT --limit 10 --offset 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
