@@ -15,9 +15,7 @@ type msgAnchorSuite struct {
 }
 
 func TestMsgAnchor(t *testing.T) {
-	runner := gocuke.NewRunner(t, &msgAnchorSuite{}).Path("./features/msg_anchor.feature")
-	runner.Step(`^the\s+message\s+"((?:[^\"]|\")*)"`, (*msgAnchorSuite).TheMessage)
-	runner.Run()
+	gocuke.NewRunner(t, &msgAnchorSuite{}).Path("./features/msg_anchor.feature").Run()
 }
 
 func (s *msgAnchorSuite) Before(t gocuke.TestingT) {

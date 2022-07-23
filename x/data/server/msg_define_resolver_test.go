@@ -21,7 +21,7 @@ type defineResolverSuite struct {
 }
 
 func TestDefineResolver(t *testing.T) {
-	gocuke.NewRunner(t, &defineResolverSuite{}).Path("./features/define_resolver.feature").Run()
+	gocuke.NewRunner(t, &defineResolverSuite{}).Path("./features/msg_define_resolver.feature").Run()
 }
 
 func (s *defineResolverSuite) Before(t gocuke.TestingT) {

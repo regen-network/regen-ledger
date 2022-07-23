@@ -24,9 +24,7 @@ type registerResolverSuite struct {
 }
 
 func TestRegisterResolver(t *testing.T) {
-	runner := gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/register_resolver.feature")
-	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*registerResolverSuite).TheContentHash)
-	runner.Run()
+	gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/msg_register_resolver.feature").Run()
 }
 
 func (s *registerResolverSuite) Before(t gocuke.TestingT) {

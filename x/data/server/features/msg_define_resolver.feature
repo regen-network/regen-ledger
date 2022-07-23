@@ -1,4 +1,4 @@
-Feature: Define Resolver
+Feature: Msg/DefineResolver
 
   A resolver can be defined:
   - when the url and manager combination is unique
