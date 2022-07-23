@@ -29,7 +29,7 @@ func TestKeeper_Basket(t *testing.T) {
 	require.Equal(t, basketDenom, res.Basket.BasketDenom)
 
 	// bad query
-	res, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
+	_, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
 		BasketDenom: batchDenom,
 	})
 	require.Error(t, err)
@@ -61,4 +61,11 @@ func TestKeeper_BasketClasses(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, basketDenom, res.Basket.BasketDenom)
 	require.Equal(t, []string{classId}, res.Classes)
+
+	// query unknown basket
+	_, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
+		BasketDenom: "unknown",
+	})
+	require.Error(t, err)
+	require.ErrorContains(t, err, "basket unknown not found")
 }

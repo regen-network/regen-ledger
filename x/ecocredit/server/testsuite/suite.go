@@ -277,9 +277,9 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		BasketDenom: basketDenom,
 		BatchDenom:  batchDenom,
 	})
-	require.Error(err)
-	require.Contains(err.Error(), "not found")
-	require.Nil(bRes)
+	require.NoError(err)
+	require.NotNil(bRes)
+	require.Equal(bRes.Balance, "0")
 
 	// basket token balance of user2 should be empty now
 	endBal := s.getUserBalance(user2, basketDenom)
