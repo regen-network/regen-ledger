@@ -30,6 +30,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
@@ -158,7 +159,7 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 
 	// merge the params into the json target
 	coreParams := core.DefaultParams()
-	err = core.MergeParamsIntoTarget(s.codec, &coreParams, target)
+	err = genesis.MergeParamsIntoTarget(s.codec, &coreParams, target)
 	s.Require().NoError(err)
 
 	// get raw json from target
