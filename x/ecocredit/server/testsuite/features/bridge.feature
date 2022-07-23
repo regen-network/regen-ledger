@@ -291,6 +291,15 @@ Feature: Bridge Integration
     """
     Then expect no error
     And expect total projects "2"
+    And expect project with properties
+    """
+    {
+      "id": "C01-002",
+      "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
+      "jurisdiction": "US-WA",
+      "reference_id": "VCS-002"
+    }
+    """
     And expect total credit batches "3"
     And expect batch supply with batch denom "C01-002-20200101-20210101-001"
     """
