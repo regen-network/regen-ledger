@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1278](https://github.com/regen-network/regen-ledger/pull/1278) Fix `open` not set in `Msg/CreateBatch`
 - [#1281](https://github.com/regen-network/regen-ledger/pull/1281) Fix curator address in state migrations
 - [#1284](https://github.com/regen-network/regen-ledger/pull/1284) Fix basket state migration
+- [#1290](https://github.com/regen-network/regen-ledger/pull/1290) Fix error message when basket not found.
+- [#1290](https://github.com/regen-network/regen-ledger/pull/1290) Return empty balance when basket balance not found.
 
 ## [v4.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-rc1) - 2022-07-15
 
