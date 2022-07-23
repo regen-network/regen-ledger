@@ -1,26 +1,28 @@
-package core
+package genesis
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogoproto "github.com/gogo/protobuf/proto"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // ValidateGenesis performs basic validation for the following:
@@ -32,7 +34,7 @@ import (
 // - the retired amount of each credit batch complies with the credit type precision
 // - the calculated total amount of each credit batch matches the total supply
 // An error is returned if any of these validation checks fail.
-func ValidateGenesis(data json.RawMessage, params Params) error {
+func ValidateGenesis(data json.RawMessage, params core.Params) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -245,34 +247,34 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 func validateMsg(m proto.Message) error {
 	switch m.(type) {
 	case *api.Class:
-		msg := &Class{}
+		msg := &core.Class{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 
 		return msg.Validate()
 	case *api.ClassIssuer:
-		msg := &ClassIssuer{}
+		msg := &core.ClassIssuer{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 
 		return msg.Validate()
 	case *api.Project:
-		msg := &Project{}
+		msg := &core.Project{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 
 		return msg.Validate()
 	case *api.Batch:
-		msg := &Batch{}
+		msg := &core.Batch{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
 	case *api.CreditType:
-		msg := &CreditType{}
+		msg := &core.CreditType{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
@@ -389,92 +391,44 @@ func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, targe
 	return w.Close()
 }
 
-// Validate performs a basic validation of credit class
-func (c Class) Validate() error {
-	if len(c.Metadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
-	}
-
-	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(c.Admin).String()); err != nil {
-		return sdkerrors.Wrap(err, "admin")
-	}
-
-	if len(c.Id) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
-	}
-
-	if err := ValidateClassId(c.Id); err != nil {
+// MergeCreditTypesIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeCreditTypesIntoTarget(messages []core.CreditType, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&messages[0])))
+	if err != nil {
 		return err
 	}
 
-	if len(c.CreditTypeAbbrev) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("must specify a credit type abbreviation")
+	// using json package because array is not a proto message
+	bz, err := json.Marshal(messages)
+	if err != nil {
+		return err
 	}
 
-	return nil
+	_, err = w.Write(bz)
+	if err != nil {
+		return err
+	}
+
+	return w.Close()
 }
 
-// Validate performs a basic validation of credit class issuers
-func (c ClassIssuer) Validate() error {
-	if c.ClassKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
-	}
-
-	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(c.Issuer).String()); err != nil {
-		return sdkerrors.Wrap(err, "issuer")
-	}
-
-	return nil
-}
-
-// Validate performs a basic validation of project
-func (p Project) Validate() error {
-	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(p.Admin).String()); err != nil {
-		return sdkerrors.Wrap(err, "admin")
-	}
-
-	if p.ClassKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
-	}
-
-	if err := ValidateJurisdiction(p.Jurisdiction); err != nil {
+// MergeAllowedDenomsIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeAllowedDenomsIntoTarget(messages []marketplace.AllowedDenom, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&messages[0])))
+	if err != nil {
 		return err
 	}
 
-	if len(p.Metadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("project metadata")
-	}
-
-	if err := ValidateProjectId(p.Id); err != nil {
+	// using json package because array is not a proto message
+	bz, err := json.Marshal(messages)
+	if err != nil {
 		return err
 	}
 
-	return nil
-}
-
-// Validate performs a basic validation of credit batch
-func (b Batch) Validate() error {
-	if err := ValidateBatchDenom(b.Denom); err != nil {
+	_, err = w.Write(bz)
+	if err != nil {
 		return err
 	}
 
-	if b.ProjectKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("project key cannot be zero")
-	}
-
-	if b.StartDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("must provide a start date for the credit batch")
-	}
-	if b.EndDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("must provide an end date for the credit batch")
-	}
-	if b.EndDate.Compare(*b.StartDate) != 1 {
-		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", b.EndDate.String(), b.StartDate.String())
-	}
-
-	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(b.Issuer).String()); err != nil {
-		return sdkerrors.Wrap(err, "issuer")
-	}
-
-	return nil
+	return w.Close()
 }

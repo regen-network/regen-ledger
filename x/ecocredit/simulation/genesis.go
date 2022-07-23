@@ -22,6 +22,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -185,7 +186,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	if err := core.MergeParamsIntoTarget(simState.Cdc, params, jsonTarget); err != nil {
+	if err := genesis.MergeParamsIntoTarget(simState.Cdc, params, jsonTarget); err != nil {
 		panic(err)
 	}
 

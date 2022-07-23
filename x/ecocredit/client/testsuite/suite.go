@@ -32,6 +32,7 @@ import (
 	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -227,7 +228,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	s.basketFee = params.BasketFee
 
 	// merge the params into the json target
-	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
+	err = genesis.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
 	require.NoError(err)
 
 	// get raw json from target
