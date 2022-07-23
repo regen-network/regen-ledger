@@ -14,6 +14,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 )
 
 // InitGenesis performs genesis initialization for the ecocredit module. It
@@ -65,7 +66,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, err
 	}
 
-	err = core.MergeParamsIntoTarget(cdc, &params, jsonTarget)
+	err = genesis.MergeParamsIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		return nil, err
 	}
