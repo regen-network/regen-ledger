@@ -47,7 +47,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			args: []string{
 				"NCT1",
 				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
 				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
 			},
@@ -57,7 +57,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			args: []string{
 				"NCT2",
 				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
 				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -67,7 +67,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			args: []string{
 				"NCT3",
 				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbreviation, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
 				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
