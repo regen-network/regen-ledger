@@ -1,4 +1,4 @@
-package testsuite
+package tests
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"

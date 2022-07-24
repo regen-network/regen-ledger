@@ -1,4 +1,4 @@
-package testsuite
+package tests
 
 import (
 	"context"
@@ -75,14 +75,18 @@ func (s *bridgeSuite) BridgeServiceCallsBridgeReceiveWithMessage(a gocuke.DocStr
 	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
 
 	_, s.err = s.ecocreditServer.BridgeReceive(s.ctx, &msg)
+}
 
-	// log all events emitted
-	for _, event := range s.sdkCtx.EventManager().Events() {
-		s.t.Log(event.Type)
-		for _, attr := range event.Attributes {
-			s.t.Log(string(attr.Key), string(attr.Value))
-		}
-	}
+func (s *bridgeSuite) RecipientCallsBridgeWithMessage(a gocuke.DocString) {
+	var msg core.MsgBridge
+	err := jsonpb.UnmarshalString(a.Content, &msg)
+	require.NoError(s.t, err)
+
+	// reset context events
+	s.ctx = s.fixture.Context()
+	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+
+	_, s.err = s.ecocreditServer.Bridge(s.ctx, &msg)
 }
 
 func (s *bridgeSuite) ExpectNoError() {
@@ -195,6 +199,40 @@ func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
 					require.Equal(s.t, expected.ProjectId, val)
 				case "batch_denom":
 					require.Equal(s.t, expected.BatchDenom, val)
+				default:
+					require.Fail(s.t, "invalid attribute")
+				}
+			}
+		}
+	}
+
+	require.True(s.t, exists)
+}
+
+func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
+	var exists bool
+
+	for _, event := range s.sdkCtx.EventManager().Events() {
+		if event.Type == "regen.ecocredit.v1.EventBridge" {
+			exists = true
+
+			var expected core.EventBridge
+			err := jsonpb.UnmarshalString(a.Content, &expected)
+			require.NoError(s.t, err)
+
+			for _, attr := range event.Attributes {
+				val, err := strconv.Unquote(string(attr.Value))
+				require.NoError(s.t, err)
+
+				switch string(attr.Key) {
+				case "target":
+					require.Equal(s.t, expected.Target, val)
+				case "recipient":
+					require.Equal(s.t, expected.Recipient, val)
+				case "contract":
+					require.Equal(s.t, expected.Contract, val)
+				case "amount":
+					require.Equal(s.t, expected.Amount, val)
 				default:
 					require.Fail(s.t, "invalid attribute")
 				}

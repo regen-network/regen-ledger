@@ -352,3 +352,46 @@ Feature: Bridge Integration
       "escrowed_amount": "0"
     }
     """
+
+    # credits can be bridged back to the source chain
+
+    When recipient calls bridge with message
+    """
+    {
+      "owner": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+      "target": "polygon",
+      "recipient": "0x1000000000000000000000000000000000000000",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "amount": "200"
+        }
+      ]
+    }
+    """
+    Then expect no error
+    And expect event bridge with values
+    """
+    {
+      "target": "polygon",
+      "recipient": "0x1000000000000000000000000000000000000000",
+      "contract": "0x0000000000000000000000000000000000000001",
+      "amount": "200"
+    }
+    """
+    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    """
+    {
+      "tradable_amount": "0",
+      "retired_amount": "0",
+      "cancelled_amount": "200"
+    }
+    """
+    And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-001-20200101-20210101-001"
+    """
+    {
+      "tradable_amount": "0",
+      "retired_amount": "0",
+      "escrowed_amount": "0"
+    }
+    """
