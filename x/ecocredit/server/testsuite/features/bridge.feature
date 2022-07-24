@@ -57,6 +57,13 @@ Feature: Bridge Integration
     }
     """
     Then expect no error
+    And expect event bridge receive with values
+    """
+    {
+      "project_id": "C01-001",
+      "batch_denom": "C01-001-20200101-20210101-001"
+    }
+    """
     And expect total projects "1"
     And expect project with properties
     """
@@ -150,6 +157,13 @@ Feature: Bridge Integration
     }
     """
     Then expect no error
+    And expect event bridge receive with values
+    """
+    {
+      "project_id": "C01-001",
+      "batch_denom": "C01-001-20200101-20210101-001"
+    }
+    """
     And expect total projects "1"
     And expect total credit batches "1"
     And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-001-20200101-20210101-001"
@@ -188,6 +202,13 @@ Feature: Bridge Integration
     }
     """
     Then expect no error
+    And expect event bridge receive with values
+    """
+    {
+      "project_id": "C01-001",
+      "batch_denom": "C01-001-20200101-20210101-002"
+    }
+    """
     And expect total projects "1"
     And expect total credit batches "2"
     And expect credit batch with properties
@@ -244,6 +265,13 @@ Feature: Bridge Integration
     }
     """
     Then expect no error
+    And expect event bridge receive with values
+    """
+    {
+      "project_id": "C01-001",
+      "batch_denom": "C01-001-20200101-20210101-002"
+    }
+    """
     And expect total projects "1"
     And expect total credit batches "2"
     And expect batch supply with batch denom "C01-001-20200101-20210101-002"
@@ -290,6 +318,13 @@ Feature: Bridge Integration
     }
     """
     Then expect no error
+    And expect event bridge receive with values
+    """
+    {
+      "project_id": "C01-002",
+      "batch_denom": "C01-002-20200101-20210101-001"
+    }
+    """
     And expect total projects "2"
     And expect project with properties
     """
