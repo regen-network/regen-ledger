@@ -31,7 +31,7 @@ Feature: Bridge Integration
     }
     """
 
-  Scenario: bridge credits to regen from polygon
+  Scenario: bridge credits to regen from polygon and from regen to polygon
     When bridge service calls bridge receive with message
     """
     {
@@ -43,7 +43,7 @@ Feature: Bridge Integration
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf"
       },
       "batch": {
-        "recipient": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+        "recipient": "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -93,7 +93,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-001-20200101-20210101-001"
+    And expect batch balance with address "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd" and batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "100",
@@ -115,7 +115,7 @@ Feature: Bridge Integration
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf"
       },
       "batch": {
-        "recipient": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+        "recipient": "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -143,7 +143,7 @@ Feature: Bridge Integration
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf"
       },
       "batch": {
-        "recipient": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+        "recipient": "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -166,7 +166,7 @@ Feature: Bridge Integration
     """
     And expect total projects "1"
     And expect total credit batches "1"
-    And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-001-20200101-20210101-001"
+    And expect batch balance with address "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd" and batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "200",
@@ -188,7 +188,7 @@ Feature: Bridge Integration
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf"
       },
       "batch": {
-        "recipient": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+        "recipient": "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -229,7 +229,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-001-20200101-20210101-002"
+    And expect batch balance with address "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd" and batch denom "C01-001-20200101-20210101-002"
     """
     {
       "tradable_amount": "100",
@@ -251,7 +251,7 @@ Feature: Bridge Integration
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf"
       },
       "batch": {
-        "recipient": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+        "recipient": "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -282,7 +282,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-001-20200101-20210101-002"
+    And expect batch balance with address "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd" and batch denom "C01-001-20200101-20210101-002"
     """
     {
       "tradable_amount": "200",
@@ -304,7 +304,7 @@ Feature: Bridge Integration
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf"
       },
       "batch": {
-        "recipient": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+        "recipient": "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd",
         "amount": "100",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -344,7 +344,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-002-20200101-20210101-001"
+    And expect batch balance with address "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd" and batch denom "C01-002-20200101-20210101-001"
     """
     {
       "tradable_amount": "100",
@@ -358,7 +358,7 @@ Feature: Bridge Integration
     When recipient calls bridge with message
     """
     {
-      "owner": "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp",
+      "owner": "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd",
       "target": "polygon",
       "recipient": "0x1000000000000000000000000000000000000000",
       "credits": [
@@ -387,7 +387,7 @@ Feature: Bridge Integration
       "cancelled_amount": "200"
     }
     """
-    And expect batch balance with address "regen18427pnwf35jskwz5pzmrxquaaz4rdfpesf7tdp" and batch denom "C01-001-20200101-20210101-001"
+    And expect batch balance with address "regen1qcrl9zy7merupfkhqksp0eqs0u40mdszkd7rkd" and batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "0",

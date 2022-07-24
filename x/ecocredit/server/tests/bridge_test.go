@@ -43,7 +43,7 @@ func TestBridgeIntegration(t *testing.T) {
 func (s *bridgeSuite) Before(t gocuke.TestingT) {
 	s.t = t
 
-	ff := server.NewFixtureFactory(t, 1)
+	ff := server.NewFixtureFactory(t, 2)
 	ff.SetModules([]module.Module{
 		NewEcocreditModule(ff),
 	})
