@@ -1,4 +1,4 @@
-Feature: Attest
+Feature: Msg/Attest
 
   Background:
     Given the content hash

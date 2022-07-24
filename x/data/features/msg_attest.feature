@@ -4,7 +4,7 @@ Feature: MsgAttest
     Given the message
      """
      {
-       "attestor": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+       "attestor": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
        "content_hashes": [
          {
            "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
@@ -39,7 +39,7 @@ Feature: MsgAttest
     Given the message
     """
     {
-      "attestor": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "attestor": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated

@@ -22,9 +22,7 @@ type attestSuite struct {
 }
 
 func TestAttest(t *testing.T) {
-	runner := gocuke.NewRunner(t, &attestSuite{}).Path("./features/attest.feature")
-	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*attestSuite).TheContentHash)
-	runner.Run()
+	gocuke.NewRunner(t, &attestSuite{}).Path("./features/msg_attest.feature").Run()
 }
 
 func (s *attestSuite) Before(t gocuke.TestingT) {

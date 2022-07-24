@@ -4,7 +4,7 @@ Feature: MsgDefineResolver
     Given the message
     """
     {
-      "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_url": "https://foo.bar"
     }
     """
@@ -33,7 +33,7 @@ Feature: MsgDefineResolver
     Given the message
     """
     {
-      "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -43,7 +43,7 @@ Feature: MsgDefineResolver
     Given the message
     """
     {
-      "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_url": "foo.bar"
     }
     """

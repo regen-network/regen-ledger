@@ -1,4 +1,4 @@
-Feature: Register Resolver
+Feature: Msg/RegisterResolver
 
   Background:
     Given the content hash
