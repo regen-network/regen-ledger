@@ -12,7 +12,6 @@ require (
 	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
 	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
-	github.com/regen-network/regen-ledger/x/group v1.0.0-beta1
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0
@@ -169,8 +168,6 @@ replace github.com/regen-network/regen-ledger/types => ./types
 replace github.com/regen-network/regen-ledger/x/data => ./x/data
 
 replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
-
-replace github.com/regen-network/regen-ledger/x/group => ./x/group
 
 replace github.com/regen-network/regen-ledger/api => ./api
 

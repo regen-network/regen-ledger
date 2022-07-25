@@ -50,7 +50,7 @@ func TestQuery_BatchesByClass(t *testing.T) {
 
 	// insert two batches that are "C01" credit batches
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C01-20200101-20210101-002"}))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C01-001-20200101-20210101-002"}))
 
 	// insert two batches that are not "C01" credit batches
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C011-001-20200101-20210101-001"}))

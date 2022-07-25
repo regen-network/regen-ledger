@@ -1,18 +1,18 @@
-package core_test
+package genesis
 
 import (
 	"context"
 	"encoding/json"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -113,7 +113,7 @@ func TestValidateGenesis(t *testing.T) {
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = core.ValidateGenesis(genesisJson, params)
+	err = ValidateGenesis(genesisJson, params)
 	require.NoError(t, err)
 }
 
@@ -485,7 +485,7 @@ func TestGenesisValidate(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
 			jsn := setupStateAndExportJSON(t, tc.setupState)
-			err := core.ValidateGenesis(jsn, tc.params)
+			err := ValidateGenesis(jsn, tc.params)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -606,7 +606,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = core.ValidateGenesis(genesisJson, params)
+	err = ValidateGenesis(genesisJson, params)
 	require.NoError(t, err)
 }
 

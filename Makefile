@@ -287,7 +287,7 @@ godocs:
 ###############################################################################
 
 swagger: proto-swagger-gen
-	@./scripts/generate-swagger-docs.sh
+	@./scripts/generate_swagger_docs.sh
 
 .PHONY: swagger
 

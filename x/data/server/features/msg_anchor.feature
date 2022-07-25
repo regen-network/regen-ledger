@@ -1,4 +1,4 @@
-Feature: Anchor
+Feature: Msg/Anchor
 
   Background:
     Given the content hash

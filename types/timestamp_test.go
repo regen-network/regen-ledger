@@ -30,7 +30,7 @@ func TestGogoToProtobufDuration(t *testing.T) {
 		{
 			name: "nil case",
 			args: args{d: nil},
-			want: &durationpb.Duration{},
+			want: nil,
 		},
 	}
 	for _, tt := range tests {
@@ -59,7 +59,7 @@ func TestGogoToProtobufTimestamp(t *testing.T) {
 		{
 			name: "nil",
 			args: args{ts: nil},
-			want: &timestamppb.Timestamp{},
+			want: nil,
 		},
 	}
 	for _, tt := range tests {
@@ -88,7 +88,7 @@ func TestProtobufToGogoTimestamp(t *testing.T) {
 		{
 			name: "nil",
 			args: args{ts: nil},
-			want: &gogotypes.Timestamp{},
+			want: nil,
 		},
 	}
 	for _, tt := range tests {
