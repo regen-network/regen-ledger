@@ -92,7 +92,8 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=regen \
 	-X github.com/cosmos/cosmos-sdk/version.AppName=regen \
 	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-	-X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)
+	-X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep) \
+	-X google.golang.org/protobuf/reflect/protoregistry.conflictPolicy=warn
 
 ifeq ($(DB_BACKEND), goleveldb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=goleveldb
