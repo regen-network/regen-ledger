@@ -6,11 +6,10 @@ The following instructions assume that you have already completed the following:
 
 - [Initial Setup](README)
 - [Install Regen](install-regen.md)
-- [Install Cosmovisor](install-cosmovisor.md) (optional)
 
 ## Quickstart
 
-If you would like to manually set up a full node, skip to the [next section](#install-regen). Alternatively, you can run the following quickstart script:
+If you would like to manually set up a full node, skip to the [next section](#initialize-node). Alternatively, you can run the following quickstart script:
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/regen-network/mainnet/blob/main/scripts/mainnet-val-setup.sh)
