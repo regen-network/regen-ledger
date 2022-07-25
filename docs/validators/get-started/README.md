@@ -12,10 +12,6 @@ We recommend the following hardware specifications:
 
 We recommend using Ubuntu 18.04 or 20.04. The following setup instructions are assuming you are using one of these images and the setup may be different if not.
 
-:::tip Note
-The following commands are included in the [Quickstart Script](run-a-full-node.md#quickstart) and are therefore not required if you are using the script. The script also includes the steps outlined in [Run A Full Node](run-a-full-node.md).
-:::
-
 ### Install Dependencies
 
 Update packages:

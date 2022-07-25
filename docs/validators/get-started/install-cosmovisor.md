@@ -74,7 +74,7 @@ You should see the following:
 
 ## Configuration
 
-### Initial Setup
+### Cosmovisor Service
 
 Create a `cosmovisor.service` systemd service file and make sure the environment variables are set to the appropriate values (the following example includes the recommended settings):
 
@@ -117,6 +117,8 @@ Move the file to the systemd directory:
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 ```
 
+### Genesis Binary Setup
+
 Create a directory for data backups:
 
 ```bash
@@ -134,6 +136,8 @@ Copy the genesis binary which will be used when starting `cosmovisor` (assuming 
 ```bash
 cp path/to/binary/regen $HOME/.regen/cosmovisor/genesis/bin
 ```
+
+### Starting Cosmovisor
 
 Start `cosmovisor` to make sure everything is configured correctly:
 
@@ -153,7 +157,7 @@ Enable `cosmovisor` to start automatically when the machine reboots:
 sudo systemctl enable cosmovisor.service
 ```
 
-### Updating Setup
+### Configuration Updates
 
 When you make changes to the configuration, be sure to stop and start the `cosmovisor` service so that you are using the latest changes.
 

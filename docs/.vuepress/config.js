@@ -181,9 +181,10 @@ module.exports = {
           children: [
             '/validators/get-started/',
             '/validators/get-started/install-regen',
-            '/validators/get-started/run-a-full-node',
+            '/validators/get-started/initialize-node',
             '/validators/get-started/create-a-validator',
             '/validators/get-started/install-cosmovisor',
+            '/validators/get-started/using-quickstart',
             '/validators/get-started/using-state-sync',
           ]
         },

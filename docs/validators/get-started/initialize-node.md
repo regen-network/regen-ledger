@@ -1,4 +1,4 @@
-# Run a Full Node
+# Initialize Node
 
 This document provides instructions for running a full node for a [live network](../../ledger/get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
@@ -6,14 +6,6 @@ The following instructions assume that you have already completed the following:
 
 - [Initial Setup](README)
 - [Install Regen](install-regen.md)
-
-## Quickstart
-
-If you would like to manually set up a full node, skip to the [next section](#initialize-node). Alternatively, you can run the following quickstart script:
-
-```bash
-bash <(curl -s https://raw.githubusercontent.com/regen-network/mainnet/blob/main/scripts/mainnet-val-setup.sh)
-```
 
 ## Initialize Node
 
@@ -86,7 +78,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 ## Start Node
 
-At this point, the node is ready. If you do not need to run a dedicated full node in a separate process, you can start the node using the `regen` binary.
+The node is now ready to connect to the network.
 
 Start node:
 
@@ -94,6 +86,10 @@ Start node:
 regen start
 ```
 
-## Prepare Upgrade
+## Create a Validator
 
-The next step will be to [create a validator](create-a-validator.md) and prepare your node for the [upgrade process](../migrations/upgrade.md).
+The next step will be to [create a validator](create-a-validator.md).
+
+## Using State Sync
+
+Also, syncing from genesis will be a slow process. You may want to consider [using state sync](using-state-sync.md).
