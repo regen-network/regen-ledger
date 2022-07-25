@@ -462,11 +462,8 @@ message MsgBridge {
   // recipient is the address of the account receiving the bridged credits.
   string recipient = 3;
 
-  // recipient is the address of the contract handling the bridged credits.
-  string contract = 4;
-
   // credits specifies a credit batch and the number of credits being bridged.
-  repeated Credits credits = 5;
+  repeated Credits credits = 4;
 }
 
 // MsgBridgeResponse is the Msg/Bridge response type.
