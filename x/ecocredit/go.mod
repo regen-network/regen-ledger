@@ -3,7 +3,8 @@ module github.com/regen-network/regen-ledger/x/ecocredit
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.46.0-rc2
+	cosmossdk.io/math v1.0.0-beta.2
+	github.com/cosmos/cosmos-sdk v0.46.0-rc3
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11
@@ -17,8 +18,8 @@ require (
 	github.com/regen-network/regen-ledger/api v0.8.0
 	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/spf13/cobra v1.5.0
-	github.com/stretchr/testify v1.7.5
-	github.com/tendermint/tendermint v0.34.20-rc0
+	github.com/stretchr/testify v1.8.0
+	github.com/tendermint/tendermint v0.34.20-rc1
 	github.com/tendermint/tm-db v0.6.7
 	github.com/thanhpk/randstr v1.0.4
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
@@ -35,7 +36,6 @@ require (
 	cloud.google.com/go/storage v1.14.0 // indirect
 	cosmossdk.io/api v0.1.0-alpha8 // indirect
 	cosmossdk.io/errors v1.0.0-beta.7 // indirect
-	cosmossdk.io/math v1.0.0-beta.2 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/99designs/keyring v1.1.6 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
@@ -106,7 +106,7 @@ require (
 	github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/lib/pq v1.10.6 // indirect
-	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
+	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

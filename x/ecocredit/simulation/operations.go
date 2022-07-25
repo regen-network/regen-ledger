@@ -300,7 +300,7 @@ func SimulateMsgUpdateProjectMetadata(ak ecocredit.AccountKeeper, bk ecocredit.B
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -351,7 +351,7 @@ func SimulateMsgUpdateProjectAdmin(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -404,7 +404,7 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -458,7 +458,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -526,7 +526,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -641,7 +641,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -726,7 +726,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -802,7 +802,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -849,7 +849,7 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -891,7 +891,7 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -956,7 +956,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -1017,7 +1017,7 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -1073,7 +1073,7 @@ func SimulateMsgSealBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, q
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -1184,6 +1184,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 		acc := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
 
 		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,

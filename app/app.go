@@ -120,10 +120,10 @@ var (
 			params.AppModuleBasic{},
 			crisis.AppModuleBasic{},
 			slashing.AppModuleBasic{},
-			// ibc.AppModuleBasic{}, // TODO: enable ibc
+			// ibc.AppModuleBasic{},
 			upgrade.AppModuleBasic{},
 			evidence.AppModuleBasic{},
-			// transfer.AppModuleBasic{}, // TODO: enable ibc
+			// transfer.AppModuleBasic{},
 			vesting.AppModuleBasic{},
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
@@ -141,7 +141,7 @@ var (
 			stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 			stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 			govtypes.ModuleName:            {authtypes.Burner},
-			// ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner}, // TODO: enable ibc
+			// ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 			ecocredit.ModuleName:       {authtypes.Burner},
 			basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 		}
@@ -189,15 +189,15 @@ type RegenApp struct {
 	CrisisKeeper     crisiskeeper.Keeper
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
-	// IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly // TODO: enable ibc
+	// IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper evidencekeeper.Keeper
-	// TransferKeeper   ibctransferkeeper.Keeper // TODO: enable ibc
+	// TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper feegrantkeeper.Keeper
 	AuthzKeeper    authzkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	// ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	// ScopedTransferKeeper capabilitykeeper.ScopedKeeper  // TODO: enable ibc
+	// ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	// ScopedIBCMockKeeper  capabilitykeeper.ScopedKeeper
 
 	// the module manager
@@ -239,7 +239,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, capabilitytypes.StoreKey, feegrant.StoreKey,
-			authzkeeper.StoreKey, // TODO: add ibchost.StoreKey, ibctransfertypes.StoreKey,
+			authzkeeper.StoreKey,
+			// ibchost.StoreKey, ibctransfertypes.StoreKey,
 		}, setCustomKVStoreKeys()...)...,
 	)
 
