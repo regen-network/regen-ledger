@@ -63,13 +63,7 @@ cp ./cosmovisor/cosmovisor $HOME/go/bin
 Verify the checksum of the binary:
 
 ```bash
-cosmovisor version
-```
-
-You should see the following:
-
-```bash
-v1.1.0
+sha256sum $HOME/go/bin/cosmovisor
 ```
 
 You should see the following:
@@ -122,6 +116,12 @@ Move the file to the systemd directory:
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 ```
 
+Create a directory for the genesis binary:
+
+```bash
+mkdir -p $HOME/.regen/cosmovisor/gensis/bin
+```
+
 Copy the genesis binary which will be used when starting `cosmovisor` (assuming that you have already built the binary from source following the instructions in [Install Regen](./install-regen.md)):
 
 ```bash
@@ -148,7 +148,7 @@ sudo systemctl enable cosmovisor.service
 
 ### Updating The Configuration
 
-When you make changes to the configuration, be sure to stop and start cosmovisor so that cosmovisor is using the latest configuration.
+When you make changes to the configuration, be sure to stop and start the `cosmovisor` service so that you are using the latest changes.
 
 ```bash
 sudo systemctl stop cosmovisor
