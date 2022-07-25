@@ -18,7 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	regentypes "github.com/regen-network/regen-ledger/types"
@@ -65,18 +64,10 @@ func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
 func makeTestAddresses(count int) []sdk.AccAddress {
 	addrs := make([]sdk.AccAddress, count)
 
-	// TODO: make all keys deterministic
-
-	key1 := secp256k1.GenPrivKeyFromSecret([]byte("alice"))
-	pub1 := key1.PubKey()
-	addrs[0] = sdk.AccAddress(pub1.Address())
-
-	key2 := secp256k1.GenPrivKeyFromSecret([]byte("bob"))
-	pub2 := key2.PubKey()
-	addrs[1] = sdk.AccAddress(pub2.Address())
-
-	for i := 2; i < count; i++ {
-		_, _, addrs[i] = testdata.KeyTestPubAddr()
+	for i := 0; i < count; i++ {
+		// generate from secret so that keys are deterministic
+		key := secp256k1.GenPrivKeyFromSecret([]byte{byte(i)})
+		addrs[i] = sdk.AccAddress(key.PubKey().Address())
 	}
 
 	return addrs
