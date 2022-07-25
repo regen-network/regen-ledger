@@ -93,8 +93,8 @@ func (s *bridgeSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *bridgeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
+func (s *bridgeSuite) ExpectTheError(a gocuke.DocString) {
+	require.EqualError(s.t, s.err, a.Content)
 }
 
 func (s *bridgeSuite) ExpectTotalCreditBatches(a string) {

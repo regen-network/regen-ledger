@@ -63,13 +63,11 @@ func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
 
 func makeTestAddresses(count int) []sdk.AccAddress {
 	addrs := make([]sdk.AccAddress, count)
-
 	for i := 0; i < count; i++ {
 		// generate from secret so that keys are deterministic
 		key := secp256k1.GenPrivKeyFromSecret([]byte{byte(i)})
 		addrs[i] = sdk.AccAddress(key.PubKey().Address())
 	}
-
 	return addrs
 }
 

@@ -128,7 +128,10 @@ Feature: Bridge Integration
       }
     }
     """
-    Then expect the error "credits already issued with tx id: 0x0000000000000000000000000000000000000000000000000000000000000001: invalid request"
+    Then expect the error
+    """
+    credits already issued with tx id: 0x0000000000000000000000000000000000000000000000000000000000000001: invalid request
+    """
 
     # providing a new origin tx id with the same origin tx contract will mint to the existing credit batch
 
