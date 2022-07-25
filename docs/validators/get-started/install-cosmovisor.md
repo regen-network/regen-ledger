@@ -87,6 +87,7 @@ Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.regen"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+Environment="DAEMON_DATA_BACKUP_DIR=${HOME}/.regen/backups"
 Environment="UNSAFE_SKIP_BACKUP=false"
 User=${USER}
 ExecStart=${GOBIN}/cosmovisor start
@@ -116,10 +117,16 @@ Move the file to the systemd directory:
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 ```
 
+Create a directory for data backups:
+
+```bash
+mkdir -p ${HOME}/.regen/backups
+```
+
 Create a directory for the genesis binary:
 
 ```bash
-mkdir -p $HOME/.regen/cosmovisor/gensis/bin
+mkdir -p $HOME/.regen/cosmovisor/genesis/bin
 ```
 
 Copy the genesis binary which will be used when starting `cosmovisor` (assuming that you have already built the binary from source following the instructions in [Install Regen](./install-regen.md)):
