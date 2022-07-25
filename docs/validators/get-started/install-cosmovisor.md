@@ -2,11 +2,11 @@
 
 [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
 
-::: tip Note
+## Installation
+
+::: tip Cosmovisor Versions
 It is not possible to install Cosmovisor v1.1 using `go install` and, when Cosmovisor v1.0 is installed using `go install`, the `version` command does not print the version. Until a new version is available, the following includes installation instructions for Cosmovisor v1.0 using `go install` (with a checksum) and Cosmovisor v1.1 building from source.
 :::
-
-## Installation
 
 ### Using Go Install
 
@@ -146,7 +146,7 @@ Enable `cosmovisor` to start automatically when the machine reboots:
 sudo systemctl enable cosmovisor.service
 ```
 
-### Updating The Configuration
+### Updating Setup
 
 When you make changes to the configuration, be sure to stop and start the `cosmovisor` service so that you are using the latest changes.
 

@@ -184,6 +184,7 @@ module.exports = {
             '/validators/get-started/install-cosmovisor',
             '/validators/get-started/run-a-full-node',
             '/validators/get-started/create-a-validator',
+            '/validators/get-started/using-state-sync',
           ]
         },
         {

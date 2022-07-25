@@ -6,7 +6,7 @@ The following instructions assume that you have already completed the following:
 
 - [Initial Setup](README)
 - [Install Regen](install-regen.md)
-- [Install Cosmovisor](install-cosmovisor.md)
+- [Install Cosmovisor](install-cosmovisor.md) (optional)
 
 ## Quickstart
 
@@ -41,8 +41,6 @@ regen init [moniker] --chain-id regen-hambach-1
 ## Update Genesis
 
 Update the genesis file.
-
-<!-- TODO: update to use dedicated full node operated by RND -->
 
 *For Regen Mainnet:*
 
@@ -95,81 +93,6 @@ Start node:
 
 ```bash
 regen start
-```
-
-## Set Genesis Binary
-
-Create the folder for the genesis binary and copy the `regen` binary:
-
-```bash
-mkdir -p $HOME/.regen/cosmovisor/genesis/bin
-cp $GOBIN/regen $HOME/.regen/cosmovisor/genesis/bin
-```
-
-## Cosmovisor Service
-
-The next step will be to configure `cosmovisor` as a `systemd` service. For more information about the environment variables used to configure `cosmovisor`, see [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor).
-
-Create the `cosmovisor.service` file:
-
-```bash
-echo "[Unit]
-Description=Cosmovisor daemon
-After=network-online.target
-[Service]
-Environment="DAEMON_NAME=regen"
-Environment="DAEMON_HOME=${HOME}/.regen"
-Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
-Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
-Environment="UNSAFE_SKIP_BACKUP=false"
-User=${USER}
-ExecStart=${GOBIN}/cosmovisor start
-Restart=always
-RestartSec=3
-LimitNOFILE=4096
-[Install]
-WantedBy=multi-user.target
-" >cosmovisor.service
-```
-
-Move the file to the systemd directory:
-
-```bash
-sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
-```
-
-Reload systemctl and start `cosmovisor`:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl start cosmovisor
-```
-
-Check the status of the `cosmovisor` service:
-
-```bash
-sudo systemctl status cosmovisor
-```
-
-Enable cosmovisor to start automatically when the machine reboots:
-
-```bash
-sudo systemctl enable cosmovisor.service
-```
-## Using StateSync
-
-[Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet) and [Redwood Testnet](../../ledger/get-started/live-networks.md#redwood-testnet) also support [statesync](https://docs.cosmos.network/v0.44/architecture/adr-040-storage-and-smt-state-commitments.html#snapshots-for-storage-sync-and-state-versioning) which allows node operators to quickly spin up a node without downloading the existing chain data. It should be noted that not many nodes should be spun up on the network using this method as these nodes will be unable to propogate the historical data to other nodes.
-
-*Download and execute the script for Regen Mainnet*:
-```bash 
-export MONIKER=<your-node-moniker>
-curl -s -L https://raw.githubusercontent.com/regen-network/regen-ledger/master/scripts/statesync.bash | bash -s $MONIKER
-```
-
-*Download and execute the script for Redwood Testnet*:
-```bash 
-export MONIKER=<your-node-moniker>
-curl -s -L https://raw.githubusercontent.com/regen-network/testnets/master/scripts/testnet-statesync.bash | bash -s $MONIKER
 ```
 
 ## Prepare Upgrade
