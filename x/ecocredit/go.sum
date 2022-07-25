@@ -1235,8 +1235,6 @@ github.com/regen-network/gocuke v0.6.2 h1:pHviZ0kKAq2U2hN2q3smKNxct6hS0mGByFMHGn
 github.com/regen-network/gocuke v0.6.2/go.mod h1:zYaqIHZobHyd0xOrHGPQjbhGJsuZ1oElx150u2o1xuk=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
-github.com/regen-network/regen-ledger/orm v1.0.0-beta1 h1:io3MMmqpIy3YCdkGmcsP+xAaq3JZi1/OAWk3ut+Th9s=
-github.com/regen-network/regen-ledger/orm v1.0.0-beta1/go.mod h1:iWlJmID0OfhKaIOoSsr35+gevY7h9OgpfemKNlLu7YU=
 github.com/remyoudompheng/go-dbus v0.0.0-20121104212943-b7232d34b1d5/go.mod h1:+u151txRmLpwxBmpYn9z3d1sdJdjRPQpsXuYeY9jNls=
 github.com/remyoudompheng/go-liblzma v0.0.0-20190506200333-81bf2d431b96/go.mod h1:90HvCY7+oHHUKkbeMCiHt1WuFR2/hPJ9QrljDG+v6ls=
 github.com/remyoudompheng/go-misc v0.0.0-20190427085024-2d6ac652a50e/go.mod h1:80FQABjoFzZ2M5uEa6FUaJYEmqU2UOKojlFVak1UAwI=
