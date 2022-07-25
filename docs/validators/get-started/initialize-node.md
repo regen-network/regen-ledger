@@ -1,7 +1,5 @@
 # Initialize Node
 
-This document provides instructions for running a full node for a [live network](../../ledger/get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
-
 The following instructions assume that you have already completed the following:
 
 - [Initial Setup](README)
@@ -78,9 +76,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 ## Start Node
 
-The node is now ready to connect to the network.
-
-Start node:
+The node is now ready to connect to the network:
 
 ```bash
 regen start

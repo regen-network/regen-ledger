@@ -2,7 +2,7 @@
 
 We recommend validators become familiar with the manual setup process, but we do have a handy quickstart script available for spinning up a full node from scratch.
 
-This following script will cover the steps in [Initial Setup](README.md), [Install Regen](install-regen.md), and [Initialize Node](initialize-node.md) and then instruct you on next steps outlined in [Create a Validator](create-a-validator.md).
+This following script will cover the steps in [Initial Setup](README.md), [Install Regen](install-regen.md), and [Initialize Node](initialize-node.md).
 
 *For Regen Mainnet:*
 
