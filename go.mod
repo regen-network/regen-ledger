@@ -116,7 +116,6 @@ require (
 	github.com/regen-network/gocuke v0.6.2 // indirect
 	github.com/regen-network/regen-ledger/api v1.0.0 // indirect
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1 // indirect
-	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
