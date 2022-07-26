@@ -183,9 +183,9 @@ module.exports = {
             '/validators/get-started/install-regen',
             '/validators/get-started/initialize-node',
             '/validators/get-started/create-a-validator',
-            '/validators/get-started/install-cosmovisor',
             '/validators/get-started/using-quickstart',
             '/validators/get-started/using-state-sync',
+            '/validators/get-started/using-cosmovisor',
           ]
         },
         {

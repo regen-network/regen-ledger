@@ -1,4 +1,4 @@
-# Install Cosmovisor
+# Using Cosmovisor
 
 [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
 
@@ -8,7 +8,7 @@
 It is not possible to install Cosmovisor v1.1 using `go install` and, when Cosmovisor v1.0 is installed using `go install`, the `version` command does not print the version. Until a new version is available, the following includes installation instructions for Cosmovisor v1.0 using `go install` (with a checksum) and Cosmovisor v1.1 building from source.
 :::
 
-### Using Go Install
+### Go Install (v1.0)
 
 Install the binary:
 
@@ -28,7 +28,7 @@ You should see the following:
 33b850556c55ee17934373598b1284a39eb64975af79eeda55872446990b9254
 ```
 
-### Building From Source
+### Building From Source (v1.1)
 
 Clone the `cosmos-sdk` repository:
 
@@ -105,10 +105,16 @@ WantedBy=multi-user.target
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
 ```
 
-`cosmovisor` will automatically create a backup of the data directory at the time of the upgrade and before the migration. If you would like to disable the auto-backup, update the following environment variable in the systemd configuration file:
+`cosmovisor` can automatically create a backup of the data directory at the time of the upgrade and before the migration. If you would like to disable the auto-backup, update the following environment variable in the systemd configuration file:
 
 ```bash
 Environment="UNSAFE_SKIP_BACKUP=true"
+```
+
+`cosmovisor` will use the following directory to store backups if `UNSAFE_SKIP_BACKUP` is set to `false`:
+
+```bash
+Environment="DAEMON_DATA_BACKUP_DIR=true"
 ```
 
 Move the file to the systemd directory:
