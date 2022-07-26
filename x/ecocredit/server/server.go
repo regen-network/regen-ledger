@@ -12,13 +12,13 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server/marketplace"
 )
 
 type serverImpl struct {

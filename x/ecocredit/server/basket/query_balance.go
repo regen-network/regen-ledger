@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
 )
 
 func (k Keeper) BasketBalance(ctx context.Context, request *baskettypes.QueryBasketBalanceRequest) (*baskettypes.QueryBasketBalanceResponse, error) {

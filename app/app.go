@@ -95,10 +95,10 @@ import (
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v2/module"
+	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/v2/server"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/regen-network/regen-ledger/v4/client/docs/statik"

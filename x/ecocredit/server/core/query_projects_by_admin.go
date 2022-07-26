@@ -8,7 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 )
 
 func (k Keeper) ProjectsByAdmin(ctx context.Context, req *core.QueryProjectsByAdminRequest) (*core.QueryProjectsByAdminResponse, error) {

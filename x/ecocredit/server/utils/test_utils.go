@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/mocks"
 )
 
 // ExpectParamGet is a helper function that sets up an expected mock call for the provided type.

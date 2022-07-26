@@ -17,10 +17,10 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v2/module"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server/testsuite"
 )
 
 func TestServer(t *testing.T) {

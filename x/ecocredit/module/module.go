@@ -28,14 +28,14 @@ import (
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client"
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
-	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/client"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/genesis"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/simulation"
 )
 
 type Module struct {

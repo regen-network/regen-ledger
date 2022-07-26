@@ -26,14 +26,14 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/v2/client"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/basket"
+	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/genesis"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
 )
 
 type IntegrationTestSuite struct {

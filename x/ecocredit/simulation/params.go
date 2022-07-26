@@ -8,8 +8,8 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 )
 
 // ParamChanges defines the parameters that can be modified by param change proposals

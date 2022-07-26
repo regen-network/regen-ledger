@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
 )
 
 func TestParseBasketCredits(t *testing.T) {

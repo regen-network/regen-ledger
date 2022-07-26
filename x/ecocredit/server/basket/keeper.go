@@ -5,8 +5,8 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
 )
 
 // Keeper is the basket keeper.

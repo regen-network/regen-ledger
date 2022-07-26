@@ -16,7 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
 )
 
 var AllowDenomProposalHandler = govclient.NewProposalHandler(TxAllowDenomProposal, func(context client.Context) rest.ProposalRESTHandler {

@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server/utils"
 )
 
 // Balance queries the balance (both tradable and retired) of a given credit

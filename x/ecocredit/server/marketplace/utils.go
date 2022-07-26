@@ -8,8 +8,8 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server/utils"
 )
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.

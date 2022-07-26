@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 )
 
 // CreditType queries credit type information by abbreviation.

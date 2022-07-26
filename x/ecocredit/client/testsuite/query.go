@@ -6,8 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/v2/client"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 )
 
 func (s *IntegrationTestSuite) TestQueryClassesCmd() {

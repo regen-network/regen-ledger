@@ -6,9 +6,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/basket"
+	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 )
 
 // QueryCmd returns the parent command for all x/ecocredit query commands.

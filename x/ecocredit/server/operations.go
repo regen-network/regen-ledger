@@ -5,10 +5,10 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/simulation"
 )
 
 // WeightedOperations returns all the ecocredit module operations with their respective weights.

@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	client "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	client "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/basket"
 )
 
 func (s *IntegrationTestSuite) TestQueryBasketCmd() {

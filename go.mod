@@ -11,7 +11,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.1.0
 	github.com/regen-network/regen-ledger/x/data v1.0.0
-	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.0.0
 	github.com/regen-network/regen-ledger/x/group v1.0.0-beta1
 	github.com/rs/zerolog v1.26.0
 	github.com/spf13/cast v1.4.1
@@ -116,6 +116,7 @@ require (
 	github.com/regen-network/gocuke v0.6.2 // indirect
 	github.com/regen-network/regen-ledger/api v1.0.0 // indirect
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1 // indirect
+	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
@@ -150,7 +151,7 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
 
-replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
+replace github.com/regen-network/regen-ledger/x/ecocredit/v2 => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/group => ./x/group
 

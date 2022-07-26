@@ -7,7 +7,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
 )
 
 func TestKeeper_BasketBalance(t *testing.T) {

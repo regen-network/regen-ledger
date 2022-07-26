@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
 )
 
 func (k Keeper) SellOrder(ctx context.Context, req *marketplace.QuerySellOrderRequest) (*marketplace.QuerySellOrderResponse, error) {
