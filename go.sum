@@ -764,6 +764,8 @@ github.com/regen-network/regen-ledger/x/data v1.0.0 h1:BD2TIDnYxg8pFToXreFCnYYBP
 github.com/regen-network/regen-ledger/x/data v1.0.0/go.mod h1:VeYgHuJMauiTTyG3Ds/BEsIDHk7tCcEctWZPgufHmWc=
 github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.0.0 h1:r6HNNQ6zI7za17Ch1vf2+I27MnCwfZyFFlPe/z9++sg=
 github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.0.0/go.mod h1:vjR5wrsQtdWsWHOJgJJHLX+EnoZvuFqrIaZztIntJGY=
+github.com/regen-network/regen-ledger/x/group v1.0.0-beta2 h1:GIJCbR7XbVqh6q/NEppzBF+U8S7xQLGAI/PQAKOzcmg=
+github.com/regen-network/regen-ledger/x/group v1.0.0-beta2/go.mod h1:Q6Q3OGDMSLMjHWeLr7ZrE1z/B+EgNiF5HeZO8NNhKMk=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=

@@ -12,7 +12,7 @@ require (
 	github.com/regen-network/regen-ledger/types v1.1.0
 	github.com/regen-network/regen-ledger/x/data v1.0.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.0.0
-	github.com/regen-network/regen-ledger/x/group v1.0.0-beta1
+	github.com/regen-network/regen-ledger/x/group v1.0.0-beta2
 	github.com/rs/zerolog v1.26.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.4.0
@@ -149,8 +149,6 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
-
-replace github.com/regen-network/regen-ledger/x/group => ./x/group
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
