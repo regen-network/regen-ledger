@@ -12,7 +12,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/regen-network/gocuke v0.6.2
-	github.com/regen-network/regen-ledger/api v0.8.0
+	github.com/regen-network/regen-ledger/api v1.0.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.15
@@ -139,5 +139,3 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
-
-replace github.com/regen-network/regen-ledger/api => ../api
