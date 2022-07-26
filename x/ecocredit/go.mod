@@ -16,7 +16,7 @@ require (
 	github.com/regen-network/gocuke v0.6.2
 	github.com/regen-network/regen-ledger/api v1.0.0
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
-	github.com/regen-network/regen-ledger/types v1.0.0
+	github.com/regen-network/regen-ledger/types v1.1.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.15
@@ -140,7 +140,5 @@ require (
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-replace github.com/regen-network/regen-ledger/types => ../../types
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
