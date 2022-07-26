@@ -779,6 +779,8 @@ github.com/regen-network/gocuke v0.6.2 h1:pHviZ0kKAq2U2hN2q3smKNxct6hS0mGByFMHGn
 github.com/regen-network/gocuke v0.6.2/go.mod h1:zYaqIHZobHyd0xOrHGPQjbhGJsuZ1oElx150u2o1xuk=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
+github.com/regen-network/regen-ledger/api v1.0.0 h1:L5y3xDuxN5eRinehUFeY8Z/VsCCto7OEuUD3AS3k4Aw=
+github.com/regen-network/regen-ledger/api v1.0.0/go.mod h1:ZK8v/oSmixoFV3Jo1bHEM0Xfn8lu8GlT04tMj7lCl7A=
 github.com/regen-network/regen-ledger/orm v1.0.0-beta1 h1:io3MMmqpIy3YCdkGmcsP+xAaq3JZi1/OAWk3ut+Th9s=
 github.com/regen-network/regen-ledger/orm v1.0.0-beta1/go.mod h1:iWlJmID0OfhKaIOoSsr35+gevY7h9OgpfemKNlLu7YU=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=

@@ -114,7 +114,7 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/regen-network/gocuke v0.6.2 // indirect
-	github.com/regen-network/regen-ledger/api v0.8.0 // indirect
+	github.com/regen-network/regen-ledger/api v1.0.0 // indirect
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
@@ -157,8 +157,6 @@ replace github.com/regen-network/regen-ledger/x/data => ./x/data
 replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/group => ./x/group
-
-replace github.com/regen-network/regen-ledger/api => ./api
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
