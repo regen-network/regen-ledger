@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.12.1
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types v1.0.0
+	github.com/regen-network/regen-ledger/types v1.1.0
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
 	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
 	github.com/regen-network/regen-ledger/x/group v1.0.0-beta1
@@ -149,8 +149,6 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
-
-replace github.com/regen-network/regen-ledger/types => ./types
 
 replace github.com/regen-network/regen-ledger/x/data => ./x/data
 
