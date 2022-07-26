@@ -1,6 +1,6 @@
 # Install Regen
 
-The following instructions are instructions for building the `regen` binary from source, also available at [Install Regen](../../ledger/get-started) alongside general information about the `regen` binary.
+The following instructions are for building the `regen` binary from source, also available at [Install Regen](../../ledger/get-started) alongside general information about the `regen` binary.
 
 A significant difference here is that the genesis binary is used for each chain because a validator node needs to start from genesis (unless [Using State Sync](using-state-sync.md)).
 
