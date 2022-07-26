@@ -61,6 +61,7 @@ type Config struct {
 	TimeoutCommit    time.Duration              // the consensus commitment timeout
 	ChainID          string                     // the network chain-id
 	NumValidators    int                        // the total number of validators to create and bond
+	Mnemonics        []string                   // custom user-provided validator operator mnemonics
 	BondDenom        string                     // the staking bond denomination
 	MinGasPrices     string                     // the minimum gas prices each validator will accept
 	AccountTokens    sdk.Int                    // the amount of unique validator tokens (e.g. 1000node0)
@@ -301,7 +302,12 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			return nil, err
 		}
 
-		addr, secret, err := testutil.GenerateSaveCoinKey(kb, nodeDirName, "", true, algo)
+		var mnemonic string
+		if i < len(cfg.Mnemonics) {
+			mnemonic = cfg.Mnemonics[i]
+		}
+
+		addr, secret, err := testutil.GenerateSaveCoinKey(kb, nodeDirName, mnemonic, true, algo)
 		if err != nil {
 			return nil, err
 		}

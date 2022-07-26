@@ -54,5 +54,6 @@ func DefaultConfig() network.Config {
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
 		PrintMnemonic:     false,
+		Mnemonics:         []string{""},
 	}
 }
