@@ -31,15 +31,15 @@ jobs:
         name: Build experimental
         if: matrix.envs == 'experimental-build'
         run: EXPERIMENTAL=true make build
-      -
-        name: Run release setup
-        if: matrix.envs == 'release-build'
-        run: ./scripts/release-setup.sh
-        shell: bash
-      -
-        name: Build release
-        if: matrix.envs == 'release-build'
-        uses: goreleaser/goreleaser-action@v2
-        with:
-          version: latest
-          args: build --skip-validate --rm-dist
+#      -
+#        name: Run release setup
+#        if: matrix.envs == 'release-build'
+#        run: ./scripts/release-setup.sh
+#        shell: bash
+#      -
+#        name: Build release
+#        if: matrix.envs == 'release-build'
+#        uses: goreleaser/goreleaser-action@v2
+#        with:
+#          version: latest
+#          args: build --skip-validate --rm-dist
