@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/x/ecocredit
+module github.com/regen-network/regen-ledger/x/ecocredit/v2
 
 go 1.18
 

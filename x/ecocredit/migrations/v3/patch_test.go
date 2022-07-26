@@ -24,9 +24,9 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	v3 "github.com/regen-network/regen-ledger/x/ecocredit/v2/migrations/v3"
 )
 
 func TestMainnetMigrations(t *testing.T) {

@@ -20,9 +20,9 @@ import (
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v2/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
 )

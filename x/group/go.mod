@@ -11,8 +11,8 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
 	github.com/regen-network/regen-ledger/types v1.1.0
-	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
+	github.com/regen-network/regen-ledger/x/data v1.0.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.0.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.15
@@ -142,6 +142,4 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/regen-network/regen-ledger/x/data => ../data
-
-replace github.com/regen-network/regen-ledger/x/ecocredit => ../ecocredit
+replace github.com/regen-network/regen-ledger/x/ecocredit/v2 => ../ecocredit

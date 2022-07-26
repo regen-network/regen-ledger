@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	data "github.com/regen-network/regen-ledger/x/data/client/testsuite"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/client/testsuite"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/testsuite"
 )
 
 func TestDataIntegration(t *testing.T) {

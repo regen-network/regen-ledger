@@ -21,10 +21,10 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	coreserver "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/mocks"
+	coreserver "github.com/regen-network/regen-ledger/x/ecocredit/v2/server/core"
 )
 
 type baseSuite struct {

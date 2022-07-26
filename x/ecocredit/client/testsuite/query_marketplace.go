@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	client "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	client "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
 )
 
 func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {

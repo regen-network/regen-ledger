@@ -30,8 +30,8 @@ import (
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/client/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/client/marketplace"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 

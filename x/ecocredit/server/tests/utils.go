@@ -12,9 +12,9 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v2/module"
 )
 
 func NewEcocreditModule(ff *server.FixtureFactory) *ecocredit.Module {

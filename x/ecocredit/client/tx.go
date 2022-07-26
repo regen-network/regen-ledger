@@ -15,9 +15,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
-	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/basket"
+	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 )
 
 const (

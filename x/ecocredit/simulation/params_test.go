@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/simulation"
 )
 
 func TestParamChanges(t *testing.T) {

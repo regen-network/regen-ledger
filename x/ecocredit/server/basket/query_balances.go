@@ -12,7 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
 )
 
 func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBasketBalancesRequest) (*baskettypes.QueryBasketBalancesResponse, error) {

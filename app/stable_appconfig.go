@@ -35,11 +35,11 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v2/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {

@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/v2/client/basket"
 )
 
 func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
