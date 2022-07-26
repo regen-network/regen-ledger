@@ -5,25 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<<<<<<< HEAD
-## [Unreleased v4.0]
-=======
-## [Unreleased]
-
-### app
-
-#### Removed
-
-- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
-
-### x/group
-
-#### Removed
-
-- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module
-
 ## [v4.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0) - 2022-07-26
->>>>>>> aeb6b0d (docs: update changelog for v4.0 release (#1305))
 
 ### General
 
