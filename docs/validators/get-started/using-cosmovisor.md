@@ -78,6 +78,10 @@ You should see the following:
 
 Create a `cosmovisor.service` systemd service file and make sure the environment variables are set to the appropriate values (the following example includes the recommended settings):
 
+::: tip Unsafe Skip Backups
+The following recommended settings include `UNSAFE_SKIP_BACKUP=false` as a precaution but setting this to `true` will make the upgrade go much faster. Ideally backups would be created ahead of time in order to limit the time it takes to bring validators back online.
+:::
+
 ```bash
 echo "[Unit]
 Description=Cosmovisor daemon
@@ -111,7 +115,7 @@ Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
 Environment="UNSAFE_SKIP_BACKUP=true"
 ```
 
-`cosmovisor` will use the following directory to store backups if `UNSAFE_SKIP_BACKUP` is set to `false`:
+`cosmovisor` will use the following directory to store backups if `UNSAFE_SKIP_BACKUP=false`:
 
 ```bash
 Environment="DAEMON_DATA_BACKUP_DIR=true"
