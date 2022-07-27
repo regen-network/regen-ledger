@@ -100,7 +100,7 @@ Environment="DAEMON_DATA_BACKUP_DIR=${HOME}/.regen"
 Environment="UNSAFE_SKIP_BACKUP=false"
 Environment="DAEMON_PREUPGRADE_MAX_RETRIES=0"
 User=${USER}
-ExecStart=${GOBIN}/cosmovisor start
+ExecStart=${GOBIN}/cosmovisor run start
 Restart=always
 RestartSec=3
 LimitNOFILE=4096
