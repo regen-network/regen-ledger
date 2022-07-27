@@ -1,36 +1,21 @@
 # Using Cosmovisor
 
-[Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
+[Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/main/cosmovisor#cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
 
 ## Installation
 
 ::: tip Cosmovisor Versions
-It is not possible to install Cosmovisor v1.1 using `go install` and, when Cosmovisor v1.0 is installed using `go install`, the `version` command does not print the version. Until a new version is available, the following includes installation instructions for Cosmovisor v1.0 using `go install` (with a checksum) and Cosmovisor v1.1 building from source.
+The following instructions use the latest version (`v1.2`), which does not support installation with `go install` and therefore `cosmovisor` must be built from source.
+
+The most recent version that supports `go install` is `v1.0`, which is still safe to use but the configuration will be different and several improvements have since been added.
+
+For more information about each version, see the release notes:
+- [Cosmovisor v1.0.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.0.0)
+- [Cosmovisor v1.1.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.1.0)
+- [Cosmovisor v1.2.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.2.0)
 :::
 
-### Go Install (v1.0)
-
-Install the binary:
-
-```bash
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0
-```
-
-Verify the checksum of the binary:
-
-```bash
-sha256sum $HOME/go/bin/cosmovisor
-```
-
-You should see the following:
-
-```bash
-33b850556c55ee17934373598b1284a39eb64975af79eeda55872446990b9254
-```
-
-### Building From Source (v1.1)
-
-Clone the `cosmos-sdk` repository:
+Clone the `cosmos-sdk` repository (if not already cloned):
 
 ```bash
 git clone https://github.com/cosmos/cosmos-sdk
@@ -42,10 +27,16 @@ Change into the `cosmos-sdk` repository:
 cd cosmos-sdk
 ```
 
+Fetch the latest tags (if already cloned):
+
+```bash
+git fetch --all
+```
+
 Check out the tagged release:
 
 ```bash
-git checkout cosmovisor/v1.1.0
+git checkout cosmovisor/v1.2.0
 ```
 
 Build the cosmovisor binary:
@@ -60,6 +51,18 @@ Copy the built binary to your `GOBIN` directory:
 cp ./cosmovisor/cosmovisor $HOME/go/bin
 ```
 
+Check the version:
+
+```bash
+cosmovisor version
+```
+
+You should see the following (the errors following the version are expected if environment variables are not yet set, which will be set in the systemd file in the next section):
+
+```bash
+cosmovisor version:  1.2.0
+```
+
 Verify the checksum of the binary:
 
 ```bash
@@ -69,17 +72,17 @@ sha256sum $HOME/go/bin/cosmovisor
 You should see the following:
 
 ```bash
-3f27c7feb1c093ddf9c919857b1cdf1e3a0654504c6acef68116deb325388361
+63e5700980eb9442962d00becf0fa6f823209f024c5a1c4133f7d4a88c1614f3
 ```
 
 ## Configuration
 
 ### Cosmovisor Service
 
-Create a `cosmovisor.service` systemd service file and make sure the environment variables are set to the appropriate values (the following example includes the recommended settings):
+Create a `cosmovisor.service` systemd service file and make sure the environment variables are set to the desired values (the following example includes the default `cosmovisor` configuration settings with the exception of `DAEMON_NAME` and `DAEMON_HOME`):
 
 ::: tip Unsafe Skip Backups
-The following recommended settings include `UNSAFE_SKIP_BACKUP=false` as a precaution but setting this to `true` will make the upgrade go much faster. Ideally backups would be created ahead of time in order to limit the time it takes to bring validators back online.
+The following recommended settings include `UNSAFE_SKIP_BACKUP=false` as a precaution but setting this to `true` will make the upgrade go much faster. Ideally backups are created ahead of time in order to limit the time it takes to bring validators back online.
 :::
 
 ```bash
@@ -89,10 +92,13 @@ After=network-online.target
 [Service]
 Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.regen"
-Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
-Environment="DAEMON_DATA_BACKUP_DIR=${HOME}/.regen/backups"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="DAEMON_RESTART_DELAY=0s"
+Environment="DAEMON_POLL_INTERVAL=300ms"
+Environment="DAEMON_DATA_BACKUP_DIR=${HOME}/.regen"
 Environment="UNSAFE_SKIP_BACKUP=false"
+Environment="DAEMON_PREUPGRADE_MAX_RETRIES=0"
 User=${USER}
 ExecStart=${GOBIN}/cosmovisor start
 Restart=always
@@ -103,23 +109,7 @@ WantedBy=multi-user.target
 " >cosmovisor.service
 ```
 
-`cosmovisor` can be configured to automatically download upgrade binaries. It is recommended that validators do not use the auto-download option and that the upgrade binary is prepared manually. If you would like to enable the auto-download option, update the following environment variable in the systemd configuration file:
-
-```bash
-Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
-```
-
-`cosmovisor` can automatically create a backup of the data directory at the time of the upgrade and before the migration. If you would like to disable the auto-backup, update the following environment variable in the systemd configuration file:
-
-```bash
-Environment="UNSAFE_SKIP_BACKUP=true"
-```
-
-`cosmovisor` will use the following directory to store backups if `UNSAFE_SKIP_BACKUP=false`:
-
-```bash
-Environment="DAEMON_DATA_BACKUP_DIR=true"
-```
+For more information about the configuration options used in the example above, see [Command Line Arguments And Environment Variables](https://github.com/cosmos/cosmos-sdk/tree/main/cosmovisor#command-line-arguments-and-environment-variables).
 
 Move the file to the systemd directory:
 
@@ -127,24 +117,12 @@ Move the file to the systemd directory:
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 ```
 
-### Genesis Binary Setup
+### Initialize Cosmovisor
 
-Create a directory for data backups:
-
-```bash
-mkdir -p ${HOME}/.regen/backups
-```
-
-Create a directory for the genesis binary:
+Run the initialization command (if you built the `regen` binary from source, the path will be different, so make sure you provide the path to the `regen` binary that will be used as the starting binary):
 
 ```bash
-mkdir -p $HOME/.regen/cosmovisor/genesis/bin
-```
-
-Copy the genesis binary which will be used when starting `cosmovisor` (assuming that you have already built the binary from source following the instructions in [Install Regen](./install-regen.md)):
-
-```bash
-cp path/to/binary/regen $HOME/.regen/cosmovisor/genesis/bin
+DAEMON_HOME=~/.regen DAEMON_NAME=regen cosmovisor init $HOME/go/bin/cosmovisor
 ```
 
 ### Starting Cosmovisor
