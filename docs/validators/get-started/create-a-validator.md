@@ -1,10 +1,10 @@
 # Create a Validator
 
-This document provides instructions for creating a validator on Regen Mainnet, Redwood Testnet, and Hambach Testnet.
+This document provides instructions for creating a validator.
 
 ## Prerequisites
 
-This assumes that you already have a [full node running](run-a-full-node.md).
+This assumes that you already have a full node [initialized and running](initialize-node.md).
 
 ## Add Validator Key
 
@@ -43,3 +43,7 @@ regen tx staking create-validator \
   --gas="auto" \
   --from=<key_name>
 ```
+
+## Prepare Upgrade
+
+The next step will be to prepare your node for [software upgrades](../upgrades/README.md).
