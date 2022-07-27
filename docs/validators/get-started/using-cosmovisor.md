@@ -120,7 +120,7 @@ sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 Run the initialization command (if you built the `regen` binary from source, the path will be different, so make sure you provide the path to the `regen` binary that will be used as the starting binary):
 
 ```bash
-DAEMON_HOME=~/.regen DAEMON_NAME=regen cosmovisor init $HOME/go/bin/cosmovisor
+DAEMON_HOME=~/.regen DAEMON_NAME=regen cosmovisor init $HOME/go/bin/regen
 ```
 
 ## Starting Cosmovisor
