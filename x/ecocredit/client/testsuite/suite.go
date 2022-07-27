@@ -176,7 +176,6 @@ func (s *IntegrationTestSuite) setupGenesis() {
 
 	// set up temporary mem db
 	db := dbm.NewMemDB()
-	defer db.Close()
 
 	mdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(err)

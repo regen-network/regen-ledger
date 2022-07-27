@@ -18,14 +18,16 @@ import (
 	"github.com/regen-network/regen-ledger/v4/app"
 )
 
-func NewRegenAppConstructor(val network.Validator) servertypes.Application {
-	return app.NewRegenApp(
-		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
-		app.MakeEncodingConfig(),
-		app.EmptyAppOptions{},
-		baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
-		baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
-	)
+func NewRegenAppConstructor(encCfg app.EncodingConfig) network.AppConstructor {
+	return func(val network.Validator) servertypes.Application {
+		return app.NewRegenApp(
+			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
+			encCfg,
+			app.EmptyAppOptions{},
+			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
+			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
+		)
+	}
 }
 
 // DefaultConfig returns a sane default configuration suitable for nearly all
@@ -39,11 +41,11 @@ func DefaultConfig() network.Config {
 		LegacyAmino:       encCfg.Amino,
 		InterfaceRegistry: encCfg.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
-		AppConstructor:    NewRegenAppConstructor,
+		AppConstructor:    NewRegenAppConstructor(encCfg),
 		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Codec),
 		TimeoutCommit:     2 * time.Second,
 		ChainID:           "chain-" + tmrand.NewRand().Str(6),
-		NumValidators:     4,
+		NumValidators:     2,
 		BondDenom:         sdk.DefaultBondDenom,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
 		AccountTokens:     sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
@@ -54,6 +56,5 @@ func DefaultConfig() network.Config {
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
 		PrintMnemonic:     false,
-		Mnemonics:         []string{""},
 	}
 }
