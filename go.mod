@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/v4
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.46.0-rc3
+	github.com/cosmos/cosmos-sdk v0.46.0
 	// github.com/cosmos/ibc-go/v3 v3.1.0
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.12.2 // indirect
@@ -183,5 +183,3 @@ replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 
 // Mock wasmd module removed in experimental build
 replace github.com/CosmWasm/wasmd => ./mocks/wasmd
-
-replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.46.0-rc3.0.20220726061457-a69a77bc6468
