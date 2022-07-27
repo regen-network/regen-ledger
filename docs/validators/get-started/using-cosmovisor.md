@@ -60,7 +60,7 @@ cosmovisor version
 You should see the following (the errors following the version are expected if environment variables are not yet set, which will be set in the systemd file in the next section):
 
 ```bash
-cosmovisor version:  1.2.0
+cosmovisor version: 1.2.0
 ```
 
 Verify the checksum of the binary:
@@ -75,9 +75,7 @@ You should see the following:
 63e5700980eb9442962d00becf0fa6f823209f024c5a1c4133f7d4a88c1614f3
 ```
 
-## Configuration
-
-### Cosmovisor Service
+## Cosmovisor Service
 
 Create a `cosmovisor.service` systemd service file and make sure the environment variables are set to the desired values (the following example includes the default `cosmovisor` configuration settings with the exception of `DAEMON_NAME` and `DAEMON_HOME`):
 
@@ -117,7 +115,7 @@ Move the file to the systemd directory:
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 ```
 
-### Initialize Cosmovisor
+## Initialize Cosmovisor
 
 Run the initialization command (if you built the `regen` binary from source, the path will be different, so make sure you provide the path to the `regen` binary that will be used as the starting binary):
 
@@ -125,7 +123,7 @@ Run the initialization command (if you built the `regen` binary from source, the
 DAEMON_HOME=~/.regen DAEMON_NAME=regen cosmovisor init $HOME/go/bin/cosmovisor
 ```
 
-### Starting Cosmovisor
+## Starting Cosmovisor
 
 Start `cosmovisor` to make sure everything is configured correctly:
 
@@ -145,7 +143,7 @@ Enable `cosmovisor` to start automatically when the machine reboots:
 sudo systemctl enable cosmovisor.service
 ```
 
-### Configuration Updates
+## Configuration Updates
 
 When you make changes to the configuration, be sure to stop and start the `cosmovisor` service so that you are using the latest changes.
 
