@@ -220,7 +220,8 @@ Feature: MsgSell
           "batch_denom": "C01-001-20200101-20210101-001",
           "quantity": "100",
           "ask_price": {
-            "denom": "foo.bar"
+            "denom": "foo.bar",
+            "amount": "1"
           }
         }
       ]

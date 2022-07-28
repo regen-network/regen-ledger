@@ -187,7 +187,8 @@ Feature: MsgBuyDirect
           "sell_order_id": 1,
           "quantity": "100",
           "bid_price": {
-            "denom": "foo.bar"
+            "denom": "foo.bar",
+            "amount": "1"
           }
         }
       ]

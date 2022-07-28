@@ -205,7 +205,8 @@ Feature: MsgUpdateSellOrders
           "sell_order_id": 1,
           "new_quantity": "100",
           "new_ask_price": {
-            "denom": "foo.bar"
+            "denom": "foo.bar",
+            "amount": "123"
           }
         }
       ]
