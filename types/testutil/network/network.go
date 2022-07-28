@@ -15,24 +15,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/regen-network/regen-ledger/v4/app"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
 	"github.com/tendermint/tendermint/node"
 	tmclient "github.com/tendermint/tendermint/rpc/client"
-	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
@@ -51,19 +45,6 @@ var lock = new(sync.Mutex)
 // AppConstructor defines a function which accepts a network configuration and
 // creates an ABCI Application to provide to Tendermint.
 type AppConstructor = func(val Validator) servertypes.Application
-
-// NewAppConstructor returns a new regen AppConstructor
-func NewAppConstructor(encodingCfg app.EncodingConfig) AppConstructor {
-	return func(val Validator) servertypes.Application {
-		return app.NewRegenApp(
-			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
-			encodingCfg,
-			app.EmptyAppOptions{},
-			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
-			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
-		)
-	}
-}
 
 // Config defines the necessary configuration used to bootstrap and start an
 // in-process local testing network.
@@ -94,35 +75,6 @@ type Config struct {
 	APIAddress       string                     // REST API listen address (including port)
 	GRPCAddress      string                     // GRPC server listen address (including port)
 	PrintMnemonic    bool                       // print the mnemonic of first validator as log output for testing
-}
-
-// DefaultConfig returns a sane default configuration suitable for nearly all
-// testing requirements.
-func DefaultConfig() Config {
-	encCfg := app.MakeEncodingConfig()
-
-	return Config{
-		Codec:             encCfg.Codec,
-		TxConfig:          encCfg.TxConfig,
-		LegacyAmino:       encCfg.Amino,
-		InterfaceRegistry: encCfg.InterfaceRegistry,
-		AccountRetriever:  authtypes.AccountRetriever{},
-		AppConstructor:    NewAppConstructor(encCfg),
-		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Codec),
-		TimeoutCommit:     2 * time.Second,
-		ChainID:           "chain-" + tmrand.Str(6),
-		NumValidators:     4,
-		BondDenom:         sdk.DefaultBondDenom,
-		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:     sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
-		BondedTokens:      sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
-		PruningStrategy:   pruningtypes.PruningOptionNothing,
-		CleanupDir:        true,
-		SigningAlgo:       string(hd.Secp256k1Type),
-		KeyringOptions:    []keyring.Option{},
-		PrintMnemonic:     false,
-	}
 }
 
 type (
