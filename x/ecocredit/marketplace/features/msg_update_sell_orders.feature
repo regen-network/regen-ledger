@@ -205,15 +205,14 @@ Feature: MsgUpdateSellOrders
           "sell_order_id": 1,
           "new_quantity": "100",
           "new_ask_price": {
-            "denom": "foo.bar",
-            "amount": "123"
+            "denom": "foo#bar"
           }
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "updates[0]: new ask price: invalid denom: foo.bar: invalid request"
+    Then expect the error "updates[0]: new ask price: invalid denom: foo#bar: invalid request"
 
   Scenario: an error is returned if ask price amount is empty
     Given the message
