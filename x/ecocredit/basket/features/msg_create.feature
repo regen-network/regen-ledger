@@ -188,7 +188,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "credit type abbreviation cannot be empty: invalid request"
+    Then expect the error "credit type abbreviation cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if credit type abbreviation is not formatted
     Given the message
@@ -200,7 +200,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "credit type abbreviation must be 1-3 uppercase latin letters: got foobar: invalid request"
+    Then expect the error "credit type abbreviation must be 1-3 uppercase latin letters: got foobar: parse error: invalid request"
 
   Scenario: an error is returned if allowed credit classes is empty
     Given the message
@@ -227,7 +227,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "allowed_classes[0] cannot be empty: invalid request"
+    Then expect the error "allowed_classes[0] is not a valid class ID: class id cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if an allowed credit class is not formatted
     Given the message

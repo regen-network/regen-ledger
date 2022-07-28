@@ -103,7 +103,7 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "batch denom cannot be empty: invalid request"
+    Then expect the error "batch denom cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if credits batch denom is not formatted
     Given the message
@@ -119,7 +119,7 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "invalid batch denom: expected format A00-000-00000000-00000000-000: parse error"
+    Then expect the error "invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
 
   Scenario: an error is returned if credits tradable amount and retired amount are empty
     Given the message
@@ -186,7 +186,7 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "retirement jurisdiction required: invalid request"
+    Then expect the error "retirement jurisdiction: jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
 
   Scenario: an error is returned if credits retired amount is positive and retirement jurisdiction is not formatted
     Given the message
@@ -204,4 +204,4 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error"
+    Then expect the error "retirement jurisdiction: invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"

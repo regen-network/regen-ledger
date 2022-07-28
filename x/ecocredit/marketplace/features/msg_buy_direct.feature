@@ -253,7 +253,7 @@ Feature: MsgBuyDirect
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: retirement jurisdiction cannot be empty if auto-retire is disabled: invalid request"
+    Then expect the error "orders[0]: jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
 
   Scenario: an error is returned if disable auto-retire is true and retirement jurisdiction is not formatted
     Given the message

@@ -44,10 +44,6 @@ func (m *MsgSell) ValidateBasic() error {
 		// an individual order in a list of orders fails to process
 		orderIndex := fmt.Sprintf("orders[%d]", i)
 
-		if len(order.BatchDenom) == 0 {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom cannot be empty", orderIndex)
-		}
-
 		if err := core.ValidateBatchDenom(order.BatchDenom); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s: %s", orderIndex, err)
 		}

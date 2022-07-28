@@ -7,12 +7,8 @@ import (
 
 // Validate checks if Credits is valid.
 func (c *Credits) Validate() error {
-	if c.BatchDenom == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("batch denom cannot be empty")
-	}
-
 	if err := ValidateBatchDenom(c.BatchDenom); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if c.Amount == "" {
