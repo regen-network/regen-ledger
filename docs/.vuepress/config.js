@@ -181,9 +181,11 @@ module.exports = {
           children: [
             '/validators/get-started/',
             '/validators/get-started/install-regen',
-            '/validators/get-started/install-cosmovisor',
-            '/validators/get-started/run-a-full-node',
+            '/validators/get-started/initialize-node',
             '/validators/get-started/create-a-validator',
+            '/validators/get-started/using-quickstart',
+            '/validators/get-started/using-state-sync',
+            '/validators/get-started/using-cosmovisor',
           ]
         },
         {
@@ -193,6 +195,7 @@ module.exports = {
             '/validators/upgrades/',
             '/validators/upgrades/v2.0-upgrade',
             '/validators/upgrades/v3.0-upgrade',
+            '/validators/upgrades/v4.0-upgrade',
           ],
         },
       ],

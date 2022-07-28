@@ -19,43 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module
 
-## [Unreleased v4.0]
-
-### types
-
-#### Fixed
-
-- [#1292](https://github.com/regen-network/regen-ledger/pull/1292) Fix nil timestamp and duration conversion
-
-### x/ecocredit
-
-#### Added
-
-- [#1274](https://github.com/regen-network/regen-ledger/pull/1274) Add `cancel-sell-order` command
-
-#### Changed
-
-- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `types` query command to `credit-types`
-- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `balance` query command to `batch-balance`
-- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `supply` query command to `batch-supply`
-- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `buy-direct-batch` transaction command to `buy-direct-bulk`
-
-#### Fixed
-
-- [#1278](https://github.com/regen-network/regen-ledger/pull/1278) Fix `open` not set in `Msg/CreateBatch`
-- [#1281](https://github.com/regen-network/regen-ledger/pull/1281) Fix curator address in state migrations
-- [#1284](https://github.com/regen-network/regen-ledger/pull/1284) Fix basket state migration
-- [#1290](https://github.com/regen-network/regen-ledger/pull/1290) Fix error message when basket not found.
-- [#1290](https://github.com/regen-network/regen-ledger/pull/1290) Return empty balance when basket balance not found.
-
-## [v4.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0-rc1) - 2022-07-15
+## [v4.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0) - 2022-07-26
 
 ### General
 
 #### Added
 
-- [#720](https://github.com/regen-network/regen-ledger/pull/720) Add begin and end blocker support to module server
-- [#783](https://github.com/regen-network/regen-ledger/pull/783) Add `BigInt` conversion method to `Dec` interface 
 - [#1255](https://github.com/regen-network/regen-ledger/pull/1255) Add arm and windows package builds to release build
 
 #### Changed
@@ -67,7 +36,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 
 - [#685](https://github.com/regen-network/regen-ledger/pull/685) Fix swagger-gen to include ibc-go swagger docs
+
+### types
+
+#### Added
+
+- [#720](https://github.com/regen-network/regen-ledger/pull/720) Add begin and end blocker support to module server
+- [#783](https://github.com/regen-network/regen-ledger/pull/783) Add `BigInt` conversion method to `Dec` interface 
+
+#### Fixed
+
 - [#1210](https://github.com/regen-network/regen-ledger/pull/1210) Fix `PositiveDecimalFromString` to error if not finite
+- [#1292](https://github.com/regen-network/regen-ledger/pull/1292) Fix nil timestamp and duration conversion
 
 ### x/data
 
@@ -106,8 +86,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption to consume for each iteration
 - [#946](https://github.com/regen-network/regen-ledger/pull/946) Remove use of `oneof` to support legacy Amino signing
 - [#1128](https://github.com/regen-network/regen-ledger/pull/1128) Remove unique constrains on resolver URL
-- [#1177](https://github.com/regen-network/regen-ledger/pull/1177) Remove exponent from `create-basket` command
-- [#1180](https://github.com/regen-network/regen-ledger/pull/1180) Fix batch dates and project IDs in `regen-1` state migrations
 
 ### x/ecocredit
 
@@ -179,10 +157,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1209](https://github.com/regen-network/regen-ledger/pull/1209) Add regen metadata units migration
 - [#1213](https://github.com/regen-network/regen-ledger/pull/1213) Add simpler version of `send` command
 - [#1218](https://github.com/regen-network/regen-ledger/pull/1218) Add restriction on buyer being seller
+- [#1220](https://github.com/regen-network/regen-ledger/pull/1220) Add project reference id to `Query/Project` response
 - [#1224](https://github.com/regen-network/regen-ledger/pull/1224) Add `EventBridgeReceive` and `EventBridge`
 - [#1225](https://github.com/regen-network/regen-ledger/pull/1225) Add `note` and `contract` to `OriginTx`
 - [#1226](https://github.com/regen-network/regen-ledger/pull/1226) Add `BatchContract` to map batch to contract
 - [#1229](https://github.com/regen-network/regen-ledger/pull/1229) Add `class_key` to `OriginTxIndex`
+- [#1274](https://github.com/regen-network/regen-ledger/pull/1274) Add `cancel-sell-order` command
 
 #### Changed
 
@@ -249,6 +229,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1199](https://github.com/regen-network/regen-ledger/pull/1199) Update ecocredit commands to consistently use json
 - [#1200](https://github.com/regen-network/regen-ledger/pull/1200) Update basic validation for basket denom
 - [#1213](https://github.com/regen-network/regen-ledger/pull/1213) Rename `send` command to `send-bulk`
+- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `types` query command to `credit-types`
+- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `balance` query command to `batch-balance`
+- [#1288](https://github.com/regen-network/regen-ledger/pull/1288) Rename `supply` query command to `batch-supply`
 
 #### Removed
 
@@ -262,11 +245,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#939](https://github.com/regen-network/regen-ledger/pull/934) Fix gas consumption for each iteration
 - [#1135](https://github.com/regen-network/regen-ledger/pull/1135) Deprecate basket exponent and use credit type precision
 - [#1144](https://github.com/regen-network/regen-ledger/pull/1144) Fix `MsgCreateBatch` issuance with same recipient
+- [#1177](https://github.com/regen-network/regen-ledger/pull/1177) Remove exponent from `create-basket` command
+- [#1180](https://github.com/regen-network/regen-ledger/pull/1180) Fix batch dates and project IDs in `regen-1` state migrations
 - [#1194](https://github.com/regen-network/regen-ledger/pull/1194) Fix start and end date in batch denom to always use UTC
 - [#1195](https://github.com/regen-network/regen-ledger/pull/1195) Fix genesis validation to include basket balances
 - [#1202](https://github.com/regen-network/regen-ledger/pull/1202) Fix order of storing basket token denominations
-- [#1220](https://github.com/regen-network/regen-ledger/pull/1220) Add project reference id to `Query/Project` response
 - [#1234](https://github.com/regen-network/regen-ledger/pull/1234) Fix `CreateClassFee` implementation if not required
+- [#1290](https://github.com/regen-network/regen-ledger/pull/1290) Fix error message when basket not found
+- [#1290](https://github.com/regen-network/regen-ledger/pull/1290) Return empty balance when basket balance not found
 
 ### orm
 
