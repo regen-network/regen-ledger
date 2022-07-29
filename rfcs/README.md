@@ -1,5 +1,4 @@
-RFCs (Requests for Comment)
-===========================
+# RFCs
 
 Regen Network makes use of RFCs (Requests for Comment) as a method for documenting
 proposals and specifications that warrant a more structured process.
@@ -8,7 +7,7 @@ It's common that general requirements for new features or modules on Regen Ledge
 may begin being discussed as a GitHub issue, GitHub discussion, or on non-GitHub
 platforms such as the [community forum](http://forum.regen.network). For larger
 features that have a reasonable amount of architectural complexity, RFCs
-are encouraged as a mechansim for aligning on a technical approach to a given
+are encouraged as a mechanism for aligning on a technical approach to a given
 set of requirements.
 
 ## RFC Creation Process
@@ -35,3 +34,4 @@ They are to be interpreted as described in
 
 ### Accepted
 - [RFC-001: Ecosystem Service Credit Module](./001-ecosystem-serfice-credit-module.md)
+- [RFC-002: Baskets Specification](./002-baskets-specification.md)

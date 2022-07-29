@@ -263,6 +263,24 @@ module.exports = {
           children: [],
         },
       ],
+      '/specs/': [
+        {
+          title: 'Specifications',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+            '/specs/rfcs/',
+          ],
+        },
+        {
+          title: 'RFCs',
+          collapsable: false,
+          children: [
+            '/specs/rfcs/001-ecosystem-service-credit-module',
+            '/specs/rfcs/002-baskets-specification',
+          ],
+        },
+      ],
     },
   },
   /**

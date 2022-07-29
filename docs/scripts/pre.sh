@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# general specification documentation
+
+rm -r specs
+
+mkdir specs
+
+cp README_specs.md specs/README.md
+
+cp -r ../rfcs specs/rfcs
+
 # module specification documentation
 
 mkdir -p modules
