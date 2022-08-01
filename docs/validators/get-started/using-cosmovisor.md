@@ -63,18 +63,6 @@ You should see the following (the errors following the version are expected if e
 cosmovisor version: 1.2.0
 ```
 
-Verify the checksum of the binary:
-
-```bash
-sha256sum $HOME/go/bin/cosmovisor
-```
-
-You should see the following:
-
-```bash
-63e5700980eb9442962d00becf0fa6f823209f024c5a1c4133f7d4a88c1614f3
-```
-
 ## Cosmovisor Service
 
 Create a `cosmovisor.service` systemd service file and make sure the environment variables are set to the desired values (the following example includes the default `cosmovisor` configuration settings with the exception of `DAEMON_NAME` and `DAEMON_HOME`):
@@ -92,7 +80,6 @@ Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.regen"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
-Environment="DAEMON_RESTART_DELAY=0s"
 Environment="DAEMON_POLL_INTERVAL=300ms"
 Environment="DAEMON_DATA_BACKUP_DIR=${HOME}/.regen"
 Environment="UNSAFE_SKIP_BACKUP=false"
