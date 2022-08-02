@@ -84,11 +84,6 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	// TODO: remove after updating to cosmos-sdk v0.46 #857
-	sdk.SetCoinDenomRegex(func() string {
-		return types.CoinDenomRegex
-	})
-
 	s.fixture = s.fixtureFactory.Setup()
 
 	s.codec = s.fixture.Codec()

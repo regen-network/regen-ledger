@@ -57,11 +57,6 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.basketDenom = "eco.uC.NCT"
 	s.tradableCredits = "100"
-
-	// TODO: remove after updating to cosmos-sdk v0.46 #857
-	sdk.SetCoinDenomRegex(func() string {
-		return types.CoinDenomRegex
-	})
 }
 
 func (s *putSuite) ACreditType() {
