@@ -80,7 +80,6 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
@@ -156,11 +155,6 @@ func init() {
 	// this changes the power reduction from 10e6 to 10e2, which will give
 	// every validator 10,000 times more voting power than they currently have
 	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
-
-	// TODO: remove after updating to cosmos-sdk v0.46 #857
-	sdk.SetCoinDenomRegex(func() string {
-		return regentypes.CoinDenomRegex
-	})
 }
 
 // Extended ABCI application
@@ -546,7 +540,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		panic(err)
 	}
 	app.SetAnteHandler(anteHandler)
-
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {

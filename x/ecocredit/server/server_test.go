@@ -68,7 +68,7 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, sdk.DefaultBondDenom,
+		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
