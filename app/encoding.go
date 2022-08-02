@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 )
 
-// EncodingConfig specifies the concrete encoding types to use for a given app.
+// EncodingConfig specifies the concrete encoding types to use for the app.
 // This is provided for compatibility between protobuf and amino implementations.
 type EncodingConfig struct {
 	InterfaceRegistry types.InterfaceRegistry
