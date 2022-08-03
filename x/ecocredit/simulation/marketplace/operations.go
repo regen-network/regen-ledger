@@ -166,7 +166,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 
 	}
 }
@@ -262,7 +262,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -345,7 +345,7 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
@@ -396,6 +396,6 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			CoinsSpentInMsg: spendable,
 		}
 
-		return utils.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }

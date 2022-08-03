@@ -13,18 +13,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-var AllowDenomProposalHandler = govclient.NewProposalHandler(TxAllowDenomProposal, func(context client.Context) rest.ProposalRESTHandler {
-	return rest.ProposalRESTHandler{
-		SubRoute: "",
-		Handler:  nil,
-	}
-})
+var AllowDenomProposalHandler = govclient.NewProposalHandler(TxAllowDenomProposal)
 
 func TxAllowDenomProposal() *cobra.Command {
 	cmd := &cobra.Command{
@@ -73,8 +67,8 @@ relate the bank_denom to the display_denom and is informational`),
 			if err != nil {
 				return err
 			}
-			var content types.Content = &proposal
-			msg, err := types.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
+			var content govv1beta1.Content = &proposal
+			msg, err := govv1beta1.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
 			if err != nil {
 				return err
 			}

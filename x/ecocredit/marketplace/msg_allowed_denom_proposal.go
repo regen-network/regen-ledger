@@ -4,20 +4,19 @@ import (
 	"fmt"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var _ govtypes.Content = &AllowDenomProposal{}
+var _ govv1beta1.Content = &AllowDenomProposal{}
 
 const (
 	AllowDenomProposalType = "AllowDenomProposal"
 )
 
 func init() {
-	govtypes.RegisterProposalType(AllowDenomProposalType)
-	govtypes.RegisterProposalTypeCodec(&AllowDenomProposal{}, "regen/AllowDenomProposal")
+	govv1beta1.RegisterProposalType(AllowDenomProposalType)
 }
 
 func (m AllowDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
@@ -31,7 +30,7 @@ func (m AllowDenomProposal) ValidateBasic() error {
 	if err := m.Denom.Validate(); err != nil {
 		return err
 	}
-	return govtypes.ValidateAbstract(&m)
+	return govv1beta1.ValidateAbstract(&m)
 }
 
 func (m AllowDenomProposal) String() string {
