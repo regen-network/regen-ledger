@@ -77,7 +77,7 @@ Feature: MsgRetire
     }
     """
     When the message is validated
-    Then expect the error "credits[0]: batch denom cannot be empty: invalid request"
+    Then expect the error "credits[0]: batch denom cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if credits amount is empty
     Given the message
@@ -110,7 +110,7 @@ Feature: MsgRetire
     }
     """
     When the message is validated
-    Then expect the error "jurisdiction cannot be empty: invalid request"
+    Then expect the error "jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
 
   Scenario: an error is returned if jurisdiction is not formatted
     Given the message
@@ -127,4 +127,4 @@ Feature: MsgRetire
     }
     """
     When the message is validated
-    Then expect the error "invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error"
+    Then expect the error "invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"

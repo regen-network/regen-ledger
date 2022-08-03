@@ -53,12 +53,8 @@ func (m *MsgBridge) ValidateBasic() error {
 	for i, credit := range m.Credits {
 		creditIndex := fmt.Sprintf("credits[%d]", i)
 
-		if credit.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom cannot be empty", creditIndex)
-		}
-
 		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
-			return sdkerrors.Wrapf(err, "%s", creditIndex)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: %s", creditIndex, err.Error())
 		}
 
 		if credit.Amount == "" {
