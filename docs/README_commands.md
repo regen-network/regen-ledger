@@ -19,6 +19,5 @@ The following commands are available using the `regen` binary. The documentation
 - [regen tendermint](regen_tendermint.md)
 - [regen testnet](regen_testnet.md)
 - [regen tx](regen_tx.md)
-- [regen unsafe](regen_unsafe-reset-all.md)
 - [regen validate](regen_validate-genesis.md)
 - [regen version](regen_version.md)
