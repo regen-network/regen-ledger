@@ -27,12 +27,8 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
 
-	if m.BatchDenom == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("batch denom cannot be empty")
-	}
-
 	if err := ValidateBatchDenom(m.BatchDenom); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.Issuance) == 0 {

@@ -29,24 +29,16 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
-	}
-
 	if err := ValidateClassId(m.ClassId); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
 	}
 
-	if m.Jurisdiction == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("jurisdiction cannot be empty")
-	}
-
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIdLength {

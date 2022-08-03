@@ -37,12 +37,8 @@ func (m *MsgRetire) ValidateBasic() error {
 		}
 	}
 
-	if m.Jurisdiction == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("jurisdiction cannot be empty")
-	}
-
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	return nil
