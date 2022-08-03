@@ -6,22 +6,6 @@ This document provides instructions for running a single node network on your lo
 
 If you have not already done so, first you'll need to [Install Regen](README.md).
 
-## Quickstart
-
-If you would like to learn about the setup process and manually set up a single node network, skip to the [next section](#create-accounts). Alternatively, you can run the following quickstart script:
-
-```bash
-./scripts/start_testnode.sh
-```
-
-The script provides two command-line options for specifying a keyring-backend (`-k`), and the name of the blockchain (`-c`). For example, to use the `os` keyring-backend with the name `demo`:
-
-```bash
-./scripts/start_testnode.sh -k os -c demo
-```
-
-After running the quickstart script, you can skip to [Start Node](#start-node).
-
 ## Create Accounts
 
 In this section, you will create two test accounts. You will name the first account `validator` and the second account `delegator`. You will create both accounts using the `test` backend, meaning both accounts will not be securely stored and should not be used in a production environment. When using the `test` backend, accounts are stored in the home directory (more on this in the next section). 

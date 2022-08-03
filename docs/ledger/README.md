@@ -16,11 +16,12 @@ For more information, check out [Get Started: Live Networks](get-started/live-ne
 
 ## Hambach Testnet
 
-Hambach Testnet is a test network with experimental modules enabled (modules that are still in development). Developers can use Hambach Testnet to test out features not yet available on Regen Mainnet. Unofficial REGEN tokens can be redeemed using a faucet.
+Hambach Testnet is a test network with experimental modules enabled (modules that are either still in development or under consideration). Developers can use Hambach Testnet to test out features not available on Regen Mainnet. Unofficial REGEN tokens can be redeemed using a faucet.
 
 Hambach Testnet includes the following experimental modules:
 
-- [Group Module](../modules/group/README.md)
+- [Group Module](../modules/group/README.md) (alpha version, not the same version in Cosmos SDK v0.46)
+- [CosmWasm Module](https://docs.cosmwasm.com/docs/1.0/)
 
 For more information, check out [Get Started: Live Networks](get-started/live-networks.md#hambach-testnet).
 
@@ -49,4 +50,4 @@ The following wallets currently support Regen Ledger:
 Have any questions, comments, or new ideas? The following community channels are the best place to start for technical topics related to Regen Ledger:
 
 - [Regen Network Discord](https://discord.gg/BDcBJu3)
-- [Regen Network Forum](https://commonwealth.im/regen)
+- [Regen Network Forum](https://forum.regen.network)
