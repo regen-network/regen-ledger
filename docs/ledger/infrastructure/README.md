@@ -1,33 +1,30 @@
 # Core Functionality
 
-## Cosmos SDK Background
+## Built on Cosmos SDK
 
-Regen Ledger is built ontop of the Cosmos SDK. Much of the language and usage patterns when interacting with Regen Ledger follow directly from usage patterns and architecture laid out in the Cosmos SDK.
+Regen Ledger is a proof-of-stake blockchain application built on top of [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).
 
-For more information on Cosmos's work, and what it means to build an "application specific blockchain", the [Cosmos SDK Docs](https://docs.cosmos.network/master/intro/overview.html#what-are-application-specific-blockchains) is a great place to start.
+Much of the language and usage patterns when interacting with Regen Ledger follow directly from the usage patterns and architecture laid out in Cosmos SDK.
+
+For more information about Cosmos SDK and what it means to build an "application specific blockchain", the [Cosmos SDK Documentation](https://docs.cosmos.network/master/intro/overview.html#what-are-application-specific-blockchains) is a great place to start.
 
 ## Regen Ledger Overview
 
 Regen Ledger is a single application binary that:
-- Runs a fully functioning node in the public proof-of-stake Regen Network
-- Stores application state locally, using an [IAVL Tree](https://github.com/cosmos/iavl)
+- Runs a fully functioning node in a public proof-of-stake network
 - Exposes an API server with both gRPC and REST interfaces for querying blockchain state and sending transactions
 - Exposes a command line interface for account creation and key management as well as for querying blockchain state and sending transactions
 
-Regen Ledger has two custom modules in development that support our desired functionality for ecological data, claims and credits.
+Regen Ledger has two custom modules that support our desired functionality for ecosystem service credits and ecological data claims.
 
 ### Ecocredit Module
 
 The **Ecocredit Module** is our module for managing the issuance, trading, and retiring of credits pertaining to verifiable changes in ecosystem health.
 
-Initially, this module will be used for Regen Network's own [CarbonPlus Grasslands](https://regen-registry.s3.amazonaws.com/GHG+and+Co-Benefits+in+Grazing+Systems+Credit+Class.pdf) credit, but we've designed this module first and foremost to be an open platform for all credit designers - something like an [EIP721](https://eips.ethereum.org/EIPS/eip-721) token standard for ecosystem service credits.
-
 Check out [Ecocredit Module Overview](../../modules/ecocredit/README.md) for more information about the ecocredit module.
 
 ### Data Module
 
-High quality and verifiable ecological data is an essential component in any modern ecosystem service marketplace. The **Data Module** is intended to sit alongside the Ecocredit Module, serving as a generic repository for more complex metadata pertaining to a credit batch or an ecosystem service project.
-
-The basic functionality of the data module includes anchoring data, attesting to the veracity of anchored data, and registering anchored data to a resolver.
+The **Data Module** is used alongside the Ecocredit Module, enabling the anchoring of ecological data, attesting to the veracity of anchored data, and registering anchored data to a resolver.
 
 Check out [Data Module Overview](../../modules/data/README.md) for more information about the data module.
