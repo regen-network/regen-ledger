@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        envs: ["stable-build", "experimental-build", "release-build"]
+        envs: ["stable-build", "release-build"]
     steps:
       -
         uses: actions/checkout@v2
@@ -27,10 +27,6 @@ jobs:
         name: Build stable
         if: matrix.envs == 'stable-build'
         run: make build
-      -
-        name: Build experimental
-        if: matrix.envs == 'experimental-build'
-        run: EXPERIMENTAL=true make build
       -
         name: Run release setup
         if: matrix.envs == 'release-build'
