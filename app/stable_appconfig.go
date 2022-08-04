@@ -21,8 +21,6 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
-	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -31,7 +29,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			[]govclient.ProposalHandler{
 				paramsclient.ProposalHandler, distrclient.ProposalHandler,
 				upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler,
-				ecocreditcore.CreditTypeProposalHandler, marketplace.AllowDenomProposalHandler,
 			},
 		),
 	}

@@ -75,7 +75,7 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, sdk.AccAddress("")) // TODO: update gov authority address
 	ff.SetModules([]module.Module{ecocreditModule})
 
 	return ff, ecocreditSubspace, bankKeeper, accountKeeper
