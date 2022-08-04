@@ -1,4 +1,4 @@
-name: Sims Cron Job
+name: Sims Nightly
 
 on:
   schedule:
