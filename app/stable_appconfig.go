@@ -19,6 +19,7 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
@@ -59,6 +60,12 @@ func setCustomOrderEndBlocker() []string {
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
+	upgradeName := "v5.0"
+	app.UpgradeKeeper.SetUpgradeHandler(upgradeName,
+		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			// transfer module consensus version has been bumped to 2
+			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		})
 }
 
 func (app *RegenApp) setCustomAnteHandler(cfg client.TxConfig) (sdk.AnteHandler, error) {
