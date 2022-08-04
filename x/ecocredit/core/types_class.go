@@ -17,10 +17,6 @@ func (c Class) Validate() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if len(c.Id) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
-	}
-
 	if err := ValidateClassId(c.Id); err != nil {
 		return err
 	}

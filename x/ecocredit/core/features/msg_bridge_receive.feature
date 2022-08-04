@@ -54,7 +54,7 @@ Feature: MsgBridgeReceive
     }
     """
     When the message is validated
-    Then expect the error "class id cannot be empty: invalid request"
+    Then expect the error "class id cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if class id is not formatted
     Given the message
@@ -114,7 +114,7 @@ Feature: MsgBridgeReceive
     }
     """
     When the message is validated
-    Then expect the error "project jurisdiction cannot be empty: invalid request"
+    Then expect the error "jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
 
   Scenario: an error is returned if project jurisdiction is not formatted
     Given the message

@@ -38,7 +38,7 @@ Feature: MsgUpdateProjectAdmin
     }
     """
     When the message is validated
-    Then expect the error "project id cannot be empty: invalid request"
+    Then expect the error "project id cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if project id is not formatted
     Given the message
@@ -49,7 +49,7 @@ Feature: MsgUpdateProjectAdmin
     }
     """
     When the message is validated
-    Then expect the error "invalid project id: foo: parse error"
+    Then expect the error "invalid project id: foo: parse error: invalid request"
 
   Scenario: an error is returned if new admin is empty
     Given the message

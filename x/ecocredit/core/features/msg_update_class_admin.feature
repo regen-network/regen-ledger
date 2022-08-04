@@ -38,7 +38,7 @@ Feature: MsgUpdateClassAdmin
     }
     """
     When the message is validated
-    Then expect the error "class id cannot be empty: invalid request"
+    Then expect the error "class id cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if class id is not formatted
     Given the message
@@ -49,7 +49,7 @@ Feature: MsgUpdateClassAdmin
     }
     """
     When the message is validated
-    Then expect the error "class ID didn't match the format: expected A00, got foo: parse error"
+    Then expect the error "class ID didn't match the format: expected A00, got foo: parse error: invalid request"
 
   Scenario: an error is returned if new admin is empty
     Given the message
