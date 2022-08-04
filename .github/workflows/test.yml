@@ -7,7 +7,7 @@ on:
       - master
 jobs:
   tests:
-    name: Unit tests
+    name: Sub modules test and code coverage
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
