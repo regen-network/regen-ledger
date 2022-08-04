@@ -988,6 +988,10 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgMintBatchCredits, "batch is closed"), nil, nil
 		}
 
+		if batch.Issuer != issuerAddr {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgMintBatchCredits, "only batch issuer can mint additional credits"), nil, nil
+		}
+
 		msg := &core.MsgMintBatchCredits{
 			Issuer:     issuerAddr,
 			BatchDenom: batch.Denom,
