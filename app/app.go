@@ -409,9 +409,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			evidence.NewAppModule(app.EvidenceKeeper),
 			feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 			authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-			// ibc.NewAppModule(app.IBCKeeper),
+			ibc.NewAppModule(app.IBCKeeper),
 			params.NewAppModule(app.ParamsKeeper),
-			// transferModule,
+			transferModule,
 		}, app.setCustomModuleManager()...)...,
 	)
 
@@ -440,8 +440,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			vestingtypes.ModuleName,
 
 			// ibc modules
-			// ibchost.ModuleName,
-			// ibctransfertypes.ModuleName,
+			ibchost.ModuleName,
+			ibctransfertypes.ModuleName,
 		}, setCustomOrderBeginBlocker()...)...,
 	)
 	app.mm.SetOrderEndBlockers(
@@ -464,8 +464,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			vestingtypes.ModuleName,
 
 			// ibc modules
-			// ibchost.ModuleName,
-			// ibctransfertypes.ModuleName,
+			ibchost.ModuleName,
+			ibctransfertypes.ModuleName,
 		}, setCustomOrderEndBlocker()...)...,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
