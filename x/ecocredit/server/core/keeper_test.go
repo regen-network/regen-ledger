@@ -68,7 +68,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
+	_, _, authorityAddress := testdata.KeyTestPubAddr()
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authorityAddress)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 
