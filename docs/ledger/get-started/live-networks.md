@@ -38,11 +38,11 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 ### Hambach Testnet
 
-`regen-hambach-1` is the chain ID for Hambach Testnet.
+`regen-hambach-2` is the chain ID for Hambach Testnet.
 
-Hambach Testnet launched with the `v2.0.0-beta1` release tag of `regen-ledger` using the experimental build (`EXPERIMENTAL=true`).
+The latest iteration of Hambach Testnet launched with the `v4.0.0` release tag of `regen-ledger` using the experimental build (`EXPERIMENTAL=true`).
 
-Hambach Testnet will be restarted with an incremented chain ID rather than going through the upgrade process due to the inability to support migrations for experimental modules. It's important to keep this in mind when developing with Hambach Testnet and we recommend creating scripts that can be used to reseed the network following a restart.
+When the time comes to update Hambach Testnet, the chain will be restarted with an incremented chain ID rather than going through the upgrade process due to the inability to support migrations for experimental modules. It's important to keep this in mind when developing with Hambach Testnet and we recommend developers create scripts that will reseed the network when the time comes.
 
 The following URLs are node addresses for full nodes operated by RND and VitWit:
 
