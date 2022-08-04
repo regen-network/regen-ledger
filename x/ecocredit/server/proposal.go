@@ -3,7 +3,7 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -23,8 +23,8 @@ func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal)
 	return s.coreKeeper.AddCreditType(ctx, ctp)
 }
 
-func NewProposalHandler(k ProposalKeeper) govtypes.Handler {
-	return func(ctx sdk.Context, content govtypes.Content) error {
+func NewProposalHandler(k ProposalKeeper) govv1beta1.Handler {
+	return func(ctx sdk.Context, content govv1beta1.Content) error {
 		switch c := content.(type) {
 		case *core.CreditTypeProposal:
 			return handleAddCreditTypeProposal(ctx, k, c)

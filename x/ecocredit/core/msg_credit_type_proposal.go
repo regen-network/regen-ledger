@@ -4,20 +4,19 @@ import (
 	"fmt"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var _ govtypes.Content = &CreditTypeProposal{}
+var _ govv1beta1.Content = &CreditTypeProposal{}
 
 const (
 	ProposalType = "CreditTypeProposal"
 )
 
 func init() {
-	govtypes.RegisterProposalType(ProposalType)
-	govtypes.RegisterProposalTypeCodec(&CreditTypeProposal{}, "regen/CreditTypeProposal")
+	govv1beta1.RegisterProposalType(ProposalType)
 }
 
 func (m *CreditTypeProposal) ProposalRoute() string { return ecocredit.RouterKey }
@@ -31,7 +30,7 @@ func (m *CreditTypeProposal) ValidateBasic() error {
 	if err := m.CreditType.Validate(); err != nil {
 		return err
 	}
-	return govtypes.ValidateAbstract(m)
+	return govv1beta1.ValidateAbstract(m)
 }
 
 func (m *CreditTypeProposal) String() string {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
@@ -105,7 +106,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		mm.keys[name] = key
-		mm.baseApp.MountStore(key, sdk.StoreTypeIAVL)
+		mm.baseApp.MountStore(key, storetypes.StoreTypeIAVL)
 
 		msgRegistrar := registrar{
 			router:       mm.router,

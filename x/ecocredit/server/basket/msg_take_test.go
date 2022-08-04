@@ -6,7 +6,6 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -55,11 +54,6 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 	s.basketDenom = "eco.uC.NCT"
 	s.tokenAmount = "100"
 	s.jurisdiction = "US-WA"
-
-	// TODO: remove after updating to cosmos-sdk v0.46 #857
-	sdk.SetCoinDenomRegex(func() string {
-		return types.CoinDenomRegex
-	})
 }
 
 func (s *takeSuite) ACreditType() {

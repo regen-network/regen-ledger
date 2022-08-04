@@ -220,14 +220,14 @@ Feature: MsgSell
           "batch_denom": "C01-001-20200101-20210101-001",
           "quantity": "100",
           "ask_price": {
-            "denom": "foo.bar"
+            "denom": "foo#bar"
           }
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: ask price: invalid denom: foo.bar: invalid request"
+    Then expect the error "orders[0]: ask price: invalid denom: foo#bar: invalid request"
 
   Scenario: an error is returned if ask price amount is empty
     Given the message

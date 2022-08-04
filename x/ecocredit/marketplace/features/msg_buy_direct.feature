@@ -187,14 +187,14 @@ Feature: MsgBuyDirect
           "sell_order_id": 1,
           "quantity": "100",
           "bid_price": {
-            "denom": "foo.bar"
+            "denom": "foo#bar"
           }
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: bid price: invalid denom: foo.bar: invalid request"
+    Then expect the error "orders[0]: bid price: invalid denom: foo#bar: invalid request"
 
   Scenario: an error is returned if bid price amount is empty
     Given the message

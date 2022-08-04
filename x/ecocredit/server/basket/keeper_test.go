@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -45,7 +46,7 @@ type baseSuite struct {
 	coreStore    ecocreditApi.StateStore
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *sdk.KVStoreKey
+	storeKey     *storetypes.KVStoreKey
 	sdkCtx       sdk.Context
 }
 
@@ -63,7 +64,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
 	s.storeKey = sdk.NewKVStoreKey("test")
-	cms.MountStoreWithDB(s.storeKey, sdk.StoreTypeIAVL, db)
+	cms.MountStoreWithDB(s.storeKey, storetypes.StoreTypeIAVL, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
