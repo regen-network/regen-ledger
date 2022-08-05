@@ -123,7 +123,7 @@ message MsgAddCreditType {
   string authority = 1;
 
   // credit_type defines a credit type to add to the credit types parameter. 
-  repeated CreditType credit_type = 2;
+  CreditType credit_type = 2;
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.

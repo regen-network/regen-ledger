@@ -15,57 +15,6 @@ import (
 	sync "sync"
 )
 
-var _ protoreflect.List = (*_MsgAddCreditType_2_list)(nil)
-
-type _MsgAddCreditType_2_list struct {
-	list *[]*CreditType
-}
-
-func (x *_MsgAddCreditType_2_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_MsgAddCreditType_2_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_MsgAddCreditType_2_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*CreditType)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_MsgAddCreditType_2_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*CreditType)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_MsgAddCreditType_2_list) AppendMutable() protoreflect.Value {
-	v := new(CreditType)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_MsgAddCreditType_2_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_MsgAddCreditType_2_list) NewElement() protoreflect.Value {
-	v := new(CreditType)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_MsgAddCreditType_2_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
 	md_MsgAddCreditType             protoreflect.MessageDescriptor
 	fd_MsgAddCreditType_authority   protoreflect.FieldDescriptor
@@ -150,8 +99,8 @@ func (x *fastReflection_MsgAddCreditType) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if len(x.CreditType) != 0 {
-		value := protoreflect.ValueOfList(&_MsgAddCreditType_2_list{list: &x.CreditType})
+	if x.CreditType != nil {
+		value := protoreflect.ValueOfMessage(x.CreditType.ProtoReflect())
 		if !f(fd_MsgAddCreditType_credit_type, value) {
 			return
 		}
@@ -174,7 +123,7 @@ func (x *fastReflection_MsgAddCreditType) Has(fd protoreflect.FieldDescriptor) b
 	case "regen.ecocredit.v1.MsgAddCreditType.authority":
 		return x.Authority != ""
 	case "regen.ecocredit.v1.MsgAddCreditType.credit_type":
-		return len(x.CreditType) != 0
+		return x.CreditType != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddCreditType"))
@@ -215,11 +164,8 @@ func (x *fastReflection_MsgAddCreditType) Get(descriptor protoreflect.FieldDescr
 		value := x.Authority
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.MsgAddCreditType.credit_type":
-		if len(x.CreditType) == 0 {
-			return protoreflect.ValueOfList(&_MsgAddCreditType_2_list{})
-		}
-		listValue := &_MsgAddCreditType_2_list{list: &x.CreditType}
-		return protoreflect.ValueOfList(listValue)
+		value := x.CreditType
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddCreditType"))
@@ -243,9 +189,7 @@ func (x *fastReflection_MsgAddCreditType) Set(fd protoreflect.FieldDescriptor, v
 	case "regen.ecocredit.v1.MsgAddCreditType.authority":
 		x.Authority = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgAddCreditType.credit_type":
-		lv := value.List()
-		clv := lv.(*_MsgAddCreditType_2_list)
-		x.CreditType = *clv.list
+		x.CreditType = value.Message().Interface().(*CreditType)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddCreditType"))
@@ -268,10 +212,9 @@ func (x *fastReflection_MsgAddCreditType) Mutable(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.MsgAddCreditType.credit_type":
 		if x.CreditType == nil {
-			x.CreditType = []*CreditType{}
+			x.CreditType = new(CreditType)
 		}
-		value := &_MsgAddCreditType_2_list{list: &x.CreditType}
-		return protoreflect.ValueOfList(value)
+		return protoreflect.ValueOfMessage(x.CreditType.ProtoReflect())
 	case "regen.ecocredit.v1.MsgAddCreditType.authority":
 		panic(fmt.Errorf("field authority of message regen.ecocredit.v1.MsgAddCreditType is not mutable"))
 	default:
@@ -290,8 +233,8 @@ func (x *fastReflection_MsgAddCreditType) NewField(fd protoreflect.FieldDescript
 	case "regen.ecocredit.v1.MsgAddCreditType.authority":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgAddCreditType.credit_type":
-		list := []*CreditType{}
-		return protoreflect.ValueOfList(&_MsgAddCreditType_2_list{list: &list})
+		m := new(CreditType)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddCreditType"))
@@ -365,11 +308,9 @@ func (x *fastReflection_MsgAddCreditType) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if len(x.CreditType) > 0 {
-			for _, e := range x.CreditType {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
+		if x.CreditType != nil {
+			l = options.Size(x.CreditType)
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -400,21 +341,19 @@ func (x *fastReflection_MsgAddCreditType) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.CreditType) > 0 {
-			for iNdEx := len(x.CreditType) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.CreditType[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x12
+		if x.CreditType != nil {
+			encoded, err := options.Marshal(x.CreditType)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
 			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
 		}
 		if len(x.Authority) > 0 {
 			i -= len(x.Authority)
@@ -533,8 +472,10 @@ func (x *fastReflection_MsgAddCreditType) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.CreditType = append(x.CreditType, &CreditType{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.CreditType[len(x.CreditType)-1]); err != nil {
+				if x.CreditType == nil {
+					x.CreditType = &CreditType{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.CreditType); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -18263,7 +18204,7 @@ type MsgAddCreditType struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// credit_type defines a credit type to add to the credit types parameter.
-	CreditType []*CreditType `protobuf:"bytes,2,rep,name=credit_type,json=creditType,proto3" json:"credit_type,omitempty"`
+	CreditType *CreditType `protobuf:"bytes,2,opt,name=credit_type,json=creditType,proto3" json:"credit_type,omitempty"`
 }
 
 func (x *MsgAddCreditType) Reset() {
@@ -18293,7 +18234,7 @@ func (x *MsgAddCreditType) GetAuthority() string {
 	return ""
 }
 
-func (x *MsgAddCreditType) GetCreditType() []*CreditType {
+func (x *MsgAddCreditType) GetCreditType() *CreditType {
 	if x != nil {
 		return x.CreditType
 	}
@@ -20015,7 +19956,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x09,
 	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x3f, 0x0a, 0x0b, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
 	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52,
 	0x0a, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x22, 0x1a, 0x0a, 0x18, 0x4d,
