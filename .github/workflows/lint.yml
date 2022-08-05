@@ -36,32 +36,32 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
-#      - uses: technote-space/get-diff-action@v6
-#        with:
-#          PATTERNS: |
-#            **/**.proto
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.proto
       - uses: bufbuild/buf-setup-action@v1
-#        if: env.GIT_DIFF
+        if: env.GIT_DIFF
       - uses: bufbuild/buf-lint-action@v1
         with:
           input: 'proto'
-#        if: env.GIT_DIFF
+        if: env.GIT_DIFF
 
   protolint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
-#      - uses: technote-space/get-diff-action@v6
-#        with:
-#          PATTERNS: |
-#            **/**.proto
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.proto
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-#        if: env.GIT_DIFF
+        if: env.GIT_DIFF
       - name: protolint
         run: |
           go install github.com/yoheimuta/protolint/cmd/protolint@latest
           protolint .
-#        if: env.GIT_DIFF
+        if: env.GIT_DIFF
