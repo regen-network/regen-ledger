@@ -2,10 +2,11 @@ syntax = "proto3";
 
 package regen.ecocredit.orderbook.v1alpha1;
 
-import "google/protobuf/timestamp.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
+import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/orderbook";
+option go_package =
+  "github.com/regen-network/regen-ledger/x/ecocredit/orderbook";
 
 // BuyOrderSellOrderMatch defines the data the FIFO/price-time-priority matching
 // algorithm used to actually match buy and sell orders.
