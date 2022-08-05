@@ -5,21 +5,22 @@ on:
   push:
     branches:
       - master
+      - release/v*
 
 jobs:
-  go-lint:
-    name: go-lint
+  golangci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -28,8 +29,7 @@ jobs:
           skip-go-installation: true
         if: env.GIT_DIFF
 
-  proto-lint:
-    name: proto-lint
+  protolint:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -38,5 +38,13 @@ jobs:
 #        with:
 #          PATTERNS: |
 #            **/**.proto
-      - uses: yoheimuta/action-protolint@v1
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+#        if: env.GIT_DIFF
+      - name: Install protolint
+        run: go install github.com/yoheimuta/protolint/cmd/protolint@latest
+#        if: env.GIT_DIFF
+      - name: Run protolint
+        run: protolint .
 #        if: env.GIT_DIFF
