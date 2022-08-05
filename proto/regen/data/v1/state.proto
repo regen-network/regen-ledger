@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package regen.data.v1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/data";
-
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // DataID stores a compact data ID and its full IRI.
 message DataID {
@@ -61,7 +61,7 @@ message Resolver {
     id : 4
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1, fields : "url"}
-    index : {id : 2, fields : "url,manager", unique: true}
+    index : {id : 2, fields : "url,manager", unique : true}
   };
 
   // id is the ID of the resolver.

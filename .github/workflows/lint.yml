@@ -1,22 +1,20 @@
 name: Lint
-# Lint runs golangci-lint over the entire regen-ledger repository
-# This workflow is run on every pull request and push to master
-# The `golangci` will pass without running if no *.{go, mod, sum} files have been changed.
+
 on:
   pull_request:
   push:
     branches:
       - master
+
 jobs:
-  golangci:
-    name: golangci-lint
+  go-lint:
+    name: go-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18
-      - uses: technote-space/get-diff-action@v6.0.1
-        id: git_diff
+      - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
@@ -31,24 +29,14 @@ jobs:
         if: env.GIT_DIFF
 
   proto-lint:
-    name: proto-linting
+    name: proto-lint
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v2
-      # - uses: technote-space/get-diff-action@v4
-      #   with:
-      #     PATTERNS: |
-      #       proto/**/*.proto
-      - uses: golangci/golangci-lint-action@master
-        with:
-          version: v1.28
-          args: --timeout 10m
-          github-token: ${{ secrets.github_token }}
-        if: env.GIT_DIFF
-      - id: install clang
-        run: apt-get install -yq --no-install-recommends clang
-      - id: check version
-        run: clang --version
-      - id: check clang-format
-        run: clang-format --version
+#      - uses: technote-space/get-diff-action@v6
+#        with:
+#          PATTERNS: |
+#            **/**.proto
+      - uses: yoheimuta/action-protolint@v1
+#        if: env.GIT_DIFF

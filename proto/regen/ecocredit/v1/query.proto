@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package regen.ecocredit.v1;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
 
@@ -191,7 +191,9 @@ service Query {
   rpc CreditType(QueryCreditTypeRequest) returns (QueryCreditTypeResponse) {
     option (google.api.http) = {
       get : "/regen/ecocredit/v1/credit-type/{abbreviation}"
-      additional_bindings : [ {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"} ]
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"}
+      ]
     };
   }
 }

@@ -10,13 +10,6 @@ jobs:
     name: Sub modules test and code coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: technote-space/get-diff-action@v4
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-
       - name: Install Go
         uses: actions/setup-go@v2.1.3
         with:

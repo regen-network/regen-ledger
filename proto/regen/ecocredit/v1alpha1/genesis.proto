@@ -1,8 +1,9 @@
 syntax = "proto3";
+
 package regen.ecocredit.v1alpha1;
 
-import "regen/ecocredit/v1alpha1/types.proto";
 import "gogoproto/gogo.proto";
+import "regen/ecocredit/v1alpha1/types.proto";
 
 // GenesisState defines ecocredit module's genesis state.
 message GenesisState {
