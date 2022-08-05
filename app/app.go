@@ -104,6 +104,10 @@ import (
 
 const (
 	appName = "regen"
+
+	// EnvPrefix environment variable prefix used to map environment
+	// variables to command flags
+	EnvPrefix = "REGEN"
 )
 
 var _ simapp.App = &RegenApp{}
@@ -112,13 +116,11 @@ var (
 	// DefaultNodeHome default home directories for regen
 	DefaultNodeHome = os.ExpandEnv("$HOME/.regen")
 
-	// The ModuleBasicManager is in charge of setting up basic,
-	// non-dependant module elements, such as codec registration
-	// and genesis verification.
+	// ModuleBasics is in charge of setting up basic, non-dependant module
+	// elements, such as codec registration and genesis verification.
 	ModuleBasics = module.NewBasicManager(
 		append([]module.AppModuleBasic{
 			auth.AppModuleBasic{},
-			// genaccounts.AppModuleBasic{},
 			genutil.AppModuleBasic{},
 			bank.AppModuleBasic{},
 			capability.AppModuleBasic{},
