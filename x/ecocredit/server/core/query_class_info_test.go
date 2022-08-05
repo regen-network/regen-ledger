@@ -14,21 +14,26 @@ import (
 func TestQuery_ClassInfo(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
-	})
+
+	class := &api.Class{
+		Id:               "C01",
+		Admin:            s.addr,
+		Metadata:         "data",
+		CreditTypeAbbrev: "C",
+	}
+
+	err := s.stateStore.ClassTable().Insert(s.ctx, class)
 	assert.NilError(t, err)
 
-	// query an invalid class
-	_, err = s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: "C02"})
+	// query class by the "C01" class id
+	res, err := s.k.Class(s.ctx, &core.QueryClassRequest{ClassId: class.Id})
+	assert.NilError(t, err)
+	assert.Equal(t, class.Id, res.Class.Id)
+	assert.Equal(t, s.addr.String(), res.Class.Admin)
+	assert.Equal(t, class.Metadata, res.Class.Metadata)
+	assert.Equal(t, class.CreditTypeAbbrev, res.Class.CreditTypeAbbrev)
+
+	// query class by an unknown class id
+	_, err = s.k.Class(s.ctx, &core.QueryClassRequest{ClassId: "C02"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-
-	// query a valid class
-	res, err := s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: "C01"})
-	assert.NilError(t, err)
-	assert.Equal(t, "C01", res.Info.Name)
-	assert.DeepEqual(t, s.addr.Bytes(), res.Info.Admin)
 }

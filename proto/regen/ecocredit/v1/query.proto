@@ -3,9 +3,10 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
@@ -14,91 +15,197 @@ service Query {
 
   // Classes queries for all credit classes with pagination.
   rpc Classes(QueryClassesRequest) returns (QueryClassesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/classes";
+    option (google.api.http).get = "/regen/ecocredit/v1/classes";
   }
 
-  // ClassInfo queries for information on a credit class.
-  rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/classes/{class_id}";
+  // ClassesByAdmin queries for all credit classes with a specific admin
+  // address.
+  rpc ClassesByAdmin(QueryClassesByAdminRequest)
+      returns (QueryClassesByAdminResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/classes-by-admin/{admin}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/classes/admin/{admin}"}
+      ]
+    };
+  }
+
+  // Class queries for information on a credit class.
+  rpc Class(QueryClassRequest) returns (QueryClassResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/class/{class_id}"
+      additional_bindings : [ {get : "/regen/ecocredit/v1/classes/{class_id}"} ]
+    };
   }
 
   // ClassIssuers queries for the addresses of the issuers for a credit class.
-  rpc ClassIssuers(QueryClassIssuersRequest) returns (QueryClassIssuersResponse) {
-    option (google.api.http).get =
-      "/regen/ecocredit/v1/classes/{class_id}/issuers";
+  rpc ClassIssuers(QueryClassIssuersRequest)
+      returns (QueryClassIssuersResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/class-issuers/{class_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/classes/{class_id}/issuers"}
+      ]
+    };
   }
 
-
-  // Projects queries for all projects within a class with pagination.
+  // Projects queries for all projects with pagination.
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/classes/{class_id}/projects";
+    option (google.api.http).get = "/regen/ecocredit/v1/projects";
   }
 
-  // ClassInfo queries for information on a project.
-  rpc ProjectInfo(QueryProjectInfoRequest) returns (QueryProjectInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/projects/{project_id}";
+  // ProjectsByClass queries for all projects within a class with pagination.
+  rpc ProjectsByClass(QueryProjectsByClassRequest)
+      returns (QueryProjectsByClassResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/projects-by-class/{class_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/projects/class/{class_id}"},
+        {get : "/regen/ecocredit/v1/classes/{class_id}/projects"}
+      ]
+    };
   }
 
-  // Batches queries for all batches in the given project with pagination.
+  // ProjectsByReferenceId queries for all projects by reference-id with
+  // pagination.
+  rpc ProjectsByReferenceId(QueryProjectsByReferenceIdRequest)
+      returns (QueryProjectsByReferenceIdResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/projects-by-reference-id/{reference_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/projects/reference-id/{reference_id}"}
+      ]
+    };
+  }
+
+  // ProjectsByAdmin queries for all projects by admin with
+  // pagination.
+  rpc ProjectsByAdmin(QueryProjectsByAdminRequest)
+      returns (QueryProjectsByAdminResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/projects-by-admin/{admin}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/projects/admin/{admin}"}
+      ]
+    };
+  }
+
+  // Project queries for information on a project.
+  rpc Project(QueryProjectRequest) returns (QueryProjectResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/project/{project_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/projects/{project_id}"}
+      ]
+    };
+  }
+
+  // Batches queries for all batches with pagination.
   rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/projects/{project_id}/batches";
+    option (google.api.http).get = "/regen/ecocredit/v1/batches";
   }
 
-  // BatchInfo queries for information on a credit batch.
-  rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/batches/{batch_denom}";
+  // BatchesByIssuer queries all batches issued from a given issuer address.
+  rpc BatchesByIssuer(QueryBatchesByIssuerRequest)
+      returns (QueryBatchesByIssuerResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/batches-by-issuer/{issuer}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/issuer/{issuer}"}
+      ]
+    };
+  }
+
+  // BatchesByClass queries all batches issued from a given class.
+  rpc BatchesByClass(QueryBatchesByClassRequest)
+      returns (QueryBatchesByClassResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/batches-by-class/{class_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/class/{class_id}"}
+      ]
+    };
+  }
+
+  // BatchesByProject queries for all batches from a given project with
+  // pagination.
+  rpc BatchesByProject(QueryBatchesByProjectRequest)
+      returns (QueryBatchesByProjectResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/batches-by-project/{project_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/project/{project_id}"}
+      ]
+    };
+  }
+
+  // Batch queries for information on a credit batch.
+  rpc Batch(QueryBatchRequest) returns (QueryBatchResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/batch/{batch_denom}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/{batch_denom}"}
+      ]
+    };
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
-  // batch for a given account.
+  // batch for a given account address.
   rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/batches/{batch_denom}/balance/{account}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/balance/{batch_denom}/{address}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/{batch_denom}/balance/{address}"},
+        {get : "/regen/ecocredit/v1/balances/{address}/batch/{batch_denom}"}
+      ]
+    };
+  }
+
+  // Balances queries all credit balances the given account holds.
+  rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/balances/{address}";
   }
 
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/batches/{batch_denom}/supply";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/supply/{batch_denom}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/{batch_denom}/supply"}
+      ]
+    };
   }
 
   // CreditTypes returns the list of allowed types that credit classes can have.
   // See Types/CreditType for more details.
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/credit-types";
+    option (google.api.http).get = "/regen/ecocredit/v1/credit-types";
   }
 
   // Params queries the ecocredit module parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/params";
+    option (google.api.http).get = "/regen/ecocredit/v1/params";
   }
-}
 
-// QueryParamsRequest is the Query/Params request type.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is the Query/Params response type.
-message QueryParamsResponse {
-  // params defines the parameters of the ecocredit module.
-  Params params = 1;
+  // CreditType queries credit type information by abbreviation.
+  rpc CreditType(QueryCreditTypeRequest) returns (QueryCreditTypeResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/credit-type/{abbreviation}"
+      additional_bindings : [ {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"} ]
+    };
+  }
 }
 
 // QueryClassesRequest is the Query/Classes request type.
 message QueryClassesRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
+
   // classes are the fetched credit classes.
   repeated ClassInfo classes = 1;
 
@@ -106,23 +213,44 @@ message QueryClassesResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryClassInfoRequest is the Query/ClassInfo request type.
-message QueryClassInfoRequest {
+// QueryClassesByAdminRequest is the Query/ClassesByAdmin request type.
+message QueryClassesByAdminRequest {
 
-  // class_id is the unique ID of credit class to query.
+  // admin is the address of the admin of the class.
+  string admin = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryClassesByAdminResponse is the Query/ClassesByAdmin response type.
+message QueryClassesByAdminResponse {
+
+  // classes are the fetched credit classes.
+  repeated ClassInfo classes = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryClassRequest is the Query/Class request type.
+message QueryClassRequest {
+
+  // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 }
 
-// QueryClassInfoResponse is the Query/ClassInfo request type.
-message QueryClassInfoResponse {
+// QueryClassResponse is the Query/Class request type.
+message QueryClassResponse {
 
-  // info is the ClassInfo for the credit class.
-  ClassInfo info = 1;
+  // class is the fetched credit class.
+  ClassInfo class = 1;
 }
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.
 message QueryClassIssuersRequest {
-  // class_id is the unique ID of credit class to query.
+
+  // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 
   // pagination defines an optional pagination for the request.
@@ -131,6 +259,7 @@ message QueryClassIssuersRequest {
 
 // QueryClassIssuersRequest is the Query/ClassIssuers response type.
 message QueryClassIssuersResponse {
+
   // issuers is a list of issuers for the credit class
   repeated string issuers = 1;
 
@@ -141,15 +270,13 @@ message QueryClassIssuersResponse {
 // QueryProjectsRequest is the Query/Projects request type.
 message QueryProjectsRequest {
 
-  // class_id is the unique ID of credit class to query.
-  string class_id = 1;
-
   // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 // QueryProjectsResponse is the Query/Projects response type.
 message QueryProjectsResponse {
+
   // projects are the fetched projects.
   repeated ProjectInfo projects = 1;
 
@@ -157,92 +284,228 @@ message QueryProjectsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryProjectInfoRequest is the Query/Project request type.
-message QueryProjectInfoRequest {
+// QueryProjectsByClassRequest is the Query/ProjectsByClass request type.
+message QueryProjectsByClassRequest {
 
-  // project_id is the unique ID of the project to query.
-  string project_id = 1;
-}
-
-// QueryProjectInfoResponse is the Query/Project response type.
-message QueryProjectInfoResponse {
-
-  // info is the ProjectInfo for the project.
-  ProjectInfo info = 1;
-}
-
-
-// QueryBatchesRequest is the Query/Batches request type.
-message QueryBatchesRequest {
-
-  // project_id is the unique ID of the project to query.
-  string project_id = 1;
+  // class_id is the unique identifier of the credit class to query.
+  string class_id = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryProjectsByClassResponse is the Query/ProjectsByClass response type.
+message QueryProjectsByClassResponse {
+
+  // projects are the fetched projects.
+  repeated ProjectInfo projects = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProjectsByReferenceIdRequest is the Query/ProjectsByReferenceId request
+// type.
+message QueryProjectsByReferenceIdRequest {
+
+  // reference_id is the project reference id.
+  string reference_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectsByReferenceIdResponse is the Query/ProjectsByReferenceId
+// response type.
+message QueryProjectsByReferenceIdResponse {
+
+  // projects are the fetched projects.
+  repeated ProjectInfo projects = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProjectsByAdminRequest is the Query/ProjectByAdmin request type.
+message QueryProjectsByAdminRequest {
+
+  // admin is the account address of project admin.
+  string admin = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectsByAdminResponse is the Query/ProjectByAdmin response type.
+message QueryProjectsByAdminResponse {
+
+  // projects are the fetched projects.
+  repeated ProjectInfo projects = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProjectRequest is the Query/Project request type.
+message QueryProjectRequest {
+
+  // project_id is the unique identifier of the project to query.
+  string project_id = 1;
+}
+
+// QueryProjectResponse is the Query/Project response type.
+message QueryProjectResponse {
+
+  // project is the fetched project.
+  ProjectInfo project = 1;
+}
+
+// QueryBatchesRequest is the Query/Batches request type.
+message QueryBatchesRequest {
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
 // QueryBatchesResponse is the Query/Batches response type.
 message QueryBatchesResponse {
 
-  // batches are the fetched credit batches within the project.
+  // batches are the fetched credit batches.
   repeated BatchInfo batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryBatchInfoRequest is the Query/BatchInfo request type.
-message QueryBatchInfoRequest {
+// QueryBatchesByIssuerRequest is the Query/BatchesByIssuer request type.
+message QueryBatchesByIssuerRequest {
 
-  // batch_denom is the unique ID of credit batch to query.
+  // issuer is the address that issued the batch
+  string issuer = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesByIssuerResponse is the Query/BatchesByIssuer response type.
+message QueryBatchesByIssuerResponse {
+
+  // batches are the fetched credit batches.
+  repeated BatchInfo batches = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBatchesByClassRequest is the Query/BatchesByClass request type.
+message QueryBatchesByClassRequest {
+
+  // class_id is the unique identifier of the credit class to query.
+  string class_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesByProjectRequest is the Query/BatchesByProject request type.
+message QueryBatchesByProjectRequest {
+
+  // project_id is the unique identifier of the project to query.
+  string project_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesByProjectResponse is the Query/BatchesByProject response type.
+message QueryBatchesByProjectResponse {
+
+  // batches are the fetched credit batches.
+  repeated BatchInfo batches = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBatchesByClassResponse is the Query/BatchesByClass response type.
+message QueryBatchesByClassResponse {
+
+  // batches are the fetched credit batches.
+  repeated BatchInfo batches = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBatchRequest is the Query/Batch request type.
+message QueryBatchRequest {
+
+  // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 1;
 }
 
-// QueryBatchInfoResponse is the Query/BatchInfo response type.
-message QueryBatchInfoResponse {
+// QueryBatchResponse is the Query/Batch response type.
+message QueryBatchResponse {
 
-  // info is the BatchInfo for the credit batch.
-  BatchInfo info = 1;
+  // batch is the fetched credit batch.
+  BatchInfo batch = 1;
 }
 
 // QueryBalanceRequest is the Query/Balance request type.
 message QueryBalanceRequest {
 
-  // account is the address of the account whose balance is being queried.
-  string account = 1;
+  // address is the address of the account whose balance is being queried.
+  string address = 1;
 
-  // batch_denom is the unique ID of credit batch balance to query.
+  // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 2;
 }
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
 
-  // tradable_amount is the decimal number of tradable credits.
-  string tradable_amount = 1;
+  // balance is the balance of the given account.
+  BatchBalanceInfo balance = 1;
+}
 
-  // retired_amount is the decimal number of retired credits.
-  string retired_amount = 2;
+// QueryBalancesRequest is the Query/Balances request type.
+message QueryBalancesRequest {
+
+  // address is the address of the account whose balance is being queried.
+  string address = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBalancesResponse is the Query/Balances response type.
+message QueryBalancesResponse {
+
+  // balances are a list of balances from different credit batches that the
+  // account holds.
+  repeated BatchBalanceInfo balances = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
 message QuerySupplyRequest {
 
-  // batch_denom is the unique ID of credit batch to query.
+  // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 1;
 }
 
 // QuerySupplyResponse is the Query/Supply response type.
 message QuerySupplyResponse {
 
-  // tradable_supply is the decimal number of tradable credits in the batch
+  // tradable_amount is the decimal number of tradable credits in the batch
   // supply.
-  string tradable_supply = 1;
+  string tradable_amount = 1;
 
-  // retired_supply is the decimal number of retired credits in the batch
+  // retired_amount is the decimal number of retired credits in the batch
   // supply.
-  string retired_supply = 2;
+  string retired_amount = 2;
 
   // cancelled_amount is the decimal number of cancelled credits in the batch
   // supply.
@@ -254,6 +517,128 @@ message QueryCreditTypesRequest {}
 
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 message QueryCreditTypesResponse {
-  // list of credit types
+
+  // credit_types are the fetched credit types.
   repeated CreditType credit_types = 1;
+}
+
+// QueryParamsRequest is the Query/Params request type.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the Query/Params response type.
+message QueryParamsResponse {
+
+  // params defines the parameters of the ecocredit module.
+  Params params = 1;
+}
+
+// QueryCreditTypeRequest is the Query/CreditType request type
+message QueryCreditTypeRequest {
+
+  // abbreviation is the abbreviation of the credit type.
+  string abbreviation = 1;
+}
+
+// QueryCreditTypeResponse is the Query/CreditType response type
+message QueryCreditTypeResponse {
+
+  // credit_type is the fetched credit type.
+  CreditType credit_type = 1;
+}
+
+// ClassInfo is the human-readable credit class information.
+message ClassInfo {
+
+  // id is the unique identifier of the credit class.
+  string id = 1;
+
+  // admin is the admin of the credit class.
+  string admin = 2;
+
+  // metadata is the arbitrary metadata attached to the credit class.
+  string metadata = 3;
+
+  // credit_type_abbrev is the abbreviation of the credit type within which this
+  // credit class was created.
+  string credit_type_abbrev = 4;
+}
+
+// ProjectInfo is the human-readable project information.
+message ProjectInfo {
+
+  // id is the unique identifier of the project.
+  string id = 1;
+
+  // admin is the admin of the project.
+  string admin = 2;
+
+  // class_id is the unique identifier of the credit class within which the
+  // project was created.
+  string class_id = 3;
+
+  // jurisdiction is the jurisdiction of the project. Full documentation can be
+  // found in MsgCreateProject.jurisdiction.
+  string jurisdiction = 4;
+
+  // metadata is the arbitrary metadata attached to the project.
+  string metadata = 5;
+
+  // reference_id is any arbitrary string that can be use to reference project.
+  string reference_id = 6;
+}
+
+// BatchInfo is the human-readable credit batch information.
+message BatchInfo {
+
+  // issuer is the address that created the batch and the address authorized to
+  // mint new credits to the credit batch if the credit batch is open.
+  string issuer = 1;
+
+  // project_id is the unique identifier of the project within which this credit
+  // batch was created.
+  string project_id = 2;
+
+  // denom is the unique identifier of the credit batch formed from the project
+  // name, batch sequence number and dates.
+  string denom = 3;
+
+  // metadata is any arbitrary metadata attached to the credit batch.
+  string metadata = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5;
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6;
+
+  // issuance_date is the timestamp when the credit batch was issued.
+  google.protobuf.Timestamp issuance_date = 7;
+
+  // open determines whether or not the credit batch is open, i.e. whether or
+  // not new credits can be minted to the credit batch.
+  bool open = 8;
+}
+
+// BatchBalanceInfo is the human-readable batch balance information.
+message BatchBalanceInfo {
+
+  // address is the address of the account that owns the credits.
+  string address = 1;
+
+  // batch_denom is the unique identifier of the credit batch.
+  string batch_denom = 2;
+
+  // tradable_amount is the total number of tradable credits owned by address.
+  string tradable_amount = 3;
+
+  // retired_amount is the total number of retired credits owned by address.
+  string retired_amount = 4;
+
+  // escrowed_amount is the total number of escrowed credits owned by address
+  // and held in escrow by the marketplace. Credits are held in escrow when a
+  // sell order is created and taken out of escrow when the sell order is either
+  // cancelled, updated with a reduced quantity, or processed.
+  string escrowed_amount = 5;
 }

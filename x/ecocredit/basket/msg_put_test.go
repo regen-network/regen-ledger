@@ -1,110 +1,37 @@
 package basket
 
 import (
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/stretchr/testify/require"
 	"testing"
-	"time"
+
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
 )
 
-func TestMsgPut_ValidateBasic(t *testing.T) {
-	_, _, addr := testdata.KeyTestPubAddr()
-	t1, t2 := time.Now(), time.Now()
-	denom, err := ecocredit.FormatDenom("C02", 1, &t1, &t2)
-	require.NoError(t, err)
+type msgPutSuite struct {
+	t   gocuke.TestingT
+	msg *MsgPut
+	err error
+}
 
-	type fields struct {
-		Owner       string
-		BasketDenom string
-		Credits     []*BasketCredit
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
-	}{
-		{
-			name: "valid",
-			fields: fields{
-				Owner:       addr.String(),
-				BasketDenom: "COOL",
-				Credits:     []*BasketCredit{{BatchDenom: denom, Amount: "100.5302"}},
-			},
-		},
-		{
-			name: "bad addr",
-			fields: fields{
-				Owner:       "oops!",
-				BasketDenom: "COOL",
-				Credits:     []*BasketCredit{{BatchDenom: denom, Amount: "100.5302"}},
-			},
-			wantErr: true,
-		},
-		{
-			name: "no credits",
-			fields: fields{
-				Owner:       addr.String(),
-				BasketDenom: "COOL",
-			},
-			wantErr: true,
-		},
-		{
-			name: "bad batch denom",
-			fields: fields{
-				Owner:       addr.String(),
-				BasketDenom: "COOL",
-				Credits:     []*BasketCredit{{BatchDenom: "bad bad not good!", Amount: "100.5302"}},
-			},
-			wantErr: true,
-		},
-		{
-			name: "bad amount",
-			fields: fields{
-				Owner:       addr.String(),
-				BasketDenom: "COOL",
-				Credits:     []*BasketCredit{{BatchDenom: denom, Amount: "100.52.302.35.2"}},
-			},
-			wantErr: true,
-		},
-		{
-			name: "zero amount",
-			fields: fields{
-				Owner:       addr.String(),
-				BasketDenom: "COOL",
-				Credits:     []*BasketCredit{{BatchDenom: denom, Amount: "0"}},
-			},
-			wantErr: true,
-		},
-		{
-			name: "negative amount",
-			fields: fields{
-				Owner:       addr.String(),
-				BasketDenom: "COOL",
-				Credits:     []*BasketCredit{{BatchDenom: denom, Amount: "-50.329"}},
-			},
-			wantErr: true,
-		},
-		{
-			name: "bad basket denom",
-			fields: fields{
-				Owner:       addr.String(),
-				BasketDenom: "CO:OL",
-				Credits:     []*BasketCredit{{BatchDenom: denom, Amount: "100"}},
-			},
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := MsgPut{
-				Owner:       tt.fields.Owner,
-				BasketDenom: tt.fields.BasketDenom,
-				Credits:     tt.fields.Credits,
-			}
-			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
-				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+func TestMsgPut(t *testing.T) {
+	gocuke.NewRunner(t, &msgPutSuite{}).Path("./features/msg_put.feature").Run()
+}
+
+func (s *msgPutSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgPut{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgPutSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgPutSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgPutSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

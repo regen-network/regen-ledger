@@ -14,21 +14,21 @@ import (
 func TestQuery_Supply(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom := "C01-20200101-20220101-001"
+	batchDenom := "C01-001-20200101-20220101-001"
 	tradable := "10.54321"
 	retired := "50.3214"
 	cancelled := "0.3215"
 
 	// make a batch and some supply
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
-		BatchDenom: batchDenom,
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
+		ProjectKey: 1,
+		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &api.BatchSupply{
-		BatchId:         1,
+	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
+		BatchKey:        1,
 		TradableAmount:  tradable,
 		RetiredAmount:   retired,
 		CancelledAmount: cancelled,
@@ -37,8 +37,8 @@ func TestQuery_Supply(t *testing.T) {
 	// valid query
 	res, err := s.k.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 	assert.NilError(t, err)
-	assert.Equal(t, tradable, res.TradableSupply)
-	assert.Equal(t, retired, res.RetiredSupply)
+	assert.Equal(t, tradable, res.TradableAmount)
+	assert.Equal(t, retired, res.RetiredAmount)
 	assert.Equal(t, cancelled, res.CancelledAmount)
 
 	// bad denom query

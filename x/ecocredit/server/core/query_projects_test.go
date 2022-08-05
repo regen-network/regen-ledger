@@ -5,7 +5,6 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -16,45 +15,39 @@ func TestQuery_Projects(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	// create a class and 2 projects from it
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
-	})
-	assert.NilError(t, err)
-	err = s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
-		Name:            "P01",
-		ClassId:         1,
-		ProjectLocation: "US-CA",
-		Metadata:        "",
-	})
-	assert.NilError(t, err)
-	err = s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
-		Name:            "P02",
-		ClassId:         1,
-		ProjectLocation: "US-CA",
-		Metadata:        "",
+	// insert credit class
+	classKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id: "C01",
 	})
 	assert.NilError(t, err)
 
-	// base query
-	res, err := s.k.Projects(s.ctx, &core.QueryProjectsRequest{ClassId: "C01"})
-	assert.NilError(t, err)
-	assert.Equal(t, 2, len(res.Projects))
-	assert.Equal(t, "US-CA", res.Projects[0].ProjectLocation)
+	project := &api.Project{
+		Id:           "C01-001",
+		ClassKey:     classKey,
+		Jurisdiction: "US-CA",
+		Metadata:     "metadata",
+	}
 
-	// invalid query
-	_, err = s.k.Projects(s.ctx, &core.QueryProjectsRequest{ClassId: "F01"})
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+	// insert two projects
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+		Id:       "C01-002",
+		ClassKey: classKey,
+	}))
 
-	// paginated query
-	res, err = s.k.Projects(s.ctx, &core.QueryProjectsRequest{
-		ClassId:    "C01",
+	// query projects with pagination
+	res, err := s.k.Projects(s.ctx, &core.QueryProjectsRequest{
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
+
+	// check pagination
 	assert.Equal(t, 1, len(res.Projects))
 	assert.Equal(t, uint64(2), res.Pagination.Total)
+
+	// check project properties
+	assert.Equal(t, project.Id, res.Projects[0].Id)
+	assert.Equal(t, "C01", res.Projects[0].ClassId)
+	assert.Equal(t, project.Jurisdiction, res.Projects[0].Jurisdiction)
+	assert.Equal(t, project.Metadata, res.Projects[0].Metadata)
 }

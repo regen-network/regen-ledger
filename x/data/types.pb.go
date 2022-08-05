@@ -6,7 +6,6 @@ package data
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -23,96 +22,124 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MediaType defines MIME media types to be used with a ContentHash.Raw hash.
-type MediaType int32
+// DigestAlgorithm is the hash digest algorithm
+type DigestAlgorithm int32
 
 const (
-	// MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
-	MediaType_MEDIA_TYPE_UNSPECIFIED MediaType = 0
-	// plain text
-	MediaType_MEDIA_TYPE_TEXT_PLAIN MediaType = 1
-	// JSON
-	MediaType_MEDIA_TYPE_JSON MediaType = 2
-	// CSV
-	MediaType_MEDIA_TYPE_CSV MediaType = 3
-	// XML
-	MediaType_MEDIA_TYPE_XML MediaType = 4
-	// PDF
-	MediaType_MEDIA_TYPE_PDF MediaType = 5
-	// TIIF
-	MediaType_MEDIA_TYPE_TIFF MediaType = 16
-	// JPG
-	MediaType_MEDIA_TYPE_JPG MediaType = 17
-	// PNG
-	MediaType_MEDIA_TYPE_PNG MediaType = 18
-	// SVG
-	MediaType_MEDIA_TYPE_SVG MediaType = 19
-	// WEBP
-	MediaType_MEDIA_TYPE_WEBP MediaType = 20
-	// AVIF
-	MediaType_MEDIA_TYPE_AVIF MediaType = 21
-	// GIF
-	MediaType_MEDIA_TYPE_GIF MediaType = 22
-	// APNG
-	MediaType_MEDIA_TYPE_APNG MediaType = 23
-	// MPEG
-	MediaType_MEDIA_TYPE_MPEG MediaType = 32
-	// MP4
-	MediaType_MEDIA_TYPE_MP4 MediaType = 33
-	// WEBM
-	MediaType_MEDIA_TYPE_WEBM MediaType = 34
-	// OGG
-	MediaType_MEDIA_TYPE_OGG MediaType = 35
+	// unspecified and invalid
+	DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED DigestAlgorithm = 0
+	// BLAKE2b-256
+	DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256 DigestAlgorithm = 1
 )
 
-var MediaType_name = map[int32]string{
-	0:  "MEDIA_TYPE_UNSPECIFIED",
-	1:  "MEDIA_TYPE_TEXT_PLAIN",
-	2:  "MEDIA_TYPE_JSON",
-	3:  "MEDIA_TYPE_CSV",
-	4:  "MEDIA_TYPE_XML",
-	5:  "MEDIA_TYPE_PDF",
-	16: "MEDIA_TYPE_TIFF",
-	17: "MEDIA_TYPE_JPG",
-	18: "MEDIA_TYPE_PNG",
-	19: "MEDIA_TYPE_SVG",
-	20: "MEDIA_TYPE_WEBP",
-	21: "MEDIA_TYPE_AVIF",
-	22: "MEDIA_TYPE_GIF",
-	23: "MEDIA_TYPE_APNG",
-	32: "MEDIA_TYPE_MPEG",
-	33: "MEDIA_TYPE_MP4",
-	34: "MEDIA_TYPE_WEBM",
-	35: "MEDIA_TYPE_OGG",
+var DigestAlgorithm_name = map[int32]string{
+	0: "DIGEST_ALGORITHM_UNSPECIFIED",
+	1: "DIGEST_ALGORITHM_BLAKE2B_256",
 }
 
-var MediaType_value = map[string]int32{
-	"MEDIA_TYPE_UNSPECIFIED": 0,
-	"MEDIA_TYPE_TEXT_PLAIN":  1,
-	"MEDIA_TYPE_JSON":        2,
-	"MEDIA_TYPE_CSV":         3,
-	"MEDIA_TYPE_XML":         4,
-	"MEDIA_TYPE_PDF":         5,
-	"MEDIA_TYPE_TIFF":        16,
-	"MEDIA_TYPE_JPG":         17,
-	"MEDIA_TYPE_PNG":         18,
-	"MEDIA_TYPE_SVG":         19,
-	"MEDIA_TYPE_WEBP":        20,
-	"MEDIA_TYPE_AVIF":        21,
-	"MEDIA_TYPE_GIF":         22,
-	"MEDIA_TYPE_APNG":        23,
-	"MEDIA_TYPE_MPEG":        32,
-	"MEDIA_TYPE_MP4":         33,
-	"MEDIA_TYPE_WEBM":        34,
-	"MEDIA_TYPE_OGG":         35,
+var DigestAlgorithm_value = map[string]int32{
+	"DIGEST_ALGORITHM_UNSPECIFIED": 0,
+	"DIGEST_ALGORITHM_BLAKE2B_256": 1,
 }
 
-func (x MediaType) String() string {
-	return proto.EnumName(MediaType_name, int32(x))
+func (x DigestAlgorithm) String() string {
+	return proto.EnumName(DigestAlgorithm_name, int32(x))
 }
 
-func (MediaType) EnumDescriptor() ([]byte, []int) {
+func (DigestAlgorithm) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_a49a7c2bdb2b2846, []int{0}
+}
+
+// RawMediaType defines MIME media types to be used with a ContentHash.Raw hash.
+type RawMediaType int32
+
+const (
+	// RAW_MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
+	RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED RawMediaType = 0
+	// plain text
+	RawMediaType_RAW_MEDIA_TYPE_TEXT_PLAIN RawMediaType = 1
+	// JSON
+	RawMediaType_RAW_MEDIA_TYPE_JSON RawMediaType = 2
+	// CSV
+	RawMediaType_RAW_MEDIA_TYPE_CSV RawMediaType = 3
+	// XML
+	RawMediaType_RAW_MEDIA_TYPE_XML RawMediaType = 4
+	// PDF
+	RawMediaType_RAW_MEDIA_TYPE_PDF RawMediaType = 5
+	// TIIF
+	RawMediaType_RAW_MEDIA_TYPE_TIFF RawMediaType = 16
+	// JPG
+	RawMediaType_RAW_MEDIA_TYPE_JPG RawMediaType = 17
+	// PNG
+	RawMediaType_RAW_MEDIA_TYPE_PNG RawMediaType = 18
+	// SVG
+	RawMediaType_RAW_MEDIA_TYPE_SVG RawMediaType = 19
+	// WEBP
+	RawMediaType_RAW_MEDIA_TYPE_WEBP RawMediaType = 20
+	// AVIF
+	RawMediaType_RAW_MEDIA_TYPE_AVIF RawMediaType = 21
+	// GIF
+	RawMediaType_RAW_MEDIA_TYPE_GIF RawMediaType = 22
+	// APNG
+	RawMediaType_RAW_MEDIA_TYPE_APNG RawMediaType = 23
+	// MPEG
+	RawMediaType_RAW_MEDIA_TYPE_MPEG RawMediaType = 32
+	// MP4
+	RawMediaType_RAW_MEDIA_TYPE_MP4 RawMediaType = 33
+	// WEBM
+	RawMediaType_RAW_MEDIA_TYPE_WEBM RawMediaType = 34
+	// OGG
+	RawMediaType_RAW_MEDIA_TYPE_OGG RawMediaType = 35
+)
+
+var RawMediaType_name = map[int32]string{
+	0:  "RAW_MEDIA_TYPE_UNSPECIFIED",
+	1:  "RAW_MEDIA_TYPE_TEXT_PLAIN",
+	2:  "RAW_MEDIA_TYPE_JSON",
+	3:  "RAW_MEDIA_TYPE_CSV",
+	4:  "RAW_MEDIA_TYPE_XML",
+	5:  "RAW_MEDIA_TYPE_PDF",
+	16: "RAW_MEDIA_TYPE_TIFF",
+	17: "RAW_MEDIA_TYPE_JPG",
+	18: "RAW_MEDIA_TYPE_PNG",
+	19: "RAW_MEDIA_TYPE_SVG",
+	20: "RAW_MEDIA_TYPE_WEBP",
+	21: "RAW_MEDIA_TYPE_AVIF",
+	22: "RAW_MEDIA_TYPE_GIF",
+	23: "RAW_MEDIA_TYPE_APNG",
+	32: "RAW_MEDIA_TYPE_MPEG",
+	33: "RAW_MEDIA_TYPE_MP4",
+	34: "RAW_MEDIA_TYPE_WEBM",
+	35: "RAW_MEDIA_TYPE_OGG",
+}
+
+var RawMediaType_value = map[string]int32{
+	"RAW_MEDIA_TYPE_UNSPECIFIED": 0,
+	"RAW_MEDIA_TYPE_TEXT_PLAIN":  1,
+	"RAW_MEDIA_TYPE_JSON":        2,
+	"RAW_MEDIA_TYPE_CSV":         3,
+	"RAW_MEDIA_TYPE_XML":         4,
+	"RAW_MEDIA_TYPE_PDF":         5,
+	"RAW_MEDIA_TYPE_TIFF":        16,
+	"RAW_MEDIA_TYPE_JPG":         17,
+	"RAW_MEDIA_TYPE_PNG":         18,
+	"RAW_MEDIA_TYPE_SVG":         19,
+	"RAW_MEDIA_TYPE_WEBP":        20,
+	"RAW_MEDIA_TYPE_AVIF":        21,
+	"RAW_MEDIA_TYPE_GIF":         22,
+	"RAW_MEDIA_TYPE_APNG":        23,
+	"RAW_MEDIA_TYPE_MPEG":        32,
+	"RAW_MEDIA_TYPE_MP4":         33,
+	"RAW_MEDIA_TYPE_WEBM":        34,
+	"RAW_MEDIA_TYPE_OGG":         35,
+}
+
+func (x RawMediaType) String() string {
+	return proto.EnumName(RawMediaType_name, int32(x))
+}
+
+func (RawMediaType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_a49a7c2bdb2b2846, []int{1}
 }
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
@@ -140,14 +167,14 @@ func (x GraphCanonicalizationAlgorithm) String() string {
 }
 
 func (GraphCanonicalizationAlgorithm) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_a49a7c2bdb2b2846, []int{1}
+	return fileDescriptor_a49a7c2bdb2b2846, []int{2}
 }
 
 // GraphMerkleTree is the graph merkle tree type used for hashing, if any
 type GraphMerkleTree int32
 
 const (
-	// no merkle tree
+	// unspecified and valid
 	GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED GraphMerkleTree = 0
 )
 
@@ -164,45 +191,23 @@ func (x GraphMerkleTree) String() string {
 }
 
 func (GraphMerkleTree) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_a49a7c2bdb2b2846, []int{2}
-}
-
-// DigestAlgorithm is the hash digest algorithm
-type DigestAlgorithm int32
-
-const (
-	// unspecified and invalid
-	DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED DigestAlgorithm = 0
-	// BLAKE2b-256
-	DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256 DigestAlgorithm = 1
-)
-
-var DigestAlgorithm_name = map[int32]string{
-	0: "DIGEST_ALGORITHM_UNSPECIFIED",
-	1: "DIGEST_ALGORITHM_BLAKE2B_256",
-}
-
-var DigestAlgorithm_value = map[string]int32{
-	"DIGEST_ALGORITHM_UNSPECIFIED": 0,
-	"DIGEST_ALGORITHM_BLAKE2B_256": 1,
-}
-
-func (x DigestAlgorithm) String() string {
-	return proto.EnumName(DigestAlgorithm_name, int32(x))
-}
-
-func (DigestAlgorithm) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_a49a7c2bdb2b2846, []int{3}
 }
 
-// ContentHash specifies a hash based content identifier for a piece of data
+// ContentHash specifies a hash-based content identifier for a piece of data.
 type ContentHash struct {
-	// sum selects the type of content hash
-	//
-	// Types that are valid to be assigned to Sum:
-	//	*ContentHash_Raw_
-	//	*ContentHash_Graph_
-	Sum isContentHash_Sum `protobuf_oneof:"sum"`
+	// Raw specifies "raw" data which does not specify a deterministic, canonical
+	// encoding. Users of these hashes MUST maintain a copy of the hashed data
+	// which is preserved bit by bit. All other content encodings specify a
+	// deterministic, canonical encoding allowing implementations to choose from a
+	// variety of alternative formats for transport and encoding while maintaining
+	// the guarantee that the canonical hash will not change. The media type for
+	// "raw" data is defined by the MediaType enum.
+	Raw *ContentHash_Raw `protobuf:"bytes,1,opt,name=raw,proto3" json:"raw,omitempty"`
+	// Graph specifies graph data that conforms to the RDF data model.
+	// The canonicalization algorithm used for an RDF graph is specified by
+	// GraphCanonicalizationAlgorithm.
+	Graph *ContentHash_Graph `protobuf:"bytes,2,opt,name=graph,proto3" json:"graph,omitempty"`
 }
 
 func (m *ContentHash) Reset()         { *m = ContentHash{} }
@@ -238,59 +243,29 @@ func (m *ContentHash) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ContentHash proto.InternalMessageInfo
 
-type isContentHash_Sum interface {
-	isContentHash_Sum()
-	MarshalTo([]byte) (int, error)
-	Size() int
-}
-
-type ContentHash_Raw_ struct {
-	Raw *ContentHash_Raw `protobuf:"bytes,1,opt,name=raw,proto3,oneof" json:"raw,omitempty"`
-}
-type ContentHash_Graph_ struct {
-	Graph *ContentHash_Graph `protobuf:"bytes,2,opt,name=graph,proto3,oneof" json:"graph,omitempty"`
-}
-
-func (*ContentHash_Raw_) isContentHash_Sum()   {}
-func (*ContentHash_Graph_) isContentHash_Sum() {}
-
-func (m *ContentHash) GetSum() isContentHash_Sum {
-	if m != nil {
-		return m.Sum
-	}
-	return nil
-}
-
 func (m *ContentHash) GetRaw() *ContentHash_Raw {
-	if x, ok := m.GetSum().(*ContentHash_Raw_); ok {
-		return x.Raw
+	if m != nil {
+		return m.Raw
 	}
 	return nil
 }
 
 func (m *ContentHash) GetGraph() *ContentHash_Graph {
-	if x, ok := m.GetSum().(*ContentHash_Graph_); ok {
-		return x.Graph
+	if m != nil {
+		return m.Graph
 	}
 	return nil
 }
 
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*ContentHash) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*ContentHash_Raw_)(nil),
-		(*ContentHash_Graph_)(nil),
-	}
-}
-
-// Raw is the content hash type used for raw data
+// Raw is the content hash type used for raw data.
 type ContentHash_Raw struct {
-	// hash represents the hash of the data based on the specified digest_algorithm
+	// hash represents the hash of the data based on the specified
+	// digest_algorithm.
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
-	// media_type represents the MediaType for raw data.
-	MediaType MediaType `protobuf:"varint,3,opt,name=media_type,json=mediaType,proto3,enum=regen.data.v1.MediaType" json:"media_type,omitempty"`
+	// media_type represents the media type for raw data.
+	MediaType RawMediaType `protobuf:"varint,3,opt,name=media_type,json=mediaType,proto3,enum=regen.data.v1.RawMediaType" json:"media_type,omitempty"`
 }
 
 func (m *ContentHash_Raw) Reset()         { *m = ContentHash_Raw{} }
@@ -340,22 +315,24 @@ func (m *ContentHash_Raw) GetDigestAlgorithm() DigestAlgorithm {
 	return DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED
 }
 
-func (m *ContentHash_Raw) GetMediaType() MediaType {
+func (m *ContentHash_Raw) GetMediaType() RawMediaType {
 	if m != nil {
 		return m.MediaType
 	}
-	return MediaType_MEDIA_TYPE_UNSPECIFIED
+	return RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED
 }
 
-// Graph is the content hash type used for RDF graph data
+// Graph is the content hash type used for RDF graph data.
 type ContentHash_Graph struct {
-	// hash represents the hash of the data based on the specified digest_algorithm
+	// hash represents the hash of the data based on the specified
+	// digest_algorithm.
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
-	// graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm.
+	// graph_canonicalization_algorithm represents the RDF graph
+	// canonicalization algorithm.
 	CanonicalizationAlgorithm GraphCanonicalizationAlgorithm `protobuf:"varint,3,opt,name=canonicalization_algorithm,json=canonicalizationAlgorithm,proto3,enum=regen.data.v1.GraphCanonicalizationAlgorithm" json:"canonicalization_algorithm,omitempty"`
-	// merkle_tree is the merkle tree type used for the graph hash, if any
+	// merkle_tree is the merkle tree type used for the graph hash, if any.
 	MerkleTree GraphMerkleTree `protobuf:"varint,4,opt,name=merkle_tree,json=merkleTree,proto3,enum=regen.data.v1.GraphMerkleTree" json:"merkle_tree,omitempty"`
 }
 
@@ -420,26 +397,24 @@ func (m *ContentHash_Graph) GetMerkleTree() GraphMerkleTree {
 	return GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
 }
 
-// SignerEntry is a signer entry wrapping a signer address and timestamp
-type SignerEntry struct {
-	// signer is the address of the signer
-	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
-	// timestamp is the time at which the data was signed
-	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+// ContentHashes contains list of content ContentHash.
+type ContentHashes struct {
+	// data is a list of content hashes which the resolver claims to serve.
+	ContentHashes []*ContentHash `protobuf:"bytes,1,rep,name=content_hashes,json=contentHashes,proto3" json:"content_hashes,omitempty"`
 }
 
-func (m *SignerEntry) Reset()         { *m = SignerEntry{} }
-func (m *SignerEntry) String() string { return proto.CompactTextString(m) }
-func (*SignerEntry) ProtoMessage()    {}
-func (*SignerEntry) Descriptor() ([]byte, []int) {
+func (m *ContentHashes) Reset()         { *m = ContentHashes{} }
+func (m *ContentHashes) String() string { return proto.CompactTextString(m) }
+func (*ContentHashes) ProtoMessage()    {}
+func (*ContentHashes) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a49a7c2bdb2b2846, []int{1}
 }
-func (m *SignerEntry) XXX_Unmarshal(b []byte) error {
+func (m *ContentHashes) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SignerEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ContentHashes) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SignerEntry.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ContentHashes.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -449,92 +424,82 @@ func (m *SignerEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *SignerEntry) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SignerEntry.Merge(m, src)
+func (m *ContentHashes) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContentHashes.Merge(m, src)
 }
-func (m *SignerEntry) XXX_Size() int {
+func (m *ContentHashes) XXX_Size() int {
 	return m.Size()
 }
-func (m *SignerEntry) XXX_DiscardUnknown() {
-	xxx_messageInfo_SignerEntry.DiscardUnknown(m)
+func (m *ContentHashes) XXX_DiscardUnknown() {
+	xxx_messageInfo_ContentHashes.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SignerEntry proto.InternalMessageInfo
+var xxx_messageInfo_ContentHashes proto.InternalMessageInfo
 
-func (m *SignerEntry) GetSigner() string {
+func (m *ContentHashes) GetContentHashes() []*ContentHash {
 	if m != nil {
-		return m.Signer
-	}
-	return ""
-}
-
-func (m *SignerEntry) GetTimestamp() *types.Timestamp {
-	if m != nil {
-		return m.Timestamp
+		return m.ContentHashes
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterEnum("regen.data.v1.MediaType", MediaType_name, MediaType_value)
+	proto.RegisterEnum("regen.data.v1.DigestAlgorithm", DigestAlgorithm_name, DigestAlgorithm_value)
+	proto.RegisterEnum("regen.data.v1.RawMediaType", RawMediaType_name, RawMediaType_value)
 	proto.RegisterEnum("regen.data.v1.GraphCanonicalizationAlgorithm", GraphCanonicalizationAlgorithm_name, GraphCanonicalizationAlgorithm_value)
 	proto.RegisterEnum("regen.data.v1.GraphMerkleTree", GraphMerkleTree_name, GraphMerkleTree_value)
-	proto.RegisterEnum("regen.data.v1.DigestAlgorithm", DigestAlgorithm_name, DigestAlgorithm_value)
 	proto.RegisterType((*ContentHash)(nil), "regen.data.v1.ContentHash")
 	proto.RegisterType((*ContentHash_Raw)(nil), "regen.data.v1.ContentHash.Raw")
 	proto.RegisterType((*ContentHash_Graph)(nil), "regen.data.v1.ContentHash.Graph")
-	proto.RegisterType((*SignerEntry)(nil), "regen.data.v1.SignerEntry")
+	proto.RegisterType((*ContentHashes)(nil), "regen.data.v1.ContentHashes")
 }
 
 func init() { proto.RegisterFile("regen/data/v1/types.proto", fileDescriptor_a49a7c2bdb2b2846) }
 
 var fileDescriptor_a49a7c2bdb2b2846 = []byte{
-	// 710 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x94, 0xcf, 0x53, 0xd3, 0x40,
-	0x14, 0xc7, 0x1b, 0xda, 0x32, 0xd3, 0xad, 0xd2, 0x75, 0x11, 0x2c, 0x1d, 0x27, 0xd6, 0x3a, 0xe3,
-	0x38, 0x1d, 0x48, 0xa1, 0x8a, 0xe2, 0xc9, 0x49, 0xdb, 0x34, 0x0d, 0x34, 0x69, 0x66, 0x1b, 0x10,
-	0xb9, 0x64, 0x42, 0xbb, 0xa6, 0x19, 0x9a, 0xa4, 0x93, 0x04, 0x2a, 0x1e, 0xbd, 0x79, 0xf3, 0xe2,
-	0xd1, 0x7f, 0xc4, 0xbf, 0xc0, 0x23, 0x47, 0x8f, 0x0e, 0xfc, 0x23, 0x4e, 0xb7, 0x14, 0xca, 0xf2,
-	0xc3, 0x93, 0xb7, 0xdd, 0xf7, 0x3e, 0xdf, 0xef, 0x7b, 0x93, 0x7d, 0x2f, 0x60, 0x29, 0x20, 0x36,
-	0xf1, 0x4a, 0x5d, 0x2b, 0xb2, 0x4a, 0x47, 0x6b, 0xa5, 0xe8, 0x78, 0x40, 0x42, 0x61, 0x10, 0xf8,
-	0x91, 0x8f, 0xee, 0xd3, 0x94, 0x30, 0x4a, 0x09, 0x47, 0x6b, 0xb9, 0x27, 0xb6, 0xef, 0xdb, 0x7d,
-	0x52, 0xa2, 0xc9, 0xfd, 0xc3, 0x8f, 0xa5, 0xc8, 0x71, 0x49, 0x18, 0x59, 0xee, 0x60, 0xcc, 0x17,
-	0x7e, 0x26, 0x40, 0xba, 0xea, 0x7b, 0x11, 0xf1, 0xa2, 0x86, 0x15, 0xf6, 0x50, 0x19, 0xc4, 0x03,
-	0x6b, 0x98, 0xe5, 0xf2, 0xdc, 0x8b, 0x74, 0x99, 0x17, 0xae, 0xb8, 0x09, 0x53, 0xa0, 0x80, 0xad,
-	0x61, 0x23, 0x86, 0x47, 0x30, 0xda, 0x00, 0x49, 0x3b, 0xb0, 0x06, 0xbd, 0xec, 0x0c, 0x55, 0xe5,
-	0xef, 0x50, 0xc9, 0x23, 0xae, 0x11, 0xc3, 0x63, 0x41, 0xee, 0x07, 0x07, 0xe2, 0xd8, 0x1a, 0x22,
-	0x04, 0x12, 0x3d, 0x2b, 0xec, 0xd1, 0xb2, 0xf7, 0x30, 0x3d, 0x23, 0x05, 0xc0, 0xae, 0x63, 0x93,
-	0x30, 0x32, 0xad, 0xbe, 0xed, 0x07, 0x4e, 0xd4, 0x73, 0x69, 0x81, 0xb9, 0x6b, 0x6d, 0xd5, 0x28,
-	0x26, 0x4e, 0x28, 0x9c, 0xe9, 0x5e, 0x0d, 0xa0, 0x37, 0x00, 0xb8, 0xa4, 0xeb, 0x58, 0xe6, 0xe8,
-	0x4b, 0x65, 0xe3, 0xd4, 0x24, 0xcb, 0x98, 0xa8, 0x23, 0xc0, 0x38, 0x1e, 0x10, 0x9c, 0x72, 0x27,
-	0xc7, 0xdc, 0xf7, 0x19, 0x90, 0xa4, 0x2d, 0xff, 0xef, 0x0e, 0xfb, 0x20, 0xd7, 0xb1, 0x3c, 0xdf,
-	0x73, 0x3a, 0x56, 0xdf, 0xf9, 0x6c, 0x45, 0x8e, 0xef, 0x4d, 0x99, 0x8e, 0x3b, 0x5e, 0x61, 0x4c,
-	0x69, 0x63, 0x55, 0x46, 0x75, 0x59, 0x63, 0xa9, 0x73, 0x5b, 0x0a, 0xbd, 0x03, 0x69, 0x97, 0x04,
-	0x07, 0x7d, 0x62, 0x46, 0x01, 0x21, 0xd9, 0xc4, 0x8d, 0x3d, 0x53, 0x7b, 0x95, 0x62, 0x46, 0x40,
-	0x08, 0x06, 0xee, 0xc5, 0xb9, 0x92, 0x04, 0xf1, 0xf0, 0xd0, 0x2d, 0x98, 0x20, 0xdd, 0x76, 0x6c,
-	0x8f, 0x04, 0x92, 0x17, 0x05, 0xc7, 0x68, 0x11, 0xcc, 0x86, 0xf4, 0x4a, 0xbf, 0x52, 0x0a, 0x9f,
-	0xdf, 0xd0, 0x06, 0x48, 0x5d, 0x8c, 0xdd, 0xf9, 0x8c, 0xe4, 0x84, 0xf1, 0x60, 0x0a, 0x93, 0xc1,
-	0x14, 0x8c, 0x09, 0x81, 0x2f, 0xe1, 0xe2, 0xd7, 0x38, 0x48, 0x5d, 0x3c, 0x0c, 0xca, 0x81, 0x45,
-	0x55, 0xaa, 0x29, 0xa2, 0x69, 0x7c, 0xd0, 0x25, 0x73, 0x5b, 0x6b, 0xeb, 0x52, 0x55, 0xa9, 0x2b,
-	0x52, 0x0d, 0xc6, 0xd0, 0x12, 0x58, 0x98, 0xca, 0x19, 0xd2, 0xae, 0x61, 0xea, 0x4d, 0x51, 0xd1,
-	0x20, 0x87, 0xe6, 0x41, 0x66, 0x2a, 0xb5, 0xd9, 0x6e, 0x69, 0x70, 0x06, 0x21, 0x30, 0x37, 0x15,
-	0xac, 0xb6, 0x77, 0x60, 0x9c, 0x89, 0xed, 0xaa, 0x4d, 0x98, 0x60, 0x62, 0x7a, 0xad, 0x0e, 0x93,
-	0x8c, 0xa1, 0xa1, 0xd4, 0xeb, 0x10, 0x32, 0xe0, 0xa6, 0x2e, 0xc3, 0x07, 0xac, 0x58, 0x93, 0x21,
-	0x62, 0x62, 0xed, 0x1d, 0x19, 0xce, 0x33, 0x86, 0xef, 0xa5, 0x8a, 0x0e, 0x1f, 0x32, 0x41, 0x71,
-	0x47, 0xa9, 0xc3, 0x05, 0x46, 0x2d, 0x2b, 0x75, 0xb8, 0xc8, 0x82, 0xa3, 0x32, 0x8f, 0x98, 0xa0,
-	0xaa, 0x4b, 0x32, 0xcc, 0x33, 0x6a, 0x55, 0x7f, 0x05, 0x9f, 0x5e, 0xaf, 0xad, 0xc2, 0x02, 0x03,
-	0xb6, 0x64, 0x19, 0x3e, 0x2b, 0x7e, 0xe1, 0x00, 0x7f, 0xf7, 0xc8, 0xa1, 0x55, 0xb0, 0x2c, 0x63,
-	0x51, 0x6f, 0x98, 0x55, 0x51, 0x6b, 0x69, 0x4a, 0x55, 0x6c, 0x2a, 0x7b, 0xa2, 0xa1, 0xb4, 0x34,
-	0x53, 0x6c, 0xca, 0x2d, 0xac, 0x18, 0x0d, 0x95, 0x79, 0x36, 0x01, 0x14, 0xff, 0xad, 0xc0, 0x35,
-	0x4d, 0x2c, 0xaf, 0xae, 0xad, 0x43, 0xae, 0xf8, 0x16, 0x64, 0x98, 0xb9, 0x44, 0xcf, 0x41, 0x61,
-	0x6c, 0xa1, 0x4a, 0x78, 0xab, 0x29, 0x99, 0x06, 0x96, 0x24, 0x53, 0x6b, 0x69, 0xcc, 0x84, 0x14,
-	0xb7, 0x41, 0x86, 0x59, 0x43, 0x94, 0x07, 0x8f, 0x6b, 0x8a, 0x2c, 0xb5, 0x8d, 0x5b, 0xfb, 0xbb,
-	0x89, 0xa8, 0x34, 0xc5, 0x2d, 0xa9, 0x5c, 0x31, 0xcb, 0xeb, 0xaf, 0x21, 0x57, 0xa9, 0xff, 0x3a,
-	0xe5, 0xb9, 0x93, 0x53, 0x9e, 0xfb, 0x73, 0xca, 0x73, 0xdf, 0xce, 0xf8, 0xd8, 0xc9, 0x19, 0x1f,
-	0xfb, 0x7d, 0xc6, 0xc7, 0xf6, 0x96, 0x6d, 0x27, 0xea, 0x1d, 0xee, 0x0b, 0x1d, 0xdf, 0x2d, 0xd1,
-	0xd5, 0x5a, 0xf1, 0x48, 0x34, 0xf4, 0x83, 0x83, 0xf3, 0x5b, 0x9f, 0x74, 0x6d, 0x12, 0x94, 0x3e,
-	0xd1, 0xff, 0xf8, 0xfe, 0x2c, 0xdd, 0x84, 0x97, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x64, 0x22,
-	0x61, 0x6b, 0xdc, 0x05, 0x00, 0x00,
+	// 670 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x54, 0xcd, 0x72, 0xd2, 0x40,
+	0x1c, 0x27, 0x85, 0x3a, 0xe3, 0x9f, 0x7e, 0xac, 0x5b, 0x6d, 0x29, 0x6a, 0x06, 0x71, 0xc6, 0xe9,
+	0x30, 0x6d, 0x68, 0xd1, 0x76, 0x46, 0x2f, 0x4e, 0x80, 0x90, 0xa6, 0x25, 0x21, 0xb3, 0xa4, 0x1f,
+	0xf6, 0x92, 0xd9, 0xc2, 0x0e, 0x30, 0x85, 0x84, 0x09, 0xb1, 0x58, 0x8f, 0x3e, 0x81, 0x17, 0xef,
+	0x3e, 0x83, 0x4f, 0xe1, 0xb1, 0x07, 0x0f, 0x1e, 0x9d, 0xf6, 0x45, 0x1c, 0x16, 0xab, 0x34, 0x6e,
+	0xeb, 0xc9, 0xdb, 0xe6, 0xf7, 0xf5, 0xff, 0x4d, 0xf6, 0x03, 0x96, 0x03, 0xd6, 0x62, 0x5e, 0xbe,
+	0x49, 0x43, 0x9a, 0x3f, 0xdd, 0xc8, 0x87, 0x67, 0x7d, 0x36, 0x50, 0xfa, 0x81, 0x1f, 0xfa, 0x78,
+	0x96, 0x53, 0xca, 0x88, 0x52, 0x4e, 0x37, 0xb2, 0x5f, 0x12, 0x90, 0x2c, 0xf9, 0x5e, 0xc8, 0xbc,
+	0x70, 0x9b, 0x0e, 0xda, 0x78, 0x1d, 0xe2, 0x01, 0x1d, 0xa6, 0xa4, 0x8c, 0xb4, 0x92, 0x2c, 0xc8,
+	0xca, 0x35, 0xb1, 0x32, 0x21, 0x54, 0x08, 0x1d, 0x92, 0x91, 0x14, 0x6f, 0xc1, 0x74, 0x2b, 0xa0,
+	0xfd, 0x76, 0x6a, 0x8a, 0x7b, 0x32, 0xb7, 0x78, 0xf4, 0x91, 0x8e, 0x8c, 0xe5, 0xe9, 0xcf, 0x12,
+	0xc4, 0x09, 0x1d, 0x62, 0x0c, 0x89, 0x36, 0x1d, 0xb4, 0xf9, 0xc8, 0x19, 0xc2, 0xd7, 0xd8, 0x00,
+	0xd4, 0xec, 0xb4, 0xd8, 0x20, 0x74, 0x69, 0xb7, 0xe5, 0x07, 0x9d, 0xb0, 0xdd, 0xe3, 0xf1, 0x73,
+	0x7f, 0x55, 0x2a, 0x73, 0x99, 0x7a, 0xa5, 0x22, 0xf3, 0xcd, 0xeb, 0x00, 0x7e, 0x05, 0xd0, 0x63,
+	0xcd, 0x0e, 0x75, 0x47, 0x3f, 0x21, 0x15, 0xe7, 0x21, 0x0f, 0x23, 0x21, 0x84, 0x0e, 0xcd, 0x91,
+	0xc6, 0x39, 0xeb, 0x33, 0x72, 0xb7, 0x77, 0xb5, 0x4c, 0x7f, 0x9a, 0x82, 0x69, 0xde, 0xf9, 0x7f,
+	0x97, 0xec, 0x42, 0xba, 0x41, 0x3d, 0xdf, 0xeb, 0x34, 0x68, 0xb7, 0xf3, 0x9e, 0x86, 0x1d, 0xdf,
+	0x9b, 0x08, 0x1d, 0x97, 0x5e, 0x8b, 0x84, 0xf2, 0x62, 0xa5, 0x88, 0xeb, 0xcf, 0x8c, 0xe5, 0xc6,
+	0x4d, 0x14, 0x7e, 0x0d, 0xc9, 0x1e, 0x0b, 0x4e, 0xba, 0xcc, 0x0d, 0x03, 0xc6, 0x52, 0x09, 0x61,
+	0x67, 0x1e, 0x6f, 0x72, 0x99, 0x13, 0x30, 0x46, 0xa0, 0xf7, 0x7b, 0x9d, 0x25, 0x30, 0x3b, 0xb1,
+	0xad, 0x6c, 0x80, 0x55, 0x98, 0x6b, 0x8c, 0x01, 0xb7, 0xcd, 0x91, 0x94, 0x94, 0x89, 0xaf, 0x24,
+	0x0b, 0xe9, 0x9b, 0x0f, 0x03, 0x99, 0x6d, 0x4c, 0x46, 0xe4, 0xf6, 0x60, 0x3e, 0xf2, 0x9b, 0x70,
+	0x06, 0x1e, 0x95, 0x0d, 0x5d, 0xab, 0x3b, 0xae, 0x5a, 0xd5, 0x6b, 0xc4, 0x70, 0xb6, 0x4d, 0x77,
+	0xcf, 0xaa, 0xdb, 0x5a, 0xc9, 0xa8, 0x18, 0x5a, 0x19, 0xc5, 0x84, 0x8a, 0x62, 0x55, 0xdd, 0xd5,
+	0x0a, 0x45, 0xb7, 0xb0, 0xb9, 0x85, 0xa4, 0xdc, 0xb7, 0x38, 0xcc, 0x4c, 0x6e, 0x2f, 0x96, 0x21,
+	0x4d, 0xd4, 0x03, 0xd7, 0xd4, 0xca, 0x86, 0xea, 0x3a, 0x6f, 0x6c, 0x2d, 0x12, 0xf9, 0x18, 0x96,
+	0x23, 0xbc, 0xa3, 0x1d, 0x3a, 0xae, 0x5d, 0x55, 0x0d, 0x0b, 0x49, 0x78, 0x09, 0x16, 0x22, 0xf4,
+	0x4e, 0xbd, 0x66, 0xa1, 0x29, 0xbc, 0x08, 0x38, 0x42, 0x94, 0xea, 0xfb, 0x28, 0x2e, 0xc0, 0x0f,
+	0xcd, 0x2a, 0x4a, 0x08, 0x70, 0xbb, 0x5c, 0x41, 0xd3, 0x82, 0x01, 0x8e, 0x51, 0xa9, 0x20, 0x24,
+	0x30, 0xec, 0xd8, 0x3a, 0xba, 0x27, 0x0a, 0xb2, 0x74, 0x84, 0x05, 0x78, 0x7d, 0x5f, 0x47, 0x0b,
+	0x82, 0x01, 0x07, 0x5a, 0xd1, 0x46, 0xf7, 0x05, 0x84, 0xba, 0x6f, 0x54, 0xd0, 0x03, 0x41, 0x92,
+	0x6e, 0x54, 0xd0, 0xa2, 0xc8, 0x30, 0x1a, 0xbd, 0x24, 0x20, 0x4c, 0x5b, 0xd3, 0x51, 0x46, 0x90,
+	0x64, 0xda, 0x2f, 0xd0, 0x13, 0x71, 0x27, 0x13, 0x65, 0x05, 0x86, 0x9a, 0xae, 0xa3, 0xa7, 0xb9,
+	0x0f, 0x12, 0xc8, 0xb7, 0x5f, 0x00, 0xbc, 0x0e, 0xab, 0x3a, 0x51, 0xed, 0x6d, 0xb7, 0xa4, 0x5a,
+	0x35, 0xcb, 0x28, 0xa9, 0x55, 0xe3, 0x48, 0x75, 0x8c, 0x9a, 0x75, 0xe3, 0x69, 0x52, 0x20, 0xf7,
+	0x6f, 0x07, 0x29, 0x5b, 0x6a, 0x61, 0x7d, 0x63, 0x13, 0x49, 0xb9, 0x97, 0x30, 0x1f, 0xb9, 0x25,
+	0xf8, 0x19, 0x64, 0xc7, 0x11, 0xa6, 0x46, 0x76, 0xab, 0x9a, 0xeb, 0x10, 0x4d, 0x73, 0xad, 0x9a,
+	0x15, 0x39, 0x65, 0xc5, 0xca, 0xd7, 0x0b, 0x59, 0x3a, 0xbf, 0x90, 0xa5, 0x1f, 0x17, 0xb2, 0xf4,
+	0xf1, 0x52, 0x8e, 0x9d, 0x5f, 0xca, 0xb1, 0xef, 0x97, 0x72, 0xec, 0x68, 0xb5, 0xd5, 0x09, 0xdb,
+	0x6f, 0x8f, 0x95, 0x86, 0xdf, 0xcb, 0xf3, 0xcb, 0xb3, 0xe6, 0xb1, 0x70, 0xe8, 0x07, 0x27, 0xbf,
+	0xbe, 0xba, 0xac, 0xd9, 0x62, 0x41, 0xfe, 0x1d, 0x7f, 0xdc, 0x8f, 0xef, 0xf0, 0x47, 0xfd, 0xf9,
+	0xcf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x76, 0x18, 0xcf, 0xc5, 0xf1, 0x05, 0x00, 0x00,
 }
 
 func (m *ContentHash) Marshal() (dAtA []byte, err error) {
@@ -557,25 +522,18 @@ func (m *ContentHash) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Sum != nil {
+	if m.Graph != nil {
 		{
-			size := m.Sum.Size()
-			i -= size
-			if _, err := m.Sum.MarshalTo(dAtA[i:]); err != nil {
+			size, err := m.Graph.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
 				return 0, err
 			}
+			i -= size
+			i = encodeVarintTypes(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0x12
 	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ContentHash_Raw_) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ContentHash_Raw_) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
 	if m.Raw != nil {
 		{
 			size, err := m.Raw.MarshalToSizedBuffer(dAtA[:i])
@@ -590,27 +548,7 @@ func (m *ContentHash_Raw_) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	return len(dAtA) - i, nil
 }
-func (m *ContentHash_Graph_) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
 
-func (m *ContentHash_Graph_) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	if m.Graph != nil {
-		{
-			size, err := m.Graph.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintTypes(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	return len(dAtA) - i, nil
-}
 func (m *ContentHash_Raw) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -696,7 +634,7 @@ func (m *ContentHash_Graph) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *SignerEntry) Marshal() (dAtA []byte, err error) {
+func (m *ContentHashes) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -706,34 +644,29 @@ func (m *SignerEntry) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SignerEntry) MarshalTo(dAtA []byte) (int, error) {
+func (m *ContentHashes) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SignerEntry) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ContentHashes) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Timestamp != nil {
-		{
-			size, err := m.Timestamp.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
+	if len(m.ContentHashes) > 0 {
+		for iNdEx := len(m.ContentHashes) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ContentHashes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTypes(dAtA, i, uint64(size))
 			}
-			i -= size
-			i = encodeVarintTypes(dAtA, i, uint64(size))
+			i--
+			dAtA[i] = 0xa
 		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Signer) > 0 {
-		i -= len(m.Signer)
-		copy(dAtA[i:], m.Signer)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Signer)))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -755,36 +688,17 @@ func (m *ContentHash) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Sum != nil {
-		n += m.Sum.Size()
-	}
-	return n
-}
-
-func (m *ContentHash_Raw_) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.Raw != nil {
 		l = m.Raw.Size()
 		n += 1 + l + sovTypes(uint64(l))
 	}
-	return n
-}
-func (m *ContentHash_Graph_) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.Graph != nil {
 		l = m.Graph.Size()
 		n += 1 + l + sovTypes(uint64(l))
 	}
 	return n
 }
+
 func (m *ContentHash_Raw) Size() (n int) {
 	if m == nil {
 		return 0
@@ -826,19 +740,17 @@ func (m *ContentHash_Graph) Size() (n int) {
 	return n
 }
 
-func (m *SignerEntry) Size() (n int) {
+func (m *ContentHashes) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Signer)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	if m.Timestamp != nil {
-		l = m.Timestamp.Size()
-		n += 1 + l + sovTypes(uint64(l))
+	if len(m.ContentHashes) > 0 {
+		for _, e := range m.ContentHashes {
+			l = e.Size()
+			n += 1 + l + sovTypes(uint64(l))
+		}
 	}
 	return n
 }
@@ -907,11 +819,12 @@ func (m *ContentHash) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			v := &ContentHash_Raw{}
-			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.Raw == nil {
+				m.Raw = &ContentHash_Raw{}
+			}
+			if err := m.Raw.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			m.Sum = &ContentHash_Raw_{v}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -942,11 +855,12 @@ func (m *ContentHash) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			v := &ContentHash_Graph{}
-			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.Graph == nil {
+				m.Graph = &ContentHash_Graph{}
+			}
+			if err := m.Graph.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			m.Sum = &ContentHash_Graph_{v}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1065,7 +979,7 @@ func (m *ContentHash_Raw) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MediaType |= MediaType(b&0x7F) << shift
+				m.MediaType |= RawMediaType(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1232,7 +1146,7 @@ func (m *ContentHash_Graph) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SignerEntry) Unmarshal(dAtA []byte) error {
+func (m *ContentHashes) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1255,47 +1169,15 @@ func (m *SignerEntry) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SignerEntry: wiretype end group for non-group")
+			return fmt.Errorf("proto: ContentHashes: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SignerEntry: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ContentHashes: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Signer = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentHashes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1322,10 +1204,8 @@ func (m *SignerEntry) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Timestamp == nil {
-				m.Timestamp = &types.Timestamp{}
-			}
-			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.ContentHashes = append(m.ContentHashes, &ContentHash{})
+			if err := m.ContentHashes[len(m.ContentHashes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

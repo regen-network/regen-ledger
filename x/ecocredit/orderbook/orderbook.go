@@ -4,10 +4,13 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+
 	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	orderbookv1alpha1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/orderbook/v1alpha1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 )
+
+// TODO: revisit when BuyOrder is reintroduced for marketplace order-book https://github.com/regen-network/regen-ledger/issues/505
 
 type orderbook struct {
 	memStore         orderbookv1alpha1.MemoryStore
@@ -41,10 +44,10 @@ func NewOrderBook(db ormdb.ModuleDB) (OrderBook, error) {
 
 type OrderBook interface {
 	// OnInsertBuyOrder gets called whenever a buy order is inserted into the marketplace state.
-	OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1.BuyOrder) error
+	//OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1.BuyOrder) error
 
 	// OnInsertSellOrder gets called whenever a sell order is inserted into the marketplace state.
-	OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batchInfo *ecocreditv1.BatchInfo) error
+	OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batch *ecocreditv1.Batch) error
 
 	// ProcessBatch called in end blocker, can happen every block or at some epoch.
 	ProcessBatch(ctx context.Context) error
@@ -53,11 +56,12 @@ type OrderBook interface {
 	Reload(ctx context.Context) error
 }
 
+/*
 func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1.BuyOrder) error {
 	return nil
 }
-
-func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batchInfo *ecocreditv1.BatchInfo) error {
+*/
+func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batch *ecocreditv1.Batch) error {
 	return nil
 }
 

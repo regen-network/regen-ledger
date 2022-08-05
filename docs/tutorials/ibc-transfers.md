@@ -2,7 +2,7 @@
 
 The [Inter-Blockchain Communication (IBC)](https://ibcprotocol.org/) protocol is enabled on Regen Mainnet meaning token holders can transfer tokens between Regen Mainnet and other IBC enabled blockchains.
 
-This document provides instructions for performing an IBC token transfer using either [Keplr Wallet](https://wallet.keplr.app/) or the [command-line interface (CLI)](/regen-ledger/interfaces.html#command-line-interface). 
+This document provides instructions for performing an IBC token transfer using either [Keplr Wallet](https://wallet.keplr.app/) or the [command-line interface (CLI)](../ledger/infrastructure/interfaces.html#command-line-interface). 
 
 ## Available Channels
 
@@ -27,7 +27,7 @@ IBC transfers are possible using [Keplr Wallet](https://wallet.keplr.app/). In o
 
 ## Using The Command-Line Interface
 
-IBC transfers are also possible using the [command-line interface (CLI)](/regen-ledger/interfaces.html#command-line-interface). For instructions on how to install the `regen` binary, check out [Quick Start](/getting-started/).
+IBC transfers are also possible using the [command-line interface (CLI)](../ledger/infrastructure/interfaces.html#command-line-interface). For instructions on how to install the `regen` binary, check out [Quick Start](../ledger/get-started/).
 
 The following command can be used to perform an IBC transfer:
 ```

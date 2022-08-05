@@ -4,7 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
+
+//go:generate mockgen -source=expected_keepers.go -package mocks -destination mocks/expected_keepers.go
 
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
 type AccountKeeper interface {
@@ -31,13 +34,15 @@ type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
-// Keeper defines the expected interface needed to prune expired buy and sell orders.
-type Keeper interface {
-	PruneOrders(ctx sdk.Context) error
-}
+type ParamKeeper interface {
 
-type DistributionKeeper interface {
-	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
+	// Get fetches a parameter by key from the Subspace's KVStore and sets the provided pointer to the fetched value.
+	// If the value does not exist, this method will panic.
+	Get(ctx sdk.Context, key []byte, ptr interface{})
+
+	// GetParamSet fetches each parameter in the ParamSet.
+	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }

@@ -5,6 +5,7 @@ import (
 	"math/big"
 
 	"github.com/cockroachdb/apd/v2"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -17,6 +18,13 @@ import (
 type Dec struct {
 	dec apd.Decimal
 }
+
+// constants for more convenient intent behind dec.Cmp values.
+const (
+	GreaterThan = 1
+	LessThan    = -1
+	EqualTo     = 0
+)
 
 const mathCodespace = "math"
 
@@ -75,7 +83,7 @@ func NewPositiveDecFromString(s string) (Dec, error) {
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
-	if !d.IsPositive() {
+	if !d.IsPositive() || !d.IsFinite() {
 		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
 	return d, nil
@@ -198,6 +206,27 @@ func (x Dec) BigInt() (*big.Int, error) {
 	return z, nil
 }
 
+// SdkIntTrim rounds decimal number to the integer towards zero and converts it to `sdk.Int`.
+// Panics if x is bigger the SDK Int max value
+func (x Dec) SdkIntTrim() sdk.Int {
+	y, _ := x.Reduce()
+	var r = y.dec.Coeff
+	if y.dec.Exponent != 0 {
+		decs := big.NewInt(10)
+		if y.dec.Exponent > 0 {
+			decs.Exp(decs, big.NewInt(int64(y.dec.Exponent)), nil)
+			r.Mul(&y.dec.Coeff, decs)
+		} else {
+			decs.Exp(decs, big.NewInt(int64(-y.dec.Exponent)), nil)
+			r.Quo(&y.dec.Coeff, decs)
+		}
+	}
+	if x.dec.Negative {
+		r.Neg(&r)
+	}
+	return sdk.NewIntFromBigInt(&r)
+}
+
 func (x Dec) String() string {
 	return x.dec.Text('f')
 }
@@ -217,16 +246,24 @@ func (x Dec) Equal(y Dec) bool {
 	return x.dec.Cmp(&y.dec) == 0
 }
 
+// IsZero returns true if the decimal is zero.
 func (x Dec) IsZero() bool {
 	return x.dec.IsZero()
 }
 
+// IsNegative returns true if the decimal is negative.
 func (x Dec) IsNegative() bool {
 	return x.dec.Negative && !x.dec.IsZero()
 }
 
+// IsPositive returns true if the decimal is positive.
 func (x Dec) IsPositive() bool {
 	return !x.dec.Negative && !x.dec.IsZero()
+}
+
+// IsFinite returns true if the decimal is finite.
+func (x Dec) IsFinite() bool {
+	return x.dec.Form == apd.Finite
 }
 
 // NumDecimalPlaces returns the number of decimal places in x.

@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.marketplace.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/marketplace/v1/state.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
@@ -11,61 +12,72 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketpla
 // Msg is the regen.ecocredit.marketplace.v1 Query service.
 service Query {
 
-  // SellOrder queries a sell order by its ID
+  // SellOrder queries a sell order by its unique identifier.
   rpc SellOrder(QuerySellOrderRequest) returns (QuerySellOrderResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/id/{sell_order_id}";
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-order/{sell_order_id}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/marketplace/v1/sell-orders/{sell_order_id}"}
+      ]
+    };
   }
 
-  // SellOrders queries a paginated list of all sell orders
+  // SellOrders queries a paginated list of all sell orders.
   rpc SellOrders(QuerySellOrdersRequest) returns (QuerySellOrdersResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders";
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/sell-orders";
   }
 
-  // SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
-  rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest) returns (QuerySellOrdersByBatchDenomResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/{batch_denom}";
+  // SellOrdersByBatch queries a paginated list of all sell orders based on
+  // the batch denom of the credits being sold.
+  rpc SellOrdersByBatch(QuerySellOrdersByBatchRequest)
+      returns (QuerySellOrdersByBatchResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-orders-by-batch/{batch_denom}"
+      additional_bindings : [ {
+        get : "/regen/ecocredit/marketplace/v1/sell-orders/batch/{batch_denom}"
+      } ]
+    };
   }
 
-  // SellOrdersByAddress queries a paginated list of all sell orders from a specific address
-  rpc SellOrdersByAddress(QuerySellOrdersByAddressRequest) returns (QuerySellOrdersByAddressResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/address/{address}";
+  // SellOrdersBySeller queries a paginated list of all sell orders based on the
+  // account address of the seller.
+  rpc SellOrdersBySeller(QuerySellOrdersBySellerRequest)
+      returns (QuerySellOrdersBySellerResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/marketplace/v1/sell-orders-by-seller/{seller}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/marketplace/v1/sell-orders/seller/{seller}"}
+      ]
+    };
   }
 
-  // BuyOrder queries a buy order by its id
-  rpc BuyOrder(QueryBuyOrderRequest) returns (QueryBuyOrderResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders/id/{buy_order_id}";
-  }
-
-  // BuyOrders queries a paginated list of all buy orders
-  rpc BuyOrders(QueryBuyOrdersRequest) returns (QueryBuyOrdersResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders";
-  }
-
-  // BuyOrdersByAddress queries a paginated list of buy orders by creator address
-  rpc BuyOrdersByAddress(QueryBuyOrdersByAddressRequest) returns (QueryBuyOrdersByAddressResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders/address/{address}";
-  }
-
-  // AllowedDenoms queries all denoms allowed to be set in the AskPrice of a sell order
-  rpc AllowedDenoms(QueryAllowedDenomsRequest) returns (QueryAllowedDenomsResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/ask-denoms";
+  // AllowedDenoms queries a paginated list of all bank denoms allowed to be
+  // used in the marketplace.
+  rpc AllowedDenoms(QueryAllowedDenomsRequest)
+      returns (QueryAllowedDenomsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/allowed-denoms";
   }
 }
 
 // QuerySellOrderRequest is the Query/SellOrder request type.
 message QuerySellOrderRequest {
+
   // sell_order_id is the id of the requested sell order.
   uint64 sell_order_id = 1;
 }
 
 // QuerySellOrderResponse is the Query/SellOrder response type.
 message QuerySellOrderResponse {
+
   // sell_order contains all information related to a sell order.
-  SellOrder sell_order = 1;
+  SellOrderInfo sell_order = 1;
 }
 
 // QuerySellOrdersRequest is the Query/SellOrders request type.
 message QuerySellOrdersRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
@@ -74,14 +86,15 @@ message QuerySellOrdersRequest {
 message QuerySellOrdersResponse {
 
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
+  repeated SellOrderInfo sell_orders = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
-message QuerySellOrdersByBatchDenomRequest {
+// QuerySellOrdersByBatchRequest is the Query/SellOrdersByBatch
+// request type.
+message QuerySellOrdersByBatchRequest {
 
   // batch_denom is an ecocredit denom
   string batch_denom = 1;
@@ -90,79 +103,34 @@ message QuerySellOrdersByBatchDenomRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
-message QuerySellOrdersByBatchDenomResponse {
+// QuerySellOrdersByBatchResponse is the Query/SellOrdersByBatch
+// response type.
+message QuerySellOrdersByBatchResponse {
 
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
+  repeated SellOrderInfo sell_orders = 1;
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
-message QuerySellOrdersByAddressRequest {
+// QuerySellOrdersBySellerRequest is the Query/SellOrdersBySeller request
+// type.
+message QuerySellOrdersBySellerRequest {
 
-  // address is the creator of the sell order
-  string address = 1;
+  // seller is the address of the account that is selling credits.
+  string seller = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
-message QuerySellOrdersByAddressResponse {
+// QuerySellOrdersBySellerResponse is the Query/SellOrdersBySellerResponse
+// response type.
+message QuerySellOrdersBySellerResponse {
 
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
-
-  // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QueryBuyOrderRequest is the Query/BuyOrder request type.
-message QueryBuyOrderRequest {
-  // buy_order_id is the id of the buy order.
-  uint64 buy_order_id = 1;
-}
-
-// QueryBuyOrderResponse is the Query/BuyOrder response type.
-message QueryBuyOrderResponse {
-  // buy_order contains all information related to a buy order.
-  BuyOrder buy_order = 1;
-}
-
-// QueryBuyOrdersRequest is the Query/BuyOrders request type.
-message QueryBuyOrdersRequest {
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-// QueryBuyOrdersResponse is the Query/BuyOrders response type.
-message QueryBuyOrdersResponse {
-
-  // buy_orders is a list of buy orders.
-  repeated BuyOrder buy_orders = 1;
-
-  // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddress request type
-message QueryBuyOrdersByAddressRequest {
-
-  // address of the buy order creator
-  string address = 1;
-
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
-message QueryBuyOrdersByAddressResponse {
-
-  // buy_orders is a list of buy orders.
-  repeated BuyOrder buy_orders = 1;
+  repeated SellOrderInfo sell_orders = 1;
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -170,6 +138,7 @@ message QueryBuyOrdersByAddressResponse {
 
 // QueryAllowedDenomsRequest is the Query/AllowedDenoms request type.
 message QueryAllowedDenomsRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
@@ -177,9 +146,43 @@ message QueryAllowedDenomsRequest {
 // QueryAllowedDenomsResponse is the Query/AllowedDenoms response type.
 message QueryAllowedDenomsResponse {
 
-  // allowed_denoms is a list of coin denoms allowed to use in the ask price of sell orders.
+  // allowed_denoms is a list of coin denoms allowed to use in the ask price of
+  // sell orders.
   repeated AllowedDenom allowed_denoms = 1;
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// SellOrderInfo is the human-readable sell order information.
+message SellOrderInfo {
+
+  // id is the unique ID of sell order.
+  uint64 id = 1;
+
+  // seller is the address of the account that is selling credits.
+  string seller = 2;
+
+  // batch_denom is denom of the credit batch being sold.
+  string batch_denom = 3;
+
+  // quantity is the decimal quantity of credits being sold.
+  string quantity = 4;
+
+  // ask_denom is the denom used in the ask price of the sell order.
+  string ask_denom = 5;
+
+  // ask_amount is the amount that the seller is asking for each credit unit of
+  // the batch. Each credit unit of the batch will be sold for at least the
+  // ask_amount.
+  string ask_amount = 6;
+
+  // disable_auto_retire disables auto-retirement of credits which allows a
+  // buyer to disable auto-retirement in their buy order enabling them to
+  // resell the credits to another buyer.
+  bool disable_auto_retire = 7;
+
+  // expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp expiration = 9;
 }

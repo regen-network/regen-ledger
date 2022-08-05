@@ -3,21 +3,20 @@ package ormstore
 import (
 	"testing"
 
+	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	storetypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func sdkContextForStoreKey(key *types.KVStoreKey) sdk.Context {
+func sdkContextForStoreKey(key *storetypes.KVStoreKey) sdk.Context {
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
 	cms.MountStoreWithDB(key, storetypes.StoreTypeIAVL, db)
@@ -29,11 +28,14 @@ func sdkContextForStoreKey(key *types.KVStoreKey) sdk.Context {
 }
 
 func TestStoreKeyDB(t *testing.T) {
-	storeKey := types.NewKVStoreKey("test")
+	storeKey := storetypes.NewKVStoreKey("test")
 	db, err := NewStoreKeyDB(
-		ormdb.ModuleSchema{FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-			1: ecocreditv1.File_regen_ecocredit_v1_state_proto,
-		}},
+		&ormv1alpha1.ModuleSchemaDescriptor{
+			SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
+				{Id: 1, ProtoFileName: ecocreditv1.File_regen_ecocredit_v1_state_proto.Path()},
+			},
+			Prefix: nil,
+		},
 		storeKey,
 		ormdb.ModuleDBOptions{},
 	)

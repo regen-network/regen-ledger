@@ -1,103 +1,44 @@
 package server
 
 import (
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	"google.golang.org/protobuf/reflect/protoreflect"
+	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
-)
-
-const (
-	TradableBalancePrefix    byte = 0x0
-	TradableSupplyPrefix     byte = 0x1
-	RetiredBalancePrefix     byte = 0x2
-	RetiredSupplyPrefix      byte = 0x3
-	CreditTypeSeqTablePrefix byte = 0x4
-	ClassInfoTablePrefix     byte = 0x5
-	BatchInfoTablePrefix     byte = 0x6
-
-	ProjectInfoTablePrefix    byte = 0x10
-	ProjectInfoTableSeqPrefix byte = 0x11
-	ProjectsByClassIDIndex    byte = 0x12
-	BatchesByProjectIndex     byte = 0x13
-
-	// sell order table
-	SellOrderTablePrefix             byte = 0x20
-	SellOrderTableSeqPrefix          byte = 0x21
-	SellOrderByExpirationIndexPrefix byte = 0x22
-	SellOrderByAddressIndexPrefix    byte = 0x23
-	SellOrderByBatchDenomIndexPrefix byte = 0x24
-
-	// buy order table
-	BuyOrderTablePrefix             byte = 0x25
-	BuyOrderTableSeqPrefix          byte = 0x26
-	BuyOrderByExpirationIndexPrefix byte = 0x27
-	BuyOrderByAddressIndexPrefix    byte = 0x28
-
-	AskDenomTablePrefix byte = 0x30
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
+	storeKey storetypes.StoreKey
 
 	paramSpace    paramtypes.Subspace
 	bankKeeper    ecocredit.BankKeeper
 	accountKeeper ecocredit.AccountKeeper
 
-	// Store sequence numbers per credit type
-	creditTypeSeqTable orm.PrimaryKeyTable
+	coreKeeper        core.Keeper
+	basketKeeper      basket.Keeper
+	marketplaceKeeper marketplace.Keeper
 
-	classInfoTable orm.PrimaryKeyTable
-	batchInfoTable orm.PrimaryKeyTable
-
-	// sell order table
-	sellOrderTable             orm.AutoUInt64Table
-	sellOrderByAddressIndex    orm.Index
-	sellOrderByBatchDenomIndex orm.Index
-	sellOrderByExpirationIndex orm.Index
-
-	// buy order table
-	buyOrderTable             orm.AutoUInt64Table
-	buyOrderByAddressIndex    orm.Index
-	buyOrderByExpirationIndex orm.Index
-
-	askDenomTable orm.PrimaryKeyTable
-
-	// project table
-	projectInfoTable        orm.PrimaryKeyTable
-	projectInfoSeq          orm.Sequence
-	projectsByClassIDIndex  orm.Index
-	batchesByProjectIDIndex orm.Index
-
-	basketKeeper basket.Keeper
-
-	db ormdb.ModuleDB
+	db          ormdb.ModuleDB
+	stateStore  api.StateStore
+	basketStore basketapi.StateStore
 }
 
-var ModuleSchema = ormdb.ModuleSchema{
-	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: api.File_regen_ecocredit_v1_state_proto,
-		2: basketapi.File_regen_ecocredit_basket_v1_state_proto,
-		3: marketApi.File_regen_ecocredit_marketplace_v1_state_proto,
-	},
-	Prefix: []byte{ecocredit.ORMPrefix},
-}
-
-func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper, cdc codec.Codec) serverImpl {
+func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
@@ -105,145 +46,48 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		accountKeeper: accountKeeper,
 	}
 
-	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(ecocredit.CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
-	if err != nil {
-		panic(err.Error())
-	}
-	s.creditTypeSeqTable = creditTypeSeqTable.Build()
-
-	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ecocredit.ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, cdc)
-	if err != nil {
-		panic(err.Error())
-	}
-	s.classInfoTable = classInfoTableBuilder.Build()
-
-	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ecocredit.BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, cdc)
-	if err != nil {
-		panic(err.Error())
+	// ensure ecocredit module account is set
+	coreAddr := s.accountKeeper.GetModuleAddress(ecocredit.ModuleName)
+	if coreAddr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", ecocredit.ModuleName))
 	}
 
-	s.batchesByProjectIDIndex, err = orm.NewIndex(batchInfoTableBuilder, BatchesByProjectIndex, func(value interface{}) ([]interface{}, error) {
-		batchInfo, ok := value.(*ecocredit.BatchInfo)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BatchInfo{}, value)
-		}
-		return []interface{}{batchInfo.ProjectId}, nil
-	}, ecocredit.BatchInfo{}.ProjectId)
-	if err != nil {
-		panic(err.Error())
+	// ensure basket submodule account is set
+	basketAddr := s.accountKeeper.GetModuleAddress(baskettypes.BasketSubModuleName)
+	if basketAddr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", baskettypes.BasketSubModuleName))
 	}
 
-	s.batchInfoTable = batchInfoTableBuilder.Build()
-
-	sellOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(SellOrderTablePrefix, SellOrderTableSeqPrefix, storeKey, &ecocredit.SellOrder{}, cdc)
-	if err != nil {
-		panic(err.Error())
-	}
-	s.sellOrderByAddressIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		order, ok := value.(*ecocredit.SellOrder)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
-		}
-		addr, err := sdk.AccAddressFromBech32(order.Owner)
-		if err != nil {
-			return nil, err
-		}
-		return []interface{}{addr.Bytes()}, nil
-	}, []byte{})
-	if err != nil {
-		panic(err.Error())
-	}
-	s.sellOrderByBatchDenomIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByBatchDenomIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		order, ok := value.(*ecocredit.SellOrder)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
-		}
-		return []interface{}{order.BatchDenom}, nil
-	}, ecocredit.SellOrder{}.BatchDenom)
-	if err != nil {
-		panic(err.Error())
-	}
-	s.sellOrderByExpirationIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByExpirationIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		order, ok := value.(*ecocredit.SellOrder)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
-		}
-		if order.Expiration == nil {
-			return nil, nil
-		}
-		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
-	}, uint64(0))
-	if err != nil {
-		panic(err.Error())
-	}
-	s.sellOrderTable = sellOrderTableBuilder.Build()
-
-	buyOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(BuyOrderTablePrefix, BuyOrderTableSeqPrefix, storeKey, &ecocredit.BuyOrder{}, cdc)
-	if err != nil {
-		panic(err.Error())
-	}
-	s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		order, ok := value.(*ecocredit.BuyOrder)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BuyOrder{}, value)
-		}
-		addr, err := sdk.AccAddressFromBech32(order.Buyer)
-		if err != nil {
-			return nil, err
-		}
-		return []interface{}{addr.Bytes()}, nil
-	}, []byte{})
-	if err != nil {
-		panic(err.Error())
-	}
-	s.buyOrderByExpirationIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByExpirationIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		order, ok := value.(*ecocredit.BuyOrder)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BuyOrder{}, value)
-		}
-		if order.Expiration == nil {
-			return nil, nil
-		}
-		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
-	}, uint64(0))
-	if err != nil {
-		panic(err.Error())
-	}
-	s.buyOrderTable = buyOrderTableBuilder.Build()
-
-	askDenomTableBuilder, err := orm.NewPrimaryKeyTableBuilder(AskDenomTablePrefix, storeKey, &ecocredit.AskDenom{}, cdc)
-	if err != nil {
-		panic(err.Error())
-	}
-	s.askDenomTable = askDenomTableBuilder.Build()
-
-	s.projectInfoSeq = orm.NewSequence(storeKey, ProjectInfoTableSeqPrefix)
-	projectInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ProjectInfoTablePrefix, storeKey, &ecocredit.ProjectInfo{}, cdc)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	s.projectsByClassIDIndex, err = orm.NewIndex(projectInfoTableBuilder, ProjectsByClassIDIndex, func(value interface{}) ([]interface{}, error) {
-		projectInfo, ok := value.(*ecocredit.ProjectInfo)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.ProjectInfo{}, value)
-		}
-		return []interface{}{projectInfo.ClassId}, nil
-	}, ecocredit.ProjectInfo{}.ClassId)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	s.projectInfoTable = projectInfoTableBuilder.Build()
-
-	s.db, err = ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	var err error
+	s.db, err = ormstore.NewStoreKeyDB(&ecocredit.ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
 
-	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey)
+	coreStore, basketStore, marketStore := getStateStores(s.db)
+	s.stateStore = coreStore
+	s.basketStore = basketStore
+	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr)
+	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr)
+	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
 
 	return s
+}
+
+func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, marketApi.StateStore) {
+	coreStore, err := api.NewStateStore(db)
+	if err != nil {
+		panic(err)
+	}
+	basketStore, err := basketapi.NewStateStore(db)
+	if err != nil {
+		panic(err)
+	}
+	marketStore, err := marketApi.NewStateStore(db)
+	if err != nil {
+		panic(err)
+	}
+	return coreStore, basketStore, marketStore
 }
 
 func RegisterServices(
@@ -251,15 +95,21 @@ func RegisterServices(
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
-	distKeeper ecocredit.DistributionKeeper,
-) ecocredit.Keeper {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
-	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
-	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
+) Keeper {
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper)
+
+	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
+	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)
+
 	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
 	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
 
+	marketplacetypes.RegisterMsgServer(configurator.MsgServer(), impl.marketplaceKeeper)
+	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketplaceKeeper)
+
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterMigrationHandler(impl.RunMigrations)
+
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	return impl

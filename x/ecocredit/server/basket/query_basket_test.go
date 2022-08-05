@@ -16,7 +16,7 @@ func TestKeeper_Basket(t *testing.T) {
 	// add a basket
 	basketDenom := "foo"
 	batchDenom := "bar"
-	err := s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
+	err := s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
@@ -29,7 +29,7 @@ func TestKeeper_Basket(t *testing.T) {
 	require.Equal(t, basketDenom, res.Basket.BasketDenom)
 
 	// bad query
-	res, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
+	_, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
 		BasketDenom: batchDenom,
 	})
 	require.Error(t, err)
@@ -41,14 +41,14 @@ func TestKeeper_BasketClasses(t *testing.T) {
 
 	// add a basket
 	basketDenom := "foo"
-	err := s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
+	err := s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
 
 	// add a basket class
 	classId := "C01"
-	err = s.stateStore.BasketClassStore().Insert(s.ctx, &api.BasketClass{
+	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
 		BasketId: 1,
 		ClassId:  classId,
 	})
@@ -61,4 +61,11 @@ func TestKeeper_BasketClasses(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, basketDenom, res.Basket.BasketDenom)
 	require.Equal(t, []string{classId}, res.Classes)
+
+	// query unknown basket
+	_, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
+		BasketDenom: "unknown",
+	})
+	require.Error(t, err)
+	require.ErrorContains(t, err, "basket unknown not found")
 }

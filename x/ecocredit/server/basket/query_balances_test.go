@@ -18,22 +18,22 @@ func TestQueryBalances(t *testing.T) {
 	// add some baskets
 	basketDenom := "foo"
 	batchDenoms := []string{"bar", "baz", "qux"}
-	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
+	require.NoError(t, s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
 	}))
-	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[0],
 		Balance:        "100.50",
 		BatchStartDate: nil,
 	}))
-	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[1],
 		Balance:        "4.20",
 		BatchStartDate: nil,
 	}))
-	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[2],
 		Balance:        "6.10",
@@ -66,7 +66,7 @@ func TestQueryBalances(t *testing.T) {
 	require.Equal(t, "4.20", res.Balances[1].Balance)
 
 	// bad query
-	res, err = s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: "nope"})
+	_, err = s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: "nope"})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not found")
 }

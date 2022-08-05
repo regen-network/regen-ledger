@@ -3,10 +3,8 @@ package server_test
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/suite"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -16,30 +14,29 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
 
 func TestServer(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper := setup(t)
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper)
+	ff, ecocreditSubspace, bankKeeper, accountKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper)
 	suite.Run(t, s)
 }
 
 func TestGenesis(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, _, _ := setup(t)
+	ff, ecocreditSubspace, bankKeeper, _ := setup(t)
 	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper, *mocks.MockDistributionKeeper) {
+func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
 	ff := server.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
@@ -54,11 +51,11 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
-	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(distKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(tkey, sdk.StoreTypeTransient)
+	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(bankKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(distKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(tkey, storetypes.StoreTypeTransient)
 
 	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
 	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
@@ -71,17 +68,15 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms,
+		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	ctrl := gomock.NewController(t)
-	distKeeper := mocks2.NewMockDistributionKeeper(ctrl)
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
-	return ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper
+	return ff, ecocreditSubspace, bankKeeper, accountKeeper
 }

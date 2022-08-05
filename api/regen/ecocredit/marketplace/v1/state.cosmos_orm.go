@@ -10,7 +10,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type SellOrderStore interface {
+type SellOrderTable interface {
 	Insert(ctx context.Context, sellOrder *SellOrder) error
 	InsertReturningID(ctx context.Context, sellOrder *SellOrder) (uint64, error)
 	Update(ctx context.Context, sellOrder *SellOrder) error
@@ -59,16 +59,16 @@ func (this SellOrderIdIndexKey) WithId(id uint64) SellOrderIdIndexKey {
 	return this
 }
 
-type SellOrderBatchIdIndexKey struct {
+type SellOrderBatchKeyIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderBatchIdIndexKey) id() uint32            { return 1 }
-func (x SellOrderBatchIdIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderBatchIdIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderBatchKeyIndexKey) id() uint32            { return 1 }
+func (x SellOrderBatchKeyIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderBatchKeyIndexKey) sellOrderIndexKey()    {}
 
-func (this SellOrderBatchIdIndexKey) WithBatchId(batch_id uint64) SellOrderBatchIdIndexKey {
-	this.vs = []interface{}{batch_id}
+func (this SellOrderBatchKeyIndexKey) WithBatchKey(batch_key uint64) SellOrderBatchKeyIndexKey {
+	this.vs = []interface{}{batch_key}
 	return this
 }
 
@@ -98,35 +98,35 @@ func (this SellOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.T
 	return this
 }
 
-type sellOrderStore struct {
+type sellOrderTable struct {
 	table ormtable.AutoIncrementTable
 }
 
-func (this sellOrderStore) Insert(ctx context.Context, sellOrder *SellOrder) error {
+func (this sellOrderTable) Insert(ctx context.Context, sellOrder *SellOrder) error {
 	return this.table.Insert(ctx, sellOrder)
 }
 
-func (this sellOrderStore) Update(ctx context.Context, sellOrder *SellOrder) error {
+func (this sellOrderTable) Update(ctx context.Context, sellOrder *SellOrder) error {
 	return this.table.Update(ctx, sellOrder)
 }
 
-func (this sellOrderStore) Save(ctx context.Context, sellOrder *SellOrder) error {
+func (this sellOrderTable) Save(ctx context.Context, sellOrder *SellOrder) error {
 	return this.table.Save(ctx, sellOrder)
 }
 
-func (this sellOrderStore) Delete(ctx context.Context, sellOrder *SellOrder) error {
+func (this sellOrderTable) Delete(ctx context.Context, sellOrder *SellOrder) error {
 	return this.table.Delete(ctx, sellOrder)
 }
 
-func (this sellOrderStore) InsertReturningID(ctx context.Context, sellOrder *SellOrder) (uint64, error) {
+func (this sellOrderTable) InsertReturningID(ctx context.Context, sellOrder *SellOrder) (uint64, error) {
 	return this.table.InsertReturningID(ctx, sellOrder)
 }
 
-func (this sellOrderStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+func (this sellOrderTable) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this sellOrderStore) Get(ctx context.Context, id uint64) (*SellOrder, error) {
+func (this sellOrderTable) Get(ctx context.Context, id uint64) (*SellOrder, error) {
 	var sellOrder SellOrder
 	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, id)
 	if err != nil {
@@ -138,182 +138,37 @@ func (this sellOrderStore) Get(ctx context.Context, id uint64) (*SellOrder, erro
 	return &sellOrder, nil
 }
 
-func (this sellOrderStore) List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
+func (this sellOrderTable) List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return SellOrderIterator{it}, err
 }
 
-func (this sellOrderStore) ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
+func (this sellOrderTable) ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return SellOrderIterator{it}, err
 }
 
-func (this sellOrderStore) DeleteBy(ctx context.Context, prefixKey SellOrderIndexKey) error {
+func (this sellOrderTable) DeleteBy(ctx context.Context, prefixKey SellOrderIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this sellOrderStore) DeleteRange(ctx context.Context, from, to SellOrderIndexKey) error {
+func (this sellOrderTable) DeleteRange(ctx context.Context, from, to SellOrderIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this sellOrderStore) doNotImplement() {}
+func (this sellOrderTable) doNotImplement() {}
 
-var _ SellOrderStore = sellOrderStore{}
+var _ SellOrderTable = sellOrderTable{}
 
-func NewSellOrderStore(db ormtable.Schema) (SellOrderStore, error) {
+func NewSellOrderTable(db ormtable.Schema) (SellOrderTable, error) {
 	table := db.GetTable(&SellOrder{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&SellOrder{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return sellOrderStore{table.(ormtable.AutoIncrementTable)}, nil
+	return sellOrderTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
-type BuyOrderStore interface {
-	Insert(ctx context.Context, buyOrder *BuyOrder) error
-	InsertReturningID(ctx context.Context, buyOrder *BuyOrder) (uint64, error)
-	Update(ctx context.Context, buyOrder *BuyOrder) error
-	Save(ctx context.Context, buyOrder *BuyOrder) error
-	Delete(ctx context.Context, buyOrder *BuyOrder) error
-	Has(ctx context.Context, id uint64) (found bool, err error)
-	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, id uint64) (*BuyOrder, error)
-	List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
-	ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
-	DeleteBy(ctx context.Context, prefixKey BuyOrderIndexKey) error
-	DeleteRange(ctx context.Context, from, to BuyOrderIndexKey) error
-
-	doNotImplement()
-}
-
-type BuyOrderIterator struct {
-	ormtable.Iterator
-}
-
-func (i BuyOrderIterator) Value() (*BuyOrder, error) {
-	var buyOrder BuyOrder
-	err := i.UnmarshalMessage(&buyOrder)
-	return &buyOrder, err
-}
-
-type BuyOrderIndexKey interface {
-	id() uint32
-	values() []interface{}
-	buyOrderIndexKey()
-}
-
-// primary key starting index..
-type BuyOrderPrimaryKey = BuyOrderIdIndexKey
-
-type BuyOrderIdIndexKey struct {
-	vs []interface{}
-}
-
-func (x BuyOrderIdIndexKey) id() uint32            { return 0 }
-func (x BuyOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderIdIndexKey) buyOrderIndexKey()     {}
-
-func (this BuyOrderIdIndexKey) WithId(id uint64) BuyOrderIdIndexKey {
-	this.vs = []interface{}{id}
-	return this
-}
-
-type BuyOrderBuyerIndexKey struct {
-	vs []interface{}
-}
-
-func (x BuyOrderBuyerIndexKey) id() uint32            { return 1 }
-func (x BuyOrderBuyerIndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderBuyerIndexKey) buyOrderIndexKey()     {}
-
-func (this BuyOrderBuyerIndexKey) WithBuyer(buyer []byte) BuyOrderBuyerIndexKey {
-	this.vs = []interface{}{buyer}
-	return this
-}
-
-type BuyOrderExpirationIndexKey struct {
-	vs []interface{}
-}
-
-func (x BuyOrderExpirationIndexKey) id() uint32            { return 2 }
-func (x BuyOrderExpirationIndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderExpirationIndexKey) buyOrderIndexKey()     {}
-
-func (this BuyOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.Timestamp) BuyOrderExpirationIndexKey {
-	this.vs = []interface{}{expiration}
-	return this
-}
-
-type buyOrderStore struct {
-	table ormtable.AutoIncrementTable
-}
-
-func (this buyOrderStore) Insert(ctx context.Context, buyOrder *BuyOrder) error {
-	return this.table.Insert(ctx, buyOrder)
-}
-
-func (this buyOrderStore) Update(ctx context.Context, buyOrder *BuyOrder) error {
-	return this.table.Update(ctx, buyOrder)
-}
-
-func (this buyOrderStore) Save(ctx context.Context, buyOrder *BuyOrder) error {
-	return this.table.Save(ctx, buyOrder)
-}
-
-func (this buyOrderStore) Delete(ctx context.Context, buyOrder *BuyOrder) error {
-	return this.table.Delete(ctx, buyOrder)
-}
-
-func (this buyOrderStore) InsertReturningID(ctx context.Context, buyOrder *BuyOrder) (uint64, error) {
-	return this.table.InsertReturningID(ctx, buyOrder)
-}
-
-func (this buyOrderStore) Has(ctx context.Context, id uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, id)
-}
-
-func (this buyOrderStore) Get(ctx context.Context, id uint64) (*BuyOrder, error) {
-	var buyOrder BuyOrder
-	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, id)
-	if err != nil {
-		return nil, err
-	}
-	if !found {
-		return nil, ormerrors.NotFound
-	}
-	return &buyOrder, nil
-}
-
-func (this buyOrderStore) List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
-	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return BuyOrderIterator{it}, err
-}
-
-func (this buyOrderStore) ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
-	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return BuyOrderIterator{it}, err
-}
-
-func (this buyOrderStore) DeleteBy(ctx context.Context, prefixKey BuyOrderIndexKey) error {
-	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
-}
-
-func (this buyOrderStore) DeleteRange(ctx context.Context, from, to BuyOrderIndexKey) error {
-	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
-}
-
-func (this buyOrderStore) doNotImplement() {}
-
-var _ BuyOrderStore = buyOrderStore{}
-
-func NewBuyOrderStore(db ormtable.Schema) (BuyOrderStore, error) {
-	table := db.GetTable(&BuyOrder{})
-	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrder{}).ProtoReflect().Descriptor().FullName()))
-	}
-	return buyOrderStore{table.(ormtable.AutoIncrementTable)}, nil
-}
-
-type AllowedDenomStore interface {
+type AllowedDenomTable interface {
 	Insert(ctx context.Context, allowedDenom *AllowedDenom) error
 	Update(ctx context.Context, allowedDenom *AllowedDenom) error
 	Save(ctx context.Context, allowedDenom *AllowedDenom) error
@@ -377,31 +232,31 @@ func (this AllowedDenomDisplayDenomIndexKey) WithDisplayDenom(display_denom stri
 	return this
 }
 
-type allowedDenomStore struct {
+type allowedDenomTable struct {
 	table ormtable.Table
 }
 
-func (this allowedDenomStore) Insert(ctx context.Context, allowedDenom *AllowedDenom) error {
+func (this allowedDenomTable) Insert(ctx context.Context, allowedDenom *AllowedDenom) error {
 	return this.table.Insert(ctx, allowedDenom)
 }
 
-func (this allowedDenomStore) Update(ctx context.Context, allowedDenom *AllowedDenom) error {
+func (this allowedDenomTable) Update(ctx context.Context, allowedDenom *AllowedDenom) error {
 	return this.table.Update(ctx, allowedDenom)
 }
 
-func (this allowedDenomStore) Save(ctx context.Context, allowedDenom *AllowedDenom) error {
+func (this allowedDenomTable) Save(ctx context.Context, allowedDenom *AllowedDenom) error {
 	return this.table.Save(ctx, allowedDenom)
 }
 
-func (this allowedDenomStore) Delete(ctx context.Context, allowedDenom *AllowedDenom) error {
+func (this allowedDenomTable) Delete(ctx context.Context, allowedDenom *AllowedDenom) error {
 	return this.table.Delete(ctx, allowedDenom)
 }
 
-func (this allowedDenomStore) Has(ctx context.Context, bank_denom string) (found bool, err error) {
+func (this allowedDenomTable) Has(ctx context.Context, bank_denom string) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, bank_denom)
 }
 
-func (this allowedDenomStore) Get(ctx context.Context, bank_denom string) (*AllowedDenom, error) {
+func (this allowedDenomTable) Get(ctx context.Context, bank_denom string) (*AllowedDenom, error) {
 	var allowedDenom AllowedDenom
 	found, err := this.table.PrimaryKey().Get(ctx, &allowedDenom, bank_denom)
 	if err != nil {
@@ -413,13 +268,13 @@ func (this allowedDenomStore) Get(ctx context.Context, bank_denom string) (*Allo
 	return &allowedDenom, nil
 }
 
-func (this allowedDenomStore) HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error) {
+func (this allowedDenomTable) HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		display_denom,
 	)
 }
 
-func (this allowedDenomStore) GetByDisplayDenom(ctx context.Context, display_denom string) (*AllowedDenom, error) {
+func (this allowedDenomTable) GetByDisplayDenom(ctx context.Context, display_denom string) (*AllowedDenom, error) {
 	var allowedDenom AllowedDenom
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &allowedDenom,
 		display_denom,
@@ -433,37 +288,37 @@ func (this allowedDenomStore) GetByDisplayDenom(ctx context.Context, display_den
 	return &allowedDenom, nil
 }
 
-func (this allowedDenomStore) List(ctx context.Context, prefixKey AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
+func (this allowedDenomTable) List(ctx context.Context, prefixKey AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return AllowedDenomIterator{it}, err
 }
 
-func (this allowedDenomStore) ListRange(ctx context.Context, from, to AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
+func (this allowedDenomTable) ListRange(ctx context.Context, from, to AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return AllowedDenomIterator{it}, err
 }
 
-func (this allowedDenomStore) DeleteBy(ctx context.Context, prefixKey AllowedDenomIndexKey) error {
+func (this allowedDenomTable) DeleteBy(ctx context.Context, prefixKey AllowedDenomIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this allowedDenomStore) DeleteRange(ctx context.Context, from, to AllowedDenomIndexKey) error {
+func (this allowedDenomTable) DeleteRange(ctx context.Context, from, to AllowedDenomIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this allowedDenomStore) doNotImplement() {}
+func (this allowedDenomTable) doNotImplement() {}
 
-var _ AllowedDenomStore = allowedDenomStore{}
+var _ AllowedDenomTable = allowedDenomTable{}
 
-func NewAllowedDenomStore(db ormtable.Schema) (AllowedDenomStore, error) {
+func NewAllowedDenomTable(db ormtable.Schema) (AllowedDenomTable, error) {
 	table := db.GetTable(&AllowedDenom{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&AllowedDenom{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return allowedDenomStore{table}, nil
+	return allowedDenomTable{table}, nil
 }
 
-type MarketStore interface {
+type MarketTable interface {
 	Insert(ctx context.Context, market *Market) error
 	InsertReturningID(ctx context.Context, market *Market) (uint64, error)
 	Update(ctx context.Context, market *Market) error
@@ -472,9 +327,9 @@ type MarketStore interface {
 	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*Market, error)
-	HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error)
-	// GetByCreditTypeBankDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (*Market, error)
+	HasByCreditTypeAbbrevBankDenom(ctx context.Context, credit_type_abbrev string, bank_denom string) (found bool, err error)
+	// GetByCreditTypeAbbrevBankDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByCreditTypeAbbrevBankDenom(ctx context.Context, credit_type_abbrev string, bank_denom string) (*Market, error)
 	List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
 	ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
 	DeleteBy(ctx context.Context, prefixKey MarketIndexKey) error
@@ -515,53 +370,53 @@ func (this MarketIdIndexKey) WithId(id uint64) MarketIdIndexKey {
 	return this
 }
 
-type MarketCreditTypeBankDenomIndexKey struct {
+type MarketCreditTypeAbbrevBankDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x MarketCreditTypeBankDenomIndexKey) id() uint32            { return 1 }
-func (x MarketCreditTypeBankDenomIndexKey) values() []interface{} { return x.vs }
-func (x MarketCreditTypeBankDenomIndexKey) marketIndexKey()       {}
+func (x MarketCreditTypeAbbrevBankDenomIndexKey) id() uint32            { return 1 }
+func (x MarketCreditTypeAbbrevBankDenomIndexKey) values() []interface{} { return x.vs }
+func (x MarketCreditTypeAbbrevBankDenomIndexKey) marketIndexKey()       {}
 
-func (this MarketCreditTypeBankDenomIndexKey) WithCreditType(credit_type string) MarketCreditTypeBankDenomIndexKey {
-	this.vs = []interface{}{credit_type}
+func (this MarketCreditTypeAbbrevBankDenomIndexKey) WithCreditTypeAbbrev(credit_type_abbrev string) MarketCreditTypeAbbrevBankDenomIndexKey {
+	this.vs = []interface{}{credit_type_abbrev}
 	return this
 }
 
-func (this MarketCreditTypeBankDenomIndexKey) WithCreditTypeBankDenom(credit_type string, bank_denom string) MarketCreditTypeBankDenomIndexKey {
-	this.vs = []interface{}{credit_type, bank_denom}
+func (this MarketCreditTypeAbbrevBankDenomIndexKey) WithCreditTypeAbbrevBankDenom(credit_type_abbrev string, bank_denom string) MarketCreditTypeAbbrevBankDenomIndexKey {
+	this.vs = []interface{}{credit_type_abbrev, bank_denom}
 	return this
 }
 
-type marketStore struct {
+type marketTable struct {
 	table ormtable.AutoIncrementTable
 }
 
-func (this marketStore) Insert(ctx context.Context, market *Market) error {
+func (this marketTable) Insert(ctx context.Context, market *Market) error {
 	return this.table.Insert(ctx, market)
 }
 
-func (this marketStore) Update(ctx context.Context, market *Market) error {
+func (this marketTable) Update(ctx context.Context, market *Market) error {
 	return this.table.Update(ctx, market)
 }
 
-func (this marketStore) Save(ctx context.Context, market *Market) error {
+func (this marketTable) Save(ctx context.Context, market *Market) error {
 	return this.table.Save(ctx, market)
 }
 
-func (this marketStore) Delete(ctx context.Context, market *Market) error {
+func (this marketTable) Delete(ctx context.Context, market *Market) error {
 	return this.table.Delete(ctx, market)
 }
 
-func (this marketStore) InsertReturningID(ctx context.Context, market *Market) (uint64, error) {
+func (this marketTable) InsertReturningID(ctx context.Context, market *Market) (uint64, error) {
 	return this.table.InsertReturningID(ctx, market)
 }
 
-func (this marketStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+func (this marketTable) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this marketStore) Get(ctx context.Context, id uint64) (*Market, error) {
+func (this marketTable) Get(ctx context.Context, id uint64) (*Market, error) {
 	var market Market
 	found, err := this.table.PrimaryKey().Get(ctx, &market, id)
 	if err != nil {
@@ -573,17 +428,17 @@ func (this marketStore) Get(ctx context.Context, id uint64) (*Market, error) {
 	return &market, nil
 }
 
-func (this marketStore) HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error) {
+func (this marketTable) HasByCreditTypeAbbrevBankDenom(ctx context.Context, credit_type_abbrev string, bank_denom string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
-		credit_type,
+		credit_type_abbrev,
 		bank_denom,
 	)
 }
 
-func (this marketStore) GetByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (*Market, error) {
+func (this marketTable) GetByCreditTypeAbbrevBankDenom(ctx context.Context, credit_type_abbrev string, bank_denom string) (*Market, error) {
 	var market Market
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &market,
-		credit_type,
+		credit_type_abbrev,
 		bank_denom,
 	)
 	if err != nil {
@@ -595,65 +450,59 @@ func (this marketStore) GetByCreditTypeBankDenom(ctx context.Context, credit_typ
 	return &market, nil
 }
 
-func (this marketStore) List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
+func (this marketTable) List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return MarketIterator{it}, err
 }
 
-func (this marketStore) ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
+func (this marketTable) ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return MarketIterator{it}, err
 }
 
-func (this marketStore) DeleteBy(ctx context.Context, prefixKey MarketIndexKey) error {
+func (this marketTable) DeleteBy(ctx context.Context, prefixKey MarketIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this marketStore) DeleteRange(ctx context.Context, from, to MarketIndexKey) error {
+func (this marketTable) DeleteRange(ctx context.Context, from, to MarketIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this marketStore) doNotImplement() {}
+func (this marketTable) doNotImplement() {}
 
-var _ MarketStore = marketStore{}
+var _ MarketTable = marketTable{}
 
-func NewMarketStore(db ormtable.Schema) (MarketStore, error) {
+func NewMarketTable(db ormtable.Schema) (MarketTable, error) {
 	table := db.GetTable(&Market{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&Market{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return marketStore{table.(ormtable.AutoIncrementTable)}, nil
+	return marketTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type StateStore interface {
-	SellOrderStore() SellOrderStore
-	BuyOrderStore() BuyOrderStore
-	AllowedDenomStore() AllowedDenomStore
-	MarketStore() MarketStore
+	SellOrderTable() SellOrderTable
+	AllowedDenomTable() AllowedDenomTable
+	MarketTable() MarketTable
 
 	doNotImplement()
 }
 
 type stateStore struct {
-	sellOrder    SellOrderStore
-	buyOrder     BuyOrderStore
-	allowedDenom AllowedDenomStore
-	market       MarketStore
+	sellOrder    SellOrderTable
+	allowedDenom AllowedDenomTable
+	market       MarketTable
 }
 
-func (x stateStore) SellOrderStore() SellOrderStore {
+func (x stateStore) SellOrderTable() SellOrderTable {
 	return x.sellOrder
 }
 
-func (x stateStore) BuyOrderStore() BuyOrderStore {
-	return x.buyOrder
-}
-
-func (x stateStore) AllowedDenomStore() AllowedDenomStore {
+func (x stateStore) AllowedDenomTable() AllowedDenomTable {
 	return x.allowedDenom
 }
 
-func (x stateStore) MarketStore() MarketStore {
+func (x stateStore) MarketTable() MarketTable {
 	return x.market
 }
 
@@ -662,30 +511,24 @@ func (stateStore) doNotImplement() {}
 var _ StateStore = stateStore{}
 
 func NewStateStore(db ormtable.Schema) (StateStore, error) {
-	sellOrderStore, err := NewSellOrderStore(db)
+	sellOrderTable, err := NewSellOrderTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	buyOrderStore, err := NewBuyOrderStore(db)
+	allowedDenomTable, err := NewAllowedDenomTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	allowedDenomStore, err := NewAllowedDenomStore(db)
-	if err != nil {
-		return nil, err
-	}
-
-	marketStore, err := NewMarketStore(db)
+	marketTable, err := NewMarketTable(db)
 	if err != nil {
 		return nil, err
 	}
 
 	return stateStore{
-		sellOrderStore,
-		buyOrderStore,
-		allowedDenomStore,
-		marketStore,
+		sellOrderTable,
+		allowedDenomTable,
+		marketTable,
 	}, nil
 }

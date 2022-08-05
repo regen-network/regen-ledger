@@ -30,11 +30,11 @@ type CreditType struct {
 	// abbreviation is a 1-3 character uppercase abbreviation of the CreditType
 	// name, used in batch denominations within the CreditType. It must be unique.
 	Abbreviation string `protobuf:"bytes,1,opt,name=abbreviation,proto3" json:"abbreviation,omitempty"`
-	// the type of credit (e.g. carbon, biodiversity, etc)
+	// name is the name of the credit type (e.g. carbon, biodiversity).
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	// the measurement unit (e.g. kg, ton, etc)
+	// unit is the measurement unit of the credit type (e.g. kg, ton).
 	Unit string `protobuf:"bytes,3,opt,name=unit,proto3" json:"unit,omitempty"`
-	// the decimal precision
+	// precision is the decimal precision of the credit type.
 	Precision uint32 `protobuf:"varint,4,opt,name=precision,proto3" json:"precision,omitempty"`
 }
 
@@ -99,33 +99,34 @@ func (m *CreditType) GetPrecision() uint32 {
 	return 0
 }
 
-// ClassInfo represents the high-level on-chain information for a credit class.
-type ClassInfo struct {
-	// id is the unique ID of credit class.
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// abbrev is the unique string name for this credit class formed from its credit type
-	// and an auto-generated integer.
-	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+// Class represents the high-level on-chain information for a credit class.
+type Class struct {
+	// key is the table row identifier of the credit class used internally for
+	// efficient lookups. This identifier is auto-incrementing.
+	Key uint64 `protobuf:"varint,1,opt,name=key,proto3" json:"key,omitempty"`
+	// id is the unique identifier of the credit class auto-generated from the
+	// credit type abbreviation and the credit class sequence number.
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// admin is the admin of the credit class.
 	Admin []byte `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata string `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type is the abbreviation of the credit type.
-	CreditType string `protobuf:"bytes,5,opt,name=credit_type,json=creditType,proto3" json:"credit_type,omitempty"`
+	// credit_type_abbrev is the abbreviation of the credit type.
+	CreditTypeAbbrev string `protobuf:"bytes,5,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 }
 
-func (m *ClassInfo) Reset()         { *m = ClassInfo{} }
-func (m *ClassInfo) String() string { return proto.CompactTextString(m) }
-func (*ClassInfo) ProtoMessage()    {}
-func (*ClassInfo) Descriptor() ([]byte, []int) {
+func (m *Class) Reset()         { *m = Class{} }
+func (m *Class) String() string { return proto.CompactTextString(m) }
+func (*Class) ProtoMessage()    {}
+func (*Class) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6cfdca0a4aaabb36, []int{1}
 }
-func (m *ClassInfo) XXX_Unmarshal(b []byte) error {
+func (m *Class) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ClassInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Class) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ClassInfo.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Class.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -135,57 +136,59 @@ func (m *ClassInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *ClassInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClassInfo.Merge(m, src)
+func (m *Class) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Class.Merge(m, src)
 }
-func (m *ClassInfo) XXX_Size() int {
+func (m *Class) XXX_Size() int {
 	return m.Size()
 }
-func (m *ClassInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_ClassInfo.DiscardUnknown(m)
+func (m *Class) XXX_DiscardUnknown() {
+	xxx_messageInfo_Class.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ClassInfo proto.InternalMessageInfo
+var xxx_messageInfo_Class proto.InternalMessageInfo
 
-func (m *ClassInfo) GetId() uint64 {
+func (m *Class) GetKey() uint64 {
 	if m != nil {
-		return m.Id
+		return m.Key
 	}
 	return 0
 }
 
-func (m *ClassInfo) GetName() string {
+func (m *Class) GetId() string {
 	if m != nil {
-		return m.Name
+		return m.Id
 	}
 	return ""
 }
 
-func (m *ClassInfo) GetAdmin() []byte {
+func (m *Class) GetAdmin() []byte {
 	if m != nil {
 		return m.Admin
 	}
 	return nil
 }
 
-func (m *ClassInfo) GetMetadata() string {
+func (m *Class) GetMetadata() string {
 	if m != nil {
 		return m.Metadata
 	}
 	return ""
 }
 
-func (m *ClassInfo) GetCreditType() string {
+func (m *Class) GetCreditTypeAbbrev() string {
 	if m != nil {
-		return m.CreditType
+		return m.CreditTypeAbbrev
 	}
 	return ""
 }
 
-// ClassIssuers is a JOIN table for Class Info that stores the credit class issuers
+// ClassIssuers is a JOIN table for Class Info that stores the credit class
+// issuers
 type ClassIssuer struct {
-	// class_id is the row ID of a credit class.
-	ClassId uint64 `protobuf:"varint,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// class_key is the table row identifier of the credit class used internally
+	// for efficient lookups. This links a class issuer to a credit class.
+	ClassKey uint64 `protobuf:"varint,1,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
 	// issuer is the approved issuer of the credit class.
 	Issuer []byte `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
 }
@@ -223,9 +226,9 @@ func (m *ClassIssuer) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ClassIssuer proto.InternalMessageInfo
 
-func (m *ClassIssuer) GetClassId() uint64 {
+func (m *ClassIssuer) GetClassKey() uint64 {
 	if m != nil {
-		return m.ClassId
+		return m.ClassKey
 	}
 	return 0
 }
@@ -237,35 +240,40 @@ func (m *ClassIssuer) GetIssuer() []byte {
 	return nil
 }
 
-// ProjectInfo represents the high-level on-chain information for a project.
-type ProjectInfo struct {
-	// id is the unique ID of the project
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// name is the unique name of the project either formed from its credit
-	// class name and an auto-generated number or a custom name provided
-	// upon creation.
-	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	// class_id is the ID of credit class for this project.
-	ClassId uint64 `protobuf:"varint,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// project_location is the location of the project.
-	// Full documentation can be found in MsgCreateProject.project_location.
-	ProjectLocation string `protobuf:"bytes,4,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
+// Project represents the high-level on-chain information for a project.
+type Project struct {
+	// key is the table row identifier of the project used internally for
+	// efficient lookups. This identifier is auto-incrementing.
+	Key uint64 `protobuf:"varint,1,opt,name=key,proto3" json:"key,omitempty"`
+	// id is the unique identifier of the project either auto-generated from the
+	// credit class id and project sequence number or provided upon creation.
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// admin is the admin of the project.
+	Admin []byte `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
+	// class_key is the table row identifier of the credit class used internally
+	// for efficient lookups. This links a project to a credit class.
+	ClassKey uint64 `protobuf:"varint,4,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
+	// jurisdiction is the jurisdiction of the project.
+	// Full documentation can be found in MsgCreateProject.jurisdiction.
+	Jurisdiction string `protobuf:"bytes,5,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
-	Metadata string `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata string `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// reference_id is any arbitrary string used to reference the project.
+	ReferenceId string `protobuf:"bytes,7,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
 }
 
-func (m *ProjectInfo) Reset()         { *m = ProjectInfo{} }
-func (m *ProjectInfo) String() string { return proto.CompactTextString(m) }
-func (*ProjectInfo) ProtoMessage()    {}
-func (*ProjectInfo) Descriptor() ([]byte, []int) {
+func (m *Project) Reset()         { *m = Project{} }
+func (m *Project) String() string { return proto.CompactTextString(m) }
+func (*Project) ProtoMessage()    {}
+func (*Project) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6cfdca0a4aaabb36, []int{3}
 }
-func (m *ProjectInfo) XXX_Unmarshal(b []byte) error {
+func (m *Project) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ProjectInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Project) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ProjectInfo.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Project.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -275,84 +283,109 @@ func (m *ProjectInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *ProjectInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProjectInfo.Merge(m, src)
+func (m *Project) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Project.Merge(m, src)
 }
-func (m *ProjectInfo) XXX_Size() int {
+func (m *Project) XXX_Size() int {
 	return m.Size()
 }
-func (m *ProjectInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProjectInfo.DiscardUnknown(m)
+func (m *Project) XXX_DiscardUnknown() {
+	xxx_messageInfo_Project.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ProjectInfo proto.InternalMessageInfo
+var xxx_messageInfo_Project proto.InternalMessageInfo
 
-func (m *ProjectInfo) GetId() uint64 {
+func (m *Project) GetKey() uint64 {
+	if m != nil {
+		return m.Key
+	}
+	return 0
+}
+
+func (m *Project) GetId() string {
 	if m != nil {
 		return m.Id
 	}
+	return ""
+}
+
+func (m *Project) GetAdmin() []byte {
+	if m != nil {
+		return m.Admin
+	}
+	return nil
+}
+
+func (m *Project) GetClassKey() uint64 {
+	if m != nil {
+		return m.ClassKey
+	}
 	return 0
 }
 
-func (m *ProjectInfo) GetName() string {
+func (m *Project) GetJurisdiction() string {
 	if m != nil {
-		return m.Name
+		return m.Jurisdiction
 	}
 	return ""
 }
 
-func (m *ProjectInfo) GetClassId() uint64 {
-	if m != nil {
-		return m.ClassId
-	}
-	return 0
-}
-
-func (m *ProjectInfo) GetProjectLocation() string {
-	if m != nil {
-		return m.ProjectLocation
-	}
-	return ""
-}
-
-func (m *ProjectInfo) GetMetadata() string {
+func (m *Project) GetMetadata() string {
 	if m != nil {
 		return m.Metadata
 	}
 	return ""
 }
 
-// BatchInfo represents the high-level on-chain information for a credit batch.
-type BatchInfo struct {
-	// id is an auto-incrementing integer to succinctly identify the batch
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// project_id is the unique ID of the project this batch belongs to.
-	ProjectId uint64 `protobuf:"varint,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	// batch_denom is the unique string identifier of the credit batch formed
-	// from the project name, batch sequence number and dates.
-	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+func (m *Project) GetReferenceId() string {
+	if m != nil {
+		return m.ReferenceId
+	}
+	return ""
+}
+
+// Batch represents the high-level on-chain information for a credit batch.
+type Batch struct {
+	// key is the table row identifier of the credit batch used internally for
+	// efficient lookups. This identifier is auto-incrementing.
+	Key uint64 `protobuf:"varint,1,opt,name=key,proto3" json:"key,omitempty"`
+	// issuer is the address that created the batch and which is
+	// authorized to mint more credits if open=true.
+	Issuer []byte `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// project_key is the table row identifier of the credit class used internally
+	// for efficient lookups. This links a credit batch to a project.
+	ProjectKey uint64 `protobuf:"varint,3,opt,name=project_key,json=projectKey,proto3" json:"project_key,omitempty"`
+	// denom is the unique identifier of the credit batch formed from the
+	// project id, the batch sequence number, and the start and end date of the
+	// credit batch.
+	Denom string `protobuf:"bytes,4,opt,name=denom,proto3" json:"denom,omitempty"`
 	// metadata is any arbitrary metadata attached to the credit batch.
-	Metadata string `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata string `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// start_date is the beginning of the period during which this credit batch
 	// was quantified and verified.
-	StartDate *types.Timestamp `protobuf:"bytes,5,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	StartDate *types.Timestamp `protobuf:"bytes,6,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
 	// end_date is the end of the period during which this credit batch was
 	// quantified and verified.
-	EndDate *types.Timestamp `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	EndDate *types.Timestamp `protobuf:"bytes,7,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	// issuance_date is the timestamp when the credit batch was issued.
+	IssuanceDate *types.Timestamp `protobuf:"bytes,8,opt,name=issuance_date,json=issuanceDate,proto3" json:"issuance_date,omitempty"`
+	// open tells if it's possible to mint new credits in the future.
+	// Once `open` is set to false, it can't be toggled any more.
+	Open bool `protobuf:"varint,9,opt,name=open,proto3" json:"open,omitempty"`
 }
 
-func (m *BatchInfo) Reset()         { *m = BatchInfo{} }
-func (m *BatchInfo) String() string { return proto.CompactTextString(m) }
-func (*BatchInfo) ProtoMessage()    {}
-func (*BatchInfo) Descriptor() ([]byte, []int) {
+func (m *Batch) Reset()         { *m = Batch{} }
+func (m *Batch) String() string { return proto.CompactTextString(m) }
+func (*Batch) ProtoMessage()    {}
+func (*Batch) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6cfdca0a4aaabb36, []int{4}
 }
-func (m *BatchInfo) XXX_Unmarshal(b []byte) error {
+func (m *Batch) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *BatchInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Batch) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_BatchInfo.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Batch.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -362,67 +395,90 @@ func (m *BatchInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *BatchInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BatchInfo.Merge(m, src)
+func (m *Batch) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Batch.Merge(m, src)
 }
-func (m *BatchInfo) XXX_Size() int {
+func (m *Batch) XXX_Size() int {
 	return m.Size()
 }
-func (m *BatchInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_BatchInfo.DiscardUnknown(m)
+func (m *Batch) XXX_DiscardUnknown() {
+	xxx_messageInfo_Batch.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_BatchInfo proto.InternalMessageInfo
+var xxx_messageInfo_Batch proto.InternalMessageInfo
 
-func (m *BatchInfo) GetId() uint64 {
+func (m *Batch) GetKey() uint64 {
 	if m != nil {
-		return m.Id
+		return m.Key
 	}
 	return 0
 }
 
-func (m *BatchInfo) GetProjectId() uint64 {
+func (m *Batch) GetIssuer() []byte {
 	if m != nil {
-		return m.ProjectId
+		return m.Issuer
+	}
+	return nil
+}
+
+func (m *Batch) GetProjectKey() uint64 {
+	if m != nil {
+		return m.ProjectKey
 	}
 	return 0
 }
 
-func (m *BatchInfo) GetBatchDenom() string {
+func (m *Batch) GetDenom() string {
 	if m != nil {
-		return m.BatchDenom
+		return m.Denom
 	}
 	return ""
 }
 
-func (m *BatchInfo) GetMetadata() string {
+func (m *Batch) GetMetadata() string {
 	if m != nil {
 		return m.Metadata
 	}
 	return ""
 }
 
-func (m *BatchInfo) GetStartDate() *types.Timestamp {
+func (m *Batch) GetStartDate() *types.Timestamp {
 	if m != nil {
 		return m.StartDate
 	}
 	return nil
 }
 
-func (m *BatchInfo) GetEndDate() *types.Timestamp {
+func (m *Batch) GetEndDate() *types.Timestamp {
 	if m != nil {
 		return m.EndDate
 	}
 	return nil
 }
 
-// ClassSequence is a sequence number for creating credit class identifiers for each
-// credit type.
+func (m *Batch) GetIssuanceDate() *types.Timestamp {
+	if m != nil {
+		return m.IssuanceDate
+	}
+	return nil
+}
+
+func (m *Batch) GetOpen() bool {
+	if m != nil {
+		return m.Open
+	}
+	return false
+}
+
+// ClassSequence stores and increments the sequence number for credit classes
+// within a credit type.
 type ClassSequence struct {
-	// credit_type is the credit type abbreviation
-	CreditType string `protobuf:"bytes,1,opt,name=credit_type,json=creditType,proto3" json:"credit_type,omitempty"`
-	// next_class_id is the next class ID for this credit type
-	NextClassId uint64 `protobuf:"varint,2,opt,name=next_class_id,json=nextClassId,proto3" json:"next_class_id,omitempty"`
+	// credit_type_abbrev is the credit type abbreviation. This links a class
+	// sequence to a credit type.
+	CreditTypeAbbrev string `protobuf:"bytes,1,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
+	// next_sequence is the next sequence number for a credit class within the
+	// credit type. The sequence number is used to generate a class id.
+	NextSequence uint64 `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
 }
 
 func (m *ClassSequence) Reset()         { *m = ClassSequence{} }
@@ -458,27 +514,29 @@ func (m *ClassSequence) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ClassSequence proto.InternalMessageInfo
 
-func (m *ClassSequence) GetCreditType() string {
+func (m *ClassSequence) GetCreditTypeAbbrev() string {
 	if m != nil {
-		return m.CreditType
+		return m.CreditTypeAbbrev
 	}
 	return ""
 }
 
-func (m *ClassSequence) GetNextClassId() uint64 {
+func (m *ClassSequence) GetNextSequence() uint64 {
 	if m != nil {
-		return m.NextClassId
+		return m.NextSequence
 	}
 	return 0
 }
 
-// ProjectSequence stores and increments the sequence number for projects
-// within a given credit class.
+// ProjectSequence stores and increments the sequence number for projects within
+// a credit class.
 type ProjectSequence struct {
-	// class_id is the id of the credit class
-	ClassId uint64 `protobuf:"varint,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// next_project_id is the sequence number for the project
-	NextProjectId uint64 `protobuf:"varint,2,opt,name=next_project_id,json=nextProjectId,proto3" json:"next_project_id,omitempty"`
+	// class_key is the table row identifier of the credit class used internally
+	// for efficient lookups. This links a project sequence to a credit class.
+	ClassKey uint64 `protobuf:"varint,1,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
+	// next_sequence is the next sequence number for a project within the credit
+	// class. The sequence number is used to generate a project id.
+	NextSequence uint64 `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
 }
 
 func (m *ProjectSequence) Reset()         { *m = ProjectSequence{} }
@@ -514,26 +572,29 @@ func (m *ProjectSequence) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ProjectSequence proto.InternalMessageInfo
 
-func (m *ProjectSequence) GetClassId() uint64 {
+func (m *ProjectSequence) GetClassKey() uint64 {
 	if m != nil {
-		return m.ClassId
+		return m.ClassKey
 	}
 	return 0
 }
 
-func (m *ProjectSequence) GetNextProjectId() uint64 {
+func (m *ProjectSequence) GetNextSequence() uint64 {
 	if m != nil {
-		return m.NextProjectId
+		return m.NextSequence
 	}
 	return 0
 }
 
-// BatchSequence tracks the sequence number for batches within a project
+// BatchSequence stores and increments the sequence number for credit batches
+// within a project.
 type BatchSequence struct {
-	// project_id is the id of the project for a batch
-	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	// next_batch_id is a sequence number incrementing on each issued batch
-	NextBatchId uint64 `protobuf:"varint,2,opt,name=next_batch_id,json=nextBatchId,proto3" json:"next_batch_id,omitempty"`
+	// project_key is the table row identifier of the project used internally for
+	// efficient lookups. This links a batch sequence to a project.
+	ProjectKey uint64 `protobuf:"varint,1,opt,name=project_key,json=projectKey,proto3" json:"project_key,omitempty"`
+	// next_sequence is the next sequence number for a credit batch within the
+	// project. The sequence number is used to generate a batch denom.
+	NextSequence uint64 `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
 }
 
 func (m *BatchSequence) Reset()         { *m = BatchSequence{} }
@@ -569,30 +630,36 @@ func (m *BatchSequence) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BatchSequence proto.InternalMessageInfo
 
-func (m *BatchSequence) GetProjectId() string {
+func (m *BatchSequence) GetProjectKey() uint64 {
 	if m != nil {
-		return m.ProjectId
-	}
-	return ""
-}
-
-func (m *BatchSequence) GetNextBatchId() uint64 {
-	if m != nil {
-		return m.NextBatchId
+		return m.ProjectKey
 	}
 	return 0
 }
 
-// BatchBalance stores each users credit balance
+func (m *BatchSequence) GetNextSequence() uint64 {
+	if m != nil {
+		return m.NextSequence
+	}
+	return 0
+}
+
+// BatchBalance stores each accounts credit balance.
 type BatchBalance struct {
-	// address is the address of the credit holder
-	Address []byte `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	// batch_id is the id of the credit batch
-	BatchId uint64 `protobuf:"varint,2,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
-	// tradable is the tradable amount of credits
-	Tradable string `protobuf:"bytes,3,opt,name=tradable,proto3" json:"tradable,omitempty"`
-	// retired is the retired amount of credits
-	Retired string `protobuf:"bytes,4,opt,name=retired,proto3" json:"retired,omitempty"`
+	// batch_key is the table row identifier of the credit batch used internally
+	// for efficient lookups. This links a batch balance to a credit batch.
+	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
+	// address is the address of the account that owns the credits.
+	Address []byte `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	// tradable_amount is the total number of tradable credits owned by address.
+	TradableAmount string `protobuf:"bytes,3,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
+	// retired_amount is the total number of retired credits owned by address.
+	RetiredAmount string `protobuf:"bytes,4,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
+	// escrowed_amount is the total number of escrowed credits owned by address
+	// and held in escrow by the marketplace. Credits are held in escrow when a
+	// sell order is created and taken out of escrow when the sell order is either
+	// cancelled, updated with a reduced quantity, or processed.
+	EscrowedAmount string `protobuf:"bytes,5,opt,name=escrowed_amount,json=escrowedAmount,proto3" json:"escrowed_amount,omitempty"`
 }
 
 func (m *BatchBalance) Reset()         { *m = BatchBalance{} }
@@ -628,6 +695,13 @@ func (m *BatchBalance) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BatchBalance proto.InternalMessageInfo
 
+func (m *BatchBalance) GetBatchKey() uint64 {
+	if m != nil {
+		return m.BatchKey
+	}
+	return 0
+}
+
 func (m *BatchBalance) GetAddress() []byte {
 	if m != nil {
 		return m.Address
@@ -635,41 +709,47 @@ func (m *BatchBalance) GetAddress() []byte {
 	return nil
 }
 
-func (m *BatchBalance) GetBatchId() uint64 {
+func (m *BatchBalance) GetTradableAmount() string {
 	if m != nil {
-		return m.BatchId
-	}
-	return 0
-}
-
-func (m *BatchBalance) GetTradable() string {
-	if m != nil {
-		return m.Tradable
+		return m.TradableAmount
 	}
 	return ""
 }
 
-func (m *BatchBalance) GetRetired() string {
+func (m *BatchBalance) GetRetiredAmount() string {
 	if m != nil {
-		return m.Retired
+		return m.RetiredAmount
 	}
 	return ""
 }
 
-// BatchSupply tracks the supply of a credit batch
+func (m *BatchBalance) GetEscrowedAmount() string {
+	if m != nil {
+		return m.EscrowedAmount
+	}
+	return ""
+}
+
+// BatchSupply stores the supply of credits for a credit batch.
 type BatchSupply struct {
-	// batch_id is the id of the batch
-	BatchId uint64 `protobuf:"varint,1,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
-	// tradable_amount is the total number of tradable credits in the credit batch.
-	// Some of the issued credits may be cancelled and will be removed from
-	// tradable_amount and tracked in amount_cancelled. tradable_amount + retired_amount +
-	// amount_cancelled will always sum to the original credit issuance amount.
+	// batch_key is the table row identifier of the credit batch used internally
+	// for efficient lookups. This links a batch supply to a credit batch.
+	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
+	// tradable_amount is the total number of tradable credits in the credit
+	// batch. Tradable credits may be retired in which case they will be removed
+	// from tradable_amount and tracked in retired_amount. Tradable credits may
+	// also be cancelled in which case they will be removed from tradable_amount
+	// and tracked in cancelled_amount. The sum of the tradable, retired, and
+	// cancelled amounts will always equal the original credit issuance amount.
 	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
-	// retired_amount is the total amount of credits that have been retired from the credit batch.
+	// retired_amount is the total amount of credits that have been retired in the
+	// credit batch. The sum of the tradable, retired, and cancelled amounts will
+	// always equal the original credit issuance amount.
 	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 	// cancelled_amount is the number of credits in the batch that have been
-	// cancelled, effectively undoing the issuance. The sum of total_amount and
-	// amount_cancelled will always equal the original credit issuance amount.
+	// cancelled, effectively undoing the issuance. The sum of the tradable,
+	// retired, and cancelled amounts will always equal the original credit
+	// issuance amount.
 	CancelledAmount string `protobuf:"bytes,4,opt,name=cancelled_amount,json=cancelledAmount,proto3" json:"cancelled_amount,omitempty"`
 }
 
@@ -706,9 +786,9 @@ func (m *BatchSupply) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BatchSupply proto.InternalMessageInfo
 
-func (m *BatchSupply) GetBatchId() uint64 {
+func (m *BatchSupply) GetBatchKey() uint64 {
 	if m != nil {
-		return m.BatchId
+		return m.BatchKey
 	}
 	return 0
 }
@@ -734,77 +814,236 @@ func (m *BatchSupply) GetCancelledAmount() string {
 	return ""
 }
 
+// OriginTxIndex indexes the transaction ID and source from the OriginTx
+// included in Msg/CreateBatch and Msg/MintBatchCredits to prevent double
+// minting errors. The index is scoped to a credit class (it includes the
+// class_key) to prevent malicious credit class issuers from blocking any
+// bridge operations taking place within another credit class.
+type OriginTxIndex struct {
+	// class_key is the table row identifier of the credit class within which the
+	// credits were issued or minted. The class_key is included within the index
+	// to prevent malicious credit class issuers from blocking bridge operations
+	// taking place within another credit class.
+	ClassKey uint64 `protobuf:"varint,1,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
+	// id is the transaction ID of an originating transaction or operation
+	// based on a type (i.e. transaction ID, serial number).
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// source is the source chain or registry of the transaction originating
+	// the mint process (e.g. polygon, ethereum, verra).
+	Source string `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
+}
+
+func (m *OriginTxIndex) Reset()         { *m = OriginTxIndex{} }
+func (m *OriginTxIndex) String() string { return proto.CompactTextString(m) }
+func (*OriginTxIndex) ProtoMessage()    {}
+func (*OriginTxIndex) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6cfdca0a4aaabb36, []int{10}
+}
+func (m *OriginTxIndex) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *OriginTxIndex) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_OriginTxIndex.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *OriginTxIndex) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OriginTxIndex.Merge(m, src)
+}
+func (m *OriginTxIndex) XXX_Size() int {
+	return m.Size()
+}
+func (m *OriginTxIndex) XXX_DiscardUnknown() {
+	xxx_messageInfo_OriginTxIndex.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_OriginTxIndex proto.InternalMessageInfo
+
+func (m *OriginTxIndex) GetClassKey() uint64 {
+	if m != nil {
+		return m.ClassKey
+	}
+	return 0
+}
+
+func (m *OriginTxIndex) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *OriginTxIndex) GetSource() string {
+	if m != nil {
+		return m.Source
+	}
+	return ""
+}
+
+// BatchContract stores the contract address from which credits were bridged
+// when credits are bridged from a contract-based chain, therefore ensuring
+// that each credit batch corresponds to a single contract and credits that
+// have been bridged will always be bridged back to the original contract.
+type BatchContract struct {
+	// batch_key is the table row identifier of the credit batch used internally
+	// for efficient lookups. This links an external contract to a credit batch.
+	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
+	// class_key is the table row identifier of the credit class within which the
+	// credit batch exists. A contract is unique within the scope of a credit class
+	// to prevent malicious credit class issuers from blocking bridge operations
+	// taking place within another credit class.
+	ClassKey uint64 `protobuf:"varint,2,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
+	// contract is the address of the contract on the source chain that was
+	// executed when creating the transaction. This address will be used when
+	// sending credits back to the source chain.
+	Contract string `protobuf:"bytes,3,opt,name=contract,proto3" json:"contract,omitempty"`
+}
+
+func (m *BatchContract) Reset()         { *m = BatchContract{} }
+func (m *BatchContract) String() string { return proto.CompactTextString(m) }
+func (*BatchContract) ProtoMessage()    {}
+func (*BatchContract) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6cfdca0a4aaabb36, []int{11}
+}
+func (m *BatchContract) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BatchContract) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BatchContract.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BatchContract) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BatchContract.Merge(m, src)
+}
+func (m *BatchContract) XXX_Size() int {
+	return m.Size()
+}
+func (m *BatchContract) XXX_DiscardUnknown() {
+	xxx_messageInfo_BatchContract.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BatchContract proto.InternalMessageInfo
+
+func (m *BatchContract) GetBatchKey() uint64 {
+	if m != nil {
+		return m.BatchKey
+	}
+	return 0
+}
+
+func (m *BatchContract) GetClassKey() uint64 {
+	if m != nil {
+		return m.ClassKey
+	}
+	return 0
+}
+
+func (m *BatchContract) GetContract() string {
+	if m != nil {
+		return m.Contract
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*CreditType)(nil), "regen.ecocredit.v1.CreditType")
-	proto.RegisterType((*ClassInfo)(nil), "regen.ecocredit.v1.ClassInfo")
+	proto.RegisterType((*Class)(nil), "regen.ecocredit.v1.Class")
 	proto.RegisterType((*ClassIssuer)(nil), "regen.ecocredit.v1.ClassIssuer")
-	proto.RegisterType((*ProjectInfo)(nil), "regen.ecocredit.v1.ProjectInfo")
-	proto.RegisterType((*BatchInfo)(nil), "regen.ecocredit.v1.BatchInfo")
+	proto.RegisterType((*Project)(nil), "regen.ecocredit.v1.Project")
+	proto.RegisterType((*Batch)(nil), "regen.ecocredit.v1.Batch")
 	proto.RegisterType((*ClassSequence)(nil), "regen.ecocredit.v1.ClassSequence")
 	proto.RegisterType((*ProjectSequence)(nil), "regen.ecocredit.v1.ProjectSequence")
 	proto.RegisterType((*BatchSequence)(nil), "regen.ecocredit.v1.BatchSequence")
 	proto.RegisterType((*BatchBalance)(nil), "regen.ecocredit.v1.BatchBalance")
 	proto.RegisterType((*BatchSupply)(nil), "regen.ecocredit.v1.BatchSupply")
+	proto.RegisterType((*OriginTxIndex)(nil), "regen.ecocredit.v1.OriginTxIndex")
+	proto.RegisterType((*BatchContract)(nil), "regen.ecocredit.v1.BatchContract")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/state.proto", fileDescriptor_6cfdca0a4aaabb36) }
 
 var fileDescriptor_6cfdca0a4aaabb36 = []byte{
-	// 860 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x55, 0xcd, 0x6e, 0xe4, 0x44,
-	0x10, 0x4e, 0x7b, 0x92, 0x4c, 0x5c, 0xf3, 0xe7, 0x34, 0x61, 0x31, 0x81, 0x9d, 0x5d, 0x59, 0xfc,
-	0xec, 0x8a, 0x30, 0xd6, 0x04, 0x81, 0xc0, 0x12, 0x07, 0x92, 0xbd, 0x44, 0xe2, 0xb0, 0x1a, 0xf6,
-	0x84, 0x84, 0x46, 0x3d, 0xee, 0xde, 0x89, 0x83, 0xed, 0x36, 0x76, 0x4f, 0xd8, 0xbc, 0x04, 0xe2,
-	0x01, 0x10, 0x6f, 0x00, 0x77, 0x24, 0xce, 0x88, 0xe3, 0x4a, 0x5c, 0x38, 0xa2, 0xe4, 0x0d, 0x78,
-	0x02, 0xd4, 0xd5, 0x6d, 0x67, 0x1c, 0xa2, 0xec, 0xcd, 0xf5, 0x75, 0x75, 0x7d, 0x5f, 0x7d, 0x55,
-	0x3d, 0x03, 0xe3, 0x52, 0x2c, 0x45, 0x1e, 0x8a, 0x58, 0xc6, 0xa5, 0xe0, 0x89, 0x0a, 0xcf, 0xa7,
-	0x61, 0xa5, 0x98, 0x12, 0x93, 0xa2, 0x94, 0x4a, 0x52, 0x8a, 0xe7, 0x93, 0xe6, 0x7c, 0x72, 0x3e,
-	0xdd, 0xbf, 0x1f, 0xcb, 0x2a, 0x93, 0x55, 0x28, 0xcb, 0x2c, 0x3c, 0x9f, 0xb2, 0xb4, 0x38, 0x65,
-	0x53, 0x1d, 0x98, 0x2b, 0xfb, 0x0f, 0x96, 0x52, 0x2e, 0x53, 0x11, 0x62, 0xb4, 0x58, 0x3d, 0x0f,
-	0x55, 0x92, 0x89, 0x4a, 0xb1, 0xac, 0x30, 0x09, 0xc1, 0x4f, 0x04, 0xe0, 0x18, 0xab, 0x3d, 0xbb,
-	0x28, 0x04, 0x0d, 0xa0, 0xcf, 0x16, 0x8b, 0x52, 0x9c, 0x27, 0x4c, 0x25, 0x32, 0xf7, 0xc9, 0x43,
-	0xf2, 0xc8, 0x9d, 0xb5, 0x30, 0x4a, 0x61, 0x33, 0x67, 0x99, 0xf0, 0x1d, 0x3c, 0xc3, 0x6f, 0x8d,
-	0xad, 0xf2, 0x44, 0xf9, 0x1d, 0x83, 0xe9, 0x6f, 0xfa, 0x36, 0xb8, 0x45, 0x29, 0xe2, 0xa4, 0xd2,
-	0x85, 0x36, 0x1f, 0x92, 0x47, 0x83, 0xd9, 0x35, 0x10, 0xbd, 0xf3, 0xef, 0xcf, 0x7f, 0xfd, 0xd0,
-	0x19, 0xc3, 0xb0, 0xcd, 0x48, 0xc1, 0x54, 0xf7, 0x88, 0x4f, 0x7c, 0x12, 0xfc, 0x4e, 0xc0, 0x3d,
-	0x4e, 0x59, 0x55, 0x9d, 0xe4, 0xcf, 0x25, 0x1d, 0x82, 0x93, 0x70, 0xd4, 0xb4, 0x39, 0x73, 0x12,
-	0x7e, 0xab, 0x92, 0x3d, 0xd8, 0x62, 0x3c, 0x4b, 0x72, 0x94, 0xd2, 0x9f, 0x99, 0x80, 0xee, 0xc3,
-	0x4e, 0x26, 0x14, 0xe3, 0x4c, 0x31, 0x94, 0xe2, 0xce, 0x9a, 0x98, 0x3e, 0x80, 0x9e, 0xf1, 0x73,
-	0xae, 0x2e, 0x0a, 0xe1, 0x6f, 0xe1, 0x31, 0xc4, 0x8d, 0x29, 0xd1, 0xa7, 0x28, 0xf5, 0x10, 0xb6,
-	0x35, 0xbd, 0x47, 0xd6, 0x25, 0x52, 0xd7, 0xd2, 0x79, 0x0e, 0x1d, 0xb5, 0xea, 0x78, 0x1d, 0xdf,
-	0x09, 0xbe, 0x81, 0x9e, 0x51, 0x5f, 0x55, 0x2b, 0x51, 0xd2, 0x37, 0x61, 0x27, 0xd6, 0xe1, 0xbc,
-	0xe9, 0xa2, 0x8b, 0xf1, 0x09, 0xa7, 0xf7, 0x60, 0x3b, 0xc1, 0x24, 0x6c, 0xa6, 0x3f, 0xb3, 0x51,
-	0xf4, 0x16, 0x72, 0xbf, 0x0e, 0xbb, 0x30, 0xaa, 0xaf, 0x1e, 0xd8, 0xc4, 0x4e, 0xf0, 0x07, 0x81,
-	0xde, 0xd3, 0x52, 0x9e, 0x89, 0x58, 0xdd, 0xe9, 0x4f, 0x67, 0xcd, 0x9f, 0x75, 0x0d, 0x4e, 0x5b,
-	0xc3, 0x63, 0xf0, 0x0a, 0x53, 0x6d, 0x9e, 0xca, 0xd8, 0x2c, 0x80, 0x31, 0x6b, 0x64, 0xf1, 0x2f,
-	0x2d, 0xdc, 0xf2, 0x73, 0xab, 0xed, 0x67, 0x34, 0x45, 0xc9, 0x1f, 0xdc, 0x6a, 0xd7, 0x6b, 0x30,
-	0x68, 0xda, 0x40, 0xd0, 0xf1, 0x89, 0xbf, 0x19, 0xfc, 0xea, 0x80, 0x7b, 0xc4, 0x54, 0x7c, 0x7a,
-	0x6b, 0x1b, 0xf7, 0x01, 0x6a, 0x5d, 0x8d, 0x68, 0xd7, 0x22, 0x27, 0x5c, 0xcf, 0x6f, 0xa1, 0xef,
-	0xce, 0xb9, 0xc8, 0x65, 0x66, 0x9b, 0x05, 0x84, 0x9e, 0x68, 0xe4, 0xce, 0xe1, 0x7f, 0x06, 0x50,
-	0x29, 0x56, 0xaa, 0x39, 0x67, 0xca, 0xcc, 0xbe, 0x77, 0xb8, 0x3f, 0x31, 0xaf, 0x66, 0x52, 0xbf,
-	0x9a, 0xc9, 0xb3, 0xfa, 0xd5, 0xcc, 0x5c, 0xcc, 0x7e, 0xc2, 0x94, 0xa0, 0x1f, 0xc3, 0x8e, 0xc8,
-	0xb9, 0xb9, 0xb8, 0xfd, 0xca, 0x8b, 0x5d, 0x91, 0x73, 0x7d, 0x2d, 0x3a, 0x46, 0x7b, 0x3e, 0x6f,
-	0xec, 0xd9, 0x6d, 0xc9, 0x47, 0x97, 0x86, 0xeb, 0x0d, 0x7b, 0x8e, 0x8e, 0xaf, 0x45, 0x7a, 0x1d,
-	0x7f, 0x2b, 0xc8, 0x60, 0x80, 0x8b, 0xf5, 0x95, 0xf8, 0x6e, 0x25, 0xf2, 0x58, 0xdc, 0x5c, 0x62,
-	0x72, 0x73, 0x89, 0x69, 0x00, 0x83, 0x5c, 0xbc, 0x50, 0xf3, 0x1b, 0xc3, 0xef, 0x69, 0xd0, 0xec,
-	0x28, 0x8f, 0xde, 0x40, 0x69, 0xbb, 0x30, 0x68, 0x17, 0xdb, 0x0e, 0xce, 0x60, 0x64, 0xf7, 0xac,
-	0x21, 0xbc, 0x63, 0x97, 0xdf, 0x83, 0x11, 0x52, 0xfd, 0x6f, 0x68, 0xa8, 0xa0, 0x5e, 0x58, 0x1e,
-	0xed, 0x21, 0xdd, 0x10, 0x60, 0xad, 0x54, 0x37, 0x38, 0x83, 0x01, 0xae, 0x42, 0xc3, 0xd4, 0x1e,
-	0xbf, 0xe9, 0x6c, 0x6d, 0xfc, 0x75, 0x63, 0xc6, 0xc4, 0x76, 0x63, 0x66, 0xa7, 0x78, 0x74, 0x0f,
-	0x99, 0x3c, 0xe8, 0xb7, 0x4a, 0xed, 0x04, 0xbf, 0x10, 0xe8, 0x63, 0xce, 0x11, 0x4b, 0x99, 0xe6,
-	0xf2, 0xa1, 0xcb, 0x38, 0x2f, 0x45, 0x55, 0x21, 0x51, 0x7f, 0x56, 0x87, 0xba, 0xdf, 0x1b, 0x0c,
-	0xdd, 0x85, 0xa9, 0xae, 0xf7, 0x4b, 0x95, 0x8c, 0xb3, 0x45, 0x5a, 0x3f, 0xb5, 0x26, 0xd6, 0x05,
-	0x4b, 0xa1, 0x92, 0x52, 0x70, 0xbb, 0x7a, 0x75, 0x18, 0x1d, 0xa2, 0xa6, 0x03, 0xa0, 0xe0, 0x59,
-	0x8e, 0x83, 0x9a, 0x80, 0xee, 0x81, 0x57, 0x7f, 0x1f, 0xd8, 0x43, 0x8f, 0xf8, 0x6e, 0xf0, 0x1b,
-	0x81, 0x9e, 0x31, 0x67, 0x55, 0x14, 0xe9, 0x45, 0x4b, 0x14, 0x69, 0x8b, 0x7a, 0x1f, 0x46, 0xb5,
-	0x88, 0x39, 0xcb, 0xe4, 0x2a, 0x57, 0xf6, 0x67, 0x72, 0x58, 0xc3, 0x5f, 0x20, 0x4a, 0xdf, 0x85,
-	0xa1, 0x95, 0x54, 0xe7, 0x99, 0x1e, 0x06, 0x16, 0xb5, 0x69, 0x8f, 0xc1, 0x8b, 0xb5, 0x45, 0x69,
-	0x7a, 0x9d, 0x68, 0x7f, 0x1c, 0x1a, 0xdc, 0xa4, 0xae, 0xcf, 0xb5, 0x51, 0x07, 0x47, 0x4f, 0xff,
-	0xbc, 0x1c, 0x93, 0x97, 0x97, 0x63, 0xf2, 0xcf, 0xe5, 0x98, 0xfc, 0x78, 0x35, 0xde, 0x78, 0x79,
-	0x35, 0xde, 0xf8, 0xfb, 0x6a, 0xbc, 0xf1, 0xf5, 0x27, 0xcb, 0x44, 0x9d, 0xae, 0x16, 0x93, 0x58,
-	0x66, 0x21, 0xfe, 0xc5, 0x7d, 0x98, 0x0b, 0xf5, 0xbd, 0x2c, 0xbf, 0xb5, 0x51, 0x2a, 0xf8, 0x52,
-	0x94, 0xe1, 0x8b, 0xb5, 0x7f, 0xc6, 0x58, 0x96, 0x62, 0xb1, 0x8d, 0xcf, 0xec, 0xa3, 0xff, 0x02,
-	0x00, 0x00, 0xff, 0xff, 0x7c, 0x2f, 0x58, 0x24, 0x38, 0x07, 0x00, 0x00,
+	// 1025 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x56, 0xcd, 0x6e, 0xe3, 0x54,
+	0x14, 0x9e, 0x9b, 0x9f, 0x26, 0x39, 0xf9, 0x73, 0xef, 0xb4, 0xc5, 0x84, 0x21, 0x2d, 0x06, 0x34,
+	0x1d, 0xa9, 0x24, 0x2a, 0x7f, 0x82, 0x2c, 0x40, 0xd3, 0xc2, 0xa2, 0x9a, 0x05, 0xa3, 0xd0, 0x15,
+	0x9b, 0x70, 0x63, 0x9f, 0x49, 0xdd, 0x49, 0x6c, 0x73, 0x7d, 0xdd, 0x69, 0xb6, 0x3c, 0x00, 0x62,
+	0x85, 0x58, 0x20, 0x5e, 0x80, 0x57, 0xe0, 0x01, 0x60, 0x37, 0x12, 0x1b, 0x96, 0xa8, 0x7d, 0x03,
+	0xc4, 0x03, 0x20, 0x1f, 0x5f, 0x3b, 0x71, 0xc8, 0x74, 0x2a, 0x76, 0xf7, 0x9c, 0x7b, 0x7e, 0xbe,
+	0xef, 0xbb, 0xe7, 0x24, 0x86, 0xae, 0xc4, 0x09, 0x7a, 0x7d, 0xb4, 0x7d, 0x5b, 0xa2, 0xe3, 0xaa,
+	0xfe, 0xc5, 0x61, 0x3f, 0x54, 0x42, 0x61, 0x2f, 0x90, 0xbe, 0xf2, 0x39, 0xa7, 0xfb, 0x5e, 0x76,
+	0xdf, 0xbb, 0x38, 0xec, 0xbc, 0x6e, 0xfb, 0xe1, 0xcc, 0x0f, 0xfb, 0xbe, 0x9c, 0xf5, 0x2f, 0x0e,
+	0xc5, 0x34, 0x38, 0x13, 0x87, 0xb1, 0x91, 0xa4, 0x74, 0x76, 0x27, 0xbe, 0x3f, 0x99, 0x62, 0x9f,
+	0xac, 0x71, 0xf4, 0xa4, 0xaf, 0xdc, 0x19, 0x86, 0x4a, 0xcc, 0x82, 0x24, 0xc0, 0xfa, 0x89, 0x01,
+	0x1c, 0x53, 0xb5, 0xd3, 0x79, 0x80, 0xdc, 0x82, 0x86, 0x18, 0x8f, 0x25, 0x5e, 0xb8, 0x42, 0xb9,
+	0xbe, 0x67, 0xb2, 0x3d, 0xb6, 0x5f, 0x1b, 0xe6, 0x7c, 0x9c, 0x43, 0xc9, 0x13, 0x33, 0x34, 0x0b,
+	0x74, 0x47, 0xe7, 0xd8, 0x17, 0x79, 0xae, 0x32, 0x8b, 0x89, 0x2f, 0x3e, 0xf3, 0x7b, 0x50, 0x0b,
+	0x24, 0xda, 0x6e, 0x18, 0x17, 0x2a, 0xed, 0xb1, 0xfd, 0xe6, 0x70, 0xe1, 0x18, 0xbc, 0xf5, 0xf7,
+	0xcf, 0x7f, 0x7c, 0x57, 0xec, 0x42, 0x2b, 0xdf, 0x91, 0x43, 0x52, 0xdd, 0x60, 0x26, 0x33, 0x99,
+	0xf5, 0x3b, 0x83, 0xf2, 0xf1, 0x54, 0x84, 0x21, 0x37, 0xa0, 0xf8, 0x14, 0xe7, 0x04, 0xa8, 0x34,
+	0x8c, 0x8f, 0xbc, 0x05, 0x05, 0xd7, 0xd1, 0x28, 0x0a, 0xae, 0xc3, 0xb7, 0xa0, 0x2c, 0x9c, 0x99,
+	0xeb, 0x11, 0x88, 0xc6, 0x30, 0x31, 0x78, 0x07, 0xaa, 0x33, 0x54, 0xc2, 0x11, 0x4a, 0x10, 0x88,
+	0xda, 0x30, 0xb3, 0xf9, 0x01, 0xf0, 0x44, 0xc9, 0x91, 0x9a, 0x07, 0x38, 0x4a, 0x70, 0x98, 0x65,
+	0x8a, 0x32, 0xec, 0x4c, 0x95, 0x87, 0xe4, 0x1f, 0x7c, 0x42, 0x88, 0x3f, 0x82, 0x0a, 0x21, 0x31,
+	0x18, 0xaf, 0xc6, 0x00, 0x62, 0xa0, 0xbc, 0xa6, 0x5b, 0x1b, 0x05, 0xbe, 0xb3, 0xae, 0xa6, 0x51,
+	0x34, 0x0b, 0xd6, 0xd7, 0x50, 0x27, 0x2a, 0x27, 0x61, 0x18, 0xa1, 0xe4, 0xaf, 0x41, 0xcd, 0x8e,
+	0xcd, 0xd1, 0x82, 0x56, 0x95, 0x1c, 0x8f, 0x70, 0xce, 0x77, 0x60, 0xc3, 0xa5, 0x30, 0xe2, 0xd7,
+	0x18, 0x6a, 0x6b, 0x70, 0x8f, 0x30, 0xec, 0x00, 0x07, 0x23, 0x4b, 0x3e, 0xd0, 0x91, 0x45, 0xeb,
+	0x97, 0x02, 0x54, 0x1e, 0x4b, 0xff, 0x1c, 0x6d, 0xf5, 0xbf, 0xf5, 0xca, 0xc1, 0x2a, 0xad, 0xc0,
+	0xb2, 0xa0, 0x71, 0x1e, 0x49, 0x37, 0x74, 0x5c, 0x9b, 0xc6, 0x23, 0x91, 0x2a, 0xe7, 0xcb, 0x09,
+	0xbe, 0xb1, 0x22, 0xf8, 0x1b, 0xd0, 0x90, 0xf8, 0x04, 0x25, 0x7a, 0x36, 0x8e, 0x5c, 0xc7, 0xac,
+	0xd0, 0x7d, 0x3d, 0xf3, 0x9d, 0x38, 0x83, 0x33, 0x62, 0x38, 0x5e, 0xa7, 0x32, 0x87, 0xc6, 0x12,
+	0x69, 0xc7, 0x28, 0x2c, 0x2b, 0x5f, 0xe4, 0x46, 0xbe, 0xb8, 0x51, 0xe2, 0x1d, 0xd8, 0x59, 0x24,
+	0xe4, 0xee, 0xca, 0x66, 0xc9, 0xfa, 0xb1, 0x08, 0xe5, 0x23, 0xa1, 0xec, 0xb3, 0x35, 0x5a, 0xbd,
+	0x40, 0x7f, 0xbe, 0x0b, 0xf5, 0x20, 0x11, 0x98, 0xf4, 0x29, 0x52, 0x06, 0x68, 0x57, 0xac, 0xd0,
+	0x16, 0x94, 0x1d, 0xf4, 0xfc, 0x99, 0x9e, 0xb5, 0xc4, 0xc8, 0x69, 0x52, 0x5e, 0xd1, 0xe4, 0x63,
+	0x80, 0x50, 0x09, 0xa9, 0x46, 0x8e, 0x50, 0x48, 0x8a, 0xd5, 0xdf, 0xed, 0xf4, 0x92, 0xbd, 0xed,
+	0xa5, 0x7b, 0xdb, 0x3b, 0x4d, 0xf7, 0x76, 0x58, 0xa3, 0xe8, 0xcf, 0x84, 0x42, 0xfe, 0x01, 0x54,
+	0xd1, 0x73, 0x92, 0xc4, 0xca, 0x4b, 0x13, 0x2b, 0xe8, 0x39, 0x94, 0xf6, 0x29, 0x34, 0x63, 0x3a,
+	0x22, 0xd6, 0x82, 0x72, 0xab, 0x2f, 0xcd, 0x6d, 0xa4, 0x09, 0x54, 0x80, 0x43, 0xc9, 0x0f, 0xd0,
+	0x33, 0x6b, 0x7b, 0x6c, 0xbf, 0x3a, 0xa4, 0xf3, 0xe0, 0x11, 0xbd, 0xdb, 0xe7, 0x8b, 0x77, 0xab,
+	0x6b, 0x25, 0xe8, 0xe9, 0xda, 0x39, 0xdd, 0x8c, 0x02, 0x6f, 0x2d, 0xb3, 0x36, 0x8a, 0x1c, 0x52,
+	0xc1, 0x8d, 0x92, 0x59, 0xb6, 0xbe, 0x65, 0xd0, 0xa4, 0x5d, 0xf9, 0x12, 0xbf, 0x89, 0xe2, 0x37,
+	0x7b, 0xc1, 0xaa, 0xb2, 0xf5, 0xab, 0xca, 0xdf, 0x84, 0xa6, 0x87, 0x97, 0x6a, 0x14, 0xea, 0x74,
+	0x7a, 0xc5, 0xd2, 0xb0, 0x11, 0x3b, 0xd3, 0x92, 0x83, 0x2e, 0x21, 0x36, 0x61, 0x6b, 0x6d, 0xe9,
+	0x0d, 0xeb, 0x1c, 0xda, 0x7a, 0x99, 0x32, 0x14, 0x37, 0xee, 0xec, 0xad, 0x9a, 0x6e, 0x53, 0xd3,
+	0x36, 0xd4, 0x97, 0x2b, 0x55, 0x2c, 0x0f, 0x9a, 0x34, 0x8a, 0x59, 0xa7, 0x95, 0x41, 0x63, 0xff,
+	0x19, 0xb4, 0x5b, 0x75, 0x7b, 0x85, 0xba, 0x6d, 0x42, 0x33, 0x5f, 0xad, 0x6a, 0xfd, 0xc3, 0xa0,
+	0x41, 0x0d, 0x8f, 0xc4, 0x54, 0x68, 0x66, 0xe3, 0xd8, 0x5e, 0x66, 0x46, 0x8e, 0xb8, 0x97, 0x09,
+	0x15, 0xe1, 0x38, 0x12, 0xc3, 0x50, 0xaf, 0x43, 0x6a, 0xf2, 0xfb, 0xd0, 0x56, 0x52, 0x38, 0x62,
+	0x3c, 0xc5, 0x91, 0x98, 0xf9, 0x91, 0x97, 0xfe, 0x05, 0xb4, 0x52, 0xf7, 0x43, 0xf2, 0xf2, 0xb7,
+	0xa1, 0x25, 0x51, 0xb9, 0x12, 0x9d, 0x34, 0x2e, 0x59, 0x90, 0xa6, 0xf6, 0xea, 0xb0, 0xfb, 0xd0,
+	0xc6, 0xd0, 0x96, 0xfe, 0xb3, 0x45, 0x5c, 0xb2, 0x2f, 0xad, 0xd4, 0x9d, 0x04, 0x0e, 0xde, 0x27,
+	0x66, 0x3d, 0xb8, 0x0b, 0x9b, 0x1a, 0xcb, 0x41, 0x86, 0x9f, 0x6f, 0xc3, 0x66, 0x66, 0x1c, 0xe8,
+	0x6b, 0x83, 0x99, 0x35, 0xeb, 0x57, 0x06, 0xf5, 0x44, 0xe7, 0x28, 0x08, 0xa6, 0xf3, 0x9b, 0x59,
+	0xaf, 0xe1, 0x56, 0xb8, 0x25, 0xb7, 0xe2, 0x3a, 0x6e, 0x0f, 0xc0, 0xb0, 0x63, 0xad, 0xa7, 0xd3,
+	0x55, 0x11, 0xda, 0x99, 0x5f, 0xb3, 0x5b, 0x9a, 0x92, 0x05, 0x3e, 0xb0, 0x22, 0x68, 0x7e, 0x21,
+	0xdd, 0x89, 0xeb, 0x9d, 0x5e, 0x9e, 0x78, 0x0e, 0x5e, 0xde, 0x3c, 0x8f, 0xab, 0xbf, 0xf7, 0x3b,
+	0xb0, 0x11, 0xfa, 0x91, 0xb4, 0x51, 0xc3, 0xd3, 0xd6, 0x60, 0x97, 0x9a, 0xbd, 0x0a, 0xdb, 0x70,
+	0x77, 0xf9, 0xe7, 0xf5, 0x40, 0x07, 0xd7, 0xad, 0x1f, 0x98, 0x9e, 0xce, 0x63, 0xdf, 0x53, 0x52,
+	0xd8, 0xea, 0x66, 0xdd, 0x72, 0xa0, 0x0a, 0x2b, 0xa0, 0x3a, 0x50, 0xb5, 0x75, 0x15, 0x0d, 0x23,
+	0xb3, 0x07, 0x7d, 0x02, 0xf2, 0x20, 0xc7, 0x9a, 0x9b, 0xc0, 0x17, 0xa8, 0xd2, 0x50, 0xfa, 0x3a,
+	0x68, 0x1c, 0x3d, 0xfe, 0xed, 0xaa, 0xcb, 0x9e, 0x5f, 0x75, 0xd9, 0x5f, 0x57, 0x5d, 0xf6, 0xfd,
+	0x75, 0xf7, 0xce, 0xf3, 0xeb, 0xee, 0x9d, 0x3f, 0xaf, 0xbb, 0x77, 0xbe, 0xfa, 0x70, 0xe2, 0xaa,
+	0xb3, 0x68, 0xdc, 0xb3, 0xfd, 0x59, 0x9f, 0xbe, 0x9a, 0xde, 0xf1, 0x50, 0x3d, 0xf3, 0xe5, 0x53,
+	0x6d, 0x4d, 0xd1, 0x99, 0xa0, 0xec, 0x5f, 0x2e, 0x7d, 0x6c, 0xd9, 0xbe, 0xc4, 0xf1, 0x06, 0xfd,
+	0xf6, 0xbd, 0xf7, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2d, 0xe0, 0x0f, 0xb7, 0x8b, 0x09, 0x00,
+	0x00,
 }
 
 func (m *CreditType) Marshal() (dAtA []byte, err error) {
@@ -856,7 +1095,7 @@ func (m *CreditType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ClassInfo) Marshal() (dAtA []byte, err error) {
+func (m *Class) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -866,20 +1105,20 @@ func (m *ClassInfo) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ClassInfo) MarshalTo(dAtA []byte) (int, error) {
+func (m *Class) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ClassInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Class) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.CreditType) > 0 {
-		i -= len(m.CreditType)
-		copy(dAtA[i:], m.CreditType)
-		i = encodeVarintState(dAtA, i, uint64(len(m.CreditType)))
+	if len(m.CreditTypeAbbrev) > 0 {
+		i -= len(m.CreditTypeAbbrev)
+		copy(dAtA[i:], m.CreditTypeAbbrev)
+		i = encodeVarintState(dAtA, i, uint64(len(m.CreditTypeAbbrev)))
 		i--
 		dAtA[i] = 0x2a
 	}
@@ -897,15 +1136,15 @@ func (m *ClassInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.Name) > 0 {
-		i -= len(m.Name)
-		copy(dAtA[i:], m.Name)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Name)))
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Id)))
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.Id != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.Id))
+	if m.Key != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.Key))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -939,15 +1178,15 @@ func (m *ClassIssuer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.ClassId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.ClassId))
+	if m.ClassKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ClassKey))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *ProjectInfo) Marshal() (dAtA []byte, err error) {
+func (m *Project) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -957,51 +1196,65 @@ func (m *ProjectInfo) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ProjectInfo) MarshalTo(dAtA []byte) (int, error) {
+func (m *Project) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ProjectInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Project) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if len(m.ReferenceId) > 0 {
+		i -= len(m.ReferenceId)
+		copy(dAtA[i:], m.ReferenceId)
+		i = encodeVarintState(dAtA, i, uint64(len(m.ReferenceId)))
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.Metadata) > 0 {
 		i -= len(m.Metadata)
 		copy(dAtA[i:], m.Metadata)
 		i = encodeVarintState(dAtA, i, uint64(len(m.Metadata)))
 		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.Jurisdiction) > 0 {
+		i -= len(m.Jurisdiction)
+		copy(dAtA[i:], m.Jurisdiction)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Jurisdiction)))
+		i--
 		dAtA[i] = 0x2a
 	}
-	if len(m.ProjectLocation) > 0 {
-		i -= len(m.ProjectLocation)
-		copy(dAtA[i:], m.ProjectLocation)
-		i = encodeVarintState(dAtA, i, uint64(len(m.ProjectLocation)))
+	if m.ClassKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ClassKey))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x20
 	}
-	if len(m.Name) > 0 {
-		i -= len(m.Name)
-		copy(dAtA[i:], m.Name)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Name)))
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Admin)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.ClassId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.ClassId))
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Id)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
-	if m.Id != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.Id))
+	if m.Key != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.Key))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *BatchInfo) Marshal() (dAtA []byte, err error) {
+func (m *Batch) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1011,16 +1264,38 @@ func (m *BatchInfo) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *BatchInfo) MarshalTo(dAtA []byte) (int, error) {
+func (m *Batch) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Batch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.Open {
+		i--
+		if m.Open {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x48
+	}
+	if m.IssuanceDate != nil {
+		{
+			size, err := m.IssuanceDate.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintState(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x42
+	}
 	if m.EndDate != nil {
 		{
 			size, err := m.EndDate.MarshalToSizedBuffer(dAtA[:i])
@@ -1031,7 +1306,7 @@ func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintState(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x3a
 	}
 	if m.StartDate != nil {
 		{
@@ -1043,29 +1318,36 @@ func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintState(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x32
 	}
 	if len(m.Metadata) > 0 {
 		i -= len(m.Metadata)
 		copy(dAtA[i:], m.Metadata)
 		i = encodeVarintState(dAtA, i, uint64(len(m.Metadata)))
 		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Denom)))
+		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.BatchDenom) > 0 {
-		i -= len(m.BatchDenom)
-		copy(dAtA[i:], m.BatchDenom)
-		i = encodeVarintState(dAtA, i, uint64(len(m.BatchDenom)))
+	if m.ProjectKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ProjectKey))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
-	if m.ProjectId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.ProjectId))
+	if len(m.Issuer) > 0 {
+		i -= len(m.Issuer)
+		copy(dAtA[i:], m.Issuer)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Issuer)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
-	if m.Id != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.Id))
+	if m.Key != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.Key))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1092,15 +1374,15 @@ func (m *ClassSequence) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.NextClassId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.NextClassId))
+	if m.NextSequence != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.NextSequence))
 		i--
 		dAtA[i] = 0x10
 	}
-	if len(m.CreditType) > 0 {
-		i -= len(m.CreditType)
-		copy(dAtA[i:], m.CreditType)
-		i = encodeVarintState(dAtA, i, uint64(len(m.CreditType)))
+	if len(m.CreditTypeAbbrev) > 0 {
+		i -= len(m.CreditTypeAbbrev)
+		copy(dAtA[i:], m.CreditTypeAbbrev)
+		i = encodeVarintState(dAtA, i, uint64(len(m.CreditTypeAbbrev)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1127,13 +1409,13 @@ func (m *ProjectSequence) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.NextProjectId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.NextProjectId))
+	if m.NextSequence != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.NextSequence))
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.ClassId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.ClassId))
+	if m.ClassKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ClassKey))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1160,17 +1442,15 @@ func (m *BatchSequence) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.NextBatchId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.NextBatchId))
+	if m.NextSequence != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.NextSequence))
 		i--
 		dAtA[i] = 0x10
 	}
-	if len(m.ProjectId) > 0 {
-		i -= len(m.ProjectId)
-		copy(dAtA[i:], m.ProjectId)
-		i = encodeVarintState(dAtA, i, uint64(len(m.ProjectId)))
+	if m.ProjectKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ProjectKey))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1195,31 +1475,38 @@ func (m *BatchBalance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Retired) > 0 {
-		i -= len(m.Retired)
-		copy(dAtA[i:], m.Retired)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Retired)))
+	if len(m.EscrowedAmount) > 0 {
+		i -= len(m.EscrowedAmount)
+		copy(dAtA[i:], m.EscrowedAmount)
+		i = encodeVarintState(dAtA, i, uint64(len(m.EscrowedAmount)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.RetiredAmount) > 0 {
+		i -= len(m.RetiredAmount)
+		copy(dAtA[i:], m.RetiredAmount)
+		i = encodeVarintState(dAtA, i, uint64(len(m.RetiredAmount)))
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.Tradable) > 0 {
-		i -= len(m.Tradable)
-		copy(dAtA[i:], m.Tradable)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Tradable)))
+	if len(m.TradableAmount) > 0 {
+		i -= len(m.TradableAmount)
+		copy(dAtA[i:], m.TradableAmount)
+		i = encodeVarintState(dAtA, i, uint64(len(m.TradableAmount)))
 		i--
 		dAtA[i] = 0x1a
-	}
-	if m.BatchId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.BatchId))
-		i--
-		dAtA[i] = 0x10
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintState(dAtA, i, uint64(len(m.Address)))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x12
+	}
+	if m.BatchKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.BatchKey))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1265,8 +1552,90 @@ func (m *BatchSupply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.BatchId != 0 {
-		i = encodeVarintState(dAtA, i, uint64(m.BatchId))
+	if m.BatchKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.BatchKey))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *OriginTxIndex) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *OriginTxIndex) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *OriginTxIndex) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Source) > 0 {
+		i -= len(m.Source)
+		copy(dAtA[i:], m.Source)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Source)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ClassKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ClassKey))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BatchContract) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BatchContract) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BatchContract) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Contract) > 0 {
+		i -= len(m.Contract)
+		copy(dAtA[i:], m.Contract)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Contract)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.ClassKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ClassKey))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.BatchKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.BatchKey))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1308,16 +1677,16 @@ func (m *CreditType) Size() (n int) {
 	return n
 }
 
-func (m *ClassInfo) Size() (n int) {
+func (m *Class) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovState(uint64(m.Id))
+	if m.Key != 0 {
+		n += 1 + sovState(uint64(m.Key))
 	}
-	l = len(m.Name)
+	l = len(m.Id)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1329,7 +1698,7 @@ func (m *ClassInfo) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.CreditType)
+	l = len(m.CreditTypeAbbrev)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1342,8 +1711,8 @@ func (m *ClassIssuer) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.ClassId != 0 {
-		n += 1 + sovState(uint64(m.ClassId))
+	if m.ClassKey != 0 {
+		n += 1 + sovState(uint64(m.ClassKey))
 	}
 	l = len(m.Issuer)
 	if l > 0 {
@@ -1352,23 +1721,27 @@ func (m *ClassIssuer) Size() (n int) {
 	return n
 }
 
-func (m *ProjectInfo) Size() (n int) {
+func (m *Project) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovState(uint64(m.Id))
+	if m.Key != 0 {
+		n += 1 + sovState(uint64(m.Key))
 	}
-	if m.ClassId != 0 {
-		n += 1 + sovState(uint64(m.ClassId))
-	}
-	l = len(m.Name)
+	l = len(m.Id)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.ProjectLocation)
+	l = len(m.Admin)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
+	if m.ClassKey != 0 {
+		n += 1 + sovState(uint64(m.ClassKey))
+	}
+	l = len(m.Jurisdiction)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1376,22 +1749,30 @@ func (m *ProjectInfo) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
+	l = len(m.ReferenceId)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
 	return n
 }
 
-func (m *BatchInfo) Size() (n int) {
+func (m *Batch) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovState(uint64(m.Id))
+	if m.Key != 0 {
+		n += 1 + sovState(uint64(m.Key))
 	}
-	if m.ProjectId != 0 {
-		n += 1 + sovState(uint64(m.ProjectId))
+	l = len(m.Issuer)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.BatchDenom)
+	if m.ProjectKey != 0 {
+		n += 1 + sovState(uint64(m.ProjectKey))
+	}
+	l = len(m.Denom)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1407,6 +1788,13 @@ func (m *BatchInfo) Size() (n int) {
 		l = m.EndDate.Size()
 		n += 1 + l + sovState(uint64(l))
 	}
+	if m.IssuanceDate != nil {
+		l = m.IssuanceDate.Size()
+		n += 1 + l + sovState(uint64(l))
+	}
+	if m.Open {
+		n += 2
+	}
 	return n
 }
 
@@ -1416,12 +1804,12 @@ func (m *ClassSequence) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.CreditType)
+	l = len(m.CreditTypeAbbrev)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	if m.NextClassId != 0 {
-		n += 1 + sovState(uint64(m.NextClassId))
+	if m.NextSequence != 0 {
+		n += 1 + sovState(uint64(m.NextSequence))
 	}
 	return n
 }
@@ -1432,11 +1820,11 @@ func (m *ProjectSequence) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.ClassId != 0 {
-		n += 1 + sovState(uint64(m.ClassId))
+	if m.ClassKey != 0 {
+		n += 1 + sovState(uint64(m.ClassKey))
 	}
-	if m.NextProjectId != 0 {
-		n += 1 + sovState(uint64(m.NextProjectId))
+	if m.NextSequence != 0 {
+		n += 1 + sovState(uint64(m.NextSequence))
 	}
 	return n
 }
@@ -1447,12 +1835,11 @@ func (m *BatchSequence) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProjectId)
-	if l > 0 {
-		n += 1 + l + sovState(uint64(l))
+	if m.ProjectKey != 0 {
+		n += 1 + sovState(uint64(m.ProjectKey))
 	}
-	if m.NextBatchId != 0 {
-		n += 1 + sovState(uint64(m.NextBatchId))
+	if m.NextSequence != 0 {
+		n += 1 + sovState(uint64(m.NextSequence))
 	}
 	return n
 }
@@ -1463,18 +1850,22 @@ func (m *BatchBalance) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.BatchKey != 0 {
+		n += 1 + sovState(uint64(m.BatchKey))
+	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	if m.BatchId != 0 {
-		n += 1 + sovState(uint64(m.BatchId))
-	}
-	l = len(m.Tradable)
+	l = len(m.TradableAmount)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.Retired)
+	l = len(m.RetiredAmount)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
+	l = len(m.EscrowedAmount)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1487,8 +1878,8 @@ func (m *BatchSupply) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.BatchId != 0 {
-		n += 1 + sovState(uint64(m.BatchId))
+	if m.BatchKey != 0 {
+		n += 1 + sovState(uint64(m.BatchKey))
 	}
 	l = len(m.TradableAmount)
 	if l > 0 {
@@ -1499,6 +1890,45 @@ func (m *BatchSupply) Size() (n int) {
 		n += 1 + l + sovState(uint64(l))
 	}
 	l = len(m.CancelledAmount)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
+	return n
+}
+
+func (m *OriginTxIndex) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ClassKey != 0 {
+		n += 1 + sovState(uint64(m.ClassKey))
+	}
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
+	l = len(m.Source)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
+	return n
+}
+
+func (m *BatchContract) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BatchKey != 0 {
+		n += 1 + sovState(uint64(m.BatchKey))
+	}
+	if m.ClassKey != 0 {
+		n += 1 + sovState(uint64(m.ClassKey))
+	}
+	l = len(m.Contract)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1676,7 +2106,7 @@ func (m *CreditType) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ClassInfo) Unmarshal(dAtA []byte) error {
+func (m *Class) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1699,17 +2129,17 @@ func (m *ClassInfo) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ClassInfo: wiretype end group for non-group")
+			return fmt.Errorf("proto: Class: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ClassInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Class: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
-			m.Id = 0
+			m.Key = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -1719,14 +2149,14 @@ func (m *ClassInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.Key |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1754,7 +2184,7 @@ func (m *ClassInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Name = string(dAtA[iNdEx:postIndex])
+			m.Id = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -1824,7 +2254,7 @@ func (m *ClassInfo) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreditType", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypeAbbrev", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1852,7 +2282,7 @@ func (m *ClassInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreditType = string(dAtA[iNdEx:postIndex])
+			m.CreditTypeAbbrev = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1906,9 +2336,9 @@ func (m *ClassIssuer) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
 			}
-			m.ClassId = 0
+			m.ClassKey = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -1918,7 +2348,7 @@ func (m *ClassIssuer) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ClassId |= uint64(b&0x7F) << shift
+				m.ClassKey |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1978,7 +2408,7 @@ func (m *ClassIssuer) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
+func (m *Project) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2001,17 +2431,17 @@ func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ProjectInfo: wiretype end group for non-group")
+			return fmt.Errorf("proto: Project: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ProjectInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Project: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
-			m.Id = 0
+			m.Key = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2021,16 +2451,16 @@ func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.Key |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			m.ClassId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2040,16 +2470,29 @@ func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ClassId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2059,27 +2502,48 @@ func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthState
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthState
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Name = string(dAtA[iNdEx:postIndex])
+			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
+			if m.Admin == nil {
+				m.Admin = []byte{}
+			}
 			iNdEx = postIndex
 		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
+			}
+			m.ClassKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ClassKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Jurisdiction", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2107,9 +2571,9 @@ func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProjectLocation = string(dAtA[iNdEx:postIndex])
+			m.Jurisdiction = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
@@ -2140,6 +2604,38 @@ func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Metadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReferenceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReferenceId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2162,7 +2658,7 @@ func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *BatchInfo) Unmarshal(dAtA []byte) error {
+func (m *Batch) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2185,17 +2681,17 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: BatchInfo: wiretype end group for non-group")
+			return fmt.Errorf("proto: Batch: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: BatchInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Batch: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
 			}
-			m.Id = 0
+			m.Key = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2205,16 +2701,16 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.Key |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
 			}
-			m.ProjectId = 0
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2224,14 +2720,48 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProjectId |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			if byteLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Issuer = append(m.Issuer[:0], dAtA[iNdEx:postIndex]...)
+			if m.Issuer == nil {
+				m.Issuer = []byte{}
+			}
+			iNdEx = postIndex
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectKey", wireType)
+			}
+			m.ProjectKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProjectKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2259,9 +2789,9 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			m.Denom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
@@ -2293,7 +2823,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			}
 			m.Metadata = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartDate", wireType)
 			}
@@ -2329,7 +2859,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EndDate", wireType)
 			}
@@ -2365,6 +2895,62 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IssuanceDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.IssuanceDate == nil {
+				m.IssuanceDate = &types.Timestamp{}
+			}
+			if err := m.IssuanceDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Open", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Open = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipState(dAtA[iNdEx:])
@@ -2417,7 +3003,7 @@ func (m *ClassSequence) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreditType", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypeAbbrev", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2445,13 +3031,13 @@ func (m *ClassSequence) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreditType = string(dAtA[iNdEx:postIndex])
+			m.CreditTypeAbbrev = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NextClassId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NextSequence", wireType)
 			}
-			m.NextClassId = 0
+			m.NextSequence = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2461,7 +3047,7 @@ func (m *ClassSequence) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.NextClassId |= uint64(b&0x7F) << shift
+				m.NextSequence |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2518,9 +3104,9 @@ func (m *ProjectSequence) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
 			}
-			m.ClassId = 0
+			m.ClassKey = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2530,16 +3116,16 @@ func (m *ProjectSequence) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ClassId |= uint64(b&0x7F) << shift
+				m.ClassKey |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NextProjectId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NextSequence", wireType)
 			}
-			m.NextProjectId = 0
+			m.NextSequence = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2549,7 +3135,7 @@ func (m *ProjectSequence) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.NextProjectId |= uint64(b&0x7F) << shift
+				m.NextSequence |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2605,10 +3191,10 @@ func (m *BatchSequence) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectKey", wireType)
 			}
-			var stringLen uint64
+			m.ProjectKey = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2618,29 +3204,16 @@ func (m *BatchSequence) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProjectKey |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthState
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthState
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProjectId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NextBatchId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NextSequence", wireType)
 			}
-			m.NextBatchId = 0
+			m.NextSequence = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2650,7 +3223,7 @@ func (m *BatchSequence) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.NextBatchId |= uint64(b&0x7F) << shift
+				m.NextSequence |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2706,6 +3279,25 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchKey", wireType)
+			}
+			m.BatchKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BatchKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -2739,28 +3331,9 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 				m.Address = []byte{}
 			}
 			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchId", wireType)
-			}
-			m.BatchId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowState
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.BatchId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Tradable", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2788,11 +3361,11 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Tradable = string(dAtA[iNdEx:postIndex])
+			m.TradableAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Retired", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2820,7 +3393,39 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Retired = string(dAtA[iNdEx:postIndex])
+			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EscrowedAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.EscrowedAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2874,9 +3479,9 @@ func (m *BatchSupply) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchKey", wireType)
 			}
-			m.BatchId = 0
+			m.BatchKey = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -2886,7 +3491,7 @@ func (m *BatchSupply) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.BatchId |= uint64(b&0x7F) << shift
+				m.BatchKey |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2986,6 +3591,259 @@ func (m *BatchSupply) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.CancelledAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipState(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthState
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *OriginTxIndex) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowState
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: OriginTxIndex: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: OriginTxIndex: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
+			}
+			m.ClassKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ClassKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Source = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipState(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthState
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BatchContract) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowState
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BatchContract: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BatchContract: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchKey", wireType)
+			}
+			m.BatchKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BatchKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
+			}
+			m.ClassKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ClassKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Contract", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Contract = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
