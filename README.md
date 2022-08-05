@@ -1,6 +1,6 @@
 # Regen Ledger
 
-![banner](docs/regen_ledger.png)
+![banner](docs/.vuepress/public/regen-ledger.png)
 
 [![Build status](https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
 [![Tests status](https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
@@ -17,7 +17,7 @@ A distributed ledger for ecology built on top of the
 
 ## Getting Started
 
-See [Get Started](https://docs.regen.network/getting-started) for instructions on how to run a single node network on your local machine. For instructions on how to run a full node or validator node on a live network, see [Running a Full Node](https://docs.regen.network/getting-started/running-a-full-node) or [Running a Validator](https://docs.regen.network/getting-started/running-a-validator).
+See [Get Started](https://docs.regen.network/ledger/get-started/) for instructions on how to run a single node network on your local machine. For instructions on how to run a full node and create a validator on a live network, see [Running a Full Node](https://docs.regen.network/validators/get-started/run-a-full-node.html) and [Create a Validator](https://docs.regen.network/validators/get-started/create-a-validator.html).
 
 ## Core Features
 

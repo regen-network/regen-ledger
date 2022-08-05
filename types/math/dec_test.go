@@ -49,6 +49,8 @@ func TestDec(t *testing.T) {
 	t.Run("TestAddSub", rapid.MakeCheck(testAddSub))
 	t.Run("TestMulQuoA", rapid.MakeCheck(testMulQuoA))
 	t.Run("TestMulQuoB", rapid.MakeCheck(testMulQuoB))
+	t.Run("TestMulQuoExact", rapid.MakeCheck(testMulQuoExact))
+	t.Run("TestQuoMulExact", rapid.MakeCheck(testQuoMulExact))
 
 	// Properties about comparision and equality
 	t.Run("TestCmpInverse", rapid.MakeCheck(testCmpInverse))
@@ -79,6 +81,9 @@ func TestDec(t *testing.T) {
 	require.NoError(t, err)
 	minusFivePointZero, err := NewDecFromString("-5.0")
 	require.NoError(t, err)
+
+	twoThousand := NewDecFinite(2, 3)
+	require.True(t, twoThousand.Equal(NewDecFromInt64(2000)))
 
 	res, err := two.Add(zero)
 	require.NoError(t, err)
@@ -143,6 +148,10 @@ func TestDec(t *testing.T) {
 	require.False(t, minusOne.IsZero())
 	require.False(t, minusOne.IsPositive())
 	require.True(t, minusOne.IsNegative())
+
+	res, err = one.MulExact(two)
+	require.NoError(t, err)
+	require.True(t, res.Equal(two))
 }
 
 // TODO: Think a bit more about the probability distribution of Dec
@@ -178,7 +187,7 @@ func testDecInt64(t *rapid.T) {
 
 // Property: invalid_number_string(s) => NewDecFromString(s) == err
 func testInvalidNewDecFromString(t *rapid.T) {
-	s := rapid.StringMatching("[[:alpha:]]*").Draw(t, "s").(string)
+	s := rapid.StringMatching("[[:alpha:]]+").Draw(t, "s").(string)
 	_, err := NewDecFromString(s)
 	require.Error(t, err)
 }
@@ -187,7 +196,7 @@ func testInvalidNewDecFromString(t *rapid.T) {
 //             => NewNonNegativeDecFromString(s) == err
 func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+$`).Filter(
 			func(s string) bool { return !strings.HasPrefix(s, "-0") && !strings.HasPrefix(s, "-.0") },
 		),
@@ -201,7 +210,7 @@ func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 func testInvalidNewNonNegativeFixedDecFromString(t *rapid.T) {
 	n := rapid.Uint32Range(0, 999).Draw(t, "n").(uint32)
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+$`).Filter(
 			func(s string) bool { return !strings.HasPrefix(s, "-0") && !strings.HasPrefix(s, "-.0") },
 		),
@@ -215,7 +224,7 @@ func testInvalidNewNonNegativeFixedDecFromString(t *rapid.T) {
 //             => NewPositiveDecFromString(s) == err
 func testInvalidNewPositiveDecFromString(t *rapid.T) {
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+|0$`),
 	).Draw(t, "s").(string)
 	_, err := NewPositiveDecFromString(s)
@@ -227,7 +236,7 @@ func testInvalidNewPositiveDecFromString(t *rapid.T) {
 func testInvalidNewPositiveFixedDecFromString(t *rapid.T) {
 	n := rapid.Uint32Range(0, 999).Draw(t, "n").(uint32)
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+|0$`),
 		rapid.StringMatching(fmt.Sprintf(`\d*\.\d{%d,}`, n+1)),
 	).Draw(t, "s").(string)
@@ -464,6 +473,44 @@ func testMulQuoB(t *rapid.T) {
 	require.True(t, a.Equal(d))
 }
 
+// Property: (a * 10^b) / 10^b == a using MulExact and QuoExact
+// and a with no more than b decimal places (b <= 32).
+func testMulQuoExact(t *rapid.T) {
+	b := rapid.Uint32Range(0, 32).Draw(t, "b").(uint32)
+	decPrec := func(d Dec) bool { return d.NumDecimalPlaces() <= b }
+	a := genDec.Filter(decPrec).Draw(t, "a").(Dec)
+
+	c := NewDecFinite(1, int32(b))
+
+	d, err := a.MulExact(c)
+	require.NoError(t, err)
+
+	e, err := d.QuoExact(c)
+	require.NoError(t, err)
+
+	require.True(t, a.Equal(e))
+}
+
+// Property: (a / b) * b == a using QuoExact and MulExact and
+// a as an integer.
+func testQuoMulExact(t *rapid.T) {
+	a := rapid.Uint64().Draw(t, "a").(uint64)
+	aDec, err := NewDecFromString(fmt.Sprintf("%d", a))
+	require.NoError(t, err)
+	b := rapid.Uint32Range(0, 32).Draw(t, "b").(uint32)
+	c := NewDecFinite(1, int32(b))
+
+	require.NoError(t, err)
+
+	d, err := aDec.QuoExact(c)
+	require.NoError(t, err)
+
+	e, err := d.MulExact(c)
+	require.NoError(t, err)
+
+	require.True(t, aDec.Equal(e))
+}
+
 // Property: Cmp(a, b) == -Cmp(b, a)
 func testCmpInverse(t *rapid.T) {
 	a := genDec.Draw(t, "a").(Dec)
@@ -548,5 +595,112 @@ func floatDecimalPlaces(t *rapid.T, f float64) uint32 {
 		return 0
 	} else {
 		return uint32(res)
+	}
+}
+
+func TestIsFinite(t *testing.T) {
+	a, err := NewDecFromString("1.5")
+	require.NoError(t, err)
+
+	require.True(t, a.IsFinite())
+
+	b, err := NewDecFromString("NaN")
+	require.NoError(t, err)
+
+	require.False(t, b.IsFinite())
+}
+
+func TestReduce(t *testing.T) {
+	a, err := NewDecFromString("1.30000")
+	require.NoError(t, err)
+	b, n := a.Reduce()
+	require.Equal(t, 4, n)
+	require.True(t, a.Equal(b))
+	require.Equal(t, "1.3", b.String())
+}
+
+func TestMulExactGood(t *testing.T) {
+	a, err := NewDecFromString("1.000001")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 6)
+	c, err := a.MulExact(b)
+	require.NoError(t, err)
+	d, err := c.Int64()
+	require.NoError(t, err)
+	require.Equal(t, int64(1000001), d)
+}
+
+func TestMulExactBad(t *testing.T) {
+	a, err := NewDecFromString("1.000000000000000000000000000000000000123456789")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 10)
+	_, err = a.MulExact(b)
+	require.ErrorIs(t, err, ErrUnexpectedRounding)
+}
+
+func TestQuoExactGood(t *testing.T) {
+	a, err := NewDecFromString("1000001")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 6)
+	c, err := a.QuoExact(b)
+	require.NoError(t, err)
+	require.Equal(t, "1.000001", c.String())
+}
+
+func TestQuoExactBad(t *testing.T) {
+	a, err := NewDecFromString("1000000000000000000000000000000000000123456789")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 10)
+	_, err = a.QuoExact(b)
+	require.ErrorIs(t, err, ErrUnexpectedRounding)
+}
+
+func TestToBigInt(t *testing.T) {
+	i1 := "1000000000000000000000000000000000000123456789"
+	tcs := []struct {
+		intStr  string
+		out     string
+		isError error
+	}{
+		{i1, i1, nil},
+		{"1000000000000000000000000000000000000123456789.00000000", i1, nil},
+		{"123.456e6", "123456000", nil},
+		{"12345.6", "", ErrNonIntegeral},
+	}
+	for idx, tc := range tcs {
+		a, err := NewDecFromString(tc.intStr)
+		require.NoError(t, err)
+		b, err := a.BigInt()
+		if tc.isError == nil {
+			require.NoError(t, err, "test_%d", idx)
+			require.Equal(t, tc.out, b.String(), "test_%d", idx)
+		} else {
+			require.ErrorIs(t, err, tc.isError, "test_%d", idx)
+		}
+	}
+}
+
+func TestToSdkInt(t *testing.T) {
+	i1 := "1000000000000000000000000000000000000123456789"
+	tcs := []struct {
+		intStr string
+		out    string
+	}{
+		{i1, i1},
+		{"1000000000000000000000000000000000000123456789.00000000", i1},
+		{"123.456e6", "123456000"},
+		{"123.456e1", "1234"},
+		{"123.456", "123"},
+		{"123.956", "123"},
+		{"-123.456", "-123"},
+		{"-123.956", "-123"},
+		{"-0.956", "0"},
+		{"-0.9", "0"},
+	}
+	for idx, tc := range tcs {
+		a, err := NewDecFromString(tc.intStr)
+		require.NoError(t, err)
+		b := a.SdkIntTrim()
+		require.Equal(t, tc.out, b.String(), "test_%d", idx)
 	}
 }

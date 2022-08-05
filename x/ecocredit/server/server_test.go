@@ -3,21 +3,23 @@ package server_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/suite"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
@@ -45,25 +47,28 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 
 	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
+	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
-	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(tkey, sdk.StoreTypeTransient)
+	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(bankKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(distKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(tkey, storetypes.StoreTypeTransient)
 
 	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
 	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
 	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
-		minttypes.ModuleName:      {authtypes.Minter},
-		ecocredittypes.ModuleName: {authtypes.Burner},
+		minttypes.ModuleName:       {authtypes.Minter},
+		ecocredittypes.ModuleName:  {authtypes.Burner},
+		basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms,
+		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(

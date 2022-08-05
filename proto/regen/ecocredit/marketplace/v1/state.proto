@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package regen.ecocredit.marketplace.v1;
+
+import "google/protobuf/timestamp.proto";
+import "cosmos/orm/v1alpha1/orm.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+
+// SellOrder represents the information for a sell order.
+message SellOrder {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 1,
+    primary_key : {fields : "id", auto_increment : true}
+    index : {id : 1 fields : "batch_key"}
+    index : {id : 2 fields : "seller"}
+    index : {id : 3 fields : "expiration"}
+  };
+
+  // id is the unique ID of sell order.
+  uint64 id = 1;
+
+  // seller is the address of the account that is selling credits.
+  bytes seller = 2;
+
+  // batch_key is the table row identifier of the credit batch used internally
+  // for efficient lookups. This links a sell order to a credit batch.
+  uint64 batch_key = 3;
+
+  // quantity is the decimal quantity of credits being sold.
+  string quantity = 4;
+
+  // market_id is the market in which this sell order exists and specifies
+  // the bank_denom that ask_amount corresponds to forming the ask_price.
+  uint64 market_id = 5;
+
+  // ask_amount is the integer amount (encoded as a string) that the seller is
+  // asking for each credit unit of the batch. Each credit unit of the batch
+  // will be sold for at least the ask_amount. The ask_amount corresponds to the
+  // Market.denom to form the ask price.
+  string ask_amount = 6;
+
+  // disable_auto_retire disables auto-retirement of credits which allows a
+  // buyer to disable auto-retirement in their buy order enabling them to
+  // resell the credits to another buyer.
+  bool disable_auto_retire = 7;
+
+  // expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp expiration = 9;
+
+  // maker indicates that this is a maker order, meaning that when it hit
+  // the order book, there were no matching buy orders.
+  bool maker = 10;
+}
+
+// AllowedDenom represents the information for an allowed ask/bid denom.
+message AllowedDenom {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 3
+    primary_key : {fields : "bank_denom"}
+    index : {id : 1 fields : "display_denom", unique : true}
+  };
+
+  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+  string bank_denom = 1;
+
+  // display_denom is the denom to display to the user and is informational.
+  // Because the denom is likely an IBC denom, this should be chosen by
+  // governance to represent the consensus trusted name of the denom.
+  string display_denom = 2;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 3;
+}
+
+// Market describes a distinctly processed market between a credit type and
+// allowed bank denom. Each market has its own precision in the order book
+// and is processed independently of other markets. Governance must enable
+// markets one by one. Every additional enabled market potentially adds more
+// processing overhead to the blockchain and potentially weakens liquidity in
+// competing markets. For instance, enabling side by side USD/Carbon and
+// EUR/Carbon markets may have the end result that each market individually has
+// less liquidity and longer settlement times. Such decisions should be taken
+// with care.
+message Market {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 4
+    primary_key : {fields : "id", auto_increment : true}
+    index : {id : 1 fields : "credit_type_abbrev,bank_denom", unique : true}
+  };
+
+  // id is the unique ID of the market.
+  uint64 id = 1;
+
+  // credit_type_abbrev is the abbreviation of the credit type.
+  string credit_type_abbrev = 2;
+
+  // bank_denom is an allowed bank denom.
+  string bank_denom = 3;
+
+  // precision_modifier is an optional modifier used to convert arbitrary
+  // precision integer bank amounts to uint32 values used for sorting in the
+  // order book. Given an arbitrary precision integer x, its uint32 conversion
+  // will be x / 10^precision_modifier using round half away from zero
+  // rounding.
+  //
+  // uint32 values range from 0 to 4,294,967,295.
+  // This allows for a full 9 digits of precision. In most real world markets
+  // this amount of precision is sufficient and most common downside -
+  // that some orders with very miniscule price differences may be ordered
+  // equivalently (because of rounding) - is acceptable.
+  // Note that this rounding will not affect settlement price which will
+  // always be done exactly.
+  //
+  // Given a USD stable coin with 6 decimal digits, a precision_modifier
+  // of 0 is probably acceptable as long as credits are always less than
+  // $4,294/unit. With precision down to $0.001 (a precision_modifier of 3
+  // in this case), prices can rise up to $4,294,000/unit. Either scenario
+  // is probably quite acceptable given that carbon prices are unlikely to
+  // rise above $1000/ton any time in the near future.
+  //
+  // If credit prices, exceed the maximum range of uint32 with this
+  // precision_modifier, orders with high prices will fail and governance
+  // will need to adjust precision_modifier to allow for higher prices in
+  // exchange for less precision at the lower end.
+  uint32 precision_modifier = 4;
+}

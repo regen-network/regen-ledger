@@ -1,2 +1,6 @@
 [Makefile]
 indent_style = tab
+
+[*.proto]
+indent_style = space
+indent_size = 2

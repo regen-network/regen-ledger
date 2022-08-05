@@ -1,13 +1,15 @@
-pids
-logs
+# os
+.DS_Store
+
+# build
+dist
+
+# npm/yarn
 node_modules
 npm-debug.log
-coverage/
-run
-dist
-.DS_Store
-.nyc_output
-.basement
-config.local.js
-basement_dist
+yarn-error.log
+
+# auto-generated
+commands
+features
 modules

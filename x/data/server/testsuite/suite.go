@@ -1,12 +1,16 @@
 package testsuite
 
 import (
+	"bytes"
 	"context"
-	"crypto"
+	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -18,10 +22,17 @@ type IntegrationTestSuite struct {
 	fixture        testutil.Fixture
 
 	ctx         context.Context
+	sdkCtx      sdk.Context
 	msgClient   data.MsgClient
 	queryClient data.QueryClient
-	addr1       sdk.AccAddress
-	addr2       sdk.AccAddress
+
+	addr1 sdk.AccAddress
+	addr2 sdk.AccAddress
+	hash1 *data.ContentHash
+	hash2 *data.ContentHash
+
+	graphHash *data.ContentHash_Graph // hash1
+	rawHash   *data.ContentHash_Raw   // hash2
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
@@ -29,13 +40,30 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *Integratio
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	require := s.Require()
+
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
+	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
-	s.Require().GreaterOrEqual(len(s.fixture.Signers()), 2)
+	require.GreaterOrEqual(len(s.fixture.Signers()), 2)
 	s.addr1 = s.fixture.Signers()[0]
 	s.addr2 = s.fixture.Signers()[1]
+
+	s.graphHash = &data.ContentHash_Graph{
+		Hash:                      bytes.Repeat([]byte{0}, 32),
+		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+	}
+	s.hash1 = &data.ContentHash{Graph: s.graphHash}
+
+	s.rawHash = &data.ContentHash_Raw{
+		Hash:            bytes.Repeat([]byte{0}, 32),
+		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+		MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
+	}
+	s.hash2 = &data.ContentHash{Raw: s.rawHash}
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -43,170 +71,128 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *IntegrationTestSuite) TestGraphScenario() {
-	testContent := []byte("xyzabc123")
-	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(testContent)
 	require := s.Require()
-	require.NoError(err)
-	digest := hash.Sum(nil)
-	graphHash := &data.ContentHash_Graph{
-		Hash:                      digest,
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-	}
-	contentHash := &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
 
-	//// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
-		Sender: s.addr1.String(),
-		Hash:   contentHash,
+	iri, err := s.graphHash.ToIRI()
+	require.NoError(err)
+
+	// set block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	// convert block time to expected format for anchor response
+	startingBlockTime, err := gogotypes.TimestampProto(s.sdkCtx.BlockTime())
+	require.NoError(err)
+
+	// can anchor data
+	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes)
+	require.Equal(startingBlockTime, anchorRes1.Timestamp)
+
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
-		Sender: s.addr1.String(),
-		Hash:   contentHash,
+	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash1,
 	})
 	require.NoError(err)
+	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
-	// can query data and get timestamp
-	iri, err := contentHash.ToIRI()
-	require.NoError(err)
-	queryRes, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
-		Iri: iri,
+	// can attest to data
+	attestRes1, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
+		Attestor:      s.addr1.String(),
+		ContentHashes: []*data.ContentHash_Graph{s.graphHash},
 	})
 	require.NoError(err)
-	require.NotNil(queryRes)
-	require.NotNil(queryRes.Entry)
-	ts := queryRes.Entry.Timestamp
-	require.NotNil(ts)
+	require.NotEqual(anchorRes1.Timestamp, attestRes1.Timestamp)
 
-	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
-	require.NoError(err)
-	require.Empty(signerRes.Signers)
-	iri, err = graphHash.ToIRI()
-	require.NoError(err)
-	require.Equal(iri, queryRes.Entry.Iri)
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
-	// can sign data
-	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
-		Signers: []string{s.addr1.String()},
-		Hash:    graphHash,
+	// attesting to the same data twice is a no-op
+	attestRes2, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
+		Attestor:      s.addr1.String(),
+		ContentHashes: []*data.ContentHash_Graph{s.graphHash},
 	})
 	require.NoError(err)
+	require.Len(attestRes2.Iris, 0)
+	require.NotContains(attestRes2.Iris, iri)
+	require.NotEqual(attestRes1.Timestamp, attestRes2.Timestamp)
 
-	// can retrieve signature, same timestamp
-	// can query data and get timestamp
-	iri, err = contentHash.ToIRI()
-	require.NoError(err)
-	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
-	require.NoError(err)
-	require.NotNil(queryRes)
-	require.Equal(ts, queryRes.Entry.Timestamp) // ensure timestamp is equal to the original
-	signerRes, err = s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: iri, Pagination: nil})
-	require.NoError(err)
-	require.Len(signerRes.Signers, 1)
-	require.Equal(s.addr1.String(), signerRes.Signers[0])
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
-	// query data by signer
-	bySignerRes, err := s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
-		Signer: s.addr1.String(),
+	// another attestor can attest to the same data
+	attestRes3, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
+		Attestor:      s.addr2.String(),
+		ContentHashes: []*data.ContentHash_Graph{s.graphHash},
 	})
 	require.NoError(err)
-	require.NotNil(bySignerRes)
-	require.Len(bySignerRes.Entries, 1)
-	require.Equal(queryRes.Entry, bySignerRes.Entries[0])
-
-	// another signer can sign
-	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
-		Signers: []string{s.addr2.String()},
-		Hash:    graphHash,
-	})
-	require.NoError(err)
-
-	// query data by signer
-	bySignerRes, err = s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
-		Signer: s.addr2.String(),
-	})
-	require.NoError(err)
-	require.NotNil(bySignerRes)
-	require.Len(bySignerRes.Entries, 1)
-	require.Equal(contentHash, bySignerRes.Entries[0].Hash)
-
-	// query and get both signatures
-	iri, err = contentHash.ToIRI()
-	require.NoError(err)
-	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
-	require.NoError(err)
-	require.NotNil(queryRes)
-	require.Equal(ts, queryRes.Entry.Timestamp)
-
-	iri2, err := contentHash.ToIRI()
-	require.NoError(err)
-	signerRes, err = s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: iri2, Pagination: nil})
-	require.NoError(err)
-	require.Len(signerRes.Signers, 2)
-	signers := make([]string, len(signerRes.Signers))
-	for _, signer := range signerRes.Signers {
-		signers = append(signers, signer)
-	}
-	require.Contains(signers, s.addr1.String())
-	require.Contains(signers, s.addr2.String())
+	require.Len(attestRes3.Iris, 1)
+	require.Contains(attestRes3.Iris, iri)
+	require.NotEqual(attestRes2.Timestamp, attestRes3.Timestamp)
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
-	testContent := []byte("19sdgh23t7sdghasf98sf")
-	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(testContent)
 	require := s.Require()
-	require.NoError(err)
-	digest := hash.Sum(nil)
-	rawHash := &data.ContentHash_Raw{
-		Hash:            digest,
-		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		MediaType:       data.MediaType_MEDIA_TYPE_UNSPECIFIED,
-	}
-	contentHash := &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
 
-	//// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
-		Sender: s.addr1.String(),
-		Hash:   contentHash,
+	iri, err := s.hash2.ToIRI()
+	require.NoError(err)
+	require.NotEmpty(iri)
+
+	// can anchor data
+	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes)
+
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now().UTC())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
-		Sender: s.addr1.String(),
-		Hash:   contentHash,
+	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash2,
+	})
+	require.NoError(err)
+	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
+}
+
+func (s *IntegrationTestSuite) TestResolver() {
+	require := s.Require()
+	testUrl := "https://foo.bar"
+	hashes := []*data.ContentHash{s.hash1, s.hash2}
+
+	// can define a resolver
+	defineResolver, err := s.msgClient.DefineResolver(s.ctx, &data.MsgDefineResolver{
+		Manager:     s.addr1.String(),
+		ResolverUrl: testUrl,
 	})
 	require.NoError(err)
 
-	// can query data and get timestamp
-	iri, err := contentHash.ToIRI()
-	require.NoError(err)
-	queryRes, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
-		Iri: iri,
+	// can register content to a resolver
+	_, err = s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
+		Manager:       s.addr1.String(),
+		ResolverId:    defineResolver.ResolverId,
+		ContentHashes: hashes,
 	})
 	require.NoError(err)
-	require.NotNil(queryRes)
-	require.NotNil(queryRes.Entry)
-	ts := queryRes.Entry.Timestamp
-	require.NotNil(ts)
 
-	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
-	require.Empty(signerRes.Signers)
-
-	// can retrieve same timestamp, and data
-	iri, err = contentHash.ToIRI()
-	require.NoError(err)
-	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
-		Iri: iri,
+	// registering same data twice is a no-op
+	_, err = s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
+		Manager:       s.addr1.String(),
+		ResolverId:    defineResolver.ResolverId,
+		ContentHashes: hashes,
 	})
 	require.NoError(err)
-	require.NotNil(queryRes)
-	require.Equal(ts, queryRes.Entry.Timestamp)
 }

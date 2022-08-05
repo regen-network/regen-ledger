@@ -1,9 +1,10 @@
 all: regen-env
 
-regen-env:
-	docker build --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) --tag regenledger/regen-env regen-env
+regen-env: regen-rmi
+	docker build --tag regenledger/regen-env -f regen-env/Dockerfile \
+    		$(shell git rev-parse --show-toplevel)
 
-clean:
-	docker rmi -f regenledger/regen-env
+regen-rmi:
+	docker rmi regenledger/regen-env 2>/dev/null; true
 
-.PHONY: all regen-env clean
+.PHONY: all regen-env regen-rmi

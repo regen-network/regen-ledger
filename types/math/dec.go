@@ -2,8 +2,10 @@ package math
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/cockroachdb/apd/v2"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -17,9 +19,20 @@ type Dec struct {
 	dec apd.Decimal
 }
 
+// constants for more convenient intent behind dec.Cmp values.
+const (
+	GreaterThan = 1
+	LessThan    = -1
+	EqualTo     = 0
+)
+
 const mathCodespace = "math"
 
-var ErrInvalidDecString = errors.Register(mathCodespace, 1, "invalid decimal string")
+var (
+	ErrInvalidDecString   = errors.Register(mathCodespace, 1, "invalid decimal string")
+	ErrUnexpectedRounding = errors.Register(mathCodespace, 2, "unexpected rounding")
+	ErrNonIntegeral       = errors.Register(mathCodespace, 3, "value is non-integral")
+)
 
 // In cosmos-sdk#7773, decimal128 (with 34 digits of precision) was suggested for performing
 // Quo/Mult arithmetic generically across the SDK. Even though the SDK
@@ -33,6 +46,9 @@ var dec128Context = apd.Context{
 }
 
 func NewDecFromString(s string) (Dec, error) {
+	if s == "" {
+		s = "0"
+	}
 	d, _, err := apd.NewFromString(s)
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
@@ -67,7 +83,7 @@ func NewPositiveDecFromString(s string) (Dec, error) {
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
-	if !d.IsPositive() {
+	if !d.IsPositive() || !d.IsFinite() {
 		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
 	return d, nil
@@ -87,6 +103,13 @@ func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
 func NewDecFromInt64(x int64) Dec {
 	var res Dec
 	res.dec.SetInt64(x)
+	return res
+}
+
+// NewDecFinite returns a decimal with a value of coeff * 10^exp.
+func NewDecFinite(coeff int64, exp int32) Dec {
+	var res Dec
+	res.dec.SetFinite(coeff, exp)
 	return res
 }
 
@@ -114,6 +137,33 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
+// MulExact returns a new dec with value x * y. The product must not round or
+// ErrUnexpectedRounding will be returned.
+func (x Dec) MulExact(y Dec) (Dec, error) {
+	var z Dec
+	condition, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, err
+	}
+	if condition.Rounded() {
+		return z, ErrUnexpectedRounding
+	}
+	return z, nil
+}
+
+// QuoExact is a version of Quo that returns ErrUnexpectedRounding if any rounding occurred.
+func (x Dec) QuoExact(y Dec) (Dec, error) {
+	var z Dec
+	condition, err := dec128Context.Quo(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, err
+	}
+	if condition.Rounded() {
+		return z, ErrUnexpectedRounding
+	}
+	return z, errors.Wrap(err, "decimal quotient error")
+}
+
 // QuoInteger returns a new integral Dec with value `x/y` (formatted as decimal128, with 34 digit precision)
 // without mutating any argument and error if there is an overflow.
 func (x Dec) QuoInteger(y Dec) (Dec, error) {
@@ -138,8 +188,43 @@ func (x Dec) Mul(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal multiplication error")
 }
 
+// Int64 converts x to an int64 or returns an error if x cannot
+// fit precisely into an int64.
 func (x Dec) Int64() (int64, error) {
 	return x.dec.Int64()
+}
+
+// BigInt converts x to a *big.Int or returns an error if x cannot
+// fit precisely into an *big.Int.
+func (x Dec) BigInt() (*big.Int, error) {
+	y, _ := x.Reduce()
+	z := &big.Int{}
+	z, ok := z.SetString(y.String(), 10)
+	if !ok {
+		return nil, ErrNonIntegeral
+	}
+	return z, nil
+}
+
+// SdkIntTrim rounds decimal number to the integer towards zero and converts it to `sdk.Int`.
+// Panics if x is bigger the SDK Int max value
+func (x Dec) SdkIntTrim() sdk.Int {
+	y, _ := x.Reduce()
+	var r = y.dec.Coeff
+	if y.dec.Exponent != 0 {
+		decs := big.NewInt(10)
+		if y.dec.Exponent > 0 {
+			decs.Exp(decs, big.NewInt(int64(y.dec.Exponent)), nil)
+			r.Mul(&y.dec.Coeff, decs)
+		} else {
+			decs.Exp(decs, big.NewInt(int64(-y.dec.Exponent)), nil)
+			r.Quo(&y.dec.Coeff, decs)
+		}
+	}
+	if x.dec.Negative {
+		r.Neg(&r)
+	}
+	return sdk.NewIntFromBigInt(&r)
 }
 
 func (x Dec) String() string {
@@ -161,16 +246,24 @@ func (x Dec) Equal(y Dec) bool {
 	return x.dec.Cmp(&y.dec) == 0
 }
 
+// IsZero returns true if the decimal is zero.
 func (x Dec) IsZero() bool {
 	return x.dec.IsZero()
 }
 
+// IsNegative returns true if the decimal is negative.
 func (x Dec) IsNegative() bool {
 	return x.dec.Negative && !x.dec.IsZero()
 }
 
+// IsPositive returns true if the decimal is positive.
 func (x Dec) IsPositive() bool {
 	return !x.dec.Negative && !x.dec.IsZero()
+}
+
+// IsFinite returns true if the decimal is finite.
+func (x Dec) IsFinite() bool {
+	return x.dec.Form == apd.Finite
 }
 
 // NumDecimalPlaces returns the number of decimal places in x.
@@ -182,8 +275,8 @@ func (x Dec) NumDecimalPlaces() uint32 {
 	return uint32(-exp)
 }
 
-// Reduce removes trailing zeros from x and returns x and the
-// number of zeros removed.
+// Reduce returns a copy of x with all trailing zeros removed and the number
+// of trailing zeros removed.
 func (x Dec) Reduce() (Dec, int) {
 	y := Dec{}
 	_, n := y.dec.Reduce(&x.dec)

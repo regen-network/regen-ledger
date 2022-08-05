@@ -6,8 +6,6 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1alpha2/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/data";
-
 // Msg is the regen.data.v1alpha1 Msg service
 service Msg {
   // AnchorData "anchors" a piece of data to the blockchain based on its secure
@@ -36,9 +34,22 @@ service Msg {
   //
   // SignData implicitly calls AnchorData if the data was not already anchored.
   //
-  // SignData can be called multiple times for the same content hash with different
-  // signers and those signers will be appended to the list of signers.
+  // SignData can be called multiple times for the same content hash with
+  // different signers and those signers will be appended to the list of
+  // signers.
   rpc SignData(MsgSignData) returns (MsgSignDataResponse);
+
+  // StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw
+  // on the blockchain.
+  //
+  // StoreRawData implicitly calls AnchorData if the data was not already
+  // anchored.
+  //
+  // The sender in StoreRawData is not attesting to the veracity of the
+  // underlying data. They can simply be a intermediary providing storage
+  // services. SignData should be used to create a digital signature attesting
+  // to the veracity of some piece of data.
+  rpc StoreRawData(MsgStoreRawData) returns (MsgStoreRawDataResponse);
 }
 
 // MsgAnchorData is the Msg/AnchorData request type.
@@ -56,9 +67,6 @@ message MsgAnchorData {
 message MsgAnchorDataResponse {
   // timestamp is the timestamp of the block at which the data was anchored.
   google.protobuf.Timestamp timestamp = 1;
-
-  // iri is the IRI of the data that was anchored.
-  string iri = 2;
 }
 
 // MsgSignData is the Msg/SignData request type.
@@ -72,9 +80,28 @@ message MsgSignData {
   repeated string signers = 1;
 
   // hash is the hash-based identifier for the anchored content. Only RDF graph
-  // data can be signed as its data model is intended to specifically convey semantic meaning.
+  // data can be signed as its data model is intended to specifically convey
+  // semantic meaning.
   ContentHash.Graph hash = 2;
 }
 
 // MsgSignDataResponse is the Msg/SignData response type.
 message MsgSignDataResponse {}
+
+// MsgStoreRawData is the Msg/StoreRawData request type.
+message MsgStoreRawData {
+  // sender is the address of the sender of the transaction.
+  // The sender in StoreData is not attesting to the veracity of the underlying
+  // data. They can simply be a intermediary providing services.
+  string sender = 1;
+
+  // content_hash is the hash-based identifier for the anchored content.
+  ContentHash.Raw content_hash = 2;
+
+  // content is the content of the raw data corresponding to the provided
+  // content hash.
+  bytes content = 3;
+}
+
+// MsgStoreRawData is the Msg/StoreRawData response type.
+message MsgStoreRawDataResponse {}

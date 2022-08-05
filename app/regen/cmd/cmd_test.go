@@ -9,8 +9,8 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/v2/app"
-	cmd "github.com/regen-network/regen-ledger/v2/app/regen/cmd"
+	"github.com/regen-network/regen-ledger/v4/app"
+	cmd "github.com/regen-network/regen-ledger/v4/app/regen/cmd"
 )
 
 func TestInitCmd(t *testing.T) {
@@ -24,6 +24,6 @@ func TestInitCmd(t *testing.T) {
 		fmt.Sprintf("--%s=%s", flags.FlagHome, nodeHome), // Set home flag
 	})
 
-	err = svrcmd.Execute(rootCmd, app.DefaultNodeHome)
+	err = svrcmd.Execute(rootCmd, app.EnvPrefix, app.DefaultNodeHome)
 	require.NoError(t, err)
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // ToIRI converts the ContentHash to an IRI (internationalized URI) using the regen IRI scheme.
@@ -13,14 +14,12 @@ import (
 // which is some base58check encoded data followed by a file extension or pseudo-extension.
 // See ContentHash_Raw.ToIRI and ContentHash_Graph.ToIRI for more details on specific formatting.
 func (ch ContentHash) ToIRI() (string, error) {
-	switch hash := ch.Sum.(type) {
-	case *ContentHash_Raw_:
-		return hash.Raw.ToIRI()
-	case *ContentHash_Graph_:
-		return hash.Graph.ToIRI()
-	default:
-		return "", fmt.Errorf("invalid %T type %T", ch, hash)
+	if chr := ch.GetRaw(); chr != nil {
+		return chr.ToIRI()
+	} else if chg := ch.GetGraph(); chg != nil {
+		return chg.ToIRI()
 	}
+	return "", sdkerrors.ErrInvalidType.Wrapf("invalid %T", ch)
 }
 
 const (
@@ -75,37 +74,37 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 }
 
 // ToExtension converts the media type to a file extension based on the mediaTypeExtensions map.
-func (mt MediaType) ToExtension() (string, error) {
+func (mt RawMediaType) ToExtension() (string, error) {
 	ext, ok := mediaExtensionTypeToString[mt]
 	if !ok {
-		return "", fmt.Errorf("missing extension for %T %s", mt, mt)
+		return "", sdkerrors.ErrInvalidRequest.Wrapf("missing extension for %T %s", mt, mt)
 	}
 
 	return ext, nil
 }
 
-var mediaExtensionTypeToString = map[MediaType]string{
-	MediaType_MEDIA_TYPE_UNSPECIFIED: "bin",
-	MediaType_MEDIA_TYPE_TEXT_PLAIN:  "txt",
-	MediaType_MEDIA_TYPE_CSV:         "csv",
-	MediaType_MEDIA_TYPE_JSON:        "json",
-	MediaType_MEDIA_TYPE_XML:         "xml",
-	MediaType_MEDIA_TYPE_PDF:         "pdf",
-	MediaType_MEDIA_TYPE_TIFF:        "tiff",
-	MediaType_MEDIA_TYPE_JPG:         "jpg",
-	MediaType_MEDIA_TYPE_PNG:         "png",
-	MediaType_MEDIA_TYPE_SVG:         "svg",
-	MediaType_MEDIA_TYPE_WEBP:        "webp",
-	MediaType_MEDIA_TYPE_AVIF:        "avif",
-	MediaType_MEDIA_TYPE_GIF:         "gif",
-	MediaType_MEDIA_TYPE_APNG:        "apng",
-	MediaType_MEDIA_TYPE_MPEG:        "mpeg",
-	MediaType_MEDIA_TYPE_MP4:         "mp4",
-	MediaType_MEDIA_TYPE_WEBM:        "webm",
-	MediaType_MEDIA_TYPE_OGG:         "ogg",
+var mediaExtensionTypeToString = map[RawMediaType]string{
+	RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED: "bin",
+	RawMediaType_RAW_MEDIA_TYPE_TEXT_PLAIN:  "txt",
+	RawMediaType_RAW_MEDIA_TYPE_CSV:         "csv",
+	RawMediaType_RAW_MEDIA_TYPE_JSON:        "json",
+	RawMediaType_RAW_MEDIA_TYPE_XML:         "xml",
+	RawMediaType_RAW_MEDIA_TYPE_PDF:         "pdf",
+	RawMediaType_RAW_MEDIA_TYPE_TIFF:        "tiff",
+	RawMediaType_RAW_MEDIA_TYPE_JPG:         "jpg",
+	RawMediaType_RAW_MEDIA_TYPE_PNG:         "png",
+	RawMediaType_RAW_MEDIA_TYPE_SVG:         "svg",
+	RawMediaType_RAW_MEDIA_TYPE_WEBP:        "webp",
+	RawMediaType_RAW_MEDIA_TYPE_AVIF:        "avif",
+	RawMediaType_RAW_MEDIA_TYPE_GIF:         "gif",
+	RawMediaType_RAW_MEDIA_TYPE_APNG:        "apng",
+	RawMediaType_RAW_MEDIA_TYPE_MPEG:        "mpeg",
+	RawMediaType_RAW_MEDIA_TYPE_MP4:         "mp4",
+	RawMediaType_RAW_MEDIA_TYPE_WEBM:        "webm",
+	RawMediaType_RAW_MEDIA_TYPE_OGG:         "ogg",
 }
 
-var stringToMediaExtensionType = map[string]MediaType{}
+var stringToMediaExtensionType = map[string]RawMediaType{}
 
 func init() {
 	for mt, ext := range mediaExtensionTypeToString {
@@ -120,24 +119,24 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	const regenPrefix = "regen:"
 
 	if !strings.HasPrefix(iri, regenPrefix) {
-		return nil, ErrInvalidIRI.Wrapf("can't parse IRI %s without %s prefix", iri, regenPrefix)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s prefix required", iri, regenPrefix)
 	}
 
 	hashExtPart := iri[len(regenPrefix):]
 	parts := strings.Split(hashExtPart, ".")
 	if len(parts) != 2 {
-		return nil, ErrInvalidIRI.Wrapf("error parsing IRI %s, expected a . followed by an suffix", iri)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: extension required", iri)
 	}
 
 	hashPart, ext := parts[0], parts[1]
 
 	res, version, err := base58.CheckDecode(hashPart)
 	if err != nil {
-		return nil, err
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s", iri, err)
 	}
 
 	if version != iriVersion0 {
-		return nil, ErrInvalidIRI.Wrapf("invalid version found when parsing IRI %s", iri)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version", iri)
 	}
 
 	rdr := bytes.NewBuffer(res)
@@ -160,7 +159,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		// look up extension as media type
 		mediaType, ok := stringToMediaExtensionType[ext]
 		if !ok {
-			return nil, ErrInvalidMediaExtension.Wrapf("cannot resolve MediaType for extension %s", ext)
+			return nil, ErrInvalidMediaExtension.Wrapf("failed to resolve media type for extension %s, expected %s", ext, mediaExtensionTypeToString[mediaType])
 		}
 
 		// interpret next byte as digest algorithm
@@ -171,16 +170,16 @@ func ParseIRI(iri string) (*ContentHash, error) {
 			return nil, err
 		}
 
-		return &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+		return &ContentHash{Raw: &ContentHash_Raw{
 			Hash:            hash,
 			DigestAlgorithm: digestAlg,
 			MediaType:       mediaType,
-		}}}, nil
+		}}, nil
 
 	case IriPrefixGraph:
 		// rdf extension is expected for graph data
 		if ext != "rdf" {
-			return nil, ErrInvalidMediaExtension.Wrapf("expected extension .rdf for graph data, got .%s", ext)
+			return nil, ErrInvalidIRI.Wrapf("invalid extension .%s for graph data, expected .rdf", ext)
 		}
 
 		// read next byte
@@ -223,12 +222,12 @@ func ParseIRI(iri string) (*ContentHash, error) {
 			return nil, err
 		}
 
-		return &ContentHash{Sum: &ContentHash_Graph_{Graph: &ContentHash_Graph{
+		return &ContentHash{Graph: &ContentHash_Graph{
 			Hash:                      hash,
 			DigestAlgorithm:           digestAlg,
 			CanonicalizationAlgorithm: c14Alg,
 			MerkleTree:                mtAlg,
-		}}}, nil
+		}}, nil
 	}
 
 	return nil, ErrInvalidIRI.Wrapf("unable to parse IRI %s", iri)

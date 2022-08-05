@@ -1,4 +1,3 @@
-// DONTCOVER
 package simulation
 
 import (
@@ -8,16 +7,18 @@ import (
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // ParamChanges defines the parameters that can be modified by param change proposals
 // on the simulation
-func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
+func ParamChanges() []simtypes.ParamChange {
 	allowListEnabled := false
 
 	return []simtypes.ParamChange{
-		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyCreditClassFee),
+		simulation.NewSimParamChange(ecocredit.ModuleName, string(core.KeyCreditClassFee),
 			func(r *rand.Rand) string {
 				bz, err := json.Marshal(genCreditClassFee(r))
 				if err != nil {
@@ -28,14 +29,14 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 			},
 		),
 
-		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyAllowlistEnabled),
+		simulation.NewSimParamChange(ecocredit.ModuleName, string(core.KeyAllowlistEnabled),
 			func(r *rand.Rand) string {
 				allowListEnabled = genAllowListEnabled(r)
 				return fmt.Sprintf("%v", allowListEnabled)
 			},
 		),
 
-		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyAllowedClassCreators),
+		simulation.NewSimParamChange(ecocredit.ModuleName, string(core.KeyAllowedClassCreators),
 			func(r *rand.Rand) string {
 				var bz []byte
 				var err error
@@ -52,16 +53,6 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 					}
 				}
 
-				return string(bz)
-			},
-		),
-
-		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyCreditTypes),
-			func(r *rand.Rand) string {
-				bz, err := json.Marshal(genCreditTypes(r))
-				if err != nil {
-					panic(err)
-				}
 				return string(bz)
 			},
 		),

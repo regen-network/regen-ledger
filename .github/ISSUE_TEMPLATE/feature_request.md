@@ -12,7 +12,7 @@ about: Create a proposal to request a feature
 
 <!-- Why do we need this feature? 
 What problems may be addressed by introducing this feature?
-What benefits does the SDK stand to gain by including this feature?
+What benefits does Regen Ledger stand to gain by including this feature?
 Are there any disadvantages of including this feature? -->
 
 ## Proposal

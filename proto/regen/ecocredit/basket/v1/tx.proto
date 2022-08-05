@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package regen.ecocredit.basket.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+
+import "gogoproto/gogo.proto";
+import "regen/ecocredit/basket/v1/types.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+// Msg is the regen.ecocredit.basket.v1 Msg service.
+service Msg {
+
+  // Create creates a bank denom which wraps credits.
+  rpc Create(MsgCreate) returns (MsgCreateResponse);
+
+  // Put puts credits into a basket in return for basket tokens.
+  rpc Put(MsgPut) returns (MsgPutResponse);
+
+  // Take takes credits from a basket starting from the oldest
+  // credits first.
+  rpc Take(MsgTake) returns (MsgTakeResponse);
+}
+
+// MsgCreateBasket is the Msg/CreateBasket request type.
+message MsgCreate {
+  // curator is the address of the basket curator who is able to change certain
+  // basket settings.
+  string curator = 1;
+
+  // name will be used to together with prefix to create a bank denom for this
+  // basket token. It can be between 3-8 alphanumeric characters, with the
+  // first character being alphabetic.
+  //
+  // The bank denom will be formed from name and credit type with the format
+  // `eco.<prefix><credit_type_abbrev>.<name>` where prefix is the prefix of
+  // a standard SI unit derived from credit type precision.
+  string name = 2;
+
+  // description is a human-readable description of the basket denom that should
+  // be at most 256 characters.
+  string description = 3;
+
+  // Deprecated (Since Revision 1): This field is no longer used and will be
+  // removed in the next version. The value of credit type precision is always
+  // used as the exponent when determining the prefix for basket denom, defining
+  // bank denom metadata, and converting credits to/from basket tokens.
+  uint32 exponent = 4 [ deprecated = true ];
+
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
+  bool disable_auto_retire = 5;
+
+  // credit_type_abbrev is the abbreviation of the credit type this basket is
+  // able to hold.
+  string credit_type_abbrev = 6;
+
+  // allowed_classes are the credit classes allowed to be put in the basket
+  repeated string allowed_classes = 7;
+
+  // date_criteria is the date criteria for batches admitted to the basket.
+  // At most, only one of the fields in the date_criteria should be set.
+  DateCriteria date_criteria = 8;
+
+  // fee is the basket creation fee. A fee is not required if the list of fees
+  // in Params.basket_fee is empty. The provided fee must be one of the fees
+  // listed in Params.basket_fee. The provided amount can be greater than
+  // or equal to the listed amount but the basket creator will only be charged
+  // the listed amount (i.e. the minimum amount).
+  //
+  // Note (Since Revision 1): Although this field supports a list of fees, the
+  // basket creator must provide no more than one fee (i.e. one Coin in a list
+  // of Coins). Providing more than one fee will fail basic message validation.
+  // This field will be updated to a single fee rather than a list of fees in
+  // the next version to reflect these requirements.
+  repeated cosmos.base.v1beta1.Coin fee = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// MsgCreateBasketResponse is the Msg/CreateBasket response type.
+message MsgCreateResponse {
+
+  // basket_denom is the unique denomination ID of the newly created basket.
+  string basket_denom = 1;
+}
+
+// MsgAddToBasket is the Msg/AddToBasket request type.
+message MsgPut {
+
+  // owner is the owner of credits being put into the basket.
+  string owner = 1;
+
+  // basket_denom is the basket denom to add credits to.
+  string basket_denom = 2;
+
+  // credits are credits to add to the basket. If they do not match the basket's
+  // admission criteria the operation will fail. If there are any "dust" credits
+  // left over when converting credits to basket tokens, these credits will
+  // not be converted to basket tokens and instead remain with the owner.
+  repeated BasketCredit credits = 3;
+}
+
+// MsgAddToBasketResponse is the Msg/AddToBasket response type.
+message MsgPutResponse {
+
+  // amount_received is the integer amount of basket tokens received.
+  string amount_received = 1;
+}
+
+// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
+message MsgTake {
+
+  // owner is the owner of the basket tokens.
+  string owner = 1;
+
+  // basket_denom is the basket bank denom to take credits from.
+  string basket_denom = 2;
+
+  // amount is the integer number of basket tokens to convert into credits.
+  string amount = 3;
+
+  // retirement_location is the optional retirement jurisdiction for the
+  // credits which will be used only if retire_on_take is true for this basket.
+  //
+  // Deprecated (Since Revision 1): This field will be removed in the next
+  // version in favor of retirement_jurisdiction. Only one of these need to be
+  // set and retirement_jurisdiction will be used if both are set.
+  string retirement_location = 4 [ deprecated = true ];
+
+  // retire_on_take is a boolean that dictates whether the ecocredits
+  // received in exchange for the basket tokens will be received as
+  // retired or tradable credits.
+  bool retire_on_take = 5;
+
+  // retirement_jurisdiction is the optional retirement jurisdiction for the
+  // credits which will be used only if retire_on_take is true for this basket.
+  //
+  // Since Revision 1
+  string retirement_jurisdiction = 6;
+}
+
+// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
+message MsgTakeResponse {
+
+  // credits are the credits taken out of the basket.
+  repeated BasketCredit credits = 1;
+}

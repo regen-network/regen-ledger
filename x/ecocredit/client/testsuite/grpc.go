@@ -2,207 +2,29 @@ package testsuite
 
 import (
 	"fmt"
+	"strings"
 
-	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func (s *IntegrationTestSuite) TestGetClasses() {
-	val := s.network.Validators[0]
+const coreRoute = "regen/ecocredit/v1"
 
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		expItems int
-	}{
-		{
-			"invalid path",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/class", val.APIAddress),
-			true,
-			0,
-		},
-		{
-			"valid query",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes", val.APIAddress),
-			false,
-			4,
-		},
-		{
-			"valid query pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes?pagination.limit=2", val.APIAddress),
-			false,
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var classes ecocredit.QueryClassesResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &classes)
-
-			if tc.expErr {
-				require.Error(err)
-			} else {
-				require.NoError(err)
-				require.NotNil(classes.Classes)
-				require.Len(classes.Classes, tc.expItems)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetClass() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name    string
-		url     string
-		expErr  bool
-		errMsg  string
-		classID string
-	}{
-		{
-			"invalid path",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/class", val.APIAddress),
-			true,
-			"Not Implemented",
-			"",
-		},
-		{
-			"class not found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes/%s", val.APIAddress, "C999"),
-			true,
-			"not found",
-			"",
-		},
-		{
-			"valid class-id",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes/%s", val.APIAddress, "C01"),
-			false,
-			"",
-			"C01",
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var class ecocredit.QueryClassInfoResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &class)
-
-			if tc.expErr {
-				require.Error(err)
-			} else {
-				require.NoError(err)
-				require.NotNil(class.Info)
-				require.Contains(class.Info.ClassId, tc.classID)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetBatches() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name       string
-		url        string
-		numBatches int
-		expErr     bool
-		errMsg     string
-	}{
-		{
-			"invalid project-id",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "abc-d"),
-			0,
-			true,
-			"invalid project id",
-		},
-		{
-			"no batches found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "P02"),
-			0,
-			false,
-			"",
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "P01"),
-			4,
-			false,
-			"",
-		},
-		{
-			"valid request with pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches?pagination.limit=2", val.APIAddress, "P01"),
-			2,
-			false,
-			"",
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var batches ecocredit.QueryBatchesResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &batches)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(batches.Batches)
-				require.Len(batches.Batches, tc.numBatches)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetBatch() {
-	val := s.network.Validators[0]
-
+func (s *IntegrationTestSuite) TestQueryClasses() {
 	testCases := []struct {
 		name      string
 		url       string
-		expErr    bool
-		errMsg    string
-		projectID string
+		paginated bool
 	}{
 		{
-			"invalid batch denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "C999"),
-			true,
-			"invalid denom",
-			"",
-		},
-		{
-			"no batches found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "A00-00000000-00000000-000"),
-			true,
-			"not found",
-			"",
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
+			"valid",
+			fmt.Sprintf("%s/%s/classes", s.val.APIAddress, coreRoute),
 			false,
-			"",
-			"P01",
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/classes?pagination.limit=1", s.val.APIAddress, coreRoute),
+			true,
 		},
 	}
 
@@ -213,64 +35,461 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var batch ecocredit.QueryBatchInfoResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &batch)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(batch.Info)
-				require.Equal(batch.Info.ProjectId, tc.projectID)
+			var res core.QueryClassesResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Classes)
+			require.True(len(res.Classes) > 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
 			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryClass() {
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/class/%s", s.val.APIAddress, coreRoute, s.classId),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/classes/%s", s.val.APIAddress, coreRoute, s.classId),
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryClassResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Class)
+			require.Equal(res.Class.Id, s.classId)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProject() {
+	require := s.Require()
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, coreRoute, s.projectId),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res core.QueryProjectResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Project)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjects() {
+	require := s.Require()
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/projects", s.val.APIAddress, coreRoute),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf(
+				"%s/%s/projects?pagination.countTotal=true",
+				// TODO: #1113
+				// "%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
+				s.val.APIAddress,
+				coreRoute,
+			),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res core.QueryProjectsResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Projects)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Projects, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
+	require := s.Require()
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf(
+				"%s/%s/projects-by-class/%s?pagination.countTotal=true",
+				// TODO: #1113
+				// "%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
+				s.val.APIAddress,
+				coreRoute,
+				s.classId,
+			),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, coreRoute, s.classId),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classId),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res core.QueryProjectsByClassResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Projects)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Projects, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
+	require := s.Require()
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf(
+				"%s/%s/projects-by-reference-id/%s",
+				s.val.APIAddress,
+				coreRoute,
+				s.projectReferenceId,
+			),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf(
+				"%s/%s/projects-by-reference-id/%s?pagination.countTotal=true",
+				// TODO: #1113
+				// "%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
+				s.val.APIAddress,
+				coreRoute,
+				s.projectReferenceId,
+			),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/projects/reference-id/%s",
+				s.val.APIAddress,
+				coreRoute,
+				s.projectReferenceId,
+			),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res core.QueryProjectsByReferenceIdResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Projects)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Projects, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatches() {
+	testCases := []struct {
+		name      string
+		url       string
+		paginated bool
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/batches", s.val.APIAddress, coreRoute),
+			false,
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/batches?pagination.limit=2", s.val.APIAddress, coreRoute),
+			true,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchesResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batches)
+			require.Greater(len(res.Batches), 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
+	testCases := []struct {
+		name      string
+		url       string
+		paginated bool
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/batches-by-issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			false,
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/batches-by-issuer/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.addr1),
+			true,
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/batches/issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			false,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchesByIssuerResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batches)
+			require.Greater(len(res.Batches), 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
+	testCases := []struct {
+		name      string
+		url       string
+		paginated bool
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/batches-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+			false,
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/batches-by-class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classId),
+			true,
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/batches/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			false,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchesByClassResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batches)
+			require.Greater(len(res.Batches), 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
+	testCases := []struct {
+		name      string
+		url       string
+		paginated bool
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/batches-by-project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			false,
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/batches-by-project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectId),
+			true,
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/batches/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			false,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchesResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batches)
+			require.Greater(len(res.Batches), 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatch() {
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/batch/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/batches/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batch)
+			require.Equal(res.Batch.Denom, s.batchDenom)
 		})
 	}
 }
 
 func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
-	val := s.network.Validators[0]
 
-	url := fmt.Sprintf("%s/regen/ecocredit/v1alpha2/credit-types", val.APIAddress)
+	url := fmt.Sprintf("%s/%s/credit-types", s.val.APIAddress, coreRoute)
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
-	var creditTypes ecocredit.QueryCreditTypesResponse
-	err = val.ClientCtx.Codec.UnmarshalJSON(resp, &creditTypes)
-
+	var res core.QueryCreditTypesResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
-	require.Len(creditTypes.CreditTypes, 1)
-	require.Equal(creditTypes.CreditTypes[0].Abbreviation, "C")
-	require.Equal(creditTypes.CreditTypes[0].Name, "carbon")
+	require.Greater(len(res.CreditTypes), 0)
 }
 
-func (s *IntegrationTestSuite) TestGetBalance() {
-	val := s.network.Validators[0]
-
+func (s *IntegrationTestSuite) TestQueryBalance() {
 	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
+		name string
+		url  string
 	}{
 		{
-			"invalid batch-denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
-			true,
-			"invalid denom",
+			"valid",
+			fmt.Sprintf("%s/%s/balance/%s/%s", s.val.APIAddress, coreRoute, s.batchDenom, s.addr1),
 		},
 		{
-			"invalid account address",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-001", "abcd"),
-			true,
-			"decoding bech32 failed",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/batches/%s/balance/%s", s.val.APIAddress, coreRoute, s.batchDenom, s.addr1),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-002", val.Address.String()),
-			false,
-			"",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/balances/%s/batch/%s", s.val.APIAddress, coreRoute, s.addr1, s.batchDenom),
 		},
 	}
 
@@ -281,42 +500,28 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var balance ecocredit.QueryBalanceResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &balance)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(balance)
-				require.Equal(balance.TradableAmount, "100")
-				require.Equal(balance.RetiredAmount, "0.000001")
-			}
+			var res core.QueryBalanceResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res)
+			require.NotEmpty(res.Balance.TradableAmount)
+			require.NotEmpty(res.Balance.RetiredAmount)
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetSupply() {
-	val := s.network.Validators[0]
-
+func (s *IntegrationTestSuite) TestQuerySupply() {
 	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
+		name string
+		url  string
 	}{
 		{
-			"invalid batch-denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/supply", val.APIAddress, "abcd"),
-			true,
-			"invalid denom",
+			"valid",
+			fmt.Sprintf("%s/%s/supply/%s", s.val.APIAddress, coreRoute, s.batchDenom),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/supply", val.APIAddress, "C01-20210101-20210201-001"),
-			false,
-			"",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/batches/%s/supply", s.val.APIAddress, coreRoute, s.batchDenom),
 		},
 	}
 
@@ -327,434 +532,37 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var supply ecocredit.QuerySupplyResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &supply)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(supply)
-				require.Equal(supply.RetiredSupply, "0.000001")
-				require.Equal(supply.TradableSupply, "100")
-			}
+			var res core.QuerySupplyResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res)
+			require.NotEmpty(res.RetiredAmount)
+			require.NotEmpty(res.TradableAmount)
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestGRPCQueryParams() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryParams() {
 	require := s.Require()
 
-	resp, err := rest.GetRequest(fmt.Sprintf("%s/regen/ecocredit/v1alpha2/params", val.APIAddress))
+	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, coreRoute))
 	require.NoError(err)
 
-	var params ecocredit.QueryParamsResponse
-	require.NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, &params))
-
-	s.Require().Equal(ecocredit.DefaultParams(), *params.Params)
+	var res core.QueryParamsResponse
+	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
+	s.Require().Equal(core.DefaultParams(), *res.Params)
 }
 
-func (s *IntegrationTestSuite) TestGetSellOrder() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
-	}{
-		{
-			"not found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "99"),
-			true,
-			"not found",
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "1"),
-			false,
-			"",
-		},
-	}
-
+func (s *IntegrationTestSuite) TestCreditType() {
 	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
 
-			var sellOrder ecocredit.QuerySellOrderResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrder)
+	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, coreRoute, "C")
+	resp, err := rest.GetRequest(url)
+	require.NoError(err)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(sellOrder.SellOrder)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetSellOrders() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders", val.APIAddress),
-			false,
-			"",
-			3,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders?pagination.limit=2", val.APIAddress),
-			false,
-			"",
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var sellOrders ecocredit.QuerySellOrdersResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(sellOrders.SellOrders)
-				require.Len(sellOrders.SellOrders, tc.expItems)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
-	val := s.network.Validators[0]
-	batchDenom := s.batchInfo.BatchDenom
-
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
-	}{
-		{
-			"invalid denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "foo"),
-			true,
-			"invalid denom",
-			0,
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, batchDenom),
-			false,
-			"",
-			3,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, batchDenom),
-			false,
-			"",
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var sellOrders ecocredit.QuerySellOrdersByBatchDenomResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(sellOrders.SellOrders)
-				require.Len(sellOrders.SellOrders, tc.expItems)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
-	}{
-		{
-			"invalid address",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, "abc"),
-			true,
-			"invalid request",
-			0,
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, val.Address.String()),
-			false,
-			"",
-			3,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s?pagination.limit=2", val.APIAddress, val.Address.String()),
-			false,
-			"",
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var sellOrders ecocredit.QuerySellOrdersByAddressResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(sellOrders.SellOrders)
-				require.Len(sellOrders.SellOrders, tc.expItems)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetBuyOrder() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
-	}{
-		{
-			"not found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/id/%s", val.APIAddress, "99"),
-			true,
-			"not found",
-		},
-		// TODO: filtered buy orders required #623
-		//{
-		//	"valid request",
-		//	fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/id/%s", val.APIAddress, "1"),
-		//	false,
-		//	"",
-		//},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var buyOrder ecocredit.QueryBuyOrderResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrder)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(buyOrder.BuyOrder)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetBuyOrders() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders", val.APIAddress),
-			false,
-			"",
-			3,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders?pagination.limit=2", val.APIAddress),
-			false,
-			"",
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var buyOrders ecocredit.QueryBuyOrdersResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrders)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(buyOrders.BuyOrders)
-				// TODO: filtered buy orders required #623
-				//require.Len(buyOrders.BuyOrders, tc.expItems)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetBuyOrdersByAddress() {
-	val := s.network.Validators[0]
-	addr := s.testAccount.String()
-
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
-	}{
-		{
-			"invalid address",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, "abc"),
-			true,
-			"invalid request",
-			0,
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, addr),
-			false,
-			"",
-			3,
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s?pagination.limit=2", val.APIAddress, addr),
-			false,
-			"",
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var buyOrders ecocredit.QueryBuyOrdersByAddressResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrders)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(buyOrders.BuyOrders)
-				// TODO: filtered buy orders required #623
-				//require.Len(buyOrders.BuyOrders, tc.expItems)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetAllowedAskDenoms() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
-			false,
-			"",
-			3,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
-			false,
-			"",
-			2,
-		},
-	}
-
-	require := s.Require()
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
-			require.NoError(err)
-
-			var askDenoms ecocredit.QueryAllowedAskDenomsResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &askDenoms)
-
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
-			} else {
-				require.NoError(err)
-				require.NotNil(askDenoms.AskDenoms)
-				// TODO: AllowAskDenom not yet implemented #624
-				//require.Len(askDenoms.AskDenoms, tc.expItems)
-			}
-		})
-	}
+	var res core.QueryCreditTypeResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.Equal(res.CreditType.Abbreviation, "C")
+	require.Equal(res.CreditType.Precision, uint32(6))
 }

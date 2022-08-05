@@ -1,0 +1,137 @@
+syntax = "proto3";
+
+package regen.data.v1;
+
+import "google/protobuf/timestamp.proto";
+import "regen/data/v1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// Msg is the regen.data.v1 Msg service
+service Msg {
+  // Anchor "anchors" a piece of data to the blockchain based on its secure
+  // hash, effectively providing a tamper resistant timestamp.
+  //
+  // The sender in Anchor is not attesting to the veracity of the underlying
+  // data. They can simply be an intermediary providing timestamp services.
+  // Attest should be used to create a digital signature attesting to the
+  // veracity of some piece of data.
+  rpc Anchor(MsgAnchor) returns (MsgAnchorResponse);
+
+  // Attest allows for digital signing of an arbitrary piece of data on the
+  // blockchain. By attesting to data, the attestor is making a statement about
+  // the veracity of the data itself. It is like signing a legal document,
+  // meaning that I agree to all conditions and to the best of my knowledge
+  // everything is true. When anchoring data, the sender is not attesting to the
+  // veracity of the data, they are simply communicating that it exists.
+  //
+  // On-chain signatures have the following benefits:
+  // - on-chain identities can be managed using different cryptographic keys
+  //   that change over time through key rotation practices
+  // - an on-chain identity may represent an organization and through delegation
+  //   individual members may sign on behalf of the group
+  // - the blockchain transaction envelope provides built-in replay protection
+  //   and timestamping
+  //
+  // Attest implicitly calls Anchor if the data was not already anchored.
+  //
+  // Attest can be called multiple times for the same content hash with
+  // different attestors and those attestors will be appended to the list of
+  // attestors. If the same attestor attempts to attest to the same piece of
+  // data, the attestor will be ignored and a new attestation with a new
+  // timestamp will not be added.
+  rpc Attest(MsgAttest) returns (MsgAttestResponse);
+
+  // DefineResolver defines a resolver URL and assigns it a new integer ID
+  // that can be used in calls to RegisterResolver.
+  rpc DefineResolver(MsgDefineResolver) returns (MsgDefineResolverResponse);
+
+  // RegisterResolver registers data content hashes
+  rpc RegisterResolver(MsgRegisterResolver)
+      returns (MsgRegisterResolverResponse);
+}
+
+// MsgAnchor is the Msg/Anchor request type.
+message MsgAnchor {
+  // sender is the address of the sender of the transaction. The sender in
+  // Anchor is not attesting to the veracity of the underlying data. They
+  // can simply be an intermediary providing services.
+  string sender = 1;
+
+  // content_hash is the content hash for the data to anchor.
+  ContentHash content_hash = 2;
+}
+
+// MsgAnchor is the Msg/Anchor response type.
+message MsgAnchorResponse {
+  // iri is the IRI of the data that was anchored.
+  string iri = 1;
+
+  // timestamp is the time at which the data was anchored.
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+// MsgAttest is the Msg/Attest request type.
+message MsgAttest {
+  // attestor is the addresses of the account attesting to the veracity of the
+  // data. By making an Attest request, the attestor is attesting to the
+  // veracity of the data referenced by the IRI. The precise meaning of this may
+  // vary depending on the underlying data.
+  string attestor = 1;
+
+  // content_hashes are the content hashes for anchored data. Only RDF graph
+  // data can be signed as its data model is intended to specifically convey
+  // semantic meaning.
+  repeated ContentHash.Graph content_hashes = 2;
+}
+
+// MsgAttestResponse is the Msg/Attest response type.
+message MsgAttestResponse {
+  // iris are the IRIs of the data that was attested to. If the attestor attests
+  // to the same piece of data, the previous attestation will not be updated and
+  // the IRI will not be included in this list.
+  repeated string iris = 1;
+
+  // timestamp is the time at which any new attestations were made.
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+// MsgDefineResolver is the Msg/DefineResolver request type.
+message MsgDefineResolver {
+  // manager is the address of the resolver manager. The manager is able
+  // to make future calls using the ID returned by this operation with
+  // Msg/RegisterResolver. To authorize other accounts to register resolvers,
+  // the manager should make use of cosmos.authz.
+  string manager = 1;
+
+  // resolver_url is a resolver URL which should refer to an HTTP service
+  // which will respond to a GET request with the IRI of a ContentHash
+  // and return the content if it exists or a 404. For graph data, resolvers
+  // should use the HTTP Accept header to negotiate the RDF serialization
+  // format.
+  string resolver_url = 2;
+}
+
+// MsgDefineResolverResponse is the Msg/DefineResolver response type.
+message MsgDefineResolverResponse {
+  // resolver_id is the integer ID of the resolver to be used in
+  // MsgRegisterResolver.
+  uint64 resolver_id = 1;
+}
+
+// MsgRegisterResolver is the Msg/RegisterResolver request type.
+message MsgRegisterResolver {
+  // manager is the address of the resolver manager who registered this
+  // resolver with Msg/DefinedResolver.
+  string manager = 1;
+
+  // resolver_id is the ID of a resolver defined with Msg/DefineResolver.
+  uint64 resolver_id = 2;
+
+  // content_hashes is a list of content hashes which the resolver claims to
+  // serve.
+  repeated ContentHash content_hashes = 3;
+}
+
+// MsgRegisterResolverResponse is the Msg/RegisterResolver response type.
+message MsgRegisterResolverResponse {}

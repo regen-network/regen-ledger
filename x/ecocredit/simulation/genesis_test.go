@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"testing"
 
+	"cosmossdk.io/math"
+	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,7 +15,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
@@ -31,33 +35,20 @@ func TestRandomizedGenState(t *testing.T) {
 		Rand:         r,
 		NumBonded:    3,
 		Accounts:     simtypes.RandomAccounts(r, 3),
-		InitialStake: 1000,
+		InitialStake: math.NewInt(1000),
 		GenState:     make(map[string]json.RawMessage),
 	}
 
 	simulation.RandomizedGenState(&simState)
 
-	var ecocreditGenesis ecocredit.GenesisState
-	simState.Cdc.MustUnmarshalJSON(simState.GenState[ecocredit.ModuleName], &ecocreditGenesis)
+	var wrapper map[string]json.RawMessage
+	require.NoError(t, json.Unmarshal(simState.GenState[ecocredit.ModuleName], &wrapper))
 
-	require.Equal(t, ecocreditGenesis.Params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
-	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
-	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(18))))
-	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
+	var params core.Params
+	simState.Cdc.MustUnmarshalJSON(wrapper[proto.MessageName(&core.Params{})], &params)
 
-	require.Len(t, ecocreditGenesis.ClassInfo, 3)
-	require.Len(t, ecocreditGenesis.BatchInfo, 3)
-	require.Len(t, ecocreditGenesis.Balances, 6)
-	require.Len(t, ecocreditGenesis.Supplies, 3)
-
-	require.Equal(t, ecocreditGenesis.Sequences, []*ecocredit.CreditTypeSeq{
-		{
-			Abbreviation: "C",
-			SeqNumber:    4,
-		},
-		{
-			Abbreviation: "BIO",
-			SeqNumber:    4,
-		},
-	})
+	require.Equal(t, params.AllowedClassCreators, []string{"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"})
+	require.Equal(t, params.AllowlistEnabled, true)
+	require.Equal(t, params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(9))))
+	require.Equal(t, params.AllowlistEnabled, true)
 }

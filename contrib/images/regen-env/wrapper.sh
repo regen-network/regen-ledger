@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+set -euo pipefail
+set -x
+
 BINARY=/regen/${BINARY:-regen}
 ID=${ID:-0}
 LOG=${LOG:-regen.log}
@@ -9,14 +12,8 @@ if ! [ -f "${BINARY}" ]; then
 	exit 1
 fi
 
-BINARY_CHECK="$(file "$BINARY" | grep 'ELF 64-bit LSB executable, x86-64')"
 
-if [ -z "${BINARY_CHECK}" ]; then
-	echo "Binary needs to be OS linux, ARCH amd64"
-	exit 1
-fi
-
-export REGENHOME="/regen/node${ID}/regen"
+export REGENHOME="/data/node${ID}/regen"
 
 if [ -d "$(dirname "${REGENHOME}"/"${LOG}")" ]; then
   "${BINARY}" --home "${REGENHOME}" "$@" | tee "${REGENHOME}/${LOG}"

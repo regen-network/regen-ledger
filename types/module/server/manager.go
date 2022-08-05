@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sort"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
@@ -19,6 +21,7 @@ import (
 )
 
 // Manager is the server module manager
+// It supports registration for begin and end blockers
 type Manager struct {
 	baseApp                    *baseapp.BaseApp
 	cdc                        *codec.ProtoCodec
@@ -29,6 +32,9 @@ type Manager struct {
 	exportGenesisHandlers      map[string]module.ExportGenesisHandler
 	registerInvariantsHandler  map[string]RegisterInvariantsHandler
 	weightedOperationsHandlers []WeightedOperationsHandler
+	beginBlockers              []BeginBlockerModule
+	endBlockers                []EndBlockerModule
+	migrationHandlers          map[string]MigrationHandler
 }
 
 // RegisterInvariants registers all module routes and module querier routes
@@ -56,6 +62,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		},
 		requiredServices:           map[reflect.Type]bool{},
 		weightedOperationsHandlers: []WeightedOperationsHandler{},
+		migrationHandlers:          map[string]MigrationHandler{},
 	}
 }
 
@@ -99,7 +106,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		mm.keys[name] = key
-		mm.baseApp.MountStore(key, sdk.StoreTypeIAVL)
+		mm.baseApp.MountStore(key, storetypes.StoreTypeIAVL)
 
 		msgRegistrar := registrar{
 			router:       mm.router,
@@ -116,6 +123,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		cfg := &configurator{
+			Configurator:     sdkmodule.NewConfigurator(mm.cdc, msgRegistrar, queryRegistrar),
 			msgServer:        msgRegistrar,
 			queryServer:      queryRegistrar,
 			key:              key,
@@ -132,10 +140,20 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			mm.weightedOperationsHandlers = append(mm.weightedOperationsHandlers, cfg.weightedOperationHandler)
 		}
 
+		if cfg.migrationHandler != nil {
+			mm.migrationHandlers[name] = cfg.migrationHandler
+		}
+
 		for typ := range cfg.requiredServices {
 			mm.requiredServices[typ] = true
 		}
 
+		if mod, ok := mod.(BeginBlockerModule); ok {
+			mm.beginBlockers = append(mm.beginBlockers, mod)
+		}
+		if mod, ok := mod.(EndBlockerModule); ok {
+			mm.endBlockers = append(mm.endBlockers, mod)
+		}
 	}
 
 	return nil
@@ -189,6 +207,29 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 	return res
 }
 
+// RunMigrations performs state migrations for registered modules.
+func (mm *Manager) RunMigrations(ctx sdk.Context, cdc codec.Codec) error {
+	// sorting migration handlers map to prevent non-determinism
+	keys := make([]string, 0, len(mm.migrationHandlers))
+	for k := range mm.migrationHandlers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		h := mm.migrationHandlers[k]
+		if h == nil {
+			continue
+		}
+
+		if err := h(ctx, cdc); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func initGenesis(ctx sdk.Context, cdc codec.Codec,
 	genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate,
 	initGenesisHandlers map[string]module.InitGenesisHandler) (abci.ResponseInitChain, error) {
@@ -214,6 +255,32 @@ func initGenesis(ctx sdk.Context, cdc codec.Codec,
 	return abci.ResponseInitChain{
 		Validators: validatorUpdates,
 	}, nil
+}
+
+func (mm *Manager) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) []abci.Event {
+	ctx = ctx.WithEventManager(sdk.NewEventManager())
+
+	for _, m := range mm.beginBlockers {
+		m.BeginBlock(ctx, req)
+	}
+	return ctx.EventManager().ABCIEvents()
+}
+
+func (mm *Manager) EndBlock(ctx sdk.Context, req abci.RequestEndBlock) ([]abci.Event, []abci.ValidatorUpdate) {
+	ctx = ctx.WithEventManager(sdk.NewEventManager())
+	var vals []abci.ValidatorUpdate
+
+	for _, m := range mm.endBlockers {
+		moduleValUpdates := m.EndBlock(ctx, req)
+		if len(moduleValUpdates) > 0 {
+			if len(vals) > 0 {
+				panic("validator EndBlock updates already set by a previous module")
+			}
+
+			vals = moduleValUpdates
+		}
+	}
+	return ctx.EventManager().ABCIEvents(), vals
 }
 
 // ExportGenesis performs export genesis functionality for modules.
@@ -243,6 +310,7 @@ func exportGenesis(ctx sdk.Context, cdc codec.Codec, exportGenesisHandlers map[s
 }
 
 type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
+type MigrationHandler func(ctx sdk.Context, cdc codec.Codec) error
 
 type configurator struct {
 	sdkmodule.Configurator
@@ -255,9 +323,14 @@ type configurator struct {
 	exportGenesisHandler      module.ExportGenesisHandler
 	weightedOperationHandler  WeightedOperationsHandler
 	registerInvariantsHandler RegisterInvariantsHandler
+	migrationHandler          MigrationHandler
 }
 
 var _ Configurator = &configurator{}
+
+func (c *configurator) RegisterMigrationHandler(mHandler MigrationHandler) {
+	c.migrationHandler = mHandler
+}
 
 func (c *configurator) RegisterWeightedOperationsHandler(operationsHandler WeightedOperationsHandler) {
 	c.weightedOperationHandler = operationsHandler
