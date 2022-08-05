@@ -66,7 +66,7 @@ func TestQueryBalances(t *testing.T) {
 	require.Equal(t, "4.20", res.Balances[1].Balance)
 
 	// bad query
-	res, err = s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: "nope"})
+	_, err = s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: "nope"})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not found")
 }

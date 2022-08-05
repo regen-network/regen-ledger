@@ -3,7 +3,7 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/eth"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -29,10 +29,6 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
 
-	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
-	}
-
 	if err := ValidateClassId(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
@@ -49,10 +45,6 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 
 	if len(m.Project.ReferenceId) > MaxReferenceIdLength {
 		return ecocredit.ErrMaxLimit.Wrapf("project reference id: max length %d", MaxReferenceIdLength)
-	}
-
-	if m.Project.Jurisdiction == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("project jurisdiction cannot be empty")
 	}
 
 	if err := ValidateJurisdiction(m.Project.Jurisdiction); err != nil {

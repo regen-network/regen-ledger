@@ -3,7 +3,7 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -37,12 +37,8 @@ func (m *MsgRetire) ValidateBasic() error {
 		}
 	}
 
-	if m.Jurisdiction == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("jurisdiction cannot be empty")
-	}
-
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	return nil

@@ -115,13 +115,3 @@ func NewParams(creditClassFee, basketFee sdk.Coins, allowlist []string, allowlis
 		BasketFee:            basketFee,
 	}
 }
-
-// DefaultParams returns a default set of parameters.
-func DefaultParams() Params {
-	return NewParams(
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFee)),
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketFee)),
-		[]string{},
-		false,
-	)
-}

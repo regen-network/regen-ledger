@@ -9,7 +9,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 )
 
 var _ legacytx.LegacyMsg = &MsgBuyDirect{}
@@ -69,12 +69,6 @@ func (m MsgBuyDirect) ValidateBasic() error {
 		}
 
 		if !order.DisableAutoRetire {
-			if len(order.RetirementJurisdiction) == 0 {
-				return sdkerrors.ErrInvalidRequest.Wrapf(
-					"%s: retirement jurisdiction cannot be empty if auto-retire is disabled", orderIndex,
-				)
-			}
-
 			if err := core.ValidateJurisdiction(order.RetirementJurisdiction); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("%s: %s", orderIndex, err)
 			}

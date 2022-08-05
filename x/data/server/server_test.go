@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -34,8 +35,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	// set up store
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
-	sk := sdk.NewKVStoreKey("test")
-	cms.MountStoreWithDB(sk, sdk.StoreTypeIAVL, db)
+	sk := storetypes.NewKVStoreKey("test")
+	cms.MountStoreWithDB(sk, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, cms.LoadLatestVersion())
 
 	// set up context

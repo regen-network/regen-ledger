@@ -87,7 +87,7 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
-			SimulateMsgDefineResolver(ak, bk),
+			SimulateMsgDefineResolver(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
@@ -123,7 +123,8 @@ func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 
 		account := ak.GetAccount(sdkCtx, sender.Address)
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -137,7 +138,7 @@ func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgAnchor, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgAnchor, "unable to deliver tx"), nil, err
 		}
@@ -175,7 +176,8 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 
 		account := ak.GetAccount(sdkCtx, attestor.Address)
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -189,7 +191,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgAttest, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "insufficient funds") {
 				return simtypes.NoOpMsg(data.ModuleName, TypeMsgAttest, "not enough balance"), nil, nil
@@ -202,7 +204,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 }
 
 // SimulateMsgDefineResolver generates a MsgDefineResolver with random values.
-func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Operation {
+func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryClient data.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -215,6 +217,18 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtyp
 		}
 
 		resolverUrl := genResolverUrl(r)
+		ctx := sdk.WrapSDKContext(sdkCtx)
+		result, err := qryClient.ResolversByURL(ctx, &data.QueryResolversByURLRequest{Url: resolverUrl})
+		if err != nil {
+			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, err.Error()), nil, err
+		}
+
+		for _, resolver := range result.Resolvers {
+			if resolver.Url == resolverUrl && resolver.Manager == manager.Address.String() {
+				return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "resolver with the same URL and manager already exists"), nil, nil
+			}
+		}
+
 		msg := &data.MsgDefineResolver{
 			Manager:     manager.Address.String(),
 			ResolverUrl: resolverUrl,
@@ -222,7 +236,8 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtyp
 
 		account := ak.GetAccount(sdkCtx, manager.Address)
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -236,7 +251,7 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtyp
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "resolver URL already exists") {
 				return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "resolver URL already exists"), nil, nil
@@ -293,7 +308,8 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 
 		account := ak.GetAccount(sdkCtx, manager)
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -307,7 +323,7 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgRegisterResolver, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgRegisterResolver, "unable to deliver tx"), nil, err
 		}

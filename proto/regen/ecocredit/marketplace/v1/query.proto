@@ -2,12 +2,13 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/marketplace/v1/state.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+option go_package =
+  "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
 // Msg is the regen.ecocredit.marketplace.v1 Query service.
 service Query {

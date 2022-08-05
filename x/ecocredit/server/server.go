@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
@@ -22,7 +22,7 @@ import (
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
+	storeKey storetypes.StoreKey
 
 	paramSpace    paramtypes.Subspace
 	bankKeeper    ecocredit.BankKeeper
@@ -37,7 +37,7 @@ type serverImpl struct {
 	basketStore basketapi.StateStore
 }
 
-func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
+func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,

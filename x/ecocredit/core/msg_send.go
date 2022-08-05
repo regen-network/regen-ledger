@@ -3,7 +3,7 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -37,12 +37,8 @@ func (m *MsgSend) ValidateBasic() error {
 	}
 
 	for _, credits := range m.Credits {
-		if credits.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("batch denom cannot be empty")
-		}
-
 		if err := ValidateBatchDenom(credits.BatchDenom); err != nil {
-			return err
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 
 		if credits.TradableAmount == "" && credits.RetiredAmount == "" {
@@ -59,12 +55,8 @@ func (m *MsgSend) ValidateBasic() error {
 		}
 
 		if !retiredAmount.IsZero() {
-			if credits.RetirementJurisdiction == "" {
-				return sdkerrors.ErrInvalidRequest.Wrap("retirement jurisdiction required")
-			}
-
 			if err = ValidateJurisdiction(credits.RetirementJurisdiction); err != nil {
-				return err
+				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err.Error())
 			}
 		}
 	}

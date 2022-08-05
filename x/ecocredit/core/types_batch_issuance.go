@@ -30,12 +30,8 @@ func (i *BatchIssuance) Validate() error {
 		}
 
 		if !retiredAmount.IsZero() {
-			if i.RetirementJurisdiction == "" {
-				return sdkerrors.ErrInvalidRequest.Wrap("retirement jurisdiction cannot be empty")
-			}
-
 			if err = ValidateJurisdiction(i.RetirementJurisdiction); err != nil {
-				return sdkerrors.Wrap(err, "retirement jurisdiction")
+				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err.Error())
 			}
 		}
 	}

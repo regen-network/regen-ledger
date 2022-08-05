@@ -32,6 +32,7 @@ import (
 	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -167,6 +168,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 func (s *IntegrationTestSuite) TearDownSuite() {
 	s.T().Log("tearing down integration test suite")
+	s.network.WaitForNextBlock()
 	s.network.Cleanup()
 }
 
@@ -175,7 +177,6 @@ func (s *IntegrationTestSuite) setupGenesis() {
 
 	// set up temporary mem db
 	db := dbm.NewMemDB()
-	defer db.Close()
 
 	mdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(err)
@@ -227,7 +228,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	s.basketFee = params.BasketFee
 
 	// merge the params into the json target
-	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
+	err = genesis.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
 	require.NoError(err)
 
 	// get raw json from target
@@ -253,7 +254,9 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 	s.addr1 = s.val.Address
 
 	// set secondary account
-	s.addr2 = sdk.AccAddress(info.GetPubKey().Address())
+	pk, err := info.GetPubKey()
+	s.Require().NoError(err)
+	s.addr2 = sdk.AccAddress(pk.Address())
 
 	// fund secondary account
 	s.fundAccount(s.val.ClientCtx, s.addr1, s.addr2, sdk.Coins{

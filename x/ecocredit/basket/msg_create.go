@@ -3,7 +3,7 @@ package basket
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -42,12 +42,8 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("description length cannot be greater than %d characters", descrMaxLen)
 	}
 
-	if len(m.CreditTypeAbbrev) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation cannot be empty")
-	}
-
 	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.AllowedClasses) == 0 {
@@ -55,9 +51,6 @@ func (m MsgCreate) ValidateBasic() error {
 	}
 
 	for i := range m.AllowedClasses {
-		if m.AllowedClasses[i] == "" {
-			return sdkerrors.ErrInvalidRequest.Wrapf("allowed_classes[%d] cannot be empty", i)
-		}
 		if err := core.ValidateClassId(m.AllowedClasses[i]); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("allowed_classes[%d] is not a valid class ID: %s", i, err)
 		}

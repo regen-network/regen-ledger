@@ -7,24 +7,18 @@ import (
 	"strings"
 
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-var CreditTypeProposalHandler = govclient.NewProposalHandler(TxCreditTypeProposalCmd, func(context client.Context) rest.ProposalRESTHandler {
-	return rest.ProposalRESTHandler{
-		SubRoute: "",
-		Handler:  nil,
-	}
-})
+var CreditTypeProposalHandler = govclient.NewProposalHandler(TxCreditTypeProposalCmd)
 
 func TxCreditTypeProposalCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -73,8 +67,8 @@ The credit type abbreviation MUST be unique, else the proposal will fail upon ex
 			if err != nil {
 				return err
 			}
-			var content types.Content = &proposal
-			msg, err := types.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
+			var content govv1beta1.Content = &proposal
+			msg, err := govv1beta1.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
 			if err != nil {
 				return err
 			}

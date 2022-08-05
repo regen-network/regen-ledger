@@ -4,7 +4,7 @@ Feature: MsgAnchor
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "content_hash": {
         "raw": {
           "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
@@ -38,7 +38,7 @@ Feature: MsgAnchor
     Given the message
     """
     {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated

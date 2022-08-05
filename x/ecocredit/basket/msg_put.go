@@ -3,7 +3,7 @@ package basket
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -39,10 +39,6 @@ func (m MsgPut) ValidateBasic() error {
 
 	if len(m.Credits) > 0 {
 		for _, credit := range m.Credits {
-			if len(credit.BatchDenom) == 0 {
-				return sdkerrors.ErrInvalidRequest.Wrap("credit batch denom cannot be empty")
-			}
-
 			if err := core.ValidateBatchDenom(credit.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}

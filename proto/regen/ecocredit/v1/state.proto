@@ -311,9 +311,9 @@ message BatchContract {
   uint64 batch_key = 1;
 
   // class_key is the table row identifier of the credit class within which the
-  // credit batch exists. A contract is unique within the scope of a credit class
-  // to prevent malicious credit class issuers from blocking bridge operations
-  // taking place within another credit class.
+  // credit batch exists. A contract is unique within the scope of a credit
+  // class to prevent malicious credit class issuers from blocking bridge
+  // operations taking place within another credit class.
   uint64 class_key = 2;
 
   // contract is the address of the contract on the source chain that was

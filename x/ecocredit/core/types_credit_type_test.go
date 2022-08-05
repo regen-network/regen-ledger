@@ -34,7 +34,7 @@ func TestCreditType_Validate(t *testing.T) {
 			fields: fields{
 				Abbreviation: "",
 			},
-			errMsg: "credit type abbreviation must be 1-3 uppercase latin letters",
+			errMsg: "credit type abbreviation cannot be empty",
 		},
 		{
 			name: "invalid: abbreviation too long",

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -50,11 +51,11 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
-	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(distKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
-	baseApp.MountStore(tkey, sdk.StoreTypeTransient)
+	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(bankKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(distKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(tkey, storetypes.StoreTypeTransient)
 
 	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
 	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
@@ -67,7 +68,7 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms,
+		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
