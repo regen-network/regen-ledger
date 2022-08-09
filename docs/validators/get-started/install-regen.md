@@ -25,19 +25,19 @@ Check out the genesis version:
 *For Regen Mainnet:*
 
 ```bash
-git checkout v1.0.0
+git checkout v4.0.0
 ```
 
 *For Redwood Testnet:*
 
 ```bash
-git checkout v1.0.0
+git checkout v4.0.0
 ```
 
 *For Hambach Testnet:*
 
 ```bash
-git checkout v2.0.0
+git checkout v4.0.0
 ```
 
 Build and install the `regen` binary:
@@ -71,17 +71,17 @@ You should see the following:
 *For Regen Mainnet:*
 
 ```bash
-v1.0.0
+v4.0.0
 ```
 
 *For Redwood Testnet:*
 
 ```bash
-v1.0.0
+v4.0.0
 ```
 
 *For Hambach Testnet:*
 
 ```bash
-v2.0.0
+v4.0.0
 ```
