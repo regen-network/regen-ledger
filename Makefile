@@ -216,9 +216,11 @@ generate:
 
 lint:
 	golangci-lint run --out-format=tab
+	protolint .
 
 lint-fix:
 	golangci-lint run --fix --out-format=tab --issues-exit-code=0
+	protolint -fix .
 
 format_filter = -name '*.go' -type f \
 	-not -path '*.git*' \
@@ -243,6 +245,7 @@ tools: go-version
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install github.com/client9/misspell/cmd/misspell@latest
 	go install golang.org/x/tools/cmd/goimports@latest
+	go install github.com/yoheimuta/protolint@latest
 
 .PHONY: tools
 

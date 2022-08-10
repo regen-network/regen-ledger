@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package regen.data.v1;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/data/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";

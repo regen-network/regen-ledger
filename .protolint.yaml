@@ -1,0 +1,22 @@
+lint:
+  rules_option:
+    # allow messages with empty struct and no newline
+    indent:
+      not_insert_newline: true
+    # allow field names that are already plural
+    repeated_field_names_pluralized:
+      uncountable_rules:
+        - iris
+  ignores:
+    # ignore rule enforcing pluralization of repeated filed names
+    # in files that are no longer maintained or already being used
+    # in production, new files should not be added to this list
+    - id: REPEATED_FIELD_NAMES_PLURALIZED
+      files:
+      - proto/regen/ecocredit/v1alpha1/genesis.proto
+      - proto/regen/ecocredit/v1alpha1/types.proto
+      - proto/regen/ecocredit/v1alpha1/tx.proto
+      - proto/regen/ecocredit/basket/v1/query.proto
+      - proto/regen/ecocredit/basket/v1/tx.proto
+      - proto/regen/ecocredit/v1/types.proto
+      - proto/regen/ecocredit/v1/tx.proto
