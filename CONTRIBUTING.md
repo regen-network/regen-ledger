@@ -1,16 +1,19 @@
-# Contributing to Regen Ledger
+# Contributing
 
-:earth_asia: Welcome! We're glad you're here. Planetary regeneration is a big project, and we can definitely use help building the tools to support regenerative land stewardship. :earth_africa:
+:earth_asia: Welcome! We're glad you're here. Planetary regeneration is a big project, and we can use your help building infrastructure and tools to support regenerative land stewardship. :earth_africa:
 
-We follow an agile methodology and use ZenHub and [GitHub Issues](https://github.com/regen-network/regen-ledger/issues) for ticket tracking. To understand our current priorities and roadmap, check out [GitHub Milestones](https://github.com/regen-network/regen-ledger/milestones). If you are a first time contributor, check out the issues labeled "[good first issue](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+)" and "[help wanted](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)" or send us a message in the **#regen-ledger** channel of our [Discord Server](https://discord.gg/regen-network).
+We follow an agile methodology and use ZenHub and [GitHub Issues](https://github.com/regen-network/regen-ledger/issues) for ticket tracking. To understand our current priorities and roadmap, check out [GitHub Milestones](https://github.com/regen-network/regen-ledger/milestones). If you're a first time contributor, check out issues labeled "[good first issue](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+)".
+
+If you have questions about a specific issue or you would like to start working on an issue, please comment in the issue. If you have general questions, feel free to reach out in the **#regen-ledger** channel of our [Discord Server](https://discord.gg/regen-network).
+
+Before you begin your journey, please read [Code of Conduct](CODE_OF_CONDUCT.md). Also, please do your best to search for answers before asking what may seem like common questions, and we will do our best to update our documentation to include the answers.
 
 ### Table of Contents
 
-- [Workflow Guidelines](#workflow-guidelines)
+- [General Guidelines](#general-guidelines)
   - [Submitting Issues](#submitting-issues)
   - [Reviewing Proposals](#reviewing-proposals)
   - [Submitting Pull Requests](#submitting-pull-requests)
-  - [Requesting Reviews](#requesting-reviews)
   - [Reviewing Pull Requests](#reviewing-pull-requests)
   - [Using GitHub Labels](#using-github-labels)
   - [Using Semantic Commits](#using-semantic-commits)
@@ -24,26 +27,20 @@ We follow an agile methodology and use ZenHub and [GitHub Issues](https://github
   - [Writing Documentation](#writing-documentation)
   - [Writing Specifications](#writing-specifications)
 
-<!--
-- [Core Contributor Guidelines](#core-contributor-guidelines)
-  - [Meetings](#meetings)
-  - [Estimating Issues](#estimating-issues)
--->
-
 ### Recommended Reading
 
-- [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Regen Ledger Docs](https://docs.regen.network)
 - [Cosmos SDK Docs](https://docs.cosmos.network/)
 
 ### Additional Documentation
 
+- [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Release Process](RELEASE_PROCESS.md)
 - [Security Policy](SECURITY.md)
 
-## Workflow Guidelines
+## General Guidelines
 
-The following guidelines provide an overview of our workflow.
+The following guidelines cover the basics, including submitting issues and pull requests, reviewing proposals and pull requests, and using labels and semantic commits.
 
 ### Submitting Issues
 
@@ -51,68 +48,66 @@ Please use the GitHub interface and [the provided templates](https://github.com/
 
 #### For Bugs
 
-**Do not open up a GitHub issue when reporting a security vulnerability. Reporting security vulnerabilities must go through the process defined within our [security policy](SECURITY.md).**
+***Important: Do not open up a GitHub issue when reporting a security vulnerability. Reporting security vulnerabilities must go through the process defined within our [security policy](SECURITY.md).***
 
-...
+Please make sure you do the following:
+- provide a concise description of the issue
+- provide a git commit hash or release version
+- provide steps on how to reproduce the issue
 
 #### For Features
 
 Issues for features should have a clear user story or user story breakdown. The whole development process affects the quality of the work that ends up in a pull request, starting with a user story.
 
+Please make sure you do the following:
+- provide a concise description of the feature
+- provide a rationale for including the feature
+- provide a description of the requirements
+
 ### Reviewing Proposals
 
-...
+When reviewing a feature request, please be conscientious of the proposer and the work they put into submitting the request. If you disagree with the feature or the approach, make sure you provide constructive feedback and clearly explain your rationale.
 
 ### Submitting Pull Requests
 
-In addition to the following guidelines, please review our [Coding Guidelines](#coding-guidelines) and/or [Documentation Guidelines](#documentation-guidelines) before opening a pull request.
+In addition to the guidelines here, please review [Coding Guidelines](#coding-guidelines) and/or [Documentation Guidelines](#documentation-guidelines) before submitting a pull request.
 
-If you are submitting minor documentation changes, you can use the GitHub editor. If you are making code changes or more significant documentation changes, you will need to fork the repository and push your changes to the forked repository.
+Ideally a pull request addresses a single issue. In some cases a pull request may address multiple issues or a pull request may not have a corresponding issue. If the necessity of the change is not obvious, please open an issue first.
 
-...
+Another way of framing this, "One pull request, one concern." A pull request to fix a bug should only fix a bug, a pull request to add a new feature should only add a new feature, a pull request to refactor code should only refactor code, etc.
 
-<!--
-Notes:
+#### Getting Started
 
-- Atomic pull requests. One pull request, one concern.
-- "One of the bad practices of a Pull Request is changing things that are not concerned with the functionality that is being addressed, like whitespace changes, typo fixes, variable renaming, etc. If those things are not related to the concern of the Pull Request, it should probably be done in a different one."
-- "...cleanup doesn't need to be done in the same Pull Request, the important thing is not leaving the codebase in a bad state after finishing the functionality. If you must, refactor the code in a separate Pull Request, and preferably before the actually concerned functionality is developed, because then if there is a need in the near future to revert the Pull Request, the likelihood of code conflict will be lower."
--->
+Unless you are a core team member or a contributor who has been granted limited write access, you will first need to fork the repository before you can submit a pull request. To fork the repository, [click this link](https://github.com/regen-network/regen-ledger/fork), select the owner, and then click "Create fork".
+
+Once you have forked the repository, you can clone the repository, create a feature branch, and start making changes locally. If you have any questions about how to use Git with GitHub, we recommend checking out [GitHub Git Guides](https://github.com/git-guides). 
+
+If you are making documentation changes to a single page, you can also use the GitHub editor. For example, to edit this document, you would click the edit icon in the top right corner, make the changes, scroll to the bottom, and fill out and submit "Commit changes".
+
+#### Feature Branch
+ 
+The feature branch should follow the format `<author>/<issue-number>-<description>`:
+
+- `author` - your first name or username (should be unique, consistent, and non-ambiguous)
+- `issue-number` - the issue number that the feature branch is addressing (if applicable)
+- `description` - a very concise description of the changes (should be no more than a few words)
 
 #### Requesting Reviews
 
-...
+Core team members will automatically be assigned to review each pull request upon submission based on [CODEOWNERS](./CODEOWNERS). If the pull request is not ready for an official review, open the pull request as a draft and keep it open as a draft until it is ready. If you would like initial feedback on a draft pull request, leave a comment tagging the individual or @regen-network/ledger-core-dev requesting initial feedback.
 
-<!--
-Notes:
-
-Two approaches to consider:
-
-1. Assign core contributors who need to review the pull request before it gets merged.
-2. Only request reviews from core contributors who need to review the pull request before it gets merged.
--->
+Before opening a pull request (either directly or converting from draft), please make sure you have added a description and that you have read through and completed the "Author Checklist" items within the pull request template.
 
 ### Reviewing Pull Requests
 
-...
+Before approving a pull request, please make sure you have read through and completed the "Reviewer Checklist" items within the pull request template, or you have checked off the individual items that you have reviewed.
 
-<!--
-Notes:
+In addition, reviewers should use one of the following keywords in the review comment:
 
-What does it mean for a PR to be approved? What does approval include? What does approval not include? Should core contributors have specific roles in the review process? For example, should one core contributor own API design and naming, another own manual testing, another own documentation (tracking inconsistencies, missing documentation, etc.)?
-
-A designated reviewer for each task?
-
-- API Design and Naming
-- Tests and Test Coverage
-- State Maching Logic
-- Manual Testing (if needed)
-- Documentation Changes
-
-Pull requests that implement a new command or a new endpoint should always be manually tested. If a pull request is blocked due to manual testing, the manual test required should be added to a tracking issue... the epic for the release? the module readiness checklist? a separate tracking issue specific to manual tests that need to be performed?
-
-Should we have a tracking issue for documentation needs that we add to during the review process? Should documentation updates be included in the code contributions?
--->
+- ACK or LGTM - you reviewed the changes, they look good, and testing does not apply (usually with an approval)
+- cACK - "Concept ACK" - you agree with the idea or direction but haven't done a thorough review (usually without an approval)
+- utACK - "Untested ACK" - you reviewed the changes but haven't performed any manual tests (usually with an approval)
+- tACK - "Tested ACK" - you reviewed the changes and performed the necessary manual tests (usually with an approval)
 
 ### Using GitHub Labels
 
@@ -124,35 +119,34 @@ We use [GitHub Labels](https://github.com/regen-network/regen-ledger/labels) for
 - each issue should have one `Scope` label
 - each issue should have one `Status` label
 - new issues should always start with either `Status: Proposed` or `Status: Bug`
-- new issues should be reviewed by core contributors on a daily basis and updated with the appropriate `Status` label
-- ...
 
 #### Using Labels With Pull Requests
 
 - `Type`, `Scope`, and `Status` labels are not required for pull requests because pull request titles must be written using semantic commits (i.e. the title should include the type and scope of the pull request) and because each pull request should have a corresponding issue with the appropriate `Type`, `Scope`, and `Status` labels applied
-- ...
 
 ### Using Semantic Commits
 
-We use [semantic commits](https://www.semanticcommits.org/en/v1.0.0/) for pull request titles and the first commit of a new branch. Semantic commits are not required for individual commits within a pull request. 
+The [semantic commit](https://www.semanticcommits.org/en/v1.0.0/) format is required for pull request titles, which will be used as the commit message with "squash and merge". The first commit of a new branch should be a semantic commit but semantic commits are not required for individual commits. 
 
+General guidelines to keep in mind:
+
+- `build`, `ci`, and `chore` should only be used when updating non-production code
 - `fix`, `feat`, `refactor`, and `perf` should only be used when updating production code
 - `test` should only be used when updating tests
-- `style` should only be used when no production code is changed
+- `style` should only be used when updating format
 - `docs` should only be used when updating documentation
-- `build`, `ci`, and `chore` should only be used when updating non-production code
 
-To write useful commit message descriptions, it’s good practice to start the description with a verb, such as “add”, “remove”, "update", or “fix”, followed by what was done.
+Also, to write useful commit message descriptions, it’s good practice to start with a verb, such as “add”, “remove”, "update", or “fix”.
 
 #### Pull Request Titles
 
 We use "squash and merge" when merging pull requests, which uses the title of the pull request as the merged commit. For this reason, pull requests titles must follow the format of semantic commits and should include the appropriate type and scope, and `!` should be added to the type prefix if the pull request introduces an API or client breaking change and will therefore require a major release.
 
-The appropriate type and scope of the pull request should be provided by the labels of the corresponding issue but the scope and type may need to be adjusted during the implementation. If the type and scope need to be adjusted during the implementation, the labels of the corresponding issue should be updated to reflect those changes. The format of the pull request title is verified during the CI process and the allowed type prefixes are defined in [this json file](https://github.com/commitizen/semantic-commit-types/blob/v3.0.0/index.json).
+The appropriate type and scope of the pull request should be provided by the labels of the corresponding issue but the type and scope may need to be adjusted during the implementation. If the type and scope need to be adjusted during the implementation, the label used in the corresponding issue should be updated to reflect those changes. The format of the pull request title is verified during the CI process and the allowed type prefixes are defined in [this json file](https://github.com/commitizen/semantic-commit-types/blob/v3.0.0/index.json).
 
 The scope is not required and may be excluded if the pull request does not update any golang code within a go module but the scope should be included and should reflect the location of the go module whenever golang code within a go module is updated. Only one go module should be updated at a time but in some cases multiple go modules may be updated. In the case of multiple go modules being updated, the location of the updated go modules should be separated by a `,` and no spaces.
 
-For pull requests that update proto files, the scope should reflect the location of the go module within which the code will be generated (e.g. `x/ecocredit` should be the scope when updating proto files in `proto/regen/ecocredit` or `proto/regen/ecocredit/basket`). This is also the location of the module in which a dummy implementation will be added when implementing new features and where changes will be made when updating existing features. This use of scope in relation to updating proto files might change in the future.
+For pull requests that update proto files, the scope should reflect the location of the go module within which the code will be generated (e.g. `x/ecocredit` should be the scope when updating proto files in `proto/regen/ecocredit` or `proto/regen/ecocredit/basket`). This is also the location of the go module in which a dummy implementation will be added when implementing new features and where changes will be made when updating existing features. Note, this use of scope in relation to updating proto files may change in the future.
 
 Examples of pull request titles using semantic commits:
 
@@ -169,103 +163,21 @@ ci: add github action workflow for proto lint check
 chore: delete test output and add to gitignore
 ```
 
-Examples of API breaking changes (`!` required):
-
-- ...
-
-Common misconceptions for API breaking changes:
-
-- adding a new message type
-
-Examples of client breaking changes (`!` required):
-
-- ...
-
-Common misconceptions for client breaking changes:
-
-- ...
-
 #### Individual Commits
 
 It is not required that individual commits within a pull request use semantic commits but the first commit should be a semantic commit. The first commit message is used to auto-populate the pull request title when opening a new pull request. If the pull request only has one non-merge commit, the first commit is used to auto-populate the commit message when using "squash and merge".
 
 ## Coding Guidelines
 
-The following guidelines provide an overview of our workflow.
+The following guidelines are for writing code.
 
 ### Writing Proto Files
 
-...
+[ work in progress... check back soon ]
 
 ### Writing Feature Files
 
-With Regen Ledger, we take a [Behaviour Driven Development (BDD)](https://en.wikipedia.org/wiki/Behavior-driven_development) approach to the design and implementation of features to encourage collaboration among various stakeholders. After the proto definitions for a feature are written, and before the feature is implemented, acceptance tests for the feature should be written using [Gherkin Syntax](https://cucumber.io/docs/gherkin/).
-
-Writing BDD-style tests provide value at three phases of development:
-
-- during the design and specification phase to get alignment on intended behavior, oftentimes with stakeholders who may not be fluent in golang or coding at all
-- during the implementation and pull request review phase to ensure tests are being written to test the intended behavior and not just to satisfy code coverage 
-- during the documentation phase to provide base-level documentation that acts as a human-readable source of truth for the intended behavior of a feature
-
-With BDD-style tests, the approach is as follows:
-
-- What are you building?
-- How will you test it?
-- How did you build it?
-- How did you build the tests?
-
-...
-
-<!--
-Notes:
-
-simplicity and readability over duplication and redundancy when writing test code
--->
-
-#### Rules
-
-- "Rule is a synonym for business requirement and acceptance criterion."
-- ...
-
-#### Background
-
-<!--
-Notes:
-
-"We believe that the Background keyword should not be used, because it has a negative effect on the readability of the scenarios."
--->
-
-#### Scenarios
-
-- "The goal of a scenario is to illustrate a rule."
-- "Any change to a scenario is effectively a change of the specification."
-- "Scenarios should read like a specification."
-- "Scenarios should be thought of as documentation, rather than tests."
-- "Scenarios should enable collaboration between business and delivery, not prevent it."
-- "Scenarios should support the evolution of the product, rather than obstruct it."
-- "Each scenario should only illustrate a single rule."
-- "Shorter scenarios are easier to read, understand and maintain."
-- ...
-
-#### Steps
-
-Given:
-
-- ...
-
-When:
-
-- ...
-
-Then:
-
-- ...
-
-<!--
-Notes:
-
-"My advice is to focus on consistency instead of reusability. Once you find a consistent way of phrasing your steps, you will benefit from step reusability anyway."
--->
+[ work in progress... check back soon ]
 
 #### Resources
 
@@ -278,9 +190,8 @@ Notes:
 The following are some general guidelines when writing golang code:
 
 - optimize for readability
-  - "This is open source software. Consider the people who will read your code, and make it look nice for them."
 - use tabs rather than spaces
-- end of file should have extra line
+- end of file should have an extra line
 - imports should be alphabetical
 - imports should be divided into sections with a line between each section
   - native go packages
@@ -291,7 +202,7 @@ The following are some general guidelines when writing golang code:
 - comments should only use a period if the comment is a complete sentence
 - when adding a comment to explain code, first consider changing the code to be more self documenting
 
-...
+#### Module File Names
 
 - each message implementation should have its own file and include the full name of the proto message (e.g. `msg_create_class.go`)
 - each message server method should have its own file and include the full name of the proto message and the method name should be prefixed with `msg_` to indicate the method is part of the message server (e.g. `msg_create_class.go`)
@@ -299,11 +210,11 @@ The following are some general guidelines when writing golang code:
 
 ### Writing Golang Tests
 
-...
+[ work in progress... check back soon ]
 
 ## Documentation Guidelines
 
-...
+The following guidelines are for writing documentation.
 
 ### Writing Guidelines
 
@@ -335,33 +246,7 @@ make docs-dev
 
 ### Writing Specifications
 
-...
-
-<!--
-### Meetings
-
-An agenda for each meeting (except for the daily scrum) should be prepared ahead of time and shared with core contributors to keep meetings focused and to the point and to provide an opportunity for other core contributors to add agenda items.
-
-#### Daily Scrum
-
-Core contributors meet on a daily basis for 15 minutes to coordinate activities.
-
-#### Weekly Scrum
-
-Core contributors meet on a weekly basis for 60 minutes to groom the backlog and coordinate activities.
-
-#### Monthly All Hands
-
-Core contributors meet with core contributors from related projects to present updates and coordinate activities.
-
-#### Quarterly Retrospective
-
-Core contributors meet with core contributors from related projects to reflect on processes.
-
-### Estimating Issues
-
-Issues should have estimates and estimates should be justified. Asking someone to justify an estimate has been shown to result in estimates that better compensate for missing information.
--->
+[ work in progress... check back soon ]
 
 ## The Words of Maya Angelou
 
