@@ -253,11 +253,13 @@ type Project struct {
 	// class_key is the table row identifier of the credit class used internally
 	// for efficient lookups. This links a project to a credit class.
 	ClassKey uint64 `protobuf:"varint,4,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
-	// project_jurisdiction is the jurisdiction of the project.
-	// Full documentation can be found in MsgCreateProject.project_jurisdiction.
-	ProjectJurisdiction string `protobuf:"bytes,5,opt,name=project_jurisdiction,json=projectJurisdiction,proto3" json:"project_jurisdiction,omitempty"`
+	// jurisdiction is the jurisdiction of the project.
+	// Full documentation can be found in MsgCreateProject.jurisdiction.
+	Jurisdiction string `protobuf:"bytes,5,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
 	Metadata string `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// reference_id is any arbitrary string used to reference the project.
+	ReferenceId string `protobuf:"bytes,7,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
 }
 
 func (m *Project) Reset()         { *m = Project{} }
@@ -321,9 +323,9 @@ func (m *Project) GetClassKey() uint64 {
 	return 0
 }
 
-func (m *Project) GetProjectJurisdiction() string {
+func (m *Project) GetJurisdiction() string {
 	if m != nil {
-		return m.ProjectJurisdiction
+		return m.Jurisdiction
 	}
 	return ""
 }
@@ -331,6 +333,13 @@ func (m *Project) GetProjectJurisdiction() string {
 func (m *Project) GetMetadata() string {
 	if m != nil {
 		return m.Metadata
+	}
+	return ""
+}
+
+func (m *Project) GetReferenceId() string {
+	if m != nil {
+		return m.ReferenceId
 	}
 	return ""
 }
@@ -640,14 +649,17 @@ type BatchBalance struct {
 	// batch_key is the table row identifier of the credit batch used internally
 	// for efficient lookups. This links a batch balance to a credit batch.
 	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
-	// address is the address of the credit holder.
+	// address is the address of the account that owns the credits.
 	Address []byte `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	// tradable is the tradable amount of credits.
-	Tradable string `protobuf:"bytes,3,opt,name=tradable,proto3" json:"tradable,omitempty"`
-	// retired is the retired amount of credits.
-	Retired string `protobuf:"bytes,4,opt,name=retired,proto3" json:"retired,omitempty"`
-	// escrowed is the amount of credits locked up in escrow for the marketplace.
-	Escrowed string `protobuf:"bytes,5,opt,name=escrowed,proto3" json:"escrowed,omitempty"`
+	// tradable_amount is the total number of tradable credits owned by address.
+	TradableAmount string `protobuf:"bytes,3,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
+	// retired_amount is the total number of retired credits owned by address.
+	RetiredAmount string `protobuf:"bytes,4,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
+	// escrowed_amount is the total number of escrowed credits owned by address
+	// and held in escrow by the marketplace. Credits are held in escrow when a
+	// sell order is created and taken out of escrow when the sell order is either
+	// cancelled, updated with a reduced quantity, or processed.
+	EscrowedAmount string `protobuf:"bytes,5,opt,name=escrowed_amount,json=escrowedAmount,proto3" json:"escrowed_amount,omitempty"`
 }
 
 func (m *BatchBalance) Reset()         { *m = BatchBalance{} }
@@ -697,23 +709,23 @@ func (m *BatchBalance) GetAddress() []byte {
 	return nil
 }
 
-func (m *BatchBalance) GetTradable() string {
+func (m *BatchBalance) GetTradableAmount() string {
 	if m != nil {
-		return m.Tradable
+		return m.TradableAmount
 	}
 	return ""
 }
 
-func (m *BatchBalance) GetRetired() string {
+func (m *BatchBalance) GetRetiredAmount() string {
 	if m != nil {
-		return m.Retired
+		return m.RetiredAmount
 	}
 	return ""
 }
 
-func (m *BatchBalance) GetEscrowed() string {
+func (m *BatchBalance) GetEscrowedAmount() string {
 	if m != nil {
-		return m.Escrowed
+		return m.EscrowedAmount
 	}
 	return ""
 }
@@ -724,17 +736,20 @@ type BatchSupply struct {
 	// for efficient lookups. This links a batch supply to a credit batch.
 	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
 	// tradable_amount is the total number of tradable credits in the credit
-	// batch. Some of the issued credits may be cancelled and will be removed from
-	// tradable_amount and tracked in amount_cancelled. tradable_amount +
-	// retired_amount + amount_cancelled will always sum to the original credit
-	// issuance amount.
+	// batch. Tradable credits may be retired in which case they will be removed
+	// from tradable_amount and tracked in retired_amount. Tradable credits may
+	// also be cancelled in which case they will be removed from tradable_amount
+	// and tracked in cancelled_amount. The sum of the tradable, retired, and
+	// cancelled amounts will always equal the original credit issuance amount.
 	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
-	// retired_amount is the total amount of credits that have been retired from
-	// the credit batch.
+	// retired_amount is the total amount of credits that have been retired in the
+	// credit batch. The sum of the tradable, retired, and cancelled amounts will
+	// always equal the original credit issuance amount.
 	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 	// cancelled_amount is the number of credits in the batch that have been
-	// cancelled, effectively undoing the issuance. The sum of total_amount and
-	// amount_cancelled will always equal the original credit issuance amount.
+	// cancelled, effectively undoing the issuance. The sum of the tradable,
+	// retired, and cancelled amounts will always equal the original credit
+	// issuance amount.
 	CancelledAmount string `protobuf:"bytes,4,opt,name=cancelled_amount,json=cancelledAmount,proto3" json:"cancelled_amount,omitempty"`
 }
 
@@ -799,32 +814,37 @@ func (m *BatchSupply) GetCancelledAmount() string {
 	return ""
 }
 
-// BatchOrigTx will index batch mint operations using orig tx ID to handle
-// potential double minting errors
-type BatchOrigTx struct {
-	// the id of an originating transaction or opeartion.
-	TxId string `protobuf:"bytes,1,opt,name=tx_id,json=txId,proto3" json:"tx_id,omitempty"`
-	// type of the transaction originating the mint process. Eg: Polygon,
-	// Ethereum, Verra...
-	Typ string `protobuf:"bytes,2,opt,name=typ,proto3" json:"typ,omitempty"`
-	// reference note for accounting, will be passed to an event
-	Note string `protobuf:"bytes,3,opt,name=note,proto3" json:"note,omitempty"`
-	// batch_denom is the unique ID of the credit batch.
-	BatchDenom string `protobuf:"bytes,4,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+// OriginTxIndex indexes the transaction ID and source from the OriginTx
+// included in Msg/CreateBatch and Msg/MintBatchCredits to prevent double
+// minting errors. The index is scoped to a credit class (it includes the
+// class_key) to prevent malicious credit class issuers from blocking any
+// bridge operations taking place within another credit class.
+type OriginTxIndex struct {
+	// class_key is the table row identifier of the credit class within which the
+	// credits were issued or minted. The class_key is included within the index
+	// to prevent malicious credit class issuers from blocking bridge operations
+	// taking place within another credit class.
+	ClassKey uint64 `protobuf:"varint,1,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
+	// id is the transaction ID of an originating transaction or operation
+	// based on a type (i.e. transaction ID, serial number).
+	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
+	// source is the source chain or registry of the transaction originating
+	// the mint process (e.g. polygon, ethereum, verra).
+	Source string `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
 }
 
-func (m *BatchOrigTx) Reset()         { *m = BatchOrigTx{} }
-func (m *BatchOrigTx) String() string { return proto.CompactTextString(m) }
-func (*BatchOrigTx) ProtoMessage()    {}
-func (*BatchOrigTx) Descriptor() ([]byte, []int) {
+func (m *OriginTxIndex) Reset()         { *m = OriginTxIndex{} }
+func (m *OriginTxIndex) String() string { return proto.CompactTextString(m) }
+func (*OriginTxIndex) ProtoMessage()    {}
+func (*OriginTxIndex) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6cfdca0a4aaabb36, []int{10}
 }
-func (m *BatchOrigTx) XXX_Unmarshal(b []byte) error {
+func (m *OriginTxIndex) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *BatchOrigTx) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *OriginTxIndex) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_BatchOrigTx.Marshal(b, m, deterministic)
+		return xxx_messageInfo_OriginTxIndex.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -834,42 +854,108 @@ func (m *BatchOrigTx) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *BatchOrigTx) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BatchOrigTx.Merge(m, src)
+func (m *OriginTxIndex) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OriginTxIndex.Merge(m, src)
 }
-func (m *BatchOrigTx) XXX_Size() int {
+func (m *OriginTxIndex) XXX_Size() int {
 	return m.Size()
 }
-func (m *BatchOrigTx) XXX_DiscardUnknown() {
-	xxx_messageInfo_BatchOrigTx.DiscardUnknown(m)
+func (m *OriginTxIndex) XXX_DiscardUnknown() {
+	xxx_messageInfo_OriginTxIndex.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_BatchOrigTx proto.InternalMessageInfo
+var xxx_messageInfo_OriginTxIndex proto.InternalMessageInfo
 
-func (m *BatchOrigTx) GetTxId() string {
+func (m *OriginTxIndex) GetClassKey() uint64 {
 	if m != nil {
-		return m.TxId
+		return m.ClassKey
+	}
+	return 0
+}
+
+func (m *OriginTxIndex) GetId() string {
+	if m != nil {
+		return m.Id
 	}
 	return ""
 }
 
-func (m *BatchOrigTx) GetTyp() string {
+func (m *OriginTxIndex) GetSource() string {
 	if m != nil {
-		return m.Typ
+		return m.Source
 	}
 	return ""
 }
 
-func (m *BatchOrigTx) GetNote() string {
-	if m != nil {
-		return m.Note
-	}
-	return ""
+// BatchContract stores the contract address from which credits were bridged
+// when credits are bridged from a contract-based chain, therefore ensuring
+// that each credit batch corresponds to a single contract and credits that
+// have been bridged will always be bridged back to the original contract.
+type BatchContract struct {
+	// batch_key is the table row identifier of the credit batch used internally
+	// for efficient lookups. This links an external contract to a credit batch.
+	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
+	// class_key is the table row identifier of the credit class within which the
+	// credit batch exists. A contract is unique within the scope of a credit class
+	// to prevent malicious credit class issuers from blocking bridge operations
+	// taking place within another credit class.
+	ClassKey uint64 `protobuf:"varint,2,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
+	// contract is the address of the contract on the source chain that was
+	// executed when creating the transaction. This address will be used when
+	// sending credits back to the source chain.
+	Contract string `protobuf:"bytes,3,opt,name=contract,proto3" json:"contract,omitempty"`
 }
 
-func (m *BatchOrigTx) GetBatchDenom() string {
+func (m *BatchContract) Reset()         { *m = BatchContract{} }
+func (m *BatchContract) String() string { return proto.CompactTextString(m) }
+func (*BatchContract) ProtoMessage()    {}
+func (*BatchContract) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6cfdca0a4aaabb36, []int{11}
+}
+func (m *BatchContract) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BatchContract) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BatchContract.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BatchContract) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BatchContract.Merge(m, src)
+}
+func (m *BatchContract) XXX_Size() int {
+	return m.Size()
+}
+func (m *BatchContract) XXX_DiscardUnknown() {
+	xxx_messageInfo_BatchContract.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BatchContract proto.InternalMessageInfo
+
+func (m *BatchContract) GetBatchKey() uint64 {
 	if m != nil {
-		return m.BatchDenom
+		return m.BatchKey
+	}
+	return 0
+}
+
+func (m *BatchContract) GetClassKey() uint64 {
+	if m != nil {
+		return m.ClassKey
+	}
+	return 0
+}
+
+func (m *BatchContract) GetContract() string {
+	if m != nil {
+		return m.Contract
 	}
 	return ""
 }
@@ -885,74 +971,79 @@ func init() {
 	proto.RegisterType((*BatchSequence)(nil), "regen.ecocredit.v1.BatchSequence")
 	proto.RegisterType((*BatchBalance)(nil), "regen.ecocredit.v1.BatchBalance")
 	proto.RegisterType((*BatchSupply)(nil), "regen.ecocredit.v1.BatchSupply")
-	proto.RegisterType((*BatchOrigTx)(nil), "regen.ecocredit.v1.BatchOrigTx")
+	proto.RegisterType((*OriginTxIndex)(nil), "regen.ecocredit.v1.OriginTxIndex")
+	proto.RegisterType((*BatchContract)(nil), "regen.ecocredit.v1.BatchContract")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/state.proto", fileDescriptor_6cfdca0a4aaabb36) }
 
 var fileDescriptor_6cfdca0a4aaabb36 = []byte{
-	// 974 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x56, 0xcd, 0x6e, 0x23, 0x45,
-	0x10, 0x4e, 0xfb, 0x27, 0xb6, 0xcb, 0x7f, 0x93, 0x4e, 0x36, 0x8c, 0xc2, 0xe2, 0x8d, 0x06, 0x10,
-	0x41, 0x0a, 0xb6, 0x0c, 0x0b, 0x02, 0x1f, 0x40, 0x9b, 0x5d, 0x0e, 0xcb, 0x1e, 0x58, 0x99, 0x9c,
-	0xb8, 0x98, 0xf6, 0x4c, 0xe1, 0x4c, 0xd6, 0xf3, 0x43, 0x4f, 0x3b, 0x6b, 0x4b, 0x9c, 0x78, 0x00,
-	0xc4, 0x91, 0x03, 0xe2, 0x49, 0x78, 0x00, 0x38, 0x20, 0xad, 0xc4, 0x85, 0x23, 0x4a, 0x4e, 0x5c,
-	0x79, 0x02, 0xd4, 0x35, 0x3d, 0x63, 0x3b, 0x78, 0x77, 0x23, 0x6e, 0x5d, 0xd5, 0xf5, 0xf3, 0x7d,
-	0xdf, 0x54, 0xb5, 0x0d, 0x1d, 0x89, 0x13, 0x0c, 0x7b, 0xe8, 0x46, 0xae, 0x44, 0xcf, 0x57, 0xbd,
-	0x8b, 0x7e, 0x2f, 0x51, 0x42, 0x61, 0x37, 0x96, 0x91, 0x8a, 0x38, 0xa7, 0xfb, 0x6e, 0x7e, 0xdf,
-	0xbd, 0xe8, 0x1f, 0xbc, 0xe6, 0x46, 0x49, 0x10, 0x25, 0xbd, 0x48, 0x06, 0xbd, 0x8b, 0xbe, 0x98,
-	0xc6, 0x67, 0xa2, 0xaf, 0x8d, 0x34, 0xe5, 0xe0, 0xce, 0x24, 0x8a, 0x26, 0x53, 0xec, 0x91, 0x35,
-	0x9e, 0x7d, 0xdd, 0x53, 0x7e, 0x80, 0x89, 0x12, 0x41, 0x9c, 0x06, 0x38, 0x3f, 0x31, 0x80, 0xfb,
-	0x54, 0xed, 0x74, 0x11, 0x23, 0x77, 0xa0, 0x21, 0xc6, 0x63, 0x89, 0x17, 0xbe, 0x50, 0x7e, 0x14,
-	0xda, 0xec, 0x90, 0x1d, 0xd5, 0x86, 0x6b, 0x3e, 0xce, 0xa1, 0x14, 0x8a, 0x00, 0xed, 0x02, 0xdd,
-	0xd1, 0x59, 0xfb, 0x66, 0xa1, 0xaf, 0xec, 0x62, 0xea, 0xd3, 0x67, 0x7e, 0x1b, 0x6a, 0xb1, 0x44,
-	0xd7, 0x4f, 0x74, 0xa1, 0xd2, 0x21, 0x3b, 0x6a, 0x0e, 0x97, 0x8e, 0xc1, 0x1b, 0xff, 0xfc, 0xfc,
-	0xc7, 0xf7, 0xc5, 0x0e, 0xb4, 0xd6, 0x3b, 0x72, 0x48, 0xab, 0x5b, 0xcc, 0x66, 0x36, 0x73, 0x7e,
-	0x63, 0x50, 0xbe, 0x3f, 0x15, 0x49, 0xc2, 0x2d, 0x28, 0x3e, 0xc1, 0x05, 0x01, 0x2a, 0x0d, 0xf5,
-	0x91, 0xb7, 0xa0, 0xe0, 0x7b, 0x06, 0x45, 0xc1, 0xf7, 0xf8, 0x1e, 0x94, 0x85, 0x17, 0xf8, 0x21,
-	0x81, 0x68, 0x0c, 0x53, 0x83, 0x1f, 0x40, 0x35, 0x40, 0x25, 0x3c, 0xa1, 0x04, 0x81, 0xa8, 0x0d,
-	0x73, 0x9b, 0x1f, 0x03, 0x4f, 0x95, 0x1c, 0xa9, 0x45, 0x8c, 0xa3, 0x14, 0x87, 0x5d, 0xa6, 0x28,
-	0xcb, 0xcd, 0x55, 0xb9, 0x47, 0xfe, 0xc1, 0xc7, 0x84, 0xf8, 0x43, 0xa8, 0x10, 0x12, 0x8b, 0xf1,
-	0xaa, 0x06, 0xa0, 0x81, 0xf2, 0x9a, 0x69, 0x6d, 0x15, 0xf8, 0xfe, 0xa6, 0x9a, 0x56, 0xd1, 0x2e,
-	0x38, 0x5f, 0x41, 0x9d, 0xa8, 0x3c, 0x4c, 0x92, 0x19, 0x4a, 0xfe, 0x2a, 0xd4, 0x5c, 0x6d, 0x8e,
-	0x96, 0xb4, 0xaa, 0xe4, 0x78, 0x84, 0x0b, 0xbe, 0x0f, 0xdb, 0x3e, 0x85, 0x11, 0xbf, 0xc6, 0xd0,
-	0x58, 0x83, 0xdb, 0x84, 0x61, 0x1f, 0x38, 0x58, 0x79, 0xf2, 0xb1, 0x89, 0x2c, 0x3a, 0x7f, 0x33,
-	0xa8, 0x3c, 0x96, 0xd1, 0x39, 0xba, 0xea, 0x7f, 0xeb, 0xb5, 0x06, 0xab, 0x74, 0x0d, 0x56, 0x1f,
-	0xf6, 0xe2, 0xb4, 0xfe, 0xe8, 0x7c, 0x26, 0xfd, 0xc4, 0xf3, 0x5d, 0x1a, 0x93, 0x54, 0xb2, 0x5d,
-	0x73, 0xf7, 0xd9, 0xca, 0xd5, 0x9a, 0xfe, 0xdb, 0xeb, 0xfa, 0x0f, 0x06, 0xc4, 0xe6, 0xee, 0x26,
-	0x45, 0x39, 0x34, 0x56, 0x08, 0x7a, 0x56, 0x61, 0x55, 0xe5, 0xa2, 0x5d, 0x72, 0x7e, 0x2c, 0x42,
-	0xf9, 0x44, 0x28, 0xf7, 0x6c, 0x03, 0xd3, 0xe7, 0xa8, 0xc7, 0xef, 0x40, 0x3d, 0x83, 0xaf, 0x33,
-	0x8a, 0x94, 0x01, 0xc6, 0xa5, 0xf9, 0xed, 0x41, 0xd9, 0xc3, 0x30, 0x0a, 0xcc, 0xa4, 0xa4, 0xc6,
-	0x1a, 0x85, 0xf2, 0xb5, 0x11, 0xfa, 0x08, 0x20, 0x51, 0x42, 0xaa, 0x91, 0x27, 0x14, 0x12, 0xc1,
-	0xfa, 0xbb, 0x07, 0xdd, 0x74, 0xeb, 0xba, 0xd9, 0xd6, 0x75, 0x4f, 0xb3, 0xad, 0x1b, 0xd6, 0x28,
-	0xfa, 0x81, 0x50, 0xc8, 0xdf, 0x87, 0x2a, 0x86, 0x5e, 0x9a, 0x58, 0x79, 0x69, 0x62, 0x05, 0x43,
-	0x8f, 0xd2, 0x3e, 0x81, 0xa6, 0xa6, 0x23, 0x42, 0x17, 0xd3, 0xdc, 0xea, 0x4b, 0x73, 0x1b, 0x59,
-	0x02, 0x15, 0xe0, 0x50, 0x8a, 0x62, 0x0c, 0xed, 0xda, 0x21, 0x3b, 0xaa, 0x0e, 0xe9, 0x3c, 0x78,
-	0x44, 0x5f, 0xe2, 0xd3, 0xe5, 0x97, 0xa8, 0x1b, 0x25, 0xe8, 0x63, 0xb4, 0xd7, 0x74, 0xb3, 0x0a,
-	0xbc, 0xb5, 0xca, 0xda, 0x2a, 0x72, 0xc8, 0x04, 0xb7, 0x4a, 0x76, 0xd9, 0xf9, 0x8e, 0x41, 0x93,
-	0x26, 0xfd, 0x0b, 0xfc, 0x66, 0x86, 0xa1, 0x8b, 0xcf, 0x59, 0x34, 0xb6, 0x79, 0xd1, 0xf8, 0xeb,
-	0xd0, 0x0c, 0x71, 0xae, 0x46, 0x89, 0x49, 0xa7, 0xaf, 0x58, 0x1a, 0x36, 0xb4, 0x33, 0x2b, 0x39,
-	0xe8, 0x10, 0x62, 0x1b, 0xf6, 0x36, 0x96, 0xde, 0x76, 0xce, 0xa1, 0x6d, 0x56, 0x21, 0x47, 0xf1,
-	0xc2, 0x8d, 0xbb, 0x51, 0xd3, 0x5b, 0xd4, 0xb4, 0x0d, 0xf5, 0xd5, 0x4a, 0x15, 0x27, 0x84, 0x26,
-	0x8d, 0x62, 0xde, 0xe9, 0xda, 0xa0, 0xb1, 0xff, 0x0c, 0xda, 0x8d, 0xba, 0xbd, 0x42, 0xdd, 0x76,
-	0xa0, 0xb9, 0x5e, 0xad, 0xea, 0xfc, 0xce, 0xa0, 0x41, 0x0d, 0x4f, 0xc4, 0x54, 0x18, 0x66, 0x63,
-	0x6d, 0xaf, 0x32, 0x23, 0x87, 0xee, 0x65, 0x43, 0x45, 0x78, 0x9e, 0xc4, 0x24, 0x31, 0xeb, 0x90,
-	0x99, 0x7a, 0xb0, 0x95, 0x14, 0x9e, 0x18, 0x4f, 0xd1, 0xbc, 0xdc, 0xb9, 0xad, 0xb3, 0x24, 0x2a,
-	0x5f, 0xa2, 0x67, 0x96, 0x21, 0x33, 0x75, 0x16, 0x26, 0xae, 0x8c, 0x9e, 0xa2, 0x97, 0xad, 0x43,
-	0x66, 0x0f, 0xee, 0x12, 0xe4, 0x2e, 0xec, 0xc2, 0x8e, 0x69, 0x72, 0x9c, 0x03, 0xe3, 0xb7, 0x60,
-	0x27, 0x37, 0x8e, 0xcd, 0xb5, 0xc5, 0xec, 0x9a, 0xf3, 0x0b, 0x83, 0x7a, 0x2a, 0xe0, 0x2c, 0x8e,
-	0xa7, 0x8b, 0x17, 0xd3, 0x79, 0x0b, 0xda, 0x19, 0xc8, 0x91, 0x08, 0xa2, 0x59, 0xa8, 0xcc, 0x9b,
-	0xd6, 0xca, 0xdc, 0xf7, 0xc8, 0xcb, 0xdf, 0x84, 0x96, 0x81, 0x9c, 0xc5, 0xa5, 0x1c, 0x9b, 0xc6,
-	0x6b, 0xc2, 0xde, 0x06, 0xcb, 0xd5, 0x22, 0x4e, 0xa7, 0xcb, 0xc0, 0x94, 0x71, 0x3b, 0xf7, 0xa7,
-	0xa1, 0xab, 0x9f, 0x7f, 0x89, 0x0f, 0x9c, 0x6f, 0x0d, 0xfa, 0xcf, 0xa5, 0x3f, 0x39, 0x9d, 0xf3,
-	0x5d, 0x28, 0xab, 0xf9, 0xc8, 0xf7, 0xcc, 0x7c, 0x97, 0xd4, 0xfc, 0xa1, 0xa7, 0x1f, 0x29, 0xb5,
-	0x88, 0x0d, 0x52, 0x7d, 0xa4, 0x9f, 0xd1, 0x48, 0x65, 0xc2, 0xd3, 0x59, 0xcf, 0x4d, 0x5a, 0x78,
-	0xf5, 0x15, 0x02, 0x72, 0x3d, 0xd0, 0x9e, 0xc1, 0x0e, 0x21, 0xa8, 0x43, 0x25, 0xeb, 0x51, 0x3f,
-	0x79, 0xfc, 0xeb, 0x65, 0x87, 0x3d, 0xbb, 0xec, 0xb0, 0xbf, 0x2e, 0x3b, 0xec, 0x87, 0xab, 0xce,
-	0xd6, 0xb3, 0xab, 0xce, 0xd6, 0x9f, 0x57, 0x9d, 0xad, 0x2f, 0x3f, 0x98, 0xf8, 0xea, 0x6c, 0x36,
-	0xee, 0xba, 0x51, 0xd0, 0xa3, 0xbf, 0x0e, 0xef, 0x84, 0xa8, 0x9e, 0x46, 0xf2, 0x89, 0xb1, 0xa6,
-	0xe8, 0x4d, 0x50, 0xf6, 0xe6, 0x2b, 0xff, 0x38, 0xdc, 0x48, 0xe2, 0x78, 0x9b, 0x9e, 0x90, 0xf7,
-	0xfe, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x6f, 0xc4, 0xaa, 0x90, 0x08, 0x00, 0x00,
+	// 1025 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x56, 0xcd, 0x6e, 0xe3, 0x54,
+	0x14, 0x9e, 0x9b, 0x9f, 0x26, 0x39, 0xf9, 0x73, 0xef, 0xb4, 0xc5, 0x84, 0x21, 0x2d, 0x06, 0x34,
+	0x1d, 0xa9, 0x24, 0x2a, 0x7f, 0x82, 0x2c, 0x40, 0xd3, 0xc2, 0xa2, 0x9a, 0x05, 0xa3, 0xd0, 0x15,
+	0x9b, 0x70, 0x63, 0x9f, 0x49, 0xdd, 0x49, 0x6c, 0x73, 0x7d, 0xdd, 0x69, 0xb6, 0x3c, 0x00, 0x62,
+	0x85, 0x58, 0x20, 0x5e, 0x80, 0x57, 0xe0, 0x01, 0x60, 0x37, 0x12, 0x1b, 0x96, 0xa8, 0x7d, 0x03,
+	0xc4, 0x03, 0x20, 0x1f, 0x5f, 0x3b, 0x71, 0xc8, 0x74, 0x2a, 0x76, 0xf7, 0x9c, 0x7b, 0x7e, 0xbe,
+	0xef, 0xbb, 0xe7, 0x24, 0x86, 0xae, 0xc4, 0x09, 0x7a, 0x7d, 0xb4, 0x7d, 0x5b, 0xa2, 0xe3, 0xaa,
+	0xfe, 0xc5, 0x61, 0x3f, 0x54, 0x42, 0x61, 0x2f, 0x90, 0xbe, 0xf2, 0x39, 0xa7, 0xfb, 0x5e, 0x76,
+	0xdf, 0xbb, 0x38, 0xec, 0xbc, 0x6e, 0xfb, 0xe1, 0xcc, 0x0f, 0xfb, 0xbe, 0x9c, 0xf5, 0x2f, 0x0e,
+	0xc5, 0x34, 0x38, 0x13, 0x87, 0xb1, 0x91, 0xa4, 0x74, 0x76, 0x27, 0xbe, 0x3f, 0x99, 0x62, 0x9f,
+	0xac, 0x71, 0xf4, 0xa4, 0xaf, 0xdc, 0x19, 0x86, 0x4a, 0xcc, 0x82, 0x24, 0xc0, 0xfa, 0x89, 0x01,
+	0x1c, 0x53, 0xb5, 0xd3, 0x79, 0x80, 0xdc, 0x82, 0x86, 0x18, 0x8f, 0x25, 0x5e, 0xb8, 0x42, 0xb9,
+	0xbe, 0x67, 0xb2, 0x3d, 0xb6, 0x5f, 0x1b, 0xe6, 0x7c, 0x9c, 0x43, 0xc9, 0x13, 0x33, 0x34, 0x0b,
+	0x74, 0x47, 0xe7, 0xd8, 0x17, 0x79, 0xae, 0x32, 0x8b, 0x89, 0x2f, 0x3e, 0xf3, 0x7b, 0x50, 0x0b,
+	0x24, 0xda, 0x6e, 0x18, 0x17, 0x2a, 0xed, 0xb1, 0xfd, 0xe6, 0x70, 0xe1, 0x18, 0xbc, 0xf5, 0xf7,
+	0xcf, 0x7f, 0x7c, 0x57, 0xec, 0x42, 0x2b, 0xdf, 0x91, 0x43, 0x52, 0xdd, 0x60, 0x26, 0x33, 0x99,
+	0xf5, 0x3b, 0x83, 0xf2, 0xf1, 0x54, 0x84, 0x21, 0x37, 0xa0, 0xf8, 0x14, 0xe7, 0x04, 0xa8, 0x34,
+	0x8c, 0x8f, 0xbc, 0x05, 0x05, 0xd7, 0xd1, 0x28, 0x0a, 0xae, 0xc3, 0xb7, 0xa0, 0x2c, 0x9c, 0x99,
+	0xeb, 0x11, 0x88, 0xc6, 0x30, 0x31, 0x78, 0x07, 0xaa, 0x33, 0x54, 0xc2, 0x11, 0x4a, 0x10, 0x88,
+	0xda, 0x30, 0xb3, 0xf9, 0x01, 0xf0, 0x44, 0xc9, 0x91, 0x9a, 0x07, 0x38, 0x4a, 0x70, 0x98, 0x65,
+	0x8a, 0x32, 0xec, 0x4c, 0x95, 0x87, 0xe4, 0x1f, 0x7c, 0x42, 0x88, 0x3f, 0x82, 0x0a, 0x21, 0x31,
+	0x18, 0xaf, 0xc6, 0x00, 0x62, 0xa0, 0xbc, 0xa6, 0x5b, 0x1b, 0x05, 0xbe, 0xb3, 0xae, 0xa6, 0x51,
+	0x34, 0x0b, 0xd6, 0xd7, 0x50, 0x27, 0x2a, 0x27, 0x61, 0x18, 0xa1, 0xe4, 0xaf, 0x41, 0xcd, 0x8e,
+	0xcd, 0xd1, 0x82, 0x56, 0x95, 0x1c, 0x8f, 0x70, 0xce, 0x77, 0x60, 0xc3, 0xa5, 0x30, 0xe2, 0xd7,
+	0x18, 0x6a, 0x6b, 0x70, 0x8f, 0x30, 0xec, 0x00, 0x07, 0x23, 0x4b, 0x3e, 0xd0, 0x91, 0x45, 0xeb,
+	0x97, 0x02, 0x54, 0x1e, 0x4b, 0xff, 0x1c, 0x6d, 0xf5, 0xbf, 0xf5, 0xca, 0xc1, 0x2a, 0xad, 0xc0,
+	0xb2, 0xa0, 0x71, 0x1e, 0x49, 0x37, 0x74, 0x5c, 0x9b, 0xc6, 0x23, 0x91, 0x2a, 0xe7, 0xcb, 0x09,
+	0xbe, 0xb1, 0x22, 0xf8, 0x1b, 0xd0, 0x90, 0xf8, 0x04, 0x25, 0x7a, 0x36, 0x8e, 0x5c, 0xc7, 0xac,
+	0xd0, 0x7d, 0x3d, 0xf3, 0x9d, 0x38, 0x83, 0x33, 0x62, 0x38, 0x5e, 0xa7, 0x32, 0x87, 0xc6, 0x12,
+	0x69, 0xc7, 0x28, 0x2c, 0x2b, 0x5f, 0xe4, 0x46, 0xbe, 0xb8, 0x51, 0xe2, 0x1d, 0xd8, 0x59, 0x24,
+	0xe4, 0xee, 0xca, 0x66, 0xc9, 0xfa, 0xb1, 0x08, 0xe5, 0x23, 0xa1, 0xec, 0xb3, 0x35, 0x5a, 0xbd,
+	0x40, 0x7f, 0xbe, 0x0b, 0xf5, 0x20, 0x11, 0x98, 0xf4, 0x29, 0x52, 0x06, 0x68, 0x57, 0xac, 0xd0,
+	0x16, 0x94, 0x1d, 0xf4, 0xfc, 0x99, 0x9e, 0xb5, 0xc4, 0xc8, 0x69, 0x52, 0x5e, 0xd1, 0xe4, 0x63,
+	0x80, 0x50, 0x09, 0xa9, 0x46, 0x8e, 0x50, 0x48, 0x8a, 0xd5, 0xdf, 0xed, 0xf4, 0x92, 0xbd, 0xed,
+	0xa5, 0x7b, 0xdb, 0x3b, 0x4d, 0xf7, 0x76, 0x58, 0xa3, 0xe8, 0xcf, 0x84, 0x42, 0xfe, 0x01, 0x54,
+	0xd1, 0x73, 0x92, 0xc4, 0xca, 0x4b, 0x13, 0x2b, 0xe8, 0x39, 0x94, 0xf6, 0x29, 0x34, 0x63, 0x3a,
+	0x22, 0xd6, 0x82, 0x72, 0xab, 0x2f, 0xcd, 0x6d, 0xa4, 0x09, 0x54, 0x80, 0x43, 0xc9, 0x0f, 0xd0,
+	0x33, 0x6b, 0x7b, 0x6c, 0xbf, 0x3a, 0xa4, 0xf3, 0xe0, 0x11, 0xbd, 0xdb, 0xe7, 0x8b, 0x77, 0xab,
+	0x6b, 0x25, 0xe8, 0xe9, 0xda, 0x39, 0xdd, 0x8c, 0x02, 0x6f, 0x2d, 0xb3, 0x36, 0x8a, 0x1c, 0x52,
+	0xc1, 0x8d, 0x92, 0x59, 0xb6, 0xbe, 0x65, 0xd0, 0xa4, 0x5d, 0xf9, 0x12, 0xbf, 0x89, 0xe2, 0x37,
+	0x7b, 0xc1, 0xaa, 0xb2, 0xf5, 0xab, 0xca, 0xdf, 0x84, 0xa6, 0x87, 0x97, 0x6a, 0x14, 0xea, 0x74,
+	0x7a, 0xc5, 0xd2, 0xb0, 0x11, 0x3b, 0xd3, 0x92, 0x83, 0x2e, 0x21, 0x36, 0x61, 0x6b, 0x6d, 0xe9,
+	0x0d, 0xeb, 0x1c, 0xda, 0x7a, 0x99, 0x32, 0x14, 0x37, 0xee, 0xec, 0xad, 0x9a, 0x6e, 0x53, 0xd3,
+	0x36, 0xd4, 0x97, 0x2b, 0x55, 0x2c, 0x0f, 0x9a, 0x34, 0x8a, 0x59, 0xa7, 0x95, 0x41, 0x63, 0xff,
+	0x19, 0xb4, 0x5b, 0x75, 0x7b, 0x85, 0xba, 0x6d, 0x42, 0x33, 0x5f, 0xad, 0x6a, 0xfd, 0xc3, 0xa0,
+	0x41, 0x0d, 0x8f, 0xc4, 0x54, 0x68, 0x66, 0xe3, 0xd8, 0x5e, 0x66, 0x46, 0x8e, 0xb8, 0x97, 0x09,
+	0x15, 0xe1, 0x38, 0x12, 0xc3, 0x50, 0xaf, 0x43, 0x6a, 0xf2, 0xfb, 0xd0, 0x56, 0x52, 0x38, 0x62,
+	0x3c, 0xc5, 0x91, 0x98, 0xf9, 0x91, 0x97, 0xfe, 0x05, 0xb4, 0x52, 0xf7, 0x43, 0xf2, 0xf2, 0xb7,
+	0xa1, 0x25, 0x51, 0xb9, 0x12, 0x9d, 0x34, 0x2e, 0x59, 0x90, 0xa6, 0xf6, 0xea, 0xb0, 0xfb, 0xd0,
+	0xc6, 0xd0, 0x96, 0xfe, 0xb3, 0x45, 0x5c, 0xb2, 0x2f, 0xad, 0xd4, 0x9d, 0x04, 0x0e, 0xde, 0x27,
+	0x66, 0x3d, 0xb8, 0x0b, 0x9b, 0x1a, 0xcb, 0x41, 0x86, 0x9f, 0x6f, 0xc3, 0x66, 0x66, 0x1c, 0xe8,
+	0x6b, 0x83, 0x99, 0x35, 0xeb, 0x57, 0x06, 0xf5, 0x44, 0xe7, 0x28, 0x08, 0xa6, 0xf3, 0x9b, 0x59,
+	0xaf, 0xe1, 0x56, 0xb8, 0x25, 0xb7, 0xe2, 0x3a, 0x6e, 0x0f, 0xc0, 0xb0, 0x63, 0xad, 0xa7, 0xd3,
+	0x55, 0x11, 0xda, 0x99, 0x5f, 0xb3, 0x5b, 0x9a, 0x92, 0x05, 0x3e, 0xb0, 0x22, 0x68, 0x7e, 0x21,
+	0xdd, 0x89, 0xeb, 0x9d, 0x5e, 0x9e, 0x78, 0x0e, 0x5e, 0xde, 0x3c, 0x8f, 0xab, 0xbf, 0xf7, 0x3b,
+	0xb0, 0x11, 0xfa, 0x91, 0xb4, 0x51, 0xc3, 0xd3, 0xd6, 0x60, 0x97, 0x9a, 0xbd, 0x0a, 0xdb, 0x70,
+	0x77, 0xf9, 0xe7, 0xf5, 0x40, 0x07, 0xd7, 0xad, 0x1f, 0x98, 0x9e, 0xce, 0x63, 0xdf, 0x53, 0x52,
+	0xd8, 0xea, 0x66, 0xdd, 0x72, 0xa0, 0x0a, 0x2b, 0xa0, 0x3a, 0x50, 0xb5, 0x75, 0x15, 0x0d, 0x23,
+	0xb3, 0x07, 0x7d, 0x02, 0xf2, 0x20, 0xc7, 0x9a, 0x9b, 0xc0, 0x17, 0xa8, 0xd2, 0x50, 0xfa, 0x3a,
+	0x68, 0x1c, 0x3d, 0xfe, 0xed, 0xaa, 0xcb, 0x9e, 0x5f, 0x75, 0xd9, 0x5f, 0x57, 0x5d, 0xf6, 0xfd,
+	0x75, 0xf7, 0xce, 0xf3, 0xeb, 0xee, 0x9d, 0x3f, 0xaf, 0xbb, 0x77, 0xbe, 0xfa, 0x70, 0xe2, 0xaa,
+	0xb3, 0x68, 0xdc, 0xb3, 0xfd, 0x59, 0x9f, 0xbe, 0x9a, 0xde, 0xf1, 0x50, 0x3d, 0xf3, 0xe5, 0x53,
+	0x6d, 0x4d, 0xd1, 0x99, 0xa0, 0xec, 0x5f, 0x2e, 0x7d, 0x6c, 0xd9, 0xbe, 0xc4, 0xf1, 0x06, 0xfd,
+	0xf6, 0xbd, 0xf7, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2d, 0xe0, 0x0f, 0xb7, 0x8b, 0x09, 0x00,
+	0x00,
 }
 
 func (m *CreditType) Marshal() (dAtA []byte, err error) {
@@ -1115,6 +1206,13 @@ func (m *Project) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ReferenceId) > 0 {
+		i -= len(m.ReferenceId)
+		copy(dAtA[i:], m.ReferenceId)
+		i = encodeVarintState(dAtA, i, uint64(len(m.ReferenceId)))
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.Metadata) > 0 {
 		i -= len(m.Metadata)
 		copy(dAtA[i:], m.Metadata)
@@ -1122,10 +1220,10 @@ func (m *Project) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x32
 	}
-	if len(m.ProjectJurisdiction) > 0 {
-		i -= len(m.ProjectJurisdiction)
-		copy(dAtA[i:], m.ProjectJurisdiction)
-		i = encodeVarintState(dAtA, i, uint64(len(m.ProjectJurisdiction)))
+	if len(m.Jurisdiction) > 0 {
+		i -= len(m.Jurisdiction)
+		copy(dAtA[i:], m.Jurisdiction)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Jurisdiction)))
 		i--
 		dAtA[i] = 0x2a
 	}
@@ -1377,24 +1475,24 @@ func (m *BatchBalance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Escrowed) > 0 {
-		i -= len(m.Escrowed)
-		copy(dAtA[i:], m.Escrowed)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Escrowed)))
+	if len(m.EscrowedAmount) > 0 {
+		i -= len(m.EscrowedAmount)
+		copy(dAtA[i:], m.EscrowedAmount)
+		i = encodeVarintState(dAtA, i, uint64(len(m.EscrowedAmount)))
 		i--
 		dAtA[i] = 0x2a
 	}
-	if len(m.Retired) > 0 {
-		i -= len(m.Retired)
-		copy(dAtA[i:], m.Retired)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Retired)))
+	if len(m.RetiredAmount) > 0 {
+		i -= len(m.RetiredAmount)
+		copy(dAtA[i:], m.RetiredAmount)
+		i = encodeVarintState(dAtA, i, uint64(len(m.RetiredAmount)))
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.Tradable) > 0 {
-		i -= len(m.Tradable)
-		copy(dAtA[i:], m.Tradable)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Tradable)))
+	if len(m.TradableAmount) > 0 {
+		i -= len(m.TradableAmount)
+		copy(dAtA[i:], m.TradableAmount)
+		i = encodeVarintState(dAtA, i, uint64(len(m.TradableAmount)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1462,7 +1560,7 @@ func (m *BatchSupply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *BatchOrigTx) Marshal() (dAtA []byte, err error) {
+func (m *OriginTxIndex) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1472,43 +1570,74 @@ func (m *BatchOrigTx) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *BatchOrigTx) MarshalTo(dAtA []byte) (int, error) {
+func (m *OriginTxIndex) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *BatchOrigTx) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *OriginTxIndex) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.BatchDenom) > 0 {
-		i -= len(m.BatchDenom)
-		copy(dAtA[i:], m.BatchDenom)
-		i = encodeVarintState(dAtA, i, uint64(len(m.BatchDenom)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.Note) > 0 {
-		i -= len(m.Note)
-		copy(dAtA[i:], m.Note)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Note)))
+	if len(m.Source) > 0 {
+		i -= len(m.Source)
+		copy(dAtA[i:], m.Source)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Source)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.Typ) > 0 {
-		i -= len(m.Typ)
-		copy(dAtA[i:], m.Typ)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Typ)))
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Id)))
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.TxId) > 0 {
-		i -= len(m.TxId)
-		copy(dAtA[i:], m.TxId)
-		i = encodeVarintState(dAtA, i, uint64(len(m.TxId)))
+	if m.ClassKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ClassKey))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BatchContract) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BatchContract) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BatchContract) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Contract) > 0 {
+		i -= len(m.Contract)
+		copy(dAtA[i:], m.Contract)
+		i = encodeVarintState(dAtA, i, uint64(len(m.Contract)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.ClassKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.ClassKey))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.BatchKey != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.BatchKey))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1612,11 +1741,15 @@ func (m *Project) Size() (n int) {
 	if m.ClassKey != 0 {
 		n += 1 + sovState(uint64(m.ClassKey))
 	}
-	l = len(m.ProjectJurisdiction)
+	l = len(m.Jurisdiction)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
 	l = len(m.Metadata)
+	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
+	l = len(m.ReferenceId)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1724,15 +1857,15 @@ func (m *BatchBalance) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.Tradable)
+	l = len(m.TradableAmount)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.Retired)
+	l = len(m.RetiredAmount)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.Escrowed)
+	l = len(m.EscrowedAmount)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -1763,25 +1896,39 @@ func (m *BatchSupply) Size() (n int) {
 	return n
 }
 
-func (m *BatchOrigTx) Size() (n int) {
+func (m *OriginTxIndex) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.TxId)
+	if m.ClassKey != 0 {
+		n += 1 + sovState(uint64(m.ClassKey))
+	}
+	l = len(m.Id)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.Typ)
+	l = len(m.Source)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.Note)
-	if l > 0 {
-		n += 1 + l + sovState(uint64(l))
+	return n
+}
+
+func (m *BatchContract) Size() (n int) {
+	if m == nil {
+		return 0
 	}
-	l = len(m.BatchDenom)
+	var l int
+	_ = l
+	if m.BatchKey != 0 {
+		n += 1 + sovState(uint64(m.BatchKey))
+	}
+	if m.ClassKey != 0 {
+		n += 1 + sovState(uint64(m.ClassKey))
+	}
+	l = len(m.Contract)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
 	}
@@ -2396,7 +2543,7 @@ func (m *Project) Unmarshal(dAtA []byte) error {
 			}
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectJurisdiction", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Jurisdiction", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2424,7 +2571,7 @@ func (m *Project) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProjectJurisdiction = string(dAtA[iNdEx:postIndex])
+			m.Jurisdiction = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
@@ -2457,6 +2604,38 @@ func (m *Project) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Metadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReferenceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReferenceId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3154,7 +3333,7 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Tradable", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3182,11 +3361,11 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Tradable = string(dAtA[iNdEx:postIndex])
+			m.TradableAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Retired", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3214,11 +3393,11 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Retired = string(dAtA[iNdEx:postIndex])
+			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Escrowed", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field EscrowedAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3246,7 +3425,7 @@ func (m *BatchBalance) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Escrowed = string(dAtA[iNdEx:postIndex])
+			m.EscrowedAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3434,7 +3613,7 @@ func (m *BatchSupply) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *BatchOrigTx) Unmarshal(dAtA []byte) error {
+func (m *OriginTxIndex) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3457,17 +3636,17 @@ func (m *BatchOrigTx) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: BatchOrigTx: wiretype end group for non-group")
+			return fmt.Errorf("proto: OriginTxIndex: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: BatchOrigTx: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: OriginTxIndex: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TxId", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
 			}
-			var stringLen uint64
+			m.ClassKey = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -3477,27 +3656,14 @@ func (m *BatchOrigTx) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ClassKey |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthState
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthState
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.TxId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Typ", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3525,11 +3691,11 @@ func (m *BatchOrigTx) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Typ = string(dAtA[iNdEx:postIndex])
+			m.Id = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Note", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3557,11 +3723,99 @@ func (m *BatchOrigTx) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Note = string(dAtA[iNdEx:postIndex])
+			m.Source = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		default:
+			iNdEx = preIndex
+			skippy, err := skipState(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthState
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BatchContract) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowState
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BatchContract: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BatchContract: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchKey", wireType)
+			}
+			m.BatchKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BatchKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
+			}
+			m.ClassKey = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ClassKey |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Contract", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3589,7 +3843,7 @@ func (m *BatchOrigTx) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			m.Contract = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -22,9 +22,7 @@ type anchorSuite struct {
 }
 
 func TestAnchor(t *testing.T) {
-	runner := gocuke.NewRunner(t, &anchorSuite{}).Path("./features/anchor.feature")
-	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*anchorSuite).TheContentHash)
-	runner.Run()
+	gocuke.NewRunner(t, &anchorSuite{}).Path("./features/msg_anchor.feature").Run()
 }
 
 func (s *anchorSuite) Before(t gocuke.TestingT) {

@@ -1,7 +1,7 @@
 # Data Module
 
-::: tip Coming Soon
-The first version of the data module will be available in Regen Ledger v4.0.
+::: tip Now Available
+The first version of the data module was made available in Regen Ledger v4.0.
 :::
 
 The following documentation provides a technical overview of the data module and is designed for developers building tools and services that interact with Regen Ledger.
@@ -21,10 +21,11 @@ The data module also enables the creation and management of data resolvers. When
 ## Contents
 
 1. **[Concepts](01_concepts.md)**
-2. **[State](02_state.md)**
-3. **[Msg Service](03_messages.md)**
-4. **[Events](04_events.md)**
-5. **[Client](05_client.md)**
+1. **[State](02_state.md)**
+1. **[Msg Service](03_messages.md)**
+1. **[Events](05_events.md)**
+1. **[Types](06_types.md)**
+1. **[Client](07_client.md)**
 
 ## Protobuf
 

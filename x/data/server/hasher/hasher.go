@@ -2,9 +2,9 @@ package hasher
 
 import (
 	"encoding/binary"
-	"fmt"
 	"hash"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -45,7 +45,7 @@ func NewHasherWithOptions(options HashOptions) (Hasher, error) {
 
 	hashLen := len(newHash().Sum(nil))
 	if minLength > hashLen {
-		return nil, fmt.Errorf("option MinLength %d is greater than hash length %d", minLength, hashLen)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("option MinLength %d is greater than hash length %d", minLength, hashLen)
 	}
 
 	bufLen := hashLen + binary.MaxVarintLen64

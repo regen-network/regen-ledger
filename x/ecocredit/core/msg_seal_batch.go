@@ -2,7 +2,7 @@ package core
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -23,11 +23,14 @@ func (m MsgSealBatch) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSealBatch) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Issuer)
-	if err != nil {
-		return sdkerrors.Wrap(err, "malformed issuer address")
+	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
-	return ValidateDenom(m.BatchDenom)
+	if err := ValidateBatchDenom(m.BatchDenom); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	return ValidateBatchDenom(m.BatchDenom)
 }
 
 // GetSigners returns the expected signers for MsgSealBatch.

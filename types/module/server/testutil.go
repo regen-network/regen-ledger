@@ -4,35 +4,36 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
-
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/grpc"
+
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 type FixtureFactory struct {
-	t       *testing.T
+	t       gocuke.TestingT
 	modules []module.Module
 	signers []sdk.AccAddress
 	cdc     *codec.ProtoCodec
 	baseApp *baseapp.BaseApp
 }
 
-func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
+func NewFixtureFactory(t gocuke.TestingT, numSigners int) *FixtureFactory {
 	signers := makeTestAddresses(numSigners)
 	return &FixtureFactory{
 		t:       t,
@@ -63,7 +64,9 @@ func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
 func makeTestAddresses(count int) []sdk.AccAddress {
 	addrs := make([]sdk.AccAddress, count)
 	for i := 0; i < count; i++ {
-		_, _, addrs[i] = testdata.KeyTestPubAddr()
+		// generate from secret so that keys are deterministic
+		key := secp256k1.GenPrivKeyFromSecret([]byte{byte(i)})
+		addrs[i] = sdk.AccAddress(key.PubKey().Address())
 	}
 	return addrs
 }
@@ -99,7 +102,7 @@ type fixture struct {
 	cdc                   *codec.ProtoCodec
 	initGenesisHandlers   map[string]module.InitGenesisHandler
 	exportGenesisHandlers map[string]module.ExportGenesisHandler
-	t                     *testing.T
+	t                     gocuke.TestingT
 	signers               []sdk.AccAddress
 }
 

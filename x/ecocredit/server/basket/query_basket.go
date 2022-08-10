@@ -6,6 +6,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -18,7 +22,10 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
-		return nil, err
+		if ormerrors.IsNotFound(err) {
+			return nil, sdkerrors.Wrapf(err, "basket %s not found", request.BasketDenom)
+		}
+		return nil, sdkerrors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
 	}
 
 	basketGogo := &baskettypes.Basket{}
@@ -44,5 +51,23 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 
 	it.Close()
 
-	return &baskettypes.QueryBasketResponse{Basket: basketGogo, Classes: classes}, nil
+	basketInfo := &baskettypes.BasketInfo{
+		BasketDenom:       basket.BasketDenom,
+		Name:              basket.Name,
+		CreditTypeAbbrev:  basket.CreditTypeAbbrev,
+		DisableAutoRetire: basket.DisableAutoRetire,
+		Exponent:          basket.Exponent,
+		Curator:           sdk.AccAddress(basket.Curator).String(),
+	}
+
+	if basket.DateCriteria != nil {
+		criteria := &baskettypes.DateCriteria{}
+		if err := ormutil.PulsarToGogoSlow(basket.DateCriteria, criteria); err != nil {
+			return nil, err
+		}
+
+		basketInfo.DateCriteria = criteria
+	}
+
+	return &baskettypes.QueryBasketResponse{Basket: basketGogo, BasketInfo: basketInfo, Classes: classes}, nil
 }

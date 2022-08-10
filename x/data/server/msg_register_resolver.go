@@ -13,7 +13,7 @@ import (
 
 // RegisterResolver registers data content hashes to the provided resolver.
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
-	resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, msg.ResolverId)
+	resolver, err := s.stateStore.ResolverTable().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
 	}
@@ -23,12 +23,14 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		return nil, err
 	}
 
-	if !bytes.Equal(resolverInfo.Manager, manager) {
+	if !bytes.Equal(resolver.Manager, manager) {
 		return nil, data.ErrUnauthorizedResolverManager
 	}
 
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	for _, ch := range msg.ContentHashes {
-		_, id, _, err := s.anchorAndGetIRI(ctx, ch)
+		iri, id, _, err := s.anchorAndGetIRI(ctx, ch)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +46,15 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 			return nil, err
 		}
 
-		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(data.GasCostPerIteration, "data/RegisterResolver content hash iteration")
+		err = sdkCtx.EventManager().EmitTypedEvent(&data.EventRegisterResolver{
+			Id:  msg.ResolverId,
+			Iri: iri,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/RegisterResolver content hash iteration")
 	}
 
 	return &data.MsgRegisterResolverResponse{}, nil

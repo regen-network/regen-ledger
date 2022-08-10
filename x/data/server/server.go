@@ -1,9 +1,8 @@
 package server
 
 import (
-	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
@@ -12,22 +11,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/server/hasher"
 )
 
-const (
-	ORMPrefix byte = iota
-)
-
 var _ data.MsgServer = serverImpl{}
 var _ data.QueryServer = serverImpl{}
 
-var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
-	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
-		{Id: 1, ProtoFileName: api.File_regen_data_v1_state_proto.Path(), StorageType: ormv1alpha1.StorageType_STORAGE_TYPE_DEFAULT_UNSPECIFIED},
-	},
-	Prefix: []byte{ORMPrefix},
-}
-
 type serverImpl struct {
-	storeKey      sdk.StoreKey
+	storeKey      storetypes.StoreKey
 	iriHasher     hasher.Hasher
 	stateStore    api.StateStore
 	db            ormdb.ModuleDB
@@ -35,13 +23,13 @@ type serverImpl struct {
 	accountKeeper data.AccountKeeper
 }
 
-func newServer(storeKey sdk.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
+func newServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	db, err := ormstore.NewStoreKeyDB(&data.ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}

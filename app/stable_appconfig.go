@@ -1,38 +1,39 @@
-//go:build !experimental
-// +build !experimental
-
 // DONTCOVER
 
 package app
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler, distrclient.ProposalHandler,
-			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-			ecocreditcore.CreditTypeProposalHandler,
+			[]govclient.ProposalHandler{
+				paramsclient.ProposalHandler, distrclient.ProposalHandler,
+				upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler,
+				ecocreditcore.CreditTypeProposalHandler, marketplace.AllowDenomProposalHandler,
+			},
 		),
 	}
 }
@@ -58,14 +59,21 @@ func setCustomOrderEndBlocker() []string {
 	return []string{}
 }
 
-func (app *RegenApp) registerUpgradeHandlers() {}
+func (app *RegenApp) registerUpgradeHandlers() {
+	upgradeName := "v5.0"
+	app.UpgradeKeeper.SetUpgradeHandler(upgradeName,
+		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			// transfer module consensus version has been bumped to 2
+			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		})
+}
 
-func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey, _ *wasm.Config) (sdk.AnteHandler, error) {
+func (app *RegenApp) setCustomAnteHandler(cfg client.TxConfig) (sdk.AnteHandler, error) {
 	return ante.NewAnteHandler(
 		ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
 			BankKeeper:      app.BankKeeper,
-			SignModeHandler: encCfg.TxConfig.SignModeHandler(),
+			SignModeHandler: cfg.SignModeHandler(),
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 		},
@@ -76,9 +84,8 @@ func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeepers(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string,
-	_ servertypes.AppOptions,
-	_ []wasm.Option) {
+func (app *RegenApp) setCustomKeepers(_ *baseapp.BaseApp, keys map[string]*storetypes.KVStoreKey, appCodec codec.Codec, _ govv1beta1.Router, _ string,
+	_ servertypes.AppOptions) {
 }
 
 func setCustomOrderInitGenesis() []string {

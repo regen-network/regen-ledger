@@ -1,108 +1,50 @@
 package core
 
 import (
+	"strconv"
+	"strings"
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 )
 
+type msgCancel struct {
+	t   gocuke.TestingT
+	msg *MsgCancel
+	err error
+}
+
 func TestMsgCancel(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgCancel{}).Path("./features/msg_cancel.feature").Run()
+}
 
-	addr1 := testutil.GenAddress()
+func (s *msgCancel) Before(t gocuke.TestingT) {
+	s.t = t
+}
 
-	tests := map[string]struct {
-		src    MsgCancel
-		expErr bool
-	}{
-		"valid msg": {
-			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid msg without holder": {
-			src: MsgCancel{
-				Credits: []*MsgCancel_CancelCredits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong holder address": {
-			src: MsgCancel{
-				Holder: "wrongHolder",
-				Credits: []*MsgCancel_CancelCredits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without credits": {
-			src: MsgCancel{
-				Holder: addr1,
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.BatchDenom": {
-			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
-					{
-						Amount: "10",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg without Credits.Amount": {
-			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
-					{
-						BatchDenom: batchDenom,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong Credits.Amount": {
-			src: MsgCancel{
-				Holder: addr1,
-				Credits: []*MsgCancel_CancelCredits{
-					{
-						BatchDenom: batchDenom,
-						Amount:     "abc",
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
+func (s *msgCancel) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgCancel{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgCancel) AReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+	s.msg.Reason = strings.Repeat("x", int(length))
+}
+
+func (s *msgCancel) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgCancel) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgCancel) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

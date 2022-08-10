@@ -5,16 +5,17 @@ import (
 
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// assertClassIssuer makes sure that the issuer is part of issuers of given class key.
 // Returns ErrUnauthorized otherwise.
-func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, addr sdk.AccAddress) error {
-	found, err := k.stateStore.ClassIssuerTable().Has(goCtx, classID, addr)
+func (k Keeper) assertClassIssuer(goCtx context.Context, classKey uint64, addr sdk.AccAddress) error {
+	found, err := k.stateStore.ClassIssuerTable().Has(goCtx, classKey, addr)
 	if err != nil {
 		return err
 	}
@@ -26,21 +27,11 @@ func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, addr sd
 
 // AddAndSaveBalance adds 'amt' to the addr's tradable balance.
 func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr sdk.AccAddress, batchKey uint64, amt math.Dec) error {
-	bal, err := table.Get(ctx, addr, batchKey)
+	bal, err := utils.GetBalance(ctx, table, addr, batchKey)
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			bal = &ecoApi.BatchBalance{
-				BatchKey: batchKey,
-				Address:  addr,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
-			}
-		} else {
-			return err
-		}
+		return err
 	}
-	tradable, err := math.NewDecFromString(bal.Tradable)
+	tradable, err := math.NewDecFromString(bal.TradableAmount)
 	if err != nil {
 		return err
 	}
@@ -48,7 +39,7 @@ func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr
 	if err != nil {
 		return err
 	}
-	bal.Tradable = newTradable.String()
+	bal.TradableAmount = newTradable.String()
 	return table.Save(ctx, bal)
 }
 
@@ -58,17 +49,17 @@ func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, a
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &ecoApi.BatchBalance{
-				BatchKey: batchKey,
-				Address:  addr,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
+				BatchKey:       batchKey,
+				Address:        addr,
+				TradableAmount: "0",
+				RetiredAmount:  "0",
+				EscrowedAmount: "0",
 			}
 		} else {
 			return err
 		}
 	}
-	retired, err := math.NewDecFromString(bal.Retired)
+	retired, err := math.NewDecFromString(bal.RetiredAmount)
 	if err != nil {
 		return err
 	}
@@ -76,7 +67,7 @@ func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, a
 	if err != nil {
 		return err
 	}
-	bal.Retired = newRetired.String()
+	bal.RetiredAmount = newRetired.String()
 	return table.Save(ctx, bal)
 }
 

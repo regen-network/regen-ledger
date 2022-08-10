@@ -1,9 +1,11 @@
 package core
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -20,31 +22,48 @@ func (m MsgUpdateClassIssuers) GetSignBytes() []byte {
 
 func (m *MsgUpdateClassIssuers) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
-		return err
+	if err := ValidateClassId(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.AddIssuers) == 0 && len(m.RemoveIssuers) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("must specify at least one of add_issuers or remove_issuers")
 	}
 
-	validateIssuers := func(issuers []string) error {
-		for _, addr := range issuers {
-			if _, err := sdk.AccAddressFromBech32(addr); err != nil {
-				return sdkerrors.ErrInvalidAddress.Wrap(addr)
-			}
+	duplicateAddMap := make(map[string]bool)
+	for i, issuer := range m.AddIssuers {
+		addIssuerIndex := fmt.Sprintf("add_issuers[%d]", i)
+
+		if _, err := sdk.AccAddressFromBech32(issuer); err != nil {
+			return sdkerrors.ErrInvalidAddress.Wrapf("%s: %s", addIssuerIndex, err)
 		}
-		return nil
+
+		if _, ok := duplicateAddMap[issuer]; ok {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: duplicate issuer", addIssuerIndex)
+		}
+
+		duplicateAddMap[issuer] = true
 	}
 
-	if err := validateIssuers(m.AddIssuers); err != nil {
-		return err
+	duplicateRemoveMap := make(map[string]bool)
+	for i, issuer := range m.RemoveIssuers {
+		removeIssuerIndex := fmt.Sprintf("remove_issuers[%d]", i)
+
+		if _, err := sdk.AccAddressFromBech32(issuer); err != nil {
+			return sdkerrors.ErrInvalidAddress.Wrapf("%s: %s", removeIssuerIndex, err)
+		}
+
+		if _, ok := duplicateRemoveMap[issuer]; ok {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: duplicate issuer", removeIssuerIndex)
+		}
+
+		duplicateRemoveMap[issuer] = true
 	}
 
-	return validateIssuers(m.RemoveIssuers)
+	return nil
 }
 
 func (m *MsgUpdateClassIssuers) GetSigners() []sdk.AccAddress {

@@ -3,33 +3,24 @@ package marketplace
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.
-func isDenomAllowed(ctx sdk.Context, denom string, pk ecocredit.ParamKeeper) bool {
-	var params core.Params
-	pk.GetParamSet(ctx, &params)
-	for _, askDenom := range params.AllowedAskDenoms {
-		if askDenom.Denom == denom {
-			return true
-		}
-	}
-	return false
+func isDenomAllowed(ctx context.Context, bankDenom string, table api.AllowedDenomTable) (bool, error) {
+	return table.Has(ctx, bankDenom)
 }
 
 type orderOptions struct {
-	autoRetire         bool
-	canPartialFill     bool
-	batchDenom         string
-	retirementLocation string
+	autoRetire   bool
+	batchDenom   string
+	jurisdiction string
 }
 
 // fillOrder moves credits and coins according to the order. It will:
@@ -38,7 +29,7 @@ type orderOptions struct {
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
-func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec,
+func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec,
 	cost sdk.Coin, opts orderOptions) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
@@ -48,16 +39,10 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 
 	switch sellOrderQty.Cmp(purchaseQty) {
 	case math.LessThan:
-		if !opts.canPartialFill {
-			return ecocredit.ErrInsufficientCredits.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
-		} else {
-			// if we can partially fill, we just delete the sellOrder and take whatever
-			// credits are left from that order.
-			if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
-				return err
-			}
-			purchaseQty = sellOrderQty
-		}
+		return sdkerrors.ErrInvalidRequest.Wrapf(
+			"%s: requested quantity: %v, sell order quantity %s",
+			orderIndex, purchaseQty, sellOrder.Quantity,
+		)
 	case math.EqualTo:
 		if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
 			return err
@@ -74,11 +59,11 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	}
 
 	// remove the credits from the seller's escrowed balance
-	sellerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellOrder.Seller, sellOrder.BatchId)
+	sellerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellOrder.Seller, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
-	escrowBal, err := math.NewDecFromString(sellerBal.Escrowed)
+	escrowBal, err := math.NewDecFromString(sellerBal.EscrowedAmount)
 	if err != nil {
 		return err
 	}
@@ -86,32 +71,24 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	if err != nil {
 		return err
 	}
-	sellerBal.Escrowed = escrowBal.String()
+	sellerBal.EscrowedAmount = escrowBal.String()
 	if err = k.coreStore.BatchBalanceTable().Update(ctx, sellerBal); err != nil {
 		return err
 	}
 
 	// update the buyers balance and the batch supply
-	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, sellOrder.BatchId)
+	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
-	buyerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, buyerAcc, sellOrder.BatchId)
+	buyerBal, err := utils.GetBalance(ctx, k.coreStore.BatchBalanceTable(), buyerAcc, sellOrder.BatchKey)
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			buyerBal = &ecoApi.BatchBalance{
-				BatchKey: sellOrder.BatchId,
-				Address:  buyerAcc,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
-			}
-		} else {
-			return err
-		}
+		return err
 	}
-	if !opts.autoRetire { // if auto retire is disabled, we move the credits into the buyer's/supply's tradable balance.
-		tradableBalance, err := math.NewDecFromString(buyerBal.Tradable)
+	// if auto retire is disabled, we move the credits into the buyer's tradable balance.
+	// supply is not updated because supply does not distinguish between tradable and escrowed credits.
+	if !opts.autoRetire {
+		tradableBalance, err := math.NewDecFromString(buyerBal.TradableAmount)
 		if err != nil {
 			return err
 		}
@@ -119,18 +96,8 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		if err != nil {
 			return err
 		}
-		buyerBal.Tradable = tradableBalance.String()
-
-		supplyTradable, err := math.NewDecFromString(supply.TradableAmount)
-		if err != nil {
-			return err
-		}
-		supplyTradable, err = math.SafeAddBalance(supplyTradable, purchaseQty)
-		if err != nil {
-			return err
-		}
-		supply.TradableAmount = supplyTradable.String()
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+		buyerBal.TradableAmount = tradableBalance.String()
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 			Sender:         sdk.AccAddress(sellOrder.Seller).String(),
 			Recipient:      buyerAcc.String(),
 			BatchDenom:     opts.batchDenom,
@@ -140,7 +107,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 	} else {
-		retiredBalance, err := math.NewDecFromString(buyerBal.Retired)
+		retiredBalance, err := math.NewDecFromString(buyerBal.RetiredAmount)
 		if err != nil {
 			return err
 		}
@@ -148,7 +115,17 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		if err != nil {
 			return err
 		}
-		buyerBal.Retired = retiredBalance.String()
+		buyerBal.RetiredAmount = retiredBalance.String()
+
+		supplyTradable, err := math.NewDecFromString(supply.TradableAmount)
+		if err != nil {
+			return err
+		}
+		supplyTradable, err = math.SafeSubBalance(supplyTradable, purchaseQty)
+		if err != nil {
+			return err
+		}
+		supply.TradableAmount = supplyTradable.String()
 
 		supplyRetired, err := math.NewDecFromString(supply.RetiredAmount)
 		if err != nil {
@@ -159,17 +136,17 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		supply.RetiredAmount = supplyRetired.String()
+		if err = k.coreStore.BatchSupplyTable().Update(ctx, supply); err != nil {
+			return err
+		}
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:      buyerAcc.String(),
+			Owner:        buyerAcc.String(),
 			BatchDenom:   opts.batchDenom,
 			Amount:       purchaseQty.String(),
-			Jurisdiction: opts.retirementLocation,
+			Jurisdiction: opts.jurisdiction,
 		}); err != nil {
 			return err
 		}
-	}
-	if err = k.coreStore.BatchSupplyTable().Update(ctx, supply); err != nil {
-		return err
 	}
 	if err = k.coreStore.BatchBalanceTable().Save(ctx, buyerBal); err != nil {
 		return err

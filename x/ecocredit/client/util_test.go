@@ -1,190 +1,251 @@
 package client
 
 import (
-	"encoding/json"
-	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/testutil"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func TestParseCredits(t *testing.T) {
-	specs := []struct {
-		name           string
-		creditsListStr string
-		expectErr      bool
-		expCreditsList []credits
-	}{
-		{
-			name:           "missing space",
-			creditsListStr: "10C01-20200101-20210101-001",
-			expectErr:      true,
-		},
-		{
-			name:           "malformed batch denom",
-			creditsListStr: "10 ABC123",
-			expectErr:      true,
-		},
-		{
-			name:           "malformed amount",
-			creditsListStr: "10! C01-20200101-20210101-001",
-			expectErr:      true,
-		},
-		{
-			name:           "single credits with simple decimal",
-			creditsListStr: "10 C01-20200101-20210101-001",
-			expectErr:      false,
-			expCreditsList: []credits{
-				{
-					batchDenom: "C01-20200101-20210101-001",
-					amount:     "10",
-				},
-			},
-		},
-		{
-			name:           "single credits with multiple places",
-			creditsListStr: "10.0000001 C01-20200101-20210101-001",
-			expectErr:      false,
-			expCreditsList: []credits{
-				{
-					batchDenom: "C01-20200101-20210101-001",
-					amount:     "10.0000001",
-				},
-			},
-		},
-		{
-			name:           "single credits with no digit before decimal point",
-			creditsListStr: ".0000001 C01-20200101-20210101-001",
-			expectErr:      false,
-			expCreditsList: []credits{
-				{
-					batchDenom: "C01-20200101-20210101-001",
-					amount:     ".0000001",
-				},
-			},
-		},
-		{
-			name:           "single credits overflowing padding",
-			creditsListStr: ".0000001 C123-20200101-20210101-1234",
-			expectErr:      false,
-			expCreditsList: []credits{
-				{
-					batchDenom: "C123-20200101-20210101-1234",
-					amount:     ".0000001",
-				},
-			},
-		},
-		{
-			name:           "multiple credits",
-			creditsListStr: ".0000001 C01-20200101-20210101-001,10 C01-20200101-20210101-002, 10000.0001 C01-20200101-20210101-003",
-			expectErr:      false,
-			expCreditsList: []credits{
-				{
-					batchDenom: "C01-20200101-20210101-001",
-					amount:     ".0000001",
-				},
-				{
-					batchDenom: "C01-20200101-20210101-002",
-					amount:     "10",
-				},
-				{
-					batchDenom: "C01-20200101-20210101-003",
-					amount:     "10000.0001",
-				},
-			},
-		},
-	}
+func TestParseMsgCreateBatch(t *testing.T) {
+	clientCtx := client.Context{}.WithCodec(&codec.ProtoCodec{})
 
-	for _, spec := range specs {
-		t.Run(spec.name, func(t *testing.T) {
-			creditsList, err := parseCreditsList(spec.creditsListStr)
-			if spec.expectErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, spec.expCreditsList, creditsList)
+	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJson := testutil.WriteToNewTempFile(t, `{
+		"issuer": "regen1",
+		"project_id": "C01-001",
+		"issuance": [
+			{
+				"recipient": "regen2",
+				"tradable_amount": "10",
+				"retired_amount": "2.5",
+				"retirement_jurisdiction": "US-WA"
 			}
+		],
+		"metadata": "metadata",
+		"start_date": "2020-01-01T00:00:00Z",
+		"end_date": "2021-01-01T00:00:00Z"
+	}`).Name()
 
-			// Also check that the tests pass successfully when wrapping with CancelCredits
-			_, err = parseCancelCreditsList(spec.creditsListStr)
-			if spec.expectErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
+	startDate := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	endDate := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
 
-func TestJSONDupliteKeys(t *testing.T) {
 	testCases := []struct {
-		name       string
-		input      string
-		expErr     bool
-		errMessage string
+		name      string
+		file      string
+		expErr    bool
+		expErrMsg string
+		expRes    *core.MsgCreateBatch
 	}{
 		{
-			"invalid json",
-			`{abcd}`,
-			true,
-			"invalid character",
+			name:      "empty file path",
+			file:      "",
+			expErr:    true,
+			expErrMsg: "no such file or directory",
 		},
 		{
-			"valid json simple",
-			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "project_jurisdiction": "AB-CDE FG1 345"}`,
-			false,
-			"",
+			name:      "invalid json format",
+			file:      invalidJson,
+			expErr:    true,
+			expErrMsg: "invalid character",
 		},
 		{
-			"valid json nested",
-			`{
-				"class_id": "C01",
-				"issuance": [
+			name:      "duplicate json keys",
+			file:      duplicateJson,
+			expErr:    true,
+			expErrMsg: "duplicate key",
+		},
+		{
+			name: "valid test",
+			file: validJson,
+			expRes: &core.MsgCreateBatch{
+				Issuer:    "regen1",
+				ProjectId: "C01-001",
+				Issuance: []*core.BatchIssuance{
 					{
-						"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
-						"tradable_amount": "1000",
-						"retired_amount": "5",
-						"retirement_jurisdiction": "ST-UVW XY Z12"
-					}
-				],
-				"metadata": "Y2FyYm9uCg==",
-				"start_date": "2021-09-08T00:00:00Z",
-				"end_date": "2022-09-08T00:00:00Z",
-				"project_jurisdiction": "AB-CDE FG1 345"
-			}`,
-			false,
-			"",
-		},
-		{
-			"invalid json duplicate keys",
-			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "class_id": "C01"}`,
-			true,
-			"duplicate key class_id",
-		},
-		{
-			"invalid nested json duplicate keys",
-			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "issuance": [
-				{
-					"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
-					"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
-					"tradable_amount": "1000",
-					"retired_amount": "5",
-					"retirement_jurisdiction": "ST-UVW XY Z12"
-				}
-			]}`,
-			true,
-			"duplicate key recipient",
+						Recipient:              "regen2",
+						TradableAmount:         "10",
+						RetiredAmount:          "2.5",
+						RetirementJurisdiction: "US-WA",
+					},
+				},
+				Metadata:  "metadata",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := checkDuplicateKey(json.NewDecoder(strings.NewReader(tc.input)), nil)
+			res, err := parseMsgCreateBatch(clientCtx, tc.file)
 			if tc.expErr {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.errMessage)
+				require.ErrorContains(t, err, tc.expErrMsg)
 			} else {
 				require.NoError(t, err)
+				require.Equal(t, tc.expRes, res)
+			}
+		})
+	}
+}
+
+func TestParseSendCredits(t *testing.T) {
+	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJson := testutil.WriteToNewTempFile(t, `[
+		{
+			"batch_denom": "C01-001-20210101-20210101-001",
+			"tradable_amount": "10"
+		},
+		{
+			"batch_denom": "C01-001-20210101-20210101-002",
+			"retired_amount": "2.5",
+			"retirement_jurisdiction": "US-WA"
+		}
+	]`).Name()
+
+	testCases := []struct {
+		name      string
+		file      string
+		expErr    bool
+		expErrMsg string
+		expRes    []*core.MsgSend_SendCredits
+	}{
+		{
+			name:      "empty file path",
+			file:      "",
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name:      "empty json object",
+			file:      emptyJson,
+			expErr:    true,
+			expErrMsg: "cannot unmarshal object",
+		},
+		{
+			name:      "invalid json format",
+			file:      invalidJson,
+			expErr:    true,
+			expErrMsg: "invalid character",
+		},
+		{
+			name:      "duplicate json keys",
+			file:      duplicateJson,
+			expErr:    true,
+			expErrMsg: "duplicate key",
+		},
+		{
+			name: "valid test",
+			file: validJson,
+			expRes: []*core.MsgSend_SendCredits{
+				{
+					BatchDenom:     "C01-001-20210101-20210101-001",
+					TradableAmount: "10",
+				},
+				{
+					BatchDenom:             "C01-001-20210101-20210101-002",
+					RetiredAmount:          "2.5",
+					RetirementJurisdiction: "US-WA",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, err := parseSendCredits(tc.file)
+			if tc.expErr {
+				require.Error(t, err)
+				require.ErrorContains(t, err, tc.expErrMsg)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expRes, res)
+			}
+		})
+	}
+}
+
+func TestParseCredits(t *testing.T) {
+	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJson := testutil.WriteToNewTempFile(t, `[
+		{
+			"batch_denom": "C01-001-20210101-20210101-001",
+			"amount": "10"
+		},
+		{
+			"batch_denom": "C01-001-20210101-20210101-002",
+			"amount": "2.5"
+		}
+	]`).Name()
+
+	testCases := []struct {
+		name      string
+		file      string
+		expErr    bool
+		expErrMsg string
+		expRes    []*core.Credits
+	}{
+		{
+			name:      "empty file path",
+			file:      "",
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name:      "empty json object",
+			file:      emptyJson,
+			expErr:    true,
+			expErrMsg: "cannot unmarshal object",
+		},
+		{
+			name:      "invalid file format",
+			file:      invalidJson,
+			expErr:    true,
+			expErrMsg: "invalid character",
+		},
+		{
+			name:      "duplicate json keys",
+			file:      duplicateJson,
+			expErr:    true,
+			expErrMsg: "duplicate key",
+		},
+		{
+			name: "valid test",
+			file: validJson,
+			expRes: []*core.Credits{
+				{
+					BatchDenom: "C01-001-20210101-20210101-001",
+					Amount:     "10",
+				},
+				{
+					BatchDenom: "C01-001-20210101-20210101-002",
+					Amount:     "2.5",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, err := parseCredits(tc.file)
+			if tc.expErr {
+				require.Error(t, err)
+				require.ErrorContains(t, err, tc.expErrMsg)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expRes, res)
 			}
 		})
 	}

@@ -1,331 +1,505 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
+	"strings"
 
-	"github.com/cosmos/cosmos-sdk/types/rest"
-
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-func (s *IntegrationTestSuite) TestQueryByIRI() {
-	val := s.network.Validators[0]
+const dataRoute = "regen/data/v1"
 
-	iri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+func (s *IntegrationTestSuite) TestQueryAnchorByIRI() {
+	require := s.Require()
 
 	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
+		name string
+		url  string
 	}{
 		{
-			"invalid IRI",
-			fmt.Sprintf("%s/regen/data/v1/by-iri/%s", val.APIAddress, "foo"),
-			true,
-			"not found",
+			"valid",
+			fmt.Sprintf("%s/%s/anchor-by-iri/%s", s.val.APIAddress, dataRoute, s.iri1),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/by-iri/%s", val.APIAddress, iri),
-			false,
-			"",
+			"valid alternative",
+			fmt.Sprintf("%s/%s/anchors/iri/%s", s.val.APIAddress, dataRoute, s.iri1),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var entry data.QueryByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &entry)
+			var res data.QueryAnchorByIRIResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Anchor)
+		})
+	}
+}
 
-			if tc.expErr {
-				require.Error(err)
+func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
+	require := s.Require()
+
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
+
+	testCases := []struct {
+		name string
+		url  string
+		body []byte
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/anchor-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/anchors/hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.QueryAnchorByHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Anchor)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
+	require := s.Require()
+
+	pgn := "pagination.countTotal=true"
+	// TODO: #1113
+	// pgn := pagination.limit=1&pagination.countTotal=true
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-attestor/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.addr1,
+			),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-attestor/%s?%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.addr1,
+				pgn,
+			),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf(
+				"%s/%s/attestations/attestor/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.addr1,
+			),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.QueryAttestationsByAttestorResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Attestations)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Attestations, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(entry.Entry)
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryByAttestor() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
+	require := s.Require()
 
-	acc1, err := val.ClientCtx.Keyring.Key("acc1")
-	s.Require().NoError(err)
-
-	addr := acc1.GetAddress().String()
+	pgn := "pagination.limit=1&pagination.countTotal=true"
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name string
+		url  string
 	}{
 		{
-			"invalid attestor",
-			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s", val.APIAddress, "foo"),
-			true,
-			"invalid bech32 string",
-			0,
+			"valid",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-iri/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.iri2,
+			),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s", val.APIAddress, addr),
-			false,
-			"",
-			2,
+			"valid with pagination",
+			fmt.Sprintf(
+				"%s/%s/attestations-by-iri/%s?%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.iri2,
+				pgn,
+			),
 		},
 		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s?pagination.limit=1", val.APIAddress, addr),
-			false,
-			"",
-			1,
+			"valid alternative",
+			fmt.Sprintf(
+				"%s/%s/attestations/iri/%s",
+				s.val.APIAddress,
+				dataRoute,
+				s.iri2,
+			),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var entries data.QueryByAttestorResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &entries)
+			var res data.QueryAttestationsByIRIResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Attestations)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Attestations, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(entries.Entries)
-				require.Len(entries.Entries, tc.expItems)
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryHashByIRI() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
+	require := s.Require()
 
-	iri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
+
+	pgn, err := json.Marshal(query.PageRequest{
+		Limit:      1,
+		CountTotal: true,
+	})
+	require.NoError(err)
 
 	testCases := []struct {
-		name   string
-		url    string
-		expErr bool
-		errMsg string
+		name string
+		url  string
+		body []byte
 	}{
 		{
-			"invalid IRI",
-			fmt.Sprintf("%s/regen/data/v1/hash/%s", val.APIAddress, "foo"),
-			true,
-			"invalid IRI",
+			"valid",
+			fmt.Sprintf("%s/%s/attestations-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/hash/%s", val.APIAddress, iri),
-			false,
-			"",
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/attestations-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, hash, pgn)),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/attestations/hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var contentHash data.QueryHashByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &contentHash)
+			var res data.QueryAttestationsByHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Attestations)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Attestations, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(contentHash.ContentHash)
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAttestors() {
-	val := s.network.Validators[0]
-
-	iri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+func (s *IntegrationTestSuite) TestQueryResolver() {
+	require := s.Require()
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name string
+		url  string
 	}{
 		{
-			"invalid attestor",
-			fmt.Sprintf("%s/regen/data/v1/attestors/%s", val.APIAddress, "foo"),
-			true,
-			"not found",
-			0,
+			"valid",
+			fmt.Sprintf("%s/%s/resolver/%d", s.val.APIAddress, dataRoute, s.resolverID),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/attestors/%s", val.APIAddress, iri),
-			false,
-			"",
-			2,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/attestors/%s?pagination.limit=1", val.APIAddress, iri),
-			false,
-			"",
-			1,
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/%d", s.val.APIAddress, dataRoute, s.resolverID),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var attestors data.QueryAttestorsByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &attestors)
+			var res data.QueryResolverResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolver)
+		})
+	}
+}
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
+	require := s.Require()
+
+	pgn := "pagination.limit=1&pagination.countTotal=true"
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/resolvers-by-iri/%s", s.val.APIAddress, dataRoute, s.iri1),
+		},
+		{
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/resolvers-by-iri/%s?%s", s.val.APIAddress, dataRoute, s.iri1, pgn),
+		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/iri/%s", s.val.APIAddress, dataRoute, s.iri1),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.QueryResolversByIRIResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolvers)
+
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Resolvers, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(attestors.Attestors)
-				require.Len(attestors.Attestors, tc.expItems)
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolverInfo() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryResolversByHash() {
+	require := s.Require()
 
-	url := "https://foo.bar"
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
+
+	pgn, err := json.Marshal(query.PageRequest{
+		Limit:      1,
+		CountTotal: true,
+	})
+	require.NoError(err)
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name string
+		url  string
+		body []byte
 	}{
 		{
-			"invalid url",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s", val.APIAddress, "foo"),
-			true,
-			"not found",
-			0,
+			"valid",
+			fmt.Sprintf("%s/%s/resolvers-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s", val.APIAddress, url),
-			false,
-			"",
-			2,
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/resolvers-by-hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s, "pagination": %s}`, hash, pgn)),
 		},
 		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s&pagination.limit=1", val.APIAddress, url),
-			false,
-			"",
-			1,
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/hash", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var resolver data.QueryResolverInfoResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &resolver)
+			var res data.QueryResolversByHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolvers)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Resolvers, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(resolver.Id)
-				require.NotNil(resolver.Manager)
+				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolvers() {
-	val := s.network.Validators[0]
+func (s *IntegrationTestSuite) TestQueryResolversByURL() {
+	require := s.Require()
 
-	iri := s.iri
+	pgn, err := json.Marshal(query.PageRequest{
+		Limit:      1,
+		CountTotal: true,
+	})
+	require.NoError(err)
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name string
+		url  string
+		body []byte
 	}{
 		{
-			"invalid iri",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/%s", val.APIAddress, "foo"),
-			true,
-			"not found",
-			0,
+			"valid",
+			fmt.Sprintf("%s/%s/resolvers-by-url", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"url": "%s"}`, s.url)),
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/%s", val.APIAddress, iri),
-			false,
-			"",
-			2,
+			"valid with pagination",
+			fmt.Sprintf("%s/%s/resolvers-by-url", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"url": "%s", "pagination": %s}`, s.url, pgn)),
 		},
 		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/%s?pagination.limit=1", val.APIAddress, iri),
-			false,
-			"",
-			1,
+			"valid alternative",
+			fmt.Sprintf("%s/%s/resolvers/url", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"url": "%s"}`, s.url)),
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
+			require.NotContains(string(bz), "code")
 
-			var resolvers data.QueryResolversByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &resolvers)
+			var res data.QueryResolversByURLResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Resolvers)
 
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+			if strings.Contains(tc.name, "pagination") {
+				require.Len(res.Resolvers, 1)
+				require.NotEmpty(res.Pagination)
+				require.NotEmpty(res.Pagination.Total)
 			} else {
-				require.NoError(err)
-				require.NotNil(resolvers.ResolverUrls)
-				require.Len(resolvers.ResolverUrls, tc.expItems)
+				require.Empty(res.Pagination)
 			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestConvertIRIToHash() {
+	require := s.Require()
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/convert-iri-to-hash/%s", s.val.APIAddress, dataRoute, s.iri1),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.ConvertIRIToHashResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.ContentHash)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestConvertHashToIRI() {
+	require := s.Require()
+
+	hash, err := json.Marshal(s.hash1)
+	require.NoError(err)
+
+	testCases := []struct {
+		name string
+		url  string
+		body []byte
+	}{
+		{
+			"valid",
+			fmt.Sprintf("%s/%s/convert-hash-to-iri", s.val.APIAddress, dataRoute),
+			[]byte(fmt.Sprintf(`{"content_hash": %s}`, hash)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			require.NoError(err)
+			require.NotContains(string(bz), "code")
+
+			var res data.ConvertHashToIRIResponse
+			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+			require.NotEmpty(res.Iri)
 		})
 	}
 }

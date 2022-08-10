@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -22,8 +23,16 @@ import (
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
+)
+
+var (
+	gmAny         = gomock.Any()
+	defaultParams = core.DefaultParams()
+	basketFees    = defaultParams.BasketFee
+	validFee      = basketFees[0]
 )
 
 type baseSuite struct {
@@ -32,14 +41,13 @@ type baseSuite struct {
 	ctx          context.Context
 	k            basket.Keeper
 	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
+	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
 	coreStore    ecocreditApi.StateStore
-	paramsKeeper *mocks2.MockParamKeeper
-	bankKeeper   *mocks2.MockBankKeeper
-	storeKey     *sdk.KVStoreKey
+	bankKeeper   *mocks.MockBankKeeper
+	paramsKeeper *mocks.MockParamKeeper
+	storeKey     *storetypes.KVStoreKey
 	sdkCtx       sdk.Context
-	distKeeper   *mocks2.MockDistributionKeeper
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -56,7 +64,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
 	s.storeKey = sdk.NewKVStoreKey("test")
-	cms.MountStoreWithDB(s.storeKey, sdk.StoreTypeIAVL, db)
+	cms.MountStoreWithDB(s.storeKey, storetypes.StoreTypeIAVL, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
@@ -65,13 +73,18 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
-	s.bankKeeper = mocks2.NewMockBankKeeper(s.ctrl)
-	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
-	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.bankKeeper, s.distKeeper, s.paramsKeeper)
+	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
+	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
+
+	_, _, moduleAddress := testdata.KeyTestPubAddr()
+	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
-	_, _, s.addr = testdata.KeyTestPubAddr()
+
+	// add test addresses
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+	s.addrs = append(s.addrs, addr1, addr2)
 
 	return s
 }

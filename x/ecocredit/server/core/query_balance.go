@@ -3,11 +3,11 @@ package core
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // Balance queries the balance (both tradable and retired) of a given credit
@@ -15,32 +15,26 @@ import (
 func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*core.QueryBalanceResponse, error) {
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
-	addr, err := sdk.AccAddressFromBech32(req.Account)
+
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	balance, err := k.stateStore.BatchBalanceTable().Get(ctx, addr, batch.Key)
+	balance, err := utils.GetBalance(ctx, k.stateStore.BatchBalanceTable(), addr, batch.Key)
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			return &core.QueryBalanceResponse{
-				Balance: &core.BatchBalance{
-					BatchKey: batch.Key,
-					Address:  addr,
-					Tradable: "0",
-					Retired:  "0",
-					Escrowed: "0",
-				},
-			}, nil
-		}
-		return nil, err
-	}
-	var bal core.BatchBalance
-	if err = ormutil.PulsarToGogoSlow(balance, &bal); err != nil {
 		return nil, err
 	}
 
-	return &core.QueryBalanceResponse{Balance: &bal}, nil
+	info := core.BatchBalanceInfo{
+		Address:        addr.String(),
+		BatchDenom:     batch.Denom,
+		TradableAmount: balance.TradableAmount,
+		RetiredAmount:  balance.RetiredAmount,
+		EscrowedAmount: balance.EscrowedAmount,
+	}
+
+	return &core.QueryBalanceResponse{Balance: &info}, nil
 }

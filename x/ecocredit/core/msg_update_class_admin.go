@@ -3,7 +3,7 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -19,20 +19,20 @@ func (m MsgUpdateClassAdmin) GetSignBytes() []byte {
 }
 
 func (m *MsgUpdateClassAdmin) ValidateBasic() error {
-	if m.Admin == m.NewAdmin {
-		return sdkerrors.ErrInvalidAddress.Wrap("new admin should be a different address from the signer")
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress
+	if err := ValidateClassId(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.ErrInvalidAddress.Wrapf("new admin: %s", err)
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
-		return err
+	if m.Admin == m.NewAdmin {
+		return sdkerrors.ErrInvalidRequest.Wrap("admin and new admin cannot be the same")
 	}
 
 	return nil

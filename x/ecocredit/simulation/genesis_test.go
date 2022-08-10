@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 
@@ -34,7 +35,7 @@ func TestRandomizedGenState(t *testing.T) {
 		Rand:         r,
 		NumBonded:    3,
 		Accounts:     simtypes.RandomAccounts(r, 3),
-		InitialStake: 1000,
+		InitialStake: math.NewInt(1000),
 		GenState:     make(map[string]json.RawMessage),
 	}
 
@@ -46,7 +47,7 @@ func TestRandomizedGenState(t *testing.T) {
 	var params core.Params
 	simState.Cdc.MustUnmarshalJSON(wrapper[proto.MessageName(&core.Params{})], &params)
 
-	require.Equal(t, params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
+	require.Equal(t, params.AllowedClassCreators, []string{"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"})
 	require.Equal(t, params.AllowlistEnabled, true)
 	require.Equal(t, params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(9))))
 	require.Equal(t, params.AllowlistEnabled, true)

@@ -1,110 +1,57 @@
 package core
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-
-	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
+type msgCreateProject struct {
+	t   gocuke.TestingT
+	msg *MsgCreateProject
+	err error
+}
+
 func TestMsgCreateProject(t *testing.T) {
-	t.Parallel()
-	issuer := testutil.GenAddress()
+	gocuke.NewRunner(t, &msgCreateProject{}).Path("./features/msg_create_project.feature").Run()
+}
 
-	testCases := []struct {
-		name   string
-		src    MsgCreateProject
-		expErr bool
-	}{
-		{
-			"valid msg with project id",
-			MsgCreateProject{
-				Issuer:              issuer,
-				ClassId:             "A00",
-				Metadata:            "hello",
-				ProjectJurisdiction: "AB-CDE FG1 345",
-				ProjectId:           "A0",
-			},
-			false,
-		},
-		{
-			"valid msg without project id",
-			MsgCreateProject{
-				Issuer:              issuer,
-				ClassId:             "A00",
-				Metadata:            "hello",
-				ProjectJurisdiction: "AB-CDE FG1 345",
-			},
-			false,
-		},
-		{
-			"invalid issuer",
-			MsgCreateProject{
-				Issuer:              "invalid address",
-				ClassId:             "A00",
-				Metadata:            "hello",
-				ProjectJurisdiction: "AB-CDE FG1 345",
-				ProjectId:           "A0",
-			},
-			true,
-		},
-		{
-			"invalid project id",
-			MsgCreateProject{
-				Issuer:              issuer,
-				ClassId:             "A00",
-				Metadata:            "hello",
-				ProjectJurisdiction: "AB-CDE FG1 345",
-				ProjectId:           "A",
-			},
-			true,
-		},
-		{
-			"invalid class id",
-			MsgCreateProject{
-				Issuer:              issuer,
-				ClassId:             "ABCD",
-				Metadata:            "hello",
-				ProjectJurisdiction: "AB-CDE FG1 345",
-				ProjectId:           "AB",
-			},
-			true,
-		},
-		{
-			"invalid project jurisdiction",
-			MsgCreateProject{
-				Issuer:              issuer,
-				ClassId:             "A01",
-				Metadata:            "hello",
-				ProjectJurisdiction: "abcd",
-				ProjectId:           "AB",
-			},
-			true,
-		},
-		{
-			"invalid: metadata is too large",
-			MsgCreateProject{
-				Issuer:              issuer,
-				ClassId:             "A01",
-				Metadata:            strings.Repeat("x", 288),
-				ProjectJurisdiction: "AB-CDE FG1 345",
-				ProjectId:           "AB",
-			},
-			true,
-		},
-	}
+func (s *msgCreateProject) Before(t gocuke.TestingT) {
+	s.t = t
+}
 
-	for _, test := range testCases {
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgCreateProject) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgCreateProject{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgCreateProject) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Metadata = strings.Repeat("x", int(length))
+}
+
+func (s *msgCreateProject) AReferenceIdWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.ReferenceId = strings.Repeat("x", int(length))
+}
+
+func (s *msgCreateProject) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgCreateProject) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgCreateProject) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

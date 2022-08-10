@@ -92,8 +92,8 @@ module.exports = {
           collapsable: false,
           children: [
             '/ledger/get-started/',
+            '/ledger/get-started/local-testnet',
             '/ledger/get-started/live-networks',
-            '/ledger/get-started/prerequisites',
           ],
         },
         {
@@ -102,6 +102,14 @@ module.exports = {
           children: [
             '/ledger/infrastructure/',
             '/ledger/infrastructure/interfaces',
+          ],
+        },
+        {
+          title: 'Migration Guides',
+          collapsable: false,
+          children: [
+            '/ledger/migrations/',
+            '/ledger/migrations/v4.0-migration',
           ],
         },
       ],
@@ -120,6 +128,7 @@ module.exports = {
         {
           title: 'Ecocredit Module',
           collapsable: false,
+          sidebarDepth: 0,
           children: [
             {
               title: 'Overview',
@@ -130,12 +139,15 @@ module.exports = {
             '/modules/ecocredit/03_messages',
             '/modules/ecocredit/04_queries',
             '/modules/ecocredit/05_events',
-            '/modules/ecocredit/06_client',
+            '/modules/ecocredit/06_types',
+            '/modules/ecocredit/07_client',
+            '/modules/ecocredit/features/',
           ],
         },
         {
           title: 'Data Module',
           collapsable: false,
+          sidebarDepth: 0,
           children: [
             {
               title: 'Overview',
@@ -144,8 +156,11 @@ module.exports = {
             '/modules/data/01_concepts',
             '/modules/data/02_state',
             '/modules/data/03_messages',
-            '/modules/data/04_events',
-            '/modules/data/05_client',
+            '/modules/data/04_queries',
+            '/modules/data/05_events',
+            '/modules/data/06_types',
+            '/modules/data/07_client',
+            '/modules/data/features/',
           ],
         },
       ],
@@ -164,18 +179,23 @@ module.exports = {
           title: 'Get Started',
           collapsable: false,
           children: [
-            '/validators/get-started/run-a-full-node',
+            '/validators/get-started/',
+            '/validators/get-started/install-regen',
+            '/validators/get-started/initialize-node',
             '/validators/get-started/create-a-validator',
-            '/validators/get-started/prerequisites',
+            '/validators/get-started/using-quickstart',
+            '/validators/get-started/using-state-sync',
+            '/validators/get-started/using-cosmovisor',
           ]
         },
         {
-          title: 'Migrations',
+          title: 'Upgrade Guides',
           collapsable: false,
           children: [
-            '/validators/migrations/upgrade',
-            '/validators/migrations/v2.0-upgrade',
-            '/validators/migrations/v3.0-upgrade',
+            '/validators/upgrades/',
+            '/validators/upgrades/v2.0-upgrade',
+            '/validators/upgrades/v3.0-upgrade',
+            '/validators/upgrades/v4.0-upgrade',
           ],
         },
       ],
@@ -212,7 +232,6 @@ module.exports = {
               '/commands/regen_tendermint',
               '/commands/regen_testnet',
               '/commands/regen_tx',
-              '/commands/regen_unsafe-reset-all',
               '/commands/regen_validate-genesis',
               '/commands/regen_version',
           ]
@@ -251,7 +270,7 @@ module.exports = {
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
-  ],
+    ],
   markdown: {
     extendMarkdown: md => {
       md.use(require('./markdown-it-gh'))

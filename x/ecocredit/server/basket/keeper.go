@@ -1,21 +1,21 @@
 package basket
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 )
 
 // Keeper is the basket keeper.
 type Keeper struct {
-	stateStore   api.StateStore
-	coreStore    ecoApi.StateStore
-	bankKeeper   ecocredit.BankKeeper
-	distKeeper   ecocredit.DistributionKeeper
-	paramsKeeper ecocredit.ParamKeeper
+	stateStore    api.StateStore
+	coreStore     ecoApi.StateStore
+	bankKeeper    ecocredit.BankKeeper
+	paramsKeeper  ecocredit.ParamKeeper
+	moduleAddress sdk.AccAddress
 }
 
 var _ baskettypes.MsgServer = Keeper{}
@@ -23,24 +23,17 @@ var _ baskettypes.QueryServer = Keeper{}
 
 // NewKeeper returns a new keeper instance.
 func NewKeeper(
-	db ormdb.ModuleDB,
-	bankKeeper ecocredit.BankKeeper,
-	distKeeper ecocredit.DistributionKeeper,
+	ss api.StateStore,
+	cs ecoApi.StateStore,
+	bk ecocredit.BankKeeper,
 	pk ecocredit.ParamKeeper,
+	ma sdk.AccAddress,
 ) Keeper {
-	basketStore, err := api.NewStateStore(db)
-	if err != nil {
-		panic(err)
-	}
-	coreStore, err := ecoApi.NewStateStore(db)
-	if err != nil {
-		panic(err)
-	}
 	return Keeper{
-		bankKeeper:   bankKeeper,
-		distKeeper:   distKeeper,
-		stateStore:   basketStore,
-		coreStore:    coreStore,
-		paramsKeeper: pk,
+		stateStore:    ss,
+		coreStore:     cs,
+		bankKeeper:    bk,
+		paramsKeeper:  pk,
+		moduleAddress: ma,
 	}
 }

@@ -9,6 +9,7 @@ import (
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	types "github.com/gogo/protobuf/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -78,7 +79,7 @@ func (m *QuerySellOrderRequest) GetSellOrderId() uint64 {
 // QuerySellOrderResponse is the Query/SellOrder response type.
 type QuerySellOrderResponse struct {
 	// sell_order contains all information related to a sell order.
-	SellOrder *SellOrder `protobuf:"bytes,1,opt,name=sell_order,json=sellOrder,proto3" json:"sell_order,omitempty"`
+	SellOrder *SellOrderInfo `protobuf:"bytes,1,opt,name=sell_order,json=sellOrder,proto3" json:"sell_order,omitempty"`
 }
 
 func (m *QuerySellOrderResponse) Reset()         { *m = QuerySellOrderResponse{} }
@@ -114,7 +115,7 @@ func (m *QuerySellOrderResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySellOrderResponse proto.InternalMessageInfo
 
-func (m *QuerySellOrderResponse) GetSellOrder() *SellOrder {
+func (m *QuerySellOrderResponse) GetSellOrder() *SellOrderInfo {
 	if m != nil {
 		return m.SellOrder
 	}
@@ -170,7 +171,7 @@ func (m *QuerySellOrdersRequest) GetPagination() *query.PageRequest {
 // QuerySellOrdersResponse is the Query/SellOrders response type.
 type QuerySellOrdersResponse struct {
 	// sell_orders is a list of sell orders.
-	SellOrders []*SellOrder `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
+	SellOrders []*SellOrderInfo `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -208,7 +209,7 @@ func (m *QuerySellOrdersResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySellOrdersResponse proto.InternalMessageInfo
 
-func (m *QuerySellOrdersResponse) GetSellOrders() []*SellOrder {
+func (m *QuerySellOrdersResponse) GetSellOrders() []*SellOrderInfo {
 	if m != nil {
 		return m.SellOrders
 	}
@@ -222,26 +223,27 @@ func (m *QuerySellOrdersResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
-type QuerySellOrdersByBatchDenomRequest struct {
+// QuerySellOrdersByBatchRequest is the Query/SellOrdersByBatch
+// request type.
+type QuerySellOrdersByBatchRequest struct {
 	// batch_denom is an ecocredit denom
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QuerySellOrdersByBatchDenomRequest) Reset()         { *m = QuerySellOrdersByBatchDenomRequest{} }
-func (m *QuerySellOrdersByBatchDenomRequest) String() string { return proto.CompactTextString(m) }
-func (*QuerySellOrdersByBatchDenomRequest) ProtoMessage()    {}
-func (*QuerySellOrdersByBatchDenomRequest) Descriptor() ([]byte, []int) {
+func (m *QuerySellOrdersByBatchRequest) Reset()         { *m = QuerySellOrdersByBatchRequest{} }
+func (m *QuerySellOrdersByBatchRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersByBatchRequest) ProtoMessage()    {}
+func (*QuerySellOrdersByBatchRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1f2df4a89dfae849, []int{4}
 }
-func (m *QuerySellOrdersByBatchDenomRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySellOrdersByBatchRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QuerySellOrdersByBatchDenomRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySellOrdersByBatchRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QuerySellOrdersByBatchDenomRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySellOrdersByBatchRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -251,52 +253,53 @@ func (m *QuerySellOrdersByBatchDenomRequest) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *QuerySellOrdersByBatchDenomRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QuerySellOrdersByBatchDenomRequest.Merge(m, src)
+func (m *QuerySellOrdersByBatchRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersByBatchRequest.Merge(m, src)
 }
-func (m *QuerySellOrdersByBatchDenomRequest) XXX_Size() int {
+func (m *QuerySellOrdersByBatchRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QuerySellOrdersByBatchDenomRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QuerySellOrdersByBatchDenomRequest.DiscardUnknown(m)
+func (m *QuerySellOrdersByBatchRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersByBatchRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QuerySellOrdersByBatchDenomRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySellOrdersByBatchRequest proto.InternalMessageInfo
 
-func (m *QuerySellOrdersByBatchDenomRequest) GetBatchDenom() string {
+func (m *QuerySellOrdersByBatchRequest) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *QuerySellOrdersByBatchDenomRequest) GetPagination() *query.PageRequest {
+func (m *QuerySellOrdersByBatchRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-// QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
-type QuerySellOrdersByBatchDenomResponse struct {
+// QuerySellOrdersByBatchResponse is the Query/SellOrdersByBatch
+// response type.
+type QuerySellOrdersByBatchResponse struct {
 	// sell_orders is a list of sell orders.
-	SellOrders []*SellOrder `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
+	SellOrders []*SellOrderInfo `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
 	// pagination defines an optional pagination for the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QuerySellOrdersByBatchDenomResponse) Reset()         { *m = QuerySellOrdersByBatchDenomResponse{} }
-func (m *QuerySellOrdersByBatchDenomResponse) String() string { return proto.CompactTextString(m) }
-func (*QuerySellOrdersByBatchDenomResponse) ProtoMessage()    {}
-func (*QuerySellOrdersByBatchDenomResponse) Descriptor() ([]byte, []int) {
+func (m *QuerySellOrdersByBatchResponse) Reset()         { *m = QuerySellOrdersByBatchResponse{} }
+func (m *QuerySellOrdersByBatchResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersByBatchResponse) ProtoMessage()    {}
+func (*QuerySellOrdersByBatchResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1f2df4a89dfae849, []int{5}
 }
-func (m *QuerySellOrdersByBatchDenomResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySellOrdersByBatchResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QuerySellOrdersByBatchDenomResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySellOrdersByBatchResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QuerySellOrdersByBatchDenomResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySellOrdersByBatchResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -306,53 +309,53 @@ func (m *QuerySellOrdersByBatchDenomResponse) XXX_Marshal(b []byte, deterministi
 		return b[:n], nil
 	}
 }
-func (m *QuerySellOrdersByBatchDenomResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QuerySellOrdersByBatchDenomResponse.Merge(m, src)
+func (m *QuerySellOrdersByBatchResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersByBatchResponse.Merge(m, src)
 }
-func (m *QuerySellOrdersByBatchDenomResponse) XXX_Size() int {
+func (m *QuerySellOrdersByBatchResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QuerySellOrdersByBatchDenomResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QuerySellOrdersByBatchDenomResponse.DiscardUnknown(m)
+func (m *QuerySellOrdersByBatchResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersByBatchResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QuerySellOrdersByBatchDenomResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySellOrdersByBatchResponse proto.InternalMessageInfo
 
-func (m *QuerySellOrdersByBatchDenomResponse) GetSellOrders() []*SellOrder {
+func (m *QuerySellOrdersByBatchResponse) GetSellOrders() []*SellOrderInfo {
 	if m != nil {
 		return m.SellOrders
 	}
 	return nil
 }
 
-func (m *QuerySellOrdersByBatchDenomResponse) GetPagination() *query.PageResponse {
+func (m *QuerySellOrdersByBatchResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request
+// QuerySellOrdersBySellerRequest is the Query/SellOrdersBySeller request
 // type.
-type QuerySellOrdersByAddressRequest struct {
-	// address is the creator of the sell order
-	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+type QuerySellOrdersBySellerRequest struct {
+	// seller is the address of the account that is selling credits.
+	Seller string `protobuf:"bytes,1,opt,name=seller,proto3" json:"seller,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QuerySellOrdersByAddressRequest) Reset()         { *m = QuerySellOrdersByAddressRequest{} }
-func (m *QuerySellOrdersByAddressRequest) String() string { return proto.CompactTextString(m) }
-func (*QuerySellOrdersByAddressRequest) ProtoMessage()    {}
-func (*QuerySellOrdersByAddressRequest) Descriptor() ([]byte, []int) {
+func (m *QuerySellOrdersBySellerRequest) Reset()         { *m = QuerySellOrdersBySellerRequest{} }
+func (m *QuerySellOrdersBySellerRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersBySellerRequest) ProtoMessage()    {}
+func (*QuerySellOrdersBySellerRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1f2df4a89dfae849, []int{6}
 }
-func (m *QuerySellOrdersByAddressRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySellOrdersBySellerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QuerySellOrdersByAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySellOrdersBySellerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QuerySellOrdersByAddressRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySellOrdersBySellerRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -362,53 +365,53 @@ func (m *QuerySellOrdersByAddressRequest) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *QuerySellOrdersByAddressRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QuerySellOrdersByAddressRequest.Merge(m, src)
+func (m *QuerySellOrdersBySellerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersBySellerRequest.Merge(m, src)
 }
-func (m *QuerySellOrdersByAddressRequest) XXX_Size() int {
+func (m *QuerySellOrdersBySellerRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QuerySellOrdersByAddressRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QuerySellOrdersByAddressRequest.DiscardUnknown(m)
+func (m *QuerySellOrdersBySellerRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersBySellerRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QuerySellOrdersByAddressRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySellOrdersBySellerRequest proto.InternalMessageInfo
 
-func (m *QuerySellOrdersByAddressRequest) GetAddress() string {
+func (m *QuerySellOrdersBySellerRequest) GetSeller() string {
 	if m != nil {
-		return m.Address
+		return m.Seller
 	}
 	return ""
 }
 
-func (m *QuerySellOrdersByAddressRequest) GetPagination() *query.PageRequest {
+func (m *QuerySellOrdersBySellerRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse
+// QuerySellOrdersBySellerResponse is the Query/SellOrdersBySellerResponse
 // response type.
-type QuerySellOrdersByAddressResponse struct {
+type QuerySellOrdersBySellerResponse struct {
 	// sell_orders is a list of sell orders.
-	SellOrders []*SellOrder `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
+	SellOrders []*SellOrderInfo `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
 	// pagination defines an optional pagination for the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QuerySellOrdersByAddressResponse) Reset()         { *m = QuerySellOrdersByAddressResponse{} }
-func (m *QuerySellOrdersByAddressResponse) String() string { return proto.CompactTextString(m) }
-func (*QuerySellOrdersByAddressResponse) ProtoMessage()    {}
-func (*QuerySellOrdersByAddressResponse) Descriptor() ([]byte, []int) {
+func (m *QuerySellOrdersBySellerResponse) Reset()         { *m = QuerySellOrdersBySellerResponse{} }
+func (m *QuerySellOrdersBySellerResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersBySellerResponse) ProtoMessage()    {}
+func (*QuerySellOrdersBySellerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1f2df4a89dfae849, []int{7}
 }
-func (m *QuerySellOrdersByAddressResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySellOrdersBySellerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QuerySellOrdersByAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySellOrdersBySellerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QuerySellOrdersByAddressResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySellOrdersBySellerResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -418,26 +421,26 @@ func (m *QuerySellOrdersByAddressResponse) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *QuerySellOrdersByAddressResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QuerySellOrdersByAddressResponse.Merge(m, src)
+func (m *QuerySellOrdersBySellerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersBySellerResponse.Merge(m, src)
 }
-func (m *QuerySellOrdersByAddressResponse) XXX_Size() int {
+func (m *QuerySellOrdersBySellerResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QuerySellOrdersByAddressResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QuerySellOrdersByAddressResponse.DiscardUnknown(m)
+func (m *QuerySellOrdersBySellerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersBySellerResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QuerySellOrdersByAddressResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySellOrdersBySellerResponse proto.InternalMessageInfo
 
-func (m *QuerySellOrdersByAddressResponse) GetSellOrders() []*SellOrder {
+func (m *QuerySellOrdersBySellerResponse) GetSellOrders() []*SellOrderInfo {
 	if m != nil {
 		return m.SellOrders
 	}
 	return nil
 }
 
-func (m *QuerySellOrdersByAddressResponse) GetPagination() *query.PageResponse {
+func (m *QuerySellOrdersBySellerResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -546,17 +549,132 @@ func (m *QueryAllowedDenomsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+// SellOrderInfo is the human-readable sell order information.
+type SellOrderInfo struct {
+	// id is the unique ID of sell order.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// seller is the address of the account that is selling credits.
+	Seller string `protobuf:"bytes,2,opt,name=seller,proto3" json:"seller,omitempty"`
+	// batch_denom is denom of the credit batch being sold.
+	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// quantity is the decimal quantity of credits being sold.
+	Quantity string `protobuf:"bytes,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	// ask_denom is the denom used in the ask price of the sell order.
+	AskDenom string `protobuf:"bytes,5,opt,name=ask_denom,json=askDenom,proto3" json:"ask_denom,omitempty"`
+	// ask_amount is the amount that the seller is asking for each credit unit of
+	// the batch. Each credit unit of the batch will be sold for at least the
+	// ask_amount.
+	AskAmount string `protobuf:"bytes,6,opt,name=ask_amount,json=askAmount,proto3" json:"ask_amount,omitempty"`
+	// disable_auto_retire disables auto-retirement of credits which allows a
+	// buyer to disable auto-retirement in their buy order enabling them to
+	// resell the credits to another buyer.
+	DisableAutoRetire bool `protobuf:"varint,7,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
+	// expiration is an optional timestamp when the sell order expires. When the
+	// expiration time is reached, the sell order is removed from state.
+	Expiration *types.Timestamp `protobuf:"bytes,9,opt,name=expiration,proto3" json:"expiration,omitempty"`
+}
+
+func (m *SellOrderInfo) Reset()         { *m = SellOrderInfo{} }
+func (m *SellOrderInfo) String() string { return proto.CompactTextString(m) }
+func (*SellOrderInfo) ProtoMessage()    {}
+func (*SellOrderInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1f2df4a89dfae849, []int{10}
+}
+func (m *SellOrderInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SellOrderInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SellOrderInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SellOrderInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SellOrderInfo.Merge(m, src)
+}
+func (m *SellOrderInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *SellOrderInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_SellOrderInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SellOrderInfo proto.InternalMessageInfo
+
+func (m *SellOrderInfo) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *SellOrderInfo) GetSeller() string {
+	if m != nil {
+		return m.Seller
+	}
+	return ""
+}
+
+func (m *SellOrderInfo) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *SellOrderInfo) GetQuantity() string {
+	if m != nil {
+		return m.Quantity
+	}
+	return ""
+}
+
+func (m *SellOrderInfo) GetAskDenom() string {
+	if m != nil {
+		return m.AskDenom
+	}
+	return ""
+}
+
+func (m *SellOrderInfo) GetAskAmount() string {
+	if m != nil {
+		return m.AskAmount
+	}
+	return ""
+}
+
+func (m *SellOrderInfo) GetDisableAutoRetire() bool {
+	if m != nil {
+		return m.DisableAutoRetire
+	}
+	return false
+}
+
+func (m *SellOrderInfo) GetExpiration() *types.Timestamp {
+	if m != nil {
+		return m.Expiration
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QuerySellOrderRequest)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrderRequest")
 	proto.RegisterType((*QuerySellOrderResponse)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrderResponse")
 	proto.RegisterType((*QuerySellOrdersRequest)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersRequest")
 	proto.RegisterType((*QuerySellOrdersResponse)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersResponse")
-	proto.RegisterType((*QuerySellOrdersByBatchDenomRequest)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersByBatchDenomRequest")
-	proto.RegisterType((*QuerySellOrdersByBatchDenomResponse)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersByBatchDenomResponse")
-	proto.RegisterType((*QuerySellOrdersByAddressRequest)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersByAddressRequest")
-	proto.RegisterType((*QuerySellOrdersByAddressResponse)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersByAddressResponse")
+	proto.RegisterType((*QuerySellOrdersByBatchRequest)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersByBatchRequest")
+	proto.RegisterType((*QuerySellOrdersByBatchResponse)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersByBatchResponse")
+	proto.RegisterType((*QuerySellOrdersBySellerRequest)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersBySellerRequest")
+	proto.RegisterType((*QuerySellOrdersBySellerResponse)(nil), "regen.ecocredit.marketplace.v1.QuerySellOrdersBySellerResponse")
 	proto.RegisterType((*QueryAllowedDenomsRequest)(nil), "regen.ecocredit.marketplace.v1.QueryAllowedDenomsRequest")
 	proto.RegisterType((*QueryAllowedDenomsResponse)(nil), "regen.ecocredit.marketplace.v1.QueryAllowedDenomsResponse")
+	proto.RegisterType((*SellOrderInfo)(nil), "regen.ecocredit.marketplace.v1.SellOrderInfo")
 }
 
 func init() {
@@ -564,51 +682,62 @@ func init() {
 }
 
 var fileDescriptor_1f2df4a89dfae849 = []byte{
-	// 698 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x4d, 0x4f, 0xd4, 0x40,
-	0x18, 0xc7, 0x19, 0x7c, 0xe5, 0xd9, 0xe0, 0x61, 0x8c, 0x88, 0x8d, 0x29, 0xa4, 0x26, 0xbe, 0x20,
-	0xdb, 0xc9, 0x42, 0xd4, 0x28, 0x21, 0xc8, 0x22, 0xa2, 0x26, 0x46, 0x5d, 0x0e, 0x26, 0x5e, 0x70,
-	0xda, 0x4e, 0xca, 0x86, 0x6e, 0x67, 0xe9, 0x14, 0x90, 0x10, 0x2e, 0x7a, 0x36, 0x21, 0xf1, 0x7b,
-	0x78, 0xf0, 0x62, 0xc2, 0xc5, 0xab, 0x47, 0x12, 0x2f, 0xde, 0x34, 0xe0, 0x07, 0xf0, 0x23, 0x98,
-	0x9d, 0x99, 0xee, 0x1b, 0x95, 0x5a, 0xe4, 0xc0, 0x6d, 0x3b, 0xfb, 0xbc, 0xfc, 0x7f, 0xff, 0x79,
-	0xf6, 0xe9, 0xc2, 0x48, 0xc4, 0x7c, 0x16, 0x12, 0xe6, 0x72, 0x37, 0x62, 0x5e, 0x35, 0x26, 0x35,
-	0x1a, 0x2d, 0xb1, 0xb8, 0x1e, 0x50, 0x97, 0x91, 0xd5, 0x12, 0x59, 0x5e, 0x61, 0xd1, 0xba, 0x5d,
-	0x8f, 0x78, 0xcc, 0xb1, 0x29, 0x63, 0xed, 0x66, 0xac, 0xdd, 0x16, 0x6b, 0xaf, 0x96, 0x8c, 0xcb,
-	0x3e, 0xe7, 0x7e, 0xc0, 0x08, 0xad, 0x57, 0x09, 0x0d, 0x43, 0x1e, 0xd3, 0xb8, 0xca, 0x43, 0xa1,
-	0xb2, 0x8d, 0xac, 0x4e, 0x22, 0xa6, 0x31, 0x4b, 0x62, 0x5d, 0x2e, 0x6a, 0x5c, 0x10, 0x87, 0x0a,
-	0xa6, 0x24, 0x90, 0xd5, 0x92, 0xc3, 0x62, 0x5a, 0x22, 0x75, 0xea, 0x57, 0x43, 0x59, 0x58, 0xc5,
-	0x5a, 0x13, 0x70, 0xe1, 0x45, 0x23, 0x62, 0x9e, 0x05, 0xc1, 0xb3, 0xc8, 0x63, 0x51, 0x85, 0x2d,
-	0xaf, 0x30, 0x11, 0x63, 0x0b, 0xfa, 0x05, 0x0b, 0x82, 0x05, 0xde, 0x38, 0x5c, 0xa8, 0x7a, 0x83,
-	0x68, 0x18, 0x5d, 0x3f, 0x59, 0x29, 0x88, 0x24, 0xf0, 0xb1, 0x67, 0x39, 0x30, 0xd0, 0x9d, 0x2c,
-	0xea, 0x3c, 0x14, 0x0c, 0x3f, 0x02, 0x68, 0x65, 0xcb, 0xd4, 0xc2, 0xd8, 0x0d, 0xfb, 0x60, 0x07,
-	0xec, 0x56, 0x99, 0xbe, 0x66, 0x17, 0xeb, 0x75, 0x77, 0x0f, 0x91, 0x28, 0x7c, 0x08, 0xd0, 0xc2,
-	0xd1, 0x3d, 0xae, 0xda, 0x8a, 0xdd, 0x6e, 0xb0, 0xdb, 0xca, 0x7e, 0xcd, 0x6e, 0x3f, 0xa7, 0x3e,
-	0xd3, 0xb9, 0x95, 0xb6, 0x4c, 0xeb, 0x23, 0x82, 0x8b, 0xfb, 0x5a, 0x68, 0x8e, 0x27, 0x50, 0x68,
-	0x71, 0x88, 0x41, 0x34, 0x7c, 0x22, 0x1f, 0x08, 0x34, 0x41, 0x04, 0x9e, 0xeb, 0xd0, 0xdb, 0x2b,
-	0xf5, 0x5e, 0xcb, 0xd4, 0xab, 0x84, 0x74, 0x08, 0x7e, 0x8f, 0xc0, 0xea, 0x12, 0x5c, 0x5e, 0x2f,
-	0xd3, 0xd8, 0x5d, 0x7c, 0xc0, 0x42, 0x5e, 0x4b, 0xfc, 0x19, 0x82, 0x82, 0xd3, 0x38, 0x5c, 0xf0,
-	0x1a, 0xa7, 0xd2, 0xa0, 0xbe, 0x0a, 0x38, 0xcd, 0xb8, 0x2e, 0x03, 0x7b, 0x0f, 0x6d, 0xe0, 0x36,
-	0x82, 0x2b, 0x07, 0xea, 0x39, 0xce, 0x66, 0xbe, 0x43, 0x30, 0xb4, 0x4f, 0xfc, 0xb4, 0xe7, 0x45,
-	0x4c, 0x34, 0x27, 0x6d, 0x10, 0xce, 0x50, 0x75, 0xa2, 0x5d, 0x4c, 0x1e, 0x8f, 0xcc, 0xc2, 0xcf,
-	0x08, 0x86, 0xff, 0xae, 0xe2, 0x38, 0xfb, 0xe7, 0xc2, 0x25, 0x29, 0x7c, 0x3a, 0x08, 0xf8, 0x1a,
-	0xf3, 0xe4, 0x8d, 0x1f, 0xf9, 0x4f, 0x74, 0x1b, 0x81, 0x91, 0xd6, 0x45, 0x1b, 0x33, 0x0f, 0xe7,
-	0xa8, 0xfa, 0x42, 0xcd, 0x7a, 0xe2, 0xcd, 0x68, 0x96, 0x37, 0xed, 0xe5, 0x2a, 0xfd, 0xb4, 0xbd,
-	0xf8, 0x91, 0x39, 0x34, 0xb6, 0x75, 0x16, 0x4e, 0x49, 0xf1, 0xf8, 0x0b, 0x82, 0xbe, 0xe6, 0x75,
-	0xe0, 0x5b, 0x59, 0xea, 0x52, 0x17, 0xb3, 0x71, 0x3b, 0x6f, 0x9a, 0x92, 0x64, 0xcd, 0xbc, 0xfd,
-	0xf6, 0xeb, 0x43, 0xef, 0x24, 0x9e, 0x20, 0x59, 0xaf, 0x12, 0x16, 0x04, 0x45, 0x35, 0x63, 0x64,
-	0xa3, 0xe3, 0x1d, 0xb0, 0x89, 0x3f, 0x21, 0x80, 0xd6, 0x88, 0xe2, 0x9c, 0x5a, 0x92, 0xb9, 0x30,
-	0xee, 0xe4, 0xce, 0xd3, 0x10, 0xe3, 0x12, 0xa2, 0x88, 0x6f, 0xe6, 0x80, 0xc0, 0xbf, 0x11, 0x0c,
-	0xa4, 0xaf, 0x26, 0x5c, 0xce, 0x29, 0x24, 0x65, 0xcf, 0x1a, 0x33, 0xff, 0x55, 0x43, 0x83, 0x3d,
-	0x95, 0x60, 0x73, 0x78, 0x36, 0xcf, 0xed, 0xc8, 0x5d, 0x5e, 0x94, 0x23, 0x4f, 0x36, 0xda, 0x76,
-	0xfd, 0x26, 0xfe, 0x81, 0xe0, 0x7c, 0xca, 0x2a, 0xc1, 0x53, 0xb9, 0xb5, 0x76, 0xae, 0x42, 0xe3,
-	0xfe, 0xe1, 0x0b, 0x68, 0xd2, 0x59, 0x49, 0x3a, 0x85, 0x27, 0xf3, 0x90, 0xea, 0x7d, 0x4b, 0x36,
-	0xf4, 0x87, 0x4d, 0xbc, 0x8d, 0xa0, 0xbf, 0x63, 0x1b, 0xe0, 0xbb, 0xff, 0x24, 0x2d, 0x6d, 0x4f,
-	0x19, 0xf7, 0x0e, 0x93, 0xaa, 0x79, 0xc6, 0x24, 0xcf, 0x28, 0x1e, 0xc9, 0xe2, 0xa1, 0x62, 0x49,
-	0xdd, 0x95, 0x28, 0xbf, 0xfc, 0xba, 0x6b, 0xa2, 0x9d, 0x5d, 0x13, 0xfd, 0xdc, 0x35, 0xd1, 0xd6,
-	0x9e, 0xd9, 0xb3, 0xb3, 0x67, 0xf6, 0x7c, 0xdf, 0x33, 0x7b, 0x5e, 0x4d, 0xfa, 0xd5, 0x78, 0x71,
-	0xc5, 0xb1, 0x5d, 0x5e, 0x53, 0xf5, 0x8a, 0x21, 0x8b, 0xd7, 0x78, 0xb4, 0xa4, 0x9f, 0x02, 0xe6,
-	0xf9, 0x2c, 0x22, 0x6f, 0xd2, 0xdb, 0x38, 0xa7, 0xe5, 0xbf, 0xba, 0xf1, 0x3f, 0x01, 0x00, 0x00,
-	0xff, 0xff, 0x2a, 0x11, 0x51, 0x5a, 0x99, 0x0a, 0x00, 0x00,
+	// 875 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x55, 0xcf, 0x8f, 0xdb, 0x44,
+	0x14, 0xde, 0x71, 0xdb, 0xa5, 0x79, 0xab, 0x54, 0xea, 0x20, 0x4a, 0x30, 0xd4, 0xbb, 0xca, 0x01,
+	0x2a, 0x20, 0x63, 0xd2, 0x8a, 0x22, 0xb6, 0xda, 0x56, 0x89, 0x10, 0xa8, 0x12, 0xe2, 0x87, 0x8b,
+	0x84, 0xb4, 0x97, 0x30, 0x8e, 0x67, 0x53, 0x2b, 0x8e, 0x27, 0xeb, 0x19, 0x6f, 0x1b, 0xad, 0x2a,
+	0x7e, 0x48, 0x08, 0x4e, 0x08, 0x89, 0x2b, 0x9c, 0xf8, 0x0f, 0x7a, 0xa3, 0x07, 0x4e, 0x1c, 0x38,
+	0x56, 0xe2, 0xc2, 0x11, 0xed, 0xf2, 0x77, 0x20, 0xe4, 0x99, 0x71, 0x12, 0x27, 0x69, 0x53, 0x47,
+	0x7b, 0xd8, 0x9b, 0x3d, 0xef, 0x7d, 0x33, 0xdf, 0xf7, 0xcd, 0xbc, 0xf7, 0xe0, 0xf5, 0x84, 0xf5,
+	0x58, 0xec, 0xb2, 0x2e, 0xef, 0x26, 0x2c, 0x08, 0xa5, 0x3b, 0xa0, 0x49, 0x9f, 0xc9, 0x61, 0x44,
+	0xbb, 0xcc, 0x3d, 0x68, 0xba, 0xfb, 0x29, 0x4b, 0x46, 0x64, 0x98, 0x70, 0xc9, 0xb1, 0xa3, 0x72,
+	0xc9, 0x38, 0x97, 0x4c, 0xe5, 0x92, 0x83, 0xa6, 0xfd, 0x4a, 0x8f, 0xf3, 0x5e, 0xc4, 0x5c, 0x3a,
+	0x0c, 0x5d, 0x1a, 0xc7, 0x5c, 0x52, 0x19, 0xf2, 0x58, 0x68, 0xb4, 0xbd, 0x69, 0xa2, 0xea, 0xcf,
+	0x4f, 0xf7, 0x5c, 0x19, 0x0e, 0x98, 0x90, 0x74, 0x30, 0x34, 0x09, 0xcb, 0xa8, 0x08, 0x49, 0x25,
+	0xcb, 0x73, 0xbb, 0x5c, 0x0c, 0xb8, 0x70, 0x7d, 0x2a, 0x98, 0xe6, 0xe8, 0x1e, 0x34, 0x7d, 0x26,
+	0x69, 0xd3, 0x1d, 0xd2, 0x5e, 0x18, 0xab, 0x93, 0x75, 0x6e, 0xfd, 0x06, 0xbc, 0xf0, 0x69, 0x96,
+	0x71, 0x87, 0x45, 0xd1, 0xc7, 0x49, 0xc0, 0x12, 0x8f, 0xed, 0xa7, 0x4c, 0x48, 0x5c, 0x87, 0xaa,
+	0x60, 0x51, 0xd4, 0xe1, 0xd9, 0x62, 0x27, 0x0c, 0x6a, 0x68, 0x0b, 0x5d, 0x39, 0xeb, 0x6d, 0x88,
+	0x3c, 0xf1, 0x76, 0x50, 0xdf, 0x83, 0x4b, 0xb3, 0x60, 0x31, 0xe4, 0xb1, 0x60, 0xf8, 0x43, 0x80,
+	0x09, 0x5a, 0x41, 0x37, 0xae, 0x36, 0xc8, 0xd3, 0x2d, 0x22, 0xe3, 0x6d, 0x6e, 0xc7, 0x7b, 0xdc,
+	0xab, 0x8c, 0x4f, 0xaa, 0x7f, 0x31, 0x7b, 0x8e, 0xc8, 0x59, 0xbe, 0x0f, 0x30, 0x91, 0x64, 0xce,
+	0x79, 0x95, 0x68, 0xfd, 0x24, 0xd3, 0x4f, 0xf4, 0x1d, 0x19, 0xfd, 0xe4, 0x13, 0xda, 0x63, 0x06,
+	0xeb, 0x4d, 0x21, 0xeb, 0x0f, 0x11, 0xbc, 0x38, 0x77, 0x84, 0xd1, 0xf2, 0x11, 0x6c, 0x4c, 0xb4,
+	0x88, 0x1a, 0xda, 0x3a, 0x53, 0x5e, 0x0c, 0x8c, 0xc5, 0x08, 0xfc, 0x41, 0x81, 0xb3, 0xa5, 0x38,
+	0xbf, 0xb6, 0x94, 0xb3, 0x26, 0x53, 0x20, 0xfd, 0x3d, 0x82, 0xcb, 0x33, 0xa4, 0xdb, 0xa3, 0x36,
+	0x95, 0xdd, 0xbb, 0xb9, 0x3d, 0x9b, 0xb0, 0xe1, 0x67, 0xff, 0x9d, 0x80, 0xc5, 0x7c, 0xa0, 0xfc,
+	0xa9, 0x78, 0xa0, 0x96, 0xde, 0xcb, 0x56, 0x66, 0xfc, 0xb3, 0x56, 0xf6, 0xef, 0x37, 0x04, 0xce,
+	0x93, 0xa8, 0x9c, 0x76, 0x1b, 0xbf, 0x5a, 0xc4, 0x3d, 0xfb, 0x9e, 0x14, 0xc3, 0x25, 0x58, 0x17,
+	0x6a, 0xc1, 0x58, 0x68, 0xfe, 0x4e, 0xcc, 0xbe, 0x47, 0x08, 0x36, 0x9f, 0x48, 0xe1, 0xb4, 0xfb,
+	0xd7, 0x85, 0x97, 0x14, 0xf7, 0x56, 0x14, 0xf1, 0x7b, 0x2c, 0x50, 0x0f, 0xeb, 0xc4, 0x0b, 0xf4,
+	0x11, 0x02, 0x7b, 0xd1, 0x29, 0xc6, 0x9c, 0x3b, 0x70, 0x81, 0xea, 0x80, 0x7e, 0xea, 0xb9, 0x3f,
+	0x6f, 0x2e, 0xf3, 0x67, 0x7a, 0x3b, 0xaf, 0x4a, 0xa7, 0x37, 0x3f, 0x39, 0x87, 0x7e, 0xb6, 0xa0,
+	0x5a, 0xb8, 0x08, 0x7c, 0x01, 0xac, 0x71, 0x4b, 0xb5, 0xc2, 0x60, 0xea, 0x81, 0x59, 0x85, 0x07,
+	0x36, 0x53, 0xc0, 0x67, 0xe6, 0x0a, 0xd8, 0x86, 0xf3, 0xfb, 0x29, 0x8d, 0x65, 0x28, 0x47, 0xb5,
+	0xb3, 0x2a, 0x3a, 0xfe, 0xc7, 0x2f, 0x43, 0x85, 0x8a, 0xbe, 0x81, 0x9e, 0xd3, 0x41, 0x2a, 0xfa,
+	0x1a, 0x78, 0x19, 0x20, 0x0b, 0xd2, 0x01, 0x4f, 0x63, 0x59, 0x5b, 0x57, 0xd1, 0x2c, 0xbd, 0xa5,
+	0x16, 0x30, 0x81, 0xe7, 0x83, 0x50, 0x50, 0x3f, 0x62, 0x1d, 0x9a, 0x4a, 0xde, 0x49, 0x98, 0x0c,
+	0x13, 0x56, 0x7b, 0x6e, 0x0b, 0x5d, 0x39, 0xef, 0x5d, 0x34, 0xa1, 0x56, 0x2a, 0xb9, 0xa7, 0x02,
+	0x78, 0x1b, 0x80, 0xdd, 0x1f, 0x86, 0x89, 0xf6, 0xaa, 0xa2, 0xbc, 0xb2, 0x89, 0x9e, 0x6a, 0x24,
+	0x9f, 0x6a, 0xe4, 0xb3, 0x7c, 0xaa, 0x79, 0x53, 0xd9, 0x57, 0xff, 0xa8, 0xc0, 0x39, 0x75, 0xb7,
+	0xf8, 0x3f, 0x04, 0x95, 0xb1, 0x51, 0xf8, 0xed, 0x65, 0x97, 0xb7, 0x70, 0x72, 0xd9, 0xd7, 0xcb,
+	0xc2, 0xf4, 0x8d, 0xd5, 0xbf, 0x46, 0xdf, 0xfc, 0xf5, 0xef, 0x4f, 0xd6, 0x21, 0xde, 0x76, 0x97,
+	0x0d, 0x5b, 0x16, 0x45, 0x0d, 0x55, 0x87, 0xee, 0x61, 0x61, 0x48, 0x3e, 0xd8, 0xdd, 0xc1, 0x37,
+	0x9e, 0x1d, 0x2d, 0x66, 0xe1, 0xf8, 0x21, 0x02, 0x98, 0xf4, 0x00, 0x5c, 0x52, 0x4a, 0x5e, 0x75,
+	0xf6, 0x3b, 0xa5, 0x71, 0xc6, 0x83, 0x6b, 0xca, 0x82, 0x06, 0x7e, 0xa3, 0x84, 0x08, 0xfc, 0xab,
+	0x05, 0x17, 0xe7, 0xfa, 0x3e, 0xde, 0x29, 0xc9, 0xa1, 0x38, 0xba, 0xec, 0x9b, 0xab, 0xc2, 0x8d,
+	0x92, 0x1f, 0xf4, 0x6d, 0x7e, 0x87, 0x70, 0xbb, 0x84, 0x96, 0x86, 0x3f, 0x6a, 0xa8, 0xea, 0x72,
+	0x0f, 0xa7, 0xea, 0xee, 0xc1, 0x6e, 0x0b, 0xdf, 0x2a, 0x73, 0xad, 0x0b, 0xb6, 0xc0, 0xbf, 0x58,
+	0x80, 0xe7, 0xdb, 0x3b, 0x2e, 0xaf, 0xb3, 0x30, 0x9a, 0xec, 0x5b, 0x2b, 0xe3, 0x8d, 0x51, 0xdf,
+	0x6a, 0xa3, 0xbe, 0xc4, 0x37, 0x4b, 0xfa, 0xa4, 0x5b, 0x94, 0x7e, 0xc2, 0x2c, 0x29, 0xfd, 0xf4,
+	0x67, 0xe0, 0xf8, 0x77, 0x04, 0xd5, 0x42, 0x73, 0xc7, 0xef, 0x3e, 0x93, 0xb4, 0x45, 0x63, 0xc7,
+	0xde, 0x5e, 0x05, 0x6a, 0x0c, 0xb9, 0xae, 0xfc, 0x78, 0x0b, 0x93, 0x65, 0x6a, 0xcc, 0xb4, 0x68,
+	0xe8, 0x89, 0xd3, 0xfe, 0xfc, 0xcf, 0x23, 0x07, 0x3d, 0x3e, 0x72, 0xd0, 0x3f, 0x47, 0x0e, 0xfa,
+	0xf1, 0xd8, 0x59, 0x7b, 0x7c, 0xec, 0xac, 0xfd, 0x7d, 0xec, 0xac, 0xed, 0xee, 0xf4, 0x42, 0x79,
+	0x37, 0xf5, 0x49, 0x97, 0x0f, 0xf4, 0x9e, 0x8d, 0x98, 0xc9, 0x7b, 0x3c, 0xe9, 0x9b, 0xbf, 0x88,
+	0x05, 0x3d, 0x96, 0xb8, 0xf7, 0x17, 0x1f, 0xe5, 0xaf, 0xab, 0xfe, 0x79, 0xed, 0xff, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0x5b, 0xf1, 0x59, 0xc6, 0x8f, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -623,18 +752,18 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// SellOrder queries a sell order by its ID
+	// SellOrder queries a sell order by its unique identifier.
 	SellOrder(ctx context.Context, in *QuerySellOrderRequest, opts ...grpc.CallOption) (*QuerySellOrderResponse, error)
-	// SellOrders queries a paginated list of all sell orders
+	// SellOrders queries a paginated list of all sell orders.
 	SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific
-	// ecocredit denom
-	SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a
-	// specific address
-	SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error)
-	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
-	// sell order
+	// SellOrdersByBatch queries a paginated list of all sell orders based on
+	// the batch denom of the credits being sold.
+	SellOrdersByBatch(ctx context.Context, in *QuerySellOrdersByBatchRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchResponse, error)
+	// SellOrdersBySeller queries a paginated list of all sell orders based on the
+	// account address of the seller.
+	SellOrdersBySeller(ctx context.Context, in *QuerySellOrdersBySellerRequest, opts ...grpc.CallOption) (*QuerySellOrdersBySellerResponse, error)
+	// AllowedDenoms queries a paginated list of all bank denoms allowed to be
+	// used in the marketplace.
 	AllowedDenoms(ctx context.Context, in *QueryAllowedDenomsRequest, opts ...grpc.CallOption) (*QueryAllowedDenomsResponse, error)
 }
 
@@ -664,18 +793,18 @@ func (c *queryClient) SellOrders(ctx context.Context, in *QuerySellOrdersRequest
 	return out, nil
 }
 
-func (c *queryClient) SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error) {
-	out := new(QuerySellOrdersByBatchDenomResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatchDenom", in, out, opts...)
+func (c *queryClient) SellOrdersByBatch(ctx context.Context, in *QuerySellOrdersByBatchRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchResponse, error) {
+	out := new(QuerySellOrdersByBatchResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error) {
-	out := new(QuerySellOrdersByAddressResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByAddress", in, out, opts...)
+func (c *queryClient) SellOrdersBySeller(ctx context.Context, in *QuerySellOrdersBySellerRequest, opts ...grpc.CallOption) (*QuerySellOrdersBySellerResponse, error) {
+	out := new(QuerySellOrdersBySellerResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersBySeller", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -693,18 +822,18 @@ func (c *queryClient) AllowedDenoms(ctx context.Context, in *QueryAllowedDenomsR
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// SellOrder queries a sell order by its ID
+	// SellOrder queries a sell order by its unique identifier.
 	SellOrder(context.Context, *QuerySellOrderRequest) (*QuerySellOrderResponse, error)
-	// SellOrders queries a paginated list of all sell orders
+	// SellOrders queries a paginated list of all sell orders.
 	SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific
-	// ecocredit denom
-	SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a
-	// specific address
-	SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error)
-	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
-	// sell order
+	// SellOrdersByBatch queries a paginated list of all sell orders based on
+	// the batch denom of the credits being sold.
+	SellOrdersByBatch(context.Context, *QuerySellOrdersByBatchRequest) (*QuerySellOrdersByBatchResponse, error)
+	// SellOrdersBySeller queries a paginated list of all sell orders based on the
+	// account address of the seller.
+	SellOrdersBySeller(context.Context, *QuerySellOrdersBySellerRequest) (*QuerySellOrdersBySellerResponse, error)
+	// AllowedDenoms queries a paginated list of all bank denoms allowed to be
+	// used in the marketplace.
 	AllowedDenoms(context.Context, *QueryAllowedDenomsRequest) (*QueryAllowedDenomsResponse, error)
 }
 
@@ -718,11 +847,11 @@ func (*UnimplementedQueryServer) SellOrder(ctx context.Context, req *QuerySellOr
 func (*UnimplementedQueryServer) SellOrders(ctx context.Context, req *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SellOrders not implemented")
 }
-func (*UnimplementedQueryServer) SellOrdersByBatchDenom(ctx context.Context, req *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByBatchDenom not implemented")
+func (*UnimplementedQueryServer) SellOrdersByBatch(ctx context.Context, req *QuerySellOrdersByBatchRequest) (*QuerySellOrdersByBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByBatch not implemented")
 }
-func (*UnimplementedQueryServer) SellOrdersByAddress(ctx context.Context, req *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByAddress not implemented")
+func (*UnimplementedQueryServer) SellOrdersBySeller(ctx context.Context, req *QuerySellOrdersBySellerRequest) (*QuerySellOrdersBySellerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersBySeller not implemented")
 }
 func (*UnimplementedQueryServer) AllowedDenoms(ctx context.Context, req *QueryAllowedDenomsRequest) (*QueryAllowedDenomsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowedDenoms not implemented")
@@ -768,38 +897,38 @@ func _Query_SellOrders_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_SellOrdersByBatchDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySellOrdersByBatchDenomRequest)
+func _Query_SellOrdersByBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrdersByBatchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, in)
+		return srv.(QueryServer).SellOrdersByBatch(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatchDenom",
+		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatch",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, req.(*QuerySellOrdersByBatchDenomRequest))
+		return srv.(QueryServer).SellOrdersByBatch(ctx, req.(*QuerySellOrdersByBatchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_SellOrdersByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySellOrdersByAddressRequest)
+func _Query_SellOrdersBySeller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrdersBySellerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).SellOrdersByAddress(ctx, in)
+		return srv.(QueryServer).SellOrdersBySeller(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByAddress",
+		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersBySeller",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).SellOrdersByAddress(ctx, req.(*QuerySellOrdersByAddressRequest))
+		return srv.(QueryServer).SellOrdersBySeller(ctx, req.(*QuerySellOrdersBySellerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -835,12 +964,12 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_SellOrders_Handler,
 		},
 		{
-			MethodName: "SellOrdersByBatchDenom",
-			Handler:    _Query_SellOrdersByBatchDenom_Handler,
+			MethodName: "SellOrdersByBatch",
+			Handler:    _Query_SellOrdersByBatch_Handler,
 		},
 		{
-			MethodName: "SellOrdersByAddress",
-			Handler:    _Query_SellOrdersByAddress_Handler,
+			MethodName: "SellOrdersBySeller",
+			Handler:    _Query_SellOrdersBySeller_Handler,
 		},
 		{
 			MethodName: "AllowedDenoms",
@@ -998,7 +1127,7 @@ func (m *QuerySellOrdersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *QuerySellOrdersByBatchDenomRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySellOrdersByBatchRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1008,12 +1137,12 @@ func (m *QuerySellOrdersByBatchDenomRequest) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *QuerySellOrdersByBatchDenomRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersByBatchRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QuerySellOrdersByBatchDenomRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersByBatchRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1040,7 +1169,7 @@ func (m *QuerySellOrdersByBatchDenomRequest) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
-func (m *QuerySellOrdersByBatchDenomResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySellOrdersByBatchResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1050,12 +1179,12 @@ func (m *QuerySellOrdersByBatchDenomResponse) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *QuerySellOrdersByBatchDenomResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersByBatchResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QuerySellOrdersByBatchDenomResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersByBatchResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1089,7 +1218,7 @@ func (m *QuerySellOrdersByBatchDenomResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QuerySellOrdersByAddressRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySellOrdersBySellerRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1099,12 +1228,12 @@ func (m *QuerySellOrdersByAddressRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QuerySellOrdersByAddressRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersBySellerRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QuerySellOrdersByAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersBySellerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1121,17 +1250,17 @@ func (m *QuerySellOrdersByAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+	if len(m.Seller) > 0 {
+		i -= len(m.Seller)
+		copy(dAtA[i:], m.Seller)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Seller)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QuerySellOrdersByAddressResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySellOrdersBySellerResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1141,12 +1270,12 @@ func (m *QuerySellOrdersByAddressResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QuerySellOrdersByAddressResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersBySellerResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QuerySellOrdersByAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySellOrdersBySellerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1264,6 +1393,91 @@ func (m *QueryAllowedDenomsResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
+func (m *SellOrderInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SellOrderInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SellOrderInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Expiration != nil {
+		{
+			size, err := m.Expiration.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x4a
+	}
+	if m.DisableAutoRetire {
+		i--
+		if m.DisableAutoRetire {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x38
+	}
+	if len(m.AskAmount) > 0 {
+		i -= len(m.AskAmount)
+		copy(dAtA[i:], m.AskAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.AskAmount)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.AskDenom) > 0 {
+		i -= len(m.AskDenom)
+		copy(dAtA[i:], m.AskDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.AskDenom)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Quantity) > 0 {
+		i -= len(m.Quantity)
+		copy(dAtA[i:], m.Quantity)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Quantity)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Seller) > 0 {
+		i -= len(m.Seller)
+		copy(dAtA[i:], m.Seller)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Seller)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Id != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1332,7 +1546,7 @@ func (m *QuerySellOrdersResponse) Size() (n int) {
 	return n
 }
 
-func (m *QuerySellOrdersByBatchDenomRequest) Size() (n int) {
+func (m *QuerySellOrdersByBatchRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1349,7 +1563,7 @@ func (m *QuerySellOrdersByBatchDenomRequest) Size() (n int) {
 	return n
 }
 
-func (m *QuerySellOrdersByBatchDenomResponse) Size() (n int) {
+func (m *QuerySellOrdersByBatchResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1368,13 +1582,13 @@ func (m *QuerySellOrdersByBatchDenomResponse) Size() (n int) {
 	return n
 }
 
-func (m *QuerySellOrdersByAddressRequest) Size() (n int) {
+func (m *QuerySellOrdersBySellerRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Address)
+	l = len(m.Seller)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -1385,7 +1599,7 @@ func (m *QuerySellOrdersByAddressRequest) Size() (n int) {
 	return n
 }
 
-func (m *QuerySellOrdersByAddressResponse) Size() (n int) {
+func (m *QuerySellOrdersBySellerResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1431,6 +1645,45 @@ func (m *QueryAllowedDenomsResponse) Size() (n int) {
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *SellOrderInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovQuery(uint64(m.Id))
+	}
+	l = len(m.Seller)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Quantity)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.AskDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.AskAmount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.DisableAutoRetire {
+		n += 2
+	}
+	if m.Expiration != nil {
+		l = m.Expiration.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -1570,7 +1823,7 @@ func (m *QuerySellOrderResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.SellOrder == nil {
-				m.SellOrder = &SellOrder{}
+				m.SellOrder = &SellOrderInfo{}
 			}
 			if err := m.SellOrder.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1741,7 +1994,7 @@ func (m *QuerySellOrdersResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.SellOrders = append(m.SellOrders, &SellOrder{})
+			m.SellOrders = append(m.SellOrders, &SellOrderInfo{})
 			if err := m.SellOrders[len(m.SellOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1803,7 +2056,7 @@ func (m *QuerySellOrdersResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QuerySellOrdersByBatchDenomRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySellOrdersByBatchRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1826,10 +2079,10 @@ func (m *QuerySellOrdersByBatchDenomRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySellOrdersByBatchRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySellOrdersByBatchRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1921,7 +2174,7 @@ func (m *QuerySellOrdersByBatchDenomRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QuerySellOrdersByBatchDenomResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySellOrdersByBatchResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1944,10 +2197,10 @@ func (m *QuerySellOrdersByBatchDenomResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySellOrdersByBatchResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySellOrdersByBatchResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1979,7 +2232,7 @@ func (m *QuerySellOrdersByBatchDenomResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.SellOrders = append(m.SellOrders, &SellOrder{})
+			m.SellOrders = append(m.SellOrders, &SellOrderInfo{})
 			if err := m.SellOrders[len(m.SellOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -2041,7 +2294,7 @@ func (m *QuerySellOrdersByBatchDenomResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QuerySellOrdersByAddressRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySellOrdersBySellerRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2064,15 +2317,15 @@ func (m *QuerySellOrdersByAddressRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QuerySellOrdersByAddressRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySellOrdersBySellerRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QuerySellOrdersByAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySellOrdersBySellerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Seller", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2100,7 +2353,7 @@ func (m *QuerySellOrdersByAddressRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Address = string(dAtA[iNdEx:postIndex])
+			m.Seller = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -2159,7 +2412,7 @@ func (m *QuerySellOrdersByAddressRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QuerySellOrdersByAddressResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySellOrdersBySellerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2182,10 +2435,10 @@ func (m *QuerySellOrdersByAddressResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QuerySellOrdersByAddressResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySellOrdersBySellerResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QuerySellOrdersByAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySellOrdersBySellerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2217,7 +2470,7 @@ func (m *QuerySellOrdersByAddressResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.SellOrders = append(m.SellOrders, &SellOrder{})
+			m.SellOrders = append(m.SellOrders, &SellOrderInfo{})
 			if err := m.SellOrders[len(m.SellOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -2461,6 +2714,291 @@ func (m *QueryAllowedDenomsResponse) Unmarshal(dAtA []byte) error {
 				m.Pagination = &query.PageResponse{}
 			}
 			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SellOrderInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SellOrderInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SellOrderInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Seller", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Seller = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Quantity", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Quantity = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AskDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AskDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AskAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AskAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.DisableAutoRetire = bool(v != 0)
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Expiration", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Expiration == nil {
+				m.Expiration = &types.Timestamp{}
+			}
+			if err := m.Expiration.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

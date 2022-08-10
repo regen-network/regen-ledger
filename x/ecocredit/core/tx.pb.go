@@ -35,17 +35,25 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateClass is the Msg/CreateClass request type.
 type MsgCreateClass struct {
-	// admin is the address of the account that created the credit class.
+	// admin is the address of the account creating the credit class that will
+	// become the admin of the credit class upon creation. The admin will have
+	// permissions within the credit class to update the credit class including
+	// the list of approved issuers. If Params.allowlist_enabled is set to true,
+	// this address must be included in Params.allowed_class_creators.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// issuers are the account addresses of the approved issuers.
+	// issuers are the addresses of the accounts that will have permissions within
+	// the credit class to create projects and issue credits.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
-	// metadata is any arbitrary metadata to attached to the credit class.
+	// metadata is any arbitrary string with a maximum length of 256 characters
+	// that includes or references metadata to attach to the credit class.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type_abbrev is the abbreviation of a credit type (e.g. "C", "BIO").
+	// credit_type_abbrev is the abbreviation of the credit type under which the
+	// credit class will be created (e.g. "C", "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
-	// fee specifies the fee to pay for the creation of the credit class.
-	// acceptable fees for creating a credit class can be found in the governance
-	// parameters for the ecocredit module.
+	// fee is the credit class creation fee. The specified fee must be one of the
+	// fees listed in Params.credit_class_fee. The specified amount can be greater
+	// than or equal to the listed amount but the credit class creator will only
+	// be charged the listed amount (i.e. the minimum amount).
 	Fee *types.Coin `protobuf:"bytes,5,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
@@ -165,28 +173,29 @@ func (m *MsgCreateClassResponse) GetClassId() string {
 
 // MsgCreateProjectResponse is the Msg/CreateProject request type.
 type MsgCreateProject struct {
-	// issuer is the address of an approved issuer for the credit class through
-	// which batches will be issued. It is not required, however, that this same
-	// issuer issue all batches for a project.
-	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// class_id is the unique identifier of the credit class within which the
+	// admin is the address of the account creating the project that will become
+	// the admin of the project upon creation. The creator of the project must be
+	// an approved issuer within the credit class under which the project is being
+	// created. The admin will have permissions to update the project including
+	// the ability to reassign the admin role to another account.
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
+	// class_id is the unique identifier of the credit class under which the
 	// project will be created.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// metadata is any arbitrary metadata attached to the project.
+	// metadata is any arbitrary string with a maximum length of 256 characters
+	// that includes or references metadata to attach to the project.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// project_jurisdiction is the jurisdiction of the project backing the credits
-	// in this batch. It is a string of the form
-	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-	// fields conforming to ISO 3166-2, and postal-code being up to 64
-	// alphanumeric characters. country-code is required, while sub-national-code
-	// and postal-code are optional and can be added for increased precision.
-	ProjectJurisdiction string `protobuf:"bytes,4,opt,name=project_jurisdiction,json=projectJurisdiction,proto3" json:"project_jurisdiction,omitempty"`
-	// project_id is an optional user-specified project ID which can be used
-	// instead of an auto-generated ID. If project_id is provided, it must be
-	// unique within the credit class and match the regex [A-Za-z0-9]{2,16}
-	// or else the operation will fail. If project_id is omitted an ID will
-	// automatically be generated.
-	ProjectId string `protobuf:"bytes,5,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// jurisdiction is the jurisdiction of the project. A jurisdiction has with
+	// the format: <country-code>[-<sub-national-code>[ <postal-code>]]
+	// The country-code must be 2 alphabetic characters, the sub-national-code
+	// can be 1-3 alphanumeric characters, and the postal-code can be up to 64
+	// alphanumeric characters. Only the country-code is required, while the
+	// sub-national-code and postal-code are optional and can be added for
+	// increased precision.
+	Jurisdiction string `protobuf:"bytes,4,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
+	// reference_id is any arbitrary string used to reference the project with a
+	// maximum length of 32 characters.
+	ReferenceId string `protobuf:"bytes,5,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
 }
 
 func (m *MsgCreateProject) Reset()         { *m = MsgCreateProject{} }
@@ -222,9 +231,9 @@ func (m *MsgCreateProject) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateProject proto.InternalMessageInfo
 
-func (m *MsgCreateProject) GetIssuer() string {
+func (m *MsgCreateProject) GetAdmin() string {
 	if m != nil {
-		return m.Issuer
+		return m.Admin
 	}
 	return ""
 }
@@ -243,23 +252,23 @@ func (m *MsgCreateProject) GetMetadata() string {
 	return ""
 }
 
-func (m *MsgCreateProject) GetProjectJurisdiction() string {
+func (m *MsgCreateProject) GetJurisdiction() string {
 	if m != nil {
-		return m.ProjectJurisdiction
+		return m.Jurisdiction
 	}
 	return ""
 }
 
-func (m *MsgCreateProject) GetProjectId() string {
+func (m *MsgCreateProject) GetReferenceId() string {
 	if m != nil {
-		return m.ProjectId
+		return m.ReferenceId
 	}
 	return ""
 }
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 type MsgCreateProjectResponse struct {
-	// project_id is the unique identifier of the newly created project.
+	// project_id is the unique identifier of the project.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
@@ -305,14 +314,18 @@ func (m *MsgCreateProjectResponse) GetProjectId() string {
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 type MsgCreateBatch struct {
-	// issuer is the address of the batch issuer.
+	// issuer is the address of the account issuing the credits and must be an
+	// approved issuer within the credit class of the project.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// project_id is the unique identifier of the project within which the credit
+	// project_id is the unique identifier of the project under which the credit
 	// batch will be created.
 	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	// issuance are the credits issued in the batch.
+	// issuance specifies the amount of tradable and retired credits that will be
+	// issued to each recipient and the jurisdiction in which the credits will be
+	// retired if credits are to be retired upon receipt.
 	Issuance []*BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
-	// metadata is any arbitrary metadata attached to the credit batch.
+	// metadata is any arbitrary string with a maximum length of 256 characters
+	// that includes or references metadata to attach to the credit batch.
 	Metadata string `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// start_date is the beginning of the period during which this credit batch
 	// was quantified and verified.
@@ -320,16 +333,16 @@ type MsgCreateBatch struct {
 	// end_date is the end of the period during which this credit batch was
 	// quantified and verified.
 	EndDate *time.Time `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3,stdtime" json:"end_date,omitempty"`
-	// If open is true we will enable future minting.
-	// Otherwise we will seal the batch and disable the future minting.
+	// open determines whether or not the credits can be dynamically minted to the
+	// credit batch following the creation of the credit batch. This field should
+	// only be set to true when bridging credits from another chain or registry as
+	// a result of a bridge operation and is not intended for native issuance.
 	Open bool `protobuf:"varint,7,opt,name=open,proto3" json:"open,omitempty"`
-	// A reference to a transaction or an event referencing the transaction
-	// which caused the transfer from other chain or registry.
-	// If not set (null), it means that the batch originate in Regen Ledger
-	// (doesn't come from external registry).
+	// origin_tx is the transaction from another chain or registry that triggered
+	// the creation of the credit batch. This field can be ignored when natively
+	// issuing credits and should only be set when bridging assets from another
+	// chain or registry as a result of a bridge operation.
 	OriginTx *OriginTx `protobuf:"bytes,8,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
-	// reference note for accounting, will be passed to an event
-	Note string `protobuf:"bytes,9,opt,name=note,proto3" json:"note,omitempty"`
 }
 
 func (m *MsgCreateBatch) Reset()         { *m = MsgCreateBatch{} }
@@ -421,97 +434,9 @@ func (m *MsgCreateBatch) GetOriginTx() *OriginTx {
 	return nil
 }
 
-func (m *MsgCreateBatch) GetNote() string {
-	if m != nil {
-		return m.Note
-	}
-	return ""
-}
-
-// BatchIssuance represents the issuance of some credits in a batch to a
-// single recipient.
-type BatchIssuance struct {
-	// recipient is the account of the recipient.
-	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// tradable_amount is the number of credits in this issuance that can be
-	// traded by this recipient. Decimal values are acceptable.
-	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
-	// retired_amount is the number of credits in this issuance that are
-	// effectively retired by the issuer on receipt. Decimal values are
-	// acceptable.
-	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
-	// retirement_jurisdiction is the jurisdiction of the beneficiary or buyer of
-	// the retired credits. This must be provided if retired_amount is positive.
-	// It is a string of the form <country-code>[-<sub-national-code>[
-	// <postal-code>]], with the first two fields conforming to ISO 3166-2, and
-	// postal-code being up to 64 alphanumeric characters.
-	RetirementJurisdiction string `protobuf:"bytes,4,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
-}
-
-func (m *BatchIssuance) Reset()         { *m = BatchIssuance{} }
-func (m *BatchIssuance) String() string { return proto.CompactTextString(m) }
-func (*BatchIssuance) ProtoMessage()    {}
-func (*BatchIssuance) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{5}
-}
-func (m *BatchIssuance) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *BatchIssuance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_BatchIssuance.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *BatchIssuance) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BatchIssuance.Merge(m, src)
-}
-func (m *BatchIssuance) XXX_Size() int {
-	return m.Size()
-}
-func (m *BatchIssuance) XXX_DiscardUnknown() {
-	xxx_messageInfo_BatchIssuance.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_BatchIssuance proto.InternalMessageInfo
-
-func (m *BatchIssuance) GetRecipient() string {
-	if m != nil {
-		return m.Recipient
-	}
-	return ""
-}
-
-func (m *BatchIssuance) GetTradableAmount() string {
-	if m != nil {
-		return m.TradableAmount
-	}
-	return ""
-}
-
-func (m *BatchIssuance) GetRetiredAmount() string {
-	if m != nil {
-		return m.RetiredAmount
-	}
-	return ""
-}
-
-func (m *BatchIssuance) GetRetirementJurisdiction() string {
-	if m != nil {
-		return m.RetirementJurisdiction
-	}
-	return ""
-}
-
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 type MsgCreateBatchResponse struct {
-	// batch_denom is the unique identifier of the newly created batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
@@ -519,7 +444,7 @@ func (m *MsgCreateBatchResponse) Reset()         { *m = MsgCreateBatchResponse{}
 func (m *MsgCreateBatchResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateBatchResponse) ProtoMessage()    {}
 func (*MsgCreateBatchResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{6}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{5}
 }
 func (m *MsgCreateBatchResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -555,27 +480,27 @@ func (m *MsgCreateBatchResponse) GetBatchDenom() string {
 	return ""
 }
 
-// MsgMintBatchCredits is a request type for MintBatchCredits Msg RPC.
+// MsgMintBatchCredits is the Msg/MintBatchCredits request type.
 type MsgMintBatchCredits struct {
-	// Issuer must equal to the batch.issuer address.
-	// Signer of the msg.
+	// issuer is the address of the account minting the credits and must be the
+	// same issuer who created the credit batch.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// issuance are the credits issued in the batch.
+	// issuance specifies the amount of tradable and retired credits that will be
+	// issued to each recipient and the jurisdiction in which the credits will be
+	// retired if credits are to be retired upon receipt.
 	Issuance []*BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
-	// A reference to a transaction or an event referencing the transaction
-	// which caused the transfer from other chain or registry.
+	// origin_tx is the transaction from another chain or registry that triggered
+	// the minting of credits.
 	OriginTx *OriginTx `protobuf:"bytes,4,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
-	// reference note for accounting, will be passed to an event
-	Note string `protobuf:"bytes,5,opt,name=note,proto3" json:"note,omitempty"`
 }
 
 func (m *MsgMintBatchCredits) Reset()         { *m = MsgMintBatchCredits{} }
 func (m *MsgMintBatchCredits) String() string { return proto.CompactTextString(m) }
 func (*MsgMintBatchCredits) ProtoMessage()    {}
 func (*MsgMintBatchCredits) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{7}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{6}
 }
 func (m *MsgMintBatchCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -632,17 +557,47 @@ func (m *MsgMintBatchCredits) GetOriginTx() *OriginTx {
 	return nil
 }
 
-func (m *MsgMintBatchCredits) GetNote() string {
-	if m != nil {
-		return m.Note
-	}
-	return ""
+// MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
+type MsgMintBatchCreditsResponse struct {
 }
 
-// MsgSealBatch request type for MsgSealBatch RPC.
+func (m *MsgMintBatchCreditsResponse) Reset()         { *m = MsgMintBatchCreditsResponse{} }
+func (m *MsgMintBatchCreditsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgMintBatchCreditsResponse) ProtoMessage()    {}
+func (*MsgMintBatchCreditsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{7}
+}
+func (m *MsgMintBatchCreditsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgMintBatchCreditsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgMintBatchCreditsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgMintBatchCreditsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgMintBatchCreditsResponse.Merge(m, src)
+}
+func (m *MsgMintBatchCreditsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgMintBatchCreditsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgMintBatchCreditsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgMintBatchCreditsResponse proto.InternalMessageInfo
+
+// MsgSealBatch is the Msg/MintBatchCredits request type.
 type MsgSealBatch struct {
-	// Issuer must equal to the batch.issuer address.
-	// Signer of the msg.
+	// issuer is the address of the account that created the credit batch and the
+	// only account with permissions to seal the credit batch.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
@@ -695,43 +650,6 @@ func (m *MsgSealBatch) GetBatchDenom() string {
 	return ""
 }
 
-// MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
-type MsgMintBatchCreditsResponse struct {
-}
-
-func (m *MsgMintBatchCreditsResponse) Reset()         { *m = MsgMintBatchCreditsResponse{} }
-func (m *MsgMintBatchCreditsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgMintBatchCreditsResponse) ProtoMessage()    {}
-func (*MsgMintBatchCreditsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{9}
-}
-func (m *MsgMintBatchCreditsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgMintBatchCreditsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgMintBatchCreditsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgMintBatchCreditsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgMintBatchCreditsResponse.Merge(m, src)
-}
-func (m *MsgMintBatchCreditsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgMintBatchCreditsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgMintBatchCreditsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgMintBatchCreditsResponse proto.InternalMessageInfo
-
 // MsgSealBatchResponse is the Msg/SealBatch response type.
 type MsgSealBatchResponse struct {
 }
@@ -740,7 +658,7 @@ func (m *MsgSealBatchResponse) Reset()         { *m = MsgSealBatchResponse{} }
 func (m *MsgSealBatchResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSealBatchResponse) ProtoMessage()    {}
 func (*MsgSealBatchResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{10}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{9}
 }
 func (m *MsgSealBatchResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -773,9 +691,9 @@ var xxx_messageInfo_MsgSealBatchResponse proto.InternalMessageInfo
 type MsgSend struct {
 	// sender is the address of the account sending credits.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
-	// sender is the address of the account receiving credits.
+	// recipient is the address of the account receiving credits.
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// credits are the credits being sent.
+	// credits are the credits being sent to the recipient.
 	Credits []*MsgSend_SendCredits `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
@@ -783,7 +701,7 @@ func (m *MsgSend) Reset()         { *m = MsgSend{} }
 func (m *MsgSend) String() string { return proto.CompactTextString(m) }
 func (*MsgSend) ProtoMessage()    {}
 func (*MsgSend) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{11}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{10}
 }
 func (m *MsgSend) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -833,25 +751,27 @@ func (m *MsgSend) GetCredits() []*MsgSend_SendCredits {
 	return nil
 }
 
-// SendCredits specifies a batch and the number of credits being transferred.
-// This is split into tradable credits, which will remain tradable on receipt,
-// and retired credits, which will be retired on receipt.
+// SendCredits specifies the amount of tradable and retired credits of a
+// credit batch that will be sent to the recipient and the jurisdiction in
+// which the credits will be retired upon receipt.
 type MsgSend_SendCredits struct {
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// tradable_amount is the number of credits in this transfer that can be
-	// traded by the recipient. Decimal values are acceptable within the
-	// precision returned by Query/Precision.
+	// tradable_amount is the amount of credits in this transfer that can be
+	// traded by the recipient. The number of decimal places must be less than
+	// or equal to the credit type precision.
 	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
-	// retired_amount is the number of credits in this transfer that are
-	// effectively retired by the issuer on receipt. Decimal values are
-	// acceptable within the precision returned by Query/Precision.
+	// retired_amount is the amount of credits in this transfer that are retired
+	// upon receipt. The number of decimal places must be less than or equal to
+	// the credit type precision.
 	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
-	// retirement_jurisdiction is the jurisdiction of the beneficiary or buyer
-	// of the retired credits. This must be provided if retired_amount is
-	// positive. It is a string of the form <country-code>[-<sub-national-code>[
-	// <postal-code>]], with the first two fields conforming to ISO 3166-2, and
-	// postal-code being up to 64 alphanumeric characters.
+	// retirement_jurisdiction is the jurisdiction of the recipient and is only
+	// required if retired_amount is positive. A jurisdiction has the format:
+	// <country-code>[-<sub-national-code>[ <postal-code>]]
+	// The country-code and sub-national-code must conform to ISO 3166-2 and the
+	// postal-code can be up to 64 alphanumeric characters. Only the
+	// country-code is required, while the sub-national-code and postal-code are
+	// optional and can be added for increased precision.
 	RetirementJurisdiction string `protobuf:"bytes,4,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
 }
 
@@ -859,7 +779,7 @@ func (m *MsgSend_SendCredits) Reset()         { *m = MsgSend_SendCredits{} }
 func (m *MsgSend_SendCredits) String() string { return proto.CompactTextString(m) }
 func (*MsgSend_SendCredits) ProtoMessage()    {}
 func (*MsgSend_SendCredits) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{11, 0}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{10, 0}
 }
 func (m *MsgSend_SendCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -924,7 +844,7 @@ func (m *MsgSendResponse) Reset()         { *m = MsgSendResponse{} }
 func (m *MsgSendResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSendResponse) ProtoMessage()    {}
 func (*MsgSendResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{12}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{11}
 }
 func (m *MsgSendResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -955,15 +875,17 @@ var xxx_messageInfo_MsgSendResponse proto.InternalMessageInfo
 
 // MsgRetire is the Msg/Retire request type.
 type MsgRetire struct {
-	// holder is the credit holder address.
-	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
-	// credits are the credits being retired.
-	Credits []*MsgRetire_RetireCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
-	// jurisdiction is the jurisdiction of the beneficiary or buyer of the retired
-	// credits. It is a string of the form
-	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-	// fields conforming to ISO 3166-2, and postal-code being up to 64
-	// alphanumeric characters.
+	// owner is the address of the account that owns the credits being retired.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// credits specifies a credit batch and the number of credits being retired.
+	Credits []*Credits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	// jurisdiction is the jurisdiction of the credit owner. A jurisdiction has
+	// the format: <country-code>[-<sub-national-code>[ <postal-code>]]
+	// The country-code must be 2 alphabetic characters, the sub-national-code
+	// can be 1-3 alphanumeric characters, and the postal-code can be up to 64
+	// alphanumeric characters. Only the country-code is required, while the
+	// sub-national-code and postal-code are optional and can be added for
+	// increased precision.
 	Jurisdiction string `protobuf:"bytes,3,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
 }
 
@@ -971,7 +893,7 @@ func (m *MsgRetire) Reset()         { *m = MsgRetire{} }
 func (m *MsgRetire) String() string { return proto.CompactTextString(m) }
 func (*MsgRetire) ProtoMessage()    {}
 func (*MsgRetire) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{13}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{12}
 }
 func (m *MsgRetire) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1000,14 +922,14 @@ func (m *MsgRetire) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRetire proto.InternalMessageInfo
 
-func (m *MsgRetire) GetHolder() string {
+func (m *MsgRetire) GetOwner() string {
 	if m != nil {
-		return m.Holder
+		return m.Owner
 	}
 	return ""
 }
 
-func (m *MsgRetire) GetCredits() []*MsgRetire_RetireCredits {
+func (m *MsgRetire) GetCredits() []*Credits {
 	if m != nil {
 		return m.Credits
 	}
@@ -1021,63 +943,6 @@ func (m *MsgRetire) GetJurisdiction() string {
 	return ""
 }
 
-// RetireCredits specifies a batch and the number of credits being retired.
-type MsgRetire_RetireCredits struct {
-	// batch_denom is the unique identifier of the credit batch.
-	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// amount is the number of credits being retired.
-	// Decimal values are acceptable within the precision returned by
-	// Query/Precision.
-	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
-}
-
-func (m *MsgRetire_RetireCredits) Reset()         { *m = MsgRetire_RetireCredits{} }
-func (m *MsgRetire_RetireCredits) String() string { return proto.CompactTextString(m) }
-func (*MsgRetire_RetireCredits) ProtoMessage()    {}
-func (*MsgRetire_RetireCredits) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{13, 0}
-}
-func (m *MsgRetire_RetireCredits) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgRetire_RetireCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgRetire_RetireCredits.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgRetire_RetireCredits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRetire_RetireCredits.Merge(m, src)
-}
-func (m *MsgRetire_RetireCredits) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgRetire_RetireCredits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRetire_RetireCredits.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgRetire_RetireCredits proto.InternalMessageInfo
-
-func (m *MsgRetire_RetireCredits) GetBatchDenom() string {
-	if m != nil {
-		return m.BatchDenom
-	}
-	return ""
-}
-
-func (m *MsgRetire_RetireCredits) GetAmount() string {
-	if m != nil {
-		return m.Amount
-	}
-	return ""
-}
-
 // MsgRetire is the Msg/Retire response type.
 type MsgRetireResponse struct {
 }
@@ -1086,7 +951,7 @@ func (m *MsgRetireResponse) Reset()         { *m = MsgRetireResponse{} }
 func (m *MsgRetireResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRetireResponse) ProtoMessage()    {}
 func (*MsgRetireResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{14}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{13}
 }
 func (m *MsgRetireResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1117,17 +982,20 @@ var xxx_messageInfo_MsgRetireResponse proto.InternalMessageInfo
 
 // MsgCancel is the Msg/Cancel request type.
 type MsgCancel struct {
-	// holder is the credit holder address.
-	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
-	// credits are the credits being cancelled.
-	Credits []*MsgCancel_CancelCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	// owner is the address of the account that owns the credits being cancelled.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// credits specifies a credit batch and the number of credits being cancelled.
+	Credits []*Credits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	// reason is any arbitrary string that specifies the reason for cancelling
+	// credits.
+	Reason string `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
 func (m *MsgCancel) Reset()         { *m = MsgCancel{} }
 func (m *MsgCancel) String() string { return proto.CompactTextString(m) }
 func (*MsgCancel) ProtoMessage()    {}
 func (*MsgCancel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{15}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{14}
 }
 func (m *MsgCancel) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1156,73 +1024,23 @@ func (m *MsgCancel) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCancel proto.InternalMessageInfo
 
-func (m *MsgCancel) GetHolder() string {
+func (m *MsgCancel) GetOwner() string {
 	if m != nil {
-		return m.Holder
+		return m.Owner
 	}
 	return ""
 }
 
-func (m *MsgCancel) GetCredits() []*MsgCancel_CancelCredits {
+func (m *MsgCancel) GetCredits() []*Credits {
 	if m != nil {
 		return m.Credits
 	}
 	return nil
 }
 
-// CancelCredits specifies a batch and the number of credits being cancelled.
-type MsgCancel_CancelCredits struct {
-	// batch_denom is the unique identifier of the credit batch.
-	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// amount is the number of credits being cancelled.
-	// Decimal values are acceptable within the precision returned by
-	// Query/Precision.
-	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
-}
-
-func (m *MsgCancel_CancelCredits) Reset()         { *m = MsgCancel_CancelCredits{} }
-func (m *MsgCancel_CancelCredits) String() string { return proto.CompactTextString(m) }
-func (*MsgCancel_CancelCredits) ProtoMessage()    {}
-func (*MsgCancel_CancelCredits) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{15, 0}
-}
-func (m *MsgCancel_CancelCredits) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgCancel_CancelCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgCancel_CancelCredits.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgCancel_CancelCredits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCancel_CancelCredits.Merge(m, src)
-}
-func (m *MsgCancel_CancelCredits) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgCancel_CancelCredits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCancel_CancelCredits.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgCancel_CancelCredits proto.InternalMessageInfo
-
-func (m *MsgCancel_CancelCredits) GetBatchDenom() string {
+func (m *MsgCancel) GetReason() string {
 	if m != nil {
-		return m.BatchDenom
-	}
-	return ""
-}
-
-func (m *MsgCancel_CancelCredits) GetAmount() string {
-	if m != nil {
-		return m.Amount
+		return m.Reason
 	}
 	return ""
 }
@@ -1235,7 +1053,7 @@ func (m *MsgCancelResponse) Reset()         { *m = MsgCancelResponse{} }
 func (m *MsgCancelResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgCancelResponse) ProtoMessage()    {}
 func (*MsgCancelResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{16}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{15}
 }
 func (m *MsgCancelResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1266,11 +1084,13 @@ var xxx_messageInfo_MsgCancelResponse proto.InternalMessageInfo
 
 // MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
 type MsgUpdateClassAdmin struct {
-	// admin is the address of the account that is the admin of the credit class.
+	// admin is the address of the account that is currently the admin of the
+	// credit class.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// new_admin is the address of the new admin of the credit class.
+	// new_admin is the address of the account that will become the new admin of
+	// the credit class.
 	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
 }
 
@@ -1278,7 +1098,7 @@ func (m *MsgUpdateClassAdmin) Reset()         { *m = MsgUpdateClassAdmin{} }
 func (m *MsgUpdateClassAdmin) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassAdmin) ProtoMessage()    {}
 func (*MsgUpdateClassAdmin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{17}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{16}
 }
 func (m *MsgUpdateClassAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1336,7 +1156,7 @@ func (m *MsgUpdateClassAdminResponse) Reset()         { *m = MsgUpdateClassAdmin
 func (m *MsgUpdateClassAdminResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassAdminResponse) ProtoMessage()    {}
 func (*MsgUpdateClassAdminResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{18}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{17}
 }
 func (m *MsgUpdateClassAdminResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1371,9 +1191,11 @@ type MsgUpdateClassIssuers struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// add_issuers are the issuers to add to the class issuers list.
+	// add_issuers are the addresses of the accounts that will be added to the
+	// list of approved credit class issuers.
 	AddIssuers []string `protobuf:"bytes,3,rep,name=add_issuers,json=addIssuers,proto3" json:"add_issuers,omitempty"`
-	// remove_issuers are the issuers to remove from the class issuers list.
+	// remove_issuers are the addresses of the accounts that will be removed from
+	// the list of approved credit class issuers.
 	RemoveIssuers []string `protobuf:"bytes,4,rep,name=remove_issuers,json=removeIssuers,proto3" json:"remove_issuers,omitempty"`
 }
 
@@ -1381,7 +1203,7 @@ func (m *MsgUpdateClassIssuers) Reset()         { *m = MsgUpdateClassIssuers{} }
 func (m *MsgUpdateClassIssuers) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassIssuers) ProtoMessage()    {}
 func (*MsgUpdateClassIssuers) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{19}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{18}
 }
 func (m *MsgUpdateClassIssuers) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1446,7 +1268,7 @@ func (m *MsgUpdateClassIssuersResponse) Reset()         { *m = MsgUpdateClassIss
 func (m *MsgUpdateClassIssuersResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassIssuersResponse) ProtoMessage()    {}
 func (*MsgUpdateClassIssuersResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{20}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{19}
 }
 func (m *MsgUpdateClassIssuersResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1481,16 +1303,17 @@ type MsgUpdateClassMetadata struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// metadata is the updated arbitrary metadata to be attached to the credit
-	// class.
-	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// new_metadata is new metadata that will replace the existing metadata. It
+	// can be any arbitrary string with a maximum length of 256 characters that
+	// includes or references the metadata to attach to the credit class.
+	NewMetadata string `protobuf:"bytes,3,opt,name=new_metadata,json=newMetadata,proto3" json:"new_metadata,omitempty"`
 }
 
 func (m *MsgUpdateClassMetadata) Reset()         { *m = MsgUpdateClassMetadata{} }
 func (m *MsgUpdateClassMetadata) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassMetadata) ProtoMessage()    {}
 func (*MsgUpdateClassMetadata) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{21}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{20}
 }
 func (m *MsgUpdateClassMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1533,9 +1356,9 @@ func (m *MsgUpdateClassMetadata) GetClassId() string {
 	return ""
 }
 
-func (m *MsgUpdateClassMetadata) GetMetadata() string {
+func (m *MsgUpdateClassMetadata) GetNewMetadata() string {
 	if m != nil {
-		return m.Metadata
+		return m.NewMetadata
 	}
 	return ""
 }
@@ -1548,7 +1371,7 @@ func (m *MsgUpdateClassMetadataResponse) Reset()         { *m = MsgUpdateClassMe
 func (m *MsgUpdateClassMetadataResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassMetadataResponse) ProtoMessage()    {}
 func (*MsgUpdateClassMetadataResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{22}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{21}
 }
 func (m *MsgUpdateClassMetadataResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1579,19 +1402,21 @@ var xxx_messageInfo_MsgUpdateClassMetadataResponse proto.InternalMessageInfo
 
 // MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin request type.
 type MsgUpdateProjectAdmin struct {
-	// admin is the project's current admin address.
+	// admin is the address of the account that is the currently the admin of the
+	// project.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// new_admin is the address of the new admin of the project.
-	NewAdmin string `protobuf:"bytes,2,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
-	// project_id is the unique identifier of the project (e.g. VERRA1).
-	ProjectId string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// project_id is the unique identifier of the project.
+	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// new_admin is the address of the account that will become the new admin of
+	// the project.
+	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
 }
 
 func (m *MsgUpdateProjectAdmin) Reset()         { *m = MsgUpdateProjectAdmin{} }
 func (m *MsgUpdateProjectAdmin) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateProjectAdmin) ProtoMessage()    {}
 func (*MsgUpdateProjectAdmin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{23}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{22}
 }
 func (m *MsgUpdateProjectAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1627,16 +1452,16 @@ func (m *MsgUpdateProjectAdmin) GetAdmin() string {
 	return ""
 }
 
-func (m *MsgUpdateProjectAdmin) GetNewAdmin() string {
+func (m *MsgUpdateProjectAdmin) GetProjectId() string {
 	if m != nil {
-		return m.NewAdmin
+		return m.ProjectId
 	}
 	return ""
 }
 
-func (m *MsgUpdateProjectAdmin) GetProjectId() string {
+func (m *MsgUpdateProjectAdmin) GetNewAdmin() string {
 	if m != nil {
-		return m.ProjectId
+		return m.NewAdmin
 	}
 	return ""
 }
@@ -1649,7 +1474,7 @@ func (m *MsgUpdateProjectAdminResponse) Reset()         { *m = MsgUpdateProjectA
 func (m *MsgUpdateProjectAdminResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateProjectAdminResponse) ProtoMessage()    {}
 func (*MsgUpdateProjectAdminResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{24}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{23}
 }
 func (m *MsgUpdateProjectAdminResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1680,19 +1505,21 @@ var xxx_messageInfo_MsgUpdateProjectAdminResponse proto.InternalMessageInfo
 
 // MsgUpdateProjectMetadata is the Msg/UpdateProjectMetadata request type.
 type MsgUpdateProjectMetadata struct {
-	// admin is project admin address.
+	// admin is the address of the account that is the admin of the project.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// new_metadata is the metadata to update the project with.
-	NewMetadata string `protobuf:"bytes,2,opt,name=new_metadata,json=newMetadata,proto3" json:"new_metadata,omitempty"`
-	// project_id is the unique identifier of the project (e.g. VERRA1).
-	ProjectId string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// project_id is the unique identifier of the project.
+	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// new_metadata is new metadata that will replace the existing metadata. It
+	// can be any arbitrary string with a maximum length of 256 characters that
+	// includes or references the metadata to attach to the project.
+	NewMetadata string `protobuf:"bytes,3,opt,name=new_metadata,json=newMetadata,proto3" json:"new_metadata,omitempty"`
 }
 
 func (m *MsgUpdateProjectMetadata) Reset()         { *m = MsgUpdateProjectMetadata{} }
 func (m *MsgUpdateProjectMetadata) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateProjectMetadata) ProtoMessage()    {}
 func (*MsgUpdateProjectMetadata) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{25}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{24}
 }
 func (m *MsgUpdateProjectMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1728,16 +1555,16 @@ func (m *MsgUpdateProjectMetadata) GetAdmin() string {
 	return ""
 }
 
-func (m *MsgUpdateProjectMetadata) GetNewMetadata() string {
+func (m *MsgUpdateProjectMetadata) GetProjectId() string {
 	if m != nil {
-		return m.NewMetadata
+		return m.ProjectId
 	}
 	return ""
 }
 
-func (m *MsgUpdateProjectMetadata) GetProjectId() string {
+func (m *MsgUpdateProjectMetadata) GetNewMetadata() string {
 	if m != nil {
-		return m.ProjectId
+		return m.NewMetadata
 	}
 	return ""
 }
@@ -1751,7 +1578,7 @@ func (m *MsgUpdateProjectMetadataResponse) Reset()         { *m = MsgUpdateProje
 func (m *MsgUpdateProjectMetadataResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateProjectMetadataResponse) ProtoMessage()    {}
 func (*MsgUpdateProjectMetadataResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{26}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{25}
 }
 func (m *MsgUpdateProjectMetadataResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1780,26 +1607,426 @@ func (m *MsgUpdateProjectMetadataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateProjectMetadataResponse proto.InternalMessageInfo
 
+// MsgBridge is the Msg/Bridge request type.
+type MsgBridge struct {
+	// owner is the address of the account that owns the credits being bridged.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// target is the name of the target chain or registry.
+	Target string `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
+	// recipient is the address of the account receiving the bridged credits.
+	Recipient string `protobuf:"bytes,3,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	// credits specifies a credit batch and the number of credits being bridged.
+	Credits []*Credits `protobuf:"bytes,4,rep,name=credits,proto3" json:"credits,omitempty"`
+}
+
+func (m *MsgBridge) Reset()         { *m = MsgBridge{} }
+func (m *MsgBridge) String() string { return proto.CompactTextString(m) }
+func (*MsgBridge) ProtoMessage()    {}
+func (*MsgBridge) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{26}
+}
+func (m *MsgBridge) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBridge) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBridge.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBridge) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBridge.Merge(m, src)
+}
+func (m *MsgBridge) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBridge) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBridge.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBridge proto.InternalMessageInfo
+
+func (m *MsgBridge) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *MsgBridge) GetTarget() string {
+	if m != nil {
+		return m.Target
+	}
+	return ""
+}
+
+func (m *MsgBridge) GetRecipient() string {
+	if m != nil {
+		return m.Recipient
+	}
+	return ""
+}
+
+func (m *MsgBridge) GetCredits() []*Credits {
+	if m != nil {
+		return m.Credits
+	}
+	return nil
+}
+
+// MsgBridgeResponse is the Msg/Bridge response type.
+type MsgBridgeResponse struct {
+}
+
+func (m *MsgBridgeResponse) Reset()         { *m = MsgBridgeResponse{} }
+func (m *MsgBridgeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgBridgeResponse) ProtoMessage()    {}
+func (*MsgBridgeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{27}
+}
+func (m *MsgBridgeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBridgeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBridgeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBridgeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBridgeResponse.Merge(m, src)
+}
+func (m *MsgBridgeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBridgeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBridgeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBridgeResponse proto.InternalMessageInfo
+
+// MsgBridgeReceive is the Msg/BridgeReceive request type.
+type MsgBridgeReceive struct {
+	// issuer is the account address of the service bridging the credits.
+	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// class_id is the unique identifier of the credit class within which the
+	// project and credit batch already exist or will be created.
+	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// project defines the project information for the bridged credits.
+	Project *MsgBridgeReceive_Project `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	// batch defines the credit batch information for the bridged credits.
+	Batch *MsgBridgeReceive_Batch `protobuf:"bytes,4,opt,name=batch,proto3" json:"batch,omitempty"`
+	// origin_tx is a reference to a transaction which caused the transfer from
+	// another chain or registry.
+	OriginTx *OriginTx `protobuf:"bytes,5,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
+}
+
+func (m *MsgBridgeReceive) Reset()         { *m = MsgBridgeReceive{} }
+func (m *MsgBridgeReceive) String() string { return proto.CompactTextString(m) }
+func (*MsgBridgeReceive) ProtoMessage()    {}
+func (*MsgBridgeReceive) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{28}
+}
+func (m *MsgBridgeReceive) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBridgeReceive) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBridgeReceive.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBridgeReceive) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBridgeReceive.Merge(m, src)
+}
+func (m *MsgBridgeReceive) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBridgeReceive) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBridgeReceive.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBridgeReceive proto.InternalMessageInfo
+
+func (m *MsgBridgeReceive) GetIssuer() string {
+	if m != nil {
+		return m.Issuer
+	}
+	return ""
+}
+
+func (m *MsgBridgeReceive) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *MsgBridgeReceive) GetProject() *MsgBridgeReceive_Project {
+	if m != nil {
+		return m.Project
+	}
+	return nil
+}
+
+func (m *MsgBridgeReceive) GetBatch() *MsgBridgeReceive_Batch {
+	if m != nil {
+		return m.Batch
+	}
+	return nil
+}
+
+func (m *MsgBridgeReceive) GetOriginTx() *OriginTx {
+	if m != nil {
+		return m.OriginTx
+	}
+	return nil
+}
+
+// Batch defines the credit batch information for the bridged credits. This
+// information will be used to create a credit batch or to dynamically mint
+// credits to an existing credit batch.
+type MsgBridgeReceive_Batch struct {
+	// recipient is the recipient of the bridged credits.
+	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	// amount is the amount of credits being bridged.
+	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	// start_date is the beginning of the period during which this credit batch
+	// was quantified and verified.
+	StartDate *time.Time `protobuf:"bytes,3,opt,name=start_date,json=startDate,proto3,stdtime" json:"start_date,omitempty"`
+	// end_date is the end of the period during which this credit batch was
+	// quantified and verified.
+	EndDate *time.Time `protobuf:"bytes,4,opt,name=end_date,json=endDate,proto3,stdtime" json:"end_date,omitempty"`
+	// metadata is the metadata for the credit batch.
+	Metadata string `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
+}
+
+func (m *MsgBridgeReceive_Batch) Reset()         { *m = MsgBridgeReceive_Batch{} }
+func (m *MsgBridgeReceive_Batch) String() string { return proto.CompactTextString(m) }
+func (*MsgBridgeReceive_Batch) ProtoMessage()    {}
+func (*MsgBridgeReceive_Batch) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{28, 0}
+}
+func (m *MsgBridgeReceive_Batch) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBridgeReceive_Batch) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBridgeReceive_Batch.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBridgeReceive_Batch) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBridgeReceive_Batch.Merge(m, src)
+}
+func (m *MsgBridgeReceive_Batch) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBridgeReceive_Batch) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBridgeReceive_Batch.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBridgeReceive_Batch proto.InternalMessageInfo
+
+func (m *MsgBridgeReceive_Batch) GetRecipient() string {
+	if m != nil {
+		return m.Recipient
+	}
+	return ""
+}
+
+func (m *MsgBridgeReceive_Batch) GetAmount() string {
+	if m != nil {
+		return m.Amount
+	}
+	return ""
+}
+
+func (m *MsgBridgeReceive_Batch) GetStartDate() *time.Time {
+	if m != nil {
+		return m.StartDate
+	}
+	return nil
+}
+
+func (m *MsgBridgeReceive_Batch) GetEndDate() *time.Time {
+	if m != nil {
+		return m.EndDate
+	}
+	return nil
+}
+
+func (m *MsgBridgeReceive_Batch) GetMetadata() string {
+	if m != nil {
+		return m.Metadata
+	}
+	return ""
+}
+
+// Project defines the project information for the bridged credits. This
+// information will be used to find an existing project or to create a new
+// project if a project with the same reference id does not already exist.
+type MsgBridgeReceive_Project struct {
+	// reference_id is the reference id of the project.
+	ReferenceId string `protobuf:"bytes,1,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
+	// jurisdiction is the project jurisdiction.
+	Jurisdiction string `protobuf:"bytes,2,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
+	// metadata is the metadata for the project.
+	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
+}
+
+func (m *MsgBridgeReceive_Project) Reset()         { *m = MsgBridgeReceive_Project{} }
+func (m *MsgBridgeReceive_Project) String() string { return proto.CompactTextString(m) }
+func (*MsgBridgeReceive_Project) ProtoMessage()    {}
+func (*MsgBridgeReceive_Project) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{28, 1}
+}
+func (m *MsgBridgeReceive_Project) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBridgeReceive_Project) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBridgeReceive_Project.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBridgeReceive_Project) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBridgeReceive_Project.Merge(m, src)
+}
+func (m *MsgBridgeReceive_Project) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBridgeReceive_Project) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBridgeReceive_Project.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBridgeReceive_Project proto.InternalMessageInfo
+
+func (m *MsgBridgeReceive_Project) GetReferenceId() string {
+	if m != nil {
+		return m.ReferenceId
+	}
+	return ""
+}
+
+func (m *MsgBridgeReceive_Project) GetJurisdiction() string {
+	if m != nil {
+		return m.Jurisdiction
+	}
+	return ""
+}
+
+func (m *MsgBridgeReceive_Project) GetMetadata() string {
+	if m != nil {
+		return m.Metadata
+	}
+	return ""
+}
+
+// MsgBridgeReceiveResponse is the Msg/BridgeReceive response type.
+type MsgBridgeReceiveResponse struct {
+	// batch_denom is the unique identifier of the credit batch either created
+	// or within which the credits were dynamically minted.
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// project_id is the unique identifier of the project that was either created
+	// or the existing project within which the credit batch exists.
+	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+}
+
+func (m *MsgBridgeReceiveResponse) Reset()         { *m = MsgBridgeReceiveResponse{} }
+func (m *MsgBridgeReceiveResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgBridgeReceiveResponse) ProtoMessage()    {}
+func (*MsgBridgeReceiveResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{29}
+}
+func (m *MsgBridgeReceiveResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBridgeReceiveResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBridgeReceiveResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBridgeReceiveResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBridgeReceiveResponse.Merge(m, src)
+}
+func (m *MsgBridgeReceiveResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBridgeReceiveResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBridgeReceiveResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBridgeReceiveResponse proto.InternalMessageInfo
+
+func (m *MsgBridgeReceiveResponse) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *MsgBridgeReceiveResponse) GetProjectId() string {
+	if m != nil {
+		return m.ProjectId
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*MsgCreateClass)(nil), "regen.ecocredit.v1.MsgCreateClass")
 	proto.RegisterType((*MsgCreateClassResponse)(nil), "regen.ecocredit.v1.MsgCreateClassResponse")
 	proto.RegisterType((*MsgCreateProject)(nil), "regen.ecocredit.v1.MsgCreateProject")
 	proto.RegisterType((*MsgCreateProjectResponse)(nil), "regen.ecocredit.v1.MsgCreateProjectResponse")
 	proto.RegisterType((*MsgCreateBatch)(nil), "regen.ecocredit.v1.MsgCreateBatch")
-	proto.RegisterType((*BatchIssuance)(nil), "regen.ecocredit.v1.BatchIssuance")
 	proto.RegisterType((*MsgCreateBatchResponse)(nil), "regen.ecocredit.v1.MsgCreateBatchResponse")
 	proto.RegisterType((*MsgMintBatchCredits)(nil), "regen.ecocredit.v1.MsgMintBatchCredits")
-	proto.RegisterType((*MsgSealBatch)(nil), "regen.ecocredit.v1.MsgSealBatch")
 	proto.RegisterType((*MsgMintBatchCreditsResponse)(nil), "regen.ecocredit.v1.MsgMintBatchCreditsResponse")
+	proto.RegisterType((*MsgSealBatch)(nil), "regen.ecocredit.v1.MsgSealBatch")
 	proto.RegisterType((*MsgSealBatchResponse)(nil), "regen.ecocredit.v1.MsgSealBatchResponse")
 	proto.RegisterType((*MsgSend)(nil), "regen.ecocredit.v1.MsgSend")
 	proto.RegisterType((*MsgSend_SendCredits)(nil), "regen.ecocredit.v1.MsgSend.SendCredits")
 	proto.RegisterType((*MsgSendResponse)(nil), "regen.ecocredit.v1.MsgSendResponse")
 	proto.RegisterType((*MsgRetire)(nil), "regen.ecocredit.v1.MsgRetire")
-	proto.RegisterType((*MsgRetire_RetireCredits)(nil), "regen.ecocredit.v1.MsgRetire.RetireCredits")
 	proto.RegisterType((*MsgRetireResponse)(nil), "regen.ecocredit.v1.MsgRetireResponse")
 	proto.RegisterType((*MsgCancel)(nil), "regen.ecocredit.v1.MsgCancel")
-	proto.RegisterType((*MsgCancel_CancelCredits)(nil), "regen.ecocredit.v1.MsgCancel.CancelCredits")
 	proto.RegisterType((*MsgCancelResponse)(nil), "regen.ecocredit.v1.MsgCancelResponse")
 	proto.RegisterType((*MsgUpdateClassAdmin)(nil), "regen.ecocredit.v1.MsgUpdateClassAdmin")
 	proto.RegisterType((*MsgUpdateClassAdminResponse)(nil), "regen.ecocredit.v1.MsgUpdateClassAdminResponse")
@@ -1811,93 +2038,107 @@ func init() {
 	proto.RegisterType((*MsgUpdateProjectAdminResponse)(nil), "regen.ecocredit.v1.MsgUpdateProjectAdminResponse")
 	proto.RegisterType((*MsgUpdateProjectMetadata)(nil), "regen.ecocredit.v1.MsgUpdateProjectMetadata")
 	proto.RegisterType((*MsgUpdateProjectMetadataResponse)(nil), "regen.ecocredit.v1.MsgUpdateProjectMetadataResponse")
+	proto.RegisterType((*MsgBridge)(nil), "regen.ecocredit.v1.MsgBridge")
+	proto.RegisterType((*MsgBridgeResponse)(nil), "regen.ecocredit.v1.MsgBridgeResponse")
+	proto.RegisterType((*MsgBridgeReceive)(nil), "regen.ecocredit.v1.MsgBridgeReceive")
+	proto.RegisterType((*MsgBridgeReceive_Batch)(nil), "regen.ecocredit.v1.MsgBridgeReceive.Batch")
+	proto.RegisterType((*MsgBridgeReceive_Project)(nil), "regen.ecocredit.v1.MsgBridgeReceive.Project")
+	proto.RegisterType((*MsgBridgeReceiveResponse)(nil), "regen.ecocredit.v1.MsgBridgeReceiveResponse")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/tx.proto", fileDescriptor_2b8ae49f50a3ddbd) }
 
 var fileDescriptor_2b8ae49f50a3ddbd = []byte{
-	// 1289 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xdd, 0x6e, 0x1b, 0x45,
-	0x14, 0xee, 0xda, 0x6e, 0x6c, 0x1f, 0xd7, 0xfd, 0x99, 0xa4, 0xc1, 0xdd, 0x34, 0x8e, 0xbb, 0x50,
-	0xd5, 0xb4, 0x61, 0x57, 0x4e, 0x11, 0x28, 0x42, 0x08, 0x25, 0x29, 0x22, 0x41, 0x32, 0x54, 0x26,
-	0x08, 0x09, 0x09, 0x59, 0xeb, 0xdd, 0xe9, 0x66, 0x8b, 0xbd, 0x63, 0xed, 0x8e, 0x93, 0x54, 0x5c,
-	0xf2, 0x02, 0x79, 0x07, 0x1e, 0x01, 0x44, 0x6f, 0x78, 0x00, 0x2e, 0x7b, 0xd9, 0x0b, 0x24, 0x50,
-	0xf2, 0x22, 0x68, 0x67, 0x66, 0x27, 0xbb, 0x9b, 0xf5, 0xda, 0x21, 0x37, 0xdc, 0xd4, 0x3b, 0xe7,
-	0x7c, 0xe7, 0xe7, 0x3b, 0x73, 0x66, 0xe6, 0x34, 0xb0, 0xe2, 0x63, 0x07, 0x7b, 0x06, 0xb6, 0x88,
-	0xe5, 0x63, 0xdb, 0xa5, 0xc6, 0x61, 0xc7, 0xa0, 0xc7, 0xfa, 0xd8, 0x27, 0x94, 0x20, 0xc4, 0x94,
-	0xba, 0x54, 0xea, 0x87, 0x1d, 0x75, 0xc9, 0x21, 0x0e, 0x61, 0x6a, 0x23, 0xfc, 0xe2, 0x48, 0x75,
-	0xcd, 0x21, 0xc4, 0x19, 0x62, 0x83, 0xad, 0x06, 0x93, 0x17, 0x06, 0x75, 0x47, 0x38, 0xa0, 0xe6,
-	0x68, 0x2c, 0x00, 0x4d, 0x8b, 0x04, 0x23, 0x12, 0x18, 0x03, 0x33, 0xc0, 0xc6, 0x61, 0x67, 0x80,
-	0xa9, 0xd9, 0x31, 0x2c, 0xe2, 0x7a, 0x91, 0x3e, 0x2b, 0x8f, 0x57, 0x63, 0x1c, 0x70, 0xbd, 0xf6,
-	0x5a, 0x81, 0x9b, 0xdd, 0xc0, 0xd9, 0xf1, 0xb1, 0x49, 0xf1, 0xce, 0xd0, 0x0c, 0x02, 0xb4, 0x04,
-	0xd7, 0x4d, 0x7b, 0xe4, 0x7a, 0x0d, 0xa5, 0xa5, 0xb4, 0xab, 0x3d, 0xbe, 0x40, 0x0d, 0x28, 0xbb,
-	0x41, 0x30, 0xc1, 0x7e, 0xd0, 0x28, 0xb4, 0x8a, 0xed, 0x6a, 0x2f, 0x5a, 0x22, 0x15, 0x2a, 0x23,
-	0x4c, 0x4d, 0xdb, 0xa4, 0x66, 0xa3, 0xc8, 0x4c, 0xe4, 0x1a, 0xad, 0x03, 0xe2, 0x71, 0xfb, 0x61,
-	0xd0, 0xbe, 0x39, 0x18, 0xf8, 0xf8, 0xb0, 0x51, 0x62, 0xa8, 0xdb, 0x5c, 0xb3, 0xff, 0x6a, 0x8c,
-	0xb7, 0x98, 0x1c, 0x3d, 0x81, 0xe2, 0x0b, 0x8c, 0x1b, 0xd7, 0x5b, 0x4a, 0xbb, 0xb6, 0x71, 0x4f,
-	0xe7, 0xd4, 0xf4, 0x90, 0x9a, 0x2e, 0xa8, 0xe9, 0x3b, 0xc4, 0xf5, 0x7a, 0x21, 0x4a, 0x7b, 0x0a,
-	0xcb, 0xc9, 0xc4, 0x7b, 0x38, 0x18, 0x13, 0x2f, 0xc0, 0xe8, 0x1e, 0x54, 0xac, 0x50, 0xd0, 0x77,
-	0x6d, 0xc1, 0xa1, 0xcc, 0xd6, 0x7b, 0xb6, 0xf6, 0xab, 0x02, 0xb7, 0xa5, 0xd5, 0x73, 0x9f, 0xbc,
-	0xc4, 0x16, 0x45, 0xcb, 0xb0, 0xc0, 0xb9, 0x08, 0xb4, 0x58, 0x25, 0xfc, 0x14, 0x12, 0x7e, 0x72,
-	0x39, 0x77, 0x60, 0x69, 0xcc, 0x3d, 0xf7, 0x5f, 0x4e, 0x7c, 0x37, 0xb0, 0x5d, 0x8b, 0xba, 0xc4,
-	0x13, 0xac, 0x17, 0x85, 0xee, 0xcb, 0x98, 0x0a, 0xad, 0x02, 0x44, 0x26, 0xae, 0xcd, 0xf8, 0x57,
-	0x7b, 0x55, 0x21, 0xd9, 0xb3, 0xb5, 0x4d, 0x68, 0xa4, 0x93, 0x96, 0x64, 0x93, 0xa6, 0x4a, 0xda,
-	0xf4, 0xe7, 0x62, 0x6c, 0x7f, 0xb7, 0x4d, 0x6a, 0x1d, 0x4c, 0xa5, 0x9b, 0xf4, 0x54, 0x48, 0x79,
-	0x42, 0x9f, 0x42, 0x25, 0x04, 0x9a, 0x9e, 0x85, 0x1b, 0xc5, 0x56, 0xb1, 0x5d, 0xdb, 0x78, 0xa0,
-	0x5f, 0xec, 0x63, 0x9d, 0xc5, 0xd8, 0x13, 0xc0, 0x9e, 0x34, 0x49, 0x54, 0xac, 0x94, 0xaa, 0xd8,
-	0x67, 0x00, 0x01, 0x35, 0x7d, 0xda, 0xb7, 0x4d, 0x1a, 0x6d, 0xbf, 0xaa, 0xf3, 0xd6, 0xd7, 0xa3,
-	0xd6, 0xd7, 0xf7, 0xa3, 0xd6, 0xdf, 0x2e, 0x9d, 0xfc, 0xbd, 0xa6, 0xf4, 0xaa, 0xcc, 0xe6, 0x99,
-	0x49, 0x31, 0xfa, 0x04, 0x2a, 0xd8, 0xb3, 0xb9, 0xf9, 0xc2, 0x9c, 0xe6, 0x65, 0xec, 0xd9, 0xcc,
-	0x18, 0x41, 0x89, 0x8c, 0xb1, 0xd7, 0x28, 0xb7, 0x94, 0x76, 0xa5, 0xc7, 0xbe, 0xd1, 0x26, 0x54,
-	0x89, 0xef, 0x3a, 0xae, 0xd7, 0xa7, 0xc7, 0x8d, 0x0a, 0xf3, 0x78, 0x3f, 0x8b, 0xed, 0xd7, 0x0c,
-	0xb4, 0x7f, 0xdc, 0xab, 0x10, 0xf1, 0x15, 0xba, 0xf3, 0x08, 0xc5, 0x8d, 0x2a, 0x23, 0xc9, 0xbe,
-	0xb5, 0xdf, 0x15, 0xa8, 0x27, 0x0a, 0x83, 0xee, 0x43, 0xd5, 0xc7, 0x96, 0x3b, 0x76, 0xb1, 0x47,
-	0xa3, 0x5d, 0x93, 0x02, 0xf4, 0x08, 0x6e, 0x51, 0xdf, 0xb4, 0xcd, 0xc1, 0x10, 0xf7, 0xcd, 0x11,
-	0x99, 0x78, 0x54, 0xec, 0xc7, 0xcd, 0x48, 0xbc, 0xc5, 0xa4, 0xe8, 0x21, 0xdc, 0xf4, 0x31, 0x75,
-	0x7d, 0x6c, 0x47, 0x38, 0xde, 0x8d, 0x75, 0x21, 0x15, 0xb0, 0x8f, 0xe1, 0x1d, 0x2e, 0x18, 0x61,
-	0x2f, 0xb3, 0x2b, 0x97, 0xcf, 0xd5, 0xf1, 0xc6, 0xd4, 0x36, 0x63, 0x87, 0x8c, 0x11, 0x90, 0x7d,
-	0xb7, 0x06, 0xb5, 0x41, 0x28, 0xe8, 0xdb, 0xd8, 0x23, 0x23, 0x41, 0x01, 0x98, 0xe8, 0x59, 0x28,
-	0xd1, 0xfe, 0x52, 0x60, 0xb1, 0x1b, 0x38, 0x5d, 0xd7, 0xa3, 0xcc, 0x72, 0x87, 0x15, 0x2d, 0x98,
-	0xda, 0x7e, 0x29, 0x87, 0x85, 0xb4, 0xc3, 0xab, 0x36, 0x60, 0x62, 0x4b, 0x4b, 0xff, 0x69, 0x4b,
-	0xaf, 0xc7, 0xb6, 0xf4, 0x0b, 0xb8, 0xd1, 0x0d, 0x9c, 0x6f, 0xb0, 0x39, 0xcc, 0x3f, 0x55, 0xb3,
-	0x68, 0x69, 0xab, 0xb0, 0x92, 0x51, 0xa6, 0xa8, 0xce, 0xda, 0x32, 0x2c, 0xc5, 0xe3, 0x48, 0xf9,
-	0x1f, 0x05, 0x28, 0x33, 0x85, 0x67, 0x87, 0xb1, 0x03, 0xec, 0xd9, 0xe7, 0xb1, 0xf9, 0x2a, 0xd9,
-	0x64, 0x85, 0x74, 0x93, 0x6d, 0x41, 0x99, 0xb3, 0x0e, 0x44, 0x39, 0x1f, 0x65, 0x95, 0x43, 0xc4,
-	0xd0, 0xc3, 0x7f, 0xa2, 0xdc, 0x22, 0x3b, 0xf5, 0xb5, 0x02, 0xb5, 0x98, 0x62, 0x66, 0x53, 0xfc,
-	0x7f, 0x1a, 0xfb, 0x0e, 0xdc, 0x12, 0xcc, 0x64, 0x45, 0xdf, 0x2a, 0x50, 0xed, 0x06, 0x4e, 0x8f,
-	0x19, 0x84, 0x35, 0x3d, 0x20, 0xc3, 0x58, 0x4d, 0xf9, 0x0a, 0x7d, 0x7e, 0x5e, 0xb5, 0x02, 0xab,
-	0xda, 0x93, 0x29, 0x55, 0xe3, 0x7e, 0x74, 0xfe, 0x93, 0xae, 0x1c, 0xd2, 0xe0, 0x46, 0x22, 0x5b,
-	0xce, 0x2e, 0x21, 0x53, 0x77, 0xa1, 0x9e, 0xb0, 0x9e, 0x5d, 0xde, 0x65, 0x58, 0x48, 0x54, 0x55,
-	0xac, 0xb4, 0x45, 0xb8, 0x23, 0x33, 0x92, 0x7c, 0x7f, 0xe3, 0x7c, 0x77, 0xc2, 0xd3, 0x31, 0xbc,
-	0x3a, 0x5f, 0xee, 0x47, 0xe7, 0x3f, 0x17, 0x3a, 0x65, 0x17, 0xea, 0x09, 0xcd, 0x55, 0xb9, 0x70,
-	0x67, 0x92, 0x8b, 0xc5, 0xee, 0x9a, 0x6f, 0xc7, 0x76, 0x34, 0x0c, 0x6c, 0xb1, 0xa1, 0x25, 0x7b,
-	0x94, 0xc9, 0x79, 0xd7, 0x57, 0xa0, 0xea, 0xe1, 0xa3, 0x3e, 0x37, 0x12, 0x0f, 0xbb, 0x87, 0x8f,
-	0x98, 0x37, 0x71, 0x52, 0xd3, 0x41, 0x64, 0x0e, 0x27, 0x0a, 0xdc, 0x4d, 0xea, 0xf7, 0xc4, 0x84,
-	0x74, 0xe9, 0x34, 0xd6, 0xa0, 0x66, 0xda, 0x76, 0x3f, 0x1a, 0xb8, 0x8a, 0x6c, 0xe0, 0x02, 0xd3,
-	0xb6, 0x23, 0x8f, 0xec, 0x78, 0x8c, 0xc8, 0x21, 0x96, 0x98, 0x12, 0xc3, 0xd4, 0xb9, 0x54, 0xc0,
-	0xb4, 0x35, 0x58, 0xcd, 0xcc, 0x48, 0xe6, 0x8c, 0xd9, 0xfd, 0x1e, 0x03, 0x74, 0xa3, 0x37, 0xf9,
-	0xd2, 0x39, 0xe7, 0x8c, 0x44, 0x5a, 0x0b, 0x9a, 0xd9, 0x61, 0x64, 0x22, 0x6e, 0xac, 0x76, 0x62,
-	0xc4, 0xc9, 0xdb, 0xc2, 0xc4, 0x3e, 0x15, 0x92, 0xfb, 0x94, 0x1a, 0x64, 0x8a, 0xe9, 0x91, 0x28,
-	0x5e, 0x94, 0x78, 0x28, 0x99, 0x8b, 0xcf, 0xc6, 0xad, 0x04, 0x60, 0x46, 0x59, 0x1e, 0xc0, 0x8d,
-	0x30, 0x1d, 0xc9, 0x9f, 0x67, 0x54, 0xf3, 0xf0, 0x91, 0x34, 0x9c, 0x91, 0x94, 0x06, 0xad, 0x69,
-	0x31, 0xa3, 0xbc, 0x36, 0x7e, 0x01, 0x28, 0x76, 0x03, 0x07, 0xfd, 0x00, 0xb5, 0xf8, 0xbc, 0xae,
-	0x4d, 0x3b, 0x90, 0xe7, 0x18, 0xf5, 0xf1, 0x6c, 0x8c, 0x7c, 0xd9, 0x2d, 0xa8, 0x27, 0xe7, 0xe3,
-	0xf7, 0x72, 0x8d, 0x05, 0x4a, 0x5d, 0x9f, 0x07, 0x25, 0x83, 0x48, 0x0e, 0xfc, 0xf5, 0xcc, 0xe7,
-	0xc0, 0x30, 0x33, 0x38, 0x24, 0xa7, 0x93, 0x21, 0xdc, 0xbe, 0x30, 0x78, 0x4c, 0x7b, 0xde, 0xd2,
-	0x40, 0xd5, 0x98, 0x13, 0x28, 0xa3, 0x7d, 0x07, 0xd5, 0xf3, 0x41, 0xa0, 0x35, 0xf5, 0x15, 0x15,
-	0x08, 0xb5, 0x3d, 0x0b, 0x21, 0x1d, 0xef, 0x42, 0x89, 0x3d, 0xf0, 0x2b, 0x39, 0x2f, 0xb3, 0xfa,
-	0x6e, 0x8e, 0x52, 0x7a, 0xfa, 0x0a, 0x16, 0xc4, 0xc3, 0xb6, 0x9a, 0xfb, 0x5e, 0xa9, 0x0f, 0x73,
-	0xd5, 0x71, 0x7f, 0xe2, 0xe1, 0x58, 0xcd, 0x7d, 0x0f, 0xa6, 0xfa, 0x4b, 0x5e, 0xe0, 0xe1, 0x86,
-	0x5d, 0xb8, 0xbd, 0xa7, 0x6d, 0x58, 0x1a, 0x38, 0x75, 0xc3, 0xa6, 0x5d, 0xd5, 0xc8, 0x07, 0x94,
-	0x71, 0x4d, 0xbf, 0x3f, 0xdb, 0x8d, 0x80, 0xaa, 0x9d, 0xb9, 0xa1, 0x32, 0xe6, 0x04, 0x16, 0xb3,
-	0xee, 0xd9, 0xc7, 0xb3, 0x3d, 0x45, 0x58, 0x75, 0x63, 0x7e, 0xec, 0x45, 0xaa, 0x89, 0x5b, 0x35,
-	0x9f, 0x6a, 0x1c, 0x3a, 0x83, 0x6a, 0xd6, 0x05, 0x8a, 0x7e, 0x82, 0xbb, 0xd9, 0xb7, 0xe7, 0xfa,
-	0x3c, 0xbe, 0x24, 0xdd, 0x0f, 0x2f, 0x83, 0x8e, 0x82, 0x6f, 0x3f, 0xff, 0xf3, 0xb4, 0xa9, 0xbc,
-	0x39, 0x6d, 0x2a, 0xff, 0x9c, 0x36, 0x95, 0x93, 0xb3, 0xe6, 0xb5, 0x37, 0x67, 0xcd, 0x6b, 0x6f,
-	0xcf, 0x9a, 0xd7, 0xbe, 0xff, 0xc8, 0x71, 0xe9, 0xc1, 0x64, 0xa0, 0x5b, 0x64, 0x64, 0x30, 0xcf,
-	0x1f, 0x78, 0x98, 0x1e, 0x11, 0xff, 0x47, 0xb1, 0x1a, 0x62, 0xdb, 0xc1, 0xbe, 0x71, 0x1c, 0xfb,
-	0x6b, 0x89, 0x45, 0x7c, 0x3c, 0x58, 0x60, 0xff, 0x87, 0x7c, 0xfa, 0x6f, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xe9, 0xca, 0x1e, 0xc3, 0xd4, 0x11, 0x00, 0x00,
+	// 1418 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x58, 0xdd, 0x8e, 0xdb, 0x44,
+	0x14, 0xae, 0x93, 0x6c, 0x7e, 0x4e, 0xb6, 0x7f, 0xd3, 0x36, 0xa4, 0xde, 0x6e, 0x36, 0x35, 0xad,
+	0xba, 0x94, 0xc5, 0xd1, 0x6e, 0xf9, 0x51, 0x85, 0x10, 0xec, 0x6e, 0x05, 0x2c, 0x52, 0xa0, 0x0a,
+	0x45, 0x48, 0x95, 0x50, 0xe4, 0xd8, 0xa7, 0xae, 0x4b, 0x62, 0x47, 0xf6, 0xec, 0x4f, 0x05, 0xcf,
+	0x80, 0xfa, 0x14, 0xbc, 0x42, 0x6f, 0x78, 0x80, 0x5e, 0x56, 0xdc, 0xd0, 0x3b, 0x50, 0xfb, 0x00,
+	0xbc, 0x02, 0xf2, 0xcc, 0x78, 0xd6, 0x76, 0x6c, 0x27, 0x51, 0xb9, 0x59, 0x79, 0xce, 0xf9, 0xe6,
+	0xfc, 0xcd, 0x99, 0x39, 0x5f, 0x16, 0xd6, 0x7c, 0xb4, 0xd1, 0xed, 0xa1, 0xe9, 0x99, 0x3e, 0x5a,
+	0x0e, 0xed, 0x1d, 0x6d, 0xf7, 0xe8, 0x89, 0x3e, 0xf5, 0x3d, 0xea, 0x11, 0xc2, 0x94, 0xba, 0x54,
+	0xea, 0x47, 0xdb, 0xea, 0x65, 0xdb, 0xb3, 0x3d, 0xa6, 0xee, 0x85, 0x5f, 0x1c, 0xa9, 0x6e, 0xd8,
+	0x9e, 0x67, 0x8f, 0xb1, 0xc7, 0x56, 0xa3, 0xc3, 0x47, 0x3d, 0xea, 0x4c, 0x30, 0xa0, 0xc6, 0x64,
+	0x2a, 0x00, 0x1d, 0xd3, 0x0b, 0x26, 0x5e, 0xd0, 0x1b, 0x19, 0x01, 0xf6, 0x8e, 0xb6, 0x47, 0x48,
+	0x8d, 0xed, 0x9e, 0xe9, 0x39, 0x6e, 0xa4, 0xcf, 0x8a, 0xe3, 0xe9, 0x14, 0x03, 0xae, 0xd7, 0x9e,
+	0x2b, 0x70, 0xae, 0x1f, 0xd8, 0xfb, 0x3e, 0x1a, 0x14, 0xf7, 0xc7, 0x46, 0x10, 0x90, 0xcb, 0xb0,
+	0x62, 0x58, 0x13, 0xc7, 0x6d, 0x2b, 0x5d, 0x65, 0xb3, 0x31, 0xe0, 0x0b, 0xd2, 0x86, 0x9a, 0x13,
+	0x04, 0x87, 0xe8, 0x07, 0xed, 0x52, 0xb7, 0xbc, 0xd9, 0x18, 0x44, 0x4b, 0xa2, 0x42, 0x7d, 0x82,
+	0xd4, 0xb0, 0x0c, 0x6a, 0xb4, 0xcb, 0x6c, 0x8b, 0x5c, 0x93, 0x2d, 0x20, 0xdc, 0xef, 0x30, 0x74,
+	0x3a, 0x34, 0x46, 0x23, 0x1f, 0x8f, 0xda, 0x15, 0x86, 0xba, 0xc0, 0x35, 0x0f, 0x9e, 0x4e, 0x71,
+	0x97, 0xc9, 0xc9, 0xfb, 0x50, 0x7e, 0x84, 0xd8, 0x5e, 0xe9, 0x2a, 0x9b, 0xcd, 0x9d, 0xab, 0x3a,
+	0x4f, 0x4d, 0x0f, 0x53, 0xd3, 0x45, 0x6a, 0xfa, 0xbe, 0xe7, 0xb8, 0x83, 0x10, 0xa5, 0xdd, 0x81,
+	0x56, 0x32, 0xf0, 0x01, 0x06, 0x53, 0xcf, 0x0d, 0x90, 0x5c, 0x85, 0xba, 0x19, 0x0a, 0x86, 0x8e,
+	0x25, 0x72, 0xa8, 0xb1, 0xf5, 0x81, 0xa5, 0xfd, 0xae, 0xc0, 0x05, 0xb9, 0xeb, 0xbe, 0xef, 0x3d,
+	0x41, 0x93, 0xe6, 0x24, 0x1c, 0xb7, 0x52, 0x4a, 0x58, 0x29, 0xcc, 0x58, 0x83, 0xd5, 0x27, 0x87,
+	0xbe, 0x13, 0x58, 0x8e, 0x49, 0x1d, 0xcf, 0x15, 0xb9, 0x26, 0x64, 0xe4, 0x3a, 0xac, 0xfa, 0xf8,
+	0x08, 0x7d, 0x74, 0x4d, 0x0c, 0xcd, 0xaf, 0x30, 0x4c, 0x53, 0xca, 0x0e, 0x2c, 0xed, 0x2e, 0xb4,
+	0xd3, 0x71, 0xca, 0xfc, 0xd6, 0x01, 0xa6, 0x5c, 0x74, 0x9a, 0x61, 0x43, 0x48, 0x0e, 0x2c, 0xed,
+	0xdf, 0x52, 0xec, 0x48, 0xf7, 0x0c, 0x6a, 0x3e, 0x26, 0x2d, 0xa8, 0xf2, 0xd3, 0x12, 0x68, 0xb1,
+	0x4a, 0x59, 0x2a, 0xa5, 0x2c, 0x91, 0xcf, 0xa0, 0x1e, 0x02, 0x0d, 0xd7, 0xc4, 0x76, 0xb9, 0x5b,
+	0xde, 0x6c, 0xee, 0x5c, 0xd7, 0x67, 0x5b, 0x57, 0x67, 0x3e, 0x0e, 0x04, 0x70, 0x20, 0xb7, 0x24,
+	0xca, 0x54, 0x49, 0x95, 0xe9, 0x73, 0x80, 0x80, 0x1a, 0x3e, 0x1d, 0x5a, 0x06, 0x8d, 0x4e, 0x5c,
+	0xd5, 0x79, 0xb7, 0xeb, 0x51, 0xb7, 0xeb, 0x0f, 0xa2, 0x6e, 0xdf, 0xab, 0x3c, 0xfb, 0x7b, 0x43,
+	0x19, 0x34, 0xd8, 0x9e, 0x7b, 0x06, 0x45, 0xf2, 0x29, 0xd4, 0xd1, 0xb5, 0xf8, 0xf6, 0xea, 0x82,
+	0xdb, 0x6b, 0xe8, 0x5a, 0x6c, 0x33, 0x81, 0x8a, 0x37, 0x45, 0xb7, 0x5d, 0xeb, 0x2a, 0x9b, 0xf5,
+	0x01, 0xfb, 0x26, 0x77, 0xa1, 0xe1, 0xf9, 0x8e, 0xed, 0xb8, 0x43, 0x7a, 0xd2, 0xae, 0x33, 0x8b,
+	0xd7, 0xb2, 0xb2, 0xfd, 0x8e, 0x81, 0x1e, 0x9c, 0x0c, 0xea, 0x9e, 0xf8, 0xd2, 0xee, 0xc6, 0x5a,
+	0x91, 0x15, 0x43, 0x1e, 0xd5, 0x06, 0x34, 0x47, 0xa1, 0x60, 0x68, 0xa1, 0xeb, 0x4d, 0x44, 0xf5,
+	0x81, 0x89, 0xee, 0x85, 0x12, 0xed, 0x85, 0x02, 0x97, 0xfa, 0x81, 0xdd, 0x77, 0x5c, 0xca, 0x76,
+	0xee, 0x33, 0x3f, 0x41, 0xee, 0x89, 0xa5, 0x0c, 0x96, 0xd2, 0x06, 0xdf, 0xf6, 0xcc, 0x12, 0x55,
+	0xa8, 0x2c, 0x55, 0x85, 0x75, 0x58, 0xcb, 0xc8, 0x24, 0x2a, 0x85, 0xf6, 0x15, 0xac, 0xf6, 0x03,
+	0xfb, 0x7b, 0x34, 0xc6, 0xc5, 0x3d, 0x39, 0x2f, 0x43, 0xad, 0x05, 0x97, 0xe3, 0x86, 0xa4, 0x83,
+	0x3f, 0x4a, 0x50, 0x63, 0x0a, 0xd7, 0x0a, 0x8d, 0x07, 0xe8, 0x5a, 0xa7, 0xc6, 0xf9, 0x8a, 0x5c,
+	0x83, 0x86, 0x8f, 0xa6, 0x33, 0x75, 0xd0, 0xa5, 0x51, 0xbf, 0x4b, 0x01, 0xd9, 0x85, 0x1a, 0xcf,
+	0x30, 0x10, 0xa5, 0xbb, 0x95, 0x95, 0xba, 0xf0, 0xa1, 0x87, 0x7f, 0xa2, 0x24, 0xa3, 0x7d, 0xea,
+	0x73, 0x05, 0x9a, 0x31, 0xc5, 0xdc, 0x06, 0x20, 0xb7, 0xe0, 0x3c, 0xf5, 0x0d, 0xcb, 0x18, 0x8d,
+	0x71, 0x68, 0x4c, 0xbc, 0x43, 0x19, 0xd7, 0xb9, 0x48, 0xbc, 0xcb, 0xa4, 0xe4, 0x26, 0x9c, 0xf3,
+	0x91, 0x3a, 0x3e, 0x5a, 0x11, 0x8e, 0x3f, 0x3d, 0x67, 0x85, 0x54, 0xc0, 0x3e, 0x81, 0x77, 0xb8,
+	0x60, 0x82, 0x2e, 0x1d, 0x66, 0x3c, 0x45, 0xad, 0x53, 0xf5, 0x37, 0x31, 0xad, 0x76, 0x11, 0xce,
+	0x8b, 0xcc, 0x64, 0x45, 0x7f, 0x85, 0x46, 0x3f, 0xb0, 0x07, 0x0c, 0x1f, 0xbe, 0x92, 0xde, 0xb1,
+	0x2b, 0x2b, 0xca, 0x17, 0xe4, 0xa3, 0xd3, 0x92, 0x95, 0x58, 0xc9, 0xd6, 0xb2, 0x4a, 0x96, 0x2e,
+	0xd3, 0xcc, 0x2b, 0x59, 0x9e, 0x7d, 0x25, 0xb5, 0x4b, 0x70, 0x51, 0x7a, 0x97, 0x21, 0x4d, 0x59,
+	0x48, 0xfb, 0x61, 0xaf, 0x8e, 0xff, 0xdf, 0x90, 0x5a, 0x50, 0xf5, 0xd1, 0x08, 0x64, 0x30, 0x62,
+	0x25, 0xc2, 0xe0, 0x1e, 0x65, 0x18, 0x26, 0xbb, 0xb5, 0x3f, 0x4c, 0xad, 0x68, 0xf8, 0xec, 0xb2,
+	0x99, 0xb1, 0xf4, 0x24, 0x59, 0x83, 0x86, 0x8b, 0xc7, 0x43, 0xbe, 0x49, 0x8c, 0x12, 0x17, 0x8f,
+	0x99, 0x35, 0x71, 0xa1, 0xd2, 0x4e, 0x64, 0x0c, 0xcf, 0x14, 0xb8, 0x92, 0xd4, 0x1f, 0x88, 0x89,
+	0xbc, 0x74, 0x18, 0x1b, 0xd0, 0x34, 0x2c, 0x6b, 0x18, 0x0d, 0xf8, 0x32, 0x1b, 0xf0, 0x60, 0x58,
+	0x56, 0x64, 0x91, 0x35, 0xdf, 0xc4, 0x3b, 0x42, 0x89, 0xa9, 0x30, 0xcc, 0x59, 0x2e, 0x15, 0x30,
+	0x6d, 0x03, 0xd6, 0x33, 0x23, 0x92, 0x31, 0x8f, 0xd9, 0x4b, 0x19, 0x03, 0xf4, 0xa3, 0x81, 0xb0,
+	0x74, 0xcc, 0xd7, 0x61, 0x35, 0x2c, 0x5d, 0x6a, 0x10, 0x37, 0x5d, 0x3c, 0x8e, 0x6c, 0x6a, 0x5d,
+	0xe8, 0x64, 0x7b, 0x93, 0xf1, 0x38, 0xb1, 0x12, 0x8a, 0x31, 0x5b, 0x74, 0x92, 0x73, 0xe6, 0x65,
+	0xe1, 0x69, 0xc6, 0x6b, 0x13, 0x77, 0x25, 0x63, 0xf1, 0xd9, 0xc8, 0x4f, 0x00, 0xe6, 0x54, 0x67,
+	0x4e, 0x38, 0x0b, 0x54, 0x48, 0x83, 0x6e, 0x9e, 0x4f, 0x19, 0xd7, 0x6f, 0x0a, 0xbb, 0x73, 0x7b,
+	0xbe, 0x63, 0xd9, 0x79, 0xcf, 0x40, 0x0b, 0xaa, 0xd4, 0xf0, 0x6d, 0x8c, 0x1e, 0x2f, 0xb1, 0x4a,
+	0xbe, 0xb7, 0xe5, 0xf4, 0x7b, 0x1b, 0xbb, 0xa9, 0x95, 0xc5, 0x6f, 0xaa, 0xb8, 0x91, 0x3c, 0x1e,
+	0x19, 0xe5, 0x9f, 0x15, 0xc6, 0xec, 0x22, 0xa9, 0x89, 0xce, 0x11, 0xe6, 0xce, 0x98, 0x82, 0xb6,
+	0xfa, 0x12, 0x6a, 0xa2, 0x82, 0x2c, 0xde, 0xe6, 0xce, 0x56, 0xce, 0x0c, 0x48, 0x78, 0xd2, 0x23,
+	0x8e, 0x16, 0x6d, 0x26, 0x5f, 0xc0, 0x0a, 0x7b, 0xe5, 0xc5, 0x10, 0xbd, 0xbd, 0x90, 0x15, 0x3e,
+	0xd0, 0xf8, 0xc6, 0xe4, 0x28, 0x5e, 0x59, 0x66, 0x14, 0xab, 0x7f, 0x29, 0xb0, 0xc2, 0xa7, 0x6c,
+	0xe2, 0x00, 0x94, 0xf4, 0x01, 0xb4, 0xa0, 0x9a, 0x98, 0x39, 0x62, 0x95, 0x62, 0x67, 0xe5, 0xb7,
+	0x63, 0x67, 0x95, 0x65, 0xd9, 0x59, 0x9c, 0x37, 0xae, 0x24, 0x79, 0xa3, 0x3a, 0x86, 0x5a, 0x44,
+	0xdb, 0xd3, 0x2c, 0x5a, 0x99, 0x61, 0xd1, 0x33, 0x63, 0xa6, 0x94, 0x41, 0xc6, 0x0b, 0xc8, 0xbc,
+	0xf6, 0x90, 0x5d, 0xc9, 0xc4, 0x19, 0x2d, 0x4c, 0xed, 0xe6, 0xdc, 0xce, 0x9d, 0x57, 0x4d, 0x28,
+	0xf7, 0x03, 0x9b, 0xfc, 0x04, 0xcd, 0xf8, 0xaf, 0x2f, 0x2d, 0xa7, 0x51, 0x62, 0x18, 0xf5, 0xf6,
+	0x7c, 0x8c, 0x0c, 0xd3, 0x84, 0xb3, 0xc9, 0x5f, 0x3b, 0x37, 0x0a, 0x37, 0x0b, 0x94, 0xba, 0xb5,
+	0x08, 0x4a, 0x3a, 0x91, 0x39, 0xf0, 0xa6, 0x2b, 0xce, 0x81, 0x61, 0xe6, 0xe4, 0x90, 0x64, 0xd1,
+	0x63, 0xb8, 0x30, 0x43, 0x90, 0xf3, 0xa8, 0x59, 0x1a, 0xa8, 0xf6, 0x16, 0x04, 0x4a, 0x6f, 0x3f,
+	0x42, 0xe3, 0x94, 0xa5, 0x76, 0x73, 0x19, 0xa0, 0x40, 0xa8, 0x9b, 0xf3, 0x10, 0xd2, 0xf0, 0xd7,
+	0x50, 0x61, 0xe4, 0x74, 0xad, 0x80, 0x55, 0xaa, 0xef, 0x16, 0x28, 0xa5, 0xa5, 0x6f, 0xa1, 0x2a,
+	0x58, 0xd9, 0x7a, 0x0e, 0x9c, 0xab, 0xd5, 0x9b, 0x85, 0xea, 0xb8, 0x3d, 0x41, 0xa9, 0xf2, 0xec,
+	0x71, 0x75, 0xae, 0xbd, 0x24, 0x3d, 0x0a, 0x0f, 0x6c, 0x86, 0x1b, 0xe5, 0x1d, 0x58, 0x1a, 0x98,
+	0x7b, 0x60, 0x79, 0x44, 0x88, 0xf8, 0x40, 0x32, 0x48, 0xd0, 0x7b, 0xf3, 0xcd, 0x08, 0xa8, 0xba,
+	0xbd, 0x30, 0x54, 0xfa, 0x3c, 0x84, 0x4b, 0x59, 0x2c, 0xe6, 0xf6, 0x7c, 0x4b, 0x11, 0x56, 0xdd,
+	0x59, 0x1c, 0x3b, 0x9b, 0x6a, 0x82, 0xac, 0x14, 0xa7, 0x1a, 0x87, 0xce, 0x49, 0x35, 0x8b, 0x97,
+	0x90, 0x5f, 0xe0, 0x4a, 0x36, 0x29, 0xd9, 0x5a, 0xc4, 0x96, 0x4c, 0xf7, 0xc3, 0x65, 0xd0, 0xf1,
+	0xce, 0x14, 0xc4, 0x63, 0xbd, 0x70, 0x82, 0xe6, 0x76, 0x66, 0x92, 0x26, 0x84, 0xcf, 0x61, 0x92,
+	0x22, 0xdc, 0x58, 0x64, 0x30, 0xab, 0x0b, 0x91, 0x80, 0xc8, 0xc9, 0xde, 0xfd, 0x17, 0xaf, 0x3b,
+	0xca, 0xcb, 0xd7, 0x1d, 0xe5, 0x9f, 0xd7, 0x1d, 0xe5, 0xd9, 0x9b, 0xce, 0x99, 0x97, 0x6f, 0x3a,
+	0x67, 0x5e, 0xbd, 0xe9, 0x9c, 0x79, 0xf8, 0xb1, 0xed, 0xd0, 0xc7, 0x87, 0x23, 0xdd, 0xf4, 0x26,
+	0x3d, 0x66, 0xf1, 0x03, 0x17, 0xe9, 0xb1, 0xe7, 0xff, 0x2c, 0x56, 0x63, 0xb4, 0x6c, 0xf4, 0x7b,
+	0x27, 0xb1, 0x7f, 0xd8, 0x99, 0x9e, 0x8f, 0xa3, 0x2a, 0x9b, 0x9a, 0x77, 0xfe, 0x0b, 0x00, 0x00,
+	0xff, 0xff, 0x6d, 0xdc, 0x54, 0x9e, 0x57, 0x14, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1912,47 +2153,85 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateClass creates a new credit class with an approved list of issuers and
-	// optional metadata.
+	// CreateClass creates a new credit class under the given credit type with an
+	// approved list of issuers and optional metadata. The fee denom must be one
+	// of the denoms listed in Params.credit_class_fee and greater than or equal
+	// to the fee amount but only the minimum amount is charged. The creator of
+	// the credit class becomes the admin of the credit class upon creation.
 	CreateClass(ctx context.Context, in *MsgCreateClass, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
-	// CreateProject creates a new project within a credit class.
+	// CreateProject creates a new project under the given credit class with a
+	// jurisdiction, optional metadata, and an optional reference ID. The creator
+	// of the project must be an approved credit class issuer for the given credit
+	// class and the creator becomes the admin of the project upon creation.
 	CreateProject(ctx context.Context, in *MsgCreateProject, opts ...grpc.CallOption) (*MsgCreateProjectResponse, error)
-	// CreateBatch creates a new batch of credits for an existing project.
-	// This will create a new batch denom with a fixed supply. Issued credits can
-	// be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits under the given project with a
+	// start and end date representing the monitoring period, a list of credits to
+	// be issued with each issuance specifying a recipient, the amount of tradable
+	// and retired credits, and the retirement jurisdiction (if credits are to be
+	// retired upon receipt), and optional metadata. The credit batch creator must
+	// be listed as an approved issuer within the credit class of the project that
+	// the credits are being issued under.
+	//
+	// The default behavior is for a new credit batch to be "sealed" as opposed to
+	// being "open". When a credit batch is "open", new credits can be dynamically
+	// minted to the credit batch following the creation of the credit batch. This
+	// "open" option should only be set to true when bridging credits from another
+	// chain or registry as a result of a bridge operation and is not intended for
+	// native credit issuance.
 	CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
-	// MintBatchCredits issues new token in a given batch.
-	// The issuer must be the account who created (or delegated using x/authz),
-	// the batch.
-	// The request will fail if the batch is not open (is sealed).
-	// NOTE: this method is only for bridge purpose. It must not be used
-	// for issuing native credits on Regen. More specifically, we
-	// enable minting more credits in an existing batch, when the batch
-	// represents a vintage originally registered in another chain.
+	// MintBatchCredits dynamically mints credits to an "open" credit batch. This
+	// feature is only meant to be used when bridging credits from another chain
+	// or registry and is not intended for native credit issuance. When bridging
+	// credits from the same vintage (or monitoring period) as an existing credit
+	// batch, the credits can be dynamically minted to the existing credit batch
+	// if the credit batch is "open".
 	MintBatchCredits(ctx context.Context, in *MsgMintBatchCredits, opts ...grpc.CallOption) (*MsgMintBatchCreditsResponse, error)
-	// MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
-	// can't issue more credits. Once batch is sealed it can't be toggled any
-	// more. Only batch creator can seal a batch.
+	// MsgSealBatch seals an "open" credit batch. Once a credit batch is sealed
+	// (i.e. once "open" is set to false), credits can no longer be dynamically
+	// minted to the credit batch. A sealed credit batch cannot be unsealed and
+	// only the credit batch issuer can seal a credit batch.
 	SealBatch(ctx context.Context, in *MsgSealBatch, opts ...grpc.CallOption) (*MsgSealBatchResponse, error)
-	// Send sends tradable credits from one account to another account. Sent
-	// credits can either be tradable or retired on receipt.
+	// Send sends a specified amount of tradable credits from the credit owner's
+	// account to another account. Sent credits can either remain tradable or be
+	// retired upon receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
+	// Retire retires a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and adding it to their retired
+	// balance. Retiring credits is permanent and implies the credits are being
+	// consumed as a offset.
 	Retire(ctx context.Context, in *MsgRetire, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// Cancel removes a number of credits from the holder's account and also
-	// deducts them from the tradable supply, effectively cancelling their
-	// issuance on Regen Ledger
+	// Cancel cancels a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and removing the amount from the
+	// credit batch's tradable supply. Cancelling credits is permanent and implies
+	// the credits have been moved to another chain or registry.
 	Cancel(ctx context.Context, in *MsgCancel, opts ...grpc.CallOption) (*MsgCancelResponse, error)
-	// UpdateClassAdmin updates the credit class admin
+	// UpdateClassAdmin updates the credit class admin. Only the admin of the
+	// credit class can update the credit class.
 	UpdateClassAdmin(ctx context.Context, in *MsgUpdateClassAdmin, opts ...grpc.CallOption) (*MsgUpdateClassAdminResponse, error)
-	// UpdateClassIssuers updates the credit class issuer list
+	// UpdateClassIssuers updates the credit class issuer list. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
-	// UpdateClassMetadata updates the credit class metadata
+	// UpdateClassMetadata updates the credit class metadata. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
-	// UpdateProjectAdmin updates the project admin address
+	// UpdateProjectAdmin updates the project admin address. Only the admin of the
+	// project can update the project.
 	UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdminResponse, error)
-	// UpdateProjectMetadata updates the project metadata
+	// UpdateProjectMetadata updates the project metadata. Only the admin of the
+	// project can update the project.
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
+	// Bridge processes credits being sent back to the source chain. When credits
+	// are sent back to the source chain, the credits are cancelled and an event
+	// is emitted to be handled by an external bridge service.
+	Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
+	// BridgeReceive processes credits being sent from another chain. When the
+	// credits are sent from the same vintage as an existing credit batch within
+	// the scope of the provided credit class, the credits will be minted to the
+	// existing credit batch, otherwise the credits will be issued in a new credit
+	// batch. The new credit batch will be created under an existing project if a
+	// project with a matching reference id already exists within the scope of the
+	// credit class, otherwise a new project will be created.
+	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 }
 
 type msgClient struct {
@@ -2080,49 +2359,105 @@ func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProj
 	return out, nil
 }
 
+func (c *msgClient) Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error) {
+	out := new(MsgBridgeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/Bridge", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error) {
+	out := new(MsgBridgeReceiveResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/BridgeReceive", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateClass creates a new credit class with an approved list of issuers and
-	// optional metadata.
+	// CreateClass creates a new credit class under the given credit type with an
+	// approved list of issuers and optional metadata. The fee denom must be one
+	// of the denoms listed in Params.credit_class_fee and greater than or equal
+	// to the fee amount but only the minimum amount is charged. The creator of
+	// the credit class becomes the admin of the credit class upon creation.
 	CreateClass(context.Context, *MsgCreateClass) (*MsgCreateClassResponse, error)
-	// CreateProject creates a new project within a credit class.
+	// CreateProject creates a new project under the given credit class with a
+	// jurisdiction, optional metadata, and an optional reference ID. The creator
+	// of the project must be an approved credit class issuer for the given credit
+	// class and the creator becomes the admin of the project upon creation.
 	CreateProject(context.Context, *MsgCreateProject) (*MsgCreateProjectResponse, error)
-	// CreateBatch creates a new batch of credits for an existing project.
-	// This will create a new batch denom with a fixed supply. Issued credits can
-	// be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits under the given project with a
+	// start and end date representing the monitoring period, a list of credits to
+	// be issued with each issuance specifying a recipient, the amount of tradable
+	// and retired credits, and the retirement jurisdiction (if credits are to be
+	// retired upon receipt), and optional metadata. The credit batch creator must
+	// be listed as an approved issuer within the credit class of the project that
+	// the credits are being issued under.
+	//
+	// The default behavior is for a new credit batch to be "sealed" as opposed to
+	// being "open". When a credit batch is "open", new credits can be dynamically
+	// minted to the credit batch following the creation of the credit batch. This
+	// "open" option should only be set to true when bridging credits from another
+	// chain or registry as a result of a bridge operation and is not intended for
+	// native credit issuance.
 	CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error)
-	// MintBatchCredits issues new token in a given batch.
-	// The issuer must be the account who created (or delegated using x/authz),
-	// the batch.
-	// The request will fail if the batch is not open (is sealed).
-	// NOTE: this method is only for bridge purpose. It must not be used
-	// for issuing native credits on Regen. More specifically, we
-	// enable minting more credits in an existing batch, when the batch
-	// represents a vintage originally registered in another chain.
+	// MintBatchCredits dynamically mints credits to an "open" credit batch. This
+	// feature is only meant to be used when bridging credits from another chain
+	// or registry and is not intended for native credit issuance. When bridging
+	// credits from the same vintage (or monitoring period) as an existing credit
+	// batch, the credits can be dynamically minted to the existing credit batch
+	// if the credit batch is "open".
 	MintBatchCredits(context.Context, *MsgMintBatchCredits) (*MsgMintBatchCreditsResponse, error)
-	// MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
-	// can't issue more credits. Once batch is sealed it can't be toggled any
-	// more. Only batch creator can seal a batch.
+	// MsgSealBatch seals an "open" credit batch. Once a credit batch is sealed
+	// (i.e. once "open" is set to false), credits can no longer be dynamically
+	// minted to the credit batch. A sealed credit batch cannot be unsealed and
+	// only the credit batch issuer can seal a credit batch.
 	SealBatch(context.Context, *MsgSealBatch) (*MsgSealBatchResponse, error)
-	// Send sends tradable credits from one account to another account. Sent
-	// credits can either be tradable or retired on receipt.
+	// Send sends a specified amount of tradable credits from the credit owner's
+	// account to another account. Sent credits can either remain tradable or be
+	// retired upon receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
+	// Retire retires a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and adding it to their retired
+	// balance. Retiring credits is permanent and implies the credits are being
+	// consumed as a offset.
 	Retire(context.Context, *MsgRetire) (*MsgRetireResponse, error)
-	// Cancel removes a number of credits from the holder's account and also
-	// deducts them from the tradable supply, effectively cancelling their
-	// issuance on Regen Ledger
+	// Cancel cancels a specified amount of tradable credits, removing the amount
+	// from the credit owner's tradable balance and removing the amount from the
+	// credit batch's tradable supply. Cancelling credits is permanent and implies
+	// the credits have been moved to another chain or registry.
 	Cancel(context.Context, *MsgCancel) (*MsgCancelResponse, error)
-	// UpdateClassAdmin updates the credit class admin
+	// UpdateClassAdmin updates the credit class admin. Only the admin of the
+	// credit class can update the credit class.
 	UpdateClassAdmin(context.Context, *MsgUpdateClassAdmin) (*MsgUpdateClassAdminResponse, error)
-	// UpdateClassIssuers updates the credit class issuer list
+	// UpdateClassIssuers updates the credit class issuer list. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
-	// UpdateClassMetadata updates the credit class metadata
+	// UpdateClassMetadata updates the credit class metadata. Only the admin of
+	// the credit class can update the credit class.
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
-	// UpdateProjectAdmin updates the project admin address
+	// UpdateProjectAdmin updates the project admin address. Only the admin of the
+	// project can update the project.
 	UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdminResponse, error)
-	// UpdateProjectMetadata updates the project metadata
+	// UpdateProjectMetadata updates the project metadata. Only the admin of the
+	// project can update the project.
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
+	// Bridge processes credits being sent back to the source chain. When credits
+	// are sent back to the source chain, the credits are cancelled and an event
+	// is emitted to be handled by an external bridge service.
+	Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error)
+	// BridgeReceive processes credits being sent from another chain. When the
+	// credits are sent from the same vintage as an existing credit batch within
+	// the scope of the provided credit class, the credits will be minted to the
+	// existing credit batch, otherwise the credits will be issued in a new credit
+	// batch. The new credit batch will be created under an existing project if a
+	// project with a matching reference id already exists within the scope of the
+	// credit class, otherwise a new project will be created.
+	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -2167,6 +2502,12 @@ func (*UnimplementedMsgServer) UpdateProjectAdmin(ctx context.Context, req *MsgU
 }
 func (*UnimplementedMsgServer) UpdateProjectMetadata(ctx context.Context, req *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectMetadata not implemented")
+}
+func (*UnimplementedMsgServer) Bridge(ctx context.Context, req *MsgBridge) (*MsgBridgeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Bridge not implemented")
+}
+func (*UnimplementedMsgServer) BridgeReceive(ctx context.Context, req *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BridgeReceive not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -2407,6 +2748,42 @@ func _Msg_UpdateProjectMetadata_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_Bridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBridge)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Bridge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/Bridge",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Bridge(ctx, req.(*MsgBridge))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_BridgeReceive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBridgeReceive)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).BridgeReceive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/BridgeReceive",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).BridgeReceive(ctx, req.(*MsgBridgeReceive))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.ecocredit.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -2462,6 +2839,14 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProjectMetadata",
 			Handler:    _Msg_UpdateProjectMetadata_Handler,
+		},
+		{
+			MethodName: "Bridge",
+			Handler:    _Msg_Bridge_Handler,
+		},
+		{
+			MethodName: "BridgeReceive",
+			Handler:    _Msg_BridgeReceive_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -2583,17 +2968,17 @@ func (m *MsgCreateProject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProjectId) > 0 {
-		i -= len(m.ProjectId)
-		copy(dAtA[i:], m.ProjectId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ProjectId)))
+	if len(m.ReferenceId) > 0 {
+		i -= len(m.ReferenceId)
+		copy(dAtA[i:], m.ReferenceId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ReferenceId)))
 		i--
 		dAtA[i] = 0x2a
 	}
-	if len(m.ProjectJurisdiction) > 0 {
-		i -= len(m.ProjectJurisdiction)
-		copy(dAtA[i:], m.ProjectJurisdiction)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ProjectJurisdiction)))
+	if len(m.Jurisdiction) > 0 {
+		i -= len(m.Jurisdiction)
+		copy(dAtA[i:], m.Jurisdiction)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Jurisdiction)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -2611,10 +2996,10 @@ func (m *MsgCreateProject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Issuer) > 0 {
-		i -= len(m.Issuer)
-		copy(dAtA[i:], m.Issuer)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Issuer)))
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Admin)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2671,13 +3056,6 @@ func (m *MsgCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Note) > 0 {
-		i -= len(m.Note)
-		copy(dAtA[i:], m.Note)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Note)))
-		i--
-		dAtA[i] = 0x4a
-	}
 	if m.OriginTx != nil {
 		{
 			size, err := m.OriginTx.MarshalToSizedBuffer(dAtA[:i])
@@ -2758,57 +3136,6 @@ func (m *MsgCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *BatchIssuance) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *BatchIssuance) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *BatchIssuance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.RetirementJurisdiction) > 0 {
-		i -= len(m.RetirementJurisdiction)
-		copy(dAtA[i:], m.RetirementJurisdiction)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.RetirementJurisdiction)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.RetiredAmount) > 0 {
-		i -= len(m.RetiredAmount)
-		copy(dAtA[i:], m.RetiredAmount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.RetiredAmount)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.TradableAmount) > 0 {
-		i -= len(m.TradableAmount)
-		copy(dAtA[i:], m.TradableAmount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.TradableAmount)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Recipient) > 0 {
-		i -= len(m.Recipient)
-		copy(dAtA[i:], m.Recipient)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Recipient)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *MsgCreateBatchResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2859,13 +3186,6 @@ func (m *MsgMintBatchCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Note) > 0 {
-		i -= len(m.Note)
-		copy(dAtA[i:], m.Note)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Note)))
-		i--
-		dAtA[i] = 0x2a
-	}
 	if m.OriginTx != nil {
 		{
 			size, err := m.OriginTx.MarshalToSizedBuffer(dAtA[:i])
@@ -2909,6 +3229,29 @@ func (m *MsgMintBatchCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgMintBatchCreditsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgMintBatchCreditsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgMintBatchCreditsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func (m *MsgSealBatch) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2943,29 +3286,6 @@ func (m *MsgSealBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0xa
 	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgMintBatchCreditsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgMintBatchCreditsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgMintBatchCreditsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -3158,47 +3478,10 @@ func (m *MsgRetire) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Holder) > 0 {
-		i -= len(m.Holder)
-		copy(dAtA[i:], m.Holder)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Holder)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgRetire_RetireCredits) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgRetire_RetireCredits) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgRetire_RetireCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Amount) > 0 {
-		i -= len(m.Amount)
-		copy(dAtA[i:], m.Amount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Amount)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.BatchDenom) > 0 {
-		i -= len(m.BatchDenom)
-		copy(dAtA[i:], m.BatchDenom)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.BatchDenom)))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3248,6 +3531,13 @@ func (m *MsgCancel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Reason) > 0 {
+		i -= len(m.Reason)
+		copy(dAtA[i:], m.Reason)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Reason)))
+		i--
+		dAtA[i] = 0x1a
+	}
 	if len(m.Credits) > 0 {
 		for iNdEx := len(m.Credits) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -3262,47 +3552,10 @@ func (m *MsgCancel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Holder) > 0 {
-		i -= len(m.Holder)
-		copy(dAtA[i:], m.Holder)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Holder)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgCancel_CancelCredits) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCancel_CancelCredits) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCancel_CancelCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Amount) > 0 {
-		i -= len(m.Amount)
-		copy(dAtA[i:], m.Amount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Amount)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.BatchDenom) > 0 {
-		i -= len(m.BatchDenom)
-		copy(dAtA[i:], m.BatchDenom)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.BatchDenom)))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3497,10 +3750,10 @@ func (m *MsgUpdateClassMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if len(m.Metadata) > 0 {
-		i -= len(m.Metadata)
-		copy(dAtA[i:], m.Metadata)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
+	if len(m.NewMetadata) > 0 {
+		i -= len(m.NewMetadata)
+		copy(dAtA[i:], m.NewMetadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.NewMetadata)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -3564,17 +3817,17 @@ func (m *MsgUpdateProjectAdmin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProjectId) > 0 {
-		i -= len(m.ProjectId)
-		copy(dAtA[i:], m.ProjectId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ProjectId)))
-		i--
-		dAtA[i] = 0x1a
-	}
 	if len(m.NewAdmin) > 0 {
 		i -= len(m.NewAdmin)
 		copy(dAtA[i:], m.NewAdmin)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.NewAdmin)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.ProjectId) > 0 {
+		i -= len(m.ProjectId)
+		copy(dAtA[i:], m.ProjectId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ProjectId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -3631,17 +3884,17 @@ func (m *MsgUpdateProjectMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProjectId) > 0 {
-		i -= len(m.ProjectId)
-		copy(dAtA[i:], m.ProjectId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ProjectId)))
-		i--
-		dAtA[i] = 0x1a
-	}
 	if len(m.NewMetadata) > 0 {
 		i -= len(m.NewMetadata)
 		copy(dAtA[i:], m.NewMetadata)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.NewMetadata)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.ProjectId) > 0 {
+		i -= len(m.ProjectId)
+		copy(dAtA[i:], m.ProjectId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ProjectId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -3675,6 +3928,305 @@ func (m *MsgUpdateProjectMetadataResponse) MarshalToSizedBuffer(dAtA []byte) (in
 	_ = i
 	var l int
 	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBridge) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBridge) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBridge) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Credits) > 0 {
+		for iNdEx := len(m.Credits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Credits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if len(m.Recipient) > 0 {
+		i -= len(m.Recipient)
+		copy(dAtA[i:], m.Recipient)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Recipient)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Target) > 0 {
+		i -= len(m.Target)
+		copy(dAtA[i:], m.Target)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Target)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBridgeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBridgeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBridgeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBridgeReceive) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBridgeReceive) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBridgeReceive) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.OriginTx != nil {
+		{
+			size, err := m.OriginTx.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.Batch != nil {
+		{
+			size, err := m.Batch.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.Project != nil {
+		{
+			size, err := m.Project.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Issuer) > 0 {
+		i -= len(m.Issuer)
+		copy(dAtA[i:], m.Issuer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Issuer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBridgeReceive_Batch) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBridgeReceive_Batch) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBridgeReceive_Batch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.EndDate != nil {
+		n9, err9 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate):])
+		if err9 != nil {
+			return 0, err9
+		}
+		i -= n9
+		i = encodeVarintTx(dAtA, i, uint64(n9))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.StartDate != nil {
+		n10, err10 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate):])
+		if err10 != nil {
+			return 0, err10
+		}
+		i -= n10
+		i = encodeVarintTx(dAtA, i, uint64(n10))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Amount)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Recipient) > 0 {
+		i -= len(m.Recipient)
+		copy(dAtA[i:], m.Recipient)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Recipient)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBridgeReceive_Project) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBridgeReceive_Project) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBridgeReceive_Project) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Jurisdiction) > 0 {
+		i -= len(m.Jurisdiction)
+		copy(dAtA[i:], m.Jurisdiction)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Jurisdiction)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ReferenceId) > 0 {
+		i -= len(m.ReferenceId)
+		copy(dAtA[i:], m.ReferenceId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ReferenceId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBridgeReceiveResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBridgeReceiveResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBridgeReceiveResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ProjectId) > 0 {
+		i -= len(m.ProjectId)
+		copy(dAtA[i:], m.ProjectId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ProjectId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -3739,7 +4291,7 @@ func (m *MsgCreateProject) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Issuer)
+	l = len(m.Admin)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -3751,11 +4303,11 @@ func (m *MsgCreateProject) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.ProjectJurisdiction)
+	l = len(m.Jurisdiction)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.ProjectId)
+	l = len(m.ReferenceId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -3814,35 +4366,6 @@ func (m *MsgCreateBatch) Size() (n int) {
 		l = m.OriginTx.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Note)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *BatchIssuance) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Recipient)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.TradableAmount)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.RetiredAmount)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.RetirementJurisdiction)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
 	return n
 }
 
@@ -3883,10 +4406,15 @@ func (m *MsgMintBatchCredits) Size() (n int) {
 		l = m.OriginTx.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Note)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgMintBatchCreditsResponse) Size() (n int) {
+	if m == nil {
+		return 0
 	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -3904,15 +4432,6 @@ func (m *MsgSealBatch) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	return n
-}
-
-func (m *MsgMintBatchCreditsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	return n
 }
 
@@ -3988,7 +4507,7 @@ func (m *MsgRetire) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Holder)
+	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -3999,23 +4518,6 @@ func (m *MsgRetire) Size() (n int) {
 		}
 	}
 	l = len(m.Jurisdiction)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgRetire_RetireCredits) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.BatchDenom)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -4037,7 +4539,7 @@ func (m *MsgCancel) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Holder)
+	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -4047,20 +4549,7 @@ func (m *MsgCancel) Size() (n int) {
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
-	return n
-}
-
-func (m *MsgCancel_CancelCredits) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.BatchDenom)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Amount)
+	l = len(m.Reason)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -4158,7 +4647,7 @@ func (m *MsgUpdateClassMetadata) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Metadata)
+	l = len(m.NewMetadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -4184,11 +4673,11 @@ func (m *MsgUpdateProjectAdmin) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.NewAdmin)
+	l = len(m.ProjectId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.ProjectId)
+	l = len(m.NewAdmin)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -4214,11 +4703,11 @@ func (m *MsgUpdateProjectMetadata) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.NewMetadata)
+	l = len(m.ProjectId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.ProjectId)
+	l = len(m.NewMetadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -4231,6 +4720,138 @@ func (m *MsgUpdateProjectMetadataResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
+	return n
+}
+
+func (m *MsgBridge) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Target)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Recipient)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.Credits) > 0 {
+		for _, e := range m.Credits {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgBridgeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgBridgeReceive) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Issuer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Project != nil {
+		l = m.Project.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Batch != nil {
+		l = m.Batch.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.OriginTx != nil {
+		l = m.OriginTx.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgBridgeReceive_Batch) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Recipient)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Amount)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.StartDate != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate)
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.EndDate != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate)
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Metadata)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgBridgeReceive_Project) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ReferenceId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Jurisdiction)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Metadata)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgBridgeReceiveResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ProjectId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -4567,7 +5188,7 @@ func (m *MsgCreateProject) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4595,7 +5216,7 @@ func (m *MsgCreateProject) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Issuer = string(dAtA[iNdEx:postIndex])
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -4663,7 +5284,7 @@ func (m *MsgCreateProject) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectJurisdiction", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Jurisdiction", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4691,11 +5312,11 @@ func (m *MsgCreateProject) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProjectJurisdiction = string(dAtA[iNdEx:postIndex])
+			m.Jurisdiction = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ReferenceId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4723,7 +5344,7 @@ func (m *MsgCreateProject) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProjectId = string(dAtA[iNdEx:postIndex])
+			m.ReferenceId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -5115,216 +5736,6 @@ func (m *MsgCreateBatch) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Note", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Note = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *BatchIssuance) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: BatchIssuance: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: BatchIssuance: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Recipient", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Recipient = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.TradableAmount = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetirementJurisdiction", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RetirementJurisdiction = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -5591,38 +6002,56 @@ func (m *MsgMintBatchCredits) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Note", wireType)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
 			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
+			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Note = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgMintBatchCreditsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgMintBatchCreditsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgMintBatchCreditsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -5737,56 +6166,6 @@ func (m *MsgSealBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.BatchDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgMintBatchCreditsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgMintBatchCreditsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgMintBatchCreditsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -6265,7 +6644,7 @@ func (m *MsgRetire) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Holder", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -6293,7 +6672,7 @@ func (m *MsgRetire) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Holder = string(dAtA[iNdEx:postIndex])
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -6324,7 +6703,7 @@ func (m *MsgRetire) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgRetire_RetireCredits{})
+			m.Credits = append(m.Credits, &Credits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -6360,120 +6739,6 @@ func (m *MsgRetire) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Jurisdiction = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgRetire_RetireCredits) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: RetireCredits: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RetireCredits: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -6577,7 +6842,7 @@ func (m *MsgCancel) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Holder", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -6605,7 +6870,7 @@ func (m *MsgCancel) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Holder = string(dAtA[iNdEx:postIndex])
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -6636,64 +6901,14 @@ func (m *MsgCancel) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgCancel_CancelCredits{})
+			m.Credits = append(m.Credits, &Credits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgCancel_CancelCredits) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: CancelCredits: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CancelCredits: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
+		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Reason", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -6721,39 +6936,7 @@ func (m *MsgCancel_CancelCredits) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Amount = string(dAtA[iNdEx:postIndex])
+			m.Reason = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -7345,7 +7528,7 @@ func (m *MsgUpdateClassMetadata) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NewMetadata", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -7373,7 +7556,7 @@ func (m *MsgUpdateClassMetadata) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Metadata = string(dAtA[iNdEx:postIndex])
+			m.NewMetadata = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -7509,38 +7692,6 @@ func (m *MsgUpdateProjectAdmin) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewAdmin", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.NewAdmin = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
 			}
 			var stringLen uint64
@@ -7570,6 +7721,38 @@ func (m *MsgUpdateProjectAdmin) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ProjectId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewAdmin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewAdmin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -7705,38 +7888,6 @@ func (m *MsgUpdateProjectMetadata) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewMetadata", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.NewMetadata = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
 			}
 			var stringLen uint64
@@ -7766,6 +7917,38 @@ func (m *MsgUpdateProjectMetadata) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ProjectId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewMetadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewMetadata = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -7817,6 +8000,936 @@ func (m *MsgUpdateProjectMetadataResponse) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: MsgUpdateProjectMetadataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBridge) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBridge: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBridge: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Target", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Target = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Recipient", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Recipient = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Credits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Credits = append(m.Credits, &Credits{})
+			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBridgeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBridgeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBridgeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBridgeReceive) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBridgeReceive: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBridgeReceive: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Issuer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Project", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Project == nil {
+				m.Project = &MsgBridgeReceive_Project{}
+			}
+			if err := m.Project.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Batch", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Batch == nil {
+				m.Batch = &MsgBridgeReceive_Batch{}
+			}
+			if err := m.Batch.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OriginTx", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.OriginTx == nil {
+				m.OriginTx = &OriginTx{}
+			}
+			if err := m.OriginTx.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBridgeReceive_Batch) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Batch: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Batch: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Recipient", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Recipient = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.StartDate == nil {
+				m.StartDate = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EndDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.EndDate == nil {
+				m.EndDate = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Metadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBridgeReceive_Project) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Project: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Project: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReferenceId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReferenceId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Jurisdiction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Jurisdiction = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Metadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBridgeReceiveResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBridgeReceiveResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBridgeReceiveResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProjectId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])

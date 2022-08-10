@@ -4,6 +4,8 @@
 
 mkdir -p modules
 
+cp README_modules.md modules/README.md
+
 for D in ../x/*; do
   if [ -d "${D}" ]; then
     rm -rf "modules/$(echo $D | awk -F/ '{print $NF}')"
@@ -11,12 +13,14 @@ for D in ../x/*; do
   fi
 done
 
-cp MODULES.md modules/README.md
-
 # regen app command-line documentation
 
-rm -rf commands
 mkdir -p commands
-go run ../scripts/generate-cli-docs.go
 
-cp COMMANDS.md commands/README.md
+cp README_commands.md commands/README.md
+
+go run ../scripts/generate_cli_docs.go
+
+# module feature documentation
+
+(cd .. ; ./scripts/generate_feature_docs.sh)

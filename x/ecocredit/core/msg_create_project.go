@@ -3,10 +3,12 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
+
+const MaxReferenceIdLength = 32
 
 var _ legacytx.LegacyMsg = &MsgCreateProject{}
 
@@ -23,27 +25,24 @@ func (m MsgCreateProject) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateProject) ValidateBasic() error {
-
-	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
-		return sdkerrors.ErrInvalidAddress
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
-		return err
+	if err := ValidateClassId(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.Metadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("create project metadata")
+		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
 	}
 
-	if err := ValidateJurisdiction(m.ProjectJurisdiction); err != nil {
-		return err
+	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	if m.ProjectId != "" {
-		if err := ValidateProjectID(m.ProjectId); err != nil {
-			return err
-		}
+	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIdLength {
+		return ecocredit.ErrMaxLimit.Wrapf("reference id: max length %d", MaxReferenceIdLength)
 	}
 
 	return nil
@@ -51,6 +50,6 @@ func (m *MsgCreateProject) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgCreateProject.
 func (m *MsgCreateProject) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }

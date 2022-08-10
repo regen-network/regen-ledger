@@ -3,7 +3,7 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -20,15 +20,15 @@ func (m MsgUpdateClassMetadata) GetSignBytes() []byte {
 
 func (m *MsgUpdateClassMetadata) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return sdkerrors.ErrInvalidAddress
+		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
-		return err
+	if err := ValidateClassId(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	if len(m.Metadata) > MaxMetadataLength {
-		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
+	if len(m.NewMetadata) > MaxMetadataLength {
+		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
 	}
 
 	return nil

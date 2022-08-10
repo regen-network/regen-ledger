@@ -11,25 +11,38 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func TestQuery_ProjectInfo(t *testing.T) {
+func TestQuery_Project(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	// insert 1 project
-	err := s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:                  "P01",
-		ClassKey:            1,
-		ProjectJurisdiction: "US-CA",
-		Metadata:            "",
+	// insert class
+	classKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id: "C01",
 	})
 	assert.NilError(t, err)
 
-	// valid query
-	res, err := s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "P01"})
-	assert.NilError(t, err)
-	assert.Equal(t, "P01", res.Project.Id)
+	project := &api.Project{
+		Id:           "C01-001",
+		ClassKey:     classKey,
+		Jurisdiction: "US-CA",
+		Metadata:     "data",
+		ReferenceId:  "R01",
+	}
 
-	// invalid query
-	_, err = s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "F01"})
+	// insert project
+	err = s.stateStore.ProjectTable().Insert(s.ctx, project)
+	assert.NilError(t, err)
+
+	// query project by "C01-001" project id
+	res, err := s.k.Project(s.ctx, &core.QueryProjectRequest{ProjectId: "C01-001"})
+	assert.NilError(t, err)
+	assert.Equal(t, project.Id, res.Project.Id)
+	assert.Equal(t, "C01", res.Project.ClassId)
+	assert.Equal(t, project.Jurisdiction, res.Project.Jurisdiction)
+	assert.Equal(t, project.Metadata, res.Project.Metadata)
+	assert.Equal(t, project.ReferenceId, res.Project.ReferenceId)
+
+	// query project by unknown project id
+	_, err = s.k.Project(s.ctx, &core.QueryProjectRequest{ProjectId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
