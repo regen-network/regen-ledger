@@ -3,7 +3,7 @@ name: Sims Nightly
 on:
   schedule:
     # Runs "at 1am every day"
-    - cron: "* * * * *"
+    - cron: "0 0 * * *"
 
 jobs:
   build:

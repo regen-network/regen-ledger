@@ -16,6 +16,8 @@ jobs:
         uses: actions/setup-go@v2.1.3
         with:
           go-version: 1.18
+      - name: Checkout code
+        uses: actions/checkout@v2
       - uses: technote-space/get-diff-action@v6
         id: git_diff
         with:
@@ -23,8 +25,6 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: run sub-modules test and codecov
         run: make test-cover
         if: env.GIT_DIFF
