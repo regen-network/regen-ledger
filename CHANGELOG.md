@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### API Breaking Changes
+
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewKeeper` method in `ecocredit/core` requires a `authority` address.
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Removed `AddCreditType` proposal handler.
+
+### Added
+
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) `AddCreditType` is added for msg-based gov proposal.
+
 ### app
 
 #### Removed

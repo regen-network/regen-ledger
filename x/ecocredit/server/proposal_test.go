@@ -37,7 +37,7 @@ func setup(t *testing.T) baseSuite {
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	accountKeeper.EXPECT().GetModuleAddress(ecocredit.ModuleName).Return(sdk.AccAddress{}).Times(1)
 	accountKeeper.EXPECT().GetModuleAddress(basket.BasketSubModuleName).Return(sdk.AccAddress{}).Times(1)
-	s.server = newServer(storeKey, paramtypes.Subspace{}, accountKeeper, bankKeeper, sdk.AccAddress("")) // TODO: update gov authority address
+	s.server = newServer(storeKey, paramtypes.Subspace{}, accountKeeper, bankKeeper, sdk.AccAddress(""))
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
 	cms.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
