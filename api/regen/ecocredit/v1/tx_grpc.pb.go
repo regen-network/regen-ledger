@@ -101,7 +101,8 @@ type MsgClient interface {
 	// project with a matching reference id already exists within the scope of the
 	// credit class, otherwise a new project will be created.
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
-	// AddCreditType is a governance method that allows the addition of new credit types to the network.
+	// AddCreditType is a governance method that allows the addition of new
+	// credit types to the network.
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 }
 
@@ -340,7 +341,8 @@ type MsgServer interface {
 	// project with a matching reference id already exists within the scope of the
 	// credit class, otherwise a new project will be created.
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
-	// AddCreditType is a governance method that allows the addition of new credit types to the network.
+	// AddCreditType is a governance method that allows the addition of new
+	// credit types to the network.
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
