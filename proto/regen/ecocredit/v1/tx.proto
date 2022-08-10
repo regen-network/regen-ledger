@@ -5,8 +5,8 @@ package regen.ecocredit.v1;
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "regen/ecocredit/v1/types.proto";
 import "regen/ecocredit/v1/state.proto";
+import "regen/ecocredit/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
@@ -113,7 +113,8 @@ service Msg {
   // credit class, otherwise a new project will be created.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 
-  // AddCreditType is a governance method that allows the addition of new credit types to the network.
+  // AddCreditType is a governance method that allows the addition of new 
+  // credit types to the network.
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 }
 
