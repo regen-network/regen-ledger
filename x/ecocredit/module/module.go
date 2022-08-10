@@ -43,6 +43,7 @@ type Module struct {
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
 	Keeper        server.Keeper
+	authority     sdk.AccAddress
 }
 
 // NewModule returns a new Module object.
@@ -79,7 +80,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
+	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
 }
 
 //nolint:errcheck

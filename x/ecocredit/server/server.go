@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
@@ -38,7 +39,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
@@ -69,7 +70,7 @@ func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	s.basketStore = basketStore
 	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr)
 	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr)
-	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
+	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace, authority)
 
 	return s
 }
@@ -95,8 +96,9 @@ func RegisterServices(
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
+	authority sdk.AccAddress,
 ) Keeper {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper)
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, authority)
 
 	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
 	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)

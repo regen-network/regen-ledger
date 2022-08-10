@@ -6,6 +6,5 @@ import (
 
 // Keeper defines a set of methods the ecocredit module exposes.
 type Keeper interface {
-	ProposalKeeper
 	PruneOrders(ctx sdk.Context) error
 }
