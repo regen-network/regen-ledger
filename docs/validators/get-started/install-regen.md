@@ -37,7 +37,7 @@ git checkout v1.0.0
 *For Hambach Testnet:*
 
 ```bash
-git checkout v2.0.0
+git checkout v4.0.0
 ```
 
 Build and install the `regen` binary:
@@ -83,5 +83,5 @@ v1.0.0
 *For Hambach Testnet:*
 
 ```bash
-v2.0.0
+v4.0.0
 ```
