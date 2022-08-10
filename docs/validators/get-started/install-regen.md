@@ -25,13 +25,13 @@ Check out the genesis version:
 *For Regen Mainnet:*
 
 ```bash
-git checkout v4.0.0
+git checkout v1.0.0
 ```
 
 *For Redwood Testnet:*
 
 ```bash
-git checkout v4.0.0
+git checkout v1.0.0
 ```
 
 *For Hambach Testnet:*
@@ -71,13 +71,13 @@ You should see the following:
 *For Regen Mainnet:*
 
 ```bash
-v4.0.0
+v1.0.0
 ```
 
 *For Redwood Testnet:*
 
 ```bash
-v4.0.0
+v1.0.0
 ```
 
 *For Hambach Testnet:*
