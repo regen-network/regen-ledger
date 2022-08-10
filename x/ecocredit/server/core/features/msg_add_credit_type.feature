@@ -12,11 +12,11 @@ Feature: Msg/AddCreditType
       When alice attempts to add a credit type with properties
       """
       {
-        "authority":"",
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "credit_type":{
           "name":"carbon",
           "abbreviation":"C",
-          "precision"6,
+          "precision": 6,
           "unit":"kg"
         }
       }
@@ -29,17 +29,17 @@ Feature: Msg/AddCreditType
       Given a credit type with abbreviation properties
       """
       {
-        "authority":"",
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "credit_type":{
           "name":"carbon",
           "abbreviation":"C",
-          "precision"6,
+          "precision": 6,
           "unit":"kg"
         }
       }
       """
       When alice attempts to add a credit type with name "carbon"
-      Then expect error "credit type already exists"
+      Then expect the error "credit type with carbon name already exists: conflict"
 
   Rule: The authority must be governance account address
 
@@ -47,11 +47,11 @@ Feature: Msg/AddCreditType
       When alice attempts to add a credit type with properties
       """
       {
-        "authority":"",
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "credit_type":{
           "name":"carbon",
           "abbreviation":"C",
-          "precision"6,
+          "precision": 6,
           "unit":"kg"
         }
       }
@@ -62,13 +62,13 @@ Feature: Msg/AddCreditType
       When alice attempts to add a credit type with properties
       """
       {
-        "authority":"",
+        "authority":"regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
         "credit_type":{
           "name":"carbon",
           "abbreviation":"C",
-          "precision"6,
+          "precision": 6,
           "unit":"kg"
         }
       }
       """
-      Then expect no error
+      Then expect error contains "expected gov account as only signer for proposal message"
