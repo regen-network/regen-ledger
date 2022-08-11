@@ -103,6 +103,7 @@ type MsgClient interface {
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	// Since Revision 1
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 }
 
@@ -343,6 +344,7 @@ type MsgServer interface {
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	// Since Revision 1
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

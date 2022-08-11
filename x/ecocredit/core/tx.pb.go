@@ -34,6 +34,7 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
+// Since Revision 1
 type MsgAddCreditType struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -89,6 +90,7 @@ func (m *MsgAddCreditType) GetCreditType() *CreditType {
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
+// Since Revision 1
 type MsgAddCreditTypeResponse struct {
 }
 
@@ -2332,6 +2334,7 @@ type MsgClient interface {
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	// Since Revision 1
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 }
 
@@ -2570,6 +2573,7 @@ type MsgServer interface {
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	// Since Revision 1
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 }
 

@@ -33,7 +33,7 @@ func (s *addCreditTypeSuite) AliceAttemptsToAddACreditTypeWithName(name string) 
 	})
 }
 
-func (s *addCreditTypeSuite) ACreditTypeWithAbbreviationProperties(a gocuke.DocString) {
+func (s *addCreditTypeSuite) ACreditTypeWithProperties(a gocuke.DocString) {
 	var msg *core.MsgAddCreditType
 
 	err := json.Unmarshal([]byte(a.Content), &msg)

@@ -18196,6 +18196,7 @@ const (
 )
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
+// Since Revision 1
 type MsgAddCreditType struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -18242,6 +18243,7 @@ func (x *MsgAddCreditType) GetCreditType() *CreditType {
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
+// Since Revision 1
 type MsgAddCreditTypeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
