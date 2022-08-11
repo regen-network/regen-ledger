@@ -1,6 +1,6 @@
 Feature: MsgAddCreditType
 
-  Scenario: a valid credit types
+  Scenario: a valid message
     Given the message
     """
     {
