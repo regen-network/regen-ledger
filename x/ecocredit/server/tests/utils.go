@@ -3,6 +3,7 @@ package tests
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -12,6 +13,7 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -56,5 +58,6 @@ func NewEcocreditModule(ff *server.FixtureFactory) *ecocredit.Module {
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	return ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
+	_, _, addr := testdata.KeyTestPubAddr()
+	return ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, addr)
 }

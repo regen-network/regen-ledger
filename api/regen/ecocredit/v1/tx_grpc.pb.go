@@ -101,6 +101,10 @@ type MsgClient interface {
 	// project with a matching reference id already exists within the scope of the
 	// credit class, otherwise a new project will be created.
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
+	// AddCreditType is a governance method that allows the addition of new
+	// credit types to the network.
+	// Since Revision 1
+	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 }
 
 type msgClient struct {
@@ -246,6 +250,15 @@ func (c *msgClient) BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opt
 	return out, nil
 }
 
+func (c *msgClient) AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error) {
+	out := new(MsgAddCreditTypeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/AddCreditType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -329,6 +342,10 @@ type MsgServer interface {
 	// project with a matching reference id already exists within the scope of the
 	// credit class, otherwise a new project will be created.
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
+	// AddCreditType is a governance method that allows the addition of new
+	// credit types to the network.
+	// Since Revision 1
+	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -380,6 +397,9 @@ func (UnimplementedMsgServer) Bridge(context.Context, *MsgBridge) (*MsgBridgeRes
 }
 func (UnimplementedMsgServer) BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BridgeReceive not implemented")
+}
+func (UnimplementedMsgServer) AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCreditType not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -664,6 +684,24 @@ func _Msg_BridgeReceive_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_AddCreditType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddCreditType)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AddCreditType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/AddCreditType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AddCreditType(ctx, req.(*MsgAddCreditType))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -730,6 +768,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BridgeReceive",
 			Handler:    _Msg_BridgeReceive_Handler,
+		},
+		{
+			MethodName: "AddCreditType",
+			Handler:    _Msg_AddCreditType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
