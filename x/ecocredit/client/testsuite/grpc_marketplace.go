@@ -56,9 +56,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 			),
@@ -104,9 +102,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders-by-batch/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders/batch/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/sell-orders-by-batch/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 				s.batchDenom,
@@ -162,9 +158,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders-by-seller/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders/seller/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/sell-orders-by-seller/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 				s.addr1,
@@ -215,9 +209,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/allowed-denoms?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/allowed-denoms?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/allowed-denoms?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 			),
