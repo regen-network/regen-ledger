@@ -74,7 +74,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper)
+	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper, sdk.AccAddress(""))
 
 	// set test accounts
 	for i := 0; i < numAddresses; i++ {

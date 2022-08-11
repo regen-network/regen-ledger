@@ -164,11 +164,11 @@ message MsgBuyDirectResponse {}
 // MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
 // Since Revision 1
 message MsgRemoveAllowedDenom {
-  // denom is the denom to remove (ex. ibc/GLKHDSG423SGS)
-  string denom = 1;
+  // authority is the address of the governance account.
+  string authority = 1;
 
-  // display_denom is the denom to display to the user and is informational
-  string display_denom = 2;
+  // denom is the denom to remove (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
 }
 
 // MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
