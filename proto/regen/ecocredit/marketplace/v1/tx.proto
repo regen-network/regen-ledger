@@ -24,6 +24,10 @@ service Msg {
 
   // BuyDirect purchases credits directly from the specified sell order.
   rpc BuyDirect(MsgBuyDirect) returns (MsgBuyDirectResponse);
+
+  // RemoveAllowedDenom is a governance method that removes allowed denom.
+  // Since Revision 1
+  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom) returns (MsgRemoveAllowedDenomResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -156,3 +160,17 @@ message MsgBuyDirect {
 
 // MsgBuyDirectResponse is the Msg/BuyDirect response type.
 message MsgBuyDirectResponse {}
+
+// MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+// Since Revision 1
+message MsgRemoveAllowedDenom {
+  // denom is the denom to remove (ex. ibc/GLKHDSG423SGS)
+  string denom = 1;
+
+  // display_denom is the denom to display to the user and is informational
+  string display_denom = 2;
+}
+
+// MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+// Since Revision 1
+message MsgRemoveAllowedDenomResponse {}

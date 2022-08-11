@@ -7921,9 +7921,9 @@ type BatchContract struct {
 	// for efficient lookups. This links an external contract to a credit batch.
 	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
 	// class_key is the table row identifier of the credit class within which the
-	// credit batch exists. A contract is unique within the scope of a credit class
-	// to prevent malicious credit class issuers from blocking bridge operations
-	// taking place within another credit class.
+	// credit batch exists. A contract is unique within the scope of a credit
+	// class to prevent malicious credit class issuers from blocking bridge
+	// operations taking place within another credit class.
 	ClassKey uint64 `protobuf:"varint,2,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
 	// contract is the address of the contract on the source chain that was
 	// executed when creating the transaction. This address will be used when
