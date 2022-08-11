@@ -1,4 +1,4 @@
-Feature: CreditTypes
+Feature: MsgAddCreditType
 
   Scenario: a valid credit types
     Given the message
