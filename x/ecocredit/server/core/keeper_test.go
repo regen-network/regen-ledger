@@ -7,7 +7,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -24,7 +23,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
 
@@ -41,6 +39,7 @@ type baseSuite struct {
 	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *storetypes.KVStoreKey
 	sdkCtx       sdk.Context
+	authority    sdk.AccAddress
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -68,76 +67,14 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
+	s.authority, err = sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
+	require.NoError(t, err)
+
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress, s.authority)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 
 	return s
-}
-
-// setupClassProjectBatch setups a class "C01", a project "C01-001", a batch "C01-001-20200101-20210101-01", and a
-// supply/balance of "10.5" for both retired and tradable.
-func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId, batchDenom string) {
-	var err error
-	classId, projectId = "C01", "C01-001"
-	start, end := &timestamppb.Timestamp{Seconds: 2}, &timestamppb.Timestamp{Seconds: 30}
-	startTime, endTime := start.AsTime(), end.AsTime()
-	batchDenom, err = core.FormatBatchDenom(projectId, 1, &startTime, &endTime)
-	assert.NilError(t, err)
-
-	cKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               classId,
-		Admin:            s.addr,
-		Metadata:         "",
-		CreditTypeAbbrev: "C",
-	})
-	assert.NilError(t, err)
-
-	assert.NilError(t, s.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
-		ClassKey: cKey,
-		Issuer:   s.addr,
-	}))
-
-	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Admin:        s.addr,
-		Id:           projectId,
-		ClassKey:     cKey,
-		Jurisdiction: "US-OR",
-		Metadata:     "",
-	})
-	assert.NilError(t, err)
-	assert.NilError(t, s.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
-		ClassKey:     cKey,
-		NextSequence: 2,
-	}))
-
-	bKey, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: pKey,
-		Issuer:     s.addr,
-		Denom:      batchDenom,
-		Metadata:   "",
-		StartDate:  start,
-		EndDate:    end,
-	})
-	assert.NilError(t, err)
-	assert.NilError(t, s.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
-		ProjectKey:   pKey,
-		NextSequence: 2,
-	}))
-
-	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey:        bKey,
-		TradableAmount:  "10.5",
-		RetiredAmount:   "10.5",
-		CancelledAmount: "",
-	}))
-	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey:       bKey,
-		Address:        s.addr,
-		TradableAmount: "10.5",
-		RetiredAmount:  "10.5",
-	}))
-	return
 }
 
 // this is an example of how we will unit test the basket functionality with mocks

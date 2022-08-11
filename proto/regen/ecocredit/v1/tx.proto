@@ -5,6 +5,7 @@ package regen.ecocredit.v1;
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
@@ -111,7 +112,26 @@ service Msg {
   // project with a matching reference id already exists within the scope of the
   // credit class, otherwise a new project will be created.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
+
+  // AddCreditType is a governance method that allows the addition of new 
+  // credit types to the network.
+  // Since Revision 1
+  rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 }
+
+// MsgAddCreditType is the Msg/AddCreditType request type.
+// Since Revision 1
+message MsgAddCreditType {
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // credit_type defines a credit type to add to the credit types parameter. 
+  CreditType credit_type = 2;
+}
+
+// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
+// Since Revision 1
+message MsgAddCreditTypeResponse {}
 
 // MsgCreateClass is the Msg/CreateClass request type.
 message MsgCreateClass {
