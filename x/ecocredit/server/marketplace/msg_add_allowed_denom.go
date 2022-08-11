@@ -12,7 +12,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-// AddAllowedDenom adds a allowed denom to the network.
+// AddAllowedDenom adds a denom to the list of approved denoms that may be used in the
+// marketplace.
 func (k Keeper) AddAllowedDenom(ctx context.Context, req *marketplace.MsgAddAllowedDenom) (*marketplace.MsgAddAllowedDenomResponse, error) {
 	if k.authority.String() != req.Authority {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)

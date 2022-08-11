@@ -33,8 +33,8 @@ Feature: Msg/AddAllowedDenom
 
   Rule: The allowed denom does not exists
 
-  Scenario: The allowed denom does not exists
-    When alice attempts to add a denom with properties
+    Scenario: The allowed denom does not exists
+      When alice attempts to add a denom with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -45,17 +45,17 @@ Feature: Msg/AddAllowedDenom
       """
       Then expect no error
 
-  Scenario: The bank denom exists
-    Given an allowed denom with properties
-    """
+    Scenario: The bank denom exists
+      Given an allowed denom with properties
+      """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "bank_denom":"uregen",
         "display_denom":"REGEN",
         "exponent":6
       }
-    """
-    When alice attempts to add a denom with properties
+      """
+      When alice attempts to add a denom with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -66,17 +66,17 @@ Feature: Msg/AddAllowedDenom
       """
       Then expect the error "bank denom uregen already exists: conflict"
 
-  Scenario: The display denom exists
-    Given an allowed denom with properties
-    """
+    Scenario: The display denom exists
+      Given an allowed denom with properties
+      """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "bank_denom":"uregen",
         "display_denom":"REGEN",
         "exponent":6
       }
-    """
-    When alice attempts to add a denom with properties
+      """
+      When alice attempts to add a denom with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
