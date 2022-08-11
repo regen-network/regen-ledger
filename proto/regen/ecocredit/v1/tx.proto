@@ -120,6 +120,7 @@ service Msg {
 }
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
+// Since Revision 1
 message MsgAddCreditType {
   // authority is the address of the governance account.
   string authority = 1;
