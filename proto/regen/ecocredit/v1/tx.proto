@@ -115,6 +115,7 @@ service Msg {
 
   // AddCreditType is a governance method that allows the addition of new 
   // credit types to the network.
+  // Since Revision 1
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 }
 
