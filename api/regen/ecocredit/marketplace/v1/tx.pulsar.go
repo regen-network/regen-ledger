@@ -7071,6 +7071,7 @@ func (*MsgBuyDirectResponse) Descriptor() ([]byte, []int) {
 }
 
 // MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+// Since Revision 1
 type MsgAddAllowedDenom struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -7138,6 +7139,7 @@ func (x *MsgAddAllowedDenom) GetExponent() uint32 {
 }
 
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+// Since Revision 1
 type MsgAddAllowedDenomResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

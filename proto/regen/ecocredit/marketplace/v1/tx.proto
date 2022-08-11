@@ -27,6 +27,7 @@ service Msg {
 
   // AddAllowedDenom is a governance method that allows the addition of
   // new allowed denom.
+  // Since Revision 1
   rpc AddAllowedDenom(MsgAddAllowedDenom) returns (MsgAddAllowedDenomResponse);
 }
 
@@ -162,6 +163,7 @@ message MsgBuyDirect {
 message MsgBuyDirectResponse {}
 
 // MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+// Since Revision 1
 message MsgAddAllowedDenom {
   // authority is the address of the governance account.
   string authority = 1;
@@ -180,4 +182,5 @@ message MsgAddAllowedDenom {
 }
 
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+// Since Revision 1
 message MsgAddAllowedDenomResponse {}

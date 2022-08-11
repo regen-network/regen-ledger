@@ -32,6 +32,7 @@ type MsgClient interface {
 	BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error)
 	// AddAllowedDenom is a governance method that allows the addition of
 	// new allowed denom.
+	// Since Revision 1
 	AddAllowedDenom(ctx context.Context, in *MsgAddAllowedDenom, opts ...grpc.CallOption) (*MsgAddAllowedDenomResponse, error)
 }
 
@@ -102,6 +103,7 @@ type MsgServer interface {
 	BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error)
 	// AddAllowedDenom is a governance method that allows the addition of
 	// new allowed denom.
+	// Since Revision 1
 	AddAllowedDenom(context.Context, *MsgAddAllowedDenom) (*MsgAddAllowedDenomResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

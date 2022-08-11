@@ -676,6 +676,7 @@ func (m *MsgBuyDirectResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgBuyDirectResponse proto.InternalMessageInfo
 
 // MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+// Since Revision 1
 type MsgAddAllowedDenom struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -752,6 +753,7 @@ func (m *MsgAddAllowedDenom) GetExponent() uint32 {
 }
 
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+// Since Revision 1
 type MsgAddAllowedDenomResponse struct {
 }
 
@@ -888,6 +890,7 @@ type MsgClient interface {
 	BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error)
 	// AddAllowedDenom is a governance method that allows the addition of
 	// new allowed denom.
+	// Since Revision 1
 	AddAllowedDenom(ctx context.Context, in *MsgAddAllowedDenom, opts ...grpc.CallOption) (*MsgAddAllowedDenomResponse, error)
 }
 
@@ -956,6 +959,7 @@ type MsgServer interface {
 	BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error)
 	// AddAllowedDenom is a governance method that allows the addition of
 	// new allowed denom.
+	// Since Revision 1
 	AddAllowedDenom(context.Context, *MsgAddAllowedDenom) (*MsgAddAllowedDenomResponse, error)
 }
 
