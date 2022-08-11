@@ -1,4 +1,8 @@
 lint:
+  rules:
+    # ignore max line length conflicting with proto-format
+    remove:
+      - MAX_LINE_LENGTH
   rules_option:
     # allow messages with empty struct and no newline
     indent:

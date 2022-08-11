@@ -57,9 +57,7 @@ func (s *IntegrationTestSuite) TestQueryBaskets() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/baskets?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/baskets?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				basketRoute,
 			),
@@ -150,9 +148,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/basket-balances/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/basket-balances/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				basketRoute,
 				s.basketDenom,

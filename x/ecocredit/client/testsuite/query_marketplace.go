@@ -84,8 +84,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 		{
 			name: "valid with pagination",
 			args: []string{
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 		},
@@ -147,8 +146,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySellerCmd() {
 			name: "valid with pagination",
 			args: []string{
 				s.val.Address.String(),
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 		},
@@ -210,8 +208,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchCmd() {
 			name: "valid with pagination",
 			args: []string{
 				s.batchDenom,
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 		},
@@ -266,8 +263,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenomsCmd() {
 		{
 			name: "valid with pagination",
 			args: []string{
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 		},
