@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### x/group
 
+#### Added
+
+- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add group module
+
 #### Removed
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module
