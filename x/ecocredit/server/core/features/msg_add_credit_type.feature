@@ -1,8 +1,7 @@
 Feature: Msg/AddCreditType
 
   A credit type can be added:
-  - when the credit type does not exists
-  - when the credit type exists
+  - when the credit type does not exist
   - when the authority is a governance account address
   - the credit type is added
 
