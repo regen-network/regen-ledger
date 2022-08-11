@@ -14,10 +14,10 @@ Feature: Msg/AddCreditType
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "credit_type":{
-          "name":"carbon",
           "abbreviation":"C",
-          "precision": 6,
-          "unit":"kg"
+          "name":"carbon",
+          "unit":"kg",
+          "precision": 6
         }
       }
       """
@@ -31,10 +31,10 @@ Feature: Msg/AddCreditType
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "credit_type":{
-          "name":"carbon",
           "abbreviation":"C",
-          "precision": 6,
-          "unit":"kg"
+          "name":"carbon",
+          "unit":"kg",
+          "precision": 6
         }
       }
       """
@@ -49,10 +49,10 @@ Feature: Msg/AddCreditType
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
         "credit_type":{
-          "name":"carbon",
           "abbreviation":"C",
-          "precision": 6,
-          "unit":"kg"
+          "name":"carbon",
+          "unit":"kg",
+          "precision": 6
         }
       }
       """
@@ -64,10 +64,10 @@ Feature: Msg/AddCreditType
       {
         "authority":"regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
         "credit_type":{
-          "name":"carbon",
           "abbreviation":"C",
-          "precision": 6,
-          "unit":"kg"
+          "name":"carbon",
+          "unit":"kg",
+          "precision": 6
         }
       }
       """
