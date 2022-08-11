@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
+
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
@@ -147,8 +148,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestorCmd() {
 			name: "valid with pagination",
 			args: []string{
 				s.addr1.String(),
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 		},

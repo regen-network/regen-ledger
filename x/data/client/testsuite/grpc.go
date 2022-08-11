@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -83,9 +84,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
 func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 	require := s.Require()
 
-	pgn := "pagination.countTotal=true"
-	// TODO: #1113
-	// pgn := pagination.limit=1&pagination.countTotal=true
+	pgn := "pagination.limit=1&pagination.countTotal=true"
 
 	testCases := []struct {
 		name string

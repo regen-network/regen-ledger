@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -123,9 +124,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
 			),
@@ -168,9 +167,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects-by-class/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
 				s.classId,
@@ -227,9 +224,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects-by-reference-id/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
 				s.projectReferenceId,
