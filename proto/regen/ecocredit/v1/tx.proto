@@ -130,6 +130,7 @@ message MsgAddCreditType {
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
+// Since Revision 1
 message MsgAddCreditTypeResponse {}
 
 // MsgCreateClass is the Msg/CreateClass request type.
