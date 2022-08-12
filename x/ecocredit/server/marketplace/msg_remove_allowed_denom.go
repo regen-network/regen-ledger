@@ -21,6 +21,8 @@ func (k Keeper) RemoveAllowedDenom(ctx context.Context, req *marketplace.MsgRemo
 		if ormerrors.NotFound.Is(err) {
 			return nil, sdkerrors.ErrNotFound.Wrapf("allowed denom %s not found", req.Denom)
 		}
+
+		return nil, err
 	}
 
 	if err := k.stateStore.AllowedDenomTable().Delete(ctx, allowedDenom); err != nil {
