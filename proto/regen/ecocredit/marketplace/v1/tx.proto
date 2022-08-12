@@ -23,6 +23,11 @@ service Msg {
 
   // BuyDirect purchases credits directly from the specified sell order.
   rpc BuyDirect(MsgBuyDirect) returns (MsgBuyDirectResponse);
+
+  // AddAllowedDenom is a governance method that allows the addition of
+  // new allowed denom.
+  // Since Revision 1
+  rpc AddAllowedDenom(MsgAddAllowedDenom) returns (MsgAddAllowedDenomResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -155,3 +160,26 @@ message MsgBuyDirect {
 
 // MsgBuyDirectResponse is the Msg/BuyDirect response type.
 message MsgBuyDirectResponse {}
+
+// MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+// Since Revision 1
+message MsgAddAllowedDenom {
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+  string bank_denom = 2;
+
+  // display_denom is the denom to display to the user and is informational.
+  // Because the denom is likely an IBC denom, this should be chosen by
+  // governance to represent the consensus trusted name of the denom.
+  string display_denom = 3;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 4;
+}
+
+// MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+// Since Revision 1
+message MsgAddAllowedDenomResponse {}

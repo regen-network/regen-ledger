@@ -329,6 +329,8 @@ func (m *OriginTx) GetNote() string {
 }
 
 // CreditTypeProposal is a gov Content type for adding a credit type.
+// Deprecated (Since Revision 1): This message is no longer used and will be removed
+// in the next version. See MsgAddCreditType.
 type CreditTypeProposal struct {
 	// title is the title of the proposal.
 	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`

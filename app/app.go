@@ -80,6 +80,10 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	"github.com/cosmos/cosmos-sdk/x/group"
+	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
+	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
+
 	"github.com/cosmos/ibc-go/v5/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
@@ -96,7 +100,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/regen-network/regen-ledger/v4/client/docs/statik"
@@ -137,6 +140,7 @@ var (
 			vesting.AppModuleBasic{},
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
+			groupmodule.AppModuleBasic{},
 			ecocreditmodule.Module{},
 			data.Module{},
 		}, setCustomModuleBasics()...)...,
@@ -199,6 +203,7 @@ type RegenApp struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
+	GroupKeeper      groupkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -245,7 +250,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, capabilitytypes.StoreKey, feegrant.StoreKey,
 			authzkeeper.StoreKey,
-			ibchost.StoreKey, ibctransfertypes.StoreKey,
+			ibchost.StoreKey, ibctransfertypes.StoreKey, group.StoreKey,
 		}, setCustomKVStoreKeys()...)...,
 	)
 
@@ -360,6 +365,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 	app.AuthzKeeper = authzKeeper
 
+	groupConfig := group.DefaultConfig()
+	app.GroupKeeper = groupkeeper.NewKeeper(keys[group.StoreKey], appCodec, app.MsgServiceRouter(), app.AccountKeeper, groupConfig)
+
 	// register custom modules here
 	app.smm = setCustomModules(app, interfaceRegistry)
 	ecocreditModule := ecocreditmodule.NewModule(
@@ -379,8 +387,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		panic(err)
 	}
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
-
-	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewProposalHandler(ecocreditModule.Keeper))
 
 	govConfig := govtypes.DefaultConfig()
 	app.GovKeeper = govkeeper.NewKeeper(
@@ -415,6 +421,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			ibc.NewAppModule(app.IBCKeeper),
 			params.NewAppModule(app.ParamsKeeper),
 			transferModule,
+			groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		}, app.setCustomModuleManager()...)...,
 	)
 
@@ -441,6 +448,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			feegrant.ModuleName,
 			paramstypes.ModuleName,
 			vestingtypes.ModuleName,
+			group.ModuleName,
 
 			// ibc modules
 			ibchost.ModuleName,
@@ -465,6 +473,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			paramstypes.ModuleName,
 			upgradetypes.ModuleName,
 			vestingtypes.ModuleName,
+			group.ModuleName,
 
 			// ibc modules
 			ibchost.ModuleName,
@@ -494,6 +503,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			vestingtypes.ModuleName,
 			paramstypes.ModuleName,
 			upgradetypes.ModuleName,
+			group.ModuleName,
 
 			// ibc modules
 			ibctransfertypes.ModuleName,

@@ -2,15 +2,15 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
-import "gogoproto/gogo.proto";
 import "regen/ecocredit/marketplace/v1/state.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
 // AllowDenomProposal is a gov Content type for approving a denom for use in the
 // marketplace.
+// Deprecated (Since Revision 1): This message is no longer used and will be removed
+// in the next version. See MsgAddAllowedDenom.
 message AllowDenomProposal {
-  option (gogoproto.goproto_stringer) = false;
 
   // title is the title of the proposal.
   string title = 1;
