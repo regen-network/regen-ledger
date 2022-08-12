@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### API Breaking Changes
 
-- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires a `authority` address.
+- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Removed `AllowedDenom` proposal handler.
 
 #### Added
