@@ -51,6 +51,7 @@ func NewModule(
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
+	authority sdk.AccAddress,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
@@ -60,6 +61,7 @@ func NewModule(
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
+		authority:     authority,
 	}
 }
 
