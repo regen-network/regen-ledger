@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
-import "gogoproto/gogo.proto";
 import "regen/ecocredit/marketplace/v1/state.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
