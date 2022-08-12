@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -18,7 +19,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
@@ -37,37 +37,15 @@ func setup(t *testing.T) baseSuite {
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	accountKeeper.EXPECT().GetModuleAddress(ecocredit.ModuleName).Return(sdk.AccAddress{}).Times(1)
 	accountKeeper.EXPECT().GetModuleAddress(basket.BasketSubModuleName).Return(sdk.AccAddress{}).Times(1)
-	s.server = newServer(storeKey, paramtypes.Subspace{}, accountKeeper, bankKeeper)
+	s.server = newServer(storeKey, paramtypes.Subspace{}, accountKeeper, bankKeeper, sdk.AccAddress(""))
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
-	cms.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
+	cms.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	return s
-}
-
-func TestProposal_CreditType(t *testing.T) {
-	t.Parallel()
-	s := setup(t)
-	handler := NewProposalHandler(s.server)
-	creditTypeProposal := core.CreditTypeProposal{
-		Title:       "carbon type",
-		Description: "i would like to add a carbon type",
-		CreditType: &core.CreditType{
-			Abbreviation: "FOO",
-			Name:         "FOOBAR",
-			Unit:         "metric ton c02 equivalent",
-			Precision:    6,
-		},
-	}
-	err := handler(s.sdkCtx, &creditTypeProposal)
-	assert.NilError(t, err)
-	res, err := s.server.coreKeeper.CreditTypes(s.ctx, &core.QueryCreditTypesRequest{})
-	assert.NilError(t, err)
-	assert.Check(t, len(res.CreditTypes) == 1)
-	assert.DeepEqual(t, creditTypeProposal.CreditType, res.CreditTypes[0])
 }
 
 func TestProposal_AllowedDenom(t *testing.T) {

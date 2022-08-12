@@ -43,6 +43,7 @@ type Module struct {
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
 	Keeper        server.Keeper
+	authority     sdk.AccAddress
 }
 
 // NewModule returns a new Module object.
@@ -50,6 +51,7 @@ func NewModule(
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
+	authority sdk.AccAddress,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
@@ -59,6 +61,7 @@ func NewModule(
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
+		authority:     authority,
 	}
 }
 
@@ -79,7 +82,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
+	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
 }
 
 //nolint:errcheck

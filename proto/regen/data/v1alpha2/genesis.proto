@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package regen.data.v1alpha2;
 
-import "regen/data/v1alpha2/types.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/data/v1alpha2/types.proto";
 
 // GenesisState is the genesis state
 message GenesisState {

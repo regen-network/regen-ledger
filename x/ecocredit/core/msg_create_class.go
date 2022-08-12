@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -52,12 +52,8 @@ func (m *MsgCreateClass) ValidateBasic() error {
 		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", MaxMetadataLength)
 	}
 
-	if m.CreditTypeAbbrev == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("credit type abbreviation cannot be empty")
-	}
-
 	if err := ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if m.Fee != nil {

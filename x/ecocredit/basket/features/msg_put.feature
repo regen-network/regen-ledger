@@ -79,7 +79,7 @@ Feature: MsgPut
     }
     """
     When the message is validated
-    Then expect the error "credit batch denom cannot be empty: invalid request"
+    Then expect the error "batch denom cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if a credit batch denom is not formatted
     Given the message

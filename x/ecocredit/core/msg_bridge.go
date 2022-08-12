@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 	"github.com/regen-network/regen-ledger/types/eth"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -53,12 +53,8 @@ func (m *MsgBridge) ValidateBasic() error {
 	for i, credit := range m.Credits {
 		creditIndex := fmt.Sprintf("credits[%d]", i)
 
-		if credit.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom cannot be empty", creditIndex)
-		}
-
 		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
-			return sdkerrors.Wrapf(err, "%s", creditIndex)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: %s", creditIndex, err.Error())
 		}
 
 		if credit.Amount == "" {

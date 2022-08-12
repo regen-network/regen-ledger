@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -604,8 +605,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 			name: "valid within pagination",
 			args: []string{
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 			},
 		},
 	}
@@ -666,8 +666,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 			args: []string{
 				s.classId,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 			},
 		},
 	}

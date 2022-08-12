@@ -232,7 +232,6 @@ module.exports = {
               '/commands/regen_tendermint',
               '/commands/regen_testnet',
               '/commands/regen_tx',
-              '/commands/regen_unsafe-reset-all',
               '/commands/regen_validate-genesis',
               '/commands/regen_version',
           ]

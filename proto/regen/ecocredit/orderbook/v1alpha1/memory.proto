@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package regen.ecocredit.orderbook.v1alpha1;
 
-import "google/protobuf/timestamp.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/orderbook";
 

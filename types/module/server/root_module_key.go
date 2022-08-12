@@ -6,13 +6,14 @@ import (
 
 	"github.com/regen-network/regen-ledger/types"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 )
 
 type RootModuleKey interface {
 	ModuleKey
-	sdk.StoreKey
+	storetypes.StoreKey
 	Derive(path []byte) DerivedModuleKey
 }
 

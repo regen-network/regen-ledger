@@ -1,31 +1,67 @@
 name: Lint
-# Lint runs golangci-lint over the entire regen-ledger repository
-# This workflow is run on every pull request and push to master
-# The `golangci` will pass without running if no *.{go, mod, sum} files have been changed.
+# Lint runs golangci-lint, protolint, and buf-lint on every pull request
+# with get diff action, allowing for lint checks to be required but only
+# run when either go files or proto files have been modified.
 on:
   pull_request:
   push:
     branches:
       - master
+      - release/v*
+
 jobs:
   golangci:
-    name: golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-      - uses: technote-space/get-diff-action@v6.0.1
-        id: git_diff
+      - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
           args: --out-format=tab
           skip-go-installation: true
+        if: env.GIT_DIFF
+
+  buf-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.proto
+      - uses: bufbuild/buf-setup-action@v1
+        if: env.GIT_DIFF
+      - uses: bufbuild/buf-lint-action@v1
+        with:
+          input: 'proto'
+        if: env.GIT_DIFF
+
+  protolint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.proto
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - name: protolint
+        run: |
+          go install github.com/yoheimuta/protolint/cmd/protolint@latest
+          protolint .
         if: env.GIT_DIFF

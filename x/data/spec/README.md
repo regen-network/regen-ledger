@@ -1,7 +1,7 @@
 # Data Module
 
-::: tip Coming Soon
-The first version of the data module will be available in Regen Ledger v4.0.
+::: tip Now Available
+The first version of the data module was made available in Regen Ledger v4.0.
 :::
 
 The following documentation provides a technical overview of the data module and is designed for developers building tools and services that interact with Regen Ledger.

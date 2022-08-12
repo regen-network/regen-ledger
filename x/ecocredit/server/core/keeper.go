@@ -16,6 +16,10 @@ type Keeper struct {
 	bankKeeper    ecocredit.BankKeeper
 	paramsKeeper  ecocredit.ParamKeeper
 	moduleAddress sdk.AccAddress
+
+	// the address capable of executing ecocredit params messages. Typically, this
+	// should be the x/gov module account.
+	authority sdk.AccAddress
 }
 
 func NewKeeper(
@@ -23,11 +27,13 @@ func NewKeeper(
 	bk ecocredit.BankKeeper,
 	pk ecocredit.ParamKeeper,
 	ma sdk.AccAddress,
+	authority sdk.AccAddress,
 ) Keeper {
 	return Keeper{
 		stateStore:    ss,
 		bankKeeper:    bk,
 		paramsKeeper:  pk,
 		moduleAddress: ma,
+		authority:     authority,
 	}
 }
