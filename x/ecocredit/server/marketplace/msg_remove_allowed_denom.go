@@ -3,9 +3,10 @@ package marketplace
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -15,9 +16,14 @@ func (k Keeper) RemoveAllowedDenom(ctx context.Context, req *marketplace.MsgRemo
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	if err := k.stateStore.AllowedDenomTable().Delete(ctx, &marketplacev1.AllowedDenom{
-		BankDenom: req.Denom,
-	}); err != nil {
+	allowedDenom, err := k.stateStore.AllowedDenomTable().Get(ctx, req.Denom)
+	if err != nil {
+		if ormerrors.NotFound.Is(err) {
+			return nil, sdkerrors.ErrNotFound.Wrapf("allowed denom %s not found", req.Denom)
+		}
+	}
+
+	if err := k.stateStore.AllowedDenomTable().Delete(ctx, allowedDenom); err != nil {
 		return nil, err
 	}
 
