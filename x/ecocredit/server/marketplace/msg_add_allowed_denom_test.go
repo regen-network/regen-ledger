@@ -16,7 +16,7 @@ type addAllowedDenomSuite struct {
 	err error
 }
 
-func TestAddCreditType(t *testing.T) {
+func TestAddAllowedDenom(t *testing.T) {
 	gocuke.NewRunner(t, &addAllowedDenomSuite{}).Path("./features/msg_add_allowed_denom.feature").Run()
 }
 
