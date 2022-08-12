@@ -33,7 +33,7 @@ Feature: Msg/AddAllowedDenom
 
   Rule: The allowed denom does not exists
 
-    Scenario: The allowed denom does not exists
+    Scenario: The allowed denom does not exist
       When alice attempts to add a denom with properties
       """
       {
