@@ -1,4 +1,4 @@
-# Regen Ledger Specification
+# Regen Ledger
 
 ## Overview
 

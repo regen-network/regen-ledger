@@ -1,9 +1,9 @@
-# RFC-001: Ecosystem Service Credit Module
+# RFC-001: Ecocredit Module
 
 - Created: 2020-02-27
 - Status: __ACCEPTED__
 - Superseded By: N/A
-- RFC PR: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
+- RFC PR: [#107](https://github.com/regen-network/regen-ledger/pull/107)
 - Authors: Cory Levinson (@clevinson), Aaron Craelius (@aaronc)
 
 ### Table of Contents

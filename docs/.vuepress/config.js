@@ -58,7 +58,7 @@ module.exports = {
     docsDir: 'docs',
     nav: [
       {
-        text: 'Regen Ledger',
+        text: 'Overview',
         link: '/ledger/',
       },
       {
@@ -76,6 +76,10 @@ module.exports = {
       {
         text: 'Tutorials',
         link: '/tutorials/',
+      },
+      {
+        text: 'Specifications',
+        link: '/specs/',
       },
     ],
     sidebar: {
@@ -268,15 +272,33 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 0,
           children: [
-            '/specs/rfcs/',
+            {
+              title: 'Overview',
+              path: '/specs/',
+            },
+            '/specs/regen-ledger',
           ],
         },
         {
           title: 'RFCs',
           collapsable: false,
           children: [
-            '/specs/rfcs/001-ecosystem-service-credit-module',
-            '/specs/rfcs/002-baskets-specification',
+            {
+              title: 'RFC Overview',
+              path: '/specs/rfcs/',
+            },
+            '/specs/rfcs/001-ecocredit-module/',
+            '/specs/rfcs/002-basket-functionality/',
+          ],
+        },
+        {
+          title: 'ADRs',
+          collapsable: false,
+          children: [
+            {
+              title: 'ADR Overview',
+              path: '/specs/adrs/',
+            },
           ],
         },
       ],

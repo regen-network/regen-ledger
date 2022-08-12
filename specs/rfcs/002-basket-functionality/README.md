@@ -1,9 +1,9 @@
-# RFC-002: Baskets Specification
+# RFC-002: Basket Functionality
 
 - Created: 2021-12-03
 - Status: __ACCEPTED__
 - Superseded By: N/A
-- RFC PR: [regen-ledger#681](https://github.com/regen-network/regen-ledger/pull/681)
+- RFC PR: [#681](https://github.com/regen-network/regen-ledger/pull/681)
 - Authors: Darren Kong (@dtkong), Cory Levinson (@clevinson)
 
 ### Table of Contents
@@ -50,7 +50,7 @@ credits within the specific batch they were issued in.
 
 #### Credit Class & Batch Hierarchy (Fig. 1)
 
-![](./media/002-fig-1.jpg)
+![](media/002-fig-1.jpg)
 
 ## Need
 
@@ -122,11 +122,11 @@ An ecocredit holder has the ability to retire, transfer, or hold their ecocredit
 
 #### Ecocredit Basket Depositing (Fig. 2)
 
-![](./media/002-fig-2.jpg)
+![](media/002-fig-2.jpg)
 
 #### Ecocredit Basket Redemption (Fig. 3)
 
-![](./media/002-fig-3.jpg)
+![](media/002-fig-3.jpg)
 
 ## Prior Art
 
