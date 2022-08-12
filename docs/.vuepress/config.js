@@ -141,6 +141,7 @@ module.exports = {
             '/modules/ecocredit/05_events',
             '/modules/ecocredit/06_types',
             '/modules/ecocredit/07_client',
+            '/modules/ecocredit/features/',
           ],
         },
         {
@@ -159,6 +160,7 @@ module.exports = {
             '/modules/data/05_events',
             '/modules/data/06_types',
             '/modules/data/07_client',
+            '/modules/data/features/',
           ],
         },
       ],
@@ -179,9 +181,11 @@ module.exports = {
           children: [
             '/validators/get-started/',
             '/validators/get-started/install-regen',
-            '/validators/get-started/install-cosmovisor',
-            '/validators/get-started/run-a-full-node',
+            '/validators/get-started/initialize-node',
             '/validators/get-started/create-a-validator',
+            '/validators/get-started/using-quickstart',
+            '/validators/get-started/using-state-sync',
+            '/validators/get-started/using-cosmovisor',
           ]
         },
         {
@@ -191,6 +195,7 @@ module.exports = {
             '/validators/upgrades/',
             '/validators/upgrades/v2.0-upgrade',
             '/validators/upgrades/v3.0-upgrade',
+            '/validators/upgrades/v4.0-upgrade',
           ],
         },
       ],
