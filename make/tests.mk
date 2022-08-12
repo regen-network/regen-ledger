@@ -17,13 +17,6 @@ AMINO_TEST_ARGS		= ledger test_ledger_mock test_amino norace
 LEDGER_TEST_ARGS	= cgo ledger norace
 LEDGER_MOCK_ARGS	= ledger test_ledger_mock norace
 TEST_RACE_ARGS		= cgo ledger test_ledger_mock
-ifeq ($(EXPERIMENTAL),true)
-	UNIT_TEST_ARGS		+= experimental
-	AMINO_TEST_ARGS		+= experimental
-	LEDGER_TEST_ARGS	+= experimental
-	LEDGER_MOCK_ARGS	+= experimental
-	TEST_RACE_ARGS		+= experimental
-endif
 
 test: test-unit
 

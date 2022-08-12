@@ -8,11 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func RegisterTypes(registry codectypes.InterfaceRegistry) {
-	registry.RegisterImplementations((*govv1beta1.Content)(nil), &AllowDenomProposal{})
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
@@ -21,6 +19,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSell{}, "regen.marketplace/MsgSell", nil)
 	cdc.RegisterConcrete(&MsgCancelSellOrder{}, "regen.marketplace/MsgCancelSellOrder", nil)
 	cdc.RegisterConcrete(&MsgUpdateSellOrders{}, "regen.marketplace/MsgUpdateSellOrders", nil)
+	cdc.RegisterConcrete(&MsgAddAllowedDenom{}, "regen.marketplace/MsgAddAllowedDenom", nil)
 }
 
 var (

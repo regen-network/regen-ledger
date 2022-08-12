@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### app
 
+### x/ecocredit
+
+#### API Breaking Changes
+
+- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
+- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Removed `AllowedDenom` proposal handler.
+
+#### Added
+
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1342) `AddAllowedDenom` is added for msg-based gov proposal.
+
+
 #### Removed
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
