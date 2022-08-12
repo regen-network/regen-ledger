@@ -20,6 +20,10 @@ service Msg {
   // Take takes credits from a basket starting from the oldest
   // credits first.
   rpc Take(MsgTake) returns (MsgTakeResponse);
+
+  // UpdateClassFee is a governance method that allows for updation of fees to be
+  // used for the basket creation fee.
+  rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
@@ -150,3 +154,15 @@ message MsgTakeResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
+
+// MsgUpdateBasketFee is the Msg/UpdateBasketFee request type.
+message MsgUpdateBasketFee {
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // basket_fee defines a list of coins fees that can be used in the basket creation fee.
+  repeated cosmos.base.v1beta1.Coin basket_fee = 2;
+}
+
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+message MsgUpdateBasketFeeResponse {}

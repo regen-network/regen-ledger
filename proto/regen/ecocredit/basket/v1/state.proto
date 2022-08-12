@@ -4,6 +4,7 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
@@ -102,4 +103,18 @@ message BasketBalance {
   // batch_start_date is the start date of the batch. This field is used
   // to create an index which is used to remove the oldest credits first.
   google.protobuf.Timestamp batch_start_date = 4;
+}
+
+// BasketFee is a valid coin denom and amount that may be used as the fee
+// for basket creation.
+message BasketFee {
+  // This table is controlled via governance.
+  option (cosmos.orm.v1alpha1.singleton) = {
+    id : 4
+  };
+
+  // fee is a list of basket creation fees accepted when creating a
+  // basket. Any fee listed is accepted and charged to the basket creator when
+  // creating a basket.
+  repeated cosmos.base.v1beta1.Coin fee = 1;
 }
