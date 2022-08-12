@@ -15,6 +15,6 @@ See [RFC Overview](./rfcs) for more information.
 
 ## ADR
 
-Architecture decisions are made during the development process by contributors while fixing bugs, implementing features, or making other improvements and recorded for reference.
+Architecture decisions are made during the development process while fixing bugs, implementing features, or making other improvements and are recorded for reference.
 
 See [ADR Overview](./adrs) for more information.

@@ -164,5 +164,5 @@ Another design decision made in this proposal was to only implement two possible
 ## References
 
 1. [RFC: Ecosystem Service Credit Module](https://docs.google.com/document/d/1-CRfpZgPxiaZB4nhMwKKkeWbLDI5dYc0hmGwnGkCHP4)
-2. https://github.com/regen-network/regen-ledger/pull/67/files#diff-68348df3fa3097a94a14436af03aab22
-3. https://github.com/regen-network/regen-ledger/pull/102/files#diff-6fd37b2fd19e0fae88459fdc5025921f
+2. [initial Go specification on GitHub](https://github.com/regen-network/regen-ledger/pull/67/files#diff-68348df3fa3097a94a14436af03aab22)
+3. [initial Protobuf specification on GitHub](https://github.com/regen-network/regen-ledger/pull/102/files#diff-6fd37b2fd19e0fae88459fdc5025921f)

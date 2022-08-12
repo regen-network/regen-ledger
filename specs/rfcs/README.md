@@ -10,12 +10,6 @@ features that have a reasonable amount of architectural complexity, RFCs
 are encouraged as a mechanism for aligning on a technical approach to a given
 set of requirements.
 
-...
-
-RIP-1 is a highly recommended resource for prospective authors, which outlines...
-
-The author is responsible for building engagement and gaining critical feedback in the community.
-
 ## RFC Creation Process
 
 RFCs should be copied from the [RFC Template](000-template.md) and have sections

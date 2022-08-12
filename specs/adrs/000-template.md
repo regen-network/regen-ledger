@@ -3,44 +3,53 @@
 - Created: YYYY-MM-DD
 - Status: __DRAFT__ | __IN REVIEW__ | __ACCEPTED__ | __REJECTED__ | __SUPERSEDED__ | __ABANDONED__
 - Superseded By:
-- RFC PR: [#]()
+- ADR PR: [#]()
 - Authors:
 
 ### Table of Contents
 
 - [Summary](#summary)
-- [Need](#need)
-- [Approach](#approach)
-- [Rationale](#rationale)
+- [Context](#context)
+- [Decision](#decision)
+- [Consequences](#consequences)
 - [References](#references)
-- [History](#history)
-- [Copyright](#copyright)
+- [Changelog](#changelog)
 
 ## Summary
 
-Brief explanation of what the RFC attempts to address.
+Brief explanation of what the ADR attempts to address.
 
-## Need
+## Context
 
-What's the identified need? A need should relate to an important and specific opportunity or use case.
+What's the context? What's the issue? What led to this decision? 
 
-## Approach
+## Decision
 
-The recommended approach to fulfill the needs presented in the previous section.
+The decision on how to address the need or issue presented in the previous section.
 
-## Rationale
+## Consequences
 
-Include an overview of what tradeoffs exist when taking this approach, what benefits come from it, and/or what alternatives were considered.
+What becomes easier or more difficult to do because of this change?
+
+### Positive
+
+What are the positive consequences?
+
+### Negative
+
+What are the negative consequences?
+
+### Neutral
+
+What are the neutral consequences?
 
 ## References
+
+What are the issues that led to this decision and the issues that this decision will address?
 
 1. ..
 2. ..
 
-## History
+## Changelog
 
-An RFC should include a history section, listing any inspiring documents and a plaintext log of significant changes.
-
-## Copyright
-
-An RFC should include a copyright section waiving rights via [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+An ADR should include a changelog, providing a record of any significant changes.

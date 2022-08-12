@@ -58,7 +58,7 @@ module.exports = {
     docsDir: 'docs',
     nav: [
       {
-        text: 'Overview',
+        text: 'Regen Ledger',
         link: '/ledger/',
       },
       {
@@ -77,10 +77,11 @@ module.exports = {
         text: 'Tutorials',
         link: '/tutorials/',
       },
-      {
-        text: 'Specifications',
-        link: '/specs/',
-      },
+      // TODO: add to navigation when specs are up-to-date
+      // {
+      //   text: 'Specifications',
+      //   link: '/specs/',
+      // },
     ],
     sidebar: {
       '/ledger/': [

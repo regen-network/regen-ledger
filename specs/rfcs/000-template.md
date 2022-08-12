@@ -13,8 +13,7 @@
 - [Approach](#approach)
 - [Rationale](#rationale)
 - [References](#references)
-- [History](#history)
-- [Copyright](#copyright)
+- [Changelog](#changelog)
 
 ## Summary
 
@@ -37,10 +36,6 @@ Include an overview of what tradeoffs exist when taking this approach, what bene
 1. ..
 2. ..
 
-## History
+## Changelog
 
-An RFC should include a history section, listing any inspiring documents and a plaintext log of significant changes.
-
-## Copyright
-
-An RFC should include a copyright section waiving rights via [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+An RFC should include a changelog, providing a record of any significant changes.

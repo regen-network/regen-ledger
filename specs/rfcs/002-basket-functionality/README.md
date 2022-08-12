@@ -9,7 +9,7 @@
 ### Table of Contents
 
 - [Background](#background)
-- [Need](#need)
+- [Use Case](#use-case)
 - [Approach](#approach)
 - [Prior Art](#prior-art)
 - [References](#references)
@@ -52,7 +52,7 @@ credits within the specific batch they were issued in.
 
 ![](media/002-fig-1.jpg)
 
-## Need
+## Use Case
 
 When bringing ecocredits to market (e.g. offering them for sale on a decentralized exchange or to a potential buyer), there are a few issues we need to overcome:
 - A buyer may want to purchase more ecocredits than is issued in any one batch
