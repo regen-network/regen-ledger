@@ -65,7 +65,8 @@ func setupBase(t *testing.T) *baseSuite {
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
+	_, _, authorityAddress := testdata.KeyTestPubAddr()
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authorityAddress)
 
 	return s
 }

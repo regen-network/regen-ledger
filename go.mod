@@ -50,9 +50,9 @@ require (
 	github.com/confio/ics23/go v0.7.0 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
-	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5 // indirect
-	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.3 // indirect
-	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11 // indirect
+	github.com/cosmos/cosmos-sdk/api v0.1.0 // indirect
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.0 // indirect

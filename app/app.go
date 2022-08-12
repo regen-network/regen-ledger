@@ -80,6 +80,10 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	"github.com/cosmos/cosmos-sdk/x/group"
+	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
+	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
+
 	"github.com/cosmos/ibc-go/v5/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
@@ -137,6 +141,7 @@ var (
 			vesting.AppModuleBasic{},
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
+			groupmodule.AppModuleBasic{},
 			ecocreditmodule.Module{},
 			data.Module{},
 		}, setCustomModuleBasics()...)...,
@@ -199,6 +204,7 @@ type RegenApp struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
+	GroupKeeper      groupkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -245,7 +251,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, capabilitytypes.StoreKey, feegrant.StoreKey,
 			authzkeeper.StoreKey,
-			ibchost.StoreKey, ibctransfertypes.StoreKey,
+			ibchost.StoreKey, ibctransfertypes.StoreKey, group.StoreKey,
 		}, setCustomKVStoreKeys()...)...,
 	)
 
@@ -360,12 +366,16 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 	app.AuthzKeeper = authzKeeper
 
+	groupConfig := group.DefaultConfig()
+	app.GroupKeeper = groupkeeper.NewKeeper(keys[group.StoreKey], appCodec, app.MsgServiceRouter(), app.AccountKeeper, groupConfig)
+
 	// register custom modules here
 	app.smm = setCustomModules(app, interfaceRegistry)
 	ecocreditModule := ecocreditmodule.NewModule(
 		app.GetSubspace(ecocredit.DefaultParamspace),
 		app.AccountKeeper,
 		app.BankKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
 	)
 	dataModule := data.NewModule(app.AccountKeeper, app.BankKeeper)
 	newModules := []moduletypes.Module{ecocreditModule, dataModule}
@@ -414,6 +424,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			ibc.NewAppModule(app.IBCKeeper),
 			params.NewAppModule(app.ParamsKeeper),
 			transferModule,
+			groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		}, app.setCustomModuleManager()...)...,
 	)
 
@@ -440,6 +451,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			feegrant.ModuleName,
 			paramstypes.ModuleName,
 			vestingtypes.ModuleName,
+			group.ModuleName,
 
 			// ibc modules
 			ibchost.ModuleName,
@@ -464,6 +476,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			paramstypes.ModuleName,
 			upgradetypes.ModuleName,
 			vestingtypes.ModuleName,
+			group.ModuleName,
 
 			// ibc modules
 			ibchost.ModuleName,
@@ -493,6 +506,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			vestingtypes.ModuleName,
 			paramstypes.ModuleName,
 			upgradetypes.ModuleName,
+			group.ModuleName,
 
 			// ibc modules
 			ibctransfertypes.ModuleName,
@@ -524,7 +538,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
-			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
+			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, authtypes.NewModuleAddress(govtypes.ModuleName)),
 			data.NewModule(app.AccountKeeper, app.BankKeeper),
 		}, app.setCustomSimulationManager()...)...,
 	)

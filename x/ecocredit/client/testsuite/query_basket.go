@@ -85,8 +85,7 @@ func (s *IntegrationTestSuite) TestQueryBasketsCmd() {
 		{
 			name: "valid with pagination",
 			args: []string{
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 		},
@@ -198,8 +197,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 			name: "valid with pagination",
 			args: []string{
 				s.basketDenom,
-				// TODO: #1113
-				// fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 		},

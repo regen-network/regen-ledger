@@ -5,8 +5,7 @@ package regen.ecocredit.marketplace.v1;
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package =
-  "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
 // SellOrder represents the information for a sell order.
 message SellOrder {
