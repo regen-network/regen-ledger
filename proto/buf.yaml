@@ -21,4 +21,4 @@ lint:
     - SERVICE_SUFFIX
     - RPC_REQUEST_STANDARD_NAME
   ignore:
-    - cosmos/msg/v1/msg.proto
+    - proto/cosmos/msg/v1/msg.proto
