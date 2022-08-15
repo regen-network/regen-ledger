@@ -2,11 +2,11 @@
 
 set -eo pipefail
 
-SWAGGER_DIR=./client/docs
+SWAGGER_DIR=./app/client/docs
 SWAGGER_UI_DIR=${SWAGGER_DIR}/swagger-ui
 
 SDK_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/cosmos-sdk)
-IBC_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/ibc-go/v2)
+IBC_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/ibc-go/v5)
 
 SDK_RAW_URL=https://raw.githubusercontent.com/cosmos/cosmos-sdk/${SDK_VERSION}/client/docs/swagger-ui/swagger.yaml
 IBC_RAW_URL=https://raw.githubusercontent.com/cosmos/ibc-go/${IBC_VERSION}/docs/client/swagger-ui/swagger.yaml
@@ -61,7 +61,7 @@ statik -src=${SWAGGER_DIR}/swagger-ui -dest=${SWAGGER_DIR} -f -m
 
 # log whether or not the swagger directory was updated
 if [ -n "$(git status ${SWAGGER_DIR} --porcelain)" ]; then
-  echo "\033[91mSwagger updated\033[0m"
+  echo "Swagger statik file updated"
 else
-  echo "\033[92mSwagger in sync\033[0m"
+  echo "Swagger statik file already in sync"
 fi

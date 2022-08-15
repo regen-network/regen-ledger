@@ -1,0 +1,58 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Regen Ledger - REST and gRPC Gateway Documentation",
+        "description": "Documentation describing REST and gRPC endpoints for state queries and broadcasting transactions.",
+        "version": "v4.0.0"
+    },
+    "apis": [
+        {
+            "url": "./app/client/docs/regen/data/v1/query.swagger.json"
+        },
+        {
+            "url": "./app/client/docs/regen/ecocredit/v1/query.swagger.json",
+            "operationIds": {
+                "rename": {
+                  "Balance": "Ecocredit/Balance",
+                  "Params": "Ecocredit/Params"
+                }
+              }
+        },
+        {
+            "url": "./app/client/docs/regen/ecocredit/basket/v1/query.swagger.json"
+        },
+        {
+            "url": "./app/client/docs/regen/ecocredit/marketplace/v1/query.swagger.json"
+        },
+        {
+            "url": "./app/client/docs/regen/group/v1alpha1/query.swagger.json",
+            "operationIds": {
+                "rename": {
+                  "Proposal": "Group/Proposal"
+                }
+              }
+        },
+        {
+            "url": "./app/client/docs/swagger-sdk.yaml",
+            "dereference": {
+                "circular": "ignore"
+            },
+            "tags": {
+                "rename": {
+                "Gaia REST": "Tendermint RPC"
+                }
+            },
+            "operationIds": {
+                "rename": {
+                  "UpgradedConsensusState": "sdk/UpgradedConsensusState"
+                }
+              }
+        },
+        {
+            "url": "./app/client/docs/swagger-ibc.yaml",
+            "dereference": {
+                "circular": "ignore"
+            }
+        }
+    ]
+}
