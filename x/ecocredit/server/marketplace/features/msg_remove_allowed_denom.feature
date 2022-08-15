@@ -37,7 +37,7 @@ Feature: Msg/RemoveAllowedDenom
       """
       Then expect error contains "expected gov account as only signer for proposal message"
 
-  Rule: The bank denom exist
+  Rule: The bank denom exists
 
     Scenario: The bank denom exists
       Given an allowed denom with properties
