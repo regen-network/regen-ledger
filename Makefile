@@ -3,7 +3,7 @@
 export GO111MODULE=on
 
 BUILD_DIR ?= $(CURDIR)/build
-REGEN_DIR := $(CURDIR)/app/regen
+REGEN_CMD := $(CURDIR)/cmd/regen
 
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
@@ -133,11 +133,11 @@ endif
 all: build
 
 install: go.sum go-version
-	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
+	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_CMD)
 
 build: go.sum go-version
 	@mkdir -p $(BUILD_DIR)
-	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_DIR)
+	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_CMD)
 
 build-linux:
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build

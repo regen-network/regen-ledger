@@ -5,12 +5,12 @@ import (
 
 	"github.com/spf13/cobra/doc"
 
-	cmd "github.com/regen-network/regen-ledger/v4/app/regen/cmd"
+	"github.com/regen-network/regen-ledger/v4/app/client/cli"
 )
 
 // generate documentation for all regen app commands
 func main() {
-	rootCmd, _ := cmd.NewRootCmd()
+	rootCmd, _ := cli.NewRootCmd()
 	err := doc.GenMarkdownTree(rootCmd, "commands")
 	if err != nil {
 		log.Fatal(err)
