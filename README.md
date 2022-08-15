@@ -101,12 +101,6 @@ Build the regen binary:
 make build
 ```
 
-Run a local test network:
-
-```
-./build/regen testnet start
-```
-
 View the available commands:
 
 ```
