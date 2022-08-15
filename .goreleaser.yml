@@ -6,7 +6,7 @@ env:
 builds:
   - id: regen-darwin-amd64
     binary: regen
-    main: ./app/regen
+    main: ./cmd/regen
     goarch:
       - amd64
     goos:
@@ -30,7 +30,7 @@ builds:
 
   - id: regen-darwin-arm64
     binary: regen
-    main: ./app/regen
+    main: ./cmd/regen
     goarch:
       - arm64
     goos:
@@ -51,7 +51,7 @@ builds:
 
   - id: regen-linux-amd64
     binary: regen
-    main: ./app/regen
+    main: ./cmd/regen
     env:
       - CGO_ENABLED=1
       - CC=x86_64-linux-gnu-gcc
@@ -74,7 +74,7 @@ builds:
 
   - id: regen-linux-arm64
     binary: regen
-    main: ./app/regen
+    main: ./cmd/regen
     goarch:
       - arm64
     goos:
@@ -93,7 +93,7 @@ builds:
 
   - id: regen-windows-amd64
     binary: regen
-    main: ./app/regen
+    main: ./cmd/regen
     env:
       - CGO_ENABLED=1
       - CC=x86_64-w64-mingw32-gcc
