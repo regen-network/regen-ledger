@@ -1,14 +1,20 @@
-RFC-002: Baskets Specification
-==============================
+# RFC-002: Basket Functionality
 
-- Created: Fri Dec 3, 2021
+- Created: 2021-12-03
 - Status: __ACCEPTED__
 - Superseded By: N/A
-- RFC PR: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/681)
-- Original document: [google doc](https://docs.google.com/document/d/1YCmaQCI5ghll9IfMDAIPjImVPZpT7iZ7QpdVPVi-V5o/edit#)
-- Authors: Darren Kong, Cory Levinson
+- RFC PR: [#681](https://github.com/regen-network/regen-ledger/pull/681)
+- Authors: Darren Kong (@dtkong), Cory Levinson (@clevinson)
 
-# Background
+### Table of Contents
+
+- [Background](#background)
+- [Use Case](#use-case)
+- [Approach](#approach)
+- [Prior Art](#prior-art)
+- [References](#references)
+
+## Background
 
 ### Ecocredit Module
 
@@ -38,15 +44,15 @@ discretion of credit issuance.
 Ecocredits are semi-fungible, where their fungibility is limited to the volume of
 credits within the specific batch they were issued in.
 
-| Example 1                                      | Example 2                     |
-|------------------------------------------------|-------------------------------|
-| **GIVEN**<br>- John has 5 credits from batch A<br>- Alice gives John 5 credits from batch A<br><br>**THEN**<br>- John has 10 credits from batch A <br><br>*The credits in the end are combined numerically. This is because credits from the same batch are fully fungible/equivalent with each other.* | **GIVEN**<br>- John has 5 credits from batch A<br>- Alice gives John 5 credits from batch B<br><br>**THEN**<br>- John has 5 credits from batch A and 5 credits from batch B<br><br>*The credits in the end are tracked separately by batch, even when held by the same user. This is because credits from different batches are not fungible with each other.* |
+| Example 1                                                                                                                                                                                                                                                                                                                | Example 2                                                                                                                                                                                                                                                                                                                                                                       |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **GIVEN**<br>- John has 5 credits from batch A<br><br> **WHEN**<br>- Alice gives John 5 credits from batch A<br><br>**THEN**<br>- John has 10 credits from batch A <br><br>*The credits in the end are combined numerically. This is because credits from the same batch are fully fungible/equivalent with each other.* | **GIVEN**<br>- John has 5 credits from batch A<br><br> **WHEN**<br>- Alice gives John 5 credits from batch B<br><br>**THEN**<br>- John has 5 credits from batch A and 5 credits from batch B<br><br>*The credits in the end are tracked separately by batch, even when held by the same user. This is because credits from different batches are not fungible with each other.* |
 
 #### Credit Class & Batch Hierarchy (Fig. 1)
 
 ![](media/002-fig-1.jpg)
 
-# The Baskets Use Case
+## Use Case
 
 When bringing ecocredits to market (e.g. offering them for sale on a decentralized exchange or to a potential buyer), there are a few issues we need to overcome:
 - A buyer may want to purchase more ecocredits than is issued in any one batch
@@ -64,7 +70,7 @@ Our hope is that these basket assets increase marketability of ecocredits in the
 - Basket assets enable greater composability in cryptocurrency/blockchain such as in DeFi for use as collateral
 - Basket assets are more easily interoperable with existing carbon token standards that are emerging in other cryptocurrency/blockchain projects (e.g. KlimaDAO, MOSS Token)
 
-# Specification
+## Approach
 
 ### Basket Criteria & Instantiation
 
@@ -122,7 +128,7 @@ An ecocredit holder has the ability to retire, transfer, or hold their ecocredit
 
 ![](media/002-fig-3.jpg)
 
-# Prior Art
+## Prior Art
 
 ### NFTX
 
@@ -137,3 +143,7 @@ Toucan has a process where credits are retired on the Verra registry (off-chain)
 ### MOSS
 
 MOSS has a process where they act as a centralized custodian for their Verra registry account. They, on an on-going basis, monitor the Ethereum ledger of their ERC20 token for tokens sent to a retirement address (a non-functional “burn” address so to speak). MOSS then reciprocates retirement of credits in their Verra account. There is a liquid market for MOSS tokens on Uniswap and other Ethereum-based decentralized exchanges as well as traditional centralized exchanges.
+
+## References
+
+1. [Regen Ledger Baskets Specification](https://docs.google.com/document/d/1YCmaQCI5ghll9IfMDAIPjImVPZpT7iZ7QpdVPVi-V5o)
