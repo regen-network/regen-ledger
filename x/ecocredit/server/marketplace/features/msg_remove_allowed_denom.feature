@@ -67,4 +67,4 @@ Feature: Msg/RemoveAllowedDenom
         "denom":"uregen"
       }
       """
-      Then expect the error "allowed denom uregen not found: not found"
+      Then expect the error "allowed denom uregen: not found"
