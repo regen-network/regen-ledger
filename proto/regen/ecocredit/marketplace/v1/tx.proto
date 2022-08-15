@@ -29,6 +29,10 @@ service Msg {
   // new allowed denom.
   // Since Revision 1
   rpc AddAllowedDenom(MsgAddAllowedDenom) returns (MsgAddAllowedDenomResponse);
+
+  // RemoveAllowedDenom is a governance method that removes allowed denom.
+  // Since Revision 1
+  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom) returns (MsgRemoveAllowedDenomResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -190,3 +194,17 @@ message MsgAddAllowedDenom {
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
 // Since Revision 1
 message MsgAddAllowedDenomResponse {}
+
+// MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+// Since Revision 1
+message MsgRemoveAllowedDenom {
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the denom to remove (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
+}
+
+// MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+// Since Revision 1
+message MsgRemoveAllowedDenomResponse {}
