@@ -54,8 +54,8 @@ The marketplace submodule enables the creation and management of sell orders for
 
 ## RFCs
 
-- [RFC-001: Ecosystem Service Credit Module](https://github.com/regen-network/regen-ledger/blob/master/rfcs/001-ecosystem-service-credit-module.md)
-- [RFC-002: Baskets Specification](https://github.com/regen-network/regen-ledger/blob/master/rfcs/002-baskets-specification.md)
+- [RFC-001: Ecocredit Module](https://github.com/regen-network/regen-ledger/blob/master/specs/rfcs/001-ecocredit-module.md)
+- [RFC-002: Basket Functionality](https://github.com/regen-network/regen-ledger/blob/master/specs/rfcs/002-basket-functionality.md)
 
 ## Protobuf
 
