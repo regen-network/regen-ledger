@@ -15,7 +15,7 @@ breaking:
     - FILE
 lint:
   ignore:
-    - cosmos/msg/v1/msg.proto
+    - ./cosmos/msg/v1/msg.proto
   use:
     - DEFAULT
     - COMMENTS
