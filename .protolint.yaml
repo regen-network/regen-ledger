@@ -1,4 +1,6 @@
 lint:
+  ignore:
+    - cosmos
   rules:
     # ignore max line length conflicting with proto-format
     remove:
