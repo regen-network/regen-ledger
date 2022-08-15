@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package regen.data.v1;
 
+import "cosmos/msg/v1/msg.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1/types.proto";
-import "cosmos/msg/v1/msg.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
