@@ -1,29 +1,41 @@
-RFC-XXX: Title of RFC
-=====================
+# RFC-XXX: Title
 
-- Created: (fill me in with today's date, YYYY-MM-DD)
+- Created: YYYY-MM-DD
 - Status: __DRAFT__ | __IN REVIEW__ | __ACCEPTED__ | __REJECTED__ | __SUPERSEDED__ | __ABANDONED__
-- Superseded By: N/A
-- RFC PR: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
+- Superseded By:
+- RFC PR: [#]()
 - Authors:
 
-# Summary
+### Table of Contents
+
+- [Summary](#summary)
+- [Need](#need)
+- [Approach](#approach)
+- [Rationale](#rationale)
+- [References](#references)
+- [Changelog](#changelog)
+
+## Summary
 
 Brief explanation of what the RFC attempts to address.
 
-# Need
+## Need
 
 What's the identified need? A need should relate to an important and specific opportunity or use case.
 
-# Approach
+## Approach
 
 The recommended approach to fulfill the needs presented in the previous section.
 
-# Rationale
+## Rationale
 
 Include an overview of what tradeoffs exist when taking this approach, what benefits come from it, and/or what alternatives were considered.
 
-# References
+## References
 
 1. ..
 2. ..
+
+## Changelog
+
+An RFC should include a changelog, providing a record of any significant changes.
