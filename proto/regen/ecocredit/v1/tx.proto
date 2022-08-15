@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
@@ -113,7 +114,7 @@ service Msg {
   // credit class, otherwise a new project will be created.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 
-  // AddCreditType is a governance method that allows the addition of new 
+  // AddCreditType is a governance method that allows the addition of new
   // credit types to the network.
   // Since Revision 1
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
@@ -122,10 +123,12 @@ service Msg {
 // MsgAddCreditType is the Msg/AddCreditType request type.
 // Since Revision 1
 message MsgAddCreditType {
+  option (cosmos.msg.v1.signer) = "authority";
+
   // authority is the address of the governance account.
   string authority = 1;
 
-  // credit_type defines a credit type to add to the credit types parameter. 
+  // credit_type defines a credit type to add to the credit types parameter.
   CreditType credit_type = 2;
 }
 
@@ -135,6 +138,7 @@ message MsgAddCreditTypeResponse {}
 
 // MsgCreateClass is the Msg/CreateClass request type.
 message MsgCreateClass {
+  option (cosmos.msg.v1.signer) = "admin";
 
   // admin is the address of the account creating the credit class that will
   // become the admin of the credit class upon creation. The admin will have
@@ -171,6 +175,7 @@ message MsgCreateClassResponse {
 
 // MsgCreateProjectResponse is the Msg/CreateProject request type.
 message MsgCreateProject {
+  option (cosmos.msg.v1.signer) = "admin";
 
   // admin is the address of the account creating the project that will become
   // the admin of the project upon creation. The creator of the project must be
@@ -210,6 +215,7 @@ message MsgCreateProjectResponse {
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
+  option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account issuing the credits and must be an
   // approved issuer within the credit class of the project.
@@ -258,6 +264,7 @@ message MsgCreateBatchResponse {
 
 // MsgMintBatchCredits is the Msg/MintBatchCredits request type.
 message MsgMintBatchCredits {
+  option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account minting the credits and must be the
   // same issuer who created the credit batch.
@@ -281,6 +288,7 @@ message MsgMintBatchCreditsResponse {}
 
 // MsgSealBatch is the Msg/MintBatchCredits request type.
 message MsgSealBatch {
+  option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account that created the credit batch and the
   // only account with permissions to seal the credit batch.
@@ -295,6 +303,7 @@ message MsgSealBatchResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {
+  option (cosmos.msg.v1.signer) = "sender";
 
   // sender is the address of the account sending credits.
   string sender = 1;
@@ -339,6 +348,7 @@ message MsgSendResponse {}
 
 // MsgRetire is the Msg/Retire request type.
 message MsgRetire {
+  option (cosmos.msg.v1.signer) = "owner";
 
   // owner is the address of the account that owns the credits being retired.
   string owner = 1;
@@ -361,6 +371,7 @@ message MsgRetireResponse {}
 
 // MsgCancel is the Msg/Cancel request type.
 message MsgCancel {
+  option (cosmos.msg.v1.signer) = "owner";
 
   // owner is the address of the account that owns the credits being cancelled.
   string owner = 1;
@@ -378,6 +389,7 @@ message MsgCancelResponse {}
 
 // MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
 message MsgUpdateClassAdmin {
+  option (cosmos.msg.v1.signer) = "admin";
 
   // admin is the address of the account that is currently the admin of the
   // credit class.
@@ -396,6 +408,7 @@ message MsgUpdateClassAdminResponse {}
 
 // MsgUpdateClassIssuers is the Msg/UpdateClassIssuers request type.
 message MsgUpdateClassIssuers {
+  option (cosmos.msg.v1.signer) = "admin";
 
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
@@ -417,6 +430,7 @@ message MsgUpdateClassIssuersResponse {}
 
 // MsgUpdateClassMetadata is the Msg/UpdateClassMetadata request type.
 message MsgUpdateClassMetadata {
+  option (cosmos.msg.v1.signer) = "admin";
 
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
@@ -435,6 +449,7 @@ message MsgUpdateClassMetadataResponse {}
 
 // MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin request type.
 message MsgUpdateProjectAdmin {
+  option (cosmos.msg.v1.signer) = "admin";
 
   // admin is the address of the account that is the currently the admin of the
   // project.
@@ -453,6 +468,7 @@ message MsgUpdateProjectAdminResponse {}
 
 // MsgUpdateProjectMetadata is the Msg/UpdateProjectMetadata request type.
 message MsgUpdateProjectMetadata {
+  option (cosmos.msg.v1.signer) = "admin";
 
   // admin is the address of the account that is the admin of the project.
   string admin = 1;
@@ -472,6 +488,7 @@ message MsgUpdateProjectMetadataResponse {}
 
 // MsgBridge is the Msg/Bridge request type.
 message MsgBridge {
+  option (cosmos.msg.v1.signer) = "owner";
 
   // owner is the address of the account that owns the credits being bridged.
   string owner = 1;
@@ -491,6 +508,7 @@ message MsgBridgeResponse {}
 
 // MsgBridgeReceive is the Msg/BridgeReceive request type.
 message MsgBridgeReceive {
+  option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the account address of the service bridging the credits.
   string issuer = 1;

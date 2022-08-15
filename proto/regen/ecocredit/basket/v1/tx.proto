@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
@@ -24,6 +25,8 @@ service Msg {
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
 message MsgCreate {
+  option (cosmos.msg.v1.signer) = "curator";
+
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
   string curator = 1;
@@ -91,6 +94,7 @@ message MsgCreateResponse {
 
 // MsgAddToBasket is the Msg/AddToBasket request type.
 message MsgPut {
+  option (cosmos.msg.v1.signer) = "owner";
 
   // owner is the owner of credits being put into the basket.
   string owner = 1;
@@ -114,6 +118,7 @@ message MsgPutResponse {
 
 // MsgTakeFromBasket is the Msg/TakeFromBasket request type.
 message MsgTake {
+  option (cosmos.msg.v1.signer) = "owner";
 
   // owner is the owner of the basket tokens.
   string owner = 1;

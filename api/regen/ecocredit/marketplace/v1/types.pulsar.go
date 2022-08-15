@@ -590,8 +590,8 @@ const (
 
 // AllowDenomProposal is a gov Content type for approving a denom for use in the
 // marketplace.
-// Deprecated (Since Revision 1): This message is no longer used and will be removed
-// in the next version. See MsgAddAllowedDenom.
+// Deprecated (Since Revision 1): This message is no longer used and will be
+// removed in the next version. See MsgAddAllowedDenom.
 type AllowDenomProposal struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
