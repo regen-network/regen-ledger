@@ -33,6 +33,10 @@ type MsgClient interface {
 	// RemoveAllowedDenom is a governance method that removes allowed denom.
 	// Since Revision 1
 	RemoveAllowedDenom(ctx context.Context, in *MsgRemoveAllowedDenom, opts ...grpc.CallOption) (*MsgRemoveAllowedDenomResponse, error)
+	// AddAllowedDenom is a governance method that allows the addition of
+	// new allowed denom.
+	// Since Revision 1
+	AddAllowedDenom(ctx context.Context, in *MsgAddAllowedDenom, opts ...grpc.CallOption) (*MsgAddAllowedDenomResponse, error)
 }
 
 type msgClient struct {
@@ -82,6 +86,9 @@ func (c *msgClient) BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grp
 func (c *msgClient) RemoveAllowedDenom(ctx context.Context, in *MsgRemoveAllowedDenom, opts ...grpc.CallOption) (*MsgRemoveAllowedDenomResponse, error) {
 	out := new(MsgRemoveAllowedDenomResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Msg/RemoveAllowedDenom", in, out, opts...)
+func (c *msgClient) AddAllowedDenom(ctx context.Context, in *MsgAddAllowedDenom, opts ...grpc.CallOption) (*MsgAddAllowedDenomResponse, error) {
+	out := new(MsgAddAllowedDenomResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Msg/AddAllowedDenom", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,6 +110,10 @@ type MsgServer interface {
 	// RemoveAllowedDenom is a governance method that removes allowed denom.
 	// Since Revision 1
 	RemoveAllowedDenom(context.Context, *MsgRemoveAllowedDenom) (*MsgRemoveAllowedDenomResponse, error)
+	// AddAllowedDenom is a governance method that allows the addition of
+	// new allowed denom.
+	// Since Revision 1
+	AddAllowedDenom(context.Context, *MsgAddAllowedDenom) (*MsgAddAllowedDenomResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -124,6 +135,8 @@ func (UnimplementedMsgServer) BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuy
 }
 func (UnimplementedMsgServer) RemoveAllowedDenom(context.Context, *MsgRemoveAllowedDenom) (*MsgRemoveAllowedDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveAllowedDenom not implemented")
+func (UnimplementedMsgServer) AddAllowedDenom(context.Context, *MsgAddAllowedDenom) (*MsgAddAllowedDenomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddAllowedDenom not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -212,6 +225,8 @@ func _Msg_BuyDirect_Handler(srv interface{}, ctx context.Context, dec func(inter
 
 func _Msg_RemoveAllowedDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgRemoveAllowedDenom)
+func _Msg_AddAllowedDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddAllowedDenom)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -224,6 +239,14 @@ func _Msg_RemoveAllowedDenom_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).RemoveAllowedDenom(ctx, req.(*MsgRemoveAllowedDenom))
+		return srv.(MsgServer).AddAllowedDenom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.marketplace.v1.Msg/AddAllowedDenom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AddAllowedDenom(ctx, req.(*MsgAddAllowedDenom))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -254,6 +277,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveAllowedDenom",
 			Handler:    _Msg_RemoveAllowedDenom_Handler,
+			MethodName: "AddAllowedDenom",
+			Handler:    _Msg_AddAllowedDenom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
