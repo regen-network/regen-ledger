@@ -3376,8 +3376,8 @@ func (x *OriginTx) GetNote() string {
 }
 
 // CreditTypeProposal is a gov Content type for adding a credit type.
-// Deprecated (Since Revision 1): This message is no longer used and will be removed
-// in the next version. See MsgAddCreditType.
+// Deprecated (Since Revision 1): This message is no longer used and will be
+// removed in the next version. See MsgAddCreditType.
 type CreditTypeProposal struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

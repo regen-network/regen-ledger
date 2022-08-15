@@ -114,7 +114,7 @@ service Msg {
   // credit class, otherwise a new project will be created.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 
-  // AddCreditType is a governance method that allows the addition of new 
+  // AddCreditType is a governance method that allows the addition of new
   // credit types to the network.
   // Since Revision 1
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
@@ -128,7 +128,7 @@ message MsgAddCreditType {
   // authority is the address of the governance account.
   string authority = 1;
 
-  // credit_type defines a credit type to add to the credit types parameter. 
+  // credit_type defines a credit type to add to the credit types parameter.
   CreditType credit_type = 2;
 }
 
