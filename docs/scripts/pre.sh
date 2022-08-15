@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-# module specification documentation
+./scripts/post.sh
+
+# specs directory
+
+cp -r ../specs specs
+
+# modules directory
 
 mkdir -p modules
 
@@ -13,14 +19,12 @@ for D in ../x/*; do
   fi
 done
 
-# regen app command-line documentation
+(cd .. ; ./scripts/generate_feature_docs.sh)
+
+# commands directory
 
 mkdir -p commands
 
 cp README_commands.md commands/README.md
 
 go run ../scripts/generate_cli_docs.go
-
-# module feature documentation
-
-(cd .. ; ./scripts/generate_feature_docs.sh)
