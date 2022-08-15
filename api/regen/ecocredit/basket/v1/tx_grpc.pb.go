@@ -31,6 +31,7 @@ type MsgClient interface {
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
 	// UpdateClassFee is a governance method that allows for updation of fees to be
 	// used for the basket creation fee.
+	// Since Revision 1
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
@@ -91,6 +92,7 @@ type MsgServer interface {
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
 	// UpdateClassFee is a governance method that allows for updation of fees to be
 	// used for the basket creation fee.
+	// Since Revision 1
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
