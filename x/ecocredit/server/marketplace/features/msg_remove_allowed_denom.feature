@@ -39,7 +39,7 @@ Feature: Msg/RemoveAllowedDenom
 
   Rule: The bank denom exist
 
-    Scenario: The bank denom exist
+    Scenario: The bank denom exists
       Given an allowed denom with properties
       """
       {
