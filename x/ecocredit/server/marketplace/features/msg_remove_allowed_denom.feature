@@ -2,7 +2,7 @@ Feature: Msg/RemoveAllowedDenom
 
   An allowed denom can be removed:
   - when the authority is a governance account address
-  - when the allowed denom exist
+  - when the allowed denom exists
   - the denom is removed
 
   Rule: The authority must be governance account address
