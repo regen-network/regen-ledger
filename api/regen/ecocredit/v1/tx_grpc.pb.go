@@ -105,6 +105,19 @@ type MsgClient interface {
 	// credit types to the network.
 	// Since Revision 1
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
+	// AllowedClassCreator is a governance method that allows the addition of new
+	// addresses to the class creation allowlist.
+	// Since Revision 1
+	AllowedClassCreator(ctx context.Context, in *MsgAllowedClassCreator, opts ...grpc.CallOption) (*MsgAllowedClassCreatorResponse, error)
+	// RemoveClassCreator is a governance method that allows the removes
+	// addresses to the class creation allowlist.
+	// Since Revision 1
+	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
+	// ToggleCreditClassAllowlist is a governance method that toggles the network allowlist to on or off.
+	// when on, the class creator allowlist is used to enforce which addresses may create classes.
+	// when off, any address may create classes.
+	// Since Revision 1
+	ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggleClassAllowList, opts ...grpc.CallOption) (*MsgToggleClassAllowListResponse, error)
 }
 
 type msgClient struct {
@@ -259,6 +272,33 @@ func (c *msgClient) AddCreditType(ctx context.Context, in *MsgAddCreditType, opt
 	return out, nil
 }
 
+func (c *msgClient) AllowedClassCreator(ctx context.Context, in *MsgAllowedClassCreator, opts ...grpc.CallOption) (*MsgAllowedClassCreatorResponse, error) {
+	out := new(MsgAllowedClassCreatorResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/AllowedClassCreator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error) {
+	out := new(MsgRemoveClassCreatorResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/RemoveClassCreator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggleClassAllowList, opts ...grpc.CallOption) (*MsgToggleClassAllowListResponse, error) {
+	out := new(MsgToggleClassAllowListResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/ToggleCreditClassAllowlist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -346,6 +386,19 @@ type MsgServer interface {
 	// credit types to the network.
 	// Since Revision 1
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
+	// AllowedClassCreator is a governance method that allows the addition of new
+	// addresses to the class creation allowlist.
+	// Since Revision 1
+	AllowedClassCreator(context.Context, *MsgAllowedClassCreator) (*MsgAllowedClassCreatorResponse, error)
+	// RemoveClassCreator is a governance method that allows the removes
+	// addresses to the class creation allowlist.
+	// Since Revision 1
+	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
+	// ToggleCreditClassAllowlist is a governance method that toggles the network allowlist to on or off.
+	// when on, the class creator allowlist is used to enforce which addresses may create classes.
+	// when off, any address may create classes.
+	// Since Revision 1
+	ToggleCreditClassAllowlist(context.Context, *MsgToggleClassAllowList) (*MsgToggleClassAllowListResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -400,6 +453,15 @@ func (UnimplementedMsgServer) BridgeReceive(context.Context, *MsgBridgeReceive) 
 }
 func (UnimplementedMsgServer) AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCreditType not implemented")
+}
+func (UnimplementedMsgServer) AllowedClassCreator(context.Context, *MsgAllowedClassCreator) (*MsgAllowedClassCreatorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllowedClassCreator not implemented")
+}
+func (UnimplementedMsgServer) RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveClassCreator not implemented")
+}
+func (UnimplementedMsgServer) ToggleCreditClassAllowlist(context.Context, *MsgToggleClassAllowList) (*MsgToggleClassAllowListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ToggleCreditClassAllowlist not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -702,6 +764,60 @@ func _Msg_AddCreditType_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_AllowedClassCreator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAllowedClassCreator)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AllowedClassCreator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/AllowedClassCreator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AllowedClassCreator(ctx, req.(*MsgAllowedClassCreator))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveClassCreator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveClassCreator)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveClassCreator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/RemoveClassCreator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveClassCreator(ctx, req.(*MsgRemoveClassCreator))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ToggleCreditClassAllowlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgToggleClassAllowList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ToggleCreditClassAllowlist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/ToggleCreditClassAllowlist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ToggleCreditClassAllowlist(ctx, req.(*MsgToggleClassAllowList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -772,6 +888,18 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddCreditType",
 			Handler:    _Msg_AddCreditType_Handler,
+		},
+		{
+			MethodName: "AllowedClassCreator",
+			Handler:    _Msg_AllowedClassCreator_Handler,
+		},
+		{
+			MethodName: "RemoveClassCreator",
+			Handler:    _Msg_RemoveClassCreator_Handler,
+		},
+		{
+			MethodName: "ToggleCreditClassAllowlist",
+			Handler:    _Msg_ToggleCreditClassAllowlist_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
