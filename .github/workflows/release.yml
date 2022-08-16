@@ -17,21 +17,15 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      -
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      -
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.18
-      -
-        name: Run release setup
+      - uses: actions/setup-go@v3
+      - name: Release setup
         run: ./scripts/release-setup.sh
         shell: bash
-      -
-        name: Build and release
-        uses: goreleaser/goreleaser-action@v2
+      - name: Build and release
+        uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
           args: release --rm-dist

@@ -19,30 +19,24 @@ jobs:
   golangci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
-        if: env.GIT_DIFF
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
           args: --out-format=tab
-          skip-go-installation: true
         if: env.GIT_DIFF
 
   buf-lint:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
@@ -58,14 +52,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.proto
       - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
         if: env.GIT_DIFF
       - name: protolint
         run: |
