@@ -3,7 +3,7 @@
 export GO111MODULE=on
 
 BUILD_DIR ?= $(CURDIR)/build
-REGEN_DIR := $(CURDIR)/app/regen
+REGEN_CMD := $(CURDIR)/cmd/regen
 
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
@@ -18,7 +18,6 @@ endif
 SDK_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-EXPERIMENTAL ?= false
 LEDGER_ENABLED ?= true
 DB_BACKEND ?= goleveldb
 
@@ -29,10 +28,6 @@ DB_BACKEND ?= goleveldb
 # process build tags
 
 build_tags = netgo
-
-ifeq ($(EXPERIMENTAL),true)
-	build_tags += experimental
-endif
 
 ifeq ($(LEDGER_ENABLED),true)
   ifeq ($(OS),Windows_NT)
@@ -138,15 +133,11 @@ endif
 all: build
 
 install: go.sum go-version
-	@if $(EXPERIMENTAL); then ./scripts/experimental.sh; fi
-	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
-	@if $(EXPERIMENTAL); then ./scripts/experimental_post.sh; fi
+	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_CMD)
 
 build: go.sum go-version
 	@mkdir -p $(BUILD_DIR)
-	@if $(EXPERIMENTAL); then ./scripts/experimental.sh; fi
-	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_DIR)
-	@if $(EXPERIMENTAL); then ./scripts/experimental_post.sh; fi
+	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_CMD)
 
 build-linux:
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build

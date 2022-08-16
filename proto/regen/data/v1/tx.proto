@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.data.v1;
 
+import "cosmos/msg/v1/msg.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1/types.proto";
 
@@ -53,6 +54,8 @@ service Msg {
 
 // MsgAnchor is the Msg/Anchor request type.
 message MsgAnchor {
+  option (cosmos.msg.v1.signer) = "sender";
+
   // sender is the address of the sender of the transaction. The sender in
   // Anchor is not attesting to the veracity of the underlying data. They
   // can simply be an intermediary providing services.
@@ -73,6 +76,8 @@ message MsgAnchorResponse {
 
 // MsgAttest is the Msg/Attest request type.
 message MsgAttest {
+  option (cosmos.msg.v1.signer) = "attestor";
+
   // attestor is the addresses of the account attesting to the veracity of the
   // data. By making an Attest request, the attestor is attesting to the
   // veracity of the data referenced by the IRI. The precise meaning of this may
@@ -98,6 +103,8 @@ message MsgAttestResponse {
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 message MsgDefineResolver {
+  option (cosmos.msg.v1.signer) = "manager";
+
   // manager is the address of the resolver manager. The manager is able
   // to make future calls using the ID returned by this operation with
   // Msg/RegisterResolver. To authorize other accounts to register resolvers,
@@ -121,6 +128,8 @@ message MsgDefineResolverResponse {
 
 // MsgRegisterResolver is the Msg/RegisterResolver request type.
 message MsgRegisterResolver {
+  option (cosmos.msg.v1.signer) = "manager";
+
   // manager is the address of the resolver manager who registered this
   // resolver with Msg/DefinedResolver.
   string manager = 1;

@@ -8,10 +8,6 @@ APP_DIR = ./app
 
 simulation_tags=""
 
-ifeq ($(EXPERIMENTAL),true)
-	simulation_tags += experimental
-endif
-
 runsim:
 	go install github.com/cosmos/tools/cmd/runsim@latest
 

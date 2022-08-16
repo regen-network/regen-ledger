@@ -77,6 +77,11 @@ module.exports = {
         text: 'Tutorials',
         link: '/tutorials/',
       },
+      // TODO: add to navigation when specs are up-to-date
+      // {
+      //   text: 'Specifications',
+      //   link: '/specs/',
+      // },
     ],
     sidebar: {
       '/ledger/': [
@@ -260,6 +265,42 @@ module.exports = {
           title: 'Developer Tutorials',
           collapsable: false,
           children: [],
+        },
+      ],
+      '/specs/': [
+        {
+          title: 'Specifications',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+            {
+              title: 'Overview',
+              path: '/specs/',
+            },
+            '/specs/regen-ledger',
+          ],
+        },
+        {
+          title: 'RFCs',
+          collapsable: false,
+          children: [
+            {
+              title: 'RFC Overview',
+              path: '/specs/rfcs/',
+            },
+            '/specs/rfcs/001-ecocredit-module/',
+            '/specs/rfcs/002-basket-functionality/',
+          ],
+        },
+        {
+          title: 'ADRs',
+          collapsable: false,
+          children: [
+            {
+              title: 'ADR Overview',
+              path: '/specs/adrs/',
+            },
+          ],
         },
       ],
     },

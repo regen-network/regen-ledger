@@ -1,129 +1,139 @@
-# Regen Ledger
-
-![banner](docs/.vuepress/public/regen-ledger.png)
-
-[![Build status](https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
-[![Tests status](https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
-![GitHub issues](https://img.shields.io/github/issues/regen-network/regen-ledger.svg)
-[![GitHub issues by-label](https://img.shields.io/github/issues/regen-network/regen-ledger/good%20first%20issue.svg)](https://github.com/regen-network/regen-ledger/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-[![codecov](https://codecov.io/gh/regen-network/regen-ledger/branch/master/graph/badge.svg)](https://codecov.io/gh/regen-network/regen-ledger)
-[![GoDoc](https://godoc.org/github.com/regen-network/regen-ledger?status.svg)](http://godoc.org/github.com/regen-network/regen-ledger)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Go Report Card](https://goreportcard.com/badge/github.com/regen-network/regen-ledger)](https://goreportcard.com/report/github.com/regen-network/regen-ledger)
-[![Gitter chat](https://badges.gitter.im/regen-network/regen-ledger.png)](https://gitter.im/regen-network/regen-ledger "Gitter chat")
-
-A distributed ledger for ecology built on top of the
-[cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
-
-## Getting Started
-
-See [Get Started](https://docs.regen.network/ledger/get-started/) for instructions on how to run a single node network on your local machine. For instructions on how to run a full node and create a validator on a live network, see [Running a Full Node](https://docs.regen.network/validators/get-started/run-a-full-node.html) and [Create a Validator](https://docs.regen.network/validators/get-started/create-a-validator.html).
-
-## Core Features
-
-Regen Ledger aims to provides the following core features:
-* a database of ecological state and change of state claims that spans both
-on and off-chain data sources ([Ecological State Database](#ecological-state-database))
-* mechanisms for automating the assessment of ecological state, making payments,
-and the issuance of tokens and credits ([Compute Functions and Ecological Contracts](#compute-functions-and-ecological-contracts))
-* infrastructure for issuing ecologically-backed asset tokens and credits ([Tokens and Credits](#tokens-and-credits))
-
-This project is under heavy development and as result the above features are
-implemented to varying degrees of completeness.
-
-### Ecological State Database
-
-One of the core functionalities of Regen Ledger is providing a structured
-database of claims regarding ecological state and change of state. A claim is
-made up of a few very basic pieces of information:
-- the geo-polygon of the portion of the Earth being referred to,
-- what is being claimed about this geographical region,
-- who is making the claim, and
-- any supporting evidence the claimant would like to associate with their claim
-
-The actual data for claims can be stored on or off the Regen Ledger blockchain.
-In order to make claim data publicly available to the whole world, it can
-be stored directly on the blockchain. In order to keep some or all of the
-data private, it can be stored off-chain but "tracked" on-chain by
-providing a cryptographic hash and URL, as well as possibly some metadata about
-the claim.
-
-The facilities for storing data on-chain and tracking data off-chain
-are managed by Regen Leder's [data](https://godoc.org/github.com/regen-network/regen-ledger/x/data)
-and [geo](https://godoc.org/github.com/regen-network/regen-ledger/x/geo) modules.
-In order to make it easy to write software that can automatically reason about
-claim data, the schemas for all such data must be registered with Regen
-Ledger's [schema](https://godoc.org/github.com/regen-network/regen-ledger/x/schema)
-module and all submitted data must conform to these schemas. The actually
-signing of claims is managed by the [claim](https://godoc.org/github.com/regen-network/regen-ledger/x/claim)
-module.
-
-Regen Ledger aims to provide built-in support for indexing claim data in
-both the [PostgreSQL](https://www.postgresql.org)/[PostGIS](https://postgis.net)
-database and the [Apache Jena](https://jena.apache.org)
-RDF data store so that this data can be queried easily and used in compute
-functions and contracts.
-
-### Compute Functions and Ecological Contracts
-
-Regen Ledger aims to provide a framework for executing compute functions that
-take as input Regen Ledger's ecological state database as well as other "well-known"
-public data sources, such as satellite imagery from NASA and ESA. This framework
-will define:
-- how compute functions can uniformly access private, off-chain data
-given appropriate permissions
-- how compute functions should be written and executed to ensure that results
-are reproducible
-- how computers that are executing compute functions (called oracles) should
-interact with Regen Ledger in order to have results stored back into the
-ecological state database
-
-This functionality will be managed by the oracle module and described in more detail there.
-
-Ecological contracts in Regen Ledger are modelled as state machines that effectively "observe"
-the ecological state database for certain conditions and which execute certain
-actions when those conditions are met. For instance, a contract could
-be written to make a payment to a farmer at the end of the year if the ecological
-state database included claims from a reputable source that the farmer had
-used certain practices like cover cropping. Or a contract could be setup as
-effectively a "land trust" for a forest that accumulates credits while it
-remains forested but has them slashed whenever a deforestation event is tracked
-in the ecological state database.
-
-The functionality for ecological contracts will be managed by the contract module.
-
-### Tokens and Credits
-
-In addition to allowing for payments using existing tokens, Regen Ledger will
-allow for the creation of custom ecosystem tokens and credits whose issuance
-can be controlled directly by ecological contracts.
-
-## Testnet Status
-
-See https://github.com/regen-network/testnets.
+<div align="center" style="font-size:20px">
+    <img alt="Issues" src="docs/.vuepress/public/regen-ledger.png" />
+    <h3>
+        <i>A distributed ledger for ecological assets and data claims</i>
+    </h3>
+</div>
 <br />
+<div align="center">
+    <a href="https://github.com/regen-network/regen-ledger/blob/master/LICENSE">
+        <img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue" />
+    </a>
+    <a href="https://github.com/tendermint/tendermint/releases/latest">
+        <img alt="Version" src="https://img.shields.io/github/tag/regen-network/regen-ledger" />
+    </a>
+    <a href="https://pkg.go.dev/github.com/regen-network/regen-ledger/v4">
+        <img alt="Go Doc" src="https://pkg.go.dev/badge/github.com/regen-network/regen-ledger/v4" />
+    </a>
+</div>
 <br />
+<div align="center">
+    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+        <img alt="Build Status" src="https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+        <img alt="Test Status" src="https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+        <img alt="Sims Status" src="https://github.com/regen-network/regen-ledger/workflows/Sims/badge.svg" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+        <img alt="Lint Status" src="https://github.com/regen-network/regen-ledger/workflows/Lint/badge.svg" />
+    </a>
+</div>
 <br />
-And of course there is this, from Mary Oliver, who recently passed away. <br />
-We love you! <br />
+<div align="center">
+    <a href="https://github.com/regen-network/regen-ledger/issues">
+        <img alt="Issues" src="https://img.shields.io/github/issues/regen-network/regen-ledger?color=blue" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
+        <img alt="Good First Issues" src="https://img.shields.io/github/issues/regen-network/regen-ledger/good%20first%20issue?color=blue" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/discussions">
+        <img alt="Discussions" src="https://img.shields.io/github/discussions/regen-network/regen-ledger?color=blue" />
+    </a>
+    <a href="https://discord.gg/regen-network">
+        <img alt="Discord" src="https://img.shields.io/discord/684494798358315010?color=blue" />
+    </a>
+</div>
 <br />
-## Sleeping in the Forest<br />
+<div align="center">
+    <a href="https://goreportcard.com/report/github.com/regen-network/regen-ledger">
+        <img alt="Go Report" src="https://goreportcard.com/badge/github.com/regen-network/regen-ledger" />
+    </a>
+    <a href="https://codecov.io/gh/regen-network/regen-ledger">
+        <img alt="Code Coverage" src="https://codecov.io/gh/regen-network/regen-ledger/branch/master/graph/badge.svg" />
+    </a>
+</div>
 <br />
-I thought the earth remembered me,<br />
-she took me back so tenderly,<br />
-arranging her dark skirts, her pockets<br />
-full of lichens and seeds.<br />
-I slept as never before, a stone on the river bed,<br />
-nothing between me and the white fire of the stars<br />
-but my thoughts, and they floated light as moths<br />
-among the branches of the perfect trees.<br />
-All night I heard the small kingdoms<br />
-breathing around me, the insects,<br />
-and the birds who do their work in the darkness.<br />
-All night I rose and fell, as if in water,<br />
-grappling with a luminous doom. By morning<br />
-I had vanished at least a dozen times<br />
-into something better.<br />
-<br />
-from Sleeping In The Forest by Mary Oliver<br />
-© Mary Oliver<br />
+
+## Introduction
+
+Regen Ledger is a blockchain application for ecological assets and data claims built on top of [Cosmos SDK](http://github.com/cosmos/cosmos-sdk) and [Tendermint Core](http://github.com/tendermint/tendermint). Leveraging these tools, Regen Ledger provides the infrastructure for a Proof-of-Stake blockchain network governed by a community dedicated to planetary regeneration.
+
+Features specific to Regen Ledger are developed within this repository as custom modules that are then wired up to the main application. The custom modules developed within Regen Ledger follow the same architecture and pattern as modules developed within Cosmos SDK and other Cosmos SDK applications.
+
+The core features that Regen Ledger aims to provide include the following:
+
+- infrastructure for managing the issuance and retirement of ecosystem service credits
+- a database of ecological state and change of state claims that spans both on and off-chain data sources
+- mechanisms for automating the assessment of ecological state, making payments, and issuing assets
+
+Regen Ledger is under heavy development and as result the above features are implemented to varying degrees of completeness. For more information about our approach and vision, see [Regen Ledger Specification](specs/SPEC.md).
+
+## Documentation
+
+Documentation for Regen Ledger is hosted at [docs.regen.network](https://docs.regen.network). This includes installation instructions for users and developers, information about live networks running Regen Ledger, instructions on how to interact with local and live networks, infrastructure and module-specific documentation, tutorials for users and developers, migration guides for developers, upgrade guides for validators, a complete list of available commands, and more.
+
+## Contributing
+
+Contributions are more than welcome and greatly appreciated. All the information you need to get started should be available in [Contributing Guidelines](./CONTRIBUTING.md). Please take the time to read through the contributing guidelines before opening an issue or pull request. The following prerequisites and commands cover the basics.
+
+### Prerequisites
+
+- [Git](https://git-scm.com) `>=2`
+- [Make](https://www.gnu.org/software/make/) `>=4`
+- [Go](https://golang.org/) `>=1.18`
+
+### Running Tests
+
+Run all unit and integrations tests:
+
+```
+make test
+```
+
+### Manual Testing
+
+Build the regen binary:
+
+```
+make build
+```
+
+View the available commands:
+
+```
+./build/regen help
+```
+
+## Related Repositories
+
+- [regen-network/governance](https://github.com/regen-network/governance) - guidelines and long-form proposals for Regen Mainnet
+- [regen-network/mainnet](https://github.com/regen-network/mainnet) - additional information and historical record for Regen Mainnet
+- [regen-network/testnets](https://github.com/regen-network/testnets) - additional information and historical record for Regen Testnets
+- [regen-network/regen-js](https://github.com/regen-network/regen-js) - a JavaScript client library for interacting with Regen Ledger
+- [regen-network/regen-web](https://github.com/regen-network/regen-web) - user interfaces for Regen Network and Regen Registry
+
+## Sleeping in the Forest
+
+> I thought the earth remembered me,  
+> she took me back so tenderly,  
+> arranging her dark skirts, her pockets  
+> full of lichens and seeds.  
+>
+> I slept as never before, a stone on the river bed,  
+> nothing between me and the white fire of the stars  
+> but my thoughts, and they floated light as moths  
+> among the branches of the perfect trees.  
+>
+> All night I heard the small kingdoms  
+> breathing around me, the insects,  
+> and the birds who do their work in the darkness.  
+>
+> All night I rose and fell, as if in water,  
+> grappling with a luminous doom. By morning  
+> I had vanished at least a dozen times  
+> into something better.  
+> 
+> ― Mary Oliver
