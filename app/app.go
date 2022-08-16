@@ -111,6 +111,8 @@ const (
 	// EnvPrefix environment variable prefix used to map environment
 	// variables to command flags
 	EnvPrefix = "REGEN"
+
+	test123 = "test123"
 )
 
 var _ simapp.App = &RegenApp{}
