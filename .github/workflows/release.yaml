@@ -23,10 +23,10 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - name: Release setup
+      - name: Run release setup
         run: ./scripts/release-setup.sh
         shell: bash
-      - name: Build and release
+      - name: Run goreleaser release
         uses: goreleaser/goreleaser-action@v3
         with:
           version: latest

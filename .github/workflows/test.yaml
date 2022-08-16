@@ -30,7 +30,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - name: run sub-modules test and codecov
+      - name: Run sub-modules test and codecov
         run: make test-cover
         if: env.GIT_DIFF
       - name: Upload codecov report
@@ -55,11 +55,11 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - name: start localnet
+      - name: Start localnet
         run: |
           make clean localnet-start
         if: env.GIT_DIFF
-      - name: test liveness
+      - name: Run liveness test
         run: |
           ./contrib/localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF
