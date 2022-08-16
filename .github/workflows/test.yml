@@ -21,6 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
       - uses: technote-space/get-diff-action@v6
         id: git_diff
         with:
@@ -44,6 +46,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
       - uses: technote-space/get-diff-action@v6
         id: git_diff
         with:

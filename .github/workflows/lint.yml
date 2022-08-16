@@ -58,6 +58,8 @@ jobs:
           PATTERNS: |
             **/**.proto
       - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
         if: env.GIT_DIFF
       - name: protolint
         run: |
