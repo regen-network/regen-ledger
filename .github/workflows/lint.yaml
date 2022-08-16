@@ -30,8 +30,7 @@ jobs:
             go.mod
             go.sum
       - uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
+        args: --timeout 3m --verbose
         if: env.GIT_DIFF
 
   buf-lint:
@@ -39,6 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        id: git_diff
         with:
           PATTERNS: |
             **/**.proto
@@ -51,7 +51,6 @@ jobs:
 
   protolint:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6

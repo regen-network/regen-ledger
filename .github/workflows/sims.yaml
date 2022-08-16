@@ -72,12 +72,10 @@ jobs:
           go-version-file: 'go.mod'
       - uses: technote-space/get-diff-action@v6
         with:
-          SUFFIX_FILTER: |
+          PATTERNS: |
             **/**.go
             go.mod
             go.sum
-          SET_ENV_NAME_INSERTIONS: 1
-          SET_ENV_NAME_LINES: 1
       - uses: actions/cache@v3
         with:
           path: ~/go/bin
