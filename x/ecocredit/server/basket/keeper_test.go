@@ -77,7 +77,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
-	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
+	_, _, authority := testdata.KeyTestPubAddr()
+	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authority)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
