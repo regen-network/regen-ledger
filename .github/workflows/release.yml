@@ -1,5 +1,12 @@
 name: Release
 
+# **What it does**: Runs the goreleaser release process when a new
+# version of the application is tagged and pushed.
+#
+# **Why we have it**: Automates the release process.
+#
+# **What does it impact**: Release process.
+
 on:
   push:
     tags:

@@ -1,7 +1,13 @@
 name: Lint
-# Lint runs golangci-lint, protolint, and buf-lint on every pull request
-# with get diff action, allowing for lint checks to be required but only
-# run when either go files or proto files have been modified.
+
+# **What it does**: Runs go linters when go files have been and
+# proto linters when proto files have been modified.
+#
+# **Why we have it**: Ensures all go files and proto files are
+# properly formatted according to lint configuration files.
+#
+# **What does it impact**: Code cleanliness.
+
 on:
   pull_request:
   push:
@@ -13,6 +19,7 @@ jobs:
   golangci:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |

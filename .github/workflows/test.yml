@@ -1,5 +1,12 @@
 name: Tests
 
+# **What it does**: Runs unit and integration tests when go files
+# have been modified and provides code coverage reports.
+#
+# **Why we have it**: Ensures the application is production ready.
+#
+# **What does it impact**: Application stability.
+
 on:
   pull_request:
   push:

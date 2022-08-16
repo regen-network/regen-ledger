@@ -94,7 +94,7 @@ The feature branch should follow the format `<author>/<issue-number>-<descriptio
 
 #### Requesting Reviews
 
-Core team members will automatically be assigned to review each pull request upon submission based on [CODEOWNERS](./CODEOWNERS). If the pull request is not ready for an official review, open the pull request as a draft and keep it open as a draft until it is ready. If you would like initial feedback on a draft pull request, leave a comment tagging the individual or @regen-network/ledger-core-dev requesting initial feedback.
+Core team members will automatically be assigned to review each pull request upon submission based on [CODEOWNERS](.github/CODEOWNERS). If the pull request is not ready for an official review, open the pull request as a draft and keep it open as a draft until it is ready. If you would like initial feedback on a draft pull request, leave a comment tagging the individual or @regen-network/ledger-core-dev requesting initial feedback.
 
 Before opening a pull request (either directly or converting from draft), please make sure you have added a description and that you have read through and completed the "Author Checklist" items within the pull request template.
 
