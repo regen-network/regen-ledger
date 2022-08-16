@@ -4,7 +4,7 @@ name: Build
 #
 # **Why we have it**: Ensures the application can be built.
 #
-# **What does it impact**: Application requirements.
+# **What does it impact**: Application stability.
 
 on:
   pull_request:
@@ -20,4 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2.1.3
+        with:
+          go-version: 1.18
       - run: make build

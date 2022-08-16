@@ -6,13 +6,10 @@ name: Proto
 # **Why we have it**: Provides visibility into breaking changes and
 # ensures no breaking changes are merged to a release branch.
 #
-# **What does it impact**: Versioning and release process.
+# **What does it impact**: Application release process.
 
 on:
   pull_request:
-    paths:
-      - 'proto/**'
-  push:
     branches:
       - master
       - release/v*

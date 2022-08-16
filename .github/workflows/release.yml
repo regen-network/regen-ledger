@@ -5,7 +5,7 @@ name: Release
 #
 # **Why we have it**: Automates the release process.
 #
-# **What does it impact**: Release process.
+# **What does it impact**: Application release process.
 
 on:
   push:

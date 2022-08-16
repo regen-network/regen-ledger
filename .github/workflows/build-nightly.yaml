@@ -6,7 +6,7 @@ name: Build Nightly
 # **Why we have it**: Ensures the application can be built
 # using the goreleaser configuration.
 #
-# **What does it impact**: Application requirements.
+# **What does it impact**: Application stability.
 
 on:
   schedule:
