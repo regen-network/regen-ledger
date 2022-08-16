@@ -30,7 +30,8 @@ jobs:
             go.mod
             go.sum
       - uses: golangci/golangci-lint-action@v3
-        args: --timeout 3m --verbose
+        with:
+          args: --timeout 3m --verbose
         if: env.GIT_DIFF
 
   buf-lint:
