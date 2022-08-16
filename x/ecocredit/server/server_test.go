@@ -50,9 +50,11 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
 	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
+	ecoKey := sdk.NewKVStoreKey(ecocredittypes.ModuleName)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
 	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(ecoKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(bankKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(distKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
@@ -77,7 +79,7 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	)
 
 	_, _, authority := testdata.KeyTestPubAddr()
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, authority)
+	ecocreditModule := ecocredit.NewModule(ecoKey, ecocreditSubspace, accountKeeper, bankKeeper, authority)
 	ff.SetModules([]module.Module{ecocreditModule})
 
 	return ff, ecocreditSubspace, bankKeeper, accountKeeper

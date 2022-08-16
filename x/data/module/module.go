@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	storeTypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
+	tmtypes "github.com/tendermint/tendermint/abci/types"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -20,28 +22,76 @@ import (
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
 	"github.com/regen-network/regen-ledger/x/data/server"
 	"github.com/regen-network/regen-ledger/x/data/simulation"
 )
 
+var (
+	_ module.AppModule           = &Module{}
+	_ module.AppModuleBasic      = Module{}
+	_ module.AppModuleSimulation = Module{}
+)
+
 type Module struct {
-	ak data.AccountKeeper
-	bk data.BankKeeper
+	ak     data.AccountKeeper
+	bk     data.BankKeeper
+	sk     storeTypes.StoreKey
+	keeper server.Keeper
+}
+
+func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []tmtypes.ValidatorUpdate {
+	update, err := a.keeper.InitGenesis(s, jsonCodec, message)
+	if err != nil {
+		panic(err) // TODO(Tyler): panic or no?
+	}
+	return update
+}
+
+func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
+	jr, err := a.keeper.ExportGenesis(s, jsonCodec)
+	if err != nil {
+		panic(err) // TODO(Tyler): panic?
+	}
+	return jr
+}
+
+func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
+
+func (a Module) Route() sdk.Route {
+	return sdk.Route{}
+}
+
+func (a Module) QuerierRoute() string {
+	return data.ModuleName
+}
+
+func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+	return nil
+}
+
+func (a *Module) RegisterServices(cfg module.Configurator) {
+	// TODO(Tyler): store key
+	impl := server.NewServer(a.sk, a.ak, a.bk)
+	data.RegisterMsgServer(cfg.MsgServer(), impl)
+	data.RegisterQueryServer(cfg.QueryServer(), impl)
+	a.keeper = impl
 }
 
 var _ module.AppModuleBasic = Module{}
-var _ servermodule.Module = Module{}
+
+// TODO(Tyler): need this?? no?
+// var _ servermodule.Module = Module{}
 var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 var _ module.AppModuleSimulation = &Module{}
 
-func NewModule(ak data.AccountKeeper, bk data.BankKeeper) Module {
-	return Module{
+func NewModule(sk storeTypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {
+	return &Module{
 		ak: ak,
 		bk: bk,
+		sk: sk,
 	}
 }
 
@@ -51,10 +101,6 @@ func (a Module) Name() string {
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	data.RegisterTypes(registry)
-}
-
-func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator, a.ak, a.bk)
 }
 
 //nolint:errcheck

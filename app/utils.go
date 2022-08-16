@@ -31,5 +31,7 @@ func SimulationOperations(app *RegenApp, cdc codec.Codec, config simulation.Conf
 
 	simState.ParamChanges = app.SimulationManager().GenerateParamChanges(config.Seed)
 	simState.Contents = app.SimulationManager().GetProposalContents(simState)
-	return app.smm.WeightedOperations(simState, app.sm.Modules)
+	// TODO(Tyler): how to fix?
+	// return app.smm.WeightedOperations(simState, app.sm.Modules)
+	return nil
 }

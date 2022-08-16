@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
@@ -27,7 +28,6 @@ import (
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -38,7 +38,14 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
+var (
+	_ module.AppModule           = &Module{}
+	_ module.AppModuleBasic      = Module{}
+	_ module.AppModuleSimulation = Module{}
+)
+
 type Module struct {
+	key           storetypes.StoreKey
 	paramSpace    paramtypes.Subspace
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
@@ -46,8 +53,41 @@ type Module struct {
 	authority     sdk.AccAddress
 }
 
+func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
+	update, err := a.Keeper.InitGenesis(s, jsonCodec, message)
+	if err != nil {
+		panic(err) // TODO(Tyler): should we panic here?
+	}
+	return update
+}
+
+func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
+	m, err := a.Keeper.ExportGenesis(s, jsonCodec)
+	if err != nil {
+		panic(err) // TODO(Tyler): panic or no?
+	}
+	return m
+}
+
+func (a Module) RegisterInvariants(reg sdk.InvariantRegistry) {
+	a.Keeper.RegisterInvariants(reg)
+}
+
+func (a Module) Route() sdk.Route {
+	return sdk.Route{}
+}
+
+func (a Module) QuerierRoute() string {
+	return ecocredit.ModuleName
+}
+
+func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+	return nil // TODO(Tyler): is this even needed?
+}
+
 // NewModule returns a new Module object.
 func NewModule(
+	storeKey storetypes.StoreKey,
 	paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
@@ -58,6 +98,7 @@ func NewModule(
 	}
 
 	return &Module{
+		key:           storeKey,
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
@@ -66,7 +107,10 @@ func NewModule(
 }
 
 var _ module.AppModuleBasic = &Module{}
-var _ servermodule.Module = &Module{}
+
+// TODO(Tyler): need this?
+// broken::
+// var _ servermodule.Module = &Module{}
 var _ restmodule.Module = &Module{}
 var _ climodule.Module = &Module{}
 var _ module.AppModuleSimulation = &Module{}
@@ -81,8 +125,18 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	marketplacetypes.RegisterTypes(registry)
 }
 
-func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
+func (a *Module) RegisterServices(cfg module.Configurator) {
+	//a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
+	svr := server.NewServer(a.key, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
+	coretypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
+	coretypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
+
+	baskettypes.RegisterMsgServer(cfg.MsgServer(), svr.BasketKeeper)
+	baskettypes.RegisterQueryServer(cfg.QueryServer(), svr.BasketKeeper)
+
+	marketplacetypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
+	marketplacetypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
+	a.Keeper = svr
 }
 
 //nolint:errcheck
@@ -202,8 +256,7 @@ func (Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
 }
 
 // RegisterStoreDecoder registers a decoder for ecocredit module's types
-func (Module) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-}
+func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 // WeightedOperations returns all the ecocredit module operations with their respective weights.
 // NOTE: This is no longer needed for the modules which uses ADR-33, ecocredit module `WeightedOperations`

@@ -5,20 +5,19 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-
-	"github.com/regen-network/regen-ledger/types"
 )
 
 // InitGenesis performs genesis initialization for the data module. It
 // returns no validator updates.
-func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
+func (s serverImpl) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
 	jsonSource, err := ormjson.NewRawMessageSource(data)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.db.ImportJSON(ctx, jsonSource)
+	err = s.db.ImportJSON(sdk.WrapSDKContext(ctx), jsonSource)
 	if err != nil {
 		return nil, err
 	}
@@ -27,9 +26,9 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 }
 
 // ExportGenesis will dump the data module state into a serializable GenesisState.
-func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawMessage, error) {
+func (s serverImpl) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error) {
 	jsonTarget := ormjson.NewRawMessageTarget()
-	err := s.db.ExportJSON(ctx, jsonTarget)
+	err := s.db.ExportJSON(sdk.WrapSDKContext(ctx), jsonTarget)
 	if err != nil {
 		return nil, err
 	}
