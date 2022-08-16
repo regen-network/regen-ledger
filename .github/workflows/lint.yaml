@@ -35,6 +35,7 @@ jobs:
             go.sum
       - uses: golangci/golangci-lint-action@v3
         with:
+          args: --timeout 5m --verbose
           only-new-issues: true
         if: env.GIT_DIFF
 
