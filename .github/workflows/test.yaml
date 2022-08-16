@@ -14,6 +14,10 @@ on:
       - master
       - release/v*
 
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Sub modules test and code coverage
