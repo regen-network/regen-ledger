@@ -38,9 +38,6 @@ message Params {
   // allowed_class_creators can create credit classes. When set to false, any
   // address can create credit classes.
   bool allowlist_enabled = 4;
-
-  // test test
-  bool test = 5;
 }
 
 // Credits represents a simple structure for credits.

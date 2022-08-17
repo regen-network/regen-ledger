@@ -27,8 +27,7 @@ jobs:
       - name: Run release setup
         run: ./scripts/release-setup.sh
         shell: bash
-      - name: Run goreleaser build
-        uses: goreleaser/goreleaser-action@v3
+      - uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
           args: build --skip-validate --rm-dist
