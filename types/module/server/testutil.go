@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -21,13 +22,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	regentypes "github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 type FixtureFactory struct {
 	t       gocuke.TestingT
-	modules []module.Module
+	modules []sdkmodules.AppModule
 	signers []sdk.AccAddress
 	cdc     *codec.ProtoCodec
 	baseApp *baseapp.BaseApp
@@ -45,7 +45,7 @@ func NewFixtureFactory(t gocuke.TestingT, numSigners int) *FixtureFactory {
 	}
 }
 
-func (ff *FixtureFactory) SetModules(modules []module.Module) {
+func (ff *FixtureFactory) SetModules(modules []sdkmodules.AppModule) {
 	ff.modules = modules
 }
 
@@ -77,33 +77,34 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	baseApp := ff.baseApp
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
-	mm := NewManager(baseApp, cdc)
-	err := mm.RegisterModules(ff.modules)
-	require.NoError(ff.t, err)
-	err = mm.CompleteInitialization()
-	require.NoError(ff.t, err)
-	err = baseApp.LoadLatestVersion()
+	mm := sdkmodules.NewManager(ff.modules...)
+
+	// TODO(Tyler): ???
+	//mm := NewManager(baseApp, cdc)
+	//err := mm.RegisterModules(ff.modules)
+	//require.NoError(ff.t, err)
+	//err = mm.CompleteInitialization()
+	//require.NoError(ff.t, err)
+
+	err := baseApp.LoadLatestVersion()
 	require.NoError(ff.t, err)
 
 	return fixture{
-		baseApp:               baseApp,
-		router:                mm.router,
-		cdc:                   cdc,
-		initGenesisHandlers:   mm.initGenesisHandlers,
-		exportGenesisHandlers: mm.exportGenesisHandlers,
-		t:                     ff.t,
-		signers:               ff.signers,
+		baseApp: baseApp,
+		mm:      mm,
+		cdc:     cdc,
+		t:       ff.t,
+		signers: ff.signers,
 	}
 }
 
 type fixture struct {
-	baseApp               *baseapp.BaseApp
-	router                *router
-	cdc                   *codec.ProtoCodec
-	initGenesisHandlers   map[string]module.InitGenesisHandler
-	exportGenesisHandlers map[string]module.ExportGenesisHandler
-	t                     gocuke.TestingT
-	signers               []sdk.AccAddress
+	baseApp *baseapp.BaseApp
+	mm      *sdkmodules.Manager
+	router  *router
+	cdc     *codec.ProtoCodec
+	t       gocuke.TestingT
+	signers []sdk.AccAddress
 }
 
 func (f fixture) Context() context.Context {
@@ -123,11 +124,11 @@ func (f fixture) Signers() []sdk.AccAddress {
 }
 
 func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
-	return initGenesis(ctx, f.cdc, genesisData, []abci.ValidatorUpdate{}, f.initGenesisHandlers)
+	return f.mm.InitGenesis(ctx, f.cdc, genesisData), nil
 }
 
 func (f fixture) ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error) {
-	return exportGenesis(ctx, f.cdc, f.exportGenesisHandlers)
+	return f.mm.ExportGenesis(ctx, f.cdc), nil
 }
 
 func (f fixture) Codec() *codec.ProtoCodec {

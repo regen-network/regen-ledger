@@ -88,7 +88,7 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 	return coreStore, basketStore, marketStore
 }
 
-// TODO(Tyler): what to do for gen handlers, migration handlers, weighted, and invars??
+// TODO(Tyler): still need to figure out weighted sim handlers??
 
 //func RegisterServices(
 //	configurator server.Configurator,

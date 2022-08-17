@@ -7,6 +7,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -17,7 +18,6 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -80,7 +80,7 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 
 	_, _, authority := testdata.KeyTestPubAddr()
 	ecocreditModule := ecocredit.NewModule(ecoKey, ecocreditSubspace, accountKeeper, bankKeeper, authority)
-	ff.SetModules([]module.Module{ecocreditModule})
+	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 
 	return ff, ecocreditSubspace, bankKeeper, accountKeeper
 }

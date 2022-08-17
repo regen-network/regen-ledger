@@ -72,7 +72,6 @@ func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
 }
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
-	// TODO(Tyler): store key
 	impl := server.NewServer(a.sk, a.ak, a.bk)
 	data.RegisterMsgServer(cfg.MsgServer(), impl)
 	data.RegisterQueryServer(cfg.QueryServer(), impl)
