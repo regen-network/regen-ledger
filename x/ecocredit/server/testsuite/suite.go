@@ -153,7 +153,7 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	s.Require().NoError(err)
 
 	err = bs.BasketFeeTable().Save(ormCtx, &basketApi.BasketFee{
-		Fee: []*v1beta1.Coin{
+		Fees: []*v1beta1.Coin{
 			{
 				Denom:  s.basketFee.Denom,
 				Amount: s.basketFee.Amount.String(),
@@ -1150,12 +1150,6 @@ func (s *IntegrationTestSuite) assertDecStrEqual(d1, d2 string) {
 	dec2, err := math.NewDecFromString(d2)
 	s.Require().NoError(err)
 	s.Require().True(dec1.Equal(dec2), "%v does not equal %v", dec1, dec2)
-}
-
-func (s *IntegrationTestSuite) createClass(admin, creditTypeAbbrev, metadata string, issuers []string) string {
-	res, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin, Issuers: issuers, Metadata: metadata, CreditTypeAbbrev: creditTypeAbbrev, Fee: &createClassFee})
-	s.Require().NoError(err)
-	return res.ClassId
 }
 
 func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, bankDenom string) accountInfo {
