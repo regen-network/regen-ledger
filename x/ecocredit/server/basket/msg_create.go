@@ -23,7 +23,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	for _, c := range fee.Fee {
+	for _, c := range fee.Fees {
 		i, ok := sdk.NewIntFromString(c.Amount)
 		if !ok {
 			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")

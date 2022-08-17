@@ -31,8 +31,6 @@ import (
 var (
 	gmAny         = gomock.Any()
 	defaultParams = core.DefaultParams()
-	basketFees    = defaultParams.BasketFee
-	validFee      = basketFees[0]
 )
 
 type baseSuite struct {

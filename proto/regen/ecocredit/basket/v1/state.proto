@@ -3,8 +3,8 @@ syntax = "proto3";
 // Revision 1
 package regen.ecocredit.basket.v1;
 
-import "cosmos/orm/v1alpha1/orm.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
@@ -113,8 +113,8 @@ message BasketFee {
     id : 4
   };
 
-  // fee is a list of basket creation fees accepted when creating a
+  // fees is a list of basket creation fees accepted when creating a
   // basket. Any fee listed is accepted and charged to the basket creator when
   // creating a basket.
-  repeated cosmos.base.v1beta1.Coin fee = 1;
+  repeated cosmos.base.v1beta1.Coin fees = 1;
 }
