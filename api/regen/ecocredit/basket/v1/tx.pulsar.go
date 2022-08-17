@@ -5095,7 +5095,7 @@ type MsgUpdateBasketFee struct {
 
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// basket_fee defines a list of coins fees that can be used in the basket
+	// basket_fee defines a list of coin fees that can be used in the basket
 	// creation fee.
 	BasketFee []*v1beta1.Coin `protobuf:"bytes,2,rep,name=basket_fee,json=basketFee,proto3" json:"basket_fee,omitempty"`
 }

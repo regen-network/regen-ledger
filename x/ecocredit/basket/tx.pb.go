@@ -489,7 +489,7 @@ func (m *MsgTakeResponse) GetCredits() []*BasketCredit {
 type MsgUpdateBasketFee struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// basket_fee defines a list of coins fees that can be used in the basket
+	// basket_fee defines a list of coin fees that can be used in the basket
 	// creation fee.
 	BasketFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=basket_fee,json=basketFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"basket_fee"`
 }
@@ -669,7 +669,7 @@ type MsgClient interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
-	// UpdateClassFee is a governance method that allows for updation of fees to
+	// UpdateBasketFee is a governance method that allows for updation of fees to
 	// be used for the basket creation fee.
 	//
 	// Since Revision 1
@@ -729,7 +729,7 @@ type MsgServer interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
-	// UpdateClassFee is a governance method that allows for updation of fees to
+	// UpdateBasketFee is a governance method that allows for updation of fees to
 	// be used for the basket creation fee.
 	//
 	// Since Revision 1

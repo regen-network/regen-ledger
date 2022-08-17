@@ -23,12 +23,12 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	for _, c := range fee.Fees {
-		i, ok := sdk.NewIntFromString(c.Amount)
+	for _, coin := range fee.Fees {
+		amount, ok := sdk.NewIntFromString(coin.Amount)
 		if !ok {
 			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")
 		}
-		allowedFees = append(allowedFees, sdk.NewCoin(c.Denom, i))
+		allowedFees = append(allowedFees, sdk.NewCoin(coin.Denom, amount))
 	}
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
