@@ -78,6 +78,11 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 	mm := sdkmodules.NewManager(ff.modules...)
+	cfg := sdkmodules.NewConfigurator(cdc, baseApp.MsgServiceRouter(), baseApp.GRPCQueryRouter())
+	for _, module := range mm.Modules {
+		module.RegisterInterfaces(ff.cdc.InterfaceRegistry())
+		module.RegisterServices(cfg)
+	}
 
 	// TODO(Tyler): ???
 	//mm := NewManager(baseApp, cdc)
@@ -93,6 +98,12 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 		baseApp: baseApp,
 		mm:      mm,
 		cdc:     cdc,
+		router: &router{
+			handlers:         nil,
+			providedServices: nil,
+			authzMiddleware:  nil,
+			msgServiceRouter: nil,
+		},
 		t:       ff.t,
 		signers: ff.signers,
 	}
