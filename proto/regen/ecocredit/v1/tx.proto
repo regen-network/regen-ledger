@@ -122,18 +122,25 @@ service Msg {
   // AllowedClassCreator is a governance method that allows the addition of new
   // addresses to the class creation allowlist.
   // Since Revision 1
-  rpc AllowedClassCreator(MsgAllowedClassCreator) returns (MsgAllowedClassCreatorResponse);
+  rpc AllowedClassCreator(MsgAllowedClassCreator)
+      returns (MsgAllowedClassCreatorResponse);
 
   // RemoveClassCreator is a governance method that allows the removes
   // addresses to the class creation allowlist.
   // Since Revision 1
-  rpc RemoveClassCreator(MsgRemoveClassCreator) returns (MsgRemoveClassCreatorResponse);
+  rpc RemoveClassCreator(MsgRemoveClassCreator)
+      returns (MsgRemoveClassCreatorResponse);
 
-  // ToggleCreditClassAllowlist is a governance method that toggles the network allowlist to on or off.
-  // when on, the class creator allowlist is used to enforce which addresses may create classes.
-  // when off, any address may create classes.
-  // Since Revision 1
-  rpc ToggleCreditClassAllowlist(MsgToggleClassAllowList) returns (MsgToggleClassAllowListResponse);
+  // ToggleCreditClassAllowlist is a governance method that toggles the network
+  // allowlist to on or off. when on, the class creator allowlist is used to
+  // enforce which addresses may create classes. when off, any address may
+  // create classes. Since Revision 1
+  rpc ToggleCreditClassAllowlist(MsgToggleCreditClassAllowlist)
+      returns (MsgToggleCreditClassAllowlistResponse);
+
+  // UpdateClassFee is a governance method that allows for the addition and
+  // removal of fees to be used for the class creation fee. Since Revision 1
+  rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
 }
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
@@ -597,7 +604,7 @@ message MsgBridgeReceiveResponse {
 // MsgAllowedClassCreator is the Msg/AllowedClassCreator request type.
 // Since Revision 1
 message MsgAllowedClassCreator {
-  
+
   // authority is the address of the governance account.
   string authority = 1;
 
@@ -607,12 +614,12 @@ message MsgAllowedClassCreator {
 
 // MsgAllowedClassCreatorResponse is the Msg/AllowedClassCreator response type.
 // Since Revision 1
-message MsgAllowedClassCreatorResponse{}
+message MsgAllowedClassCreatorResponse {}
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 // Since Revision 1
 message MsgRemoveClassCreator {
-  
+
   // authority is the address of the governance account.
   string authority = 1;
 
@@ -622,11 +629,11 @@ message MsgRemoveClassCreator {
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClassCreator response type.
 // Since Revision 1
-message MsgRemoveClassCreatorResponse{}
+message MsgRemoveClassCreatorResponse {}
 
-// MsgToggleClassAllowList is the Msg/ToggleClassAllowList request type.
-// Since Revision 1
-message MsgToggleClassAllowList {
+// MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
+// type. Since Revision 1
+message MsgToggleCreditClassAllowlist {
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -635,6 +642,24 @@ message MsgToggleClassAllowList {
   bool setting = 2;
 }
 
-// MsgToggleClassAllowListResponse is the Msg/ToggleClassAllowList response type.
+// MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist
+// response type. Since Revision 1
+message MsgToggleCreditClassAllowlistResponse {}
+
+// MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 // Since Revision 1
-message MsgToggleClassAllowListResponse {};
+message MsgUpdateClassFee {
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // fee defines a list of coins fees that can be used in the credit class
+  // creation fee.
+  repeated cosmos.base.v1beta1.Coin fee = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
+// Since Revision 1
+message MsgUpdateClassFeeResponse {}

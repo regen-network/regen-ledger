@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.v1;
 
+import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -346,4 +347,16 @@ message AllowListEnabled {
 
   // enabled is whether or not the allow list is enabled.
   bool enabled = 1;
+}
+
+// ClassFee is a list of coins that may be used as the fee
+// for credit class creation.
+message ClassFee {
+  // This table is controlled via governance.
+  option (cosmos.orm.v1alpha1.singleton) = {
+    id : 15
+  };
+
+  // fee is the fee required to create a credit class.
+  repeated cosmos.base.v1beta1.Coin fee = 1;
 }
