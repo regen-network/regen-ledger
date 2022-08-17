@@ -13,19 +13,6 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  install-runsim:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
-      - name: Install runsim
-        run: go install github.com/cosmos/tools/cmd/runsim@latest
-      - uses: actions/cache@v3
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-
   sim-after-import:
     runs-on: ubuntu-latest
     needs: install-runsim
@@ -34,15 +21,10 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - uses: actions/cache@v3
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
       - name: Run sim-after-import
-        run: |
-          make sim-regen-after-import
+        run: make sim-regen-after-import
 
-  sim-fullapp:
+  sim-fast:
     runs-on: ubuntu-latest
     needs: install-runsim
     steps:
@@ -50,10 +32,5 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - uses: actions/cache@v3
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-      - name: Run sim-fullapp
-        run: |
-          make sim-regen-fast
+      - name: Run sim-fast
+        run: make sim-regen-fast

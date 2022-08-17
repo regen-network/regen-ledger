@@ -19,38 +19,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  install-runsim:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
-      - name: Install runsim
-        run: go install github.com/cosmos/tools/cmd/runsim@latest
-      - uses: actions/cache@v3
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-
   sim-nondeterminism:
     runs-on: ubuntu-latest
     needs: install-runsim
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3
+      - uses: actions/setup-go@v3
         with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+          go-version-file: 'go.mod'
         if: env.GIT_DIFF
       - name: Run sim-nondeterminism
         run: make sim-regen-nondeterminism
@@ -61,19 +43,15 @@ jobs:
     needs: install-runsim
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3
+      - uses: actions/setup-go@v3
         with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+          go-version-file: 'go.mod'
         if: env.GIT_DIFF
       - name: Run sim-import-export
         run: make sim-regen-import-export

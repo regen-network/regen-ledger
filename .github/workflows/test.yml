@@ -24,15 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
       - name: Run sub-modules test and codecov
         run: make test-cover
         if: env.GIT_DIFF
@@ -47,20 +48,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
       - name: Start localnet
-        run: |
-          make clean localnet-start
+        run: make clean localnet-start
         if: env.GIT_DIFF
       - name: Run liveness test
-        run: |
-          ./contrib/localnet_liveness.sh 100 5 50 localhost
+        run: ./contrib/localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF
