@@ -1,71 +1,34 @@
 name: Sims Nightly
 
+# **What it does**: Runs simulations (after-import, fast) on a
+# set schedule.
+#
+# **Why we have it**: Ensures the application is production ready.
+#
+# **What does it impact**: Application stability.
+
 on:
   schedule:
     # Runs "at 1am every day"
     - cron: "0 0 * * *"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip-sims')"
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.3
-        with:
-          go-version: 1.18
-      - name: Display go version
-        run: go version
-      - run: make build
-
-  install-runsim:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/setup-go@v2.1.3
-        with:
-          go-version: 1.18
-      - name: Display go version
-        run: go version
-      - name: Install runsim
-        run: export GO111MODULE="on" && go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v2.1.3
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-
   sim-after-import:
     runs-on: ubuntu-latest
-    needs: [build, install-runsim]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
-      - name: Display go version
-        run: go version
-      - uses: actions/cache@v2.1.3
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-      - name: sim-after-import
-        run: |
-          make sim-regen-after-import
+          go-version-file: 'go.mod'
+      - name: Run sim-after-import
+        run: make sim-regen-after-import
 
-  sim-fullapp:
+  sim-fast:
     runs-on: ubuntu-latest
-    needs: [build, install-runsim]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
-      - name: Display go version
-        run: go version
-      - uses: actions/cache@v2.1.3
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-      - name: sim-fullapp
-        run: |
-          make sim-regen-fast
+          go-version-file: 'go.mod'
+      - name: Run sim-fast
+        run: make sim-regen-fast
