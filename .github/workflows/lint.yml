@@ -1,7 +1,7 @@
 name: Lint
 
-# **What it does**: Runs go linters when go files have been and
-# proto linters when proto files have been modified.
+# **What it does**: Runs go linter when go files have been modified
+# and proto linters when proto files have been modified.
 #
 # **Why we have it**: Ensures all go files and proto files are
 # properly formatted according to lint configuration files.
