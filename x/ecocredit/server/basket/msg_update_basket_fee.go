@@ -12,6 +12,7 @@ import (
 
 // Create is an RPC to handle basket.UpdateBasketFee
 func (k Keeper) UpdateBasketFee(ctx context.Context, req *baskettypes.MsgUpdateBasketFee) (*baskettypes.MsgUpdateBasketFeeResponse, error) {
+	panic("OOPS")
 	if k.authority.String() != req.Authority {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}

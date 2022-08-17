@@ -32,7 +32,8 @@ service Msg {
 
   // RemoveAllowedDenom is a governance method that removes allowed denom.
   // Since Revision 1
-  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom) returns (MsgRemoveAllowedDenomResponse);
+  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
+      returns (MsgRemoveAllowedDenomResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
