@@ -59,14 +59,3 @@ func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.Bank
 		accountKeeper: ak,
 	}
 }
-
-// TODO(Tyler): what do we do for gen handler/weighted ops handler??
-//
-//func RegisterServices(configurator servermodule.Configurator, ak data.AccountKeeper, bk data.BankKeeper) {
-//	impl := NewServer(configurator.ModuleKey(), ak, bk)
-//	data.RegisterMsgServer(configurator.MsgServer(), impl)
-//	data.RegisterQueryServer(configurator.QueryServer(), impl)
-//
-//	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
-//	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
-//}

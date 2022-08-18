@@ -87,31 +87,3 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 	}
 	return coreStore, basketStore, marketStore
 }
-
-// TODO(Tyler): still need to figure out weighted sim handlers??
-
-//func RegisterServices(
-//	configurator server.Configurator,
-//	paramSpace paramtypes.Subspace,
-//	accountKeeper ecocredit.AccountKeeper,
-//	bankKeeper ecocredit.BankKeeper,
-//	authority sdk.AccAddress,
-//) Keeper {
-//	impl := NewServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, authority)
-//
-//	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.CoreKeeper)
-//	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.CoreKeeper)
-//
-//	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.BasketKeeper)
-//	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.BasketKeeper)
-//
-//	marketplacetypes.RegisterMsgServer(configurator.MsgServer(), impl.MarketplaceKeeper)
-//	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.MarketplaceKeeper)
-//
-//	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
-//	configurator.RegisterMigrationHandler(impl.RunMigrations)
-//
-//	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
-//	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
-//	return impl
-//}

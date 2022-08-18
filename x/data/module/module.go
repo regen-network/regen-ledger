@@ -44,17 +44,17 @@ type Module struct {
 func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []tmtypes.ValidatorUpdate {
 	update, err := a.keeper.InitGenesis(s, jsonCodec, message)
 	if err != nil {
-		panic(err) // TODO(Tyler): panic or no?
+		panic(err)
 	}
 	return update
 }
 
 func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
-	jr, err := a.keeper.ExportGenesis(s, jsonCodec)
+	jsn, err := a.keeper.ExportGenesis(s, jsonCodec)
 	if err != nil {
-		panic(err) // TODO(Tyler): panic?
+		panic(err)
 	}
-	return jr
+	return jsn
 }
 
 func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
@@ -79,9 +79,6 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 }
 
 var _ module.AppModuleBasic = Module{}
-
-// TODO(Tyler): need this?? no?
-// var _ servermodule.Module = Module{}
 var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 var _ module.AppModuleSimulation = &Module{}

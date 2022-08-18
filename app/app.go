@@ -375,9 +375,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter, app.MsgServiceRouter(), govConfig,
 	)
 
-	// TODO(Tyler): not needed??
-	//app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath, appOpts)
-
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	app.mm = module.NewManager(
@@ -557,15 +554,13 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	return app
 }
 
-// TODO(Tyler): is below needed?
-
 // MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
 // Regenapp. It is useful for tests and clients who do not want to construct the
 // full Regenapp
-//func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
-//	cfg := MakeEncodingConfig()
-//	return cfg.Codec, cfg.Amino
-//}
+func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
+	cfg := MakeEncodingConfig()
+	return cfg.Codec, cfg.Amino
+}
 
 // Name returns the name of the App
 func (app *RegenApp) Name() string { return app.BaseApp.Name() }
@@ -579,9 +574,6 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 // EndBlocker application updates every end block
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
-	if len(resp.ValidatorUpdates) > 0 { // TODO(tyler): is this still needed?
-		panic("validator EndBlock updates already set by the SDK Module Manager")
-	}
 	return resp
 }
 

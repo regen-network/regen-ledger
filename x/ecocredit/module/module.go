@@ -57,16 +57,16 @@ type Module struct {
 func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
 	_, err := a.Keeper.InitGenesis(s, jsonCodec, message)
 	if err != nil {
-		panic(err) // TODO(Tyler): should we panic here?
+		panic(err)
 	}
-	// TODO(Tyler): remove this
+	// TODO(Tyler): the app fails without this....????
 	return []abci.ValidatorUpdate{{PubKey: crypto2.PublicKey{}, Power: 4}}
 }
 
 func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
 	m, err := a.Keeper.ExportGenesis(s, jsonCodec)
 	if err != nil {
-		panic(err) // TODO(Tyler): panic or no?
+		panic(err)
 	}
 	return m
 }
@@ -83,9 +83,7 @@ func (a Module) QuerierRoute() string {
 	return ecocredit.ModuleName
 }
 
-func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
-	return nil // TODO(Tyler): is this even needed?
-}
+func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier { return nil }
 
 // NewModule returns a new Module object.
 func NewModule(
@@ -109,10 +107,6 @@ func NewModule(
 }
 
 var _ module.AppModuleBasic = &Module{}
-
-// TODO(Tyler): need this?
-// broken::
-// var _ servermodule.Module = &Module{}
 var _ restmodule.Module = &Module{}
 var _ climodule.Module = &Module{}
 var _ module.AppModuleSimulation = &Module{}
