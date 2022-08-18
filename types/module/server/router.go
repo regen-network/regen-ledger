@@ -135,7 +135,9 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 				if err != nil {
 					return err
 				}
-				response = res.MsgResponses[0].GetCachedValue()
+				// response = res.MsgResponses[0].GetCachedValue()
+				resValue := reflect.ValueOf(res.MsgResponses[0].GetCachedValue()) // you get this from cached value of the any
+				reflect.ValueOf(response).Elem().Set(resValue.Elem())
 			}
 
 			// only commit writes if there is no error so that calls are atomic
