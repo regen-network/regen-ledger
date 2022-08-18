@@ -5,6 +5,8 @@ package regen.ecocredit.v1alpha1;
 import "gogoproto/gogo.proto";
 import "regen/ecocredit/v1alpha1/types.proto";
 
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core/v1alpha1";
+
 // GenesisState defines ecocredit module's genesis state.
 message GenesisState {
   // Params contains the updateable global parameters for use with the x/params
