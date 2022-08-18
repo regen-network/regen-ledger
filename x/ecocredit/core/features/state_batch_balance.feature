@@ -31,7 +31,7 @@ Feature: BatchBalance
     {}
     """
     When the batch balance is validated
-    Then expect the error "batch key cannot be zero: invalid request"
+    Then expect the error "batch key cannot be zero"
 
   Scenario: an error is returned if address is empty
     Given the batch balance
