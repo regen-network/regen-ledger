@@ -5,41 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<<<<<<< HEAD
-=======
-## [Unreleased]
-
-### app
-
-#### Removed
-
-- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
-
-### x/ecocredit
-
-#### API Breaking Changes
-
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewKeeper` method in `ecocredit/core` requires a `authority` address.
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Removed `AddCreditType` proposal handler.
-- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
-- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Removed `AllowedDenom` proposal handler.
-
-#### Added
-
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1342) `AddAllowedDenom` is added for msg-based gov proposal.
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) `AddCreditType` is added for msg-based gov proposal.
-- [#1346](https://github.com/regen-network/regen-ledger/pull/1346) `RemoveAllowedDenom` is added for msg-based gov proposal.
-
-### x/group
-
-#### Added
-
-- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add group module
-
-#### Removed
-
-- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module
-
 ## [v4.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.1) - TBD
 
 ### x/ecocredit
@@ -48,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1360](https://github.com/regen-network/regen-ledger/pull/1360) Register ecocredit v1alpha1 messages to allow for historical queries
 
->>>>>>> 05c29d13 (fix(x/ecocredit): register ecocredit v1alpha1 messages (#1360))
 ## [v4.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0) - 2022-07-26
 
 ### General

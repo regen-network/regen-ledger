@@ -152,6 +152,8 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
+replace github.com/regen-network/regen-ledger/x/ecocredit/v2 => ./x/ecocredit
+
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0

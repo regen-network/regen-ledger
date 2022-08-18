@@ -465,18 +465,6 @@ func (m *CreditTypeSeq) GetSeqNumber() uint64 {
 	return 0
 }
 
-func init() {
-	proto.RegisterType((*ClassInfo)(nil), "regen.ecocredit.v1alpha1.ClassInfo")
-	proto.RegisterType((*BatchInfo)(nil), "regen.ecocredit.v1alpha1.BatchInfo")
-	proto.RegisterType((*Params)(nil), "regen.ecocredit.v1alpha1.Params")
-	proto.RegisterType((*CreditType)(nil), "regen.ecocredit.v1alpha1.CreditType")
-	proto.RegisterType((*CreditTypeSeq)(nil), "regen.ecocredit.v1alpha1.CreditTypeSeq")
-}
-
-func init() {
-	proto.RegisterFile("regen/ecocredit/v1alpha1/types.proto", fileDescriptor_5342f4dcaeff1a84)
-}
-
 var fileDescriptor_5342f4dcaeff1a84 = []byte{
 	// 753 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0xcd, 0x6e, 0xeb, 0x44,
