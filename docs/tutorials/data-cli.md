@@ -18,7 +18,7 @@ regen keys add $KEY_NAME
 MY_ADDRESS=$(regen keys show $KEY_NAME -a)
 ```
 
-If you'd like to use a custom keyring backend, see the [Cosmos SDK keyring docs](https://docs.cosmos.network/master/run-node/keyring.html). Make sure you save the seed mnemonic in a safe place!
+If you'd like to use a custom keyring backend, see the [Cosmos SDK keyring docs](https://docs.cosmos.network/main/run-node/keyring.html). Make sure you save the seed mnemonic in a safe place!
 
 To receive some funds on this address, copy the content of the `$MY_ADDRESS` variable, and paste your address on [our faucet](https://regen.vitwit.com/faucet) to receive some funds.
 
