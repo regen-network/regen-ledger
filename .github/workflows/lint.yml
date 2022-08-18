@@ -1,7 +1,13 @@
 name: Lint
-# Lint runs golangci-lint, protolint, and buf-lint on every pull request
-# with get diff action, allowing for lint checks to be required but only
-# run when either go files or proto files have been modified.
+
+# **What it does**: Runs go linter when go files have been modified
+# and proto linters when proto files have been modified.
+#
+# **Why we have it**: Ensures all go files and proto files are
+# properly formatted according to lint configuration files.
+#
+# **What does it impact**: Code cleanliness.
+
 on:
   pull_request:
   push:
@@ -9,10 +15,15 @@ on:
       - master
       - release/v*
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   golangci:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
@@ -23,20 +34,18 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v3
         with:
-          version: latest
-          args: --out-format=tab
-          skip-go-installation: true
+          args: --timeout 5m --verbose
+          only-new-issues: true
         if: env.GIT_DIFF
 
   buf-lint:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        id: git_diff
         with:
           PATTERNS: |
             **/**.proto
@@ -49,9 +58,8 @@ jobs:
 
   protolint:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
@@ -60,7 +68,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - name: protolint
+      - name: Run protolint
         run: |
           go install github.com/yoheimuta/protolint/cmd/protolint@latest
           protolint .

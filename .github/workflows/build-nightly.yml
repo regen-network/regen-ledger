@@ -1,0 +1,33 @@
+name: Build Nightly
+
+# **What it does**: Builds the regen application on a set
+# schedule using the goreleaser configuration.
+#
+# **Why we have it**: Ensures the application can be built
+# using the goreleaser configuration.
+#
+# **What does it impact**: Application stability.
+
+on:
+  schedule:
+    # Runs "at 1am every day"
+    - cron: "0 0 * * *"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+      - name: Run release setup
+        run: ./scripts/release-setup.sh
+        shell: bash
+      - uses: goreleaser/goreleaser-action@v3
+        with:
+          version: latest
+          args: build --skip-validate --rm-dist
