@@ -28,6 +28,7 @@ import (
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+<<<<<<< HEAD
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2/client"
@@ -36,6 +37,17 @@ import (
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2/simulation"
+=======
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/client"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	corev1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/core/v1alpha1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
+>>>>>>> 05c29d13 (fix(x/ecocredit): register ecocredit v1alpha1 messages (#1360))
 )
 
 type Module struct {
@@ -76,6 +88,9 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
 	marketplacetypes.RegisterTypes(registry)
+
+	// legacy types to support querying historical events
+	corev1alpha1.RegisterTypes(registry)
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
