@@ -38,7 +38,8 @@ Feature: Msg/MsgUpdateBasketFee
       Then expect error contains "expected gov account as only signer for proposal message"
 
   Rule: The basket fee is valid
-    Scenario: the basket fee is valid
+
+        Scenario: the basket fee is valid
       When alice attempts to update basket fee with properties
       """
       {
