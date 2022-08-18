@@ -31,7 +31,7 @@ Feature: BatchBalance
     {}
     """
     When the batch balance is validated
-    Then expect the error "batch key cannot be zero"
+    Then expect the error "batch key cannot be zero: parse error"
 
   Scenario: an error is returned if address is empty
     Given the batch balance
@@ -41,7 +41,7 @@ Feature: BatchBalance
     }
     """
     When the batch balance is validated
-    Then expect the error "address: empty address string is not allowed"
+    Then expect the error "address: empty address string is not allowed: parse error"
 
   Scenario: an error is returned if tradable amount is not positive
     Given the batch balance
@@ -53,7 +53,7 @@ Feature: BatchBalance
     }
     """
     When the batch balance is validated
-    Then expect the error "tradable amount: expected a non-negative decimal, got -100: invalid decimal string"
+    Then expect the error "tradable amount: expected a non-negative decimal, got -100: invalid decimal string: parse error"
 
   Scenario: an error is returned if retired amount is not positive
     Given the batch balance
@@ -65,7 +65,7 @@ Feature: BatchBalance
     }
     """
     When the batch balance is validated
-    Then expect the error "retired amount: expected a non-negative decimal, got -100: invalid decimal string"
+    Then expect the error "retired amount: expected a non-negative decimal, got -100: invalid decimal string: parse error"
 
   Scenario: an error is returned if escrowed amount is not positive
     Given the batch balance
@@ -77,4 +77,4 @@ Feature: BatchBalance
     }
     """
     When the batch balance is validated
-    Then expect the error "escrowed amount: expected a non-negative decimal, got -100: invalid decimal string"
+    Then expect the error "escrowed amount: expected a non-negative decimal, got -100: invalid decimal string: parse error"

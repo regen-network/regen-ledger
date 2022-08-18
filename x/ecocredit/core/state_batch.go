@@ -1,31 +1,30 @@
 package core
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 // Validate performs basic validation of the Batch state type
 func (b Batch) Validate() error {
 	if err := ValidateBatchDenom(b.Denom); err != nil {
-		return err
+		return err // returns parse error
 	}
 
 	if b.ProjectKey == 0 {
-		return fmt.Errorf("project key cannot be zero")
+		return ecocredit.ErrParseFailure.Wrapf("project key cannot be zero")
 	}
 
 	if b.StartDate == nil {
-		return fmt.Errorf("must provide a start date for the credit batch")
+		return ecocredit.ErrParseFailure.Wrapf("must provide a start date for the credit batch")
 	}
 
 	if b.EndDate == nil {
-		return fmt.Errorf("must provide an end date for the credit batch")
+		return ecocredit.ErrParseFailure.Wrapf("must provide an end date for the credit batch")
 	}
 
 	if b.EndDate.Compare(*b.StartDate) != 1 {
-		return fmt.Errorf(
+		return ecocredit.ErrParseFailure.Wrapf(
 			"the batch end date (%s) must be the same as or after the batch start date (%s)",
 			b.EndDate.String(),
 			b.StartDate.String(),
@@ -33,7 +32,7 @@ func (b Batch) Validate() error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(b.Issuer).String()); err != nil {
-		return fmt.Errorf("issuer: %s", err)
+		return ecocredit.ErrParseFailure.Wrapf("issuer: %s", err)
 	}
 
 	return nil
