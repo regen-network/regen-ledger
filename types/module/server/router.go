@@ -23,10 +23,11 @@ type handler struct {
 }
 
 type router struct {
-	handlers         map[string]handler
-	providedServices map[reflect.Type]bool
-	authzMiddleware  AuthorizationMiddleware
-	msgServiceRouter *baseapp.MsgServiceRouter
+	handlers           map[string]handler
+	providedServices   map[reflect.Type]bool
+	authzMiddleware    AuthorizationMiddleware
+	msgServiceRouter   *baseapp.MsgServiceRouter
+	queryServiceRouter *baseapp.GRPCQueryRouter
 }
 
 type registrar struct {
@@ -94,6 +95,10 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		typeURL := TypeURL(req)
 		handler, found := rtr.handlers[typeURL]
 
+		// TODO(Tyler): queries are coming in thru here, and query messages do NOT implement sdk.Msg
+		// we either need to -> find a way to route the request to a query handler
+		// OR
+		// figure out a way to make the request avoid coming into this invoker entirely. (i dont think it does on main.)
 		msg, isMsg := request.(sdk.Msg)
 		if !found && !isMsg {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
@@ -117,34 +122,26 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 				return err
 			}
 
-			// ADR-033 router
-			if found {
-				err = handler.f(ctx, request, response)
-				if err != nil {
-					return err
-				}
-			} else {
-				// routing using baseapp.MsgServiceRouter
-				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				handler := rtr.msgServiceRouter.HandlerByTypeURL(typeURL)
-				if handler == nil {
-					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", typeURL)
-				}
-
-				res, err := handler(sdkCtx, msg)
-				if err != nil {
-					return err
-				}
-				// response = res.MsgResponses[0].GetCachedValue()
-				if len(res.MsgResponses) == 0 {
-					panic("expected at least 1 msg response. got 0")
-				}
-				if len(res.MsgResponses) > 1 {
-					panic(fmt.Sprintf("unable to handle multiple msg responses. received %d, wanted 1", len(res.MsgResponses)))
-				}
-				resValue := reflect.ValueOf(res.MsgResponses[0].GetCachedValue())
-				reflect.ValueOf(response).Elem().Set(resValue.Elem())
+			// routing using baseapp.MsgServiceRouter
+			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			handler := rtr.msgServiceRouter.HandlerByTypeURL(typeURL)
+			if handler == nil {
+				return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", typeURL)
 			}
+
+			res, err := handler(sdkCtx, msg)
+			if err != nil {
+				return err
+			}
+			// response = res.MsgResponses[0].GetCachedValue()
+			if len(res.MsgResponses) == 0 {
+				panic("expected at least 1 msg response. got 0")
+			}
+			if len(res.MsgResponses) > 1 {
+				panic(fmt.Sprintf("unable to handle multiple msg responses. received %d, wanted 1", len(res.MsgResponses)))
+			}
+			resValue := reflect.ValueOf(res.MsgResponses[0].GetCachedValue())
+			reflect.ValueOf(response).Elem().Set(resValue.Elem())
 
 			// only commit writes if there is no error so that calls are atomic
 			cacheMs.Write()
