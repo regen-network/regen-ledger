@@ -17,12 +17,12 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	var allowedFees sdk.Coins
-	fee, err := k.stateStore.BasketFeeTable().Get(ctx)
+	fee, err := k.stateStore.BasketFeesTable().Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
+	allowedFees := make(sdk.Coins, 0, len(fee.Fees))
 	for _, coin := range fee.Fees {
 		amount, ok := sdk.NewIntFromString(coin.Amount)
 		if !ok {

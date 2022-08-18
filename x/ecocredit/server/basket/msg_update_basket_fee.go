@@ -10,25 +10,25 @@ import (
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
-// Create is an RPC to handle basket.UpdateBasketFee
-func (k Keeper) UpdateBasketFee(ctx context.Context, req *baskettypes.MsgUpdateBasketFee) (*baskettypes.MsgUpdateBasketFeeResponse, error) {
+// UpdateBasketFees is an RPC to handle basket.UpdateBasketFees
+func (k Keeper) UpdateBasketFees(ctx context.Context, req *baskettypes.MsgUpdateBasketFees) (*baskettypes.MsgUpdateBasketFeesResponse, error) {
 	if k.authority.String() != req.Authority {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	basketFee := make([]*v1beta1.Coin, req.BasketFee.Len())
-	for i, coin := range req.BasketFee {
+	basketFee := make([]*v1beta1.Coin, req.BasketFees.Len())
+	for i, coin := range req.BasketFees {
 		basketFee[i] = &v1beta1.Coin{
 			Denom:  coin.Denom,
 			Amount: coin.Amount.String(),
 		}
 	}
 
-	if err := k.stateStore.BasketFeeTable().Save(ctx, &basketv1.BasketFee{
+	if err := k.stateStore.BasketFeesTable().Save(ctx, &basketv1.BasketFees{
 		Fees: basketFee,
 	}); err != nil {
 		return nil, err
 	}
 
-	return &baskettypes.MsgUpdateBasketFeeResponse{}, nil
+	return &baskettypes.MsgUpdateBasketFeesResponse{}, nil
 }

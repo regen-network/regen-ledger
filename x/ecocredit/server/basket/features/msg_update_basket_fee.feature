@@ -12,7 +12,7 @@ Feature: Msg/MsgUpdateBasketFee
       """
       {
         "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "basket_fee": [
+        "basket_fees": [
             {
                 "denom": "uregen",
                 "amount": "1000"
@@ -27,7 +27,7 @@ Feature: Msg/MsgUpdateBasketFee
       """
       {
         "authority": "regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
-        "basket_fee": [
+        "basket_fees": [
             {
                 "denom": "uregen",
                 "amount": "1000"
@@ -39,12 +39,12 @@ Feature: Msg/MsgUpdateBasketFee
 
   Rule: The basket fee is valid
 
-        Scenario: the basket fee is valid
+    Scenario: the basket fee is valid
       When alice attempts to update basket fee with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "basket_fee":[
+        "basket_fees":[
             {
                 "denom":"uregen",
                 "amount":"1000"
@@ -53,14 +53,65 @@ Feature: Msg/MsgUpdateBasketFee
       }
       """
       Then expect no error
+      And expect basket fees with properties 
+      """
+      {
+        "fees":[
+          {
+                "denom":"uregen",
+                "amount":"1000"
+          }
+        ]
+      }
+      """
 
     Scenario: valid basket fee empty 
       When alice attempts to update basket fee with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "basket_fee":[]
+        "basket_fees":[]
       }
       """
       Then expect no error
+      And expect basket fees with properties 
+      """
+      {
+        "fees":[]
+      }
+      """
+    
+    Scenario: valid basket fee multiple tokens 
+      When alice attempts to update basket fee with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "basket_fees":[
+          {
+            "denom": "uregen",
+            "amount": "1000"
+          },
+          {
+            "denom": "uatom",
+            "amount": "1000"
+          }
+        ]
+      }
+      """
+      Then expect no error
+      And expect basket fees with properties 
+      """
+      {
+        "fees":[
+          {
+            "denom": "uregen",
+            "amount": "1000"
+          },
+          {
+            "denom": "uatom",
+            "amount": "1000"
+          }
+        ]
+      }
+      """
 

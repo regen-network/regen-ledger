@@ -45,9 +45,9 @@ func (s *createSuite) AllowedBasketFee(a string) {
 	basketFee, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
 
-	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFee{
-		Authority: "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-		BasketFee: basketFee,
+	_, err = s.k.UpdateBasketFees(s.ctx, &basket.MsgUpdateBasketFees{
+		Authority:  "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+		BasketFees: basketFee,
 	})
 	require.NoError(s.t, err)
 

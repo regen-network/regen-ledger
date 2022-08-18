@@ -8,34 +8,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type msgUpdateBasketFeeSuite struct {
+type msgUpdateBasketFeesSuite struct {
 	t   gocuke.TestingT
-	msg *MsgUpdateBasketFee
+	msg *MsgUpdateBasketFees
 	err error
 }
 
-func TestMsgAddAllowedDenomSuite(t *testing.T) {
-	gocuke.NewRunner(t, &msgUpdateBasketFeeSuite{}).Path("./features/msg_update_basket_fee.feature").Run()
+func TestMsgUpdateBasketFeesSuite(t *testing.T) {
+	gocuke.NewRunner(t, &msgUpdateBasketFeesSuite{}).Path("./features/msg_update_basket_fee.feature").Run()
 }
 
-func (s *msgUpdateBasketFeeSuite) Before(t gocuke.TestingT) {
+func (s *msgUpdateBasketFeesSuite) Before(t gocuke.TestingT) {
 	s.t = t
 }
 
-func (s *msgUpdateBasketFeeSuite) TheMessage(a gocuke.DocString) {
-	s.msg = &MsgUpdateBasketFee{}
+func (s *msgUpdateBasketFeesSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgUpdateBasketFees{}
 	err := jsonpb.UnmarshalString(a.Content, s.msg)
 	require.NoError(s.t, err)
 }
 
-func (s *msgUpdateBasketFeeSuite) TheMessageIsValidated() {
+func (s *msgUpdateBasketFeesSuite) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
-func (s *msgUpdateBasketFeeSuite) ExpectTheError(a string) {
+func (s *msgUpdateBasketFeesSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *msgUpdateBasketFeeSuite) ExpectNoError() {
+func (s *msgUpdateBasketFeesSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }

@@ -5,7 +5,7 @@ Feature: MsgUpdateBasketFee
     """
     {
       "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fee": [
+      "basket_fees": [
         {
             "denom":"uregen",
             "amount":"1000"
@@ -21,7 +21,7 @@ Feature: MsgUpdateBasketFee
     """
     {
       "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fee": []
+      "basket_fees": []
     }
     """
     When the message is validated
@@ -32,7 +32,7 @@ Feature: MsgUpdateBasketFee
     """
     {
       "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fee": [
+      "basket_fees": [
         {
             "denom":"uatom",
             "amount":"1000"
@@ -70,7 +70,7 @@ Feature: MsgUpdateBasketFee
     """
     {
       "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fee": [
+      "basket_fees": [
         {
             "denom":"A+B",
             "amount":"1000"
