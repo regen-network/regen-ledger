@@ -32,6 +32,7 @@ import (
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2/client"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
+	corev1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/v2/core/v1alpha1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2/genesis"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/v2/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2/server"
@@ -76,6 +77,9 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
 	marketplacetypes.RegisterTypes(registry)
+
+	// legacy types to support querying historical events
+	corev1alpha1.RegisterTypes(registry)
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
