@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -27,6 +28,12 @@ func (k Keeper) AllowedClassCreator(ctx context.Context, req *core.MsgAllowedCla
 
 		if found {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("class creator %s already exists", creator)
+		}
+
+		if err := k.stateStore.AllowedClassCreatorTable().Insert(ctx, &ecocreditv1.AllowedClassCreator{
+			Address: creatorAddr,
+		}); err != nil {
+			return nil, err
 		}
 
 	}

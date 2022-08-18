@@ -3,10 +3,11 @@ package core
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -21,9 +22,15 @@ func (k Keeper) RemoveClassCreator(ctx context.Context, req *core.MsgRemoveClass
 			return nil, err
 		}
 
-		if err := k.stateStore.AllowedClassCreatorTable().Delete(ctx, &ecocreditv1.AllowedClassCreator{
-			Address: creatorAddr,
-		}); err != nil {
+		classCreator, err := k.stateStore.AllowedClassCreatorTable().Get(ctx, creatorAddr)
+		if err != nil {
+			if ormerrors.NotFound.Is(err) {
+				return nil, sdkerrors.ErrNotFound.Wrapf("class creator %s", creator)
+			}
+			return nil, err
+		}
+
+		if err := k.stateStore.AllowedClassCreatorTable().Delete(ctx, classCreator); err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to remove %s from class creator list", creator)
 		}
 	}
