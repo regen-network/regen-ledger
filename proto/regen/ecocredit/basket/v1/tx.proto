@@ -162,22 +162,22 @@ message MsgTakeResponse {
   repeated BasketCredit credits = 1;
 }
 
-// MsgUpdateBasketFee is the Msg/UpdateBasketFee request type.
+// MsgUpdateBasketFees is the Msg/UpdateBasketFees request type.
 // Since Revision 1
-message MsgUpdateBasketFee {
+message MsgUpdateBasketFees {
   option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
 
-  // basket_fee defines a list of coin fees that can be used in the basket
+  // basket_fees defines a list of coin fees that can be used in the basket
   // creation fee.
-  repeated cosmos.base.v1beta1.Coin basket_fee = 2 [
+  repeated cosmos.base.v1beta1.Coin basket_fees = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 
-// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+// MsgUpdateBasketFeesResponse is the Msg/UpdateBasketFees response type.
 // Since Revision 1
-message MsgUpdateBasketFeeResponse {}
+message MsgUpdateBasketFeesResponse {}
