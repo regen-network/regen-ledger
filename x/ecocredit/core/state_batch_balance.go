@@ -16,15 +16,15 @@ func (b BatchBalance) Validate() error {
 		return sdkerrors.Wrap(err, "address")
 	}
 
-	if _, err := math.NewDecFromString(b.TradableAmount); err != nil {
+	if _, err := math.NewNonNegativeDecFromString(b.TradableAmount); err != nil {
 		return sdkerrors.Wrapf(err, "tradable amount")
 	}
 
-	if _, err := math.NewDecFromString(b.RetiredAmount); err != nil {
+	if _, err := math.NewNonNegativeDecFromString(b.RetiredAmount); err != nil {
 		return sdkerrors.Wrapf(err, "retired amount")
 	}
 
-	if _, err := math.NewDecFromString(b.EscrowedAmount); err != nil {
+	if _, err := math.NewNonNegativeDecFromString(b.EscrowedAmount); err != nil {
 		return sdkerrors.Wrapf(err, "escrowed amount")
 	}
 
