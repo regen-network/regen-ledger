@@ -84,24 +84,15 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 		module.RegisterServices(cfg)
 	}
 
-	// TODO(Tyler): ???
-	//mm := NewManager(baseApp, cdc)
-	//err := mm.RegisterModules(ff.modules)
-	//require.NoError(ff.t, err)
-	//err = mm.CompleteInitialization()
-	//require.NoError(ff.t, err)
-
 	err := baseApp.LoadLatestVersion()
-	require.NoError(ff.t, err)
 
+	require.NoError(ff.t, err)
 	return fixture{
 		baseApp: baseApp,
 		mm:      mm,
 		cdc:     cdc,
 		router: &router{
-			handlers:           nil,
-			providedServices:   nil,
-			authzMiddleware:    nil,
+			cdc:                cdc.GRPCCodec(),
 			msgServiceRouter:   baseApp.MsgServiceRouter(),
 			queryServiceRouter: baseApp.GRPCQueryRouter(),
 		},

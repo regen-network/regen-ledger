@@ -9,80 +9,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	gogogrpc "github.com/gogo/protobuf/grpc"
 	"github.com/gogo/protobuf/proto"
-	"google.golang.org/grpc"
+	types2 "github.com/tendermint/tendermint/abci/types"
+	"google.golang.org/grpc/encoding"
 
 	"github.com/regen-network/regen-ledger/types"
 )
 
-type handler struct {
-	f            func(ctx context.Context, args, reply interface{}) error
-	commitWrites bool
-	moduleName   string
-}
-
 type router struct {
-	handlers           map[string]handler
-	providedServices   map[reflect.Type]bool
-	authzMiddleware    AuthorizationMiddleware
+	cdc                encoding.Codec
 	msgServiceRouter   *baseapp.MsgServiceRouter
 	queryServiceRouter *baseapp.GRPCQueryRouter
-}
-
-type registrar struct {
-	*router
-	baseServer   gogogrpc.Server
-	commitWrites bool
-	moduleName   string
-}
-
-var _ gogogrpc.Server = registrar{}
-
-func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
-	r.providedServices[reflect.TypeOf(sd.HandlerType)] = true
-
-	r.baseServer.RegisterService(sd, ss)
-
-	for _, method := range sd.Methods {
-		fqName := fmt.Sprintf("/%s/%s", sd.ServiceName, method.MethodName)
-		methodHandler := method.Handler
-
-		var requestTypeName string
-
-		_, _ = methodHandler(nil, context.Background(), func(i interface{}) error {
-			req, ok := i.(proto.Message)
-			if !ok {
-				// We panic here because there is no other alternative and the app cannot be initialized correctly
-				// this should only happen if there is a problem with code generation in which case the app won't
-				// work correctly anyway.
-				panic(fmt.Errorf("can't register request type %T for service method %s", i, fqName))
-			}
-			requestTypeName = TypeURL(req)
-			return nil
-		}, noopInterceptor)
-
-		f := func(ctx context.Context, args, reply interface{}) error {
-			res, err := methodHandler(ss, ctx, func(i interface{}) error { return nil },
-				func(ctx context.Context, _ interface{}, _ *grpc.UnaryServerInfo, unaryHandler grpc.UnaryHandler) (resp interface{}, err error) {
-					return unaryHandler(ctx, args)
-				})
-			if err != nil {
-				return err
-			}
-
-			resValue := reflect.ValueOf(res)
-			if !resValue.IsZero() && reply != nil {
-				reflect.ValueOf(reply).Elem().Set(resValue.Elem())
-			}
-			return nil
-		}
-		r.handlers[requestTypeName] = handler{
-			f:            f,
-			commitWrites: r.commitWrites,
-			moduleName:   r.moduleName,
-		}
-	}
 }
 
 func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.Msg) error) (types.Invoker, error) {
@@ -93,16 +30,8 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		}
 
 		typeURL := TypeURL(req)
-		handler, found := rtr.handlers[typeURL]
 
-		// TODO(Tyler): queries are coming in thru here, and query messages do NOT implement sdk.Msg
-		// we either need to -> find a way to route the request to a query handler
-		// OR
-		// figure out a way to make the request avoid coming into this invoker entirely. (i dont think it does on main.)
 		msg, isMsg := request.(sdk.Msg)
-		if !found && !isMsg {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
-		}
 
 		// cache wrap the multistore so that inter-module writes are atomic
 		// see https://github.com/cosmos/cosmos-sdk/issues/8030
@@ -111,7 +40,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
 
 		// msg handler
-		if writeCondition != nil && (handler.commitWrites || isMsg) {
+		if writeCondition != nil && isMsg {
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -146,12 +75,25 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			// only commit writes if there is no error so that calls are atomic
 			cacheMs.Write()
 		} else {
-			// query handler
-			err := handler.f(ctx, request, response)
+			// route query here
+			handler := rtr.queryServiceRouter.Route(methodName)
+			if handler == nil {
+				panic(fmt.Sprintf("no handler found for %s", methodName))
+			}
+			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			bz, err := rtr.cdc.Marshal(request)
 			if err != nil {
 				return err
 			}
-
+			queryResponse, err := handler(sdkCtx, types2.RequestQuery{
+				Data: bz,
+			})
+			if err != nil {
+				return err
+			}
+			if err := rtr.cdc.Unmarshal(queryResponse.Value, response); err != nil {
+				return err
+			}
 			cacheMs.Write()
 		}
 		return nil
@@ -178,10 +120,6 @@ func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 			signer := signers[0]
 
 			if bytes.Equal(moduleAddr, signer) {
-				return nil
-			}
-
-			if rtr.authzMiddleware != nil && rtr.authzMiddleware(sdk.UnwrapSDKContext(ctx), methodName, msgReq, moduleAddr) {
 				return nil
 			}
 
@@ -219,8 +157,4 @@ func (rtr *router) testQueryFactory() InvokerFactory {
 
 func TypeURL(req proto.Message) string {
 	return "/" + proto.MessageName(req)
-}
-
-func noopInterceptor(_ context.Context, _ interface{}, _ *grpc.UnaryServerInfo, _ grpc.UnaryHandler) (interface{}, error) {
-	return nil, nil
 }
