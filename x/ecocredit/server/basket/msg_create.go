@@ -26,7 +26,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	for _, coin := range fee.Fees {
 		amount, ok := sdk.NewIntFromString(coin.Amount)
 		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")
+			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee %s", coin.Amount)
 		}
 		allowedFees = append(allowedFees, sdk.NewCoin(coin.Denom, amount))
 	}
