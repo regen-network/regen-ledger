@@ -29,16 +29,15 @@ import (
 )
 
 type baseSuite struct {
-	t            *testing.T
-	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	ctx          context.Context
-	k            coreserver.Keeper
-	ctrl         *gomock.Controller
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *storetypes.KVStoreKey
-	sdkCtx       sdk.Context
+	t          *testing.T
+	db         ormdb.ModuleDB
+	stateStore api.StateStore
+	ctx        context.Context
+	k          coreserver.Keeper
+	ctrl       *gomock.Controller
+	bankKeeper *mocks.MockBankKeeper
+	storeKey   *storetypes.KVStoreKey
+	sdkCtx     sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -63,10 +62,9 @@ func setupBase(t *testing.T) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	_, _, authorityAddress := testdata.KeyTestPubAddr()
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authorityAddress)
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, authorityAddress)
 
 	return s
 }

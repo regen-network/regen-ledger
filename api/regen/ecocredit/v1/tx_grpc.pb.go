@@ -118,9 +118,9 @@ type MsgClient interface {
 	// enforce which addresses may create classes. when off, any address may
 	// create classes. Since Revision 1
 	ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggleCreditClassAllowlist, opts ...grpc.CallOption) (*MsgToggleCreditClassAllowlistResponse, error)
-	// UpdateClassFee is a governance method that allows for the addition and
+	// UpdateClassFees is a governance method that allows for the addition and
 	// removal of fees to be used for the class creation fee. Since Revision 1
-	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
+	UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error)
 }
 
 type msgClient struct {
@@ -302,9 +302,9 @@ func (c *msgClient) ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggl
 	return out, nil
 }
 
-func (c *msgClient) UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error) {
-	out := new(MsgUpdateClassFeeResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateClassFee", in, out, opts...)
+func (c *msgClient) UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error) {
+	out := new(MsgUpdateClassFeesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateClassFees", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -411,9 +411,9 @@ type MsgServer interface {
 	// enforce which addresses may create classes. when off, any address may
 	// create classes. Since Revision 1
 	ToggleCreditClassAllowlist(context.Context, *MsgToggleCreditClassAllowlist) (*MsgToggleCreditClassAllowlistResponse, error)
-	// UpdateClassFee is a governance method that allows for the addition and
+	// UpdateClassFees is a governance method that allows for the addition and
 	// removal of fees to be used for the class creation fee. Since Revision 1
-	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
+	UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -478,8 +478,8 @@ func (UnimplementedMsgServer) RemoveClassCreator(context.Context, *MsgRemoveClas
 func (UnimplementedMsgServer) ToggleCreditClassAllowlist(context.Context, *MsgToggleCreditClassAllowlist) (*MsgToggleCreditClassAllowlistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ToggleCreditClassAllowlist not implemented")
 }
-func (UnimplementedMsgServer) UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassFee not implemented")
+func (UnimplementedMsgServer) UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassFees not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -836,20 +836,20 @@ func _Msg_ToggleCreditClassAllowlist_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateClassFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateClassFee)
+func _Msg_UpdateClassFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateClassFees)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateClassFee(ctx, in)
+		return srv.(MsgServer).UpdateClassFees(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Msg/UpdateClassFee",
+		FullMethod: "/regen.ecocredit.v1.Msg/UpdateClassFees",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateClassFee(ctx, req.(*MsgUpdateClassFee))
+		return srv.(MsgServer).UpdateClassFees(ctx, req.(*MsgUpdateClassFees))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -938,8 +938,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_ToggleCreditClassAllowlist_Handler,
 		},
 		{
-			MethodName: "UpdateClassFee",
-			Handler:    _Msg_UpdateClassFee_Handler,
+			MethodName: "UpdateClassFees",
+			Handler:    _Msg_UpdateClassFees_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

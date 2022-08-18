@@ -27,11 +27,11 @@ func (m *MsgRemoveClassCreator) ValidateBasic() error {
 		return sdkerrors.Wrapf(err, "invalid authority address")
 	}
 
-	if len(m.Creator) == 0 {
+	if len(m.Creators) == 0 {
 		return sdkerrors.ErrInvalidType.Wrap("class creators cannot be empty")
 	}
 
-	for _, creator := range m.Creator {
+	for _, creator := range m.Creators {
 		if _, err := sdk.AccAddressFromBech32(creator); err != nil {
 			return err
 		}

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -58,6 +59,9 @@ type IntegrationTestSuite struct {
 
 	genesisCtx types.Context
 	blockTime  time.Time
+
+	ormCtx     context.Context
+	stateStore api.StateStore
 }
 
 type marketServer struct {
@@ -146,6 +150,20 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 		Precision:    6,
 	})
 	s.Require().NoError(err)
+
+	// set default credit class fee
+	err = ss.ClassFeesTable().Save(ormCtx, &api.ClassFees{
+		Fees: []*basev1beta1.Coin{
+			{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: core.DefaultCreditClassFee.String(),
+			},
+		},
+	})
+	s.Require().NoError(err)
+
+	s.ormCtx = ormCtx
+	s.stateStore = ss
 
 	// export genesis into target
 	target := ormjson.NewRawMessageTarget()
@@ -975,8 +993,20 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range allowlistCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			s.paramSpace.Set(s.sdkCtx, core.KeyAllowedClassCreators, tc.allowlist)
-			s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, tc.allowlistEnabled)
+			for _, creator := range tc.allowlist {
+				creatorAddr, err := sdk.AccAddressFromBech32(creator)
+				s.Require().NoError(err)
+
+				err = s.stateStore.AllowedClassCreatorTable().Save(s.ormCtx, &api.AllowedClassCreator{
+					Address: creatorAddr,
+				})
+				s.Require().NoError(err)
+			}
+
+			err = s.stateStore.AllowListEnabledTable().Save(s.ormCtx, &api.AllowListEnabled{
+				Enabled: tc.allowlistEnabled,
+			})
+			s.Require().NoError(err)
 
 			// fund the creator account
 			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFee)))
@@ -1135,12 +1165,6 @@ func (s *IntegrationTestSuite) assertDecStrEqual(d1, d2 string) {
 	dec2, err := math.NewDecFromString(d2)
 	s.Require().NoError(err)
 	s.Require().True(dec1.Equal(dec2), "%v does not equal %v", dec1, dec2)
-}
-
-func (s *IntegrationTestSuite) createClass(admin, creditTypeAbbrev, metadata string, issuers []string) string {
-	res, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin, Issuers: issuers, Metadata: metadata, CreditTypeAbbrev: creditTypeAbbrev, Fee: &createClassFee})
-	s.Require().NoError(err)
-	return res.ClassId
 }
 
 func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, bankDenom string) accountInfo {

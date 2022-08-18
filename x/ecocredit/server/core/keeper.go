@@ -14,7 +14,6 @@ var _ core.QueryServer = &Keeper{}
 type Keeper struct {
 	stateStore    api.StateStore
 	bankKeeper    ecocredit.BankKeeper
-	paramsKeeper  ecocredit.ParamKeeper
 	moduleAddress sdk.AccAddress
 
 	// the address capable of executing ecocredit params messages. Typically, this
@@ -25,14 +24,12 @@ type Keeper struct {
 func NewKeeper(
 	ss api.StateStore,
 	bk ecocredit.BankKeeper,
-	pk ecocredit.ParamKeeper,
 	ma sdk.AccAddress,
 	authority sdk.AccAddress,
 ) Keeper {
 	return Keeper{
 		stateStore:    ss,
 		bankKeeper:    bk,
-		paramsKeeper:  pk,
 		moduleAddress: ma,
 		authority:     authority,
 	}

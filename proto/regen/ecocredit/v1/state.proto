@@ -349,14 +349,14 @@ message AllowListEnabled {
   bool enabled = 1;
 }
 
-// ClassFee is a list of coins that may be used as the fee
+// ClassFees is a list of coins that may be used as the fee
 // for credit class creation.
-message ClassFee {
+message ClassFees {
   // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.singleton) = {
     id : 15
   };
 
-  // fee is the fee required to create a credit class.
-  repeated cosmos.base.v1beta1.Coin fee = 1;
+  // fees is the fee required to create a credit class.
+  repeated cosmos.base.v1beta1.Coin fees = 1;
 }

@@ -1,4 +1,4 @@
-Feature: MsgAllowedClassCreator
+Feature: MsgRemoveClassCreator
 
   Scenario: a valid message
     Given the message

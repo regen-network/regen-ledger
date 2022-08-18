@@ -28,7 +28,6 @@ type createBatchSuite struct {
 	classKey         uint64
 	projectId        string
 	projectKey       uint64
-	batchKey         uint64
 	tradableAmount   string
 	startDate        *time.Time
 	endDate          *time.Time

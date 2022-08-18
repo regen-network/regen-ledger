@@ -1915,33 +1915,33 @@ func NewAllowListEnabledTable(db ormtable.Schema) (AllowListEnabledTable, error)
 }
 
 // singleton store
-type ClassFeeTable interface {
-	Get(ctx context.Context) (*ClassFee, error)
-	Save(ctx context.Context, classFee *ClassFee) error
+type ClassFeesTable interface {
+	Get(ctx context.Context) (*ClassFees, error)
+	Save(ctx context.Context, classFees *ClassFees) error
 }
 
-type classFeeTable struct {
+type classFeesTable struct {
 	table ormtable.Table
 }
 
-var _ ClassFeeTable = classFeeTable{}
+var _ ClassFeesTable = classFeesTable{}
 
-func (x classFeeTable) Get(ctx context.Context) (*ClassFee, error) {
-	classFee := &ClassFee{}
-	_, err := x.table.Get(ctx, classFee)
-	return classFee, err
+func (x classFeesTable) Get(ctx context.Context) (*ClassFees, error) {
+	classFees := &ClassFees{}
+	_, err := x.table.Get(ctx, classFees)
+	return classFees, err
 }
 
-func (x classFeeTable) Save(ctx context.Context, classFee *ClassFee) error {
-	return x.table.Save(ctx, classFee)
+func (x classFeesTable) Save(ctx context.Context, classFees *ClassFees) error {
+	return x.table.Save(ctx, classFees)
 }
 
-func NewClassFeeTable(db ormtable.Schema) (ClassFeeTable, error) {
-	table := db.GetTable(&ClassFee{})
+func NewClassFeesTable(db ormtable.Schema) (ClassFeesTable, error) {
+	table := db.GetTable(&ClassFees{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ClassFee{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&ClassFees{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return &classFeeTable{table}, nil
+	return &classFeesTable{table}, nil
 }
 
 type StateStore interface {
@@ -1959,7 +1959,7 @@ type StateStore interface {
 	BatchContractTable() BatchContractTable
 	AllowedClassCreatorTable() AllowedClassCreatorTable
 	AllowListEnabledTable() AllowListEnabledTable
-	ClassFeeTable() ClassFeeTable
+	ClassFeesTable() ClassFeesTable
 
 	doNotImplement()
 }
@@ -1979,7 +1979,7 @@ type stateStore struct {
 	batchContract       BatchContractTable
 	allowedClassCreator AllowedClassCreatorTable
 	allowListEnabled    AllowListEnabledTable
-	classFee            ClassFeeTable
+	classFees           ClassFeesTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -2038,8 +2038,8 @@ func (x stateStore) AllowListEnabledTable() AllowListEnabledTable {
 	return x.allowListEnabled
 }
 
-func (x stateStore) ClassFeeTable() ClassFeeTable {
-	return x.classFee
+func (x stateStore) ClassFeesTable() ClassFeesTable {
+	return x.classFees
 }
 
 func (stateStore) doNotImplement() {}
@@ -2117,7 +2117,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	classFeeTable, err := NewClassFeeTable(db)
+	classFeesTable, err := NewClassFeesTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -2137,6 +2137,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		batchContractTable,
 		allowedClassCreatorTable,
 		allowListEnabledTable,
-		classFeeTable,
+		classFeesTable,
 	}, nil
 }

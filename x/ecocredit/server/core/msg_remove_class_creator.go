@@ -15,7 +15,7 @@ func (k Keeper) RemoveClassCreator(ctx context.Context, req *core.MsgRemoveClass
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	for _, creator := range req.Creator {
+	for _, creator := range req.Creators {
 		creatorAddr, err := sdk.AccAddressFromBech32(creator)
 		if err != nil {
 			return nil, err

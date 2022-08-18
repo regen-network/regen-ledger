@@ -8,6 +8,7 @@ import (
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
+	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -17,13 +18,15 @@ import (
 
 type createClassSuite struct {
 	*baseSuite
-	alice            sdk.AccAddress
-	aliceBalance     sdk.Coin
-	params           core.Params
-	creditTypeAbbrev string
-	classId          string
-	res              *core.MsgCreateClassResponse
-	err              error
+	alice                sdk.AccAddress
+	aliceBalance         sdk.Coin
+	creditTypeAbbrev     string
+	allowlistEnabled     bool
+	allowedClassCreators []string
+	creditClassFee       []*v1beta1.Coin
+	classId              string
+	res                  *core.MsgCreateClassResponse
+	err                  error
 }
 
 func TestCreateClass(t *testing.T) {
@@ -55,18 +58,23 @@ func (s *createClassSuite) AllowlistEnabled(a string) {
 	allowlistEnabled, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	s.params.AllowlistEnabled = allowlistEnabled
+	s.allowlistEnabled = allowlistEnabled
 }
 
 func (s *createClassSuite) AliceIsAnApprovedCreditClassCreator() {
-	s.params.AllowedClassCreators = append(s.params.AllowedClassCreators, s.alice.String())
+	s.allowedClassCreators = append(s.allowedClassCreators, s.alice.String())
 }
 
 func (s *createClassSuite) AllowedCreditClassFee(a string) {
 	creditClassFee, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
 
-	s.params.CreditClassFee = creditClassFee
+	for _, fee := range creditClassFee {
+		s.creditClassFee = append(s.creditClassFee, &v1beta1.Coin{
+			Denom:  fee.Denom,
+			Amount: fee.Amount.String(),
+		})
+	}
 }
 
 func (s *createClassSuite) AliceHasATokenBalance(a string) {
@@ -212,41 +220,48 @@ func (s *createClassSuite) ExpectTheResponse(a gocuke.DocString) {
 }
 
 func (s *createClassSuite) createClassExpectCalls() {
-	var allowlistEnabled bool
-	var allowedClassCreators []string
-	var creditClassFee sdk.Coins
+	err := s.stateStore.AllowListEnabledTable().Save(s.ctx, &api.AllowListEnabled{
+		Enabled: s.allowlistEnabled,
+	})
+	require.NoError(s.t, err)
 
-	s.paramsKeeper.EXPECT().
-		Get(s.sdkCtx, core.KeyAllowlistEnabled, &allowlistEnabled).
-		Do(func(ctx sdk.Context, key []byte, allowlistEnabled *bool) {
-			*allowlistEnabled = s.params.AllowlistEnabled
-		}).
-		AnyTimes() // not expected on failed attempt
+	for _, creator := range s.allowedClassCreators {
+		addr, err := sdk.AccAddressFromBech32(creator)
+		require.NoError(s.t, err)
 
-	s.paramsKeeper.EXPECT().
-		Get(s.sdkCtx, core.KeyAllowedClassCreators, &allowedClassCreators).
-		Do(func(ctx sdk.Context, key []byte, allowedClassCreators *[]string) {
-			*allowedClassCreators = s.params.AllowedClassCreators
-		}).
-		AnyTimes() // not expected on failed attempt
+		err = s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &api.AllowedClassCreator{
+			Address: addr,
+		})
+		require.NoError(s.t, err)
+	}
 
-	s.paramsKeeper.EXPECT().
-		Get(s.sdkCtx, core.KeyCreditClassFee, &creditClassFee).
-		Do(func(ctx sdk.Context, key []byte, creditClassFee *sdk.Coins) {
-			*creditClassFee = s.params.CreditClassFee
-		}).
-		AnyTimes() // not expected on failed attempt
+	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
+		Fees: s.creditClassFee,
+	})
+	require.NoError(s.t, err)
 
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 
-	if len(s.params.CreditClassFee) == 1 {
-		expectedFee = s.params.CreditClassFee[0]
+	if len(s.creditClassFee) == 1 {
+		amount, ok := sdk.NewIntFromString(s.creditClassFee[0].Amount)
+		require.True(s.t, ok)
+
+		expectedFee = sdk.Coin{
+			Denom:  s.creditClassFee[0].Denom,
+			Amount: amount,
+		}
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
-	if len(s.params.CreditClassFee) == 2 {
-		expectedFee = s.params.CreditClassFee[1]
+	if len(s.creditClassFee) == 2 {
+		amount, ok := sdk.NewIntFromString(s.creditClassFee[1].Amount)
+		require.True(s.t, ok)
+
+		expectedFee = sdk.Coin{
+			Denom:  s.creditClassFee[1].Denom,
+			Amount: amount,
+		}
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
@@ -258,7 +273,7 @@ func (s *createClassSuite) createClassExpectCalls() {
 	s.bankKeeper.EXPECT().
 		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, ecocredit.ModuleName, expectedFees).
 		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
-			if s.params.CreditClassFee != nil {
+			if s.creditClassFee != nil {
 				// simulate token balance update unavailable with mocks
 				s.aliceBalance = s.aliceBalance.Sub(expectedFee)
 			}

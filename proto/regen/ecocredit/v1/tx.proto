@@ -138,9 +138,9 @@ service Msg {
   rpc ToggleCreditClassAllowlist(MsgToggleCreditClassAllowlist)
       returns (MsgToggleCreditClassAllowlistResponse);
 
-  // UpdateClassFee is a governance method that allows for the addition and
+  // UpdateClassFees is a governance method that allows for the addition and
   // removal of fees to be used for the class creation fee. Since Revision 1
-  rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
+  rpc UpdateClassFees(MsgUpdateClassFees) returns (MsgUpdateClassFeesResponse);
 }
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
@@ -604,12 +604,13 @@ message MsgBridgeReceiveResponse {
 // MsgAllowedClassCreator is the Msg/AllowedClassCreator request type.
 // Since Revision 1
 message MsgAllowedClassCreator {
+  option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
 
-  // creator is the list of addresses to add to the class creator list.
-  repeated string creator = 2;
+  // creators is the list of addresses to add to the class creator list.
+  repeated string creators = 2;
 }
 
 // MsgAllowedClassCreatorResponse is the Msg/AllowedClassCreator response type.
@@ -619,12 +620,13 @@ message MsgAllowedClassCreatorResponse {}
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 // Since Revision 1
 message MsgRemoveClassCreator {
+  option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
 
-  // creator is the list of addresses to remove the class creator list.
-  repeated string creator = 2;
+  // creators is the list of addresses to remove the class creator list.
+  repeated string creators = 2;
 }
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClassCreator response type.
@@ -634,6 +636,7 @@ message MsgRemoveClassCreatorResponse {}
 // MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
 // type. Since Revision 1
 message MsgToggleCreditClassAllowlist {
+  option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -646,20 +649,22 @@ message MsgToggleCreditClassAllowlist {
 // response type. Since Revision 1
 message MsgToggleCreditClassAllowlistResponse {}
 
-// MsgUpdateClassFee is the Msg/UpdateClassFee request type.
+// MsgUpdateClassFees is the Msg/UpdateClassFees request type.
 // Since Revision 1
-message MsgUpdateClassFee {
+message MsgUpdateClassFees {
+  option (cosmos.msg.v1.signer) = "authority";
+
   // authority is the address of the governance account.
   string authority = 1;
 
-  // fee defines a list of coins fees that can be used in the credit class
+  // fees defines a list of coins fees that can be used in the credit class
   // creation fee.
-  repeated cosmos.base.v1beta1.Coin fee = 2 [
+  repeated cosmos.base.v1beta1.Coin fees = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 
-// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
+// MsgUpdateClassFeesResponse is the Msg/UpdateClassFees response type.
 // Since Revision 1
-message MsgUpdateClassFeeResponse {}
+message MsgUpdateClassFeesResponse {}

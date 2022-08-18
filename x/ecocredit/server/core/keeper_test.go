@@ -27,19 +27,18 @@ import (
 )
 
 type baseSuite struct {
-	t            gocuke.TestingT
-	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	ctx          context.Context
-	k            Keeper
-	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
-	addr2        sdk.AccAddress
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *storetypes.KVStoreKey
-	sdkCtx       sdk.Context
-	authority    sdk.AccAddress
+	t          gocuke.TestingT
+	db         ormdb.ModuleDB
+	stateStore api.StateStore
+	ctx        context.Context
+	k          Keeper
+	ctrl       *gomock.Controller
+	addr       sdk.AccAddress
+	addr2      sdk.AccAddress
+	bankKeeper *mocks.MockBankKeeper
+	storeKey   *storetypes.KVStoreKey
+	sdkCtx     sdk.Context
+	authority  sdk.AccAddress
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -64,13 +63,12 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	s.authority, err = sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	require.NoError(t, err)
 
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress, s.authority)
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, s.authority)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 

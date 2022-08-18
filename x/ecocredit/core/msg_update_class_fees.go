@@ -8,30 +8,30 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var _ legacytx.LegacyMsg = &MsgUpdateClassFee{}
+var _ legacytx.LegacyMsg = &MsgUpdateClassFees{}
 
 // Route implements the LegacyMsg interface.
-func (m MsgUpdateClassFee) Route() string { return sdk.MsgTypeURL(&m) }
+func (m MsgUpdateClassFees) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
-func (m MsgUpdateClassFee) Type() string { return sdk.MsgTypeURL(&m) }
+func (m MsgUpdateClassFees) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.
-func (m MsgUpdateClassFee) GetSignBytes() []byte {
+func (m MsgUpdateClassFees) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a sanity check on the provided data.
-func (m *MsgUpdateClassFee) ValidateBasic() error {
+func (m *MsgUpdateClassFees) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
 		return sdkerrors.Wrapf(err, "invalid authority address")
 	}
 
-	return m.Fee.Validate()
+	return m.Fees.Validate()
 }
 
-// GetSigners returns the expected signers for MsgUpdateClassFee.
-func (m *MsgUpdateClassFee) GetSigners() []sdk.AccAddress {
+// GetSigners returns the expected signers for MsgUpdateClassFees.
+func (m *MsgUpdateClassFees) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Authority)
 	return []sdk.AccAddress{addr}
 }
