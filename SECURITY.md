@@ -5,14 +5,14 @@
 Regen Ledger is built on top of Cosmos SDK and Tendermint Core. Please refer to the security policy for each of these projects if the security vulnerability is not specific to Regen Ledger:
 
 - [Cosmos SDK Security Policy](https://github.com/cosmos/cosmos-sdk/blob/main/SECURITY.md)
-- [Tendermint Core Security Policy](https://github.com/tendermint/tendermint/blob/master/SECURITY.md)
+- [Tendermint Core Security Policy](https://github.com/tendermint/tendermint/blob/main/SECURITY.md)
 
 Significant security vulnerabilities within Regen Ledger are most likely to occur in the following packages:
 
-- [`/app`](https://github.com/regen-network/regen-ledger/tree/master/app)
-- [`/types`](https://github.com/regen-network/regen-ledger/tree/master/types)
-- [`x/data`](https://github.com/regen-network/regen-ledger/tree/master/x/data)
-- [`x/ecocredit`](https://github.com/regen-network/regen-ledger/tree/master/x/ecocredit)
+- [`/app`](https://github.com/regen-network/regen-ledger/tree/main/app)
+- [`/types`](https://github.com/regen-network/regen-ledger/tree/main/types)
+- [`x/data`](https://github.com/regen-network/regen-ledger/tree/main/x/data)
+- [`x/ecocredit`](https://github.com/regen-network/regen-ledger/tree/main/x/ecocredit)
 
 ## Disclosure Process
 
@@ -20,7 +20,7 @@ The Regen Ledger team uses the following disclosure process:
 
 1. After a security report is received, the Regen Ledger team works to verify the issue and confirm its severity level using Common Vulnerability Scoring System (CVSS).
 1. The Regen Ledger team collaborates with the Cosmos SDK and Tendermint teams to determine the vulnerability’s potential impact on the other applications and services in the Cosmos ecosystem.
-1. Patches are prepared in private repositories for eligible releases. See [Release Process](https://github.com/regen-network/regen-ledger/blob/master/RELEASE_PROCESS.md) for more information about eligible releases.
+1. Patches are prepared in private repositories for eligible releases. See [Release Process](https://github.com/regen-network/regen-ledger/blob/main/RELEASE_PROCESS.md) for more information about eligible releases.
 1. If it is determined that a CVE-ID is required, we request a CVE through a CVE Numbering Authority.
 1. We notify the community that a security release is coming to give users time to prepare their systems for the update. Notifications can include forum posts, tweets, and emails to partner projects and validators.
 1. 24 hours after the notification, fixes are applied publicly and the new release is issued.
