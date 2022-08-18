@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// Validate performs a basic validation of credit class issuers
+// Validate performs basic validation of the ClassIssuer state type
 func (c ClassIssuer) Validate() error {
 	if c.ClassKey == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")

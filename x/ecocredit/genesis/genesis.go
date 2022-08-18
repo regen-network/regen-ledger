@@ -246,6 +246,12 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 
 func validateMsg(m proto.Message) error {
 	switch m.(type) {
+	case *api.CreditType:
+		msg := &core.CreditType{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
 	case *api.Class:
 		msg := &core.Class{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
@@ -273,8 +279,44 @@ func validateMsg(m proto.Message) error {
 			return err
 		}
 		return msg.Validate()
-	case *api.CreditType:
-		msg := &core.CreditType{}
+	case *api.ClassSequence:
+		msg := &core.ClassSequence{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *api.ProjectSequence:
+		msg := &core.ProjectSequence{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *api.BatchSequence:
+		msg := &core.BatchSequence{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *api.BatchBalance:
+		msg := &core.BatchBalance{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *api.BatchSupply:
+		msg := &core.BatchSupply{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *api.OriginTxIndex:
+		msg := &core.OriginTxIndex{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *api.BatchContract:
+		msg := &core.BatchContract{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}

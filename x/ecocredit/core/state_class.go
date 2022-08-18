@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-// Validate performs a basic validation of credit class
+// Validate performs basic validation of the CreditClass state type
 func (c Class) Validate() error {
 	if len(c.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
