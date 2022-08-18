@@ -11,7 +11,7 @@ simulation_tags=""
 runsim:
 	go install github.com/cosmos/tools/cmd/runsim@latest
 
-sim-regen-nondeterminism:
+sim-regen-nondeterminism: runsim
 	@echo "Running nondeterminism test..."
 	@go test -mod=readonly $(APP_DIR) -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h -tags="$(simulation_tags)"
@@ -22,7 +22,7 @@ sim-regen-custom-genesis-fast:
 	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Genesis=${HOME}/.regen/config/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h -tags="$(simulation_tags)"
 
-sim-regen-fast:
+sim-regen-fast: runsim
 	@echo "Running quick Regen simulation. This may take several minutes..."
 	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h -tags="$(simulation_tags)"
 
