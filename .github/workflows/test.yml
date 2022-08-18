@@ -1,5 +1,12 @@
 name: Tests
 
+# **What it does**: Runs unit and integration tests when go files
+# have been modified and provides code coverage reports.
+#
+# **Why we have it**: Ensures the application is production ready.
+#
+# **What does it impact**: Application stability.
+
 on:
   pull_request:
   push:
@@ -7,25 +14,27 @@ on:
       - master
       - release/v*
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Sub modules test and code coverage
     runs-on: ubuntu-latest
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v2.1.3
-        with:
-          go-version: 1.18
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
-        id: git_diff
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - name: run sub-modules test and codecov
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - name: Run sub-modules test and codecov
         run: make test-cover
         if: env.GIT_DIFF
       - name: Upload codecov report
@@ -37,24 +46,21 @@ jobs:
 
   liveness-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.5
-        with:
-          go-version: 1.18
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
-        id: git_diff
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - name: start localnet
-        run: |
-          make clean localnet-start
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - name: test liveness
-        run: |
-          ./contrib/localnet_liveness.sh 100 5 50 localhost
+      - name: Start localnet
+        run: make clean localnet-start
+        if: env.GIT_DIFF
+      - name: Run liveness test
+        run: ./contrib/localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF

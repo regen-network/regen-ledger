@@ -236,7 +236,7 @@ tools: go-version
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install github.com/client9/misspell/cmd/misspell@latest
 	go install golang.org/x/tools/cmd/goimports@latest
-	go install github.com/yoheimuta/protolint@latest
+	go install github.com/yoheimuta/protolint/cmd/protolint@latest
 
 .PHONY: tools
 

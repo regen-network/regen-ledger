@@ -1,5 +1,12 @@
 name: Release
 
+# **What it does**: Runs the goreleaser release process when a new
+# version of the application is tagged and pushed.
+#
+# **Why we have it**: Automates the release process.
+#
+# **What does it impact**: Application release process.
+
 on:
   push:
     tags:
@@ -7,24 +14,18 @@ on:
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-latest
     steps:
-      -
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      -
-        uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
-      -
-        name: Run release setup
+          go-version-file: 'go.mod'
+      - name: Run release setup
         run: ./scripts/release-setup.sh
         shell: bash
-      -
-        name: Build and release
-        uses: goreleaser/goreleaser-action@v2
+      - uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
           args: release --rm-dist

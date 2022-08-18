@@ -1,22 +1,30 @@
 name: Proto
-# Proto runs buf (https://buf.build/) check-breakage
-# This workflow is only run when a .proto file has been changed
+
+# **What it does**: Checks for breaking changes in proto files
+# when proto files have been modified.
+#
+# **Why we have it**: Provides visibility into breaking changes and
+# ensures no breaking changes are merged to a release branch.
+#
+# **What does it impact**: Application release process.
+
 on:
   pull_request:
-    paths:
-      - 'proto/**'
-  push:
     branches:
       - master
       - release/v*
     paths:
       - 'proto/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   break-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: bufbuild/buf-setup-action@v1
       - uses: bufbuild/buf-breaking-action@v1
         with:
