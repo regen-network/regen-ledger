@@ -152,7 +152,7 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	bs, err := basketApi.NewStateStore(modDB)
 	s.Require().NoError(err)
 
-	err = bs.BasketFeeTable().Save(ormCtx, &basketApi.BasketFee{
+	err = bs.BasketFeesTable().Save(ormCtx, &basketApi.BasketFees{
 		Fees: []*v1beta1.Coin{
 			{
 				Denom:  s.basketFee.Denom,
