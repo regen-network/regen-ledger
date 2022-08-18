@@ -105,9 +105,9 @@ message BasketBalance {
   google.protobuf.Timestamp batch_start_date = 4;
 }
 
-// BasketFee is a valid coin denom and amount that may be used as the fee
+// BasketFees are valid coin denoms and amounts that may be used as the fee
 // for basket creation.
-message BasketFee {
+message BasketFees {
   // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.singleton) = {
     id : 4
