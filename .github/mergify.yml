@@ -1,7 +1,7 @@
 pull_request_rules:
   - name: backport patches to v1.0.x branch
     conditions:
-      - base=master
+      - base=main
       - label=backport/v1.0.x
     actions:
       backport:
@@ -9,7 +9,7 @@ pull_request_rules:
           - release/v1.0.x
   - name: backport patches to v2.0.x branch
     conditions:
-      - base=master
+      - base=main
       - label=backport/v2.0.x
     actions:
       backport:
@@ -17,7 +17,7 @@ pull_request_rules:
           - release/v2.0.x
   - name: backport patches to v3.0.x branch
     conditions:
-      - base=master
+      - base=main
       - label=backport/v3.0.x
     actions:
       backport:
@@ -25,7 +25,7 @@ pull_request_rules:
           - release/v3.0.x
   - name: backport patches to v4.0.x branch
     conditions:
-      - base=master
+      - base=main
       - label=backport/v4.0.x
     actions:
       backport:
