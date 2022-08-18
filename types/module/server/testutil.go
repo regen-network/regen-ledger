@@ -102,7 +102,7 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 			handlers:         nil,
 			providedServices: nil,
 			authzMiddleware:  nil,
-			msgServiceRouter: nil,
+			msgServiceRouter: baseApp.MsgServiceRouter(),
 		},
 		t:       ff.t,
 		signers: ff.signers,

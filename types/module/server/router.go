@@ -131,10 +131,11 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", typeURL)
 				}
 
-				_, err = handler(sdkCtx, msg)
+				res, err := handler(sdkCtx, msg)
 				if err != nil {
 					return err
 				}
+				response = res.MsgResponses[0].GetCachedValue()
 			}
 
 			// only commit writes if there is no error so that calls are atomic
