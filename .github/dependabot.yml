@@ -3,35 +3,35 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
+      interval: daily
+    open-pull-requests-limit: 5
 
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
+      interval: daily
+    open-pull-requests-limit: 5
 
   - package-ecosystem: "gomod"
     directory: "/types"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
+      interval: daily
+    open-pull-requests-limit: 5
 
   - package-ecosystem: "gomod"
     directory: "/x/data"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
+      interval: daily
+    open-pull-requests-limit: 5
 
   - package-ecosystem: "gomod"
     directory: "/x/ecocredit"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
+      interval: daily
+    open-pull-requests-limit: 5
 
   - package-ecosystem: "npm"
-    directory: "docs"
+    directory: "/docs"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
+      interval: daily
+    open-pull-requests-limit: 5
