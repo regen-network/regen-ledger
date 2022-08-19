@@ -7,7 +7,7 @@ Feature: Msg/MsgUpdateBasketFees
   Rule: The authority is a governance account
 
     Scenario: the authority is a governance account
-      When alice attempts to update basket fee with properties
+      When alice attempts to update basket fees with properties
       """
       {
         "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
