@@ -64,7 +64,7 @@ Feature: Msg/MsgUpdateBasketFees
       }
       """
 
-    Scenario: valid basket fee empty 
+    Scenario: the basket fees are updated (no fees)
       When alice attempts to update basket fees with properties
       """
       {
