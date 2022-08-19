@@ -38,7 +38,7 @@ Feature: Msg/MsgUpdateBasketFees
 
   Rule: The basket fees are updated
 
-    Scenario: the basket fee is valid
+    Scenario: the basket fees are updated (single fee)
       When alice attempts to update basket fee with properties
       """
       {
