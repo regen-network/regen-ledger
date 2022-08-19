@@ -1,4 +1,4 @@
-Feature: MsgUpdateBasketFee
+Feature: MsgUpdateBasketFees
 
   Scenario: a valid message
     Given the message
