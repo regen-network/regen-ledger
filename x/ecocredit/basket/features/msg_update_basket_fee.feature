@@ -65,7 +65,7 @@ Feature: MsgUpdateBasketFees
     When the message is validated
     Then expect the error "invalid authority address: decoding bech32 failed: invalid bech32 string length 3"
 
-  Scenario: an error is returned if denom is not valid denom
+  Scenario: an error is returned if basket fee denom is not formatted
     Given the message
     """
     {
