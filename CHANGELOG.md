@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 
-- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to config
+- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to stable config
 
 #### Changed
 
@@ -32,32 +32,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### API Breaking Changes
 
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewKeeper` method in `ecocredit/core` requires a `authority` address.
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Removed `AddCreditType` proposal handler.
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewKeeper` method in `ecocredit/core` requires an `authority` address.
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `AddCreditType` proposal handler has been removed.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
-- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Removed `AllowedDenom` proposal handler.
+- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `AllowedDenom` proposal handler has been removed.
 
 #### Added
 
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1342) `AddAllowedDenom` is added for msg-based gov proposal.
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) `AddCreditType` is added for msg-based gov proposal.
-- [#1346](https://github.com/regen-network/regen-ledger/pull/1346) `RemoveAllowedDenom` is added for msg-based gov proposal.
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1342) Add `AddAllowedDenom` msg-based gov proposal
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddCreditType` msg-based gov proposal
+- [#1346](https://github.com/regen-network/regen-ledger/pull/1346) Add `RemoveAllowedDenom` msg-based gov proposal
 - [#1351](https://github.com/regen-network/regen-ledger/pull/1351) Add `signer` option to transaction messages
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchBalance` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchContract` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchSequence` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchSupply` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `ClassSequence` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `OriginTxIndex` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `ProjectSequence` state validation checks
 
 #### Changed
 
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Batch` state validation checks
-- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchBalance` state validation checks
-- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchContract` state validation checks
-- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchSequence` state validation checks
-- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchSupply` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Class` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ClassIssuer` state validation checks
-- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ClassSequence` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `CreditType` state validation checks
-- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `OriginTxIndex` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Project` state validation checks
-- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ProjectSequence` state validation checks
+
+#### Removed
+
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Remove `AddCreditType` proposal handler
+- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Remove `AllowedDenom` proposal handler
 
 ### x/group
 
