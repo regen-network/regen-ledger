@@ -6,10 +6,10 @@
 </div>
 <br />
 <div align="center">
-    <a href="https://github.com/regen-network/regen-ledger/blob/master/LICENSE">
+    <a href="https://github.com/regen-network/regen-ledger/blob/main/LICENSE">
         <img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue" />
     </a>
-    <a href="https://github.com/tendermint/tendermint/releases/latest">
+    <a href="https://github.com/regen-network/regen-ledger/releases/latest">
         <img alt="Version" src="https://img.shields.io/github/tag/regen-network/regen-ledger" />
     </a>
     <a href="https://pkg.go.dev/github.com/regen-network/regen-ledger/v4">
@@ -18,16 +18,16 @@
 </div>
 <br />
 <div align="center">
-    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+    <a href="https://github.com/regen-network/regen-ledger/commits/main">
         <img alt="Build Status" src="https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+    <a href="https://github.com/regen-network/regen-ledger/commits/main">
         <img alt="Test Status" src="https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+    <a href="https://github.com/regen-network/regen-ledger/commits/main">
         <img alt="Sims Status" src="https://github.com/regen-network/regen-ledger/workflows/Sims/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/master">
+    <a href="https://github.com/regen-network/regen-ledger/commits/main">
         <img alt="Lint Status" src="https://github.com/regen-network/regen-ledger/workflows/Lint/badge.svg" />
     </a>
 </div>
@@ -52,7 +52,7 @@
         <img alt="Go Report" src="https://goreportcard.com/badge/github.com/regen-network/regen-ledger" />
     </a>
     <a href="https://codecov.io/gh/regen-network/regen-ledger">
-        <img alt="Code Coverage" src="https://codecov.io/gh/regen-network/regen-ledger/branch/master/graph/badge.svg" />
+        <img alt="Code Coverage" src="https://codecov.io/gh/regen-network/regen-ledger/branch/main/graph/badge.svg" />
     </a>
 </div>
 <br />
@@ -69,7 +69,7 @@ The core features that Regen Ledger aims to provide include the following:
 - a database of ecological state and change of state claims that spans both on and off-chain data sources
 - mechanisms for automating the assessment of ecological state, making payments, and issuing assets
 
-Regen Ledger is under heavy development and as result the above features are implemented to varying degrees of completeness. For more information about our approach and vision, see [Regen Ledger Specification](specs/SPEC.md).
+Regen Ledger is under heavy development and as result the above features are implemented to varying degrees of completeness. For more information about our approach and vision, see [Regen Ledger Specification](specs/regen-ledger.md).
 
 ## Documentation
 
