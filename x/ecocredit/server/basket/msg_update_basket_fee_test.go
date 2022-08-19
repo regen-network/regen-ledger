@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	v1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -34,7 +34,7 @@ func (s *updateBasketFeeSuite) AliceAttemptsToUpdateBasketFeesWithProperties(a g
 }
 
 func (s *updateBasketFeeSuite) ExpectBasketFeesWithProperties(a gocuke.DocString) {
-	var expected *basketv1.BasketFees
+	var expected *v1.BasketFees
 	err := json.Unmarshal([]byte(a.Content), &expected)
 	require.NoError(s.t, err)
 
