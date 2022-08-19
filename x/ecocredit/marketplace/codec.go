@@ -19,6 +19,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSell{}, "regen.marketplace/MsgSell", nil)
 	cdc.RegisterConcrete(&MsgCancelSellOrder{}, "regen.marketplace/MsgCancelSellOrder", nil)
 	cdc.RegisterConcrete(&MsgUpdateSellOrders{}, "regen.marketplace/MsgUpdateSellOrders", nil)
+	cdc.RegisterConcrete(&MsgRemoveAllowedDenom{}, "regen.marketplace/MsgRemoveAllowedDenom", nil)
 	cdc.RegisterConcrete(&MsgAddAllowedDenom{}, "regen.marketplace/MsgAddAllowedDenom", nil)
 }
 

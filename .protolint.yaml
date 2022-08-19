@@ -24,3 +24,4 @@ lint:
       - proto/regen/ecocredit/basket/v1/tx.proto
       - proto/regen/ecocredit/v1/types.proto
       - proto/regen/ecocredit/v1/tx.proto
+      - proto/cosmos/msg/v1/msg.proto

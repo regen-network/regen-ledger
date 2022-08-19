@@ -76,7 +76,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
-	assert.NilError(t, err)
+	assert.NilError(s.t, err)
 	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper, authority)
 
 	// set test accounts

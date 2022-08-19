@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.marketplace.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -28,10 +29,15 @@ service Msg {
   // new allowed denom.
   // Since Revision 1
   rpc AddAllowedDenom(MsgAddAllowedDenom) returns (MsgAddAllowedDenomResponse);
+
+  // RemoveAllowedDenom is a governance method that removes allowed denom.
+  // Since Revision 1
+  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom) returns (MsgRemoveAllowedDenomResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
 message MsgSell {
+  option (cosmos.msg.v1.signer) = "seller";
 
   // seller is the address of the account that is selling credits.
   string seller = 1;
@@ -77,6 +83,7 @@ message MsgSellResponse {
 
 // MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
 message MsgUpdateSellOrders {
+  option (cosmos.msg.v1.signer) = "seller";
 
   // seller is the address of the account that is selling credits.
   string seller = 1;
@@ -112,6 +119,7 @@ message MsgUpdateSellOrdersResponse {}
 
 // MsgCancelSellOrder is the Msg/CancelSellOrder request type.
 message MsgCancelSellOrder {
+  option (cosmos.msg.v1.signer) = "seller";
 
   // seller is the address of the account that created the sell order and is
   // therefore authorized to cancel the sell order.
@@ -126,6 +134,7 @@ message MsgCancelSellOrderResponse {}
 
 // MsgBuyDirect is the Msg/BuyDirect request type.
 message MsgBuyDirect {
+  option (cosmos.msg.v1.signer) = "buyer";
 
   // buyer is the address of the account that is buying credits.
   string buyer = 1;
@@ -164,6 +173,8 @@ message MsgBuyDirectResponse {}
 // MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
 // Since Revision 1
 message MsgAddAllowedDenom {
+  option (cosmos.msg.v1.signer) = "authority";
+
   // authority is the address of the governance account.
   string authority = 1;
 
@@ -183,3 +194,17 @@ message MsgAddAllowedDenom {
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
 // Since Revision 1
 message MsgAddAllowedDenomResponse {}
+
+// MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+// Since Revision 1
+message MsgRemoveAllowedDenom {
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the denom to remove (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
+}
+
+// MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+// Since Revision 1
+message MsgRemoveAllowedDenomResponse {}
