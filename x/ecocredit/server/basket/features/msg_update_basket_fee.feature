@@ -81,7 +81,7 @@ Feature: Msg/MsgUpdateBasketFees
       }
       """
     
-    Scenario: valid basket fee multiple tokens 
+    Scenario: the basket fees are updated (multiple fees)
       When alice attempts to update basket fees with properties
       """
       {
