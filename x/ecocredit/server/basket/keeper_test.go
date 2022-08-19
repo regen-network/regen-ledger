@@ -31,8 +31,6 @@ import (
 var (
 	gmAny         = gomock.Any()
 	defaultParams = core.DefaultParams()
-	basketFees    = defaultParams.BasketFee
-	validFee      = basketFees[0]
 )
 
 type baseSuite struct {
@@ -77,7 +75,10 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
-	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
+	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
+	assert.NilError(t, err)
+
+	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authority)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 

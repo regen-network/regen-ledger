@@ -16,6 +16,7 @@ type Keeper struct {
 	bankKeeper    ecocredit.BankKeeper
 	paramsKeeper  ecocredit.ParamKeeper
 	moduleAddress sdk.AccAddress
+	authority     sdk.AccAddress
 }
 
 var _ baskettypes.MsgServer = Keeper{}
@@ -28,6 +29,7 @@ func NewKeeper(
 	bk ecocredit.BankKeeper,
 	pk ecocredit.ParamKeeper,
 	ma sdk.AccAddress,
+	authority sdk.AccAddress,
 ) Keeper {
 	return Keeper{
 		stateStore:    ss,
@@ -35,5 +37,6 @@ func NewKeeper(
 		bankKeeper:    bk,
 		paramsKeeper:  pk,
 		moduleAddress: ma,
+		authority:     authority,
 	}
 }
