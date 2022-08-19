@@ -195,7 +195,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			Id:       req.OriginTx.Id,
 			Source:   req.OriginTx.Source,
 		}); err != nil {
-			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+			if ormerrors.AlreadyExists.Is(err) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 					"credits already issued with tx id: %s", req.OriginTx.Id,
 				)
