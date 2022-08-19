@@ -39,7 +39,7 @@ Feature: Msg/MsgUpdateBasketFees
   Rule: The basket fees are updated
 
     Scenario: the basket fees are updated (single fee)
-      When alice attempts to update basket fee with properties
+      When alice attempts to update basket fees with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
