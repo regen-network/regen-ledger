@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -26,6 +28,13 @@ func (s *batch) TheBatch(a gocuke.DocString) {
 	s.batch = &Batch{}
 	err := jsonpb.UnmarshalString(a.Content, s.batch)
 	require.NoError(s.t, err)
+}
+
+func (s *batch) MetadataWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.batch.Metadata = strings.Repeat("x", int(length))
 }
 
 func (s *batch) TheBatchIsValidated() {

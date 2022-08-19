@@ -2,17 +2,17 @@ package core
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 // Validate performs basic validation of the ClassIssuer state type
 func (c ClassIssuer) Validate() error {
 	if c.ClassKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
+		return ecocredit.ErrParseFailure.Wrap("class key cannot be zero")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(c.Issuer).String()); err != nil {
-		return sdkerrors.Wrap(err, "issuer")
+		return ecocredit.ErrParseFailure.Wrapf("issuer: %s", err)
 	}
 
 	return nil

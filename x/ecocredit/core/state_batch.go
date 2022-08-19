@@ -7,12 +7,24 @@ import (
 
 // Validate performs basic validation of the Batch state type
 func (b Batch) Validate() error {
-	if err := ValidateBatchDenom(b.Denom); err != nil {
-		return err // returns parse error
+	if b.Key == 0 {
+		return ecocredit.ErrParseFailure.Wrapf("key cannot be zero")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(b.Issuer).String()); err != nil {
+		return ecocredit.ErrParseFailure.Wrapf("issuer: %s", err)
 	}
 
 	if b.ProjectKey == 0 {
 		return ecocredit.ErrParseFailure.Wrapf("project key cannot be zero")
+	}
+
+	if err := ValidateBatchDenom(b.Denom); err != nil {
+		return err // returns parse error
+	}
+
+	if len(b.Metadata) > MaxMetadataLength {
+		return ecocredit.ErrParseFailure.Wrap("metadata cannot be more than 256 characters")
 	}
 
 	if b.StartDate == nil {
@@ -26,13 +38,12 @@ func (b Batch) Validate() error {
 	if b.EndDate.Compare(*b.StartDate) != 1 {
 		return ecocredit.ErrParseFailure.Wrapf(
 			"the batch end date (%s) must be the same as or after the batch start date (%s)",
-			b.EndDate.String(),
-			b.StartDate.String(),
+			b.EndDate, b.StartDate,
 		)
 	}
 
-	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(b.Issuer).String()); err != nil {
-		return ecocredit.ErrParseFailure.Wrapf("issuer: %s", err)
+	if b.IssuanceDate == nil {
+		return ecocredit.ErrParseFailure.Wrapf("must provide an issuance date for the credit batch")
 	}
 
 	return nil
