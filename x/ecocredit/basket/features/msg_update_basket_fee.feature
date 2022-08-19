@@ -27,7 +27,7 @@ Feature: MsgUpdateBasketFees
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message with multiple tokens
+  Scenario: a valid message with multiple basket fees
     Given the message
     """
     {
