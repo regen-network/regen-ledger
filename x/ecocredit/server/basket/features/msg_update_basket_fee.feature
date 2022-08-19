@@ -1,6 +1,6 @@
 Feature: Msg/MsgUpdateBasketFees
 
-  The basket fee can be updated:
+  The basket fees can be updated:
   - when the authority is a governance account address
   - when the provided basket fee is valid
   - the basket fee is updated
