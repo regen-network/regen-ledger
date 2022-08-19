@@ -1,29 +1,29 @@
 package core
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 // Validate performs basic validation of the OriginTxIndex state type
-func (b OriginTxIndex) Validate() error {
-	if b.ClassKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
+func (m *OriginTxIndex) Validate() error {
+	if m.ClassKey == 0 {
+		return ecocredit.ErrParseFailure.Wrap("class key cannot be zero")
 	}
 
-	if b.Id == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.id cannot be empty")
+	if m.Id == "" {
+		return ecocredit.ErrParseFailure.Wrap("id cannot be empty")
 	}
 
-	if !reOriginTxId.MatchString(b.Id) {
-		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.id must be at most 128 characters long, valid characters: alpha-numberic, space, '-' or '_'")
+	if !reOriginTxId.MatchString(m.Id) {
+		return ecocredit.ErrParseFailure.Wrap("id must be at most 128 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 
-	if b.Source == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.source cannot be empty")
+	if m.Source == "" {
+		return ecocredit.ErrParseFailure.Wrap("source cannot be empty")
 	}
 
-	if !reOriginTxSource.MatchString(b.Source) {
-		return sdkerrors.ErrInvalidRequest.Wrap("origin_tx.source must be at most 32 characters long, valid characters: alpha-numberic, space, '-' or '_'")
+	if !reOriginTxSource.MatchString(m.Source) {
+		return ecocredit.ErrParseFailure.Wrap("source must be at most 32 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 
 	return nil

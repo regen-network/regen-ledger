@@ -6,24 +6,24 @@ import (
 )
 
 // Validate performs basic validation of the CreditClass state type
-func (c Class) Validate() error {
-	if c.Key == 0 {
+func (m *Class) Validate() error {
+	if m.Key == 0 {
 		return ecocredit.ErrParseFailure.Wrapf("key cannot be zero")
 	}
 
-	if err := ValidateClassId(c.Id); err != nil {
+	if err := ValidateClassId(m.Id); err != nil {
 		return err // returns parse error
 	}
 
-	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(c.Admin).String()); err != nil {
+	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(m.Admin).String()); err != nil {
 		return ecocredit.ErrParseFailure.Wrapf("admin: %s", err)
 	}
 
-	if len(c.Metadata) > MaxMetadataLength {
+	if len(m.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrParseFailure.Wrap("credit class metadata cannot be more than 256 characters")
 	}
 
-	if err := ValidateCreditTypeAbbreviation(c.CreditTypeAbbrev); err != nil {
+	if err := ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
 		return err // returns parse error
 	}
 

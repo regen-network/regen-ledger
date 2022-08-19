@@ -1,7 +1,7 @@
 package core
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 const (
@@ -9,25 +9,25 @@ const (
 )
 
 // Validate performs basic validation of the ClassIssuer state type
-func (m CreditType) Validate() error {
+func (m *CreditType) Validate() error {
 	if err := ValidateCreditTypeAbbreviation(m.Abbreviation); err != nil {
-		return err
+		return err // returns parse error
 	}
 
 	if len(m.Name) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
+		return ecocredit.ErrParseFailure.Wrap("name cannot be empty")
 	}
 
 	if len(m.Name) > maxCreditTypeNameLength {
-		return sdkerrors.ErrInvalidRequest.Wrapf("credit type name cannot exceed %d characters", maxCreditTypeNameLength)
+		return ecocredit.ErrParseFailure.Wrapf("credit type name cannot exceed %d characters", maxCreditTypeNameLength)
 	}
 
 	if len(m.Unit) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("unit cannot be empty")
+		return ecocredit.ErrParseFailure.Wrap("unit cannot be empty")
 	}
 
 	if m.Precision != PRECISION {
-		return sdkerrors.ErrInvalidRequest.Wrapf("credit type precision is currently locked to %d", PRECISION)
+		return ecocredit.ErrParseFailure.Wrapf("credit type precision is currently locked to %d", PRECISION)
 	}
 
 	return nil

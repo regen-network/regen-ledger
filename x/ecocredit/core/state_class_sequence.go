@@ -5,12 +5,12 @@ import (
 )
 
 // Validate performs basic validation of the ClassSequence state type
-func (b ClassSequence) Validate() error {
-	if err := ValidateCreditTypeAbbreviation(b.CreditTypeAbbrev); err != nil {
+func (m *ClassSequence) Validate() error {
+	if err := ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
 		return err
 	}
 
-	if b.NextSequence == 0 {
+	if m.NextSequence == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("next sequence cannot be zero")
 	}
 

@@ -6,16 +6,16 @@ import (
 )
 
 // Validate performs basic validation of the BatchContract state type
-func (b BatchContract) Validate() error {
-	if b.BatchKey == 0 {
+func (m *BatchContract) Validate() error {
+	if m.BatchKey == 0 {
 		return ecocredit.ErrParseFailure.Wrapf("batch key cannot be zero")
 	}
 
-	if b.ClassKey == 0 {
+	if m.ClassKey == 0 {
 		return ecocredit.ErrParseFailure.Wrapf("class key cannot be zero")
 	}
 
-	if !eth.IsValidAddress(b.Contract) {
+	if !eth.IsValidAddress(m.Contract) {
 		return ecocredit.ErrParseFailure.Wrapf("contract must be a valid ethereum address")
 	}
 

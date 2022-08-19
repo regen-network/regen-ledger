@@ -7,24 +7,24 @@ import (
 )
 
 // Validate performs basic validation of the BatchBalance state type
-func (b BatchBalance) Validate() error {
-	if b.BatchKey == 0 {
+func (m *BatchBalance) Validate() error {
+	if m.BatchKey == 0 {
 		return ecocredit.ErrParseFailure.Wrapf("batch key cannot be zero")
 	}
 
-	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(b.Address).String()); err != nil {
+	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(m.Address).String()); err != nil {
 		return ecocredit.ErrParseFailure.Wrapf("address: %s", err)
 	}
 
-	if _, err := math.NewNonNegativeDecFromString(b.TradableAmount); err != nil {
+	if _, err := math.NewNonNegativeDecFromString(m.TradableAmount); err != nil {
 		return ecocredit.ErrParseFailure.Wrapf("tradable amount: %s", err)
 	}
 
-	if _, err := math.NewNonNegativeDecFromString(b.RetiredAmount); err != nil {
+	if _, err := math.NewNonNegativeDecFromString(m.RetiredAmount); err != nil {
 		return ecocredit.ErrParseFailure.Wrapf("retired amount: %s", err)
 	}
 
-	if _, err := math.NewNonNegativeDecFromString(b.EscrowedAmount); err != nil {
+	if _, err := math.NewNonNegativeDecFromString(m.EscrowedAmount); err != nil {
 		return ecocredit.ErrParseFailure.Wrapf("escrowed amount: %s", err)
 	}
 
