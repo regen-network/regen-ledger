@@ -1,17 +1,17 @@
 package core
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 // Validate performs basic validation of the ProjectSequence state type
-func (b ProjectSequence) Validate() error {
-	if b.ClassKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
+func (m *ProjectSequence) Validate() error {
+	if m.ClassKey == 0 {
+		return ecocredit.ErrParseFailure.Wrap("class key cannot be zero")
 	}
 
-	if b.NextSequence == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("next sequence cannot be zero")
+	if m.NextSequence == 0 {
+		return ecocredit.ErrParseFailure.Wrap("next sequence cannot be zero")
 	}
 
 	return nil
