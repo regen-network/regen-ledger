@@ -24,7 +24,7 @@ func (s *updateBasketFeeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *updateBasketFeeSuite) AliceAttemptsToUpdateBasketFeeWithProperties(a gocuke.DocString) {
+func (s *updateBasketFeeSuite) AliceAttemptsToUpdateBasketFeesWithProperties(a gocuke.DocString) {
 	var msg *basket.MsgUpdateBasketFees
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
