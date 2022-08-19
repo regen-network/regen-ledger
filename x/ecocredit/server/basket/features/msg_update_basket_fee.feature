@@ -22,7 +22,7 @@ Feature: Msg/MsgUpdateBasketFees
       Then expect no error
 
     Scenario: the authority is not a governance account
-      When alice attempts to update basket fee with properties
+      When alice attempts to update basket fees with properties
       """
       {
         "authority": "regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
