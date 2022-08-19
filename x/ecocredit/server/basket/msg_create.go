@@ -3,7 +3,7 @@ package basket
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/errors"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -108,7 +108,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		Name:              msg.Name,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "basket with name %s already exists", msg.Name)
+		return nil, ormerrors.UniqueKeyViolation.Wrapf("basket with name %s already exists", msg.Name)
 	}
 	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
 		return nil, err
