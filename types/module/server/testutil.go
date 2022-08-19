@@ -47,6 +47,10 @@ func NewFixtureFactory(t gocuke.TestingT, numSigners int) *FixtureFactory {
 
 func (ff *FixtureFactory) SetModules(modules []sdkmodules.AppModule) {
 	ff.modules = modules
+	// we append the mock module below in order to bypass the check for validator updates.
+	// since we are testing with a fixture with no validators, we must inject a mock module and
+	// force it to inject a validator update.
+	ff.modules = append(ff.modules, MockModule{})
 }
 
 // Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
@@ -127,6 +131,9 @@ func (f fixture) Signers() []sdk.AccAddress {
 }
 
 func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
+	// we inject the mock module genesis with bogus data in order to bypass the check for validator updates.
+	// since the testing fixture doesn't require validators/validator updates, the check fails otherwise.
+	genesisData[MockModule{}.Name()] = []byte(`{"foo":"bar"}`)
 	return f.mm.InitGenesis(ctx, f.cdc, genesisData), nil
 }
 

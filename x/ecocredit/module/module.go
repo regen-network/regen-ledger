@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	crypto2 "github.com/tendermint/tendermint/proto/tendermint/crypto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -55,12 +54,12 @@ type Module struct {
 }
 
 func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
-	_, err := a.Keeper.InitGenesis(s, jsonCodec, message)
+	update, err := a.Keeper.InitGenesis(s, jsonCodec, message)
 	if err != nil {
 		panic(err)
 	}
 	// TODO(Tyler): the app fails without this....????
-	return []abci.ValidatorUpdate{{PubKey: crypto2.PublicKey{}, Power: 4}}
+	return update
 }
 
 func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
