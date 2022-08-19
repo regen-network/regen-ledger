@@ -58,7 +58,6 @@ func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message js
 	if err != nil {
 		panic(err)
 	}
-	// TODO(Tyler): the app fails without this....????
 	return update
 }
 
