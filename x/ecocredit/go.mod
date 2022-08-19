@@ -26,7 +26,7 @@ require (
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.0
 	gotest.tools/v3 v3.2.0
-	pgregory.net/rapid v0.4.7
+	pgregory.net/rapid v0.4.8
 )
 
 require (
