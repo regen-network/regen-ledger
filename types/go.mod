@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.46.0
-	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
+	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
