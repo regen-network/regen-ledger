@@ -9,9 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### app
 
+#### Added
+
+- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to config
+
+#### Changed
+
+- [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Move application entry point to root directory
+
 #### Removed
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
+- [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Remove experimental app configuration
+
+### x/data
+
+#### Added
+
+- [#1351](https://github.com/regen-network/regen-ledger/pull/1351) Add `signer` option to transaction messages
 
 ### x/ecocredit
 
@@ -27,16 +42,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1342) `AddAllowedDenom` is added for msg-based gov proposal.
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) `AddCreditType` is added for msg-based gov proposal.
 - [#1346](https://github.com/regen-network/regen-ledger/pull/1346) `RemoveAllowedDenom` is added for msg-based gov proposal.
+- [#1351](https://github.com/regen-network/regen-ledger/pull/1351) Add `signer` option to transaction messages
+
+#### Changed
+
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Batch` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchBalance` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchContract` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchSequence` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `BatchSupply` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Class` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ClassIssuer` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ClassSequence` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `CreditType` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `OriginTxIndex` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Project` state validation checks
+- [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ProjectSequence` state validation checks
 
 ### x/group
 
-#### Added
-
-- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add group module
-
 #### Removed
 
-- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module
+- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module in favor of Cosmos SDK group module
 
 ## [v4.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.1) - TBD
 
