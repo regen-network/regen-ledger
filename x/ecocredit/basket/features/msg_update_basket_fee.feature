@@ -16,7 +16,7 @@ Feature: MsgUpdateBasketFees
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message no basket fee
+  Scenario: a valid message removing basket fees
     Given the message
     """
     {
