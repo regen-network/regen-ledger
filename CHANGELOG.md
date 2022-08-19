@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) `AddAllowedDenom` is added for msg-based gov proposal.
-- [#1349](https://github.com/regen-network/regen-ledger/pull/1349) `UpdateBasketFee` is added for msg-based gov proposal.
+- [#1349](https://github.com/regen-network/regen-ledger/pull/1349) `UpdateBasketFees` is added for msg-based gov proposal.
 
 
 #### Removed
