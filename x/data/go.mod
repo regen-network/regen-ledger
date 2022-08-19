@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cosmos/cosmos-sdk v0.46.0
-	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
+	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
