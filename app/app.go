@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"os"
 
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -121,28 +125,32 @@ var (
 	// ModuleBasics is in charge of setting up basic, non-dependant module
 	// elements, such as codec registration and genesis verification.
 	ModuleBasics = module.NewBasicManager(
-		append([]module.AppModuleBasic{
-			auth.AppModuleBasic{},
-			genutil.AppModuleBasic{},
-			bank.AppModuleBasic{},
-			capability.AppModuleBasic{},
-			staking.AppModuleBasic{},
-			mint.AppModuleBasic{},
-			distr.AppModuleBasic{},
-			params.AppModuleBasic{},
-			crisis.AppModuleBasic{},
-			slashing.AppModuleBasic{},
-			ibc.AppModuleBasic{},
-			upgrade.AppModuleBasic{},
-			evidence.AppModuleBasic{},
-			transfer.AppModuleBasic{},
-			vesting.AppModuleBasic{},
-			feegrantmodule.AppModuleBasic{},
-			authzmodule.AppModuleBasic{},
-			groupmodule.AppModuleBasic{},
-			ecocreditmodule.Module{},
-			datamodule.Module{},
-		}, setCustomModuleBasics()...)...,
+		auth.AppModuleBasic{},
+		genutil.AppModuleBasic{},
+		bank.AppModuleBasic{},
+		capability.AppModuleBasic{},
+		staking.AppModuleBasic{},
+		mint.AppModuleBasic{},
+		distr.AppModuleBasic{},
+		params.AppModuleBasic{},
+		crisis.AppModuleBasic{},
+		slashing.AppModuleBasic{},
+		ibc.AppModuleBasic{},
+		upgrade.AppModuleBasic{},
+		evidence.AppModuleBasic{},
+		transfer.AppModuleBasic{},
+		vesting.AppModuleBasic{},
+		feegrantmodule.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
+		groupmodule.AppModuleBasic{},
+		ecocreditmodule.Module{},
+		datamodule.Module{},
+		gov.NewAppModuleBasic(
+			[]govclient.ProposalHandler{
+				paramsclient.ProposalHandler, distrclient.ProposalHandler,
+				upgradeclient.LegacyProposalHandler, upgradeclient.LegacyCancelProposalHandler,
+			},
+		),
 	)
 
 	// module account permissions
@@ -159,9 +167,6 @@ var (
 			basket.BasketSubModuleName:     {authtypes.Burner, authtypes.Minter},
 		}
 
-		for k, v := range setCustomMaccPerms() {
-			perms[k] = v
-		}
 		return perms
 	}()
 )
@@ -269,7 +274,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 
-	app.initializeCustomScopedKeepers()
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	app.CapabilityKeeper.Seal()
@@ -410,58 +414,54 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	app.mm.SetOrderBeginBlockers(
-		append([]string{
-			upgradetypes.ModuleName,
-			capabilitytypes.ModuleName,
-			minttypes.ModuleName,
-			distrtypes.ModuleName,
-			slashingtypes.ModuleName,
-			evidencetypes.ModuleName,
-			stakingtypes.ModuleName,
-			authtypes.ModuleName,
-			banktypes.ModuleName,
-			govtypes.ModuleName,
-			crisistypes.ModuleName,
-			genutiltypes.ModuleName,
-			authz.ModuleName,
-			feegrant.ModuleName,
-			paramstypes.ModuleName,
-			vestingtypes.ModuleName,
-			group.ModuleName,
-			ecocredit.ModuleName,
-			data.ModuleName,
+		upgradetypes.ModuleName,
+		capabilitytypes.ModuleName,
+		minttypes.ModuleName,
+		distrtypes.ModuleName,
+		slashingtypes.ModuleName,
+		evidencetypes.ModuleName,
+		stakingtypes.ModuleName,
+		authtypes.ModuleName,
+		banktypes.ModuleName,
+		govtypes.ModuleName,
+		crisistypes.ModuleName,
+		genutiltypes.ModuleName,
+		authz.ModuleName,
+		feegrant.ModuleName,
+		paramstypes.ModuleName,
+		vestingtypes.ModuleName,
+		group.ModuleName,
+		ecocredit.ModuleName,
+		data.ModuleName,
 
-			// ibc modules
-			ibchost.ModuleName,
-			ibctransfertypes.ModuleName,
-		}, setCustomOrderBeginBlocker()...)...,
+		// ibc modules
+		ibchost.ModuleName,
+		ibctransfertypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
-		append([]string{
-			crisistypes.ModuleName,
-			govtypes.ModuleName,
-			stakingtypes.ModuleName,
-			capabilitytypes.ModuleName,
-			authtypes.ModuleName,
-			banktypes.ModuleName,
-			distrtypes.ModuleName,
-			slashingtypes.ModuleName,
-			minttypes.ModuleName,
-			genutiltypes.ModuleName,
-			evidencetypes.ModuleName,
-			authz.ModuleName,
-			feegrant.ModuleName,
-			paramstypes.ModuleName,
-			upgradetypes.ModuleName,
-			vestingtypes.ModuleName,
-			group.ModuleName,
-			ecocredit.ModuleName,
-			data.ModuleName,
+		crisistypes.ModuleName,
+		govtypes.ModuleName,
+		stakingtypes.ModuleName,
+		capabilitytypes.ModuleName,
+		authtypes.ModuleName,
+		banktypes.ModuleName,
+		distrtypes.ModuleName,
+		slashingtypes.ModuleName,
+		minttypes.ModuleName,
+		genutiltypes.ModuleName,
+		evidencetypes.ModuleName,
+		authz.ModuleName,
+		feegrant.ModuleName,
+		paramstypes.ModuleName,
+		upgradetypes.ModuleName,
+		vestingtypes.ModuleName,
+		group.ModuleName,
+		ecocredit.ModuleName,
+		data.ModuleName,
 
-			// ibc modules
-			ibchost.ModuleName,
-			ibctransfertypes.ModuleName,
-		}, setCustomOrderEndBlocker()...)...,
+		// ibc modules
+		ibchost.ModuleName,
+		ibctransfertypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -469,31 +469,29 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		append([]string{
-			capabilitytypes.ModuleName,
-			authtypes.ModuleName,
-			banktypes.ModuleName,
-			distrtypes.ModuleName,
-			stakingtypes.ModuleName,
-			slashingtypes.ModuleName,
-			govtypes.ModuleName,
-			minttypes.ModuleName,
-			crisistypes.ModuleName,
-			genutiltypes.ModuleName,
-			evidencetypes.ModuleName,
-			feegrant.ModuleName,
-			authz.ModuleName,
-			vestingtypes.ModuleName,
-			paramstypes.ModuleName,
-			upgradetypes.ModuleName,
-			group.ModuleName,
-			ecocredit.ModuleName,
-			data.ModuleName,
+		capabilitytypes.ModuleName,
+		authtypes.ModuleName,
+		banktypes.ModuleName,
+		distrtypes.ModuleName,
+		stakingtypes.ModuleName,
+		slashingtypes.ModuleName,
+		govtypes.ModuleName,
+		minttypes.ModuleName,
+		crisistypes.ModuleName,
+		genutiltypes.ModuleName,
+		evidencetypes.ModuleName,
+		feegrant.ModuleName,
+		authz.ModuleName,
+		vestingtypes.ModuleName,
+		paramstypes.ModuleName,
+		upgradetypes.ModuleName,
+		group.ModuleName,
+		ecocredit.ModuleName,
+		data.ModuleName,
 
-			// ibc modules
-			ibctransfertypes.ModuleName,
-			ibchost.ModuleName,
-		}, setCustomOrderInitGenesis()...)...,
+		// ibc modules
+		ibctransfertypes.ModuleName,
+		ibchost.ModuleName,
 	)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
@@ -505,24 +503,22 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
 	app.sm = module.NewSimulationManager(
-		append([]module.AppModuleSimulation{
-			auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
-			bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
-			capability.NewAppModule(appCodec, *app.CapabilityKeeper),
-			gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
-			mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil),
-			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-			slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-			params.NewAppModule(app.ParamsKeeper),
-			evidence.NewAppModule(app.EvidenceKeeper),
-			feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-			authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-			ibc.NewAppModule(app.IBCKeeper),
-			transferModule,
-			ecocreditMod,
-			dataMod,
-		}, app.setCustomSimulationManager()...)...,
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
+		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		params.NewAppModule(app.ParamsKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
+		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
+		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		ibc.NewAppModule(app.IBCKeeper),
+		transferModule,
+		ecocreditMod,
+		dataMod,
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -724,7 +720,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(ecocredit.DefaultParamspace)
-	initCustomParamsKeeper(&paramsKeeper)
 
 	return paramsKeeper
 }

@@ -4,12 +4,14 @@ import (
 	"strconv"
 	"testing"
 
+	sdkMath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/require"
+
+	"github.com/regen-network/regen-ledger/types/math"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -44,11 +46,11 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	s.bob = s.addrs[1]
 	s.aliceBankBalance = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkMath.NewInt(100),
 	}
 	s.bobBankBalance = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkMath.NewInt(100),
 	}
 	s.creditTypeAbbrev = "C"
 	s.classId = "C01"
@@ -57,11 +59,11 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	s.quantity = "10"
 	s.askPrice = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(10),
+		Amount: sdkMath.NewInt(10),
 	}
 	s.bidPrice = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(10),
+		Amount: sdkMath.NewInt(10),
 	}
 }
 
@@ -102,7 +104,7 @@ func (s *buyDirectSuite) BobHasABankBalanceWithDenom(a string) {
 }
 
 func (s *buyDirectSuite) BobHasABankBalanceWithAmount(a string) {
-	amount, ok := sdk.NewIntFromString(a)
+	amount, ok := sdkMath.NewIntFromString(a)
 	require.True(s.t, ok)
 
 	s.bobBankBalance = sdk.NewCoin(s.bidPrice.Denom, amount)
@@ -176,7 +178,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithAskDenom(a string) {
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
-	askAmount, ok := sdk.NewIntFromString(a)
+	askAmount, ok := sdkMath.NewIntFromString(a)
 	require.True(s.t, ok)
 
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
@@ -194,7 +196,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string, b string) {
-	askAmount, ok := sdk.NewIntFromString(b)
+	askAmount, ok := sdkMath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.quantity = a
@@ -224,7 +226,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 }
 
 func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a string, b string) {
-	askAmount, ok := sdk.NewIntFromString(b)
+	askAmount, ok := sdkMath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.quantity = a
@@ -324,7 +326,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a string, b string) {
-	bidAmount, ok := sdk.NewIntFromString(b)
+	bidAmount, ok := sdkMath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.singleBuyOrderExpectCalls()
@@ -384,7 +386,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBidAmount(a string, b string) {
 	s.quantity = a
 
-	bidAmount, ok := sdk.NewIntFromString(b)
+	bidAmount, ok := sdkMath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.multipleBuyOrderExpectCalls()
