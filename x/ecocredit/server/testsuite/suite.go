@@ -92,8 +92,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	// TODO clean up once types.Context merged upstream into sdk.Context
-	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}

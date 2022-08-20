@@ -146,7 +146,7 @@ func (s *GenesisTestSuite) SetupSuite() {
 
 	blockTime := time.Now().UTC()
 
-	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(blockTime)
+	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(blockTime)
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
 	s.signers = s.fixture.Signers()
