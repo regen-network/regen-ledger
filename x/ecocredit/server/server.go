@@ -14,6 +14,8 @@ import (
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
@@ -86,4 +88,8 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 		panic(err)
 	}
 	return coreStore, basketStore, marketStore
+}
+
+func (s serverImpl) QueryServers() (coretypes.QueryServer, baskettypes.QueryServer, marketplacetypes.QueryServer) {
+	return s.CoreKeeper, s.BasketKeeper, s.MarketplaceKeeper
 }

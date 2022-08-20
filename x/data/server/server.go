@@ -26,6 +26,7 @@ type Keeper interface {
 	InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) ([]types.ValidatorUpdate, error)
 	ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error)
 	WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation
+	QueryServer() data.QueryServer
 }
 
 type serverImpl struct {
@@ -35,6 +36,10 @@ type serverImpl struct {
 	db            ormdb.ModuleDB
 	bankKeeper    data.BankKeeper
 	accountKeeper data.AccountKeeper
+}
+
+func (s serverImpl) QueryServer() data.QueryServer {
+	return s
 }
 
 func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
