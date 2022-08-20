@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/proto"
-	types2 "github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc/encoding"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -81,7 +81,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			if err != nil {
 				return err
 			}
-			queryResponse, err := handler(sdkCtx, types2.RequestQuery{
+			queryResponse, err := handler(sdkCtx, abciTypes.RequestQuery{
 				Data: bz,
 			})
 			if err != nil {
