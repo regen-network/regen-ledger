@@ -9,22 +9,22 @@ linters:
     - depguard
     - dogsled
     - errcheck
+    - exportloopref
     - goconst
     - gocritic
     - gofmt
     - goimports
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - maligned
+    # - maligned
     - misspell
     - nakedret
     - prealloc
-    - scopelint
+    - revive
     - staticcheck
-    - structcheck
+    # - structcheck
     - stylecheck
     - typecheck
     - unconvert

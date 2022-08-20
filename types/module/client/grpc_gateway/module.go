@@ -1,4 +1,4 @@
-package grpc_gateway
+package grpcgateway
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"

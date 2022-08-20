@@ -206,7 +206,12 @@ generate:
 ###############################################################################
 
 lint:
-	golangci-lint run --out-format=tab
+	# TODO: use find and run after fixing lint errors and warnings per module
+	# @find . -name 'go.mod' -type f -execdir golangci-lint run --out-format=tab \;
+	@golangci-lint run --out-format=tab
+	@cd types && golangci-lint run --out-format=tab
+	# @golangci-lint run --out-format=tab ./x/data
+	# @golangci-lint run --out-format=tab ./x/ecocredit
 	protolint .
 
 lint-fix:

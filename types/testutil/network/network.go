@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/node"
@@ -63,9 +64,9 @@ type Config struct {
 	Mnemonics        []string                   // custom user-provided validator operator mnemonics
 	BondDenom        string                     // the staking bond denomination
 	MinGasPrices     string                     // the minimum gas prices each validator will accept
-	AccountTokens    sdk.Int                    // the amount of unique validator tokens (e.g. 1000node0)
-	StakingTokens    sdk.Int                    // the amount of tokens each validator has available to stake
-	BondedTokens     sdk.Int                    // the amount of tokens each validator stakes
+	AccountTokens    sdkmath.Int                // the amount of unique validator tokens (e.g. 1000node0)
+	StakingTokens    sdkmath.Int                // the amount of tokens each validator has available to stake
+	BondedTokens     sdkmath.Int                // the amount of tokens each validator stakes
 	PruningStrategy  string                     // the pruning strategy each validator will have
 	EnableTMLogging  bool                       // enable Tendermint logging to STDOUT
 	CleanupDir       bool                       // remove base temporary directory during cleanup
@@ -356,7 +357,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(commission, sdk.OneDec(), sdk.OneDec()),
-			sdk.OneInt(),
+			sdkmath.OneInt(),
 		)
 		if err != nil {
 			return nil, err
@@ -368,7 +369,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 		}
 
 		memo := fmt.Sprintf("%s@%s:%s", nodeIDs[i], p2pURL.Hostname(), p2pURL.Port())
-		fee := sdk.NewCoins(sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), sdk.NewInt(0)))
+		fee := sdk.NewCoins(sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), sdkmath.NewInt(0)))
 		txBuilder := cfg.TxConfig.NewTxBuilder()
 		err = txBuilder.SetMsgs(createValMsg)
 		if err != nil {

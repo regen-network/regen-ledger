@@ -30,7 +30,7 @@ func GetMsgs(anys []*types.Any) ([]sdk.Msg, error) {
 	for i, any := range anys {
 		cached := any.GetCachedValue()
 		if cached == nil {
-			return nil, fmt.Errorf("any cached value is nil, proposal messages must be correctly packed Any values.")
+			return nil, fmt.Errorf("any cached value is nil, proposal messages must be correctly packed Any values")
 		}
 		msgs[i] = cached.(sdk.Msg)
 	}
