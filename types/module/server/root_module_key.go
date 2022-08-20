@@ -1,5 +1,6 @@
 package server
 
+/*
 import (
 	"context"
 	"fmt"
@@ -67,3 +68,5 @@ func (r *rootModuleKey) Derive(path []byte) DerivedModuleKey {
 		invokerFactory: r.invokerFactory,
 	}
 }
+
+*/

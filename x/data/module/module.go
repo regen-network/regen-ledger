@@ -20,8 +20,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
-	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
 	"github.com/regen-network/regen-ledger/x/data/server"
@@ -79,8 +77,6 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 }
 
 var _ module.AppModuleBasic = Module{}
-var _ restmodule.Module = Module{}
-var _ climodule.Module = Module{}
 var _ module.AppModuleSimulation = &Module{}
 
 func NewModule(sk storeTypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {

@@ -1,5 +1,6 @@
 package module
 
+/*
 import "github.com/cosmos/cosmos-sdk/codec/types"
 
 // Module is the base module type that all modules (client and server) must satisfy.
@@ -13,3 +14,5 @@ type TypeModule interface {
 
 	RegisterInterfaces(types.InterfaceRegistry)
 }
+
+*/

@@ -1,5 +1,6 @@
 package grpc_gateway
 
+/*
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -12,3 +13,5 @@ type Module interface {
 
 	RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux)
 }
+
+*/

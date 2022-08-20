@@ -2,6 +2,7 @@ package server
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 )
 

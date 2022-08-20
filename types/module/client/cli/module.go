@@ -1,5 +1,6 @@
 package cli
 
+/*
 import (
 	"encoding/json"
 
@@ -19,3 +20,5 @@ type Module interface {
 	GetTxCmd() *cobra.Command
 	GetQueryCmd() *cobra.Command
 }
+
+*/

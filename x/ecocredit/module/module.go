@@ -26,8 +26,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
-	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -106,8 +104,6 @@ func NewModule(
 }
 
 var _ module.AppModuleBasic = &Module{}
-var _ restmodule.Module = &Module{}
-var _ climodule.Module = &Module{}
 var _ module.AppModuleSimulation = &Module{}
 
 func (a Module) Name() string {

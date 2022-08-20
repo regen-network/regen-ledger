@@ -1,5 +1,6 @@
 package server
 
+/*
 import (
 	"context"
 	"fmt"
@@ -49,3 +50,5 @@ func (d DerivedModuleKey) ModuleID() types.ModuleID {
 func (d DerivedModuleKey) Address() sdk.AccAddress {
 	return d.ModuleID().Address()
 }
+
+*/
