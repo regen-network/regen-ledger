@@ -190,12 +190,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	rawJson, err := jsonTarget.JSON()
+	rawJSON, err := jsonTarget.JSON()
 	if err != nil {
 		panic(err)
 	}
 
-	bz, err := json.Marshal(rawJson)
+	bz, err := json.Marshal(rawJSON)
 	if err != nil {
 		panic(err)
 	}

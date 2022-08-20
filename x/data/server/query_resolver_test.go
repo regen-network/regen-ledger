@@ -13,11 +13,9 @@ func TestQuery_Resolver(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	url := "https://foo.bar"
-
 	// insert resolvers
 	id, err := s.server.stateStore.ResolverTable().InsertReturningID(s.ctx, &api.Resolver{
-		Url:     url,
+		Url:     testURL,
 		Manager: s.addrs[0],
 	})
 	require.NoError(t, err)
@@ -27,7 +25,7 @@ func TestQuery_Resolver(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, id, res.Resolver.Id)
 	require.Equal(t, s.addrs[0].String(), res.Resolver.Manager)
-	require.Equal(t, url, res.Resolver.Url)
+	require.Equal(t, testURL, res.Resolver.Url)
 
 	// query resolvers with id that does not exist
 	_, err = s.server.Resolver(s.ctx, &data.QueryResolverRequest{

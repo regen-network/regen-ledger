@@ -84,7 +84,7 @@ func (t hasher) CreateID(value []byte, collisions int) (id []byte) {
 	hashBz := hasher.Sum(nil)
 
 	id = make([]byte, t.minLen, t.bufLen)
-	copy(id[:], hashBz[:t.minLen])
+	copy(id, hashBz[:t.minLen])
 
 	// Deal with collisions by appending the equivalent number of bytes
 	// from hashBz. If using this method will exceed hash length, append

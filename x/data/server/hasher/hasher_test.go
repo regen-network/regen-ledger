@@ -81,10 +81,10 @@ func testHasher(t *testing.T, h Hasher, k int) {
 			}
 		}
 		if c > 1 {
-			totalCollisions += 1
+			totalCollisions++
 		}
 		if c > 2 {
-			secondaryCollisions += 1
+			secondaryCollisions++
 		}
 	}
 
@@ -97,11 +97,11 @@ func testHasher(t *testing.T, h Hasher, k int) {
 		value := data[i]
 
 		for c := 0; ; c++ {
-			newId := hasher.CreateID(value, c)
-			v := store.Get(newId)
+			newID := hasher.CreateID(value, c)
+			v := store.Get(newID)
 			if len(v) == 0 {
-				store.Set(newId, value)
-				require.Equal(t, id, newId)
+				store.Set(newID, value)
+				require.Equal(t, id, newID)
 				break
 			}
 		}

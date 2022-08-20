@@ -27,8 +27,6 @@ const (
 
 	IriPrefixRaw   byte = 0
 	IriPrefixGraph byte = 1
-
-	didVersion0 byte = 0
 )
 
 // ToIRI converts the ContentHash_Raw to an IRI (internationalized URI) based on the following

@@ -81,11 +81,11 @@ func (s *anchorSuite) TheAnchorEntryExistsWithTimestamp(a string) {
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	dataID, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
 	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
+	require.NotNil(s.t, dataID)
 
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId.Id)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataID.Id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataAnchor)
 	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())

@@ -39,6 +39,7 @@ func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
 	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
@@ -77,6 +78,7 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolver() {
 	})
 }
 
+//nolint:revive
 func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToAResolverWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -113,18 +115,18 @@ func (s *registerResolverSuite) TheAnchorEntryExistsWithTimestamp(a string) {
 	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
-	dataId := s.getDataId()
+	dataID := s.getDataID()
 
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataID)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataAnchor)
 	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
 }
 
 func (s *registerResolverSuite) TheDataResolverEntryExists() {
-	dataId := s.getDataId()
+	dataID := s.getDataID()
 
-	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataId, s.id)
+	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataID, s.id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataResolver)
 }
@@ -133,14 +135,14 @@ func (s *registerResolverSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *registerResolverSuite) getDataId() []byte {
+func (s *registerResolverSuite) getDataID() []byte {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	dataID, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
 	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
+	require.NotNil(s.t, dataID)
 
-	return dataId.Id
+	return dataID.Id
 }
