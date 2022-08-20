@@ -62,12 +62,8 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			if err != nil {
 				return err
 			}
-			// response = res.MsgResponses[0].GetCachedValue()
-			if len(res.MsgResponses) == 0 {
-				panic("expected at least 1 msg response. got 0")
-			}
-			if len(res.MsgResponses) > 1 {
-				panic(fmt.Sprintf("unable to handle multiple msg responses. received %d, wanted 1", len(res.MsgResponses)))
+			if len(res.MsgResponses) != 1 {
+				panic(fmt.Sprintf("expected 1 msg response, got %d", len(res.MsgResponses)))
 			}
 			resValue := reflect.ValueOf(res.MsgResponses[0].GetCachedValue())
 			reflect.ValueOf(response).Elem().Set(resValue.Elem())
