@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -13,6 +12,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
@@ -78,7 +78,7 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	_, _, authority := testdata.KeyTestPubAddr()
+	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 	ecocreditModule := ecocredit.NewModule(ecoKey, ecocreditSubspace, accountKeeper, bankKeeper, authority)
 	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 

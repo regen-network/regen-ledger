@@ -23,7 +23,7 @@ func (k Keeper) AddCreditType(ctx context.Context, req *core.MsgAddCreditType) (
 		Unit:         req.CreditType.Unit,
 		Precision:    req.CreditType.Precision,
 	}); err != nil {
-		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+		if ormerrors.AlreadyExists.Is(err) {
 			return nil, sdkerrors.ErrConflict.Wrapf("credit type abbreviation %s already exists", req.CreditType.Abbreviation)
 		} else if ormerrors.UniqueKeyViolation.Is(err) {
 			return nil, sdkerrors.ErrConflict.Wrapf("credit type with %s name already exists", req.CreditType.Name)
