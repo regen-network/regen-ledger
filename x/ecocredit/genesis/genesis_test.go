@@ -109,11 +109,11 @@ func TestValidateGenesis(t *testing.T) {
 
 	target := ormjson.NewRawMessageTarget()
 	require.NoError(t, modDB.ExportJSON(ormCtx, target))
-	genesisJson, err := target.JSON()
+	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = ValidateGenesis(genesisJson, params)
+	err = ValidateGenesis(genesisJSON, params)
 	require.NoError(t, err)
 }
 
@@ -602,11 +602,11 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 
 	target := ormjson.NewRawMessageTarget()
 	require.NoError(t, modDB.ExportJSON(ormCtx, target))
-	genesisJson, err := target.JSON()
+	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = ValidateGenesis(genesisJson, params)
+	err = ValidateGenesis(genesisJSON, params)
 	require.NoError(t, err)
 }
 

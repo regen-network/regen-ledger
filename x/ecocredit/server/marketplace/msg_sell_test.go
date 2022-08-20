@@ -24,7 +24,7 @@ type sellSuite struct {
 	alice               sdk.AccAddress
 	aliceTradableAmount string
 	creditTypeAbbrev    string
-	classId             string
+	classID             string
 	batchDenom          string
 	askPrice            *sdk.Coin
 	quantity            string
@@ -42,8 +42,8 @@ func (s *sellSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addrs[0]
 	s.aliceTradableAmount = "200"
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.batchDenom = "C01-001-20200101-20210101-001"
+	s.classID = testClassID
+	s.batchDenom = testBatchDenom
 	s.askPrice = &sdk.Coin{
 		Denom:  "regen",
 		Amount: sdk.NewInt(100),
@@ -104,11 +104,11 @@ func (s *sellSuite) AnAllowedDenomWithBankDenom(a string) {
 }
 
 func (s *sellSuite) ACreditBatchWithBatchDenom(a string) {
-	classId := core.GetClassIdFromBatchDenom(a)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+	classID := core.GetClassIDFromBatchDenom(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
+		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -126,10 +126,11 @@ func (s *sellSuite) ACreditBatchWithBatchDenom(a string) {
 }
 
 func (s *sellSuite) AMarketWithCreditTypeAndBankDenom(a string, b string) {
-	s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
+	err := s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditTypeAbbrev: a,
 		BankDenom:        b,
 	})
+	require.NoError(s.t, err)
 }
 
 func (s *sellSuite) AliceHasATradableBatchBalance() {
@@ -138,8 +139,8 @@ func (s *sellSuite) AliceHasATradableBatchBalance() {
 
 func (s *sellSuite) AliceHasATradableBatchBalanceWithDenom(a string) {
 	s.batchDenom = a
-	s.classId = core.GetClassIdFromBatchDenom(s.batchDenom)
-	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassId(s.classId)
+	s.classID = core.GetClassIDFromBatchDenom(s.batchDenom)
+	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassID(s.classID)
 
 	s.aliceTradableBatchBalance()
 }
@@ -152,8 +153,8 @@ func (s *sellSuite) AliceHasATradableBatchBalanceWithAmount(a string) {
 
 func (s *sellSuite) AliceHasATradableBatchBalanceWithDenomAndAmount(a string, b string) {
 	s.batchDenom = a
-	s.classId = core.GetClassIdFromBatchDenom(s.batchDenom)
-	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassId(s.classId)
+	s.classID = core.GetClassIDFromBatchDenom(s.batchDenom)
+	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassID(s.classID)
 	s.aliceTradableAmount = b
 
 	s.aliceTradableBatchBalance()
@@ -355,6 +356,7 @@ func (s *sellSuite) ExpectAliceEscrowedCreditBalance(a string) {
 	require.Equal(s.t, balance.EscrowedAmount, a)
 }
 
+//nolint:revive
 func (s *sellSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -368,6 +370,7 @@ func (s *sellSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // always zero
 }
 
+//nolint:revive
 func (s *sellSuite) ExpectNoMarketWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -406,7 +409,7 @@ func (s *sellSuite) ExpectTheResponse(a gocuke.DocString) {
 
 func (s *sellSuite) aliceTradableBatchBalance() {
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)

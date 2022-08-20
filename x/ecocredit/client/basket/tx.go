@@ -19,7 +19,7 @@ import (
 
 const (
 	FlagDisableAutoRetire      = "disable-auto-retire"
-	FlagCreditTypeAbbrev       = "credit-type-abbrev"
+	FlagCreditTypeAbbrev       = "credit-type-abbrev" //nolint:gosec
 	FlagAllowedClasses         = "allowed-classes"
 	FlagMinimumStartDate       = "minimum-start-date"
 	FlagStartDateWindow        = "start-date-window"
@@ -161,8 +161,8 @@ Flags:
 	cmd.Flags().String(FlagDenomDescription, "", "the description to be used in the bank denom metadata.")
 
 	// required flags
-	cmd.MarkFlagRequired(FlagCreditTypeAbbrev)
-	cmd.MarkFlagRequired(FlagAllowedClasses)
+	_ = cmd.MarkFlagRequired(FlagCreditTypeAbbrev)
+	_ = cmd.MarkFlagRequired(FlagAllowedClasses)
 
 	return txFlags(cmd)
 }

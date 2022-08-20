@@ -211,7 +211,7 @@ lint:
 	@golangci-lint run --out-format=tab
 	@cd ./types && golangci-lint run --out-format=tab
 	@cd ./x/data && golangci-lint run --out-format=tab
-	# @cd ./x/ecocredit && golangci-lint run --out-format=tab
+	@cd ./x/ecocredit && golangci-lint run --out-format=tab
 	protolint .
 
 lint-fix:

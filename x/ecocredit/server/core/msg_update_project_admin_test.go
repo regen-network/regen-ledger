@@ -39,8 +39,9 @@ func (s *updateProjectAdmin) ACreditTypeWithAbbreviation(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *updateProjectAdmin) ACreditClassWithClassId(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,
@@ -50,6 +51,7 @@ func (s *updateProjectAdmin) ACreditClassWithClassId(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *updateProjectAdmin) AProjectWithProjectIdAndAdminAlice(a string) {
 	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:    a,
@@ -58,6 +60,7 @@ func (s *updateProjectAdmin) AProjectWithProjectIdAndAdminAlice(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *updateProjectAdmin) AliceAttemptsToUpdateProjectAdminWithProjectId(a string) {
 	s.res, s.err = s.k.UpdateProjectAdmin(s.ctx, &core.MsgUpdateProjectAdmin{
 		Admin:     s.alice.String(),
@@ -66,6 +69,7 @@ func (s *updateProjectAdmin) AliceAttemptsToUpdateProjectAdminWithProjectId(a st
 	})
 }
 
+//nolint:revive
 func (s *updateProjectAdmin) BobAttemptsToUpdateProjectAdminWithProjectId(a string) {
 	s.res, s.err = s.k.UpdateProjectAdmin(s.ctx, &core.MsgUpdateProjectAdmin{
 		Admin:     s.bob.String(),
@@ -74,6 +78,7 @@ func (s *updateProjectAdmin) BobAttemptsToUpdateProjectAdminWithProjectId(a stri
 	})
 }
 
+//nolint:revive
 func (s *updateProjectAdmin) AliceAttemptsToUpdateProjectAdminWithProjectIdAndNewAdminBob(a string) {
 	s.res, s.err = s.k.UpdateProjectAdmin(s.ctx, &core.MsgUpdateProjectAdmin{
 		Admin:     s.alice.String(),
@@ -94,6 +99,7 @@ func (s *updateProjectAdmin) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
+//nolint:revive
 func (s *updateProjectAdmin) ExpectProjectWithProjectIdAndAdminBob(a string) {
 	project, err := s.stateStore.ProjectTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)

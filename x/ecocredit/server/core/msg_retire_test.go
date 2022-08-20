@@ -18,9 +18,9 @@ type retire struct {
 	*baseSuite
 	alice            sdk.AccAddress
 	creditTypeAbbrev string
-	classId          string
+	classID          string
 	classKey         uint64
-	projectId        string
+	projectID        string
 	projectKey       uint64
 	batchDenom       string
 	batchKey         uint64
@@ -37,9 +37,9 @@ func (s *retire) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.projectId = "C01-001"
-	s.batchDenom = "C01-001-20200101-20210101-001"
+	s.classID = testClassID
+	s.projectID = testProjectID
+	s.batchDenom = testBatchDenom
 	s.tradableAmount = "10"
 }
 
@@ -82,7 +82,7 @@ func (s *retire) ACreditBatchWithDenom(a string) {
 
 func (s *retire) ACreditBatchFromCreditClassWithCreditType(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: a,
 	})
 	require.NoError(s.t, err)
@@ -90,7 +90,7 @@ func (s *retire) ACreditBatchFromCreditClassWithCreditType(a string) {
 	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectId,
+		Id:       s.projectID,
 		ClassKey: cKey,
 	})
 	require.NoError(s.t, err)
@@ -224,7 +224,7 @@ func (s *retire) projectSetup() {
 	require.NoError(s.t, err)
 
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -232,7 +232,7 @@ func (s *retire) projectSetup() {
 	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectId,
+		Id:       s.projectID,
 		ClassKey: cKey,
 	})
 	require.NoError(s.t, err)

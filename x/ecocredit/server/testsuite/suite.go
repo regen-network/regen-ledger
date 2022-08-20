@@ -188,7 +188,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// create a class and issue a batch
 	userTotalCreditBalance, err := math.NewDecFromString("1000000000000000")
 	require.NoError(err)
-	classId, batchDenom := s.createClassAndIssueBatch(user, user, "C", userTotalCreditBalance.String(), "2020-01-01", "2022-01-01")
+	classID, batchDenom := s.createClassAndIssueBatch(user, user, "C", userTotalCreditBalance.String(), "2020-01-01", "2022-01-01")
 
 	// fund account to create a basket
 	balanceBefore := sdk.NewInt64Coin(s.basketFee.Denom, 30000)
@@ -201,7 +201,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		Exponent:          6,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		AllowedClasses:    []string{classId},
+		AllowedClasses:    []string{classID},
 		DateCriteria:      nil,
 		Fee:               sdk.NewCoins(s.basketFee),
 	})
@@ -303,7 +303,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		Exponent:          6,
 		DisableAutoRetire: false,
 		CreditTypeAbbrev:  "C",
-		AllowedClasses:    []string{classId},
+		AllowedClasses:    []string{classID},
 		DateCriteria:      nil,
 		Fee:               sdk.NewCoins(s.basketFee),
 	})
@@ -357,14 +357,14 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 		Fee:              &createClassFee,
 	})
 	require.NoError(err)
-	classId := cRes.ClassId
+	classID := cRes.ClassId
 	start, err := types.ParseDate("start date", startStr)
 	require.NoError(err)
 	end, err := types.ParseDate("end date", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:        admin.String(),
-		ClassId:      classId,
+		ClassId:      classID,
 		Metadata:     "",
 		Jurisdiction: "US-NY",
 	})
@@ -379,7 +379,7 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	})
 	require.NoError(err)
 	batchDenom := bRes.BatchDenom
-	return classId, batchDenom
+	return classID, batchDenom
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
@@ -417,7 +417,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Fee:              &createClassFee,
 	})
 	s.Require().NoError(err)
-	classId := createClsRes.ClassId
+	classID := createClsRes.ClassId
 
 	adminBalanceAfter := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 	expectedBalance := adminBalanceAfter.Add(createClassFee)
@@ -425,7 +425,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// create project
 	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		ClassId:      classId,
+		ClassId:      classID,
 		Admin:        issuer1,
 		Metadata:     "metadata",
 		Jurisdiction: "AQ",
@@ -433,7 +433,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
 	s.Require().Equal("C02-001", createProjectRes.ProjectId)
-	projectId := createProjectRes.ProjectId
+	projectID := createProjectRes.ProjectId
 
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "100"
@@ -447,7 +447,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// Batch creation should succeed with StartDate before EndDate, and valid data
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    issuer1,
-		ProjectId: projectId,
+		ProjectId: projectID,
 		StartDate: &time1,
 		EndDate:   &time2,
 		Issuance: []*core.BatchIssuance{
@@ -1044,8 +1044,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().Nil(err)
 	s.Require().Equal(expectedSellOrderIds, createSellOrder.SellOrderIds)
-	orderId1 := createSellOrder.SellOrderIds[0]
-	orderId2 := createSellOrder.SellOrderIds[1]
+	orderID1 := createSellOrder.SellOrderIds[0]
+	orderID2 := createSellOrder.SellOrderIds[1]
 
 	// now we buy these orders
 	buyerAcc := acc5
@@ -1060,14 +1060,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Buyer: buyerAcc.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId:            orderId1,
+				SellOrderId:            orderID1,
 				Quantity:               order1Qty,
 				BidPrice:               &coinPrice,
 				DisableAutoRetire:      false,
 				RetirementJurisdiction: "US-OR",
 			},
 			{
-				SellOrderId:       orderId2,
+				SellOrderId:       orderID2,
 				Quantity:          order2Qty,
 				BidPrice:          &coinPrice,
 				DisableAutoRetire: true,

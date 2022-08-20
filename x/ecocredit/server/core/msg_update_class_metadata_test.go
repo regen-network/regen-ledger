@@ -39,8 +39,9 @@ func (s *updateClassMetadata) ACreditTypeWithAbbreviation(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *updateClassMetadata) ACreditClassWithClassIdAndAdminAlice(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,
@@ -50,6 +51,7 @@ func (s *updateClassMetadata) ACreditClassWithClassIdAndAdminAlice(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *updateClassMetadata) AliceAttemptsToUpdateClassMetadataWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:   s.alice.String(),
@@ -57,6 +59,7 @@ func (s *updateClassMetadata) AliceAttemptsToUpdateClassMetadataWithClassId(a st
 	})
 }
 
+//nolint:revive
 func (s *updateClassMetadata) BobAttemptsToUpdateClassMetadataWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:   s.bob.String(),
@@ -64,6 +67,7 @@ func (s *updateClassMetadata) BobAttemptsToUpdateClassMetadataWithClassId(a stri
 	})
 }
 
+//nolint:revive
 func (s *updateClassMetadata) AliceAttemptsToUpdateClassMetadataWithClassIdAndNewMetadata(a string, b gocuke.DocString) {
 	s.res, s.err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:       s.alice.String(),
@@ -84,6 +88,7 @@ func (s *updateClassMetadata) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
+//nolint:revive
 func (s *updateClassMetadata) ExpectCreditClassWithClassIdAndMetadata(a string, b gocuke.DocString) {
 	class, err := s.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)

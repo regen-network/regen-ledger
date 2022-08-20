@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
@@ -77,7 +78,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		// check that bid price >= sell price
 		sellOrderAskAmount, ok := sdk.NewIntFromString(sellOrder.AskAmount)
 		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("could not convert %s to %T", sellOrder.AskAmount, sdk.Int{})
+			return nil, sdkerrors.ErrInvalidType.Wrapf("could not convert %s to %T", sellOrder.AskAmount, sdkmath.Int{})
 		}
 		sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderAskAmount}
 		if sellOrderAskAmount.GT(order.BidPrice.Amount) {

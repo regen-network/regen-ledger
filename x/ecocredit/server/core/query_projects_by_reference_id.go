@@ -14,6 +14,7 @@ import (
 )
 
 // ProjectsByReferenceId queries projects by reference id.
+//nolint:revive
 func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *core.QueryProjectsByReferenceIdRequest) (*core.QueryProjectsByReferenceIdResponse, error) {
 	if req.ReferenceId == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "reference-id is empty")

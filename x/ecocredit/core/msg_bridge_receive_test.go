@@ -30,6 +30,7 @@ func (s *msgBridgeReceive) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *msgBridgeReceive) AProjectReferenceIdWithLength(a string) {
 	length, err := strconv.ParseInt(a, 10, 64)
 	require.NoError(s.t, err)

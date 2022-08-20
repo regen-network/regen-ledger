@@ -14,19 +14,18 @@ func TestKeeper_Basket(t *testing.T) {
 	s := setupBase(t)
 
 	// add a basket
-	basketDenom := "foo"
 	batchDenom := "bar"
 	err := s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
-		BasketDenom: basketDenom,
+		BasketDenom: testBasketDenom,
 	})
 	require.NoError(t, err)
 
 	// query
 	res, err := s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
-		BasketDenom: basketDenom,
+		BasketDenom: testBasketDenom,
 	})
 	require.NoError(t, err)
-	require.Equal(t, basketDenom, res.Basket.BasketDenom)
+	require.Equal(t, testBasketDenom, res.Basket.BasketDenom)
 
 	// bad query
 	_, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
@@ -40,27 +39,26 @@ func TestKeeper_BasketClasses(t *testing.T) {
 	s := setupBase(t)
 
 	// add a basket
-	basketDenom := "foo"
 	err := s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
-		BasketDenom: basketDenom,
+		BasketDenom: testBasketDenom,
 	})
 	require.NoError(t, err)
 
 	// add a basket class
-	classId := "C01"
+	classID := "C01"
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
 		BasketId: 1,
-		ClassId:  classId,
+		ClassId:  classID,
 	})
 	require.NoError(t, err)
 
 	// query
 	res, err := s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{
-		BasketDenom: basketDenom,
+		BasketDenom: testBasketDenom,
 	})
 	require.NoError(t, err)
-	require.Equal(t, basketDenom, res.Basket.BasketDenom)
-	require.Equal(t, []string{classId}, res.Classes)
+	require.Equal(t, testBasketDenom, res.Basket.BasketDenom)
+	require.Equal(t, []string{classID}, res.Classes)
 
 	// query unknown basket
 	_, err = s.k.Basket(s.ctx, &baskettypes.QueryBasketRequest{

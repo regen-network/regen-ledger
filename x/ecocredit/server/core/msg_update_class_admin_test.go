@@ -39,8 +39,9 @@ func (s *updateClassAdmin) ACreditTypeWithAbbreviation(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *updateClassAdmin) ACreditClassWithClassIdAndAdminAlice(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,
@@ -50,6 +51,7 @@ func (s *updateClassAdmin) ACreditClassWithClassIdAndAdminAlice(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *updateClassAdmin) AliceAttemptsToUpdateClassAdminWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassAdmin(s.ctx, &core.MsgUpdateClassAdmin{
 		Admin:    s.alice.String(),
@@ -58,6 +60,7 @@ func (s *updateClassAdmin) AliceAttemptsToUpdateClassAdminWithClassId(a string) 
 	})
 }
 
+//nolint:revive
 func (s *updateClassAdmin) BobAttemptsToUpdateClassAdminWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassAdmin(s.ctx, &core.MsgUpdateClassAdmin{
 		Admin:    s.bob.String(),
@@ -66,6 +69,7 @@ func (s *updateClassAdmin) BobAttemptsToUpdateClassAdminWithClassId(a string) {
 	})
 }
 
+//nolint:revive
 func (s *updateClassAdmin) AliceAttemptsToUpdateClassAdminWithClassIdAndNewAdminBob(a string) {
 	s.res, s.err = s.k.UpdateClassAdmin(s.ctx, &core.MsgUpdateClassAdmin{
 		Admin:    s.alice.String(),
@@ -86,6 +90,7 @@ func (s *updateClassAdmin) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
+//nolint:revive
 func (s *updateClassAdmin) ExpectCreditClassWithClassIdAndAdminBob(a string) {
 	class, err := s.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)

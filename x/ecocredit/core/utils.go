@@ -13,8 +13,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var errBadReq = sdkerrors.ErrInvalidRequest
-
 const (
 	// BridgePolygon is currently the only allowed target when calling
 	// Msg/Bridge and the only allowed source (provided within OriginTx)
@@ -35,18 +33,18 @@ const (
 )
 
 var (
-	RegexClassId      = `[A-Z]{1,3}[0-9]{2,}`
-	RegexProjectId    = fmt.Sprintf(`%s-[A-Z0-9]{2,}`, RegexClassId)
-	RegexBatchDenom   = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectId)
+	RegexClassID      = `[A-Z]{1,3}[0-9]{2,}`
+	RegexProjectID    = fmt.Sprintf(`%s-[A-Z0-9]{2,}`, RegexClassID)
+	RegexBatchDenom   = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectID)
 	RegexJurisdiction = `([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`
 
-	regexClassId      = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassId))
-	regexProjectId    = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectId))
+	regexClassID      = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassID))
+	regexProjectID    = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectID))
 	regexBatchDenom   = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexBatchDenom))
 	regexJurisdiction = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexJurisdiction))
 )
 
-// FormatClassId formats the unique identifier for a new credit class, based
+// FormatClassID formats the unique identifier for a new credit class, based
 // on the credit type abbreviation and the credit class sequence number. This
 // format may evolve over time, but will maintain backwards compatibility.
 //
@@ -58,24 +56,24 @@ var (
 // least three digits
 //
 // e.g. C01
-func FormatClassId(creditTypeAbbreviation string, classSeqNo uint64) string {
+func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
-// FormatProjectId formats the unique identifier for a new project, based on
+// FormatProjectID formats the unique identifier for a new project, based on
 // the credit class id and project sequence number. This format may evolve over
 // time, but will maintain backwards compatibility.
 //
 // The current version has the format:
 // <class-id>-<project-sequence>
 //
-// <class-id> is the unique identifier of the credit class (see FormatClassId)
+// <class-id> is the unique identifier of the credit class (see FormatClassID)
 // <project-sequence> is the sequence number of the project, padded to at least
 // three digits
 //
 // e.g. C01-001
-func FormatProjectId(classId string, projectSeqNo uint64) string {
-	return fmt.Sprintf("%s-%03d", classId, projectSeqNo)
+func FormatProjectID(classID string, projectSeqNo uint64) string {
+	return fmt.Sprintf("%s-%03d", classID, projectSeqNo)
 }
 
 // FormatBatchDenom formats the unique denomination for a credit batch. This
@@ -84,19 +82,19 @@ func FormatProjectId(classId string, projectSeqNo uint64) string {
 // The current version has the format:
 // <project-id>-<start_date>-<end_date>-<batch_sequence>
 //
-// <project-id> is the unique identifier of the project (see FormatProjectId)
+// <project-id> is the unique identifier of the project (see FormatProjectID)
 // <start-date> is the start date of the credit batch with the format YYYYMMDD
 // <end-date> is the end date of the credit batch with the format YYYYMMDD
 // <batch-sequence> is the sequence number of the credit batch, padded to at least
 // three digits
 //
 // e.g. C01-001-20190101-20200101-001
-func FormatBatchDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
+func FormatBatchDenom(projectID string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
 	return fmt.Sprintf(
 		"%s-%s-%s-%03d",
 
 		// Project ID string
-		projectId,
+		projectID,
 
 		// Start Date as YYYYMMDD
 		startDate.UTC().Format("20060102"),
@@ -122,28 +120,28 @@ func ValidateCreditTypeAbbreviation(abbr string) error {
 	return nil
 }
 
-// ValidateClassId validates a class ID conforms to the format described in
-// FormatClassId. The return is nil if the ID is valid.
-func ValidateClassId(classId string) error {
-	if classId == "" {
+// ValidateClassID validates a class ID conforms to the format described in
+// FormatClassID. The return is nil if the ID is valid.
+func ValidateClassID(classID string) error {
+	if classID == "" {
 		return ecocredit.ErrParseFailure.Wrap("class id cannot be empty")
 	}
-	matches := regexClassId.FindStringSubmatch(classId)
+	matches := regexClassID.FindStringSubmatch(classID)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("class ID didn't match the format: expected A00, got %s", classId)
+		return ecocredit.ErrParseFailure.Wrapf("class ID didn't match the format: expected A00, got %s", classID)
 	}
 	return nil
 }
 
-// ValidateProjectId validates a project ID conforms to the format described
-// in FormatProjectId. The return is nil if the ID is valid.
-func ValidateProjectId(projectId string) error {
-	if projectId == "" {
+// ValidateProjectID validates a project ID conforms to the format described
+// in FormatProjectID. The return is nil if the ID is valid.
+func ValidateProjectID(projectID string) error {
+	if projectID == "" {
 		return ecocredit.ErrParseFailure.Wrap("project id cannot be empty")
 	}
-	matches := regexProjectId.FindStringSubmatch(projectId)
+	matches := regexProjectID.FindStringSubmatch(projectID)
 	if matches == nil {
-		return sdkerrors.Wrapf(ecocredit.ErrParseFailure, "invalid project id: %s", projectId)
+		return sdkerrors.Wrapf(ecocredit.ErrParseFailure, "invalid project id: %s", projectID)
 	}
 	return nil
 }
@@ -178,10 +176,10 @@ func ValidateJurisdiction(jurisdiction string) error {
 	return nil
 }
 
-// GetClassIdFromProjectId returns the credit class ID in a project ID.
-func GetClassIdFromProjectId(projectId string) string {
+// GetClassIDFromProjectID returns the credit class ID in a project ID.
+func GetClassIDFromProjectID(projectID string) string {
 	var s strings.Builder
-	for _, r := range projectId {
+	for _, r := range projectID {
 		if r != '-' {
 			s.WriteRune(r)
 			continue
@@ -191,8 +189,8 @@ func GetClassIdFromProjectId(projectId string) string {
 	return s.String()
 }
 
-// GetClassIdFromBatchDenom returns the credit class ID in a batch denom.
-func GetClassIdFromBatchDenom(denom string) string {
+// GetClassIDFromBatchDenom returns the credit class ID in a batch denom.
+func GetClassIDFromBatchDenom(denom string) string {
 	var s strings.Builder
 	for _, r := range denom {
 		if r != '-' {
@@ -204,8 +202,8 @@ func GetClassIdFromBatchDenom(denom string) string {
 	return s.String()
 }
 
-// GetProjectIdFromBatchDenom returns the credit project ID in a batch denom.
-func GetProjectIdFromBatchDenom(denom string) string {
+// GetProjectIDFromBatchDenom returns the credit project ID in a batch denom.
+func GetProjectIDFromBatchDenom(denom string) string {
 	var s strings.Builder
 	c := 0
 	for _, r := range denom {
@@ -221,10 +219,10 @@ func GetProjectIdFromBatchDenom(denom string) string {
 	return s.String()
 }
 
-// GetCreditTypeAbbrevFromClassId returns the credit type abbreviation in a credit class id
-func GetCreditTypeAbbrevFromClassId(classId string) string {
+// GetCreditTypeAbbrevFromClassID returns the credit type abbreviation in a credit class id
+func GetCreditTypeAbbrevFromClassID(classID string) string {
 	var s strings.Builder
-	for _, r := range classId {
+	for _, r := range classID {
 		if !unicode.IsNumber(r) {
 			s.WriteRune(r)
 			continue

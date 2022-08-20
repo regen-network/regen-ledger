@@ -26,6 +26,12 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
 
+const (
+	testClassID    = "C01"
+	testProjectID  = "C01-001"
+	testBatchDenom = "C01-001-20200101-20210101-001"
+)
+
 type baseSuite struct {
 	t            gocuke.TestingT
 	db           ormdb.ModuleDB

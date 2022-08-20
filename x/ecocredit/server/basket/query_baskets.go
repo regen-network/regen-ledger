@@ -58,7 +58,7 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 			Name:              basket.Name,
 			DisableAutoRetire: basket.DisableAutoRetire,
 			CreditTypeAbbrev:  basket.CreditTypeAbbrev,
-			Exponent:          basket.Exponent,
+			Exponent:          basket.Exponent, //nolint:staticcheck
 			Curator:           sdk.AccAddress(basket.Curator).String(),
 			DateCriteria:      criteria,
 		})

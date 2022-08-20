@@ -96,8 +96,9 @@ func (s *createSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *createSuite) ACreditClassWithId(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
 		Id:               a,

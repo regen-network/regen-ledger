@@ -17,7 +17,7 @@ func (c Class) Validate() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if err := ValidateClassId(c.Id); err != nil {
+	if err := ValidateClassID(c.Id); err != nil {
 		return err
 	}
 

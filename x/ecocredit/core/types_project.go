@@ -25,7 +25,7 @@ func (p Project) Validate() error {
 		return ecocredit.ErrMaxLimit.Wrap("project metadata")
 	}
 
-	if err := ValidateProjectId(p.Id); err != nil {
+	if err := ValidateProjectID(p.Id); err != nil {
 		return err
 	}
 

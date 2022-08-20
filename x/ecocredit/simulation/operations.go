@@ -28,20 +28,20 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgCreateClass           = "op_weight_msg_create_class"
-	OpWeightMsgCreateBatch           = "op_weight_msg_create_batch"
-	OpWeightMsgSend                  = "op_weight_msg_send"
-	OpWeightMsgRetire                = "op_weight_msg_retire"
-	OpWeightMsgCancel                = "op_weight_msg_cancel"
-	OpWeightMsgUpdateClassAdmin      = "op_weight_msg_update_class_admin"
-	OpWeightMsgUpdateClassMetadata   = "op_weight_msg_update_class_metadata"
-	OpWeightMsgUpdateClassIssuers    = "op_weight_msg_update_class_issuers"
-	OpWeightMsgCreateProject         = "op_weight_msg_create_project"
-	OpWeightMsgUpdateProjectAdmin    = "op_weight_msg_update_project_admin"
-	OpWeightMsgUpdateProjectMetadata = "op_weight_msg_update_project_metadata"
-	OpWeightMsgMintBatchCredits      = "op_weight_msg_mint_batch_credits"
-	OpWeightMsgSealBatch             = "op_weight_msg_seal_batch"
-	OpWeightMsgBridge                = "op_weight_msg_bridge"
+	OpWeightMsgCreateClass           = "op_weight_msg_create_class"            //nolint:gosec
+	OpWeightMsgCreateBatch           = "op_weight_msg_create_batch"            //nolint:gosec
+	OpWeightMsgSend                  = "op_weight_msg_send"                    //nolint:gosec
+	OpWeightMsgRetire                = "op_weight_msg_retire"                  //nolint:gosec
+	OpWeightMsgCancel                = "op_weight_msg_cancel"                  //nolint:gosec
+	OpWeightMsgUpdateClassAdmin      = "op_weight_msg_update_class_admin"      //nolint:gosec
+	OpWeightMsgUpdateClassMetadata   = "op_weight_msg_update_class_metadata"   //nolint:gosec
+	OpWeightMsgUpdateClassIssuers    = "op_weight_msg_update_class_issuers"    //nolint:gosec
+	OpWeightMsgCreateProject         = "op_weight_msg_create_project"          //nolint:gosec
+	OpWeightMsgUpdateProjectAdmin    = "op_weight_msg_update_project_admin"    //nolint:gosec
+	OpWeightMsgUpdateProjectMetadata = "op_weight_msg_update_project_metadata" //nolint:gosec
+	OpWeightMsgMintBatchCredits      = "op_weight_msg_mint_batch_credits"      //nolint:gosec
+	OpWeightMsgSealBatch             = "op_weight_msg_seal_batch"              //nolint:gosec
+	OpWeightMsgBridge                = "op_weight_msg_bridge"                  //nolint:gosec
 )
 
 // ecocredit operations weights
@@ -419,7 +419,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			return op, nil, err
 		}
 
-		issuers, op, err := getClassIssuers(sdkCtx, r, qryClient, class.Id, TypeMsgCreateProject)
+		issuers, op, err := getClassIssuers(sdkCtx, qryClient, class.Id, TypeMsgCreateProject)
 		if len(issuers) == 0 {
 			return op, nil, err
 		}
@@ -1213,7 +1213,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 	}
 }
 
-func getClassIssuers(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, className string, msgType string) ([]string, simtypes.OperationMsg, error) {
+func getClassIssuers(ctx sdk.Context, qryClient core.QueryClient, className string, msgType string) ([]string, simtypes.OperationMsg, error) {
 	classIssuers, err := qryClient.ClassIssuers(sdk.WrapSDKContext(ctx), &core.QueryClassIssuersRequest{ClassId: className})
 	if err != nil {
 		if ormerrors.IsNotFound(err) {

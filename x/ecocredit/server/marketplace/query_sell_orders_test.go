@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	classId       = "C01"
+	classID       = "C01"
 	batchDenom    = "C01-001-20200101-20200201-001"
 	start, end    = timestamppb.Now(), timestamppb.Now()
 	validAskDenom = sdk.DefaultBondDenom
@@ -28,7 +28,7 @@ var (
 func TestSellOrders(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t, 2)
-	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classID, start, end, creditType)
 
 	order1 := insertSellOrder(t, s, s.addrs[0], 1)
 	order2 := insertSellOrder(t, s, s.addrs[1], 1)
@@ -39,9 +39,9 @@ func TestSellOrders(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
 	if res.SellOrders[0].Id == order1.Id {
-		assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
+		assertOrderEqual(s.ctx, t, s.k, res.SellOrders[0], order1)
 	} else {
-		assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
+		assertOrderEqual(s.ctx, t, s.k, res.SellOrders[0], order2)
 	}
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 }
@@ -62,7 +62,7 @@ func insertSellOrder(t *testing.T, s *baseSuite, addr sdk.AccAddress, batchKey u
 	return sellOrder
 }
 
-func assertOrderEqual(t *testing.T, ctx context.Context, k Keeper, received *marketplace.SellOrderInfo, order *api.SellOrder) {
+func assertOrderEqual(ctx context.Context, t *testing.T, k Keeper, received *marketplace.SellOrderInfo, order *api.SellOrder) {
 	seller := sdk.AccAddress(order.Seller)
 
 	batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)

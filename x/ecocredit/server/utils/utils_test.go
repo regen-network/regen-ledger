@@ -113,6 +113,6 @@ func TestUtils_GetCreditTypeFromBatchDenom(t *testing.T) {
 	assert.DeepEqual(t, ct, creditType, cmpopts.IgnoreUnexported(api.CreditType{}))
 
 	invalidDenom := "C02-0000000-0000000-001"
-	ct, err = GetCreditTypeFromBatchDenom(s.ctx, s.stateStore, invalidDenom)
+	_, err = GetCreditTypeFromBatchDenom(s.ctx, s.stateStore, invalidDenom)
 	assert.ErrorContains(t, err, "could not get class with ID C02")
 }

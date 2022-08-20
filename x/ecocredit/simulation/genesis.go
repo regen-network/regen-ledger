@@ -78,7 +78,7 @@ func genAllowListEnabled(r *rand.Rand) bool {
 	return r.Int63n(101) <= 90
 }
 
-func genCreditTypes(r *rand.Rand) []*core.CreditType {
+func genCreditTypes() []*core.CreditType {
 	return []*core.CreditType{
 		{
 			Name:         "carbon",
@@ -130,7 +130,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, typeCreditTypes, &creditTypes, simState.Rand,
-		func(r *rand.Rand) { creditTypes = genCreditTypes(r) },
+		func(r *rand.Rand) { creditTypes = genCreditTypes() },
 	)
 
 	simState.AppParams.GetOrGenerate(
@@ -222,13 +222,13 @@ func createClass(ctx context.Context, sStore api.StateStore, class *api.Class) (
 		}
 
 		return 0, err
-	} else {
-		if err := sStore.ClassSequenceTable().Update(ctx, &api.ClassSequence{
-			CreditTypeAbbrev: class.CreditTypeAbbrev,
-			NextSequence:     seq.NextSequence + 1,
-		}); err != nil {
-			return 0, err
-		}
+	}
+
+	if err := sStore.ClassSequenceTable().Update(ctx, &api.ClassSequence{
+		CreditTypeAbbrev: class.CreditTypeAbbrev,
+		NextSequence:     seq.NextSequence + 1,
+	}); err != nil {
+		return 0, err
 	}
 
 	return cKey, nil

@@ -41,8 +41,9 @@ func (s *createProjectSuite) ACreditTypeWithAbbreviation(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *createProjectSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,
@@ -57,6 +58,7 @@ func (s *createProjectSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *createProjectSuite) AProjectSequenceWithClassIdAndNextSequence(a, b string) {
 	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)
@@ -71,10 +73,11 @@ func (s *createProjectSuite) AProjectSequenceWithClassIdAndNextSequence(a, b str
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
-	classId := core.GetClassIdFromProjectId(a)
+	classID := core.GetClassIDFromProjectID(a)
 
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classId)
+	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classID)
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
@@ -94,6 +97,7 @@ func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
 	require.NoError(s.t, err)
 }
 
+//nolint:revive
 func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassId(a string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:   s.alice.String(),
@@ -101,6 +105,7 @@ func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassId(a string) 
 	})
 }
 
+//nolint:revive
 func (s *createProjectSuite) BobAttemptsToCreateAProjectWithClassId(a string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:   s.bob.String(),
@@ -108,6 +113,7 @@ func (s *createProjectSuite) BobAttemptsToCreateAProjectWithClassId(a string) {
 	})
 }
 
+//nolint:revive
 func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassIdAndReferenceId(a, b string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:       s.alice.String(),
@@ -142,6 +148,7 @@ func (s *createProjectSuite) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
+//nolint:revive
 func (s *createProjectSuite) ExpectProjectSequenceWithClassIdAndNextSequence(a string, b string) {
 	project, err := s.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)
@@ -176,8 +183,8 @@ func (s *createProjectSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.Equal(s.t, &res, s.res)
 }
 
-func (s *createProjectSuite) getProjectSequence(projectId string) uint64 {
-	str := strings.Split(projectId, "-")
+func (s *createProjectSuite) getProjectSequence(projectID string) uint64 {
+	str := strings.Split(projectID, "-")
 	seq, err := strconv.ParseUint(str[1], 10, 32)
 	require.NoError(s.t, err)
 	return seq

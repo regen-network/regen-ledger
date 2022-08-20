@@ -42,6 +42,7 @@ func (s *sealBatch) ACreditTypeWithAbbreviation(a string) {
 	s.creditTypeAbbrev = a
 }
 
+//nolint:revive
 func (s *sealBatch) ACreditClassWithIdAndIssuerAlice(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,
@@ -58,6 +59,7 @@ func (s *sealBatch) ACreditClassWithIdAndIssuerAlice(a string) {
 	s.classKey = cKey
 }
 
+//nolint:revive
 func (s *sealBatch) AProjectWithId(a string) {
 	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:       a,
@@ -67,9 +69,9 @@ func (s *sealBatch) AProjectWithId(a string) {
 }
 
 func (s *sealBatch) ACreditBatchWithDenomAndIssuerAlice(a string) {
-	projectId := core.GetProjectIdFromBatchDenom(a)
+	projectID := core.GetProjectIDFromBatchDenom(a)
 
-	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectId)
+	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectID)
 	require.NoError(s.t, err)
 
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{

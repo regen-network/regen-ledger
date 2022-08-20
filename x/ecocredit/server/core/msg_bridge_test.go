@@ -17,9 +17,9 @@ type bridgeSuite struct {
 	*baseSuite
 	alice            sdk.AccAddress
 	creditTypeAbbrev string
-	classId          string
+	classID          string
 	classKey         uint64
-	projectId        string
+	projectID        string
 	batchDenom       string
 	batchKey         uint64
 	tradableAmount   string
@@ -39,9 +39,9 @@ func (s *bridgeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.projectId = "C01-001"
-	s.batchDenom = "C01-001-20200101-20210101-001"
+	s.classID = testClassID
+	s.projectID = testProjectID
+	s.batchDenom = testBatchDenom
 	s.tradableAmount = "10"
 	s.target = "polygon"
 	s.contract = "0x01"
@@ -175,7 +175,7 @@ func (s *bridgeSuite) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -183,7 +183,7 @@ func (s *bridgeSuite) creditBatchSetup() {
 	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectId,
+		Id:       s.projectID,
 		ClassKey: cKey,
 	})
 	require.NoError(s.t, err)
