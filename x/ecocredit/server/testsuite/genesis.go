@@ -11,7 +11,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -23,7 +22,7 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 
 	// Set the param set to empty values to properly test init
 	var ecocreditParams core.Params
-	s.paramSpace.SetParamSet(ctx.Context, &ecocreditParams)
+	s.paramSpace.SetParamSet(ctx, &ecocreditParams)
 
 	defaultParams := core.DefaultParams()
 	paramsJSON, err := s.fixture.Codec().MarshalJSON(&defaultParams)
@@ -100,7 +99,7 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	wrapper = map[string]json.RawMessage{}
 	wrapper["ecocredit"] = bz
 
-	_, err = s.fixture.InitGenesis(s.genesisCtx.Context, wrapper)
+	_, err = s.fixture.InitGenesis(s.genesisCtx, wrapper)
 	require.NoError(err)
 
 	exported := s.exportGenesisState(s.genesisCtx)
@@ -108,9 +107,9 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 
 }
 
-func (s *GenesisTestSuite) exportGenesisState(ctx types.Context) map[string]json.RawMessage {
+func (s *GenesisTestSuite) exportGenesisState(ctx sdk.Context) map[string]json.RawMessage {
 	require := s.Require()
-	exported, err := s.fixture.ExportGenesis(ctx.Context)
+	exported, err := s.fixture.ExportGenesis(ctx)
 	require.NoError(err)
 
 	var wrapper map[string]json.RawMessage
@@ -130,7 +129,7 @@ type GenesisTestSuite struct {
 	paramSpace paramstypes.Subspace
 	bankKeeper bankkeeper.Keeper
 
-	genesisCtx types.Context
+	genesisCtx sdk.Context
 }
 
 func NewGenesisTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *GenesisTestSuite {
@@ -147,7 +146,7 @@ func (s *GenesisTestSuite) SetupSuite() {
 	blockTime := time.Now().UTC()
 
 	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(blockTime)
-	s.genesisCtx = types.Context{Context: sdkCtx}
+	s.genesisCtx = sdkCtx
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)

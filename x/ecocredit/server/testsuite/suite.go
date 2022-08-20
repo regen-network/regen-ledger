@@ -58,7 +58,7 @@ type IntegrationTestSuite struct {
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
 
-	genesisCtx types.Context
+	genesisCtx sdk.Context
 	blockTime  time.Time
 }
 
@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-	s.genesisCtx = types.Context{Context: sdkCtx}
+	s.genesisCtx = sdkCtx
 
 	ecocreditParams := core.DefaultParams()
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
