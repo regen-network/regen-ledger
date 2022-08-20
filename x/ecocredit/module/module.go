@@ -28,6 +28,7 @@ import (
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -259,7 +260,15 @@ func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // NOTE: This is no longer needed for the modules which uses ADR-33, ecocredit module `WeightedOperations`
 // registered in the `x/ecocredit/server` package.
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return a.Keeper.WeightedOperations(simState)
+	key := a.key.(servermodule.RootModuleKey)
+
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc,
+		a.accountKeeper, a.bankKeeper,
+		coretypes.NewQueryClient(key),
+		baskettypes.NewQueryClient(key),
+		marketplacetypes.NewQueryClient(key),
+	)
 }
 
 // BeginBlock checks if there are any expired sell or buy orders and removes them from state.

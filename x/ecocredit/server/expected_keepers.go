@@ -5,8 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/tendermint/tendermint/abci/types"
 )
 
@@ -18,5 +16,4 @@ type Keeper interface {
 	RegisterInvariants(sdk.InvariantRegistry)
 	InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) ([]types.ValidatorUpdate, error)
 	ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error)
-	WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation
 }
