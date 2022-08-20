@@ -206,17 +206,12 @@ generate:
 ###############################################################################
 
 lint:
-	# TODO: use find and run after fixing lint errors and warnings per module
-	# @find . -name 'go.mod' -type f -execdir golangci-lint run --out-format=tab \;
-	@golangci-lint run --out-format=tab
-	@cd ./types && golangci-lint run --out-format=tab
-	@cd ./x/data && golangci-lint run --out-format=tab
-	@cd ./x/ecocredit && golangci-lint run --out-format=tab
-	protolint .
+	@echo "Linting all go modules..."
+	@find . -name 'go.mod' -type f -execdir golangci-lint run --out-format=tab \;
 
 lint-fix:
-	golangci-lint run --fix --out-format=tab --issues-exit-code=0
-	protolint -fix .
+	@echo "Attempting to fix lint errors in all go modules..."
+	@find . -name 'go.mod' -type f -execdir golangci-lint run --fix --out-format=tab --issues-exit-code=0 \;
 
 format_filter = -name '*.go' -type f \
 	-not -path '*.git*' \

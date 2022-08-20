@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package marketplace
 
 import (
@@ -48,7 +49,6 @@ func (s *cancelSellOrder) Before(t gocuke.TestingT) {
 	s.quantity = "100"
 }
 
-//nolint:revive
 func (s *cancelSellOrder) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -58,7 +58,6 @@ func (s *cancelSellOrder) AliceCreatedASellOrderWithId(a string) {
 	s.sellOrderSetup()
 }
 
-//nolint:revive
 func (s *cancelSellOrder) AliceCreatedASellOrderWithIdAndQuantity(a string, b string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -85,7 +84,6 @@ func (s *cancelSellOrder) AliceHasTheBatchBalance(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *cancelSellOrder) AliceAttemptsToCancelTheSellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -96,7 +94,6 @@ func (s *cancelSellOrder) AliceAttemptsToCancelTheSellOrderWithId(a string) {
 	})
 }
 
-//nolint:revive
 func (s *cancelSellOrder) BobAttemptsToCancelTheSellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -131,7 +128,6 @@ func (s *cancelSellOrder) ExpectAliceBatchBalance(a gocuke.DocString) {
 	require.Equal(s.t, expected.EscrowedAmount, balance.EscrowedAmount)
 }
 
-//nolint:revive
 func (s *cancelSellOrder) ExpectNoSellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)

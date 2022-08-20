@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package marketplace
 
 import (
@@ -5,15 +6,16 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -155,7 +157,6 @@ func (s *buyDirectSuite) TheBatchSupply(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -235,7 +236,6 @@ func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a
 	s.createSellOrders(2)
 }
 
-//nolint:revive
 func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -254,7 +254,6 @@ func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
 	})
 }
 
-//nolint:revive
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -424,7 +423,6 @@ func (s *buyDirectSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-//nolint:revive
 func (s *buyDirectSuite) ExpectSellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -442,7 +440,6 @@ func (s *buyDirectSuite) ExpectSellOrderWithQuantity(a string) {
 	require.Equal(s.t, order.Quantity, a)
 }
 
-//nolint:revive
 func (s *buyDirectSuite) ExpectNoSellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)

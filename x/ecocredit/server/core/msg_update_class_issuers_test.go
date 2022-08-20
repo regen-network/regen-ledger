@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -44,7 +45,6 @@ func (s *updateClassIssuers) ACreditTypeWithAbbreviation(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *updateClassIssuers) ACreditClassWithClassIdAndAdminAlice(a string) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
@@ -56,7 +56,6 @@ func (s *updateClassIssuers) ACreditClassWithClassIdAndAdminAlice(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *updateClassIssuers) ACreditClassWithClassIdAdminAliceAndIssuers(a string, b gocuke.DocString) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
@@ -83,7 +82,6 @@ func (s *updateClassIssuers) ACreditClassWithClassIdAdminAliceAndIssuers(a strin
 	}
 }
 
-//nolint:revive
 func (s *updateClassIssuers) AliceAttemptsToUpdateClassIssuersWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassIssuers(s.ctx, &core.MsgUpdateClassIssuers{
 		Admin:   s.alice.String(),
@@ -91,7 +89,6 @@ func (s *updateClassIssuers) AliceAttemptsToUpdateClassIssuersWithClassId(a stri
 	})
 }
 
-//nolint:revive
 func (s *updateClassIssuers) BobAttemptsToUpdateClassIssuersWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassIssuers(s.ctx, &core.MsgUpdateClassIssuers{
 		Admin:   s.bob.String(),
@@ -99,7 +96,6 @@ func (s *updateClassIssuers) BobAttemptsToUpdateClassIssuersWithClassId(a string
 	})
 }
 
-//nolint:revive
 func (s *updateClassIssuers) AliceAttemptsToUpdateClassIssuersWithClassIdAndAddIssuers(a string, b gocuke.DocString) {
 	var addIssuers []string
 	err := json.Unmarshal([]byte(b.Content), &addIssuers)
@@ -112,7 +108,6 @@ func (s *updateClassIssuers) AliceAttemptsToUpdateClassIssuersWithClassIdAndAddI
 	})
 }
 
-//nolint:revive
 func (s *updateClassIssuers) AliceAttemptsToUpdateClassIssuersWithClassIdAndRemoveIssuers(a string, b gocuke.DocString) {
 	var removeIssuers []string
 	err := json.Unmarshal([]byte(b.Content), &removeIssuers)
@@ -137,7 +132,6 @@ func (s *updateClassIssuers) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
-//nolint:revive
 func (s *updateClassIssuers) ExpectCreditClassWithClassIdAndIssuers(a string, b gocuke.DocString) {
 	class, err := s.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)

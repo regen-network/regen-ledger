@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -77,7 +78,6 @@ func (s *bridgeReceiveSuite) ACreditTypeWithAbbreviation(a string) {
 	s.creditTypeAbbrev = a
 }
 
-//nolint:revive
 func (s *bridgeReceiveSuite) ACreditClassWithIdAndIssuerAlice(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,
@@ -94,7 +94,6 @@ func (s *bridgeReceiveSuite) ACreditClassWithIdAndIssuerAlice(a string) {
 	s.classKey = cKey
 }
 
-//nolint:revive
 func (s *bridgeReceiveSuite) AProjectWithId(a string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:       a,
@@ -113,7 +112,6 @@ func (s *bridgeReceiveSuite) AProjectWithId(a string) {
 	s.projectKey = pKey
 }
 
-//nolint:revive
 func (s *bridgeReceiveSuite) AProjectWithIdAndReferenceId(a, b string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:          a,
@@ -175,7 +173,6 @@ func (s *bridgeReceiveSuite) TheBatchContract(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassId(a string) {
 	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
 		Issuer:  s.alice.String(),
@@ -196,7 +193,6 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassId(a string) {
 	})
 }
 
-//nolint:revive
 func (s *bridgeReceiveSuite) BobAttemptsToBridgeCreditsWithClassId(a string) {
 	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
 		Issuer:  s.bob.String(),
@@ -265,7 +261,6 @@ func (s *bridgeReceiveSuite) BobAttemptsToBridgeCreditsWithContract(a string) {
 	})
 }
 
-//nolint:revive
 func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithClassIdAndProjectReferenceId(a, b string) {
 	s.res, s.err = s.k.BridgeReceive(s.ctx, &core.MsgBridgeReceive{
 		Issuer:  s.alice.String(),

@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -39,7 +40,6 @@ func (s *updateProjectMetadata) ACreditTypeWithAbbreviation(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *updateProjectMetadata) ACreditClassWithClassId(a string) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
@@ -51,7 +51,6 @@ func (s *updateProjectMetadata) ACreditClassWithClassId(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *updateProjectMetadata) AProjectWithProjectIdAndAdminAlice(a string) {
 	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:    a,
@@ -60,7 +59,6 @@ func (s *updateProjectMetadata) AProjectWithProjectIdAndAdminAlice(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *updateProjectMetadata) AliceAttemptsToUpdateProjectMetadataWithProjectId(a string) {
 	s.res, s.err = s.k.UpdateProjectMetadata(s.ctx, &core.MsgUpdateProjectMetadata{
 		Admin:     s.alice.String(),
@@ -68,7 +66,6 @@ func (s *updateProjectMetadata) AliceAttemptsToUpdateProjectMetadataWithProjectI
 	})
 }
 
-//nolint:revive
 func (s *updateProjectMetadata) BobAttemptsToUpdateProjectMetadataWithProjectId(a string) {
 	s.res, s.err = s.k.UpdateProjectMetadata(s.ctx, &core.MsgUpdateProjectMetadata{
 		Admin:     s.bob.String(),
@@ -76,7 +73,6 @@ func (s *updateProjectMetadata) BobAttemptsToUpdateProjectMetadataWithProjectId(
 	})
 }
 
-//nolint:revive
 func (s *updateProjectMetadata) AliceAttemptsToUpdateProjectMetadataWithProjectIdAndNewMetadata(a string, b gocuke.DocString) {
 	s.res, s.err = s.k.UpdateProjectMetadata(s.ctx, &core.MsgUpdateProjectMetadata{
 		Admin:       s.alice.String(),
@@ -97,7 +93,6 @@ func (s *updateProjectMetadata) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
-//nolint:revive
 func (s *updateProjectMetadata) ExpectProjectWithProjectIdAndMetadata(a string, b gocuke.DocString) {
 	project, err := s.stateStore.ProjectTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)

@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -53,7 +54,6 @@ func (s *mintBatchCredits) ACreditTypeWithAbbreviation(a string) {
 	s.creditTypeAbbrev = a
 }
 
-//nolint:revive
 func (s *mintBatchCredits) ACreditClassWithIdAndIssuerAlice(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,
@@ -70,7 +70,6 @@ func (s *mintBatchCredits) ACreditClassWithIdAndIssuerAlice(a string) {
 	s.classKey = cKey
 }
 
-//nolint:revive
 func (s *mintBatchCredits) AProjectWithId(a string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:       a,

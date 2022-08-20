@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package basket_test
 
 import (
@@ -96,7 +97,6 @@ func (s *createSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *createSuite) ACreditClassWithId(a string) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 

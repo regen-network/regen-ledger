@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package server
 
 import (
@@ -39,7 +40,6 @@ func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
 	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
@@ -78,7 +78,6 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolver() {
 	})
 }
 
-//nolint:revive
 func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToAResolverWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)

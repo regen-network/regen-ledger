@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -37,7 +38,6 @@ func (s *msgCreateProject) MetadataWithLength(a string) {
 	s.msg.Metadata = strings.Repeat("x", int(length))
 }
 
-//nolint:revive
 func (s *msgCreateProject) AReferenceIdWithLength(a string) {
 	length, err := strconv.ParseInt(a, 10, 64)
 	require.NoError(s.t, err)

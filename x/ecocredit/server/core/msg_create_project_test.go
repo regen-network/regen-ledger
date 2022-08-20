@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -41,7 +42,6 @@ func (s *createProjectSuite) ACreditTypeWithAbbreviation(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *createProjectSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
@@ -58,7 +58,6 @@ func (s *createProjectSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *createProjectSuite) AProjectSequenceWithClassIdAndNextSequence(a, b string) {
 	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)
@@ -73,7 +72,6 @@ func (s *createProjectSuite) AProjectSequenceWithClassIdAndNextSequence(a, b str
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
 	classID := core.GetClassIDFromProjectID(a)
 
@@ -97,7 +95,6 @@ func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassId(a string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:   s.alice.String(),
@@ -105,7 +102,6 @@ func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassId(a string) 
 	})
 }
 
-//nolint:revive
 func (s *createProjectSuite) BobAttemptsToCreateAProjectWithClassId(a string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:   s.bob.String(),
@@ -113,7 +109,6 @@ func (s *createProjectSuite) BobAttemptsToCreateAProjectWithClassId(a string) {
 	})
 }
 
-//nolint:revive
 func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassIdAndReferenceId(a, b string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Admin:       s.alice.String(),
@@ -148,7 +143,6 @@ func (s *createProjectSuite) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
-//nolint:revive
 func (s *createProjectSuite) ExpectProjectSequenceWithClassIdAndNextSequence(a string, b string) {
 	project, err := s.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)

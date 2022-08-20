@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package server
 
 import (
@@ -29,7 +30,6 @@ func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 	s.bob = s.addrs[1]
 }
 
-//nolint:revive
 func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 	_, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
@@ -38,7 +38,6 @@ func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 	require.NoError(s.t, err)
 }
 
-//nolint:revive
 func (s *defineResolverSuite) AliceAttemptsToDefineAResolverWithUrl(a string) {
 	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
@@ -46,7 +45,6 @@ func (s *defineResolverSuite) AliceAttemptsToDefineAResolverWithUrl(a string) {
 	})
 }
 
-//nolint:revive
 func (s *defineResolverSuite) BobAttemptsToDefineAResolverWithUrl(a string) {
 	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.bob.String(),
@@ -54,7 +52,6 @@ func (s *defineResolverSuite) BobAttemptsToDefineAResolverWithUrl(a string) {
 	})
 }
 
-//nolint:revive
 func (s *defineResolverSuite) ExpectTheResolverWithIdAndUrlAndManagerBob(a string, b string) {
 	id, err := strconv.ParseUint(a, 10, 64)
 	require.NoError(s.t, err)

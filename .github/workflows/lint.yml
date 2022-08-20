@@ -22,23 +22,71 @@ concurrency:
 jobs:
   golangci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-arch: ["app", "types", "x/data", "x/ecocredit"]
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        id: get-diff-app
         with:
           PATTERNS: |
-            **/**.go
-            **/go.mod
-            **/go.sum
+            app/**.go
+            app/go.mod
+            app/go.sum
+        if: matrix.envs == 'app'
+      - uses: technote-space/get-diff-action@v6
+        id: get-diff-types
+        with:
+          PATTERNS: |
+            types/**.go
+            types/go.mod
+            types/go.sum
+        if: matrix.envs == 'types'
+      - uses: technote-space/get-diff-action@v6
+        id: get-diff-data
+        with:
+          PATTERNS: |
+            x/data/**.go
+            x/data/go.mod
+            x/data/go.sum
+        if: matrix.envs == 'x/data'
+      - uses: technote-space/get-diff-action@v6
+        id: get-diff-ecocredit
+        with:
+          PATTERNS: |
+            x/ecocredit/**.go
+            x/ecocredit/go.mod
+            x/ecocredit/go.sum
+        if: matrix.envs == 'x/ecocredit'
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --timeout 5m --verbose
+          args: --verbose
           only-new-issues: true
-        if: env.GIT_DIFF
+          working-directory: "/"
+        if: steps.git-diff-app.outputs.diff
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          args: --verbose
+          only-new-issues: true
+          working-directory: "/types"
+        if: steps.git-diff-types.outputs.diff
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          args: --verbose
+          only-new-issues: true
+          working-directory: "/x/data"
+        if: steps.git-diff-data.outputs.diff
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          args: --verbose
+          only-new-issues: true
+          working-directory: "/x/ecocredit"
+        if: steps.git-diff-ecocredit.outputs.diff
 
   buf-lint:
     runs-on: ubuntu-latest

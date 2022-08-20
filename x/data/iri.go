@@ -72,10 +72,10 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 }
 
 // ToExtension converts the media type to a file extension based on the mediaTypeExtensions map.
-func (mt RawMediaType) ToExtension() (string, error) {
-	ext, ok := mediaExtensionTypeToString[mt]
+func (rmt RawMediaType) ToExtension() (string, error) {
+	ext, ok := mediaExtensionTypeToString[rmt]
 	if !ok {
-		return "", sdkerrors.ErrInvalidRequest.Wrapf("missing extension for %T %s", mt, mt)
+		return "", sdkerrors.ErrInvalidRequest.Wrapf("missing extension for %T %s", rmt, rmt)
 	}
 
 	return ext, nil

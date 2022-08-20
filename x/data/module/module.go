@@ -57,7 +57,7 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.ak, a.bk)
 }
 
-//nolint:errcheck
+//nolint
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
 }

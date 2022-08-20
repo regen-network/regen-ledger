@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package marketplace
 
 import (
@@ -109,7 +110,6 @@ func (s *updateSellOrdersSuite) AliceCreatedASellOrder() {
 	s.sellOrderSetup(1)
 }
 
-//nolint:revive
 func (s *updateSellOrdersSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -211,7 +211,6 @@ func (s *updateSellOrdersSuite) BobAttemptsToUpdateTheSellOrder() {
 	})
 }
 
-//nolint:revive
 func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -365,7 +364,6 @@ func (s *updateSellOrdersSuite) ExpectAliceEscrowedCreditBalance(a string) {
 	require.Equal(s.t, a, balance.EscrowedAmount)
 }
 
-//nolint:revive
 func (s *updateSellOrdersSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -379,7 +377,6 @@ func (s *updateSellOrdersSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // always zero
 }
 
-//nolint:revive
 func (s *updateSellOrdersSuite) ExpectNoMarketWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
