@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
+	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -22,6 +23,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
+	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -96,17 +98,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
+	ecocreditParams := core.DefaultParams()
+	s.basketFee = sdk.NewInt64Coin("bfee", 20)
 	_, err := s.fixture.InitGenesis(s.sdkCtx, map[string]json.RawMessage{ecocredit.ModuleName: s.ecocreditGenesis()})
 	s.Require().NoError(err)
 
-	ecocreditParams := core.DefaultParams()
-	s.basketFee = sdk.NewInt64Coin("bfee", 20)
-	ecocreditParams.BasketFee = sdk.NewCoins(s.basketFee)
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
 	s.basketServer = basketServer{basket.NewQueryClient(s.fixture.QueryConn()), basket.NewMsgClient(s.fixture.TxConn())}
+
 	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
@@ -144,6 +146,19 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 		Name:         "carbon",
 		Unit:         "metric ton C02",
 		Precision:    6,
+	})
+	s.Require().NoError(err)
+
+	bs, err := basketApi.NewStateStore(modDB)
+	s.Require().NoError(err)
+
+	err = bs.BasketFeesTable().Save(ormCtx, &basketApi.BasketFees{
+		Fees: []*v1beta1.Coin{
+			{
+				Denom:  s.basketFee.Denom,
+				Amount: s.basketFee.Amount.String(),
+			},
+		},
 	})
 	s.Require().NoError(err)
 
@@ -1135,12 +1150,6 @@ func (s *IntegrationTestSuite) assertDecStrEqual(d1, d2 string) {
 	dec2, err := math.NewDecFromString(d2)
 	s.Require().NoError(err)
 	s.Require().True(dec1.Equal(dec2), "%v does not equal %v", dec1, dec2)
-}
-
-func (s *IntegrationTestSuite) createClass(admin, creditTypeAbbrev, metadata string, issuers []string) string {
-	res, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin, Issuers: issuers, Metadata: metadata, CreditTypeAbbrev: creditTypeAbbrev, Fee: &createClassFee})
-	s.Require().NoError(err)
-	return res.ClassId
 }
 
 func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, bankDenom string) accountInfo {
