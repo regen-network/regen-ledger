@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-arch: ["app", "types", "x/data", "x/ecocredit"]
+        module: ["app", "types", "x/data", "x/ecocredit"]
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
@@ -34,7 +34,7 @@ jobs:
             app/**.go
             app/go.mod
             app/go.sum
-        if: matrix.envs == 'app'
+        if: matrix.module == 'app'
       - uses: technote-space/get-diff-action@v6
         id: get-diff-types
         with:
@@ -42,7 +42,7 @@ jobs:
             types/**.go
             types/go.mod
             types/go.sum
-        if: matrix.envs == 'types'
+        if: matrix.module == 'types'
       - uses: technote-space/get-diff-action@v6
         id: get-diff-data
         with:
@@ -50,7 +50,7 @@ jobs:
             x/data/**.go
             x/data/go.mod
             x/data/go.sum
-        if: matrix.envs == 'x/data'
+        if: matrix.module == 'x/data'
       - uses: technote-space/get-diff-action@v6
         id: get-diff-ecocredit
         with:
@@ -58,7 +58,7 @@ jobs:
             x/ecocredit/**.go
             x/ecocredit/go.mod
             x/ecocredit/go.sum
-        if: matrix.envs == 'x/ecocredit'
+        if: matrix.module == 'x/ecocredit'
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
