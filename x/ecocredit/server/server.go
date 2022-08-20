@@ -22,8 +22,6 @@ import (
 )
 
 type serverImpl struct {
-	storeKey storetypes.StoreKey
-
 	paramSpace    paramtypes.Subspace
 	bankKeeper    ecocredit.BankKeeper
 	accountKeeper ecocredit.AccountKeeper
@@ -40,7 +38,6 @@ type serverImpl struct {
 func NewServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{
-		storeKey:      storeKey,
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,

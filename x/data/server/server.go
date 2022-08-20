@@ -30,7 +30,6 @@ type Keeper interface {
 }
 
 type serverImpl struct {
-	storeKey      storetypes.StoreKey
 	iriHasher     hasher.Hasher
 	stateStore    api.StateStore
 	db            ormdb.ModuleDB
@@ -59,7 +58,6 @@ func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.Bank
 	}
 
 	return serverImpl{
-		storeKey:      storeKey,
 		iriHasher:     hasher,
 		stateStore:    stateStore,
 		db:            db,
