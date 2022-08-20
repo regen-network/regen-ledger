@@ -1,4 +1,4 @@
-package server
+package fixture
 
 import (
 	"context"
@@ -21,7 +21,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
@@ -115,7 +114,7 @@ type fixture struct {
 }
 
 func (f fixture) Context() context.Context {
-	return regentypes.Context{Context: f.baseApp.NewUncachedContext(false, tmproto.Header{})}
+	return f.baseApp.NewUncachedContext(false, tmproto.Header{})
 }
 
 func (f fixture) TxConn() grpc.ClientConnInterface {

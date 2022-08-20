@@ -17,7 +17,7 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/fixture"
 	"github.com/regen-network/regen-ledger/x/data"
 	datamodule "github.com/regen-network/regen-ledger/x/data/module"
 )
@@ -28,8 +28,8 @@ func TestServer(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) *server.FixtureFactory {
-	ff := server.NewFixtureFactory(t, 8)
+func setup(t *testing.T) *fixture.FixtureFactory {
+	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
 	amino := codec.NewLegacyAmino()

@@ -1,4 +1,4 @@
-package server
+package fixture
 
 import (
 	"bytes"
@@ -62,6 +62,11 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			if err != nil {
 				return err
 			}
+			// set events from response in the sdk context event manager.
+			for _, e := range res.Events {
+				sdkCtx.EventManager().EmitEvent(sdk.Event(e))
+			}
+
 			if len(res.MsgResponses) != 1 {
 				panic(fmt.Sprintf("expected 1 msg response, got %d", len(res.MsgResponses)))
 			}
