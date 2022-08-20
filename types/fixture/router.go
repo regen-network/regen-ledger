@@ -35,7 +35,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 
 		// cache wrap the multistore so that inter-module writes are atomic
 		// see https://github.com/cosmos/cosmos-sdk/issues/8030
-		regenCtx := types.UnwrapSDKContext(ctx)
+		regenCtx := sdk.UnwrapSDKContext(ctx)
 		cacheMs := regenCtx.MultiStore().CacheMultiStore()
 		ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
 

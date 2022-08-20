@@ -8,13 +8,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // CreateProject creates a new project for a specific credit class.
 func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (*core.MsgCreateProjectResponse, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())

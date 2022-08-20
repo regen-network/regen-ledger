@@ -4,17 +4,18 @@ import (
 	"context"
 	"fmt"
 
+	sdkMath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettypes.MsgTakeResponse, error) {
@@ -36,7 +37,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, ErrCantDisableRetire
 	}
 
-	amountBasketTokens, ok := sdk.NewIntFromString(msg.Amount)
+	amountBasketTokens, ok := sdkMath.NewIntFromString(msg.Amount)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("bad integer %s", msg.Amount)
 	}
@@ -187,7 +188,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 }
 
 func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, retire bool, jurisdiction string) error {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	batch, err := k.coreStore.BatchTable().GetByDenom(ctx, batchDenom)
 	if err != nil {
 		return err
