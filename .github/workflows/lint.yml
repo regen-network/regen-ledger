@@ -68,25 +68,25 @@ jobs:
           args: --verbose
           only-new-issues: true
           working-directory: "/"
-        if: steps.git-diff-app.outputs.diff
+        if: steps.get-diff-app.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
           args: --verbose
           only-new-issues: true
           working-directory: "/types"
-        if: steps.git-diff-types.outputs.diff
+        if: steps.get-diff-types.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
           args: --verbose
           only-new-issues: true
           working-directory: "/x/data"
-        if: steps.git-diff-data.outputs.diff
+        if: steps.get-diff-data.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
           args: --verbose
           only-new-issues: true
           working-directory: "/x/ecocredit"
-        if: steps.git-diff-ecocredit.outputs.diff
+        if: steps.get-diff-ecocredit.outputs.diff
 
   buf-lint:
     runs-on: ubuntu-latest
