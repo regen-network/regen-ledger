@@ -30,34 +30,22 @@ jobs:
       - uses: technote-space/get-diff-action@v6
         id: get-diff-app
         with:
-          PATTERNS: |
-            app/**.go
-            app/go.mod
-            app/go.sum
+          PATTERNS: app/**/**.go
         if: matrix.module == 'app'
       - uses: technote-space/get-diff-action@v6
         id: get-diff-types
         with:
-          PATTERNS: |
-            types/**.go
-            types/go.mod
-            types/go.sum
+          PATTERNS: types/**/**.go
         if: matrix.module == 'types'
       - uses: technote-space/get-diff-action@v6
         id: get-diff-data
         with:
-          PATTERNS: |
-            x/data/**.go
-            x/data/go.mod
-            x/data/go.sum
+          PATTERNS: x/data/**/**.go
         if: matrix.module == 'x/data'
       - uses: technote-space/get-diff-action@v6
         id: get-diff-ecocredit
         with:
-          PATTERNS: |
-            x/ecocredit/**.go
-            x/ecocredit/go.mod
-            x/ecocredit/go.sum
+          PATTERNS: x/ecocredit/**/**.go
         if: matrix.module == 'x/ecocredit'
       - uses: actions/setup-go@v3
         with:
@@ -65,26 +53,18 @@ jobs:
         if: env.GIT_DIFF
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
-          only-new-issues: true
           working-directory: "/"
         if: steps.get-diff-app.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
-          only-new-issues: true
           working-directory: "/types"
         if: steps.get-diff-types.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
-          only-new-issues: true
           working-directory: "/x/data"
         if: steps.get-diff-data.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
-          only-new-issues: true
           working-directory: "/x/ecocredit"
         if: steps.get-diff-ecocredit.outputs.diff
 
