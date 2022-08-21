@@ -57,15 +57,15 @@ jobs:
         if: steps.get-diff-app.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          working-directory: "/types"
+          working-directory: "types"
         if: steps.get-diff-types.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          working-directory: "/x/data"
+          working-directory: "x/data"
         if: steps.get-diff-data.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          working-directory: "/x/ecocredit"
+          working-directory: "x/ecocredit"
         if: steps.get-diff-ecocredit.outputs.diff
 
   buf-lint:
