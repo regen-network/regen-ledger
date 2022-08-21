@@ -12,7 +12,6 @@ linters:
     - exportloopref
     - goconst
     - gocritic
-    - gofmt
     - goimports
     - gosec
     - gosimple

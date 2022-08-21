@@ -228,7 +228,7 @@ format_local = \
 	github.com/regen-network/regen-ledger
 
 format:
-	@echo "Running goimports (and gofmt under the hood)..."
+	@echo "Formatting imports in all go modules..."
 	@find . $(format_filter) | xargs goimports -w -local $(subst $(whitespace),$(comma),$(format_local))
 
 .PHONY: lint lint-fix format
