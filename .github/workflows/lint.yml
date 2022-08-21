@@ -27,6 +27,10 @@ jobs:
         module: ["app", "types", "x/data", "x/ecocredit"]
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
       - uses: technote-space/get-diff-action@v6
         id: git-diff-app
         with:
@@ -47,28 +51,20 @@ jobs:
         with:
           PATTERNS: x/ecocredit/**/**.go
         if: matrix.module == 'x/ecocredit'
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
-        if: env.GIT_DIFF
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
           working-directory: "."
         if: steps.git-diff-app.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
           working-directory: "types"
         if: steps.git-diff-types.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
           working-directory: "x/data"
         if: steps.git-diff-data.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --verbose
           working-directory: "x/ecocredit"
         if: steps.git-diff-ecocredit.outputs.diff
 
