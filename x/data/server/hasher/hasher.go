@@ -4,8 +4,9 @@ import (
 	"encoding/binary"
 	"hash"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"golang.org/x/crypto/blake2b"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // Hasher generates a unique binary identifier for a longer piece of binary data

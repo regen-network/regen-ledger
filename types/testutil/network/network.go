@@ -18,9 +18,10 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
+
 	"github.com/tendermint/tendermint/node"
 	tmclient "github.com/tendermint/tendermint/rpc/client"
-	"google.golang.org/grpc"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"

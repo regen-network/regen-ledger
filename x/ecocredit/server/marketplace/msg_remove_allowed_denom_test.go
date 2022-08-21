@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"

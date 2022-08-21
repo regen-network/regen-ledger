@@ -5,8 +5,8 @@ import (
 	"math/big"
 
 	sdkmath "cosmossdk.io/math"
-
 	"github.com/cockroachdb/apd/v2"
+
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 

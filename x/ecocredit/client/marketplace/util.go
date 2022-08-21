@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/spf13/cobra"
 )
 
 func txFlags(cmd *cobra.Command) *cobra.Command {
