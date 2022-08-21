@@ -53,7 +53,7 @@ jobs:
         if: env.GIT_DIFF
       - uses: golangci/golangci-lint-action@v3
         with:
-          working-directory: "/"
+          working-directory: "."
         if: steps.get-diff-app.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
