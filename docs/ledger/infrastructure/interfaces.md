@@ -60,7 +60,7 @@ In some programming languages, you may be able to leverage a pre-existing client
 While CosmJS provides basic support for all Cosmos SDK based blockchains, you will still need to compile the protobuf messages for Regen Ledger's own modules (e.g. ecocredit module, data module) if you intend to interact with ecosytem service credits or on-chain ecological data.
 :::
 
-For more information about the gRPC interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/master/run-node/interact-node.html).
+For more information about the gRPC interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/main/run-node/interact-node.html).
 
 ## REST Interface
 
@@ -77,4 +77,4 @@ curl \
 
 In order to interact with the REST interface, make sure you have API server and (optionally) Swagger UI enabled in your `~/.regen/config/app.toml` file. With Swagger UI enabled, you can go to `http://localhost:1317/swagger/` to read through the OpenAPI documentation.
 
-For more information about the REST interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/master/run-node/interact-node.html).
+For more information about the REST interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/main/run-node/interact-node.html).

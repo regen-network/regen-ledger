@@ -15,11 +15,11 @@ Download and execute the state sync script:
 *For Regen Mainnet:*
 
 ```bash 
-curl -s -L https://raw.githubusercontent.com/regen-network/regen-ledger/master/scripts/statesync.bash | bash -s $MONIKER
+curl -s -L https://raw.githubusercontent.com/regen-network/regen-ledger/main/scripts/statesync.bash | bash -s $MONIKER
 ```
 
 *For Redwood Testnet:*
 
 ```bash 
-curl -s -L https://raw.githubusercontent.com/regen-network/testnets/master/scripts/testnet-statesync.bash | bash -s $MONIKER
+curl -s -L https://raw.githubusercontent.com/regen-network/testnets/main/scripts/testnet-statesync.bash | bash -s $MONIKER
 ```

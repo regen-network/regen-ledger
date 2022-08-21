@@ -1,0 +1,32 @@
+name: Proto
+
+# **What it does**: Checks for breaking changes in proto files
+# when proto files have been modified.
+#
+# **Why we have it**: Provides visibility into breaking changes and
+# ensures no breaking changes are merged to a release branch.
+#
+# **What does it impact**: Application release process.
+
+on:
+  pull_request:
+    branches:
+      - main
+      - release/v*
+    paths:
+      - 'proto/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  break-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bufbuild/buf-setup-action@v1
+      - uses: bufbuild/buf-breaking-action@v1
+        with:
+          input: 'proto'
+          against: 'https://github.com/${{ github.repository }}.git#branch=${{ github.event.pull_request.base.ref }},ref=HEAD~1,subdir=proto'
