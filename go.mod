@@ -3,6 +3,7 @@ module github.com/regen-network/regen-ledger/v4
 go 1.18
 
 require (
+	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.0
 	github.com/cosmos/ibc-go/v5 v5.0.0-beta1
 	github.com/gorilla/mux v1.8.0
@@ -20,8 +21,6 @@ require (
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	google.golang.org/genproto v0.0.0-20220725144611-272f38e5d71b // indirect
 )
-
-require cosmossdk.io/math v1.0.0-beta.3
 
 require (
 	cloud.google.com/go v0.100.2 // indirect
