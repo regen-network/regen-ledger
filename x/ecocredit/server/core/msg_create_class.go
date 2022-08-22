@@ -37,13 +37,9 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		fees = &api.ClassFees{}
 	}
 
-	allowedFees := make(sdk.Coins, 0, len(fees.Fees))
-	for _, coin := range fees.Fees {
-		amount, ok := sdk.NewIntFromString(coin.Amount)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("credit class fee %s", coin.Amount)
-		}
-		allowedFees = append(allowedFees, sdk.NewCoin(coin.Denom, amount))
+	allowedFees, ok := core.ProtoCoinsToCoins(fees.Fees)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidType.Wrap("credit class fee")
 	}
 
 	// only check and charge fee if allowed fees is not empty

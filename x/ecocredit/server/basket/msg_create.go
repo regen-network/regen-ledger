@@ -11,6 +11,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Create is an RPC to handle basket.MsgCreate
@@ -22,13 +23,9 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	allowedFees := make(sdk.Coins, 0, len(fee.Fees))
-	for _, coin := range fee.Fees {
-		amount, ok := sdk.NewIntFromString(coin.Amount)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee %s", coin.Amount)
-		}
-		allowedFees = append(allowedFees, sdk.NewCoin(coin.Denom, amount))
+	allowedFees, ok := core.ProtoCoinsToCoins(fee.Fees)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")
 	}
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)

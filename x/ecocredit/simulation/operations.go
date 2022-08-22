@@ -1049,6 +1049,10 @@ func SimulateMsgSealBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, q
 			return op, nil, err
 		}
 
+		if batch.Issuer != issuerAddr {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSealBatch, "only batch issuer can seal batch"), nil, nil
+		}
+
 		if !batch.Open {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSealBatch, "batch is closed"), nil, nil
 		}
