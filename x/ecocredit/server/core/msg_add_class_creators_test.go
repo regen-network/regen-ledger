@@ -12,21 +12,21 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-type allowedClassCreator struct {
+type adddClassCreators struct {
 	*baseSuite
 	err error
 }
 
-func TestAllowedClassCreator(t *testing.T) {
-	gocuke.NewRunner(t, &allowedClassCreator{}).Path("./features/msg_allowed_class_creator.feature").Run()
+func TestAddClassCreators(t *testing.T) {
+	gocuke.NewRunner(t, &adddClassCreators{}).Path("./features/msg_add_class_creators.feature").Run()
 }
 
-func (s *allowedClassCreator) Before(t gocuke.TestingT) {
+func (s *adddClassCreators) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *allowedClassCreator) ClassCreatorsWithProperties(a gocuke.DocString) {
-	var msg *core.MsgAllowedClassCreator
+func (s *adddClassCreators) ClassCreatorsWithProperties(a gocuke.DocString) {
+	var msg *core.MsgAddClassCreators
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
@@ -43,23 +43,23 @@ func (s *allowedClassCreator) ClassCreatorsWithProperties(a gocuke.DocString) {
 
 }
 
-func (s *allowedClassCreator) AliceAttemptsToAddClassCreatorsWithProperties(a gocuke.DocString) {
-	var msg *core.MsgAllowedClassCreator
+func (s *adddClassCreators) AliceAttemptsToAddClassCreatorsWithProperties(a gocuke.DocString) {
+	var msg *core.MsgAddClassCreators
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
 
-	_, s.err = s.k.AllowedClassCreator(s.ctx, msg)
+	_, s.err = s.k.AddClassCreators(s.ctx, msg)
 }
 
-func (s *allowedClassCreator) ExpectNoError() {
+func (s *adddClassCreators) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *allowedClassCreator) ExpectTheError(a string) {
+func (s *adddClassCreators) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *allowedClassCreator) ExpectErrorContains(a string) {
+func (s *adddClassCreators) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }

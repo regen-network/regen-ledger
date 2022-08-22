@@ -12,21 +12,21 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-type removeClassClassCreator struct {
+type removeClassClassCreators struct {
 	*baseSuite
 	err error
 }
 
-func TestRemoveClassCreator(t *testing.T) {
-	gocuke.NewRunner(t, &removeClassClassCreator{}).Path("./features/msg_remove_class_creator.feature").Run()
+func TestRemoveClassCreators(t *testing.T) {
+	gocuke.NewRunner(t, &removeClassClassCreators{}).Path("./features/msg_remove_class_creators.feature").Run()
 }
 
-func (s *removeClassClassCreator) Before(t gocuke.TestingT) {
+func (s *removeClassClassCreators) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *removeClassClassCreator) ClassCreatorsWithProperties(a gocuke.DocString) {
-	var msg *core.MsgAllowedClassCreator
+func (s *removeClassClassCreators) ClassCreatorsWithProperties(a gocuke.DocString) {
+	var msg *core.MsgAddClassCreators
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
@@ -43,23 +43,23 @@ func (s *removeClassClassCreator) ClassCreatorsWithProperties(a gocuke.DocString
 
 }
 
-func (s *removeClassClassCreator) AliceAttemptsToRemoveClassCreatorsWithProperties(a gocuke.DocString) {
-	var msg *core.MsgRemoveClassCreator
+func (s *removeClassClassCreators) AliceAttemptsToRemoveClassCreatorsWithProperties(a gocuke.DocString) {
+	var msg *core.MsgRemoveClassCreators
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
 
-	_, s.err = s.k.RemoveClassCreator(s.ctx, msg)
+	_, s.err = s.k.RemoveClassCreators(s.ctx, msg)
 }
 
-func (s *removeClassClassCreator) ExpectNoError() {
+func (s *removeClassClassCreators) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *removeClassClassCreator) ExpectTheError(a string) {
+func (s *removeClassClassCreators) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *removeClassClassCreator) ExpectErrorContains(a string) {
+func (s *removeClassClassCreators) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }

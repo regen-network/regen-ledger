@@ -8,21 +8,21 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var _ legacytx.LegacyMsg = &MsgAllowedClassCreator{}
+var _ legacytx.LegacyMsg = &MsgRemoveClassCreators{}
 
 // Route implements the LegacyMsg interface.
-func (m MsgAllowedClassCreator) Route() string { return sdk.MsgTypeURL(&m) }
+func (m MsgRemoveClassCreators) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
-func (m MsgAllowedClassCreator) Type() string { return sdk.MsgTypeURL(&m) }
+func (m MsgRemoveClassCreators) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.
-func (m MsgAllowedClassCreator) GetSignBytes() []byte {
+func (m MsgRemoveClassCreators) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a sanity check on the provided data.
-func (m *MsgAllowedClassCreator) ValidateBasic() error {
+func (m *MsgRemoveClassCreators) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
 		return sdkerrors.Wrapf(err, "invalid authority address")
 	}
@@ -40,8 +40,8 @@ func (m *MsgAllowedClassCreator) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners returns the expected signers for MsgAllowedClassCreator.
-func (m *MsgAllowedClassCreator) GetSigners() []sdk.AccAddress {
+// GetSigners returns the expected signers for MsgRemoveClassCreators.
+func (m *MsgRemoveClassCreators) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Authority)
 	return []sdk.AccAddress{addr}
 }

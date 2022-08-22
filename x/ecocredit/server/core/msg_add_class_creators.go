@@ -10,7 +10,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func (k Keeper) AllowedClassCreator(ctx context.Context, req *core.MsgAllowedClassCreator) (*core.MsgAllowedClassCreatorResponse, error) {
+func (k Keeper) AddClassCreators(ctx context.Context, req *core.MsgAddClassCreators) (*core.MsgAddClassCreatorsResponse, error) {
 	if k.authority.String() != req.Authority {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
@@ -38,5 +38,5 @@ func (k Keeper) AllowedClassCreator(ctx context.Context, req *core.MsgAllowedCla
 
 	}
 
-	return &core.MsgAllowedClassCreatorResponse{}, nil
+	return &core.MsgAddClassCreatorsResponse{}, nil
 }

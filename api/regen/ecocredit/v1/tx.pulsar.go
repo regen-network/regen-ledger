@@ -18183,74 +18183,74 @@ func (x *fastReflection_MsgBridgeReceiveResponse) ProtoMethods() *protoiface.Met
 	}
 }
 
-var _ protoreflect.List = (*_MsgAllowedClassCreator_2_list)(nil)
+var _ protoreflect.List = (*_MsgAddClassCreators_2_list)(nil)
 
-type _MsgAllowedClassCreator_2_list struct {
+type _MsgAddClassCreators_2_list struct {
 	list *[]string
 }
 
-func (x *_MsgAllowedClassCreator_2_list) Len() int {
+func (x *_MsgAddClassCreators_2_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgAllowedClassCreator_2_list) Get(i int) protoreflect.Value {
+func (x *_MsgAddClassCreators_2_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfString((*x.list)[i])
 }
 
-func (x *_MsgAllowedClassCreator_2_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgAddClassCreators_2_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgAllowedClassCreator_2_list) Append(value protoreflect.Value) {
+func (x *_MsgAddClassCreators_2_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgAllowedClassCreator_2_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message MsgAllowedClassCreator at list field Creators as it is not of Message kind"))
+func (x *_MsgAddClassCreators_2_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgAddClassCreators at list field Creators as it is not of Message kind"))
 }
 
-func (x *_MsgAllowedClassCreator_2_list) Truncate(n int) {
+func (x *_MsgAddClassCreators_2_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgAllowedClassCreator_2_list) NewElement() protoreflect.Value {
+func (x *_MsgAddClassCreators_2_list) NewElement() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_MsgAllowedClassCreator_2_list) IsValid() bool {
+func (x *_MsgAddClassCreators_2_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_MsgAllowedClassCreator           protoreflect.MessageDescriptor
-	fd_MsgAllowedClassCreator_authority protoreflect.FieldDescriptor
-	fd_MsgAllowedClassCreator_creators  protoreflect.FieldDescriptor
+	md_MsgAddClassCreators           protoreflect.MessageDescriptor
+	fd_MsgAddClassCreators_authority protoreflect.FieldDescriptor
+	fd_MsgAddClassCreators_creators  protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
-	md_MsgAllowedClassCreator = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgAllowedClassCreator")
-	fd_MsgAllowedClassCreator_authority = md_MsgAllowedClassCreator.Fields().ByName("authority")
-	fd_MsgAllowedClassCreator_creators = md_MsgAllowedClassCreator.Fields().ByName("creators")
+	md_MsgAddClassCreators = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgAddClassCreators")
+	fd_MsgAddClassCreators_authority = md_MsgAddClassCreators.Fields().ByName("authority")
+	fd_MsgAddClassCreators_creators = md_MsgAddClassCreators.Fields().ByName("creators")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgAllowedClassCreator)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgAddClassCreators)(nil)
 
-type fastReflection_MsgAllowedClassCreator MsgAllowedClassCreator
+type fastReflection_MsgAddClassCreators MsgAddClassCreators
 
-func (x *MsgAllowedClassCreator) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgAllowedClassCreator)(x)
+func (x *MsgAddClassCreators) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgAddClassCreators)(x)
 }
 
-func (x *MsgAllowedClassCreator) slowProtoReflect() protoreflect.Message {
+func (x *MsgAddClassCreators) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[32]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -18262,43 +18262,43 @@ func (x *MsgAllowedClassCreator) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgAllowedClassCreator_messageType fastReflection_MsgAllowedClassCreator_messageType
-var _ protoreflect.MessageType = fastReflection_MsgAllowedClassCreator_messageType{}
+var _fastReflection_MsgAddClassCreators_messageType fastReflection_MsgAddClassCreators_messageType
+var _ protoreflect.MessageType = fastReflection_MsgAddClassCreators_messageType{}
 
-type fastReflection_MsgAllowedClassCreator_messageType struct{}
+type fastReflection_MsgAddClassCreators_messageType struct{}
 
-func (x fastReflection_MsgAllowedClassCreator_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgAllowedClassCreator)(nil)
+func (x fastReflection_MsgAddClassCreators_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgAddClassCreators)(nil)
 }
-func (x fastReflection_MsgAllowedClassCreator_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgAllowedClassCreator)
+func (x fastReflection_MsgAddClassCreators_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgAddClassCreators)
 }
-func (x fastReflection_MsgAllowedClassCreator_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgAllowedClassCreator
+func (x fastReflection_MsgAddClassCreators_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddClassCreators
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgAllowedClassCreator) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgAllowedClassCreator
+func (x *fastReflection_MsgAddClassCreators) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddClassCreators
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgAllowedClassCreator) Type() protoreflect.MessageType {
-	return _fastReflection_MsgAllowedClassCreator_messageType
+func (x *fastReflection_MsgAddClassCreators) Type() protoreflect.MessageType {
+	return _fastReflection_MsgAddClassCreators_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgAllowedClassCreator) New() protoreflect.Message {
-	return new(fastReflection_MsgAllowedClassCreator)
+func (x *fastReflection_MsgAddClassCreators) New() protoreflect.Message {
+	return new(fastReflection_MsgAddClassCreators)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgAllowedClassCreator) Interface() protoreflect.ProtoMessage {
-	return (*MsgAllowedClassCreator)(x)
+func (x *fastReflection_MsgAddClassCreators) Interface() protoreflect.ProtoMessage {
+	return (*MsgAddClassCreators)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -18306,16 +18306,16 @@ func (x *fastReflection_MsgAllowedClassCreator) Interface() protoreflect.ProtoMe
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgAllowedClassCreator) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgAddClassCreators) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Authority != "" {
 		value := protoreflect.ValueOfString(x.Authority)
-		if !f(fd_MsgAllowedClassCreator_authority, value) {
+		if !f(fd_MsgAddClassCreators_authority, value) {
 			return
 		}
 	}
 	if len(x.Creators) != 0 {
-		value := protoreflect.ValueOfList(&_MsgAllowedClassCreator_2_list{list: &x.Creators})
-		if !f(fd_MsgAllowedClassCreator_creators, value) {
+		value := protoreflect.ValueOfList(&_MsgAddClassCreators_2_list{list: &x.Creators})
+		if !f(fd_MsgAddClassCreators_creators, value) {
 			return
 		}
 	}
@@ -18332,17 +18332,17 @@ func (x *fastReflection_MsgAllowedClassCreator) Range(f func(protoreflect.FieldD
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgAllowedClassCreator) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgAddClassCreators) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.authority":
+	case "regen.ecocredit.v1.MsgAddClassCreators.authority":
 		return x.Authority != ""
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.creators":
+	case "regen.ecocredit.v1.MsgAddClassCreators.creators":
 		return len(x.Creators) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18352,17 +18352,17 @@ func (x *fastReflection_MsgAllowedClassCreator) Has(fd protoreflect.FieldDescrip
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreator) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgAddClassCreators) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.authority":
+	case "regen.ecocredit.v1.MsgAddClassCreators.authority":
 		x.Authority = ""
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.creators":
+	case "regen.ecocredit.v1.MsgAddClassCreators.creators":
 		x.Creators = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18372,22 +18372,22 @@ func (x *fastReflection_MsgAllowedClassCreator) Clear(fd protoreflect.FieldDescr
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgAllowedClassCreator) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgAddClassCreators) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.authority":
+	case "regen.ecocredit.v1.MsgAddClassCreators.authority":
 		value := x.Authority
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.creators":
+	case "regen.ecocredit.v1.MsgAddClassCreators.creators":
 		if len(x.Creators) == 0 {
-			return protoreflect.ValueOfList(&_MsgAllowedClassCreator_2_list{})
+			return protoreflect.ValueOfList(&_MsgAddClassCreators_2_list{})
 		}
-		listValue := &_MsgAllowedClassCreator_2_list{list: &x.Creators}
+		listValue := &_MsgAddClassCreators_2_list{list: &x.Creators}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreator does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreators does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -18401,19 +18401,19 @@ func (x *fastReflection_MsgAllowedClassCreator) Get(descriptor protoreflect.Fiel
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreator) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgAddClassCreators) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.authority":
+	case "regen.ecocredit.v1.MsgAddClassCreators.authority":
 		x.Authority = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.creators":
+	case "regen.ecocredit.v1.MsgAddClassCreators.creators":
 		lv := value.List()
-		clv := lv.(*_MsgAllowedClassCreator_2_list)
+		clv := lv.(*_MsgAddClassCreators_2_list)
 		x.Creators = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18427,49 +18427,49 @@ func (x *fastReflection_MsgAllowedClassCreator) Set(fd protoreflect.FieldDescrip
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreator) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgAddClassCreators) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.creators":
+	case "regen.ecocredit.v1.MsgAddClassCreators.creators":
 		if x.Creators == nil {
 			x.Creators = []string{}
 		}
-		value := &_MsgAllowedClassCreator_2_list{list: &x.Creators}
+		value := &_MsgAddClassCreators_2_list{list: &x.Creators}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.authority":
-		panic(fmt.Errorf("field authority of message regen.ecocredit.v1.MsgAllowedClassCreator is not mutable"))
+	case "regen.ecocredit.v1.MsgAddClassCreators.authority":
+		panic(fmt.Errorf("field authority of message regen.ecocredit.v1.MsgAddClassCreators is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgAllowedClassCreator) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgAddClassCreators) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.authority":
+	case "regen.ecocredit.v1.MsgAddClassCreators.authority":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgAllowedClassCreator.creators":
+	case "regen.ecocredit.v1.MsgAddClassCreators.creators":
 		list := []string{}
-		return protoreflect.ValueOfList(&_MsgAllowedClassCreator_2_list{list: &list})
+		return protoreflect.ValueOfList(&_MsgAddClassCreators_2_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgAllowedClassCreator) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgAddClassCreators) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgAllowedClassCreator", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgAddClassCreators", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -18477,7 +18477,7 @@ func (x *fastReflection_MsgAllowedClassCreator) WhichOneof(d protoreflect.OneofD
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgAllowedClassCreator) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgAddClassCreators) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -18488,7 +18488,7 @@ func (x *fastReflection_MsgAllowedClassCreator) GetUnknown() protoreflect.RawFie
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreator) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgAddClassCreators) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -18500,7 +18500,7 @@ func (x *fastReflection_MsgAllowedClassCreator) SetUnknown(fields protoreflect.R
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgAllowedClassCreator) IsValid() bool {
+func (x *fastReflection_MsgAddClassCreators) IsValid() bool {
 	return x != nil
 }
 
@@ -18510,9 +18510,9 @@ func (x *fastReflection_MsgAllowedClassCreator) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgAllowedClassCreator) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgAddClassCreators) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgAllowedClassCreator)
+		x := input.Message.Interface().(*MsgAddClassCreators)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -18544,7 +18544,7 @@ func (x *fastReflection_MsgAllowedClassCreator) ProtoMethods() *protoiface.Metho
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgAllowedClassCreator)
+		x := input.Message.Interface().(*MsgAddClassCreators)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -18590,7 +18590,7 @@ func (x *fastReflection_MsgAllowedClassCreator) ProtoMethods() *protoiface.Metho
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgAllowedClassCreator)
+		x := input.Message.Interface().(*MsgAddClassCreators)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -18622,10 +18622,10 @@ func (x *fastReflection_MsgAllowedClassCreator) ProtoMethods() *protoiface.Metho
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAllowedClassCreator: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddClassCreators: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAllowedClassCreator: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddClassCreators: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -18728,23 +18728,23 @@ func (x *fastReflection_MsgAllowedClassCreator) ProtoMethods() *protoiface.Metho
 }
 
 var (
-	md_MsgAllowedClassCreatorResponse protoreflect.MessageDescriptor
+	md_MsgAddClassCreatorsResponse protoreflect.MessageDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
-	md_MsgAllowedClassCreatorResponse = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgAllowedClassCreatorResponse")
+	md_MsgAddClassCreatorsResponse = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgAddClassCreatorsResponse")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgAllowedClassCreatorResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgAddClassCreatorsResponse)(nil)
 
-type fastReflection_MsgAllowedClassCreatorResponse MsgAllowedClassCreatorResponse
+type fastReflection_MsgAddClassCreatorsResponse MsgAddClassCreatorsResponse
 
-func (x *MsgAllowedClassCreatorResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgAllowedClassCreatorResponse)(x)
+func (x *MsgAddClassCreatorsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgAddClassCreatorsResponse)(x)
 }
 
-func (x *MsgAllowedClassCreatorResponse) slowProtoReflect() protoreflect.Message {
+func (x *MsgAddClassCreatorsResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[33]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -18756,43 +18756,43 @@ func (x *MsgAllowedClassCreatorResponse) slowProtoReflect() protoreflect.Message
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgAllowedClassCreatorResponse_messageType fastReflection_MsgAllowedClassCreatorResponse_messageType
-var _ protoreflect.MessageType = fastReflection_MsgAllowedClassCreatorResponse_messageType{}
+var _fastReflection_MsgAddClassCreatorsResponse_messageType fastReflection_MsgAddClassCreatorsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgAddClassCreatorsResponse_messageType{}
 
-type fastReflection_MsgAllowedClassCreatorResponse_messageType struct{}
+type fastReflection_MsgAddClassCreatorsResponse_messageType struct{}
 
-func (x fastReflection_MsgAllowedClassCreatorResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgAllowedClassCreatorResponse)(nil)
+func (x fastReflection_MsgAddClassCreatorsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgAddClassCreatorsResponse)(nil)
 }
-func (x fastReflection_MsgAllowedClassCreatorResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgAllowedClassCreatorResponse)
+func (x fastReflection_MsgAddClassCreatorsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgAddClassCreatorsResponse)
 }
-func (x fastReflection_MsgAllowedClassCreatorResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgAllowedClassCreatorResponse
+func (x fastReflection_MsgAddClassCreatorsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddClassCreatorsResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgAllowedClassCreatorResponse
+func (x *fastReflection_MsgAddClassCreatorsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddClassCreatorsResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Type() protoreflect.MessageType {
-	return _fastReflection_MsgAllowedClassCreatorResponse_messageType
+func (x *fastReflection_MsgAddClassCreatorsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgAddClassCreatorsResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) New() protoreflect.Message {
-	return new(fastReflection_MsgAllowedClassCreatorResponse)
+func (x *fastReflection_MsgAddClassCreatorsResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgAddClassCreatorsResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Interface() protoreflect.ProtoMessage {
-	return (*MsgAllowedClassCreatorResponse)(x)
+func (x *fastReflection_MsgAddClassCreatorsResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgAddClassCreatorsResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -18800,7 +18800,7 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) Interface() protoreflect
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgAddClassCreatorsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 }
 
 // Has reports whether a field is populated.
@@ -18814,13 +18814,13 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) Range(f func(protoreflec
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgAddClassCreatorsResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18830,13 +18830,13 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) Has(fd protoreflect.Fiel
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgAddClassCreatorsResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18846,13 +18846,13 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) Clear(fd protoreflect.Fi
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgAddClassCreatorsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreatorResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreatorsResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -18866,13 +18866,13 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) Get(descriptor protorefl
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgAddClassCreatorsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18886,36 +18886,36 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) Set(fd protoreflect.Fiel
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgAddClassCreatorsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgAddClassCreatorsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAllowedClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAllowedClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgAddClassCreatorsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgAllowedClassCreatorResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgAddClassCreatorsResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -18923,7 +18923,7 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) WhichOneof(d protoreflec
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgAddClassCreatorsResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -18934,7 +18934,7 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) GetUnknown() protoreflec
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgAddClassCreatorsResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -18946,7 +18946,7 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) SetUnknown(fields protor
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) IsValid() bool {
+func (x *fastReflection_MsgAddClassCreatorsResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -18956,9 +18956,9 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgAllowedClassCreatorResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgAddClassCreatorsResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgAllowedClassCreatorResponse)
+		x := input.Message.Interface().(*MsgAddClassCreatorsResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -18980,7 +18980,7 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) ProtoMethods() *protoifa
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgAllowedClassCreatorResponse)
+		x := input.Message.Interface().(*MsgAddClassCreatorsResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19010,7 +19010,7 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) ProtoMethods() *protoifa
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgAllowedClassCreatorResponse)
+		x := input.Message.Interface().(*MsgAddClassCreatorsResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19042,10 +19042,10 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) ProtoMethods() *protoifa
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAllowedClassCreatorResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddClassCreatorsResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAllowedClassCreatorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddClassCreatorsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			default:
@@ -19083,74 +19083,74 @@ func (x *fastReflection_MsgAllowedClassCreatorResponse) ProtoMethods() *protoifa
 	}
 }
 
-var _ protoreflect.List = (*_MsgRemoveClassCreator_2_list)(nil)
+var _ protoreflect.List = (*_MsgRemoveClassCreators_2_list)(nil)
 
-type _MsgRemoveClassCreator_2_list struct {
+type _MsgRemoveClassCreators_2_list struct {
 	list *[]string
 }
 
-func (x *_MsgRemoveClassCreator_2_list) Len() int {
+func (x *_MsgRemoveClassCreators_2_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgRemoveClassCreator_2_list) Get(i int) protoreflect.Value {
+func (x *_MsgRemoveClassCreators_2_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfString((*x.list)[i])
 }
 
-func (x *_MsgRemoveClassCreator_2_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgRemoveClassCreators_2_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgRemoveClassCreator_2_list) Append(value protoreflect.Value) {
+func (x *_MsgRemoveClassCreators_2_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgRemoveClassCreator_2_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message MsgRemoveClassCreator at list field Creators as it is not of Message kind"))
+func (x *_MsgRemoveClassCreators_2_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgRemoveClassCreators at list field Creators as it is not of Message kind"))
 }
 
-func (x *_MsgRemoveClassCreator_2_list) Truncate(n int) {
+func (x *_MsgRemoveClassCreators_2_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgRemoveClassCreator_2_list) NewElement() protoreflect.Value {
+func (x *_MsgRemoveClassCreators_2_list) NewElement() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_MsgRemoveClassCreator_2_list) IsValid() bool {
+func (x *_MsgRemoveClassCreators_2_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_MsgRemoveClassCreator           protoreflect.MessageDescriptor
-	fd_MsgRemoveClassCreator_authority protoreflect.FieldDescriptor
-	fd_MsgRemoveClassCreator_creators  protoreflect.FieldDescriptor
+	md_MsgRemoveClassCreators           protoreflect.MessageDescriptor
+	fd_MsgRemoveClassCreators_authority protoreflect.FieldDescriptor
+	fd_MsgRemoveClassCreators_creators  protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
-	md_MsgRemoveClassCreator = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgRemoveClassCreator")
-	fd_MsgRemoveClassCreator_authority = md_MsgRemoveClassCreator.Fields().ByName("authority")
-	fd_MsgRemoveClassCreator_creators = md_MsgRemoveClassCreator.Fields().ByName("creators")
+	md_MsgRemoveClassCreators = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgRemoveClassCreators")
+	fd_MsgRemoveClassCreators_authority = md_MsgRemoveClassCreators.Fields().ByName("authority")
+	fd_MsgRemoveClassCreators_creators = md_MsgRemoveClassCreators.Fields().ByName("creators")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgRemoveClassCreator)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgRemoveClassCreators)(nil)
 
-type fastReflection_MsgRemoveClassCreator MsgRemoveClassCreator
+type fastReflection_MsgRemoveClassCreators MsgRemoveClassCreators
 
-func (x *MsgRemoveClassCreator) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgRemoveClassCreator)(x)
+func (x *MsgRemoveClassCreators) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgRemoveClassCreators)(x)
 }
 
-func (x *MsgRemoveClassCreator) slowProtoReflect() protoreflect.Message {
+func (x *MsgRemoveClassCreators) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[34]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -19162,43 +19162,43 @@ func (x *MsgRemoveClassCreator) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgRemoveClassCreator_messageType fastReflection_MsgRemoveClassCreator_messageType
-var _ protoreflect.MessageType = fastReflection_MsgRemoveClassCreator_messageType{}
+var _fastReflection_MsgRemoveClassCreators_messageType fastReflection_MsgRemoveClassCreators_messageType
+var _ protoreflect.MessageType = fastReflection_MsgRemoveClassCreators_messageType{}
 
-type fastReflection_MsgRemoveClassCreator_messageType struct{}
+type fastReflection_MsgRemoveClassCreators_messageType struct{}
 
-func (x fastReflection_MsgRemoveClassCreator_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgRemoveClassCreator)(nil)
+func (x fastReflection_MsgRemoveClassCreators_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgRemoveClassCreators)(nil)
 }
-func (x fastReflection_MsgRemoveClassCreator_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgRemoveClassCreator)
+func (x fastReflection_MsgRemoveClassCreators_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveClassCreators)
 }
-func (x fastReflection_MsgRemoveClassCreator_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRemoveClassCreator
+func (x fastReflection_MsgRemoveClassCreators_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveClassCreators
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgRemoveClassCreator) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRemoveClassCreator
+func (x *fastReflection_MsgRemoveClassCreators) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveClassCreators
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgRemoveClassCreator) Type() protoreflect.MessageType {
-	return _fastReflection_MsgRemoveClassCreator_messageType
+func (x *fastReflection_MsgRemoveClassCreators) Type() protoreflect.MessageType {
+	return _fastReflection_MsgRemoveClassCreators_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgRemoveClassCreator) New() protoreflect.Message {
-	return new(fastReflection_MsgRemoveClassCreator)
+func (x *fastReflection_MsgRemoveClassCreators) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveClassCreators)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgRemoveClassCreator) Interface() protoreflect.ProtoMessage {
-	return (*MsgRemoveClassCreator)(x)
+func (x *fastReflection_MsgRemoveClassCreators) Interface() protoreflect.ProtoMessage {
+	return (*MsgRemoveClassCreators)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -19206,16 +19206,16 @@ func (x *fastReflection_MsgRemoveClassCreator) Interface() protoreflect.ProtoMes
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgRemoveClassCreator) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgRemoveClassCreators) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Authority != "" {
 		value := protoreflect.ValueOfString(x.Authority)
-		if !f(fd_MsgRemoveClassCreator_authority, value) {
+		if !f(fd_MsgRemoveClassCreators_authority, value) {
 			return
 		}
 	}
 	if len(x.Creators) != 0 {
-		value := protoreflect.ValueOfList(&_MsgRemoveClassCreator_2_list{list: &x.Creators})
-		if !f(fd_MsgRemoveClassCreator_creators, value) {
+		value := protoreflect.ValueOfList(&_MsgRemoveClassCreators_2_list{list: &x.Creators})
+		if !f(fd_MsgRemoveClassCreators_creators, value) {
 			return
 		}
 	}
@@ -19232,17 +19232,17 @@ func (x *fastReflection_MsgRemoveClassCreator) Range(f func(protoreflect.FieldDe
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgRemoveClassCreator) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgRemoveClassCreators) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.authority":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.authority":
 		return x.Authority != ""
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.creators":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.creators":
 		return len(x.Creators) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19252,17 +19252,17 @@ func (x *fastReflection_MsgRemoveClassCreator) Has(fd protoreflect.FieldDescript
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreator) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgRemoveClassCreators) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.authority":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.authority":
 		x.Authority = ""
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.creators":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.creators":
 		x.Creators = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19272,22 +19272,22 @@ func (x *fastReflection_MsgRemoveClassCreator) Clear(fd protoreflect.FieldDescri
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgRemoveClassCreator) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRemoveClassCreators) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.authority":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.authority":
 		value := x.Authority
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.creators":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.creators":
 		if len(x.Creators) == 0 {
-			return protoreflect.ValueOfList(&_MsgRemoveClassCreator_2_list{})
+			return protoreflect.ValueOfList(&_MsgRemoveClassCreators_2_list{})
 		}
-		listValue := &_MsgRemoveClassCreator_2_list{list: &x.Creators}
+		listValue := &_MsgRemoveClassCreators_2_list{list: &x.Creators}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreator does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreators does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19301,19 +19301,19 @@ func (x *fastReflection_MsgRemoveClassCreator) Get(descriptor protoreflect.Field
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreator) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgRemoveClassCreators) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.authority":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.authority":
 		x.Authority = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.creators":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.creators":
 		lv := value.List()
-		clv := lv.(*_MsgRemoveClassCreator_2_list)
+		clv := lv.(*_MsgRemoveClassCreators_2_list)
 		x.Creators = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19327,49 +19327,49 @@ func (x *fastReflection_MsgRemoveClassCreator) Set(fd protoreflect.FieldDescript
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreator) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRemoveClassCreators) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.creators":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.creators":
 		if x.Creators == nil {
 			x.Creators = []string{}
 		}
-		value := &_MsgRemoveClassCreator_2_list{list: &x.Creators}
+		value := &_MsgRemoveClassCreators_2_list{list: &x.Creators}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.authority":
-		panic(fmt.Errorf("field authority of message regen.ecocredit.v1.MsgRemoveClassCreator is not mutable"))
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.authority":
+		panic(fmt.Errorf("field authority of message regen.ecocredit.v1.MsgRemoveClassCreators is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgRemoveClassCreator) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRemoveClassCreators) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.authority":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.authority":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgRemoveClassCreator.creators":
+	case "regen.ecocredit.v1.MsgRemoveClassCreators.creators":
 		list := []string{}
-		return protoreflect.ValueOfList(&_MsgRemoveClassCreator_2_list{list: &list})
+		return protoreflect.ValueOfList(&_MsgRemoveClassCreators_2_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreator"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreator does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgRemoveClassCreator) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgRemoveClassCreators) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgRemoveClassCreator", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgRemoveClassCreators", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -19377,7 +19377,7 @@ func (x *fastReflection_MsgRemoveClassCreator) WhichOneof(d protoreflect.OneofDe
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgRemoveClassCreator) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgRemoveClassCreators) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -19388,7 +19388,7 @@ func (x *fastReflection_MsgRemoveClassCreator) GetUnknown() protoreflect.RawFiel
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreator) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgRemoveClassCreators) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -19400,7 +19400,7 @@ func (x *fastReflection_MsgRemoveClassCreator) SetUnknown(fields protoreflect.Ra
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgRemoveClassCreator) IsValid() bool {
+func (x *fastReflection_MsgRemoveClassCreators) IsValid() bool {
 	return x != nil
 }
 
@@ -19410,9 +19410,9 @@ func (x *fastReflection_MsgRemoveClassCreator) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgRemoveClassCreator) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgRemoveClassCreators) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgRemoveClassCreator)
+		x := input.Message.Interface().(*MsgRemoveClassCreators)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19444,7 +19444,7 @@ func (x *fastReflection_MsgRemoveClassCreator) ProtoMethods() *protoiface.Method
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRemoveClassCreator)
+		x := input.Message.Interface().(*MsgRemoveClassCreators)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19490,7 +19490,7 @@ func (x *fastReflection_MsgRemoveClassCreator) ProtoMethods() *protoiface.Method
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRemoveClassCreator)
+		x := input.Message.Interface().(*MsgRemoveClassCreators)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19522,10 +19522,10 @@ func (x *fastReflection_MsgRemoveClassCreator) ProtoMethods() *protoiface.Method
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreator: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreators: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreator: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreators: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -19628,23 +19628,23 @@ func (x *fastReflection_MsgRemoveClassCreator) ProtoMethods() *protoiface.Method
 }
 
 var (
-	md_MsgRemoveClassCreatorResponse protoreflect.MessageDescriptor
+	md_MsgRemoveClassCreatorsResponse protoreflect.MessageDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
-	md_MsgRemoveClassCreatorResponse = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgRemoveClassCreatorResponse")
+	md_MsgRemoveClassCreatorsResponse = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgRemoveClassCreatorsResponse")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgRemoveClassCreatorResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgRemoveClassCreatorsResponse)(nil)
 
-type fastReflection_MsgRemoveClassCreatorResponse MsgRemoveClassCreatorResponse
+type fastReflection_MsgRemoveClassCreatorsResponse MsgRemoveClassCreatorsResponse
 
-func (x *MsgRemoveClassCreatorResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgRemoveClassCreatorResponse)(x)
+func (x *MsgRemoveClassCreatorsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgRemoveClassCreatorsResponse)(x)
 }
 
-func (x *MsgRemoveClassCreatorResponse) slowProtoReflect() protoreflect.Message {
+func (x *MsgRemoveClassCreatorsResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -19656,43 +19656,43 @@ func (x *MsgRemoveClassCreatorResponse) slowProtoReflect() protoreflect.Message 
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgRemoveClassCreatorResponse_messageType fastReflection_MsgRemoveClassCreatorResponse_messageType
-var _ protoreflect.MessageType = fastReflection_MsgRemoveClassCreatorResponse_messageType{}
+var _fastReflection_MsgRemoveClassCreatorsResponse_messageType fastReflection_MsgRemoveClassCreatorsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgRemoveClassCreatorsResponse_messageType{}
 
-type fastReflection_MsgRemoveClassCreatorResponse_messageType struct{}
+type fastReflection_MsgRemoveClassCreatorsResponse_messageType struct{}
 
-func (x fastReflection_MsgRemoveClassCreatorResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgRemoveClassCreatorResponse)(nil)
+func (x fastReflection_MsgRemoveClassCreatorsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgRemoveClassCreatorsResponse)(nil)
 }
-func (x fastReflection_MsgRemoveClassCreatorResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgRemoveClassCreatorResponse)
+func (x fastReflection_MsgRemoveClassCreatorsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveClassCreatorsResponse)
 }
-func (x fastReflection_MsgRemoveClassCreatorResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRemoveClassCreatorResponse
+func (x fastReflection_MsgRemoveClassCreatorsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveClassCreatorsResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRemoveClassCreatorResponse
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveClassCreatorsResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Type() protoreflect.MessageType {
-	return _fastReflection_MsgRemoveClassCreatorResponse_messageType
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgRemoveClassCreatorsResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) New() protoreflect.Message {
-	return new(fastReflection_MsgRemoveClassCreatorResponse)
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveClassCreatorsResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Interface() protoreflect.ProtoMessage {
-	return (*MsgRemoveClassCreatorResponse)(x)
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgRemoveClassCreatorsResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -19700,7 +19700,7 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) Interface() protoreflect.
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 }
 
 // Has reports whether a field is populated.
@@ -19714,13 +19714,13 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) Range(f func(protoreflect
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19730,13 +19730,13 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) Has(fd protoreflect.Field
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19746,13 +19746,13 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) Clear(fd protoreflect.Fie
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorsResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19766,13 +19766,13 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) Get(descriptor protorefle
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19786,36 +19786,36 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) Set(fd protoreflect.Field
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveClassCreatorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveClassCreatorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgRemoveClassCreatorResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgRemoveClassCreatorsResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -19823,7 +19823,7 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) WhichOneof(d protoreflect
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -19834,7 +19834,7 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) GetUnknown() protoreflect
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -19846,7 +19846,7 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) SetUnknown(fields protore
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) IsValid() bool {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -19856,9 +19856,9 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgRemoveClassCreatorResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgRemoveClassCreatorsResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgRemoveClassCreatorResponse)
+		x := input.Message.Interface().(*MsgRemoveClassCreatorsResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19880,7 +19880,7 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) ProtoMethods() *protoifac
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRemoveClassCreatorResponse)
+		x := input.Message.Interface().(*MsgRemoveClassCreatorsResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19910,7 +19910,7 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) ProtoMethods() *protoifac
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRemoveClassCreatorResponse)
+		x := input.Message.Interface().(*MsgRemoveClassCreatorsResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -19942,10 +19942,10 @@ func (x *fastReflection_MsgRemoveClassCreatorResponse) ProtoMethods() *protoifac
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreatorResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreatorsResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreatorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveClassCreatorsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			default:
@@ -23274,9 +23274,9 @@ func (x *MsgBridgeReceiveResponse) GetProjectId() string {
 	return ""
 }
 
-// MsgAllowedClassCreator is the Msg/AllowedClassCreator request type.
+// MsgAddClassCreators is the Msg/AddClassCreators request type.
 // Since Revision 1
-type MsgAllowedClassCreator struct {
+type MsgAddClassCreators struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -23287,8 +23287,8 @@ type MsgAllowedClassCreator struct {
 	Creators []string `protobuf:"bytes,2,rep,name=creators,proto3" json:"creators,omitempty"`
 }
 
-func (x *MsgAllowedClassCreator) Reset() {
-	*x = MsgAllowedClassCreator{}
+func (x *MsgAddClassCreators) Reset() {
+	*x = MsgAddClassCreators{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[32]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -23296,41 +23296,41 @@ func (x *MsgAllowedClassCreator) Reset() {
 	}
 }
 
-func (x *MsgAllowedClassCreator) String() string {
+func (x *MsgAddClassCreators) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgAllowedClassCreator) ProtoMessage() {}
+func (*MsgAddClassCreators) ProtoMessage() {}
 
-// Deprecated: Use MsgAllowedClassCreator.ProtoReflect.Descriptor instead.
-func (*MsgAllowedClassCreator) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgAddClassCreators.ProtoReflect.Descriptor instead.
+func (*MsgAddClassCreators) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{32}
 }
 
-func (x *MsgAllowedClassCreator) GetAuthority() string {
+func (x *MsgAddClassCreators) GetAuthority() string {
 	if x != nil {
 		return x.Authority
 	}
 	return ""
 }
 
-func (x *MsgAllowedClassCreator) GetCreators() []string {
+func (x *MsgAddClassCreators) GetCreators() []string {
 	if x != nil {
 		return x.Creators
 	}
 	return nil
 }
 
-// MsgAllowedClassCreatorResponse is the Msg/AllowedClassCreator response type.
+// MsgAddClassCreatorsResponse is the Msg/AddClassCreators response type.
 // Since Revision 1
-type MsgAllowedClassCreatorResponse struct {
+type MsgAddClassCreatorsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *MsgAllowedClassCreatorResponse) Reset() {
-	*x = MsgAllowedClassCreatorResponse{}
+func (x *MsgAddClassCreatorsResponse) Reset() {
+	*x = MsgAddClassCreatorsResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[33]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -23338,20 +23338,20 @@ func (x *MsgAllowedClassCreatorResponse) Reset() {
 	}
 }
 
-func (x *MsgAllowedClassCreatorResponse) String() string {
+func (x *MsgAddClassCreatorsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgAllowedClassCreatorResponse) ProtoMessage() {}
+func (*MsgAddClassCreatorsResponse) ProtoMessage() {}
 
-// Deprecated: Use MsgAllowedClassCreatorResponse.ProtoReflect.Descriptor instead.
-func (*MsgAllowedClassCreatorResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgAddClassCreatorsResponse.ProtoReflect.Descriptor instead.
+func (*MsgAddClassCreatorsResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{33}
 }
 
-// MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
+// MsgRemoveClassCreators is the Msg/RemoveClassCreators request type.
 // Since Revision 1
-type MsgRemoveClassCreator struct {
+type MsgRemoveClassCreators struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -23362,8 +23362,8 @@ type MsgRemoveClassCreator struct {
 	Creators []string `protobuf:"bytes,2,rep,name=creators,proto3" json:"creators,omitempty"`
 }
 
-func (x *MsgRemoveClassCreator) Reset() {
-	*x = MsgRemoveClassCreator{}
+func (x *MsgRemoveClassCreators) Reset() {
+	*x = MsgRemoveClassCreators{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[34]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -23371,41 +23371,41 @@ func (x *MsgRemoveClassCreator) Reset() {
 	}
 }
 
-func (x *MsgRemoveClassCreator) String() string {
+func (x *MsgRemoveClassCreators) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgRemoveClassCreator) ProtoMessage() {}
+func (*MsgRemoveClassCreators) ProtoMessage() {}
 
-// Deprecated: Use MsgRemoveClassCreator.ProtoReflect.Descriptor instead.
-func (*MsgRemoveClassCreator) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgRemoveClassCreators.ProtoReflect.Descriptor instead.
+func (*MsgRemoveClassCreators) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{34}
 }
 
-func (x *MsgRemoveClassCreator) GetAuthority() string {
+func (x *MsgRemoveClassCreators) GetAuthority() string {
 	if x != nil {
 		return x.Authority
 	}
 	return ""
 }
 
-func (x *MsgRemoveClassCreator) GetCreators() []string {
+func (x *MsgRemoveClassCreators) GetCreators() []string {
 	if x != nil {
 		return x.Creators
 	}
 	return nil
 }
 
-// MsgRemoveClassCreatorResponse is the Msg/RemoveClassCreator response type.
+// MsgRemoveClassCreatorsResponse is the Msg/RemoveClasssCreator response type.
 // Since Revision 1
-type MsgRemoveClassCreatorResponse struct {
+type MsgRemoveClassCreatorsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *MsgRemoveClassCreatorResponse) Reset() {
-	*x = MsgRemoveClassCreatorResponse{}
+func (x *MsgRemoveClassCreatorsResponse) Reset() {
+	*x = MsgRemoveClassCreatorsResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -23413,14 +23413,14 @@ func (x *MsgRemoveClassCreatorResponse) Reset() {
 	}
 }
 
-func (x *MsgRemoveClassCreatorResponse) String() string {
+func (x *MsgRemoveClassCreatorsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgRemoveClassCreatorResponse) ProtoMessage() {}
+func (*MsgRemoveClassCreatorsResponse) ProtoMessage() {}
 
-// Deprecated: Use MsgRemoveClassCreatorResponse.ProtoReflect.Descriptor instead.
-func (*MsgRemoveClassCreatorResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgRemoveClassCreatorsResponse.ProtoReflect.Descriptor instead.
+func (*MsgRemoveClassCreatorsResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{35}
 }
 
@@ -24039,189 +24039,188 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63,
 	0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
 	0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x62, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f,
-	0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x5f, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x43,
+	0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x1c, 0x0a, 0x09,
+	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74,
+	0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x1d, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64,
+	0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x62, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f,
+	0x76, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x12,
 	0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x1a, 0x0a,
 	0x08, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52,
 	0x08, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09,
 	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x20, 0x0a, 0x1e, 0x4d, 0x73, 0x67,
-	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x61, 0x0a, 0x15, 0x4d,
-	0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x6f, 0x72, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74,
+	0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x67, 0x0a, 0x1d, 0x4d,
+	0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c,
+	0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x09,
+	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x65,
+	0x74, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f,
+	0x72, 0x69, 0x74, 0x79, 0x22, 0x27, 0x0a, 0x25, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c,
+	0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f,
+	0x77, 0x6c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xa3, 0x01,
+	0x0a, 0x12, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x46, 0x65, 0x65, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74,
 	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
-	0x74, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02,
-	0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x3a, 0x0e,
-	0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x1f,
-	0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x67, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x43, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74,
-	0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x18,
-	0x0a, 0x07, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52,
-	0x07, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61,
-	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x27, 0x0a, 0x25, 0x4d, 0x73, 0x67, 0x54,
-	0x6f, 0x67, 0x67, 0x6c, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0xa3, 0x01, 0x0a, 0x12, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43,
-	0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68,
-	0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x75, 0x74,
-	0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x5f, 0x0a, 0x04, 0x66, 0x65, 0x65, 0x73, 0x18, 0x02,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
-	0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42,
-	0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e,
-	0x73, 0x52, 0x04, 0x66, 0x65, 0x65, 0x73, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75,
-	0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x1c, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xa0, 0x10, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5d, 0x0a,
-	0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x22, 0x2e, 0x72,
+	0x74, 0x79, 0x12, 0x5f, 0x0a, 0x04, 0x66, 0x65, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f,
+	0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64,
+	0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x04, 0x66,
+	0x65, 0x65, 0x73, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72,
+	0x69, 0x74, 0x79, 0x22, 0x1c, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x32, 0x9a, 0x10, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5d, 0x0a, 0x0b, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
+	0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x1a, 0x2a, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
 	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43,
-	0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x24, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x5d, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68,
-	0x12, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42,
-	0x61, 0x74, 0x63, 0x68, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x6c, 0x0a, 0x10, 0x4d, 0x69, 0x6e, 0x74, 0x42, 0x61, 0x74, 0x63, 0x68, 0x43, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x73, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x4d, 0x69, 0x6e,
-	0x74, 0x42, 0x61, 0x74, 0x63, 0x68, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x1a, 0x2f, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x4d, 0x69, 0x6e, 0x74, 0x42, 0x61, 0x74, 0x63, 0x68, 0x43,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57,
-	0x0a, 0x09, 0x53, 0x65, 0x61, 0x6c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x12, 0x20, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x61, 0x6c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x1a, 0x28, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x61, 0x6c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x48, 0x0a, 0x04, 0x53, 0x65, 0x6e, 0x64, 0x12,
-	0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x1a, 0x23, 0x2e, 0x72,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x1a,
+	0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a,
+	0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x12, 0x22, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x4e, 0x0a, 0x06, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x1d, 0x2e, 0x72, 0x65,
+	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68,
+	0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x10,
+	0x4d, 0x69, 0x6e, 0x74, 0x42, 0x61, 0x74, 0x63, 0x68, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73,
+	0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x4d, 0x69, 0x6e, 0x74, 0x42, 0x61, 0x74,
+	0x63, 0x68, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x73, 0x67, 0x4d, 0x69, 0x6e, 0x74, 0x42, 0x61, 0x74, 0x63, 0x68, 0x43, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x09, 0x53, 0x65,
+	0x61, 0x6c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x12, 0x20, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
+	0x53, 0x65, 0x61, 0x6c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x73, 0x67, 0x53, 0x65, 0x61, 0x6c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x48, 0x0a, 0x04, 0x53, 0x65, 0x6e, 0x64, 0x12, 0x1b, 0x2e, 0x72, 0x65,
 	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67,
+	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x1a, 0x23, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
+	0x67, 0x53, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a,
+	0x06, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
+	0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52,
+	0x65, 0x74, 0x69, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a,
+	0x06, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
+	0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43,
+	0x61, 0x6e, 0x63, 0x65, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a,
+	0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64, 0x6d, 0x69,
+	0x6e, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67,
 	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x4e, 0x0a, 0x06, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x12, 0x1d, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x6c, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x1a, 0x2f,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61,
-	0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x72, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73,
-	0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73,
-	0x1a, 0x31, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43,
-	0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61,
-	0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65,
-	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x1a, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64,
+	0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x12, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72,
+	0x73, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x1a, 0x31, 0x2e, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
+	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x75, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
 	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55,
 	0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x12, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x41, 0x64, 0x6d, 0x69, 0x6e,
-	0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x1a, 0x31, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b,
-	0x0a, 0x15, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x74, 0x61, 0x1a, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x29, 0x2e, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
+	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x1a, 0x31, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
 	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0x1a, 0x34, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x41, 0x64, 0x6d,
+	0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x15, 0x55, 0x70,
 	0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x64,
-	0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x06, 0x42,
-	0x72, 0x69, 0x64, 0x67, 0x65, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72,
-	0x69, 0x64, 0x67, 0x65, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69,
-	0x64, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d, 0x42,
-	0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x12, 0x24, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69,
-	0x76, 0x65, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67,
-	0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x63, 0x0a, 0x0d, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70,
-	0x65, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
-	0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x13, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64,
-	0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x2a, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x1a, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x61, 0x74, 0x61, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x1a, 0x34, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x06, 0x42, 0x72, 0x69, 0x64, 0x67,
+	0x65, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65,
+	0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d, 0x42, 0x72, 0x69, 0x64, 0x67,
+	0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
 	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x12,
-	0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x6f, 0x72, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76,
-	0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x1a, 0x31, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x8a, 0x01, 0x0a, 0x1a, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x12,
-	0x31, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x43, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69,
-	0x73, 0x74, 0x1a, 0x39, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c,
-	0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f,
-	0x77, 0x6c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a,
-	0x0f, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73,
-	0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43,
-	0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xd5, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d,
+	0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x1a, 0x2c,
 	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
-	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02,
-	0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63,
+	0x65, 0x69, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d,
+	0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x24, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x43,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x6c, 0x0a, 0x10, 0x41, 0x64, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64,
+	0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x1a, 0x2f,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x75, 0x0a, 0x13, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52,
+	0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x73, 0x1a, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76,
+	0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x8a, 0x01, 0x0a, 0x1a, 0x54, 0x6f, 0x67, 0x67, 0x6c,
+	0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f,
+	0x77, 0x6c, 0x69, 0x73, 0x74, 0x12, 0x31, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x6f,
+	0x67, 0x67, 0x6c, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41,
+	0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x1a, 0x39, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
+	0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x0f, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x1a, 0x2e,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xd5,
+	0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f,
+	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f,
+	0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02,
+	0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02,
+	0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -24270,10 +24269,10 @@ var file_regen_ecocredit_v1_tx_proto_goTypes = []interface{}{
 	(*MsgBridgeResponse)(nil),                     // 29: regen.ecocredit.v1.MsgBridgeResponse
 	(*MsgBridgeReceive)(nil),                      // 30: regen.ecocredit.v1.MsgBridgeReceive
 	(*MsgBridgeReceiveResponse)(nil),              // 31: regen.ecocredit.v1.MsgBridgeReceiveResponse
-	(*MsgAllowedClassCreator)(nil),                // 32: regen.ecocredit.v1.MsgAllowedClassCreator
-	(*MsgAllowedClassCreatorResponse)(nil),        // 33: regen.ecocredit.v1.MsgAllowedClassCreatorResponse
-	(*MsgRemoveClassCreator)(nil),                 // 34: regen.ecocredit.v1.MsgRemoveClassCreator
-	(*MsgRemoveClassCreatorResponse)(nil),         // 35: regen.ecocredit.v1.MsgRemoveClassCreatorResponse
+	(*MsgAddClassCreators)(nil),                   // 32: regen.ecocredit.v1.MsgAddClassCreators
+	(*MsgAddClassCreatorsResponse)(nil),           // 33: regen.ecocredit.v1.MsgAddClassCreatorsResponse
+	(*MsgRemoveClassCreators)(nil),                // 34: regen.ecocredit.v1.MsgRemoveClassCreators
+	(*MsgRemoveClassCreatorsResponse)(nil),        // 35: regen.ecocredit.v1.MsgRemoveClassCreatorsResponse
 	(*MsgToggleCreditClassAllowlist)(nil),         // 36: regen.ecocredit.v1.MsgToggleCreditClassAllowlist
 	(*MsgToggleCreditClassAllowlistResponse)(nil), // 37: regen.ecocredit.v1.MsgToggleCreditClassAllowlistResponse
 	(*MsgUpdateClassFees)(nil),                    // 38: regen.ecocredit.v1.MsgUpdateClassFees
@@ -24323,8 +24322,8 @@ var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
 	28, // 31: regen.ecocredit.v1.Msg.Bridge:input_type -> regen.ecocredit.v1.MsgBridge
 	30, // 32: regen.ecocredit.v1.Msg.BridgeReceive:input_type -> regen.ecocredit.v1.MsgBridgeReceive
 	0,  // 33: regen.ecocredit.v1.Msg.AddCreditType:input_type -> regen.ecocredit.v1.MsgAddCreditType
-	32, // 34: regen.ecocredit.v1.Msg.AllowedClassCreator:input_type -> regen.ecocredit.v1.MsgAllowedClassCreator
-	34, // 35: regen.ecocredit.v1.Msg.RemoveClassCreator:input_type -> regen.ecocredit.v1.MsgRemoveClassCreator
+	32, // 34: regen.ecocredit.v1.Msg.AddClassCreators:input_type -> regen.ecocredit.v1.MsgAddClassCreators
+	34, // 35: regen.ecocredit.v1.Msg.RemoveClassCreators:input_type -> regen.ecocredit.v1.MsgRemoveClassCreators
 	36, // 36: regen.ecocredit.v1.Msg.ToggleCreditClassAllowlist:input_type -> regen.ecocredit.v1.MsgToggleCreditClassAllowlist
 	38, // 37: regen.ecocredit.v1.Msg.UpdateClassFees:input_type -> regen.ecocredit.v1.MsgUpdateClassFees
 	3,  // 38: regen.ecocredit.v1.Msg.CreateClass:output_type -> regen.ecocredit.v1.MsgCreateClassResponse
@@ -24343,8 +24342,8 @@ var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
 	29, // 51: regen.ecocredit.v1.Msg.Bridge:output_type -> regen.ecocredit.v1.MsgBridgeResponse
 	31, // 52: regen.ecocredit.v1.Msg.BridgeReceive:output_type -> regen.ecocredit.v1.MsgBridgeReceiveResponse
 	1,  // 53: regen.ecocredit.v1.Msg.AddCreditType:output_type -> regen.ecocredit.v1.MsgAddCreditTypeResponse
-	33, // 54: regen.ecocredit.v1.Msg.AllowedClassCreator:output_type -> regen.ecocredit.v1.MsgAllowedClassCreatorResponse
-	35, // 55: regen.ecocredit.v1.Msg.RemoveClassCreator:output_type -> regen.ecocredit.v1.MsgRemoveClassCreatorResponse
+	33, // 54: regen.ecocredit.v1.Msg.AddClassCreators:output_type -> regen.ecocredit.v1.MsgAddClassCreatorsResponse
+	35, // 55: regen.ecocredit.v1.Msg.RemoveClassCreators:output_type -> regen.ecocredit.v1.MsgRemoveClassCreatorsResponse
 	37, // 56: regen.ecocredit.v1.Msg.ToggleCreditClassAllowlist:output_type -> regen.ecocredit.v1.MsgToggleCreditClassAllowlistResponse
 	39, // 57: regen.ecocredit.v1.Msg.UpdateClassFees:output_type -> regen.ecocredit.v1.MsgUpdateClassFeesResponse
 	38, // [38:58] is the sub-list for method output_type
@@ -24747,7 +24746,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAllowedClassCreator); i {
+			switch v := v.(*MsgAddClassCreators); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -24759,7 +24758,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAllowedClassCreatorResponse); i {
+			switch v := v.(*MsgAddClassCreatorsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -24771,7 +24770,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgRemoveClassCreator); i {
+			switch v := v.(*MsgRemoveClassCreators); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -24783,7 +24782,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgRemoveClassCreatorResponse); i {
+			switch v := v.(*MsgRemoveClassCreatorsResponse); i {
 			case 0:
 				return &v.state
 			case 1:

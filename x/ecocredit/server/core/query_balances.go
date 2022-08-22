@@ -36,6 +36,9 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		}
 
 		batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
+		if err != nil {
+			return nil, err
+		}
 
 		info := core.BatchBalanceInfo{
 			Address:        addr.String(),
