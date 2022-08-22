@@ -106,3 +106,26 @@ Feature: Msg/Cancel
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+      Scenario: EventCancel is emitted
+        Given a credit batch
+        And alice owns tradable credit amount "10"
+        And the batch supply
+        """
+        {
+        "retired_amount": "0",
+        "tradable_amount": "10",
+        "cancelled_amount": "0"
+        }
+        """
+        When alice attempts to cancel credit amount "10" with reason "foo"
+        Then expect event with properties
+        """
+        {
+          "amount": "10",
+          "reason": "foo"
+        }
+        """
+        # batch_denom and owner will be set in the event during runtime

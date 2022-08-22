@@ -1,12 +1,14 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -258,4 +260,43 @@ func (s *cancel) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	s.batchKey = bKey
+}
+
+func (s *cancel) AliceAttemptsToCancelCreditAmountWithReason(a, b string) {
+	s.res, s.err = s.k.Cancel(s.ctx, &core.MsgCancel{
+		Owner: s.alice.String(),
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+		Reason: b,
+	})
+}
+
+func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
+	var event api.EventCancel
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Owner = s.alice.String()
+	event.BatchDenom = s.batchDenom
+
+	events := s.sdkCtx.EventManager().Events()
+	eventCancel := events[len(events)-1]
+
+	require.Equal(s.t, string(proto.MessageName(&event)), eventCancel.Type)
+
+	for _, attr := range eventCancel.Attributes {
+		switch string(attr.Key) {
+		case "owner":
+			require.Equal(s.t, event.Owner, attributeValue(attr.Value))
+		case "batch_denom":
+			require.Equal(s.t, event.BatchDenom, attributeValue(attr.Value))
+		case "amount":
+			require.Equal(s.t, event.Amount, attributeValue(attr.Value))
+		case "reason":
+			require.Equal(s.t, event.Reason, attributeValue(attr.Value))
+		}
+	}
 }
