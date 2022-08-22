@@ -21,12 +21,12 @@ type createSuite struct {
 	*baseSuite
 	alice               sdk.AccAddress
 	aliceBalance        sdk.Coin
-	params              core.Params
 	basketName          string
 	creditTypeAbbrev    string
 	creditTypePrecision uint32
 	res                 *basket.MsgCreateResponse
 	err                 error
+	basketFee           sdk.Coins
 }
 
 func TestCreate(t *testing.T) {
@@ -45,7 +45,13 @@ func (s *createSuite) AllowedBasketFee(a string) {
 	basketFee, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
 
-	s.params.BasketFee = basketFee
+	_, err = s.k.UpdateBasketFees(s.ctx, &basket.MsgUpdateBasketFees{
+		Authority:  "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+		BasketFees: basketFee,
+	})
+	require.NoError(s.t, err)
+
+	s.basketFee = basketFee
 }
 
 func (s *createSuite) ACreditType() {
@@ -216,25 +222,17 @@ func (s *createSuite) ExpectTheResponse(a gocuke.DocString) {
 }
 
 func (s *createSuite) createExpectCalls() {
-	var basketFee sdk.Coins
-
-	s.paramsKeeper.EXPECT().
-		Get(s.sdkCtx, core.KeyBasketFee, &basketFee).
-		Do(func(ctx sdk.Context, key []byte, basketFee *sdk.Coins) {
-			*basketFee = s.params.BasketFee
-		}).
-		AnyTimes() // not expected on failed attempt
 
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 
-	if len(s.params.BasketFee) == 1 {
-		expectedFee = s.params.BasketFee[0]
+	if len(s.basketFee) == 1 {
+		expectedFee = s.basketFee[0]
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
-	if len(s.params.BasketFee) == 2 {
-		expectedFee = s.params.BasketFee[1]
+	if len(s.basketFee) == 2 {
+		expectedFee = s.basketFee[1]
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
@@ -246,7 +244,7 @@ func (s *createSuite) createExpectCalls() {
 	s.bankKeeper.EXPECT().
 		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, expectedFees).
 		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
-			if s.params.BasketFee != nil {
+			if s.basketFee != nil {
 				// simulate token balance update unavailable with mocks
 				s.aliceBalance = s.aliceBalance.Sub(expectedFee)
 			}

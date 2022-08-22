@@ -3,7 +3,7 @@ package basket
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/errors"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -11,15 +11,25 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	var allowedFees sdk.Coins
-	k.paramsKeeper.Get(sdkCtx, core.KeyBasketFee, &allowedFees)
+	fee, err := k.stateStore.BasketFeesTable().Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	allowedFees := make(sdk.Coins, 0, len(fee.Fees))
+	for _, coin := range fee.Fees {
+		amount, ok := sdk.NewIntFromString(coin.Amount)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee %s", coin.Amount)
+		}
+		allowedFees = append(allowedFees, sdk.NewCoin(coin.Denom, amount))
+	}
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
@@ -108,7 +118,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		Name:              msg.Name,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "basket with name %s already exists", msg.Name)
+		return nil, ormerrors.UniqueKeyViolation.Wrapf("basket with name %s already exists", msg.Name)
 	}
 	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
 		return nil, err

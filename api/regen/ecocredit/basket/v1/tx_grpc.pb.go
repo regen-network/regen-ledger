@@ -29,6 +29,11 @@ type MsgClient interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
+	// UpdateBasketFees is a governance method that allows for updating of fees to
+	// be used for the basket creation fee.
+	//
+	// Since Revision 1
+	UpdateBasketFees(ctx context.Context, in *MsgUpdateBasketFees, opts ...grpc.CallOption) (*MsgUpdateBasketFeesResponse, error)
 }
 
 type msgClient struct {
@@ -66,6 +71,15 @@ func (c *msgClient) Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOpti
 	return out, nil
 }
 
+func (c *msgClient) UpdateBasketFees(ctx context.Context, in *MsgUpdateBasketFees, opts ...grpc.CallOption) (*MsgUpdateBasketFeesResponse, error) {
+	out := new(MsgUpdateBasketFeesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/UpdateBasketFees", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -77,6 +91,11 @@ type MsgServer interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
+	// UpdateBasketFees is a governance method that allows for updating of fees to
+	// be used for the basket creation fee.
+	//
+	// Since Revision 1
+	UpdateBasketFees(context.Context, *MsgUpdateBasketFees) (*MsgUpdateBasketFeesResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -92,6 +111,9 @@ func (UnimplementedMsgServer) Put(context.Context, *MsgPut) (*MsgPutResponse, er
 }
 func (UnimplementedMsgServer) Take(context.Context, *MsgTake) (*MsgTakeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Take not implemented")
+}
+func (UnimplementedMsgServer) UpdateBasketFees(context.Context, *MsgUpdateBasketFees) (*MsgUpdateBasketFeesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasketFees not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -160,6 +182,24 @@ func _Msg_Take_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateBasketFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBasketFees)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateBasketFees(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.basket.v1.Msg/UpdateBasketFees",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateBasketFees(ctx, req.(*MsgUpdateBasketFees))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -178,6 +218,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Take",
 			Handler:    _Msg_Take_Handler,
+		},
+		{
+			MethodName: "UpdateBasketFees",
+			Handler:    _Msg_UpdateBasketFees_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

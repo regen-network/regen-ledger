@@ -21,6 +21,12 @@ service Msg {
   // Take takes credits from a basket starting from the oldest
   // credits first.
   rpc Take(MsgTake) returns (MsgTakeResponse);
+
+  // UpdateBasketFees is a governance method that allows for updating of fees to
+  // be used for the basket creation fee.
+  //
+  // Since Revision 1
+  rpc UpdateBasketFees(MsgUpdateBasketFees) returns (MsgUpdateBasketFeesResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
@@ -155,3 +161,23 @@ message MsgTakeResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
+
+// MsgUpdateBasketFees is the Msg/UpdateBasketFees request type.
+// Since Revision 1
+message MsgUpdateBasketFees {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // basket_fees defines a list of coin fees that can be used in the basket
+  // creation fee.
+  repeated cosmos.base.v1beta1.Coin basket_fees = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// MsgUpdateBasketFeesResponse is the Msg/UpdateBasketFees response type.
+// Since Revision 1
+message MsgUpdateBasketFeesResponse {}
