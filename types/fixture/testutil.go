@@ -88,8 +88,8 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	}
 
 	err := baseApp.LoadLatestVersion()
-
 	require.NoError(ff.t, err)
+
 	return fixture{
 		baseApp: baseApp,
 		mm:      mm,
@@ -130,9 +130,9 @@ func (f fixture) Signers() []sdk.AccAddress {
 }
 
 func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
-	// we inject the mock module genesis with bogus data in order to bypass the check for validator updates.
+	// we inject the mock module genesis in order to bypass the check for validator updates.
 	// since the testing fixture doesn't require validators/validator updates, the check fails otherwise.
-	genesisData[MockModule{}.Name()] = []byte(`{"foo":"bar"}`)
+	genesisData[MockModule{}.Name()] = []byte(`{}`)
 	return f.mm.InitGenesis(ctx, f.cdc, genesisData), nil
 }
 
