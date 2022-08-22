@@ -31,7 +31,11 @@ func (m *MsgAddCreditType) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("credit type cannot be empty")
 	}
 
-	return m.CreditType.Validate()
+	if err := m.CreditType.Validate(); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	return nil
 }
 
 // GetSigners returns the expected signers for MsgAddCreditType.

@@ -46,18 +46,20 @@ func TestValidateGenesis(t *testing.T) {
 
 	batches := []*api.Batch{
 		{
-			Issuer:     sdk.AccAddress("addr2"),
-			ProjectKey: 1,
-			Denom:      "BIO01-001-00000000-00000000-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr2"),
+			ProjectKey:   1,
+			Denom:        "BIO01-001-00000000-00000000-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 		{
-			Issuer:     sdk.AccAddress("addr3"),
-			ProjectKey: 1,
-			Denom:      "BIO02-001-00000000-00000000-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr3"),
+			ProjectKey:   1,
+			Denom:        "BIO02-001-00000000-00000000-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 	}
 	for _, b := range batches {
@@ -534,18 +536,20 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 
 	batches := []*api.Batch{
 		{
-			Issuer:     sdk.AccAddress("addr2"),
-			ProjectKey: 1,
-			Denom:      "C01-001-20180101-20200101-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr2"),
+			ProjectKey:   1,
+			Denom:        "C01-001-20180101-20200101-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 		{
-			Issuer:     sdk.AccAddress("addr3"),
-			ProjectKey: 1,
-			Denom:      "BIO02-001-00000000-00000000-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr3"),
+			ProjectKey:   1,
+			Denom:        "BIO02-001-00000000-00000000-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 	}
 	for _, b := range batches {
