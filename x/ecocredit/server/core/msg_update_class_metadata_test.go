@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/rand"
+	"google.golang.org/protobuf/proto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -115,7 +115,7 @@ func (s *updateClassMetadata) ExpectEventWithProperties(a gocuke.DocString) {
 	events := s.sdkCtx.EventManager().Events()
 	lastEvent := events[len(events)-1]
 
-	require.Equal(s.t, proto.MessageName(&event), lastEvent.Type)
+	require.Equal(s.t, string(proto.MessageName(&event)), lastEvent.Type)
 	require.Len(s.t, lastEvent.Attributes, 1) // should only have classID
 
 	classID := strings.Trim(string(lastEvent.Attributes[0].Value), `"`)
