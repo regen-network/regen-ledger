@@ -59,6 +59,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ClassIssuer` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `CreditType` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Project` state validation checks
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `DateCriteria.ToApi` to `DateCriteria.ToAPI`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `QueryProjectsByReferenceIdCmd` to `QueryProjectsByReferenceIDCmd`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `FlagReferenceId` to `FlagReferenceID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `MaxReferenceIdLength` to `MaxReferenceIDLength`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `RegexClassId` to `RegexClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `RegexProjectId` to `RegexProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `FormatClassId` to `FormatClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `FormatProjectId` to `FormatProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `ValidateClassId` to `ValidateClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `ValidateProjectId` to `ValidateProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetClassIDFromProjectId` to `GetClassIDFromProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetClassIdFromBatchDenom` to `GetClassIDFromBatchDenom`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetProjectIdFromBatchDenom` to `GetProjectIDFromBatchDenom`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetCreditTypeAbbrevFromClassId` to `GetCreditTypeAbbrevFromClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `BasketSupplyInvariant` to `SupplyInvariant`
 
 #### Removed
 
