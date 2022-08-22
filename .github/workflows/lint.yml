@@ -30,22 +30,34 @@ jobs:
       - uses: technote-space/get-diff-action@v6
         id: git-diff-app
         with:
-          PATTERNS: app/**/**.go
+          PATTERNS: |
+            app/**/**.go
+            go.mod
+            go.sum
         if: matrix.module == 'app'
       - uses: technote-space/get-diff-action@v6
         id: git-diff-types
         with:
-          PATTERNS: types/**/**.go
+          PATTERNS: |
+            types/**/**.go
+            types/go.mod
+            types/go.sum
         if: matrix.module == 'types'
       - uses: technote-space/get-diff-action@v6
         id: git-diff-data
         with:
-          PATTERNS: x/data/**/**.go
+          PATTERNS: |
+            x/data/**/**.go
+            x/data/go.mod
+            x/data/go.sum
         if: matrix.module == 'x/data'
       - uses: technote-space/get-diff-action@v6
         id: git-diff-ecocredit
         with:
-          PATTERNS: x/ecocredit/**/**.go
+          PATTERNS: |
+            x/ecocredit/**/**.go
+            x/ecocredit/go.mod
+            x/ecocredit/go.sum
         if: matrix.module == 'x/ecocredit'
       - uses: actions/setup-go@v3
         with:

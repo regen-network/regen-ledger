@@ -12,6 +12,7 @@ linters:
     - exportloopref
     - goconst
     - gocritic
+    # TODO: investigate why golangci-lint-action is producing an error when latest golangci-lint does not locally
     # - gofmt
     # - goimports
     - gosec
@@ -29,6 +30,7 @@ linters:
     - unconvert
     - unparam
     - unused
+    # TODO: consider enabling and resolving
     # - wsl
 
 issues:
