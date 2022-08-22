@@ -9,6 +9,8 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -16,7 +18,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	dbm "github.com/tendermint/tm-db"
 
 	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -78,7 +79,7 @@ func genAllowListEnabled(r *rand.Rand) bool {
 	return r.Int63n(101) <= 90
 }
 
-func genCreditTypes(r *rand.Rand) []*core.CreditType {
+func genCreditTypes() []*core.CreditType {
 	return []*core.CreditType{
 		{
 			Name:         "carbon",
@@ -130,7 +131,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, typeCreditTypes, &creditTypes, simState.Rand,
-		func(r *rand.Rand) { creditTypes = genCreditTypes(r) },
+		func(r *rand.Rand) { creditTypes = genCreditTypes() },
 	)
 
 	simState.AppParams.GetOrGenerate(
@@ -190,12 +191,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	rawJson, err := jsonTarget.JSON()
+	rawJSON, err := jsonTarget.JSON()
 	if err != nil {
 		panic(err)
 	}
 
-	bz, err := json.Marshal(rawJson)
+	bz, err := json.Marshal(rawJSON)
 	if err != nil {
 		panic(err)
 	}
@@ -222,13 +223,13 @@ func createClass(ctx context.Context, sStore api.StateStore, class *api.Class) (
 		}
 
 		return 0, err
-	} else {
-		if err := sStore.ClassSequenceTable().Update(ctx, &api.ClassSequence{
-			CreditTypeAbbrev: class.CreditTypeAbbrev,
-			NextSequence:     seq.NextSequence + 1,
-		}); err != nil {
-			return 0, err
-		}
+	}
+
+	if err := sStore.ClassSequenceTable().Update(ctx, &api.ClassSequence{
+		CreditTypeAbbrev: class.CreditTypeAbbrev,
+		NextSequence:     seq.NextSequence + 1,
+	}); err != nil {
+		return 0, err
 	}
 
 	return cKey, nil

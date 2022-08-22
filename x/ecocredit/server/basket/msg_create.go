@@ -113,7 +113,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
-		DateCriteria:      msg.DateCriteria.ToApi(),
+		DateCriteria:      msg.DateCriteria.ToAPI(),
 		Exponent:          creditType.Precision, // exponent is no longer used but set until removed
 		Name:              msg.Name,
 	})

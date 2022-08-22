@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	"github.com/gogo/protobuf/proto"
 	"google.golang.org/grpc"
+
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
 )

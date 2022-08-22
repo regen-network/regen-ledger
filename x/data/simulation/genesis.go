@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -38,7 +39,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	if err := generateGenesisState(r, ormCtx, ss, simState); err != nil {
+	if err := generateGenesisState(ormCtx, r, ss, simState); err != nil {
 		panic(err)
 	}
 
@@ -47,12 +48,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	rawJson, err := jsonTarget.JSON()
+	rawJSON, err := jsonTarget.JSON()
 	if err != nil {
 		panic(err)
 	}
 
-	bz, err := json.Marshal(rawJson)
+	bz, err := json.Marshal(rawJSON)
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +61,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	simState.GenState[data.ModuleName] = bz
 }
 
-func generateGenesisState(r *rand.Rand, ormCtx context.Context, ss api.StateStore,
+func generateGenesisState(ormCtx context.Context, r *rand.Rand, ss api.StateStore,
 	simState *module.SimulationState) error {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
@@ -103,7 +104,7 @@ func generateGenesisState(r *rand.Rand, ormCtx context.Context, ss api.StateStor
 		}
 
 		manager, _ := simtypes.RandomAcc(r, simState.Accounts)
-		resolverId, err := ss.ResolverTable().InsertReturningID(ormCtx, &api.Resolver{
+		resolverID, err := ss.ResolverTable().InsertReturningID(ormCtx, &api.Resolver{
 			Url:     "https://foo.bar",
 			Manager: manager.Address,
 		})
@@ -112,7 +113,7 @@ func generateGenesisState(r *rand.Rand, ormCtx context.Context, ss api.StateStor
 		}
 
 		err = ss.DataResolverTable().Insert(ormCtx, &api.DataResolver{
-			ResolverId: resolverId,
+			ResolverId: resolverID,
 			Id:         id,
 		})
 		if err != nil {

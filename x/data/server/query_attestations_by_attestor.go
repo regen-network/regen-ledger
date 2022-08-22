@@ -46,13 +46,13 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 			return nil, err
 		}
 
-		dataId, err := s.stateStore.DataIDTable().Get(ctx, dataAttestor.Id)
+		dataID, err := s.stateStore.DataIDTable().Get(ctx, dataAttestor.Id)
 		if err != nil {
 			return nil, err
 		}
 
 		attestations = append(attestations, &data.AttestationInfo{
-			Iri:       dataId.Iri,
+			Iri:       dataID.Iri,
 			Attestor:  request.Attestor,
 			Timestamp: types.ProtobufToGogoTimestamp(dataAttestor.Timestamp),
 		})

@@ -6,7 +6,7 @@ name: Lint
 # **Why we have it**: Ensures all go files and proto files are
 # properly formatted according to lint configuration files.
 #
-# **What does it impact**: Code cleanliness.
+# **What does it impact**: Code quality.
 
 on:
   pull_request:
@@ -22,54 +22,95 @@ concurrency:
 jobs:
   golangci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ["app", "types", "x/data", "x/ecocredit"]
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        id: git-diff-app
         with:
           PATTERNS: |
-            **/**.go
-            **/go.mod
-            **/go.sum
+            app/**/**.go
+            go.mod
+            go.sum
+        if: matrix.module == 'app'
+      - uses: technote-space/get-diff-action@v6
+        id: git-diff-types
+        with:
+          PATTERNS: |
+            types/**/**.go
+            types/go.mod
+            types/go.sum
+        if: matrix.module == 'types'
+      - uses: technote-space/get-diff-action@v6
+        id: git-diff-data
+        with:
+          PATTERNS: |
+            x/data/**/**.go
+            x/data/go.mod
+            x/data/go.sum
+        if: matrix.module == 'x/data'
+      - uses: technote-space/get-diff-action@v6
+        id: git-diff-ecocredit
+        with:
+          PATTERNS: |
+            x/ecocredit/**/**.go
+            x/ecocredit/go.mod
+            x/ecocredit/go.sum
+        if: matrix.module == 'x/ecocredit'
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
       - uses: golangci/golangci-lint-action@v3
         with:
-          args: --timeout 5m --verbose
-          only-new-issues: true
-        if: env.GIT_DIFF
+          working-directory: "."
+        if: steps.git-diff-app.outputs.diff
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          working-directory: "types"
+        if: steps.git-diff-types.outputs.diff
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          working-directory: "x/data"
+        if: steps.git-diff-data.outputs.diff
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          working-directory: "x/ecocredit"
+        if: steps.git-diff-ecocredit.outputs.diff
 
   buf-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
-        id: git_diff
+        id: git-diff-proto
         with:
           PATTERNS: |
             **/**.proto
       - uses: bufbuild/buf-setup-action@v1
-        if: env.GIT_DIFF
+        if: steps.git-diff-proto.outputs.diff
       - uses: bufbuild/buf-lint-action@v1
         with:
           input: 'proto'
-        if: env.GIT_DIFF
+        if: steps.git-diff-proto.outputs.diff
 
   protolint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        id: git-diff-proto
         with:
           PATTERNS: |
             **/**.proto
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-        if: env.GIT_DIFF
+        if: steps.git-diff-proto.outputs.diff
       - name: Run protolint
         run: |
           go install github.com/yoheimuta/protolint/cmd/protolint@latest
           protolint .
-        if: env.GIT_DIFF
+        if: steps.git-diff-proto.outputs.diff

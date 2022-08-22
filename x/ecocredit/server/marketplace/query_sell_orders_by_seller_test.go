@@ -13,7 +13,7 @@ import (
 func TestSellOrdersBySeller(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t, 3)
-	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classID, start, end, creditType)
 
 	otherAddr := s.addrs[1]
 	noOrdersAddr := s.addrs[2]
@@ -27,7 +27,7 @@ func TestSellOrdersBySeller(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
+	assertOrderEqual(s.ctx, t, s.k, res.SellOrders[0], order1)
 	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	res, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
@@ -36,7 +36,7 @@ func TestSellOrdersBySeller(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
+	assertOrderEqual(s.ctx, t, s.k, res.SellOrders[0], order2)
 	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// addr with no sell orders should just return empty slice

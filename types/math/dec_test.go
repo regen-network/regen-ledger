@@ -52,7 +52,7 @@ func TestDec(t *testing.T) {
 	t.Run("TestMulQuoExact", rapid.MakeCheck(testMulQuoExact))
 	t.Run("TestQuoMulExact", rapid.MakeCheck(testQuoMulExact))
 
-	// Properties about comparision and equality
+	// Properties about comparison and equality
 	t.Run("TestCmpInverse", rapid.MakeCheck(testCmpInverse))
 	t.Run("TestEqualCommutative", rapid.MakeCheck(testEqualCommutative))
 
@@ -97,14 +97,14 @@ func TestDec(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, res.Equal(three))
 
-	res, err = SafeSubBalance(two, five)
+	_, err = SafeSubBalance(two, five)
 	require.Error(t, err, "Expected insufficient funds error")
 
 	res, err = SafeAddBalance(three, two)
 	require.NoError(t, err)
 	require.True(t, res.Equal(five))
 
-	res, err = SafeAddBalance(minusFivePointZero, five)
+	_, err = SafeAddBalance(minusFivePointZero, five)
 	require.Error(t, err, "Expected ErrInvalidRequest")
 
 	res, err = four.Quo(two)
@@ -591,11 +591,12 @@ func floatDecimalPlaces(t *rapid.T, f float64) uint32 {
 	}
 
 	// Subtract exponent from base and check if negative
-	if res := basePlaces - exp; res <= 0 {
+	res := basePlaces - exp
+	if res <= 0 {
 		return 0
-	} else {
-		return uint32(res)
 	}
+
+	return uint32(res)
 }
 
 func TestIsFinite(t *testing.T) {

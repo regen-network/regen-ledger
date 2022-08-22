@@ -7,9 +7,10 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"gotest.tools/v3/assert"
 
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -113,6 +114,6 @@ func TestUtils_GetCreditTypeFromBatchDenom(t *testing.T) {
 	assert.DeepEqual(t, ct, creditType, cmpopts.IgnoreUnexported(api.CreditType{}))
 
 	invalidDenom := "C02-0000000-0000000-001"
-	ct, err = GetCreditTypeFromBatchDenom(s.ctx, s.stateStore, invalidDenom)
+	_, err = GetCreditTypeFromBatchDenom(s.ctx, s.stateStore, invalidDenom)
 	assert.ErrorContains(t, err, "could not get class with ID C02")
 }

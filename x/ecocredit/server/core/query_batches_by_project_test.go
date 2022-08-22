@@ -44,7 +44,7 @@ func TestQuery_BatchesByProject(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Batches))
-	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch)
+	assertBatchEqual(s.ctx, t, s.k, res.Batches[0], batch)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	// query batches by unknown project

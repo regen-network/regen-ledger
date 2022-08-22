@@ -52,12 +52,12 @@ type IntegrationTestSuite struct {
 	basketFee          sdk.Coins
 	creditTypeAbbrev   string
 	allowedDenoms      []string
-	classId            string
-	projectId          string
-	projectReferenceId string
+	classID            string
+	projectID          string
+	projectReferenceID string
 	batchDenom         string
 	basketDenom        string
-	sellOrderId        uint64
+	sellOrderID        uint64
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.setupTestAccounts()
 
 	// create test credit class
-	s.classId = s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	s.classID = s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
 		Admin:            s.addr1.String(),
 		Issuers:          []string{s.addr1.String()},
 		Metadata:         "metadata",
@@ -94,15 +94,15 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// set test reference id
-	s.projectReferenceId = "VCS-001"
+	s.projectReferenceID = "VCS-001"
 
 	// create test project
-	s.projectId = s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	s.projectID = s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
 		Admin:        s.addr1.String(),
-		ClassId:      s.classId,
+		ClassId:      s.classID,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
-		ReferenceId:  s.projectReferenceId,
+		ReferenceId:  s.projectReferenceID,
 	})
 
 	startDate, err := types.ParseDate("start date", "2020-01-01")
@@ -114,7 +114,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// create test credit batch
 	s.batchDenom = s.createBatch(s.val.ClientCtx, &core.MsgCreateBatch{
 		Issuer:    s.addr1.String(),
-		ProjectId: s.projectId,
+		ProjectId: s.projectID,
 		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:              s.addr1.String(),
@@ -132,7 +132,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Curator:          s.addr1.String(),
 		Name:             "NCT",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		AllowedClasses:   []string{s.classId},
+		AllowedClasses:   []string{s.classID},
 		Fee:              s.basketFee,
 	})
 
@@ -151,7 +151,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	askPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
 	// create sell orders with first test account and set test values
-	sellOrderIds := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+	sellOrderIDs := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
 		Seller: s.addr1.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
@@ -163,12 +163,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		},
 	})
 
-	s.sellOrderId = sellOrderIds[0]
+	s.sellOrderID = sellOrderIDs[0]
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
 	s.T().Log("tearing down integration test suite")
-	s.network.WaitForNextBlock()
+	s.Require().NoError(s.network.WaitForNextBlock())
 	s.network.Cleanup()
 }
 
@@ -289,7 +289,7 @@ func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sd
 	require.Zero(res.Code, res.RawLog)
 }
 
-func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (classId string) {
+func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (classID string) {
 	require := s.Require()
 
 	cmd := coreclient.TxCreateClassCmd()
@@ -323,7 +323,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 	return ""
 }
 
-func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (projectId string) {
+func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (projectID string) {
 	require := s.Require()
 
 	cmd := coreclient.TxCreateProjectCmd()
@@ -451,7 +451,7 @@ func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket
 	require.Zero(res.Code, res.RawLog)
 }
 
-func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) (sellOrderIds []uint64) {
+func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) (sellOrderIDs []uint64) {
 	require := s.Require()
 
 	// using json package because array is not a proto message
@@ -473,22 +473,22 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
 
-	orderIds := make([]uint64, 0, len(msg.Orders))
+	orderIDs := make([]uint64, 0, len(msg.Orders))
 	for _, event := range res.Logs[0].Events {
 		if event.Type == proto.MessageName(&marketplace.EventSell{}) {
 			for _, attr := range event.Attributes {
 				if attr.Key == "sell_order_id" {
-					orderId, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
+					orderID, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
 					require.NoError(err)
-					orderIds = append(orderIds, orderId)
+					orderIDs = append(orderIDs, orderID)
 				}
 			}
 		}
 	}
 
-	if len(orderIds) == 0 {
+	if len(orderIDs) == 0 {
 		require.Fail("failed to find sell order id(s) in response")
 	}
 
-	return orderIds
+	return orderIDs
 }

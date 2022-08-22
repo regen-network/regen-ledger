@@ -11,12 +11,14 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
+const outputFormat = "JSON"
+
 func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	val := s.network.Validators[0]
 	val2 := s.network.Validators[1]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	classId := s.createClass(clientCtx, &core.MsgCreateClass{
+	clientCtx.OutputFormat = outputFormat
+	classID := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
@@ -24,7 +26,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 
-	classId2 := s.createClass(clientCtx, &core.MsgCreateClass{
+	classID2 := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
@@ -32,7 +34,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 
-	classIds := [2]string{classId, classId2}
+	classIDs := [2]string{classID, classID2}
 
 	testCases := []struct {
 		name               string
@@ -83,7 +85,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 					for i, cls := range res.Classes {
 						resClassIds[i] = cls.Id
 					}
-					for _, id := range classIds {
+					for _, id := range classIDs {
 						s.Require().Contains(resClassIds, id)
 					}
 				}
@@ -95,7 +97,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 func (s *IntegrationTestSuite) TestQueryClassCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 	class := &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
@@ -104,7 +106,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	}
 
-	classId := s.createClass(clientCtx, class)
+	classID := s.createClass(clientCtx, class)
 
 	testCases := []struct {
 		name           string
@@ -127,10 +129,10 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		},
 		{
 			name:      "valid credit class",
-			args:      []string{classId},
+			args:      []string{classID},
 			expectErr: false,
 			expectedClass: &core.ClassInfo{
-				Id:               classId,
+				Id:               classID,
 				Admin:            val.Address.String(),
 				Metadata:         class.Metadata,
 				CreditTypeAbbrev: class.CreditTypeAbbrev,
@@ -158,7 +160,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 
 func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 	ctx := s.val.ClientCtx
-	ctx.OutputFormat = "JSON"
+	ctx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name           string
@@ -208,7 +210,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 
 func (s *IntegrationTestSuite) TestQueryBatchesByIssuerCmd() {
 	ctx := s.val.ClientCtx
-	ctx.OutputFormat = "JSON"
+	ctx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name           string
@@ -265,7 +267,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuerCmd() {
 
 func (s *IntegrationTestSuite) TestQueryBatchesByClassCmd() {
 	ctx := s.val.ClientCtx
-	ctx.OutputFormat = "JSON"
+	ctx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name           string
@@ -288,7 +290,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClassCmd() {
 		{
 			name: "valid with pagination",
 			args: []string{
-				s.classId,
+				s.classID,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 			expectErr: false,
@@ -322,7 +324,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClassCmd() {
 
 func (s *IntegrationTestSuite) TestQueryBatchesByProjectCmd() {
 	ctx := s.val.ClientCtx
-	ctx.OutputFormat = "JSON"
+	ctx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name           string
@@ -345,7 +347,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProjectCmd() {
 		{
 			name: "valid with pagination",
 			args: []string{
-				s.projectId,
+				s.projectID,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 			expectErr: false,
@@ -379,7 +381,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProjectCmd() {
 
 func (s *IntegrationTestSuite) TestQueryBatchCmd() {
 	ctx := s.val.ClientCtx
-	ctx.OutputFormat = "JSON"
+	ctx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name           string
@@ -427,7 +429,7 @@ func (s *IntegrationTestSuite) TestQueryBatchCmd() {
 func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name                   string
@@ -481,7 +483,7 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name           string
@@ -530,7 +532,7 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 	testCases := []struct {
 		name           string
 		args           []string
@@ -566,7 +568,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 func (s *IntegrationTestSuite) TestQueryParamsCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 	require := s.Require()
 
 	cmd := coreclient.QueryParamsCmd()
@@ -583,7 +585,7 @@ func (s *IntegrationTestSuite) TestQueryParamsCmd() {
 func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -637,7 +639,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -659,12 +661,12 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 		},
 		{
 			name: "valid",
-			args: []string{s.classId},
+			args: []string{s.classID},
 		},
 		{
 			name: "valid with pagination",
 			args: []string{
-				s.classId,
+				s.classID,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
 			},
@@ -698,7 +700,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -720,7 +722,7 @@ func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 		},
 		{
 			name: "valid query",
-			args: []string{s.projectId},
+			args: []string{s.projectID},
 		},
 	}
 
@@ -746,10 +748,10 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 	val := s.network.Validators[0]
 	val2 := s.network.Validators[1]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 	require := s.Require()
 
-	classId := s.createClass(clientCtx, &core.MsgCreateClass{
+	classID := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
@@ -766,14 +768,14 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 	}{
 		{
 			name:           "no pagination flags",
-			args:           []string{classId},
+			args:           []string{classID},
 			expectErr:      false,
 			expectedErrMsg: "",
 			numItems:       -1,
 		},
 		{
 			name:           "pagination limit 1",
-			args:           []string{classId, "--limit=1"},
+			args:           []string{classID, "--limit=1"},
 			expectErr:      false,
 			expectedErrMsg: "",
 			numItems:       1,
@@ -811,7 +813,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name           string

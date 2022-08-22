@@ -9,9 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -24,6 +25,12 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+)
+
+const (
+	testClassID    = "C01"
+	testProjectID  = "C01-001"
+	testBatchDenom = "C01-001-20200101-20210101-001"
 )
 
 type baseSuite struct {

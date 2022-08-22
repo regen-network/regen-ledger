@@ -25,7 +25,7 @@ func (m *MsgUpdateClassIssuers) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateClassId(m.ClassId); err != nil {
+	if err := ValidateClassID(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 

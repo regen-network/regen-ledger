@@ -23,7 +23,7 @@ func (m MsgUpdateProjectMetadata) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateProjectId(m.ProjectId); err != nil {
+	if err := ValidateProjectID(m.ProjectId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 

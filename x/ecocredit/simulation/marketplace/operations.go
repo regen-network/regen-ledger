@@ -21,10 +21,10 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgBuy             = "op_weight_msg_buy_direct"
-	OpWeightMsgSell            = "op_weight_msg_sell"
-	OpWeightMsgUpdateSellOrder = "op_weight_msg_update_sell_order"
-	OpWeightMsgCancelSellOrder = "op_weight_msg_cancel_sell_order"
+	OpWeightMsgBuy             = "op_weight_msg_buy_direct"        //nolint:gosec
+	OpWeightMsgSell            = "op_weight_msg_sell"              //nolint:gosec
+	OpWeightMsgUpdateSellOrder = "op_weight_msg_update_sell_order" //nolint:gosec
+	OpWeightMsgCancelSellOrder = "op_weight_msg_cancel_sell_order" //nolint:gosec
 )
 
 // basket operations weights
@@ -224,7 +224,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 			quantity := int(balInt)
 			if balInt > 1 {
-				quantity = simtypes.RandIntBetween(r, 1, int(quantity))
+				quantity = simtypes.RandIntBetween(r, 1, quantity)
 			}
 
 			askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 1, 50)))
@@ -310,9 +310,8 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 					// 30% chance of new quantity set to 0
 					if r.Int63n(101) <= 30 {
 						return "0"
-					} else {
-						return fmt.Sprintf("%d", newQuantity)
 					}
+					return fmt.Sprintf("%d", newQuantity)
 				}(),
 				NewAskPrice:       &askPrice,
 				DisableAutoRetire: r.Int63n(101) <= 30, // 30% chance of disable auto-retire

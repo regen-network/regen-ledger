@@ -13,10 +13,11 @@ import (
 	"context"
 	"encoding/json"
 
+	"google.golang.org/grpc"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"google.golang.org/grpc"
 )
 
 // FixtureFactory defines an interface for creating server test fixtures

@@ -35,7 +35,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryCreditTypesCmd(),
 		QueryProjectsCmd(),
 		QueryProjectsByClassCmd(),
-		QueryProjectsByReferenceIdCmd(),
+		QueryProjectsByReferenceIDCmd(),
 		QueryProjectsByAdminCmd(),
 		QueryProjectCmd(),
 		QueryParamsCmd(),
@@ -473,8 +473,8 @@ func QueryParamsCmd() *cobra.Command {
 	})
 }
 
-// QueryProjectsByReferenceIdCmd returns command that retrieves list of projects by reference id with pagination.
-func QueryProjectsByReferenceIdCmd() *cobra.Command {
+// QueryProjectsByReferenceIDCmd returns command that retrieves list of projects by reference id with pagination.
+func QueryProjectsByReferenceIDCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects-by-reference-id [reference-id]",
 		Short: "List all projects by reference ID",

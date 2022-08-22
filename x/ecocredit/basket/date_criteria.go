@@ -7,8 +7,8 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 )
 
-// ToApi converts to pulsar based data structure
-func (d *DateCriteria) ToApi() *api.DateCriteria {
+// ToAPI converts to pulsar based data structure
+func (d *DateCriteria) ToAPI() *api.DateCriteria {
 	if d == nil {
 		return nil
 	}

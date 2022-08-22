@@ -26,7 +26,7 @@ type putSuite struct {
 	alice               sdk.AccAddress
 	aliceTokenBalance   sdk.Coin
 	basketTokenSupply   sdk.Coin
-	classId             string
+	classID             string
 	creditTypeAbbrev    string
 	creditTypePrecision uint32
 	batchDenom          string
@@ -51,7 +51,7 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 		Denom:  "eco.uC.NCT",
 		Amount: sdk.NewInt(100),
 	}
-	s.classId = "C01"
+	s.classID = testClassID
 	s.creditTypeAbbrev = "C"
 	s.creditTypePrecision = 6
 	s.batchDenom = "C01-001-20200101-20210101-001"
@@ -92,15 +92,15 @@ func (s *putSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string) {
 }
 
 func (s *putSuite) ABasket() {
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
+		BasketId: basketID,
+		ClassId:  s.classID,
 	})
 	require.NoError(s.t, err)
 }
@@ -108,44 +108,44 @@ func (s *putSuite) ABasket() {
 func (s *putSuite) ABasketWithCreditType(a string) {
 	s.creditTypeAbbrev = a
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
+		BasketId: basketID,
+		ClassId:  s.classID,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *putSuite) ABasketWithDenom(a string) {
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      a,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
+		BasketId: basketID,
+		ClassId:  s.classID,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *putSuite) ABasketWithAllowedCreditClass(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
+		BasketId: basketID,
 		ClassId:  a,
 	})
 	require.NoError(s.t, err)
@@ -155,7 +155,7 @@ func (s *putSuite) ABasketWithMinimumStartDate(a string) {
 	minStartDate, err := types.ParseDate("start date", a)
 	require.NoError(s.t, err)
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		DateCriteria: &api.DateCriteria{
@@ -165,8 +165,8 @@ func (s *putSuite) ABasketWithMinimumStartDate(a string) {
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
+		BasketId: basketID,
+		ClassId:  s.classID,
 	})
 	require.NoError(s.t, err)
 }
@@ -175,7 +175,7 @@ func (s *putSuite) ABasketWithStartDateWindow(a string) {
 	startDateWindow, err := strconv.ParseInt(a, 10, 32)
 	require.NoError(s.t, err)
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		DateCriteria: &api.DateCriteria{
@@ -187,8 +187,8 @@ func (s *putSuite) ABasketWithStartDateWindow(a string) {
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
+		BasketId: basketID,
+		ClassId:  s.classID,
 	})
 	require.NoError(s.t, err)
 }
@@ -197,7 +197,7 @@ func (s *putSuite) ABasketWithYearsInThePast(a string) {
 	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		DateCriteria: &api.DateCriteria{
@@ -207,18 +207,18 @@ func (s *putSuite) ABasketWithYearsInThePast(a string) {
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
+		BasketId: basketID,
+		ClassId:  s.classID,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *putSuite) ACreditBatchWithDenom(a string) {
-	classId := core.GetClassIdFromBatchDenom(a)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+	classID := core.GetClassIDFromBatchDenom(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
+		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -236,11 +236,11 @@ func (s *putSuite) ACreditBatchWithDenom(a string) {
 }
 
 func (s *putSuite) AliceOwnsCredits() {
-	classId := core.GetClassIdFromBatchDenom(s.batchDenom)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+	classID := core.GetClassIDFromBatchDenom(s.batchDenom)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
+		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -265,11 +265,11 @@ func (s *putSuite) AliceOwnsCredits() {
 }
 
 func (s *putSuite) AliceOwnsCreditAmount(a string) {
-	classId := core.GetClassIdFromBatchDenom(s.batchDenom)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+	classID := core.GetClassIDFromBatchDenom(s.batchDenom)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
+		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -294,11 +294,11 @@ func (s *putSuite) AliceOwnsCreditAmount(a string) {
 }
 
 func (s *putSuite) AliceOwnsCreditsFromCreditBatch(a string) {
-	classId := core.GetClassIdFromBatchDenom(a)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+	classID := core.GetClassIDFromBatchDenom(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
+		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -327,7 +327,7 @@ func (s *putSuite) AliceOwnsCreditsWithStartDate(a string) {
 	require.NoError(s.t, err)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)

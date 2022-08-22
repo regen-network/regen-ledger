@@ -147,7 +147,6 @@ Feature: Msg/UpdateSellOrders
       And an allowed denom with bank denom "regen"
       And an allowed denom with bank denom "atom"
       And alice created a sell order with batch denom "C01-001-20200101-20210101-001" and ask denom "regen"
-      And a market with credit type "C" and bank denom "regen"
 
     Scenario: credit type and bank denom pair is unique
       When alice attempts to update the sell order with ask denom "atom"

@@ -26,7 +26,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		return nil, err
 	}
 
-	sellOrderIds := make([]uint64, len(req.Orders))
+	sellOrderIDs := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
 		// orderIndex is used for more granular error messages when
@@ -45,7 +45,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			return nil, err
 		}
 
-		marketId, err := k.getOrCreateMarketId(ctx, creditType.Abbreviation, order.AskPrice.Denom)
+		marketID, err := k.getOrCreateMarketID(ctx, creditType.Abbreviation, order.AskPrice.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +85,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			Seller:            sellerAcc,
 			BatchKey:          batch.Key,
 			Quantity:          order.Quantity,
-			MarketId:          marketId,
+			MarketId:          marketID,
 			AskAmount:         order.AskPrice.Amount.String(),
 			DisableAutoRetire: order.DisableAutoRetire,
 			Expiration:        expiration,
@@ -95,7 +95,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			return nil, err
 		}
 
-		sellOrderIds[i] = id
+		sellOrderIDs[i] = id
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
 			SellOrderId: id,
@@ -106,11 +106,11 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
 
-	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIDs}, nil
 }
 
-// getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
-func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
+// getOrCreateMarketID attempts to get a market, creating one otherwise, and return the Id.
+func (k Keeper) getOrCreateMarketID(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
 	market, err := k.stateStore.MarketTable().GetByCreditTypeAbbrevBankDenom(ctx, creditTypeAbbrev, bankDenom)
 	switch err {
 	case nil:

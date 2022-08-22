@@ -14,5 +14,4 @@ increases the length in the case of collisions. Identifiers will be 4 bytes long
 majority of cases and will sometimes be 5 and rarely 6 bytes long. In some extremely rare
 cases (which have not appeared in tests), identifiers may be longer.
 */
-
 package hasher

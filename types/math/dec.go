@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"math/big"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cockroachdb/apd/v2"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -206,9 +207,9 @@ func (x Dec) BigInt() (*big.Int, error) {
 	return z, nil
 }
 
-// SdkIntTrim rounds decimal number to the integer towards zero and converts it to `sdk.Int`.
+// SdkIntTrim rounds decimal number to the integer towards zero and converts it to `sdkmath.Int`.
 // Panics if x is bigger the SDK Int max value
-func (x Dec) SdkIntTrim() sdk.Int {
+func (x Dec) SdkIntTrim() sdkmath.Int {
 	y, _ := x.Reduce()
 	var r = y.dec.Coeff
 	if y.dec.Exponent != 0 {
@@ -224,7 +225,7 @@ func (x Dec) SdkIntTrim() sdk.Int {
 	if x.dec.Negative {
 		r.Neg(&r)
 	}
-	return sdk.NewIntFromBigInt(&r)
+	return sdkmath.NewIntFromBigInt(&r)
 }
 
 func (x Dec) String() string {

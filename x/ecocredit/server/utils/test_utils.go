@@ -1,8 +1,9 @@
 package utils
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
