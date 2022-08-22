@@ -12,20 +12,20 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-type adddClassCreators struct {
+type addClassCreators struct {
 	*baseSuite
 	err error
 }
 
 func TestAddClassCreators(t *testing.T) {
-	gocuke.NewRunner(t, &adddClassCreators{}).Path("./features/msg_add_class_creators.feature").Run()
+	gocuke.NewRunner(t, &addClassCreators{}).Path("./features/msg_add_class_creators.feature").Run()
 }
 
-func (s *adddClassCreators) Before(t gocuke.TestingT) {
+func (s *addClassCreators) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *adddClassCreators) ClassCreatorsWithProperties(a gocuke.DocString) {
+func (s *addClassCreators) ClassCreatorsWithProperties(a gocuke.DocString) {
 	var msg *core.MsgAddClassCreators
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
@@ -43,7 +43,7 @@ func (s *adddClassCreators) ClassCreatorsWithProperties(a gocuke.DocString) {
 
 }
 
-func (s *adddClassCreators) AliceAttemptsToAddClassCreatorsWithProperties(a gocuke.DocString) {
+func (s *addClassCreators) AliceAttemptsToAddClassCreatorsWithProperties(a gocuke.DocString) {
 	var msg *core.MsgAddClassCreators
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
@@ -52,14 +52,36 @@ func (s *adddClassCreators) AliceAttemptsToAddClassCreatorsWithProperties(a gocu
 	_, s.err = s.k.AddClassCreators(s.ctx, msg)
 }
 
-func (s *adddClassCreators) ExpectNoError() {
+func (s *addClassCreators) ExpectClassCreatorsWithProperties(a gocuke.DocString) {
+	var msg *core.MsgAddClassCreators
+
+	err := json.Unmarshal([]byte(a.Content), &msg)
+	require.NoError(s.t, err)
+
+	found := 0
+
+	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, len(msg.Creators), len(params.Params.AllowedClassCreators))
+	for _, creator := range params.Params.AllowedClassCreators {
+		for _, creator1 := range msg.Creators {
+			if creator == creator1 {
+				found++
+			}
+		}
+	}
+	require.Equal(s.t, len(msg.Creators), found)
+}
+
+func (s *addClassCreators) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *adddClassCreators) ExpectTheError(a string) {
+func (s *addClassCreators) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *adddClassCreators) ExpectErrorContains(a string) {
+func (s *addClassCreators) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }

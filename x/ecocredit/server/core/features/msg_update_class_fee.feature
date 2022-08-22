@@ -1,14 +1,14 @@
 Feature: Msg/MsgUpdateClassFees
 
-  The class fee can be updated:
+  The class fees can be updated:
   - when the authority is a governance account address
-  - when the provided class fee is valid
-  - the class fee is updated
+  - when the provided class fees are valid
+  - the class fees are updated
 
   Rule: The authority is a governance account
 
     Scenario: the authority is a governance account
-      When alice attempts to update class fee with properties
+      When alice attempts to update class fees with properties
       """
       {
         "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -23,7 +23,7 @@ Feature: Msg/MsgUpdateClassFees
       Then expect no error
 
     Scenario: the authority is not a governance account
-      When alice attempts to update class fee with properties
+      When alice attempts to update class fees with properties
       """
       {
         "authority": "regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
@@ -37,10 +37,10 @@ Feature: Msg/MsgUpdateClassFees
       """
       Then expect error contains "expected gov account as only signer for proposal message"
 
-  Rule: The class fee is valid
+  Rule: The class fees are valid
 
-    Scenario: the class fee is valid
-      When alice attempts to update class fee with properties
+    Scenario: the class fees are valid
+      When alice attempts to update class fees with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -65,8 +65,8 @@ Feature: Msg/MsgUpdateClassFees
       }
       """
 
-    Scenario: valid class fee empty 
-      When alice attempts to update class fee with properties
+    Scenario: valid class fees empty 
+      When alice attempts to update class fees with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -81,8 +81,8 @@ Feature: Msg/MsgUpdateClassFees
       }
       """
 
-    Scenario: valid class fee multiple tokens 
-      When alice attempts to update class fee with properties
+    Scenario: valid class fees (multiple tokens)
+      When alice attempts to update class fees with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -112,5 +112,23 @@ Feature: Msg/MsgUpdateClassFees
             "amount": "1000"
           }
         ]
+      }
+      """
+
+  Rule: The class fees are updated
+    
+    Scenario: valid empty class fees
+      When alice attempts to update class fees with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "fees":[]
+      }
+      """
+      Then expect no error
+      And expect class fees with properties 
+      """
+      {
+        "fees":[]
       }
       """

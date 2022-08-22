@@ -1,6 +1,6 @@
-Feature: Msg/AllowedClassCreator
+Feature: Msg/AddClassCreators
 
-  A class creator can be added:
+  A class creators can be added:
   - when the class creator does not exist
   - when the authority is a governance account address
   - the class creator is added
@@ -87,3 +87,47 @@ Feature: Msg/AllowedClassCreator
       }
       """
       Then expect error contains "expected gov account as only signer for proposal message"
+
+  Rule: The class creators are added
+
+    Scenario: The class creator is added
+      When alice attempts to add class creators with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "creators":[
+            "regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
+        ]
+      }
+      """
+      Then expect no error
+      And expect class creators with properties
+      """
+      {
+        "creators":[
+            "regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
+        ]
+      }
+      """
+
+    Scenario: The class creators are added
+      When alice attempts to add class creators with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "creators":[
+            "regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa",
+            "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+        ]
+      }
+      """
+      Then expect no error
+      And expect class creators with properties
+      """
+      {
+        "creators":[
+            "regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa",
+            "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+        ]
+      }
+      """

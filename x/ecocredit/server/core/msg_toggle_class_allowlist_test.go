@@ -39,6 +39,13 @@ func (s *toggleClassCreatorAllowlist) ExpectClassAllowlistFlagToBeTrue() {
 	require.Equal(s.t, true, res.Enabled)
 }
 
+func (s *toggleClassCreatorAllowlist) ExpectClassAllowlistFlagToBeFalse() {
+	res, err := s.stateStore.AllowListEnabledTable().Get(s.ctx)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, false, res.Enabled)
+}
+
 func (s *toggleClassCreatorAllowlist) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }

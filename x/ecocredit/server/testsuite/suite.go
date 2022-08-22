@@ -20,8 +20,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
@@ -43,26 +41,21 @@ type IntegrationTestSuite struct {
 	fixtureFactory testutil.FixtureFactory
 	fixture        testutil.Fixture
 
-	codec             *codec.ProtoCodec
-	sdkCtx            sdk.Context
-	ctx               context.Context
-	msgClient         core.MsgClient
-	marketServer      marketServer
-	basketServer      basketServer
-	queryClient       core.QueryClient
-	paramsQueryClient params.QueryClient
-	signers           []sdk.AccAddress
-	basketFee         sdk.Coin
+	codec        *codec.ProtoCodec
+	sdkCtx       sdk.Context
+	ctx          context.Context
+	msgClient    core.MsgClient
+	marketServer marketServer
+	basketServer basketServer
+	queryClient  core.QueryClient
+	signers      []sdk.AccAddress
+	basketFee    sdk.Coin
 
-	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
 
 	genesisCtx types.Context
 	blockTime  time.Time
-
-	ormCtx     context.Context
-	stateStore api.StateStore
 }
 
 type marketServer struct {
@@ -79,10 +72,9 @@ var (
 	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFee}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
-		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
 	}
@@ -101,12 +93,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
-	ecocreditParams := core.DefaultParams()
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
 	_, err := s.fixture.InitGenesis(s.sdkCtx, map[string]json.RawMessage{ecocredit.ModuleName: s.ecocreditGenesis()})
 	s.Require().NoError(err)
-
-	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
@@ -115,7 +104,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
-	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
@@ -175,9 +163,6 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 		},
 	})
 	s.Require().NoError(err)
-
-	s.ormCtx = ormCtx
-	s.stateStore = ss
 
 	// export genesis into target
 	target := ormjson.NewRawMessageTarget()
@@ -952,92 +937,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NotNil(querySupplyRes)
 				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
 				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
-			}
-		})
-	}
-
-	/****   TEST ALLOWLIST CREDIT CREATORS   ****/
-	allowlistCases := []struct {
-		name             string
-		creatorAcc       sdk.AccAddress
-		allowlist        []string
-		allowlistEnabled bool
-		wantErr          bool
-		errMsg           string
-	}{
-		{
-			name:             "valid allowlist and enabled",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          false,
-		},
-		{
-			name:             "valid multi addrs in allowlist",
-			allowlist:        []string{s.signers[0].String(), s.signers[1].String(), s.signers[2].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          false,
-		},
-		{
-			name:             "creator is not part of the allowlist",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[1],
-			allowlistEnabled: true,
-			wantErr:          true,
-			errMsg:           "not allowed",
-		},
-		{
-			name:             "valid allowlist but disabled - anyone can create credits",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: false,
-			wantErr:          false,
-		},
-		{
-			name:             "empty and enabled allowlist - nobody can create credits",
-			allowlist:        []string{},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          true,
-			errMsg:           "not allowed",
-		},
-	}
-
-	for _, tc := range allowlistCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			for _, creator := range tc.allowlist {
-				creatorAddr, err := sdk.AccAddressFromBech32(creator)
-				s.Require().NoError(err)
-
-				err = s.stateStore.AllowedClassCreatorTable().Save(s.ormCtx, &api.AllowedClassCreator{
-					Address: creatorAddr,
-				})
-				s.Require().NoError(err)
-			}
-
-			err = s.stateStore.AllowListEnabledTable().Save(s.ormCtx, &api.AllowListEnabled{
-				Enabled: tc.allowlistEnabled,
-			})
-			s.Require().NoError(err)
-
-			// fund the creator account
-			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFee)))
-
-			createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
-				Admin:            tc.creatorAcc.String(),
-				Issuers:          []string{issuer1, issuer2},
-				CreditTypeAbbrev: "C",
-				Metadata:         "",
-				Fee:              &createClassFee,
-			})
-			if tc.wantErr {
-				s.Require().Error(err)
-				s.Require().Nil(createClsRes)
-			} else {
-				s.Require().NoError(err)
-				s.Require().NotNil(createClsRes)
 			}
 		})
 	}

@@ -24,7 +24,7 @@ func (s *updateClassFeesSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *updateClassFeesSuite) AliceAttemptsToUpdateClassFeeWithProperties(a gocuke.DocString) {
+func (s *updateClassFeesSuite) AliceAttemptsToUpdateClassFeesWithProperties(a gocuke.DocString) {
 	var msg *core.MsgUpdateClassFees
 
 	err := json.Unmarshal([]byte(a.Content), &msg)

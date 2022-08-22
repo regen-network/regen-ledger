@@ -52,6 +52,35 @@ func (s *removeClassClassCreators) AliceAttemptsToRemoveClassCreatorsWithPropert
 	_, s.err = s.k.RemoveClassCreators(s.ctx, msg)
 }
 
+func (s *removeClassClassCreators) ExpectClassCreatorsWithProperties(a gocuke.DocString) {
+	var msg *core.MsgRemoveClassCreators
+
+	err := json.Unmarshal([]byte(a.Content), &msg)
+	require.NoError(s.t, err)
+
+	found := 0
+
+	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, len(msg.Creators), len(params.Params.AllowedClassCreators))
+	for _, creator := range params.Params.AllowedClassCreators {
+		for _, creator1 := range msg.Creators {
+			if creator == creator1 {
+				found++
+			}
+		}
+	}
+	require.Equal(s.t, len(msg.Creators), found)
+}
+
+func (s *removeClassClassCreators) ExpectClassCreatorsListToBeEmpty() {
+	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
+	require.NoError(s.t, err)
+
+	require.Zero(s.t, len(params.Params.AllowedClassCreators))
+}
+
 func (s *removeClassClassCreators) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
