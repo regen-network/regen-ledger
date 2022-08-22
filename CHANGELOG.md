@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Removed
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Removed `paramsKeeper` parameter from `core/Keeper`.
 
 ### x/ecocredit
 
@@ -22,12 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Removed `AllowedDenom` proposal handler.
 
+
 #### Added
 
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1342) `AddAllowedDenom` is added for msg-based gov proposal.
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) `AddCreditType` is added for msg-based gov proposal.
 - [#1346](https://github.com/regen-network/regen-ledger/pull/1346) `RemoveAllowedDenom` is added for msg-based gov proposal.
 - [#1349](https://github.com/regen-network/regen-ledger/pull/1349) `UpdateBasketFees` is added for msg-based gov proposal.
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) `AddClassCreators` is added for msg-based gov proposal.
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) `RemoveClassCreators` is added for msg-based gov proposal.
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) `ToggleCreditClassAllowlist` is added for msg-based gov proposal.
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) `UpdateClassFees` is added for msg-based gov proposal.
 
 ### x/group
 
