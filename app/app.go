@@ -550,14 +550,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	return app
 }
 
-// MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
-// Regenapp. It is useful for tests and clients who do not want to construct the
-// full Regenapp
-func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
-	cfg := MakeEncodingConfig()
-	return cfg.Codec, cfg.Amino
-}
-
 // Name returns the name of the App
 func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
