@@ -40,23 +40,27 @@ func (k Keeper) Params(ctx context.Context, _ *core.QueryParamsRequest) (*core.Q
 		return nil, err
 	}
 
-	fees := make([]sdk.Coin, len(classFees.Fees))
+	classFees1, ok := core.ProtoCoinsToCoins(classFees.Fees)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidCoins.Wrap("class fees")
+	}
 
-	for i, fee := range classFees.Fees {
-		amount, ok := sdk.NewIntFromString(fee.Amount)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidCoins.Wrapf("invalid amount %s", amount)
-		}
+	basketFees, err := k.basketStore.BasketFeesTable().Get(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-		fees[i] = sdk.NewCoin(fee.Denom, amount)
+	basketFees1, ok := core.ProtoCoinsToCoins(basketFees.Fees)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidCoins.Wrap("basket fees")
 	}
 
 	return &core.QueryParamsResponse{
 		Params: &core.Params{
 			AllowedClassCreators: creators,
 			AllowlistEnabled:     allowlistEnabled.Enabled,
-			CreditClassFee:       fees,
-			BasketFee:            sdk.NewCoins(),
+			CreditClassFee:       classFees1,
+			BasketFee:            basketFees1,
 		},
 	}, nil
 }

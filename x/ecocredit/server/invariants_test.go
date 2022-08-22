@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -64,7 +65,10 @@ func setupBase(t *testing.T) *baseSuite {
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	_, _, authorityAddress := testdata.KeyTestPubAddr()
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, authorityAddress)
+
+	basketStore, err := basketapi.NewStateStore(s.db)
+	assert.NilError(t, err)
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, authorityAddress)
 
 	return s
 }

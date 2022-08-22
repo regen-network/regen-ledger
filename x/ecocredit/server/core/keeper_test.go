@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
@@ -68,7 +69,10 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.authority, err = sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	require.NoError(t, err)
 
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, s.authority)
+	basketStore, err := basketapi.NewStateStore(s.db)
+	assert.NilError(t, err)
+
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, s.authority)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 
