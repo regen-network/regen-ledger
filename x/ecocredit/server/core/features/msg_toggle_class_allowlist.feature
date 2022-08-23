@@ -45,7 +45,7 @@ Feature: Msg/MsgToggleClassAllowlist
       Then expect no error
       And expect class allowlist flag to be true 
     
-    Scenario: The class allow list is enabled
+    Scenario: The class allow list is disabled
       When alice attempts to toggle class allowlist with properties
       """
       {
