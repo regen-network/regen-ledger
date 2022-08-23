@@ -8,16 +8,16 @@ import (
 	"testing"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type createBatchSuite struct {
@@ -395,6 +395,57 @@ func (s *createBatchSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, &res, s.res)
+}
+
+func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event api.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	eventRetire, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(event, eventRetire)
+
+}
+
+func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
+	var event api.EventMint
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(event, sdkEvent)
+}
+
+func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event api.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(event, sdkEvent)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom(a, b, c, d string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:              c,
+				RetiredAmount:          b,
+				RetirementJurisdiction: d,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+	})
+	require.NoError(s.t, s.err)
 }
 
 func (s *createBatchSuite) getProjectSequence(projectID string) uint64 {

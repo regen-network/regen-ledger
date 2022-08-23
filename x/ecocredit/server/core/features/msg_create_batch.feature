@@ -408,3 +408,39 @@ Feature: Msg/CreateBatch
       """
 
     # no failing scenario - response should always be empty when message execution fails
+
+  Rule: Events are emitted
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+      And a project with project id "C01-001"
+
+    Scenario:  Events EventRetire, EventMint, EventTransfer, and EventCreateBatch are emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event retire with properties
+      """
+      {
+        "owner": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "amount": "10",
+        "jurisdiction": "US-WA"
+      }
+      """
+      And expect event mint with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "",
+        "retired_amount": "10"
+      }
+      """
+      And expect event transfer with properties
+      """
+      {
+        "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "",
+        "retired_amount": "10"
+      }
+      """
+      # sender will be filled at runtime with alice's address
