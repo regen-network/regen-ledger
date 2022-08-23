@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -45,7 +46,7 @@ func (s *updateClassIssuers) ACreditTypeWithAbbreviation(a string) {
 }
 
 func (s *updateClassIssuers) ACreditClassWithClassIdAndAdminAlice(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,
@@ -56,7 +57,7 @@ func (s *updateClassIssuers) ACreditClassWithClassIdAndAdminAlice(a string) {
 }
 
 func (s *updateClassIssuers) ACreditClassWithClassIdAdminAliceAndIssuers(a string, b gocuke.DocString) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,

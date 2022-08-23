@@ -206,12 +206,12 @@ generate:
 ###############################################################################
 
 lint:
-	golangci-lint run --out-format=tab
-	protolint .
+	@echo "Linting all go modules..."
+	@find . -name 'go.mod' -type f -execdir golangci-lint run --out-format=tab \;
 
-lint-fix:
-	golangci-lint run --fix --out-format=tab --issues-exit-code=0
-	protolint -fix .
+lint-fix: format
+	@echo "Attempting to fix lint errors in all go modules..."
+	@find . -name 'go.mod' -type f -execdir golangci-lint run --fix --out-format=tab --issues-exit-code=0 \;
 
 format_filter = -name '*.go' -type f \
 	-not -path '*.git*' \
@@ -221,10 +221,15 @@ format_filter = -name '*.go' -type f \
 	-not -name '*.cosmos_orm.go' \
 	-not -name 'statik.go'
 
+format_local = \
+	github.com/tendermint/tendermint \
+	github.com/cosmos/cosmos-sdk \
+	github.com/cosmos/ibc-go \
+	github.com/regen-network/regen-ledger
+
 format:
-	@find . $(format_filter) | xargs gofmt -w -s
-	@find . $(format_filter) | xargs misspell -w
-	@find . $(format_filter) | xargs goimports -w
+	@echo "Formatting imports in all go modules..."
+	@find . $(format_filter) | xargs goimports -w -local $(subst $(whitespace),$(comma),$(format_local))
 
 .PHONY: lint lint-fix format
 

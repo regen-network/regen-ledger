@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -40,7 +41,7 @@ func (s *updateClassMetadata) ACreditTypeWithAbbreviation(a string) {
 }
 
 func (s *updateClassMetadata) ACreditClassWithClassIdAndAdminAlice(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,

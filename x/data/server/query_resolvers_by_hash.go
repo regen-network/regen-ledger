@@ -23,7 +23,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 		return nil, err
 	}
 
-	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
+	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("data record with content hash")
 	}
@@ -35,7 +35,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 
 	it, err := s.stateStore.DataResolverTable().List(
 		ctx,
-		api.DataResolverPrimaryKey{}.WithId(dataId.Id),
+		api.DataResolverPrimaryKey{}.WithId(dataID.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {

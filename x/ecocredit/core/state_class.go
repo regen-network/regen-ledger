@@ -11,7 +11,7 @@ func (m *Class) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("key cannot be zero")
 	}
 
-	if err := ValidateClassId(m.Id); err != nil {
+	if err := ValidateClassID(m.Id); err != nil {
 		return err // returns parse error
 	}
 

@@ -11,10 +11,10 @@ import (
 )
 
 func TestParseBasketCredits(t *testing.T) {
-	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `[
+	emptyJSON := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJSON := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJSON := testutil.WriteToNewTempFile(t, `[
 		{
 			"batch_denom": "C01-001-20210101-20210101-001",
 			"amount": "10"
@@ -40,25 +40,25 @@ func TestParseBasketCredits(t *testing.T) {
 		},
 		{
 			name:      "empty json object",
-			file:      emptyJson,
+			file:      emptyJSON,
 			expErr:    true,
 			expErrMsg: "cannot unmarshal object",
 		},
 		{
 			name:      "invalid json format",
-			file:      invalidJson,
+			file:      invalidJSON,
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
 		{
 			name:      "duplicate json keys",
-			file:      duplicateJson,
+			file:      duplicateJSON,
 			expErr:    true,
 			expErrMsg: "duplicate key",
 		},
 		{
 			name: "valid test",
-			file: validJson,
+			file: validJSON,
 			expRes: []*basket.BasketCredit{
 				{
 					BatchDenom: "C01-001-20210101-20210101-001",

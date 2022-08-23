@@ -3,6 +3,8 @@ package marketplace
 import (
 	"context"
 
+	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -157,14 +159,14 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 
 // getTotalCost calculates the cost of the order by multiplying the price per credit, and the amount of credits
 // desired in the order.
-func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) {
+func getTotalCost(pricePerCredit sdkmath.Int, amtCredits math.Dec) (sdkmath.Int, error) {
 	unitPrice, err := math.NewPositiveFixedDecFromString(pricePerCredit.String(), amtCredits.NumDecimalPlaces())
 	if err != nil {
-		return sdk.Int{}, err
+		return sdkmath.Int{}, err
 	}
 	cost, err := amtCredits.Mul(unitPrice)
 	if err != nil {
-		return sdk.Int{}, err
+		return sdkmath.Int{}, err
 	}
 	return cost.SdkIntTrim(), nil
 }

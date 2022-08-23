@@ -14,7 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/fixture"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -148,7 +148,7 @@ func (s *bridgeSuite) ExpectCreditBatchWithProperties(a gocuke.DocString) {
 }
 
 func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocString) {
-	expected := &ecocreditv1.BatchSupply{}
+	expected := &api.BatchSupply{}
 	err := jsonpb.UnmarshalString(b.Content, expected)
 	require.NoError(s.t, err)
 
@@ -163,7 +163,7 @@ func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocStri
 }
 
 func (s *bridgeSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c gocuke.DocString) {
-	expected := &ecocreditv1.BatchBalance{}
+	expected := &api.BatchBalance{}
 	err := jsonpb.UnmarshalString(c.Content, expected)
 	require.NoError(s.t, err)
 

@@ -3,7 +3,7 @@ package math
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 )
 
 func BenchmarkSdkIntTrim(b *testing.B) {
@@ -33,7 +33,7 @@ func BenchmarkSdkIntTrim(b *testing.B) {
 
 }
 
-func sdkIntTrimQuo(d Dec) sdk.Int {
+func sdkIntTrimQuo(d Dec) sdkmath.Int {
 	d, err := d.QuoInteger(NewDecFromInt64(1))
 	if err != nil {
 		panic(err)
@@ -43,17 +43,17 @@ func sdkIntTrimQuo(d Dec) sdk.Int {
 	if err != nil {
 		panic(err)
 	}
-	return sdk.NewIntFromBigInt(i)
+	return sdkmath.NewIntFromBigInt(i)
 }
 
-func sdkIntTrimNaive(d Dec) sdk.Int {
+func sdkIntTrimNaive(d Dec) sdkmath.Int {
 	d, err := d.QuoInteger(NewDecFromInt64(1))
 	if err != nil {
 		panic(err)
 	}
 
 	s := d.String()
-	i, ok := sdk.NewIntFromString(s)
+	i, ok := sdkmath.NewIntFromString(s)
 	if !ok {
 		panic("can't convert from string")
 	}

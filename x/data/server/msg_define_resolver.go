@@ -23,9 +23,9 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 	if err != nil {
 		if ormerrors.UniqueKeyViolation.Is(err) {
 			return nil, ormerrors.UniqueKeyViolation.Wrap("a resolver with the same URL and manager already exists")
-		} else {
-			return nil, err
 		}
+
+		return nil, err
 	}
 
 	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&data.EventDefineResolver{

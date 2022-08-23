@@ -19,10 +19,10 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgAnchor           = "op_weight_msg_anchor"
-	OpWeightMsgAttest           = "op_weight_msg_attest"
-	OpWeightMsgDefineResolver   = "op_weight_msg_define_resolver"
-	OpWeightMsgRegisterResolver = "op_weight_msg_register_resolver"
+	OpWeightMsgAnchor           = "op_weight_msg_anchor"            //nolint: gosec
+	OpWeightMsgAttest           = "op_weight_msg_attest"            //nolint: gosec
+	OpWeightMsgDefineResolver   = "op_weight_msg_define_resolver"   //nolint: gosec
+	OpWeightMsgRegisterResolver = "op_weight_msg_register_resolver" //nolint: gosec
 )
 
 var (
@@ -216,22 +216,22 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryCli
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "fee error"), nil, err
 		}
 
-		resolverUrl := genResolverUrl(r)
+		resolverURL := genResolverURL(r)
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		result, err := qryClient.ResolversByURL(ctx, &data.QueryResolversByURLRequest{Url: resolverUrl})
+		result, err := qryClient.ResolversByURL(ctx, &data.QueryResolversByURLRequest{Url: resolverURL})
 		if err != nil {
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, err.Error()), nil, err
 		}
 
 		for _, resolver := range result.Resolvers {
-			if resolver.Url == resolverUrl && resolver.Manager == manager.Address.String() {
+			if resolver.Url == resolverURL && resolver.Manager == manager.Address.String() {
 				return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "resolver with the same URL and manager already exists"), nil, nil
 			}
 		}
 
 		msg := &data.MsgDefineResolver{
 			Manager:     manager.Address.String(),
-			ResolverUrl: resolverUrl,
+			ResolverUrl: resolverURL,
 		}
 
 		account := ak.GetAccount(sdkCtx, manager.Address)
@@ -263,7 +263,7 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryCli
 	}
 }
 
-func genResolverUrl(r *rand.Rand) string {
+func genResolverURL(r *rand.Rand) string {
 	return fmt.Sprintf("https://%s.com", simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 3)))
 }
 
@@ -274,8 +274,8 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		resolverId := r.Uint64()
-		res, err := qryClient.Resolver(ctx, &data.QueryResolverRequest{Id: resolverId})
+		resolverID := r.Uint64()
+		res, err := qryClient.Resolver(ctx, &data.QueryResolverRequest{Id: resolverID})
 		if err != nil {
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgRegisterResolver, err.Error()), nil, nil // not found
 		}
@@ -302,7 +302,7 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 		}
 		msg := &data.MsgRegisterResolver{
 			Manager:       manager.String(),
-			ResolverId:    resolverId,
+			ResolverId:    resolverID,
 			ContentHashes: []*data.ContentHash{contentHash},
 		}
 
@@ -343,9 +343,9 @@ func getContentHash(r *rand.Rand) (*data.ContentHash, error) {
 	digest := hash.Sum(nil)
 	if r.Float32() < 0.5 {
 		return &data.ContentHash{Graph: getGraph(digest)}, nil
-	} else {
-		return &data.ContentHash{Raw: getRaw(digest)}, nil
 	}
+
+	return &data.ContentHash{Raw: getRaw(digest)}, nil
 }
 
 func getGraph(digest []byte) *data.ContentHash_Graph {

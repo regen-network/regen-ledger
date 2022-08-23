@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -27,8 +28,6 @@ const (
 
 	IriPrefixRaw   byte = 0
 	IriPrefixGraph byte = 1
-
-	didVersion0 byte = 0
 )
 
 // ToIRI converts the ContentHash_Raw to an IRI (internationalized URI) based on the following
@@ -74,10 +73,10 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 }
 
 // ToExtension converts the media type to a file extension based on the mediaTypeExtensions map.
-func (mt RawMediaType) ToExtension() (string, error) {
-	ext, ok := mediaExtensionTypeToString[mt]
+func (rmt RawMediaType) ToExtension() (string, error) {
+	ext, ok := mediaExtensionTypeToString[rmt]
 	if !ok {
-		return "", sdkerrors.ErrInvalidRequest.Wrapf("missing extension for %T %s", mt, mt)
+		return "", sdkerrors.ErrInvalidRequest.Wrapf("missing extension for %T %s", rmt, rmt)
 	}
 
 	return ext, nil

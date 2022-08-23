@@ -160,7 +160,7 @@ NOTE: The bid price is the price paid PER credit. The total cost will be quantit
 				return err
 			}
 
-			sellOrderId, err := strconv.ParseUint(args[0], 10, 64)
+			sellOrderID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -185,7 +185,7 @@ NOTE: The bid price is the price paid PER credit. The total cost will be quantit
 				Buyer: clientCtx.GetFromAddress().String(),
 				Orders: []*marketplace.MsgBuyDirect_Order{
 					{
-						SellOrderId:            sellOrderId,
+						SellOrderId:            sellOrderID,
 						Quantity:               args[1],
 						BidPrice:               &bidPrice,
 						DisableAutoRetire:      disableAutoRetire,

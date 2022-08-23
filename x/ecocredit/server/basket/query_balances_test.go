@@ -16,10 +16,9 @@ func TestQueryBalances(t *testing.T) {
 	s := setupBase(t)
 
 	// add some baskets
-	basketDenom := "foo"
 	batchDenoms := []string{"bar", "baz", "qux"}
 	require.NoError(t, s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
-		BasketDenom: basketDenom,
+		BasketDenom: testBasketDenom,
 	}))
 	require.NoError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       1,
@@ -43,7 +42,7 @@ func TestQueryBalances(t *testing.T) {
 	// setup test keeper
 
 	// query all
-	res, err := s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: basketDenom})
+	res, err := s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: testBasketDenom})
 	require.NoError(t, err)
 	require.Len(t, res.Balances, 3)
 	require.Equal(t, "100.50", res.Balances[0].Balance)
@@ -52,7 +51,7 @@ func TestQueryBalances(t *testing.T) {
 
 	// paginate
 	res, err = s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{
-		BasketDenom: basketDenom,
+		BasketDenom: testBasketDenom,
 		Pagination: &query.PageRequest{
 			Limit:      2,
 			CountTotal: true,

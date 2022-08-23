@@ -15,7 +15,7 @@ func (s *IntegrationTestSuite) TestQueryBasketCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) TestQueryBasketsCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -121,7 +121,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalanceCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string

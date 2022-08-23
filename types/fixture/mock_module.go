@@ -27,25 +27,19 @@ func (m MockModule) Name() string {
 	return "mocker"
 }
 
-func (m MockModule) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
-	return
-}
+func (m MockModule) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
-func (m MockModule) RegisterInterfaces(registry types.InterfaceRegistry) {
-	return
-}
+func (m MockModule) RegisterInterfaces(_ types.InterfaceRegistry) {}
 
-func (m MockModule) DefaultGenesis(codec codec.JSONCodec) json.RawMessage {
+func (m MockModule) DefaultGenesis(_ codec.JSONCodec) json.RawMessage {
 	return nil
 }
 
-func (m MockModule) ValidateGenesis(codec codec.JSONCodec, config client.TxEncodingConfig, message json.RawMessage) error {
+func (m MockModule) ValidateGenesis(_ codec.JSONCodec, _ client.TxEncodingConfig, _ json.RawMessage) error {
 	return nil
 }
 
-func (m MockModule) RegisterGRPCGatewayRoutes(context client.Context, mux *runtime.ServeMux) {
-	return
-}
+func (m MockModule) RegisterGRPCGatewayRoutes(_ client.Context, _ *runtime.ServeMux) {}
 
 func (m MockModule) GetTxCmd() *cobra.Command {
 	return nil
@@ -55,17 +49,15 @@ func (m MockModule) GetQueryCmd() *cobra.Command {
 	return nil
 }
 
-func (m MockModule) InitGenesis(context sdk.Context, codec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
-	return []abci.ValidatorUpdate{{crypto.PublicKey{}, 40}}
+func (m MockModule) InitGenesis(_ sdk.Context, _ codec.JSONCodec, _ json.RawMessage) []abci.ValidatorUpdate {
+	return []abci.ValidatorUpdate{{PubKey: crypto.PublicKey{}, Power: 40}}
 }
 
-func (m MockModule) ExportGenesis(context sdk.Context, codec codec.JSONCodec) json.RawMessage {
+func (m MockModule) ExportGenesis(_ sdk.Context, _ codec.JSONCodec) json.RawMessage {
 	return nil
 }
 
-func (m MockModule) RegisterInvariants(registry sdk.InvariantRegistry) {
-
-}
+func (m MockModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 func (m MockModule) Route() sdk.Route {
 	return sdk.Route{}
@@ -75,12 +67,11 @@ func (m MockModule) QuerierRoute() string {
 	return ""
 }
 
-func (m MockModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+func (m MockModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
-func (m MockModule) RegisterServices(configurator module.Configurator) {
-}
+func (m MockModule) RegisterServices(_ module.Configurator) {}
 
 func (m MockModule) ConsensusVersion() uint64 {
 	return 1

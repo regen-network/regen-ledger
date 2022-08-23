@@ -14,7 +14,7 @@ func (m *OriginTxIndex) Validate() error {
 		return ecocredit.ErrParseFailure.Wrap("id cannot be empty")
 	}
 
-	if !reOriginTxId.MatchString(m.Id) {
+	if !reOriginTxID.MatchString(m.Id) {
 		return ecocredit.ErrParseFailure.Wrap("id must be at most 128 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 

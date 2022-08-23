@@ -8,7 +8,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-const MaxReferenceIdLength = 32
+const MaxReferenceIDLength = 32
 
 var _ legacytx.LegacyMsg = &MsgCreateProject{}
 
@@ -29,7 +29,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateClassId(m.ClassId); err != nil {
+	if err := ValidateClassID(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
@@ -41,8 +41,8 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIdLength {
-		return ecocredit.ErrMaxLimit.Wrapf("reference id: max length %d", MaxReferenceIdLength)
+	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIDLength {
+		return ecocredit.ErrMaxLimit.Wrapf("reference id: max length %d", MaxReferenceIDLength)
 	}
 
 	return nil

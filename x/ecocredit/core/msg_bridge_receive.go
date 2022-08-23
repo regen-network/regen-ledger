@@ -29,7 +29,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
 
-	if err := ValidateClassId(m.ClassId); err != nil {
+	if err := ValidateClassID(m.ClassId); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
@@ -43,8 +43,8 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("project reference id cannot be empty")
 	}
 
-	if len(m.Project.ReferenceId) > MaxReferenceIdLength {
-		return ecocredit.ErrMaxLimit.Wrapf("project reference id: max length %d", MaxReferenceIdLength)
+	if len(m.Project.ReferenceId) > MaxReferenceIDLength {
+		return ecocredit.ErrMaxLimit.Wrapf("project reference id: max length %d", MaxReferenceIDLength)
 	}
 
 	if err := ValidateJurisdiction(m.Project.Jurisdiction); err != nil {

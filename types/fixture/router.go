@@ -1,7 +1,6 @@
 package fixture
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"reflect"
@@ -9,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/gogo/protobuf/proto"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc/encoding"
@@ -100,36 +100,6 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		return nil
 
 	}, nil
-}
-
-func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
-	return func(callInfo CallInfo) (types.Invoker, error) {
-		moduleID := callInfo.Caller
-		if moduleName != moduleID.ModuleName {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
-				fmt.Sprintf("expected a call from module %s, but module %s is calling", moduleName, moduleID.ModuleName))
-		}
-
-		moduleAddr := moduleID.Address()
-
-		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.Msg) error {
-			signers := msgReq.GetSigners()
-			if len(signers) != 1 {
-				return fmt.Errorf("inter module Msg invocation requires a single expected signer (%s), but %s expects multiple signers (%+v),  ", moduleAddr, methodName, signers)
-			}
-
-			signer := signers[0]
-
-			if bytes.Equal(moduleAddr, signer) {
-				return nil
-			}
-
-			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
-				fmt.Sprintf("expected %s, got %s", signers[0], moduleAddr))
-		}
-
-		return rtr.invoker(callInfo.Method, writeCondition)
-	}
 }
 
 func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {

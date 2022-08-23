@@ -7,9 +7,10 @@ import (
 	"github.com/regen-network/gocuke"
 	"gotest.tools/v3/assert"
 
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -21,16 +22,14 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
-var (
-	gmAny         = gomock.Any()
-	defaultParams = core.DefaultParams()
+const (
+	testClassID     = "C01"
+	testBasketDenom = "eco.uC.NCT"
 )
 
 type baseSuite struct {
@@ -41,7 +40,7 @@ type baseSuite struct {
 	ctrl         *gomock.Controller
 	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
-	coreStore    ecocreditApi.StateStore
+	coreStore    ecoApi.StateStore
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *storetypes.KVStoreKey
@@ -56,7 +55,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
-	s.coreStore, err = ecocreditApi.NewStateStore(s.db)
+	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()

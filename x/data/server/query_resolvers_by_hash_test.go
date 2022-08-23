@@ -34,8 +34,6 @@ func TestQuery_ResolversByHash(t *testing.T) {
 	iri2, err := ch2.ToIRI()
 	require.NoError(t, err)
 
-	url := "https://foo.bar"
-
 	// insert data ids
 	err = s.server.stateStore.DataIDTable().Insert(s.ctx, &api.DataID{Id: id1, Iri: iri1})
 	require.NoError(t, err)
@@ -44,12 +42,12 @@ func TestQuery_ResolversByHash(t *testing.T) {
 
 	// insert resolvers
 	rid1, err := s.server.stateStore.ResolverTable().InsertReturningID(s.ctx, &api.Resolver{
-		Url:     url,
+		Url:     testURL,
 		Manager: s.addrs[0],
 	})
 	require.NoError(t, err)
 	rid2, err := s.server.stateStore.ResolverTable().InsertReturningID(s.ctx, &api.Resolver{
-		Url:     url,
+		Url:     testURL,
 		Manager: s.addrs[1],
 	})
 	require.NoError(t, err)
@@ -80,7 +78,7 @@ func TestQuery_ResolversByHash(t *testing.T) {
 	// check resolver properties
 	require.Equal(t, rid1, res.Resolvers[0].Id)
 	require.Equal(t, s.addrs[0].String(), res.Resolvers[0].Manager)
-	require.Equal(t, url, res.Resolvers[0].Url)
+	require.Equal(t, testURL, res.Resolvers[0].Url)
 
 	// query resolvers with content hash that has not been registered
 	res, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{

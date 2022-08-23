@@ -4,8 +4,9 @@ import (
 	"encoding/binary"
 	"hash"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"golang.org/x/crypto/blake2b"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // Hasher generates a unique binary identifier for a longer piece of binary data
@@ -84,7 +85,7 @@ func (t hasher) CreateID(value []byte, collisions int) (id []byte) {
 	hashBz := hasher.Sum(nil)
 
 	id = make([]byte, t.minLen, t.bufLen)
-	copy(id[:], hashBz[:t.minLen])
+	copy(id, hashBz[:t.minLen])
 
 	// Deal with collisions by appending the equivalent number of bytes
 	// from hashBz. If using this method will exceed hash length, append

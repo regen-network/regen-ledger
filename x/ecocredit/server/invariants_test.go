@@ -8,9 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -270,8 +271,8 @@ func TestBatchSupplyInvariant(t *testing.T) {
 		tc := tc
 		suite := setupBase(t)
 		t.Run(tc.msg, func(t *testing.T) {
-			initBalances(t, suite.ctx, suite.stateStore, tc.balances)
-			initSupply(t, suite.ctx, suite.stateStore, tc.supply)
+			initBalances(suite.ctx, t, suite.stateStore, tc.balances)
+			initSupply(suite.ctx, t, suite.stateStore, tc.supply)
 
 			msg, broken := coreserver.BatchSupplyInvariant(suite.ctx, suite.k, tc.basketBalance)
 			if tc.expBroken {
@@ -283,7 +284,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 	}
 }
 
-func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances []*core.BatchBalance) {
+func initBalances(ctx context.Context, t *testing.T, ss api.StateStore, balances []*core.BatchBalance) {
 	for _, b := range balances {
 		_, err := math.NewNonNegativeDecFromString(b.TradableAmount)
 		require.NoError(t, err)
@@ -298,7 +299,7 @@ func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances
 	}
 }
 
-func initSupply(t *testing.T, ctx context.Context, ss api.StateStore, supply []*core.BatchSupply) {
+func initSupply(ctx context.Context, t *testing.T, ss api.StateStore, supply []*core.BatchSupply) {
 	for _, s := range supply {
 		err := ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 			BatchKey:        s.BatchKey,

@@ -55,11 +55,11 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/class/%s", s.val.APIAddress, coreRoute, s.classID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/classes/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/classes/%s", s.val.APIAddress, coreRoute, s.classID),
 		},
 	}
 
@@ -74,7 +74,7 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Class)
-			require.Equal(res.Class.Id, s.classId)
+			require.Equal(res.Class.Id, s.classID)
 		})
 	}
 }
@@ -88,11 +88,11 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, coreRoute, s.projectID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, coreRoute, s.projectID),
 		},
 	}
 
@@ -162,7 +162,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classID),
 		},
 		{
 			"valid with pagination",
@@ -170,16 +170,16 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 				"%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
-				s.classId,
+				s.classID,
 			),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, coreRoute, s.classID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classID),
 		},
 	}
 
@@ -205,7 +205,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
+func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 	require := s.Require()
 
 	testCases := []struct {
@@ -218,7 +218,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 				"%s/%s/projects-by-reference-id/%s",
 				s.val.APIAddress,
 				coreRoute,
-				s.projectReferenceId,
+				s.projectReferenceID,
 			),
 		},
 		{
@@ -227,7 +227,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 				"%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				coreRoute,
-				s.projectReferenceId,
+				s.projectReferenceID,
 			),
 		},
 		{
@@ -235,7 +235,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 			fmt.Sprintf("%s/%s/projects/reference-id/%s",
 				s.val.APIAddress,
 				coreRoute,
-				s.projectReferenceId,
+				s.projectReferenceID,
 			),
 		},
 	}
@@ -349,17 +349,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/batches-by-class/%s", s.val.APIAddress, coreRoute, s.classID),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/batches-by-class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classID),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/batches/class/%s", s.val.APIAddress, coreRoute, s.classID),
 			false,
 		},
 	}
@@ -391,17 +391,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/batches-by-project/%s", s.val.APIAddress, coreRoute, s.projectID),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/batches-by-project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectID),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/batches/project/%s", s.val.APIAddress, coreRoute, s.projectID),
 			false,
 		},
 	}

@@ -34,9 +34,10 @@ func TestGogoToProtobufDuration(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		args, want := tt.args, tt.want
 		t.Run(tt.name, func(t *testing.T) {
-			if got := types.GogoToProtobufDuration(tt.args.d); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GogoToProtobufDuration() = %v, want %v", got, tt.want)
+			if got := types.GogoToProtobufDuration(args.d); !reflect.DeepEqual(got, want) {
+				t.Errorf("GogoToProtobufDuration() = %v, want %v", got, want)
 			}
 		})
 	}
@@ -63,9 +64,10 @@ func TestGogoToProtobufTimestamp(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		args, want := tt.args, tt.want
 		t.Run(tt.name, func(t *testing.T) {
-			if got := types.GogoToProtobufTimestamp(tt.args.ts); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GogoToProtobufTimestamp() = %v, want %v", got, tt.want)
+			if got := types.GogoToProtobufTimestamp(args.ts); !reflect.DeepEqual(got, want) {
+				t.Errorf("GogoToProtobufTimestamp() = %v, want %v", got, want)
 			}
 		})
 	}
@@ -92,9 +94,10 @@ func TestProtobufToGogoTimestamp(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		args, want := tt.args, tt.want
 		t.Run(tt.name, func(t *testing.T) {
-			if got := types.ProtobufToGogoTimestamp(tt.args.ts); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ProtobufToGogoTimestamp() = %v, want %v", got, tt.want)
+			if got := types.ProtobufToGogoTimestamp(args.ts); !reflect.DeepEqual(got, want) {
+				t.Errorf("ProtobufToGogoTimestamp() = %v, want %v", got, want)
 			}
 		})
 	}
@@ -110,10 +113,11 @@ func TestParseDate(t *testing.T) {
 		{"bad", "01-2021-20", true},
 	}
 	for _, tc := range tcs {
+		date, hasErr := tc.date, tc.hasErr
 		t.Run(tc.name, func(t *testing.T) {
 			require := require.New(t)
-			tm, err := types.ParseDate(tc.date, tc.date)
-			if tc.hasErr {
+			tm, err := types.ParseDate(date, date)
+			if hasErr {
 				require.Error(err)
 				require.Equal(time.Time{}, tm)
 			} else {

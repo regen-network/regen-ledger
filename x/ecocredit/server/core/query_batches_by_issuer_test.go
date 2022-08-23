@@ -59,7 +59,7 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Batches))
 	assert.Equal(t, uint64(2), res.Pagination.Total)
-	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch1)
+	assertBatchEqual(s.ctx, t, s.k, res.Batches[0], batch1)
 
 	_, _, notIssuer := testdata.KeyTestPubAddr()
 

@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/proto"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/stretchr/testify/suite"
-	"google.golang.org/protobuf/proto"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -122,7 +123,7 @@ func (s *GenesisTestSuite) exportGenesisState(ctx sdk.Context) map[string]json.R
 type GenesisTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
+	fixtureFactory testutil.Factory
 	fixture        testutil.Fixture
 	signers        []sdk.AccAddress
 
@@ -132,7 +133,7 @@ type GenesisTestSuite struct {
 	genesisCtx sdk.Context
 }
 
-func NewGenesisTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *GenesisTestSuite {
+func NewGenesisTestSuite(fixtureFactory testutil.Factory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *GenesisTestSuite {
 	return &GenesisTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,

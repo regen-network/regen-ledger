@@ -10,10 +10,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 
+	dbm "github.com/tendermint/tm-db"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -24,7 +25,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
-type FixtureFactory struct {
+type Factory struct {
 	t       gocuke.TestingT
 	modules []sdkmodules.AppModule
 	signers []sdk.AccAddress
@@ -32,9 +33,9 @@ type FixtureFactory struct {
 	baseApp *baseapp.BaseApp
 }
 
-func NewFixtureFactory(t gocuke.TestingT, numSigners int) *FixtureFactory {
+func NewFixtureFactory(t gocuke.TestingT, numSigners int) *Factory {
 	signers := makeTestAddresses(numSigners)
-	return &FixtureFactory{
+	return &Factory{
 		t:       t,
 		signers: signers,
 		// cdc and baseApp are initialized here just for compatibility with legacy modules which don't use ADR 033
@@ -44,7 +45,7 @@ func NewFixtureFactory(t gocuke.TestingT, numSigners int) *FixtureFactory {
 	}
 }
 
-func (ff *FixtureFactory) SetModules(modules []sdkmodules.AppModule) {
+func (ff *Factory) SetModules(modules []sdkmodules.AppModule) {
 	ff.modules = modules
 	// we append the mock module below in order to bypass the check for validator updates.
 	// since we are testing with a fixture with no validators, we must inject a mock module and
@@ -54,13 +55,13 @@ func (ff *FixtureFactory) SetModules(modules []sdkmodules.AppModule) {
 
 // Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
 // has been migrated to ADR 033
-func (ff *FixtureFactory) Codec() *codec.ProtoCodec {
+func (ff *Factory) Codec() *codec.ProtoCodec {
 	return ff.cdc
 }
 
 // BaseApp is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
 // has been migrated to ADR 033
-func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
+func (ff *Factory) BaseApp() *baseapp.BaseApp {
 	return ff.baseApp
 }
 
@@ -74,7 +75,7 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff FixtureFactory) Setup() testutil.Fixture {
+func (ff Factory) Setup() testutil.Fixture {
 	cdc := ff.cdc
 	registry := cdc.InterfaceRegistry()
 	baseApp := ff.baseApp

@@ -151,10 +151,10 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *core.MsgBridgeReceive) (
 // class id and reference id because we enforce uniqueness on non-empty reference ids within the scope
 // of a credit class (and we do this at the message server level and not the ORM level because reference
 // id is optional when using Msg/CreateProject). If no project is found, nil is returned for both values.
-func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project, classId string) (*api.Project, error) {
-	class, err := k.stateStore.ClassTable().GetById(ctx, classId)
+func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *core.MsgBridgeReceive_Project, classID string) (*api.Project, error) {
+	class, err := k.stateStore.ClassTable().GetById(ctx, classID)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", classId, err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", classID, err.Error())
 	}
 
 	// first we check if there is an existing project

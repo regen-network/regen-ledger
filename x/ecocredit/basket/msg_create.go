@@ -51,7 +51,7 @@ func (m MsgCreate) ValidateBasic() error {
 	}
 
 	for i := range m.AllowedClasses {
-		if err := core.ValidateClassId(m.AllowedClasses[i]); err != nil {
+		if err := core.ValidateClassID(m.AllowedClasses[i]); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("allowed_classes[%d] is not a valid class ID: %s", i, err)
 		}
 	}

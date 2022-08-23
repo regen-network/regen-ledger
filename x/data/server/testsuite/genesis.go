@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -16,7 +17,7 @@ import (
 type GenesisTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
+	fixtureFactory testutil.Factory
 	fixture        testutil.Fixture
 
 	genesisCtx  sdk.Context
@@ -28,7 +29,7 @@ type GenesisTestSuite struct {
 	hash2       *data.ContentHash
 }
 
-func NewGenesisTestSuite(fixtureFactory testutil.FixtureFactory) *GenesisTestSuite {
+func NewGenesisTestSuite(fixtureFactory testutil.Factory) *GenesisTestSuite {
 	return &GenesisTestSuite{fixtureFactory: fixtureFactory}
 }
 

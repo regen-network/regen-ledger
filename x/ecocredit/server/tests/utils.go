@@ -20,7 +20,7 @@ import (
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
-func NewEcocreditModule(ff *fixture.FixtureFactory) *ecocredit.Module {
+func NewEcocreditModule(ff *fixture.Factory) *ecocredit.Module {
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
 	amino := codec.NewLegacyAmino()

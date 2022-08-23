@@ -15,23 +15,21 @@ func TestQuery_ResolversByURL(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	url := "https://foo.bar"
-
 	// insert resolvers
 	rid1, err := s.server.stateStore.ResolverTable().InsertReturningID(s.ctx, &api.Resolver{
-		Url:     url,
+		Url:     testURL,
 		Manager: s.addrs[0],
 	})
 	require.NoError(t, err)
 	err = s.server.stateStore.ResolverTable().Insert(s.ctx, &api.Resolver{
-		Url:     url,
+		Url:     testURL,
 		Manager: s.addrs[1],
 	})
 	require.NoError(t, err)
 
 	// query resolvers with valid url
 	res, err := s.server.ResolversByURL(s.ctx, &data.QueryResolversByURLRequest{
-		Url:        url,
+		Url:        testURL,
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	require.NoError(t, err)
@@ -43,7 +41,7 @@ func TestQuery_ResolversByURL(t *testing.T) {
 	// check resolver properties
 	require.Equal(t, rid1, res.Resolvers[0].Id)
 	require.Equal(t, s.addrs[0].String(), res.Resolvers[0].Manager)
-	require.Equal(t, url, res.Resolvers[0].Url)
+	require.Equal(t, testURL, res.Resolvers[0].Url)
 
 	// query resolvers with url that has no resolvers
 	res, err = s.server.ResolversByURL(s.ctx, &data.QueryResolversByURLRequest{

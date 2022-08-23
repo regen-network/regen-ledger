@@ -36,7 +36,7 @@ func TestQuery_Balances(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Balances))
-	assertBalanceEqual(t, s.ctx, s.k, res.Balances[0], balance1)
+	assertBalanceEqual(s.ctx, t, s.k, res.Balances[0], balance1)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	_, _, noBalAddr := testdata.KeyTestPubAddr()
@@ -49,7 +49,7 @@ func TestQuery_Balances(t *testing.T) {
 	assert.Equal(t, 0, len(res.Balances))
 }
 
-func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchBalanceInfo, balance *api.BatchBalance) {
+func assertBalanceEqual(ctx context.Context, t *testing.T, k Keeper, received *core.BatchBalanceInfo, balance *api.BatchBalance) {
 	addr := sdk.AccAddress(balance.Address)
 
 	batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)

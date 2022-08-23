@@ -28,7 +28,7 @@ func TestServer(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) *fixture.FixtureFactory {
+func setup(t *testing.T) *fixture.Factory {
 	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()

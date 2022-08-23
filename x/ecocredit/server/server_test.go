@@ -3,6 +3,8 @@ package server_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +18,6 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/fixture"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
@@ -37,7 +38,7 @@ func TestGenesis(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (*fixture.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
+func setup(t *testing.T) (*fixture.Factory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
 	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()

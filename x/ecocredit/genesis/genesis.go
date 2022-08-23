@@ -46,9 +46,7 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 	})
 
 	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{
-		JSONValidator: func(m proto.Message) error {
-			return validateMsg(m)
-		},
+		JSONValidator: validateMsg,
 	})
 	if err != nil {
 		return err
@@ -125,8 +123,8 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 		projectKeyToClassKey[project.Key] = project.ClassKey
 	}
 
-	batchIdToPrecision := make(map[uint64]uint32) // map of batchID to precision
-	batchDenomToIdMap := make(map[string]uint64)  // map of batchDenom to batchId
+	batchIDToPrecision := make(map[uint64]uint32) // map of batchID to precision
+	batchDenomToIDMap := make(map[string]uint64)  // map of batchDenom to batchID
 	bItr, err := ss.BatchTable().List(ormCtx, api.BatchPrimaryKey{})
 	if err != nil {
 		return err
@@ -140,9 +138,9 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 			return err
 		}
 
-		batchDenomToIdMap[batch.Denom] = batch.Key
+		batchDenomToIDMap[batch.Denom] = batch.Key
 
-		if _, exists := batchIdToPrecision[batch.Key]; exists {
+		if _, exists := batchIDToPrecision[batch.Key]; exists {
 			continue
 		}
 
@@ -152,12 +150,12 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 		}
 
 		if class.Key == projectKeyToClassKey[batch.ProjectKey] {
-			batchIdToPrecision[batch.Key] = abbrevToPrecision[class.CreditTypeAbbrev]
+			batchIDToPrecision[batch.Key] = abbrevToPrecision[class.CreditTypeAbbrev]
 		}
 	}
 
-	batchIdToCalSupply := make(map[uint64]math.Dec) // map of batchID to calculated supply
-	batchIdToSupply := make(map[uint64]math.Dec)    // map of batchID to actual supply
+	batchIDToCalSupply := make(map[uint64]math.Dec) // map of batchID to calculated supply
+	batchIDToSupply := make(map[uint64]math.Dec)    // map of batchID to actual supply
 	bsItr, err := ss.BatchSupplyTable().List(ormCtx, api.BatchSupplyPrimaryKey{})
 	if err != nil {
 		return err
@@ -174,13 +172,13 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 		tSupply := math.NewDecFromInt64(0)
 		rSupply := math.NewDecFromInt64(0)
 		if batchSupply.TradableAmount != "" {
-			tSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.TradableAmount, batchIdToPrecision[batchSupply.BatchKey])
+			tSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.TradableAmount, batchIDToPrecision[batchSupply.BatchKey])
 			if err != nil {
 				return err
 			}
 		}
 		if batchSupply.RetiredAmount != "" {
-			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.RetiredAmount, batchIdToPrecision[batchSupply.BatchKey])
+			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.RetiredAmount, batchIDToPrecision[batchSupply.BatchKey])
 			if err != nil {
 				return err
 			}
@@ -191,11 +189,11 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 			return err
 		}
 
-		batchIdToSupply[batchSupply.BatchKey] = total
+		batchIDToSupply[batchSupply.BatchKey] = total
 	}
 
 	// calculate credit batch supply from genesis tradable, retired and escrowed balances
-	if err := calculateSupply(ormCtx, batchIdToPrecision, ss, batchIdToCalSupply); err != nil {
+	if err := calculateSupply(ormCtx, batchIDToPrecision, ss, batchIDToCalSupply); err != nil {
 		return err
 	}
 
@@ -215,9 +213,9 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 		if err != nil {
 			return err
 		}
-		batchId, ok := batchDenomToIdMap[bBalance.BatchDenom]
+		batchID, ok := batchDenomToIDMap[bBalance.BatchDenom]
 		if !ok {
-			return fmt.Errorf("unknown credit batch %d in basket", batchId)
+			return fmt.Errorf("unknown credit batch %d in basket", batchID)
 		}
 
 		bb, err := math.NewNonNegativeDecFromString(bBalance.Balance)
@@ -225,19 +223,19 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 			return err
 		}
 
-		if amount, ok := batchIdToCalSupply[batchId]; ok {
+		if amount, ok := batchIDToCalSupply[batchID]; ok {
 			result, err := math.SafeAddBalance(amount, bb)
 			if err != nil {
 				return err
 			}
-			batchIdToCalSupply[batchId] = result
+			batchIDToCalSupply[batchID] = result
 		} else {
-			return fmt.Errorf("unknown credit batch %d in basket", batchId)
+			return fmt.Errorf("unknown credit batch %d in basket", batchID)
 		}
 	}
 
 	// verify calculated total amount of each credit batch matches the total supply
-	if err := validateSupply(batchIdToCalSupply, batchIdToSupply); err != nil {
+	if err := validateSupply(batchIDToCalSupply, batchIDToSupply); err != nil {
 		return err
 	}
 
@@ -326,7 +324,7 @@ func validateMsg(m proto.Message) error {
 	return nil
 }
 
-func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, ss api.StateStore, batchIdToSupply map[uint64]math.Dec) error {
+func calculateSupply(ctx context.Context, batchIDToPrecision map[uint64]uint32, ss api.StateStore, batchIDToSupply map[uint64]math.Dec) error {
 	bbItr, err := ss.BatchBalanceTable().List(ctx, api.BatchBalancePrimaryKey{})
 	if err != nil {
 		return err
@@ -343,7 +341,7 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 			return err
 		}
 
-		precision, ok := batchIdToPrecision[balance.BatchKey]
+		precision, ok := batchIDToPrecision[balance.BatchKey]
 		if !ok {
 			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchKey)
 		}
@@ -379,29 +377,29 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 			return err
 		}
 
-		if supply, ok := batchIdToSupply[balance.BatchKey]; ok {
+		if supply, ok := batchIDToSupply[balance.BatchKey]; ok {
 			result, err := math.SafeAddBalance(supply, total)
 			if err != nil {
 				return err
 			}
-			batchIdToSupply[balance.BatchKey] = result
+			batchIDToSupply[balance.BatchKey] = result
 		} else {
-			batchIdToSupply[balance.BatchKey] = total
+			batchIDToSupply[balance.BatchKey] = total
 		}
 	}
 
 	return nil
 }
 
-func validateSupply(batchIdToSupplyCal, batchIdToSupply map[uint64]math.Dec) error {
-	if len(batchIdToSupplyCal) == 0 && len(batchIdToSupply) > 0 {
+func validateSupply(batchIDToSupplyCal, batchIDToSupply map[uint64]math.Dec) error {
+	if len(batchIDToSupplyCal) == 0 && len(batchIDToSupply) > 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("batch supply was given but no balances were found")
 	}
-	if len(batchIdToSupply) == 0 && len(batchIdToSupplyCal) > 0 {
+	if len(batchIDToSupply) == 0 && len(batchIDToSupplyCal) > 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("batch balances were given but no supplies were found")
 	}
-	for denom, cs := range batchIdToSupplyCal {
-		if s, ok := batchIdToSupply[denom]; ok {
+	for denom, cs := range batchIDToSupplyCal {
+		if s, ok := batchIDToSupply[denom]; ok {
 			if s.Cmp(cs) != math.EqualTo {
 				return sdkerrors.ErrInvalidCoins.Wrapf("supply is incorrect for %d credit batch, expected %v, got %v", denom, s, cs)
 			}

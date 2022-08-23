@@ -17,7 +17,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
+	fixtureFactory testutil.Factory
 	fixture        testutil.Fixture
 
 	ctx         context.Context
@@ -34,7 +34,7 @@ type IntegrationTestSuite struct {
 	rawHash   *data.ContentHash_Raw   // hash2
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.Factory) *IntegrationTestSuite {
 	return &IntegrationTestSuite{fixtureFactory: fixtureFactory}
 }
 
@@ -169,13 +169,13 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 
 func (s *IntegrationTestSuite) TestResolver() {
 	require := s.Require()
-	testUrl := "https://foo.bar"
+	testURL := "https://foo.bar"
 	hashes := []*data.ContentHash{s.hash1, s.hash2}
 
 	// can define a resolver
 	defineResolver, err := s.msgClient.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.addr1.String(),
-		ResolverUrl: testUrl,
+		ResolverUrl: testURL,
 	})
 	require.NoError(err)
 
