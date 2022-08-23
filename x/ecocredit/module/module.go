@@ -252,8 +252,6 @@ func (Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
 func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 // WeightedOperations returns all the ecocredit module operations with their respective weights.
-// NOTE: This is no longer needed for the modules which uses ADR-33, ecocredit module `WeightedOperations`
-// registered in the `x/ecocredit/server` package.
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	coreQuerier, basketQuerier, marketQuerier := a.Keeper.QueryServers()
 	return simulation.WeightedOperations(
