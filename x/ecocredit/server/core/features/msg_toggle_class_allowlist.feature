@@ -32,7 +32,7 @@ Feature: Msg/MsgToggleClassAllowlist
       """
       Then expect error contains "expected gov account as only signer for proposal message"
 
-  Rule: The class allow list is enabled
+  Rule: The class allow list is setting is updated
     
     Scenario: The class allow list is enabled
       When alice attempts to toggle class allowlist with properties
