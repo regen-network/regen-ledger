@@ -2,7 +2,7 @@ Feature: Msg/MsgToggleClassAllowlist
 
   A class allow list can be enabled/disabled:
   - when the authority is a governance account
-  - the class allow list is enabled
+  - the class allow list is setting is updated
 
   Rule: The authority is a governance account
 
