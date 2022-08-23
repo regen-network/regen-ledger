@@ -41,7 +41,7 @@ Feature: MsgRemoveClassCreators
     When the message is validated
     Then expect the error "class creators cannot be empty: invalid type"
 
-  Scenario: an error is returned if class creator address not valid
+  Scenario: an error is returned if class creator address not a valid bech32 address
     Given the message
     """
     {
