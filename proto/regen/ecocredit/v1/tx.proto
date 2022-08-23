@@ -119,17 +119,17 @@ service Msg {
   // Since Revision 1
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
-  // AddClassCreators is a governance method that allows the addition of new
-  // addresses to the class creation allowlist.
+  // AddClassCreator is a governance method that allows the addition of new
+  // address to the class creation allowlist.
   // Since Revision 1
-  rpc AddClassCreators(MsgAddClassCreators)
-      returns (MsgAddClassCreatorsResponse);
+  rpc AddClassCreator(MsgAddClassCreator)
+      returns (MsgAddClassCreatorResponse);
 
-  // RemoveClassCreators is a governance method that allows the removes
-  // addresses to the class creation allowlist.
+  // RemoveClassCreator is a governance method that removes
+  // address from the creation allowlist.
   // Since Revision 1
-  rpc RemoveClassCreators(MsgRemoveClassCreators)
-      returns (MsgRemoveClassCreatorsResponse);
+  rpc RemoveClassCreator(MsgRemoveClassCreator)
+      returns (MsgRemoveClassCreatorResponse);
 
   // ToggleCreditClassAllowlist is a governance method that toggles the network
   // allowlist to on or off. when on, the class creator allowlist is used to
@@ -601,37 +601,37 @@ message MsgBridgeReceiveResponse {
   string project_id = 2;
 }
 
-// MsgAddClassCreators is the Msg/AddClassCreators request type.
+// MsgAddClassCreator is the Msg/AddClassCreator request type.
 // Since Revision 1
-message MsgAddClassCreators {
+message MsgAddClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
 
-  // creators is the list of addresses to add to the class creator list.
-  repeated string creators = 2;
+  // creator is the address to add to the class creator list.
+  string creator = 2;
 }
 
-// MsgAddClassCreatorsResponse is the Msg/AddClassCreators response type.
+// MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
 // Since Revision 1
-message MsgAddClassCreatorsResponse {}
+message MsgAddClassCreatorResponse {}
 
-// MsgRemoveClassCreators is the Msg/RemoveClassCreators request type.
+// MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 // Since Revision 1
-message MsgRemoveClassCreators {
+message MsgRemoveClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
 
-  // creators is the list of addresses to remove the class creator list.
-  repeated string creators = 2;
+  // creator is the address to remove from the class creator list.
+  string creator = 2;
 }
 
-// MsgRemoveClassCreatorsResponse is the Msg/RemoveClasssCreator response type.
+// MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
 // Since Revision 1
-message MsgRemoveClassCreatorsResponse {}
+message MsgRemoveClassCreatorResponse {}
 
 // MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
 // type. Since Revision 1
@@ -641,8 +641,8 @@ message MsgToggleCreditClassAllowlist {
   // authority is the address of the governance account.
   string authority = 1;
 
-  // setting defines the boolean value to set the allowlist on or off.
-  bool setting = 2;
+  // enabled defines the boolean value to set the allowlist on or off.
+  bool enabled = 2;
 }
 
 // MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist

@@ -21,7 +21,6 @@ type createClassSuite struct {
 	alice                sdk.AccAddress
 	aliceBalance         sdk.Coin
 	creditTypeAbbrev     string
-	allowlistEnabled     bool
 	allowedClassCreators []string
 	creditClassFee       []*v1beta1.Coin
 	classID              string
@@ -58,11 +57,24 @@ func (s *createClassSuite) AllowlistEnabled(a string) {
 	allowlistEnabled, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	s.allowlistEnabled = allowlistEnabled
+	err = s.stateStore.AllowListEnabledTable().Save(s.ctx, &api.AllowListEnabled{
+		Enabled: allowlistEnabled,
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *createClassSuite) AliceIsAnApprovedCreditClassCreator() {
 	s.allowedClassCreators = append(s.allowedClassCreators, s.alice.String())
+
+	for _, creator := range s.allowedClassCreators {
+		addr, err := sdk.AccAddressFromBech32(creator)
+		require.NoError(s.t, err)
+
+		err = s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &api.AllowedClassCreator{
+			Address: addr,
+		})
+		require.NoError(s.t, err)
+	}
 }
 
 func (s *createClassSuite) AllowedCreditClassFee(a string) {
@@ -75,6 +87,11 @@ func (s *createClassSuite) AllowedCreditClassFee(a string) {
 			Amount: fee.Amount.String(),
 		})
 	}
+
+	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
+		Fees: s.creditClassFee,
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *createClassSuite) AliceHasATokenBalance(a string) {
@@ -220,26 +237,6 @@ func (s *createClassSuite) ExpectTheResponse(a gocuke.DocString) {
 }
 
 func (s *createClassSuite) createClassExpectCalls() {
-	err := s.stateStore.AllowListEnabledTable().Save(s.ctx, &api.AllowListEnabled{
-		Enabled: s.allowlistEnabled,
-	})
-	require.NoError(s.t, err)
-
-	for _, creator := range s.allowedClassCreators {
-		addr, err := sdk.AccAddressFromBech32(creator)
-		require.NoError(s.t, err)
-
-		err = s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &api.AllowedClassCreator{
-			Address: addr,
-		})
-		require.NoError(s.t, err)
-	}
-
-	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
-		Fees: s.creditClassFee,
-	})
-	require.NoError(s.t, err)
-
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 

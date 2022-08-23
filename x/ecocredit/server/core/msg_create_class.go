@@ -8,6 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -37,7 +38,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		fees = &api.ClassFees{}
 	}
 
-	allowedFees, ok := core.ProtoCoinsToCoins(fees.Fees)
+	allowedFees, ok := types.ProtoCoinsToCoins(fees.Fees)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidType.Wrap("credit class fee")
 	}

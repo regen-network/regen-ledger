@@ -5,7 +5,7 @@ Feature: MsgToggleCreditClassAllowlist
     """
     {
       "authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "setting": true
+      "enabled": true
     }
     """
     When the message is validated

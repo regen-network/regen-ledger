@@ -6,6 +6,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -14,7 +15,7 @@ func (k Keeper) UpdateClassFees(ctx context.Context, req *core.MsgUpdateClassFee
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	classFee := core.CoinsToProtoCoins(req.Fees)
+	classFee := types.CoinsToProtoCoins(req.Fees)
 	if err := k.stateStore.ClassFeesTable().Save(ctx, &ecocreditv1.ClassFees{
 		Fees: classFee,
 	}); err != nil {

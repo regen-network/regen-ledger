@@ -12,26 +12,30 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-type removeClassClassCreators struct {
+type removeClassClassCreator struct {
 	*baseSuite
 	err error
 }
 
-func TestRemoveClassCreators(t *testing.T) {
-	gocuke.NewRunner(t, &removeClassClassCreators{}).Path("./features/msg_remove_class_creators.feature").Run()
+type classCreators struct {
+	Creators []string `json:"creators"`
 }
 
-func (s *removeClassClassCreators) Before(t gocuke.TestingT) {
+func TestRemoveClassCreators(t *testing.T) {
+	gocuke.NewRunner(t, &removeClassClassCreator{}).Path("./features/msg_remove_class_creator.feature").Run()
+}
+
+func (s *removeClassClassCreator) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *removeClassClassCreators) ClassCreatorsWithProperties(a gocuke.DocString) {
-	var msg *core.MsgAddClassCreators
+func (s *removeClassClassCreator) ClassCreatorsWithProperties(a gocuke.DocString) {
+	var creators classCreators
 
-	err := json.Unmarshal([]byte(a.Content), &msg)
+	err := json.Unmarshal([]byte(a.Content), &creators)
 	require.NoError(s.t, err)
 
-	for _, creator := range msg.Creators {
+	for _, creator := range creators.Creators {
 		creatorAddr, err := sdk.AccAddressFromBech32(creator)
 		require.NoError(s.t, err)
 
@@ -40,55 +44,53 @@ func (s *removeClassClassCreators) ClassCreatorsWithProperties(a gocuke.DocStrin
 		})
 		require.NoError(s.t, err)
 	}
-
 }
 
-func (s *removeClassClassCreators) AliceAttemptsToRemoveClassCreatorsWithProperties(a gocuke.DocString) {
-	var msg *core.MsgRemoveClassCreators
+func (s *removeClassClassCreator) AliceAttemptsToRemoveAClassCreatorWithProperties(a gocuke.DocString) {
+	var msg *core.MsgRemoveClassCreator
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
 
-	_, s.err = s.k.RemoveClassCreators(s.ctx, msg)
+	_, s.err = s.k.RemoveClassCreator(s.ctx, msg)
 }
 
-func (s *removeClassClassCreators) ExpectClassCreatorsWithProperties(a gocuke.DocString) {
-	var msg *core.MsgRemoveClassCreators
+func (s *removeClassClassCreator) ExpectClassCreatorsWithProperties(a gocuke.DocString) {
+	var creators classCreators
 
-	err := json.Unmarshal([]byte(a.Content), &msg)
+	err := json.Unmarshal([]byte(a.Content), &creators)
 	require.NoError(s.t, err)
-
-	found := 0
 
 	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, len(msg.Creators), len(params.Params.AllowedClassCreators))
+	found := 0
+	require.Equal(s.t, len(creators.Creators), len(params.Params.AllowedClassCreators))
 	for _, creator := range params.Params.AllowedClassCreators {
-		for _, creator1 := range msg.Creators {
+		for _, creator1 := range creators.Creators {
 			if creator == creator1 {
 				found++
 			}
 		}
 	}
-	require.Equal(s.t, len(msg.Creators), found)
+	require.Equal(s.t, len(creators.Creators), found)
 }
 
-func (s *removeClassClassCreators) ExpectClassCreatorsListToBeEmpty() {
+func (s *removeClassClassCreator) ExpectClassCreatorsListToBeEmpty() {
 	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
 	require.NoError(s.t, err)
 
 	require.Zero(s.t, len(params.Params.AllowedClassCreators))
 }
 
-func (s *removeClassClassCreators) ExpectNoError() {
+func (s *removeClassClassCreator) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *removeClassClassCreators) ExpectTheError(a string) {
+func (s *removeClassClassCreator) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *removeClassClassCreators) ExpectErrorContains(a string) {
+func (s *removeClassClassCreator) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }

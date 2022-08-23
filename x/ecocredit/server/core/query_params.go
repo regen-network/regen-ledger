@@ -7,6 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -40,7 +41,7 @@ func (k Keeper) Params(ctx context.Context, _ *core.QueryParamsRequest) (*core.Q
 		return nil, err
 	}
 
-	classFees1, ok := core.ProtoCoinsToCoins(classFees.Fees)
+	classFees1, ok := types.ProtoCoinsToCoins(classFees.Fees)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidCoins.Wrap("class fees")
 	}
@@ -50,7 +51,7 @@ func (k Keeper) Params(ctx context.Context, _ *core.QueryParamsRequest) (*core.Q
 		return nil, err
 	}
 
-	basketFees1, ok := core.ProtoCoinsToCoins(basketFees.Fees)
+	basketFees1, ok := types.ProtoCoinsToCoins(basketFees.Fees)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidCoins.Wrap("basket fees")
 	}

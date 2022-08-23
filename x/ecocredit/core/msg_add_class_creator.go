@@ -8,40 +8,34 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var _ legacytx.LegacyMsg = &MsgRemoveClassCreators{}
+var _ legacytx.LegacyMsg = &MsgAddClassCreator{}
 
 // Route implements the LegacyMsg interface.
-func (m MsgRemoveClassCreators) Route() string { return sdk.MsgTypeURL(&m) }
+func (m MsgAddClassCreator) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
-func (m MsgRemoveClassCreators) Type() string { return sdk.MsgTypeURL(&m) }
+func (m MsgAddClassCreator) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.
-func (m MsgRemoveClassCreators) GetSignBytes() []byte {
+func (m MsgAddClassCreator) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a sanity check on the provided data.
-func (m *MsgRemoveClassCreators) ValidateBasic() error {
+func (m *MsgAddClassCreator) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
 		return sdkerrors.Wrapf(err, "invalid authority address")
 	}
 
-	if len(m.Creators) == 0 {
-		return sdkerrors.ErrInvalidType.Wrap("class creators cannot be empty")
-	}
-
-	for _, creator := range m.Creators {
-		if _, err := sdk.AccAddressFromBech32(creator); err != nil {
-			return err
-		}
+	if _, err := sdk.AccAddressFromBech32(m.Creator); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-// GetSigners returns the expected signers for MsgRemoveClassCreators.
-func (m *MsgRemoveClassCreators) GetSigners() []sdk.AccAddress {
+// GetSigners returns the expected signers for MsgAddClassCreator.
+func (m *MsgAddClassCreator) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Authority)
 	return []sdk.AccAddress{addr}
 }

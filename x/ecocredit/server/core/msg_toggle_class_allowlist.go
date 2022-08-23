@@ -14,7 +14,7 @@ func (k Keeper) ToggleCreditClassAllowlist(ctx context.Context, req *core.MsgTog
 	}
 
 	if err := k.stateStore.AllowListEnabledTable().Save(ctx, &ecocreditv1.AllowListEnabled{
-		Enabled: req.Setting,
+		Enabled: req.Enabled,
 	}); err != nil {
 		return nil, err
 	}

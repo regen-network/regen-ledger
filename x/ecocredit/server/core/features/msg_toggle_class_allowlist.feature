@@ -11,7 +11,7 @@ Feature: Msg/MsgToggleClassAllowlist
       """
       {
         "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "setting": true
+        "enabled": true
       }
       """
       Then expect no error
@@ -22,12 +22,7 @@ Feature: Msg/MsgToggleClassAllowlist
       """
       {
         "authority": "regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
-        "fees": [
-            {
-                "denom": "uregen",
-                "amount": "1000"
-            }
-        ]
+        "enabled": true
       }
       """
       Then expect error contains "expected gov account as only signer for proposal message"
@@ -39,7 +34,7 @@ Feature: Msg/MsgToggleClassAllowlist
       """
       {
         "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "setting": true
+        "enabled": true
       }
       """
       Then expect no error
@@ -50,7 +45,7 @@ Feature: Msg/MsgToggleClassAllowlist
       """
       {
         "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "setting": false
+        "enabled": false
       }
       """
       Then expect no error
