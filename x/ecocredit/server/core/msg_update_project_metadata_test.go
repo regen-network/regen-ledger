@@ -2,6 +2,7 @@
 package core
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -11,6 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type updateProjectMetadata struct {
@@ -98,4 +100,16 @@ func (s *updateProjectMetadata) ExpectProjectWithProjectIdAndMetadata(a string, 
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, b.Content, project.Metadata)
+}
+
+func (s *updateProjectMetadata) ExpectEventWithProperties(a gocuke.DocString) {
+	var event api.EventUpdateProjectMetadata
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

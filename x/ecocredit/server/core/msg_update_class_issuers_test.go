@@ -12,6 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type updateClassIssuers struct {
@@ -149,4 +150,16 @@ func (s *updateClassIssuers) ExpectCreditClassWithClassIdAndIssuers(a string, b 
 
 		require.True(s.t, found)
 	}
+}
+
+func (s *updateClassIssuers) ExpectEventWithProperties(a gocuke.DocString) {
+	var event api.EventUpdateClassIssuers
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

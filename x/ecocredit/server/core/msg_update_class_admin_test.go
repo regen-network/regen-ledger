@@ -2,6 +2,7 @@
 package core
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -11,6 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type updateClassAdmin struct {
@@ -92,4 +94,16 @@ func (s *updateClassAdmin) ExpectCreditClassWithClassIdAndAdminBob(a string) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, s.bob.Bytes(), class.Admin)
+}
+
+func (s *updateClassAdmin) ExpectEventWithProperties(a gocuke.DocString) {
+	var event api.EventUpdateClassAdmin
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -12,6 +13,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type retire struct {
@@ -215,6 +217,33 @@ func (s *retire) ExpectBatchSupply(a gocuke.DocString) {
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+}
+
+func (s *retire) AliceAttemptsToRetireCreditAmountFrom(a string, b string) {
+	s.res, s.err = s.k.Retire(s.ctx, &core.MsgRetire{
+		Owner: s.alice.String(),
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+		Jurisdiction: b,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *retire) ExpectEventWithProperties(a gocuke.DocString) {
+	var event api.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Owner = s.alice.String()
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *retire) projectSetup() {

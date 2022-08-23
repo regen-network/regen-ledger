@@ -2,6 +2,7 @@
 package core
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -11,6 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type sealBatch struct {
@@ -110,4 +112,16 @@ func (s *sealBatch) ExpectNoError() {
 
 func (s *sealBatch) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
+}
+
+func (s *sealBatch) ExpectEventWithProperties(a gocuke.DocString) {
+	var event api.EventSealBatch
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

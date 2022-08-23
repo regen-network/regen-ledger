@@ -65,5 +65,3 @@ Feature: Msg/UpdateClassMetadata
         "class_id": "C01"
       }
       """
-
-      # no failing scenario - events are only emitted upon successful message execution
