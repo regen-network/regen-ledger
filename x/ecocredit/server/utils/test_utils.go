@@ -1,24 +1,61 @@
 package utils
 
 import (
+	"fmt"
+	"reflect"
 	"strings"
 
-	"github.com/golang/mock/gomock"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	"google.golang.org/protobuf/proto"
 )
 
-// ExpectParamGet is a helper function that sets up an expected mock call for the provided type.
-func ExpectParamGet[T any](obj *T, paramKeeper *mocks.MockParamKeeper, key []byte, times int) {
-	gmAny := gomock.Any()
-	var expectedType T
-	paramKeeper.EXPECT().Get(gmAny, key, &expectedType).Do(func(_ sdk.Context, _ []byte, param *T) {
-		*param = *obj
-	}).Times(times)
+// MatchEvent matches the values in a proto message struct to the attributes in a sdk.Event.
+func MatchEvent(event any, emitted sdk.Event) error {
+	tag := "json"
+	valOfEvent := reflect.ValueOf(event)
+	typeOfEvent := valOfEvent.Type()
+	if typeOfEvent.Kind() != reflect.Struct {
+		return fmt.Errorf("expected event to be struct, got %T", event)
+	}
+	attrMap := mapAttributes(emitted)
+
+	numExportedFields := 0
+	for i := 0; i < typeOfEvent.NumField(); i++ {
+		underlying := valOfEvent.Field(i)
+		descriptor := typeOfEvent.Field(i)
+		if !descriptor.IsExported() {
+			continue
+		}
+		numExportedFields++
+		key := strings.Split(descriptor.Tag.Get(tag), ",")[0]
+		val, ok := attrMap[key]
+		if !ok {
+			return fmt.Errorf("event has no attribute '%s'", key)
+		}
+		if underlyingValue := fmt.Sprintf("%v", underlying.Interface()); underlyingValue != val {
+			return fmt.Errorf("expected %s, got %s", underlyingValue, val)
+		}
+	}
+	if numAttrs := len(emitted.Attributes); numExportedFields != numAttrs {
+		return fmt.Errorf("emitted event has %d attributes, expected %d", numAttrs, numExportedFields)
+	}
+	return nil
 }
 
-func AttributeValue(bz []byte) string {
-	return strings.Trim(string(bz), `"`)
+func GetEvent(msg proto.Message, events []sdk.Event) (e sdk.Event, found bool) {
+	for _, e := range events {
+		if string(proto.MessageName(msg)) == e.Type {
+			return e, true
+		}
+	}
+	return e, false
+}
+
+// mapAttributes converts the sdk.Event attribute slice to a map.
+func mapAttributes(event sdk.Event) map[string]string {
+	m := make(map[string]string, len(event.Attributes))
+	for _, attr := range event.Attributes {
+		m[string(attr.Key)] = strings.Trim(string(attr.Value), `"`)
+	}
+	return m
 }
