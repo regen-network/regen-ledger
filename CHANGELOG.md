@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Refactor fixture factory to use baseApp routing and cosmos sdk module manager
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Rename FixtureFactory to Factory to prevent package stuttering
+
 
 ### x/data
 
