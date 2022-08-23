@@ -176,8 +176,12 @@ func (Module) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 }
 
 // WeightedOperations returns all the data module operations with their respective weights.
-// NOTE: This is no longer needed for the modules which uses ADR-33, data module `WeightedOperations`
-// registered in the `x/data/server` package.
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return a.keeper.WeightedOperations(simState)
+	querier := a.keeper.QueryServer()
+
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc,
+		a.ak, a.bk,
+		querier,
+	)
 }

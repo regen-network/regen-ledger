@@ -7,8 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/tendermint/tendermint/abci/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
@@ -25,7 +23,6 @@ var _ Keeper = serverImpl{}
 type Keeper interface {
 	InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) ([]types.ValidatorUpdate, error)
 	ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error)
-	WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation
 	QueryServer() data.QueryServer
 }
 
