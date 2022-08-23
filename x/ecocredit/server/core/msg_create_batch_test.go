@@ -429,7 +429,7 @@ func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
 	eventRetire, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(event, eventRetire)
+	err = utils.MatchEvent(&event, eventRetire)
 	require.NoError(s.t, err)
 }
 
@@ -440,8 +440,7 @@ func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
 
 	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
-
-	err = utils.MatchEvent(event, sdkEvent)
+	err = utils.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
 }
 
@@ -454,7 +453,7 @@ func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString)
 	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(event, sdkEvent)
+	err = utils.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
 }
 
@@ -499,7 +498,7 @@ func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocStri
 	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(event, sdkEvent)
+	err = utils.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
 }
 

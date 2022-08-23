@@ -288,6 +288,6 @@ func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
 
 	require.Equal(s.t, string(proto.MessageName(&event)), eventCancel.Type)
 
-	err = utils.MatchEvent(event, eventCancel)
+	err = utils.MatchEvent(&event, eventCancel)
 	require.NoError(s.t, err)
 }

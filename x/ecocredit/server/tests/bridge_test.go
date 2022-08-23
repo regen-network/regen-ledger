@@ -187,7 +187,7 @@ func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
 	sdkEvent, found := utils.GetEvent(&expected, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(expected, sdkEvent)
+	err = utils.MatchEvent(&expected, sdkEvent)
 	require.NoError(s.t, err)
 }
 
@@ -199,6 +199,6 @@ func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
 	sdkEvent, found := utils.GetEvent(&expected, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(expected, sdkEvent)
+	err = utils.MatchEvent(&expected, sdkEvent)
 	require.NoError(s.t, err)
 }

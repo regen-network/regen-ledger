@@ -231,8 +231,7 @@ func (s *bridgeSuite) ExpectEventWithProperties(a gocuke.DocString) {
 	eventBridge := events[len(events)-1]
 
 	require.Equal(s.t, string(proto.MessageName(&event)), eventBridge.Type)
-
-	err = utils.MatchEvent(event, eventBridge)
+	err = utils.MatchEvent(&event, eventBridge)
 	require.NoError(s.t, err)
 }
 
