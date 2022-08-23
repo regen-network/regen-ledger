@@ -33,7 +33,7 @@ func MatchEvent(event any, emitted sdk.Event) error {
 			return fmt.Errorf("event has no attribute '%s'", key)
 		}
 		if underlyingValue := fmt.Sprintf("%v", underlying.Interface()); underlyingValue != val {
-			return fmt.Errorf("expected %s, got %s", underlyingValue, val)
+			return fmt.Errorf("expected %s, got %s for field %s", underlyingValue, val, descriptor.Name)
 		}
 	}
 	if numAttrs := len(emitted.Attributes); numExportedFields != numAttrs {

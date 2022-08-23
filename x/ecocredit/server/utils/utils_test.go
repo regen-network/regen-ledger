@@ -148,7 +148,7 @@ func TestUtils_MatchFields(t *testing.T) {
 		Jurisdiction: "nope",
 	}
 	err = MatchEvent(event, se)
-	require.ErrorContains(t, err, "expected nope, got qux")
+	require.ErrorContains(t, err, "expected nope, got qux for field Jurisdiction")
 
 	// mismatch in amount of fields
 	se.Attributes = append(se.Attributes, types.EventAttribute{Key: []byte("hello"), Value: []byte("world")})
