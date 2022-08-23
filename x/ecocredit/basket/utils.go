@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -41,22 +42,28 @@ func FormatBasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, 
 	return denom, displayDenom, nil
 }
 
-// ValidateBasketName validates a basket denomination conforms to the format
-// described in FormatBasketName. The return is nil if the denom is valid.
+// ValidateBasketName validates a basket name. The name conforms to the format
+// described in FormatBasketName. The return is nil if the name is valid.
 func ValidateBasketName(name string) error {
+	if name == "" {
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
+	}
 	matches := regexBasketName.FindStringSubmatch(name)
 	if matches == nil {
-		return fmt.Errorf("name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long")
+		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexBasketName)
 	}
 	return nil
 }
 
-// ValidateBasketDenom validates a basket denomination conforms to the format
+// ValidateBasketDenom validates a basket denom. The denom conforms to the format
 // described in FormatBasketDenom. The return is nil if the denom is valid.
 func ValidateBasketDenom(denom string) error {
+	if denom == "" {
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
+	}
 	matches := regexBasketDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return fmt.Errorf("%s is not a valid basket denom", denom)
+		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexBasketDenom)
 	}
 	return nil
 }
