@@ -20,5 +20,9 @@ func (m *BasketBalance) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("balance: %s", err)
 	}
 
+	if m.BatchStartDate.GetSeconds() == 0 && m.BatchStartDate.GetNanos() == 0 {
+		return ecocredit.ErrParseFailure.Wrap("batch start date cannot be empty")
+	}
+
 	return nil
 }

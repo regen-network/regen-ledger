@@ -16,6 +16,10 @@ func (m *Market) Validate() error {
 		return err // returns parse error
 	}
 
+	if m.BankDenom == "" {
+		return ecocredit.ErrParseFailure.Wrap("bank denom cannot be empty")
+	}
+
 	if err := sdk.ValidateDenom(m.BankDenom); err != nil {
 		return ecocredit.ErrParseFailure.Wrapf("bank denom: %s", err)
 	}

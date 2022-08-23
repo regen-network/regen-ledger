@@ -20,12 +20,20 @@ func (m *SellOrder) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("batch key cannot be zero")
 	}
 
+	if m.Quantity == "" {
+		return ecocredit.ErrParseFailure.Wrapf("quantity cannot be empty")
+	}
+
 	if _, err := math.NewNonNegativeDecFromString(m.Quantity); err != nil {
 		return ecocredit.ErrParseFailure.Wrapf("quantity: %s", err)
 	}
 
 	if m.MarketId == 0 {
 		return ecocredit.ErrParseFailure.Wrapf("market id cannot be zero")
+	}
+
+	if m.AskAmount == "" {
+		return ecocredit.ErrParseFailure.Wrapf("ask amount cannot be empty")
 	}
 
 	if _, err := math.NewNonNegativeDecFromString(m.AskAmount); err != nil {
