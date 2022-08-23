@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	RegexCreditTypeAbbrev = `[A-Z]{1,3}`
+	RegexCreditTypeAbbrev = `[A-Z]{1,3}` //nolint:gosec
 	RegexClassID          = fmt.Sprintf(`%s[0-9]{2,}`, RegexCreditTypeAbbrev)
 	RegexProjectID        = fmt.Sprintf(`%s-[0-9]{3,}`, RegexClassID)
 	RegexBatchDenom       = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectID)
