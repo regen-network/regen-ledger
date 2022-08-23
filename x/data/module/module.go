@@ -23,6 +23,7 @@ import (
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
+	"github.com/regen-network/regen-ledger/x/data/genesis"
 	"github.com/regen-network/regen-ledger/x/data/server"
 	"github.com/regen-network/regen-ledger/x/data/simulation"
 )
@@ -93,7 +94,12 @@ func (a Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig,
 		return err
 	}
 
-	return db.ValidateJSON(jsonSource)
+	err = db.ValidateJSON(jsonSource)
+	if err != nil {
+		return err
+	}
+
+	return genesis.ValidateGenesis(bz)
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
