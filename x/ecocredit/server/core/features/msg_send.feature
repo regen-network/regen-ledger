@@ -225,7 +225,7 @@ Feature: Msg/Send
   Rule: Events are emitted
     Scenario: Events EventTransfer and EventRetire are emitted
       Given a credit batch with denom "C01-001-20200101-20210101-001"
-      And alices address "regen1d466m547y09dgs6xvca7uxs5k2m2pmgspa9kal"
+      And alice's address "regen1d466m547y09dgs6xvca7uxs5k2m2pmgspa9kal"
       And bobs address "regen10yhlcvh88sux4zmf67udhg5f5z2803z6jm0d25"
       And alice owns tradable credit amount "10"
       When alice attempts to send credits to bob with retired amount "10" from "US-WA"
@@ -251,7 +251,7 @@ Feature: Msg/Send
 
     Scenario: Event EventTransfer is emitted
       Given a credit batch with denom "C01-001-20200101-20210101-001"
-      And alices address "regen1d466m547y09dgs6xvca7uxs5k2m2pmgspa9kal"
+      And alice's address "regen1d466m547y09dgs6xvca7uxs5k2m2pmgspa9kal"
       And bobs address "regen10yhlcvh88sux4zmf67udhg5f5z2803z6jm0d25"
       And alice owns tradable credit amount "10"
       When alice attempts to send credits to bob with tradable amount "10"

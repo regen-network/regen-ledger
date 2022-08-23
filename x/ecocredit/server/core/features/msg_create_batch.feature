@@ -412,6 +412,7 @@ Feature: Msg/CreateBatch
   Rule: Events are emitted
     Background:
       Given a credit type with abbreviation "C"
+      And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
       And a credit class with class id "C01" and issuer alice
       And a project with project id "C01-001"
 
@@ -437,6 +438,7 @@ Feature: Msg/CreateBatch
       And expect event transfer with properties
       """
       {
+        "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
         "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
         "batch_denom": "C01-001-20200101-20210101-001",
         "tradable_amount": "",
@@ -463,6 +465,7 @@ Feature: Msg/CreateBatch
       And expect event transfer with properties
       """
       {
+        "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
         "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
         "batch_denom": "C01-001-20200101-20210101-001",
         "tradable_amount": "10",
@@ -473,5 +476,36 @@ Feature: Msg/CreateBatch
       """
       {
         "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """
+
+  Rule: Events are emitted with origin tx
+    Background:
+      Given a credit type with abbreviation "C"
+      And origin tx
+      """
+      {
+        "id": "0x123",
+        "source": "polygon",
+        "contract": "0x456",
+        "note": "hello"
+      }
+      """
+      And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
+      And a credit class with class id "C01" and issuer alice
+      And a project with project id "C01-001"
+
+    Scenario:  Events EventMint, EventTransfer, and EventCreateBatch are emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event create batch with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+          "origin_tx": {
+          "id": "0x123",
+          "source": "polygon",
+          "contract": "0x456",
+          "note": "hello"
+        }
       }
       """

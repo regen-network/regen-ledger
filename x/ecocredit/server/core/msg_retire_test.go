@@ -269,6 +269,12 @@ func (s *retire) projectSetup() {
 	s.projectKey = pKey
 }
 
+func (s *retire) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
 func (s *retire) creditBatchSetup() {
 	s.projectSetup()
 

@@ -110,6 +110,7 @@ Feature: Msg/Retire
   Rule: Event is emitted
     Scenario: EventRetire is emitted
       Given a credit batch with denom "C01-001-20200101-20210101-001"
+      And alice's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
       And alice owns tradable credit amount "10"
       And the batch supply
       """
@@ -123,6 +124,7 @@ Feature: Msg/Retire
       Then expect event with properties
       """
       {
+        "owner": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
         "batch_denom": "C01-001-20200101-20210101-001",
         "amount": "10",
         "jurisdiction": "US-WA"

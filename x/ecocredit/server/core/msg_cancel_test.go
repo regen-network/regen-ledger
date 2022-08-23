@@ -276,6 +276,12 @@ func (s *cancel) AliceAttemptsToCancelCreditAmountWithReason(a, b string) {
 	})
 }
 
+func (s *cancel) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
 func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
 	var event api.EventCancel
 	err := json.Unmarshal([]byte(a.Content), &event)

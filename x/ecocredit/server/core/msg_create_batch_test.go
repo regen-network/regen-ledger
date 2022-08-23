@@ -3,7 +3,6 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 	"testing"
@@ -21,29 +20,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
-func TestSomething(t *testing.T) {
-	event := api.EventCreateBatch{
-		BatchDenom: "foo",
-		OriginTx: &api.OriginTx{
-			Id:       "bar",
-			Source:   "baz",
-			Contract: "qux",
-			Note:     "quzz",
-		},
-	}
-	s := setupBase(t)
-
-	err := s.sdkCtx.EventManager().EmitTypedEvent(&event)
-	require.NoError(t, err)
-
-	sdkEvents := s.sdkCtx.EventManager().Events()
-	lastEvent := sdkEvents[len(sdkEvents)-1]
-
-	for _, attr := range lastEvent.Attributes {
-		fmt.Printf("Key: %s\tValue: %s\n", string(attr.Key), string(attr.Value))
-	}
-}
-
 type createBatchSuite struct {
 	*baseSuite
 	alice            sdk.AccAddress
@@ -56,6 +32,7 @@ type createBatchSuite struct {
 	tradableAmount   string
 	startDate        *time.Time
 	endDate          *time.Time
+	originTx         *core.OriginTx
 	res              *core.MsgCreateBatchResponse
 	err              error
 }
@@ -470,6 +447,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
 	})
 	require.NoError(s.t, s.err)
 }
@@ -486,6 +464,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a 
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
 	})
 	require.NoError(s.t, s.err)
 }
@@ -500,6 +479,19 @@ func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocStri
 
 	err = utils.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
+}
+
+func (s *createBatchSuite) OriginTx(a gocuke.DocString) {
+	var ot core.OriginTx
+	err := json.Unmarshal([]byte(a.Content), &ot)
+	require.NoError(s.t, err)
+	s.originTx = &ot
 }
 
 func (s *createBatchSuite) getProjectSequence(projectID string) uint64 {

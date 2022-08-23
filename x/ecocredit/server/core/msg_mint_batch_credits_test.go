@@ -348,6 +348,12 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomWithTradableA
 	require.NoError(s.t, s.err)
 }
 
+func (s *mintBatchCredits) EcocreditModuleAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
+}
+
 func (s *mintBatchCredits) getBatchSequence(batchDenom string) uint64 {
 	str := strings.Split(batchDenom, "-")
 	seq, err := strconv.ParseUint(str[4], 10, 32)
