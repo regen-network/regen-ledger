@@ -6,13 +6,11 @@ import (
 	"strconv"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -182,37 +180,25 @@ func (s *bridgeSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c 
 }
 
 func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
-	var exists bool
+	var expected api.EventBridgeReceive
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
 
-	for _, event := range s.sdkCtx.EventManager().Events() {
-		if event.Type == string(proto.MessageName(&api.EventBridgeReceive{})) {
-			exists = true
+	sdkEvent, found := utils.GetEvent(&expected, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
 
-			var expected core.EventBridgeReceive
-			err := jsonpb.UnmarshalString(a.Content, &expected)
-			require.NoError(s.t, err)
-
-			err = utils.MatchEvent(expected, event)
-		}
-	}
-
-	require.True(s.t, exists)
+	err = utils.MatchEvent(expected, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
-	var exists bool
+	var expected api.EventBridge
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
 
-	for _, event := range s.sdkCtx.EventManager().Events() {
-		if event.Type == string(proto.MessageName(&api.EventBridge{})) {
-			exists = true
+	sdkEvent, found := utils.GetEvent(&expected, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
 
-			var expected core.EventBridge
-			err := jsonpb.UnmarshalString(a.Content, &expected)
-			require.NoError(s.t, err)
-
-			err = utils.MatchEvent(expected, event)
-		}
-	}
-
-	require.True(s.t, exists)
+	err = utils.MatchEvent(expected, sdkEvent)
+	require.NoError(s.t, err)
 }

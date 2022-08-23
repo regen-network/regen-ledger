@@ -406,7 +406,7 @@ func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
 	require.True(s.t, found)
 
 	err = utils.MatchEvent(event, eventRetire)
-
+	require.NoError(s.t, err)
 }
 
 func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
@@ -418,17 +418,20 @@ func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
 	require.True(s.t, found)
 
 	err = utils.MatchEvent(event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
 	var event api.EventTransfer
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
+	event.Sender = s.k.moduleAddress.String()
 
 	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
 	err = utils.MatchEvent(event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom(a, b, c, d string) {
