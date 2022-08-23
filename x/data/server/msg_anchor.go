@@ -37,7 +37,7 @@ func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, 
 		return "", nil, nil, err
 	}
 
-	id, err = s.getOrCreateDataId(ctx, iri)
+	id, err = s.getOrCreateDataID(ctx, iri)
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -50,25 +50,25 @@ func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, 
 	return iri, id, timestamp, err
 }
 
-func (s serverImpl) getOrCreateDataId(ctx context.Context, iri string) (id []byte, err error) {
-	dataId := &api.DataID{Iri: ""}
+func (s serverImpl) getOrCreateDataID(ctx context.Context, iri string) (id []byte, err error) {
+	dataID := &api.DataID{Iri: ""}
 
-	for collisions := 0; dataId.Iri != iri; collisions++ {
+	for collisions := 0; dataID.Iri != iri; collisions++ {
 		id = s.iriHasher.CreateID([]byte(iri), collisions)
 
-		dataId, err = s.stateStore.DataIDTable().Get(ctx, id)
+		dataID, err = s.stateStore.DataIDTable().Get(ctx, id)
 		if err != nil {
 			if !ormerrors.IsNotFound(err) {
 				return nil, err
-			} else {
-				dataId = &api.DataID{
-					Id:  id,
-					Iri: iri,
-				}
-				err = s.stateStore.DataIDTable().Insert(ctx, dataId)
-				if err != nil {
-					return nil, err
-				}
+			}
+
+			dataID = &api.DataID{
+				Id:  id,
+				Iri: iri,
+			}
+			err = s.stateStore.DataIDTable().Insert(ctx, dataID)
+			if err != nil {
+				return nil, err
 			}
 		}
 
@@ -84,24 +84,24 @@ func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri st
 	if err != nil {
 		if !ormerrors.IsNotFound(err) {
 			return nil, err
-		} else {
-			sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-			timestamp, err := gogotypes.TimestampProto(sdkCtx.BlockTime())
-			if err != nil {
-				return nil, sdkerrors.Wrap(err, "invalid block time")
-			}
-
-			err = s.stateStore.DataAnchorTable().Insert(ctx, &api.DataAnchor{
-				Id:        id,
-				Timestamp: types.GogoToProtobufTimestamp(timestamp),
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchor{Iri: iri})
 		}
+
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+		timestamp, err := gogotypes.TimestampProto(sdkCtx.BlockTime())
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "invalid block time")
+		}
+
+		err = s.stateStore.DataAnchorTable().Insert(ctx, &api.DataAnchor{
+			Id:        id,
+			Timestamp: types.GogoToProtobufTimestamp(timestamp),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchor{Iri: iri})
 	}
 
 	return types.ProtobufToGogoTimestamp(dataAnchor.Timestamp), nil

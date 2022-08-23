@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package marketplace
 
 import (
@@ -5,17 +6,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -26,9 +28,9 @@ type updateSellOrdersSuite struct {
 	aliceTradableAmount string
 	aliceEscrowedAmount string
 	creditTypeAbbrev    string
-	classId             string
+	classID             string
 	batchDenom          string
-	sellOrderId         uint64
+	sellOrderID         uint64
 	askPrice            *sdk.Coin
 	quantity            string
 	disableAutoRetire   bool
@@ -47,9 +49,9 @@ func (s *updateSellOrdersSuite) Before(t gocuke.TestingT) {
 	s.bob = s.addrs[1]
 	s.aliceTradableAmount = "200"
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.batchDenom = "C01-001-20200101-20210101-001"
-	s.sellOrderId = 1
+	s.classID = testClassID
+	s.batchDenom = testBatchDenom
+	s.sellOrderID = 1
 	s.askPrice = &sdk.Coin{
 		Denom:  "regen",
 		Amount: sdk.NewInt(100),
@@ -105,13 +107,6 @@ func (s *updateSellOrdersSuite) AnAllowedDenomWithBankDenom(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *updateSellOrdersSuite) AMarketWithCreditTypeAndBankDenom(a string, b string) {
-	s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
-		CreditTypeAbbrev: a,
-		BankDenom:        b,
-	})
-}
-
 func (s *updateSellOrdersSuite) AliceCreatedASellOrder() {
 	s.sellOrderSetup(1)
 }
@@ -120,7 +115,7 @@ func (s *updateSellOrdersSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.sellOrderId = id
+	s.sellOrderID = id
 
 	s.sellOrderSetup(1)
 }
@@ -196,7 +191,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrder() {
 		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				NewQuantity: s.quantity,
 				NewAskPrice: s.askPrice,
 			},
@@ -209,7 +204,7 @@ func (s *updateSellOrdersSuite) BobAttemptsToUpdateTheSellOrder() {
 		Seller: s.bob.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				NewQuantity: s.quantity,
 				NewAskPrice: s.askPrice,
 			},
@@ -238,7 +233,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithQuantity(a 
 		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				NewQuantity: a,
 				NewAskPrice: s.askPrice,
 			},
@@ -269,7 +264,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithAskDenom(a 
 		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				NewQuantity: s.quantity,
 				NewAskPrice: &sdk.Coin{
 					Denom:  a,
@@ -288,7 +283,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithExpiration(
 		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
-				SellOrderId:   s.sellOrderId,
+				SellOrderId:   s.sellOrderID,
 				NewQuantity:   s.quantity,
 				NewAskPrice:   s.askPrice,
 				NewExpiration: &expiration,
@@ -306,7 +301,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithTheProperti
 		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
-				SellOrderId:       s.sellOrderId,
+				SellOrderId:       s.sellOrderID,
 				NewQuantity:       update.NewQuantity,
 				NewAskPrice:       update.NewAskPrice,
 				DisableAutoRetire: update.DisableAutoRetire,
@@ -424,7 +419,7 @@ func (s *updateSellOrdersSuite) sellOrderSetup(count int) {
 	}
 
 	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -466,9 +461,9 @@ func (s *updateSellOrdersSuite) sellOrderSetup(count int) {
 		order.Expiration = timestamppb.New(*s.expiration)
 	}
 
-	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, order)
+	sellOrderID, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, order)
 	require.NoError(s.t, err)
-	require.Equal(s.t, sellOrderId, s.sellOrderId)
+	require.Equal(s.t, sellOrderID, s.sellOrderID)
 
 	for i := 1; i < count; i++ {
 		order.Id = 0 // reset sell order id
@@ -481,7 +476,7 @@ func (s *updateSellOrdersSuite) aliceBatchBalance() {
 	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	if err == ormerrors.NotFound {
 		classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-			Id:               s.classId,
+			Id:               s.classID,
 			CreditTypeAbbrev: s.creditTypeAbbrev,
 		})
 		require.NoError(s.t, err)

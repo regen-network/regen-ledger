@@ -202,27 +202,27 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			BatchDenom:     batchDenom,
 			TradableAmount: amount.String(),
 		})
-	} else {
-		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
-			return err
-		}
-		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
-			return err
-		}
-		err = sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
-			Sender:        k.moduleAddress.String(), // basket submodule
-			Recipient:     owner.String(),
-			BatchDenom:    batchDenom,
-			RetiredAmount: amount.String(),
-		})
-		if err != nil {
-			return err
-		}
-		return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventRetire{
-			Owner:        owner.String(),
-			BatchDenom:   batchDenom,
-			Amount:       amount.String(),
-			Jurisdiction: jurisdiction,
-		})
 	}
+
+	if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
+		return err
+	}
+	if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
+		return err
+	}
+	err = sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
+		Sender:        k.moduleAddress.String(), // basket submodule
+		Recipient:     owner.String(),
+		BatchDenom:    batchDenom,
+		RetiredAmount: amount.String(),
+	})
+	if err != nil {
+		return err
+	}
+	return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventRetire{
+		Owner:        owner.String(),
+		BatchDenom:   batchDenom,
+		Amount:       amount.String(),
+		Jurisdiction: jurisdiction,
+	})
 }

@@ -16,9 +16,9 @@ import (
 func TestParseMsgCreateBatch(t *testing.T) {
 	clientCtx := client.Context{}.WithCodec(&codec.ProtoCodec{})
 
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `{
+	invalidJSON := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJSON := testutil.WriteToNewTempFile(t, `{
 		"issuer": "regen1",
 		"project_id": "C01-001",
 		"issuance": [
@@ -52,19 +52,19 @@ func TestParseMsgCreateBatch(t *testing.T) {
 		},
 		{
 			name:      "invalid json format",
-			file:      invalidJson,
+			file:      invalidJSON,
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
 		{
 			name:      "duplicate json keys",
-			file:      duplicateJson,
+			file:      duplicateJSON,
 			expErr:    true,
 			expErrMsg: "duplicate key",
 		},
 		{
 			name: "valid test",
-			file: validJson,
+			file: validJSON,
 			expRes: &core.MsgCreateBatch{
 				Issuer:    "regen1",
 				ProjectId: "C01-001",
@@ -98,10 +98,10 @@ func TestParseMsgCreateBatch(t *testing.T) {
 }
 
 func TestParseSendCredits(t *testing.T) {
-	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `[
+	emptyJSON := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJSON := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJSON := testutil.WriteToNewTempFile(t, `[
 		{
 			"batch_denom": "C01-001-20210101-20210101-001",
 			"tradable_amount": "10"
@@ -128,25 +128,25 @@ func TestParseSendCredits(t *testing.T) {
 		},
 		{
 			name:      "empty json object",
-			file:      emptyJson,
+			file:      emptyJSON,
 			expErr:    true,
 			expErrMsg: "cannot unmarshal object",
 		},
 		{
 			name:      "invalid json format",
-			file:      invalidJson,
+			file:      invalidJSON,
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
 		{
 			name:      "duplicate json keys",
-			file:      duplicateJson,
+			file:      duplicateJSON,
 			expErr:    true,
 			expErrMsg: "duplicate key",
 		},
 		{
 			name: "valid test",
-			file: validJson,
+			file: validJSON,
 			expRes: []*core.MsgSend_SendCredits{
 				{
 					BatchDenom:     "C01-001-20210101-20210101-001",
@@ -176,10 +176,10 @@ func TestParseSendCredits(t *testing.T) {
 }
 
 func TestParseCredits(t *testing.T) {
-	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `[
+	emptyJSON := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJSON := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJSON := testutil.WriteToNewTempFile(t, `[
 		{
 			"batch_denom": "C01-001-20210101-20210101-001",
 			"amount": "10"
@@ -205,25 +205,25 @@ func TestParseCredits(t *testing.T) {
 		},
 		{
 			name:      "empty json object",
-			file:      emptyJson,
+			file:      emptyJSON,
 			expErr:    true,
 			expErrMsg: "cannot unmarshal object",
 		},
 		{
 			name:      "invalid file format",
-			file:      invalidJson,
+			file:      invalidJSON,
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
 		{
 			name:      "duplicate json keys",
-			file:      duplicateJson,
+			file:      duplicateJSON,
 			expErr:    true,
 			expErrMsg: "duplicate key",
 		},
 		{
 			name: "valid test",
-			file: validJson,
+			file: validJSON,
 			expRes: []*core.Credits{
 				{
 					BatchDenom: "C01-001-20210101-20210101-001",

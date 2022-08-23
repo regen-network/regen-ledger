@@ -170,13 +170,13 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 
 func (s *IntegrationTestSuite) TestResolver() {
 	require := s.Require()
-	testUrl := "https://foo.bar"
+	testURL := "https://foo.bar"
 	hashes := []*data.ContentHash{s.hash1, s.hash2}
 
 	// can define a resolver
 	defineResolver, err := s.msgClient.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.addr1.String(),
-		ResolverUrl: testUrl,
+		ResolverUrl: testURL,
 	})
 	require.NoError(err)
 

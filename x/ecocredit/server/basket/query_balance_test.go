@@ -15,7 +15,7 @@ func TestKeeper_BasketBalance(t *testing.T) {
 	s := setupBase(t)
 
 	// add a basket
-	basketDenom := "foo"
+	basketDenom := testBasketDenom
 	batchDenom := "bar"
 	balance := "5.3"
 	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{

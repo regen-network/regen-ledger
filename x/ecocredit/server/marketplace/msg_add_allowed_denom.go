@@ -34,7 +34,11 @@ func (k Keeper) AddAllowedDenom(ctx context.Context, req *marketplace.MsgAddAllo
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventAllowDenom{Denom: req.BankDenom})
+	if err := sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventAllowDenom{
+		Denom: req.BankDenom,
+	}); err != nil {
+		return nil, err
+	}
 
 	return &marketplace.MsgAddAllowedDenomResponse{}, nil
 }

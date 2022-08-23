@@ -3,10 +3,11 @@ package core
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -14,6 +15,7 @@ import (
 )
 
 // ProjectsByReferenceId queries projects by reference id.
+//nolint:revive,stylecheck
 func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *core.QueryProjectsByReferenceIdRequest) (*core.QueryProjectsByReferenceIdResponse, error) {
 	if req.ReferenceId == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "reference-id is empty")

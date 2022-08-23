@@ -19,8 +19,8 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	s := setupBase(t)
 
 	// make a class with 3 issuers.
-	addrs := genAddrs(2)
-	issuers := append(addrs, s.addr)
+	issuers := genAddrs(2)
+	issuers = append(issuers, s.addr)
 	err := s.stateStore.ClassTable().Insert(s.ctx, &ecocreditv1.Class{
 		Id:               "C01",
 		Admin:            s.addr,
@@ -34,11 +34,11 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	}))
 	assert.NilError(t, s.stateStore.ClassIssuerTable().Insert(s.ctx, &ecocreditv1.ClassIssuer{
 		ClassKey: 1,
-		Issuer:   addrs[0],
+		Issuer:   issuers[0],
 	}))
 	assert.NilError(t, s.stateStore.ClassIssuerTable().Insert(s.ctx, &ecocreditv1.ClassIssuer{
 		ClassKey: 1,
-		Issuer:   addrs[1],
+		Issuer:   issuers[1],
 	}))
 
 	// base request

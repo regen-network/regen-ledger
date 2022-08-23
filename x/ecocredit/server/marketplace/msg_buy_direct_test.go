@@ -1,18 +1,21 @@
+//nolint:revive,stylecheck
 package marketplace
 
 import (
 	"strconv"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -23,9 +26,9 @@ type buyDirectSuite struct {
 	bob               sdk.AccAddress
 	bobBankBalance    sdk.Coin
 	creditTypeAbbrev  string
-	classId           string
+	classID           string
 	batchDenom        string
-	sellOrderId       uint64
+	sellOrderID       uint64
 	disableAutoRetire bool
 	quantity          string
 	askPrice          sdk.Coin
@@ -51,9 +54,9 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 		Amount: sdk.NewInt(100),
 	}
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.batchDenom = "C01-001-20200101-20210101-001"
-	s.sellOrderId = 1
+	s.classID = testClassID
+	s.batchDenom = testBatchDenom
+	s.sellOrderID = 1
 	s.quantity = "10"
 	s.askPrice = sdk.Coin{
 		Denom:  "regen",
@@ -158,7 +161,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.sellOrderId = id
+	s.sellOrderID = id
 
 	s.createSellOrders(1)
 }
@@ -276,7 +279,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
 		Buyer: s.bob.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				Quantity:    s.quantity,
 				BidPrice: &sdk.Coin{
 					Denom:  a,
@@ -297,7 +300,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 		Buyer: s.bob.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId:       s.sellOrderId,
+				SellOrderId:       s.sellOrderID,
 				Quantity:          s.quantity,
 				BidPrice:          &s.bidPrice,
 				DisableAutoRetire: disableAutoRetire,
@@ -315,7 +318,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 		Buyer: s.bob.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				Quantity:    a,
 				BidPrice:    &s.bidPrice,
 			},
@@ -333,7 +336,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a strin
 		Buyer: s.bob.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				Quantity:    a,
 				BidPrice: &sdk.Coin{
 					Denom:  s.bidPrice.Denom,
@@ -354,7 +357,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 		Buyer: s.bob.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId: s.sellOrderId,
+				SellOrderId: s.sellOrderID,
 				Quantity:    a,
 				BidPrice:    &bidPrice,
 			},
@@ -372,7 +375,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 		Buyer: s.bob.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId:       s.sellOrderId,
+				SellOrderId:       s.sellOrderID,
 				Quantity:          a,
 				BidPrice:          &s.bidPrice,
 				DisableAutoRetire: disableAutoRetire,
@@ -431,7 +434,7 @@ func (s *buyDirectSuite) ExpectSellOrderWithId(a string) {
 }
 
 func (s *buyDirectSuite) ExpectSellOrderWithQuantity(a string) {
-	order, err := s.marketStore.SellOrderTable().Get(s.ctx, s.sellOrderId)
+	order, err := s.marketStore.SellOrderTable().Get(s.ctx, s.sellOrderID)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, order.Quantity, a)
@@ -522,7 +525,7 @@ func (s *buyDirectSuite) createSellOrders(count int) {
 	}
 
 	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -560,9 +563,9 @@ func (s *buyDirectSuite) createSellOrders(count int) {
 		DisableAutoRetire: s.disableAutoRetire,
 	}
 
-	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, order)
+	sellOrderID, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, order)
 	require.NoError(s.t, err)
-	require.Equal(s.t, sellOrderId, s.sellOrderId)
+	require.Equal(s.t, sellOrderID, s.sellOrderID)
 
 	for i := 1; i < count; i++ {
 		order.Id = 0 // reset sell order id
@@ -614,7 +617,7 @@ func (s *buyDirectSuite) multipleBuyOrderExpectCalls() {
 		AnyTimes() // not expected on failed attempt
 }
 
-func (s *buyDirectSuite) calculateAskTotal(quantity string, amount string) sdk.Int {
+func (s *buyDirectSuite) calculateAskTotal(quantity string, amount string) sdkmath.Int {
 	q, err := math.NewDecFromString(quantity)
 	require.NoError(s.t, err)
 

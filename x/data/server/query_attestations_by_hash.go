@@ -24,7 +24,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 		return nil, err
 	}
 
-	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
+	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrap("data record with content hash")
 	}
@@ -36,7 +36,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 
 	it, err := s.stateStore.DataAttestorTable().List(
 		ctx,
-		api.DataAttestorIdAttestorIndexKey{}.WithId(dataId.Id),
+		api.DataAttestorIdAttestorIndexKey{}.WithId(dataID.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {

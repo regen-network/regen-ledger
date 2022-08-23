@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/types"
+	"google.golang.org/grpc"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"google.golang.org/grpc"
+
+	"github.com/regen-network/regen-ledger/types"
 )
 
 type RootModuleKey interface {

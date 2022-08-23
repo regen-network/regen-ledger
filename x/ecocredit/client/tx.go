@@ -23,7 +23,7 @@ import (
 const (
 	FlagAddIssuers             string = "add-issuers"
 	FlagRemoveIssuers          string = "remove-issuers"
-	FlagReferenceId            string = "reference-id"
+	FlagReferenceID            string = "reference-id"
 	FlagRetirementJurisdiction string = "retirement-jurisdiction"
 )
 
@@ -104,7 +104,7 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 
-			// Parse and normalize credit clas fee
+			// Parse and normalize credit class fee
 			fee, err := sdk.ParseCoinNormalized(args[3])
 			if err != nil {
 				return err
@@ -150,7 +150,7 @@ regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pL
 				return err
 			}
 
-			referenceId, err := cmd.Flags().GetString(FlagReferenceId)
+			referenceID, err := cmd.Flags().GetString(FlagReferenceID)
 			if err != nil {
 				return err
 			}
@@ -160,7 +160,7 @@ regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pL
 				ClassId:      args[0],
 				Jurisdiction: args[1],
 				Metadata:     args[2],
-				ReferenceId:  referenceId,
+				ReferenceId:  referenceID,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -168,7 +168,7 @@ regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pL
 		},
 	}
 
-	cmd.Flags().String(FlagReferenceId, "", "a reference ID for the project")
+	cmd.Flags().String(FlagReferenceID, "", "a reference ID for the project")
 
 	return txFlags(cmd)
 }
@@ -225,14 +225,17 @@ Parameters:
 
 			// Marshal and output JSON of message
 			ctx := sdkclient.GetClientContextFromCmd(cmd)
-			msgJson, err := ctx.Codec.MarshalJSON(msg)
+			msgJSON, err := ctx.Codec.MarshalJSON(msg)
 			if err != nil {
 				return err
 			}
 
-			var formattedJson bytes.Buffer
-			json.Indent(&formattedJson, msgJson, "", "  ")
-			fmt.Println(formattedJson.String())
+			var formattedJSON bytes.Buffer
+			err = json.Indent(&formattedJSON, msgJSON, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(formattedJSON.String())
 
 			return nil
 		},

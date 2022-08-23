@@ -20,11 +20,11 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/sell-order/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderId),
+			fmt.Sprintf("%s/%s/sell-order/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/sell-orders/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderId),
+			fmt.Sprintf("%s/%s/sell-orders/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderID),
 		},
 	}
 

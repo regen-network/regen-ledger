@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -80,9 +81,9 @@ func (s *mintBatchCredits) AProjectWithId(a string) {
 }
 
 func (s *mintBatchCredits) ACreditBatchWithDenomAndIssuerAlice(a string) {
-	projectId := core.GetProjectIdFromBatchDenom(a)
+	projectID := core.GetProjectIDFromBatchDenom(a)
 
-	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectId)
+	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectID)
 	require.NoError(s.t, err)
 
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{

@@ -78,11 +78,11 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 			if err != nil {
 				return err
 			}
-			marketId, err := k.getOrCreateMarketId(ctx, creditType.Abbreviation, update.NewAskPrice.Denom)
+			marketID, err := k.getOrCreateMarketID(ctx, creditType.Abbreviation, update.NewAskPrice.Denom)
 			if err != nil {
 				return err
 			}
-			order.MarketId = marketId
+			order.MarketId = marketID
 		}
 
 		order.AskAmount = update.NewAskPrice.Amount.String()

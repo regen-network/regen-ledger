@@ -8,25 +8,25 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDateCriteriaToApi(t *testing.T) {
+func TestDateCriteriaToAPI(t *testing.T) {
 	t.Parallel()
 
 	require := require.New(t)
 
 	var dc *DateCriteria
-	require.Nil(dc.ToApi(), "handles nil")
+	require.Nil(dc.ToAPI(), "handles nil")
 
 	tstamp := &types.Timestamp{Seconds: 10}
 	dc = &DateCriteria{MinStartDate: tstamp}
 	tstampStd, err := types.TimestampFromProto(tstamp)
 	require.NoError(err)
-	require.Equal(tstampStd, dc.ToApi().GetMinStartDate().AsTime(), "handles min start date")
+	require.Equal(tstampStd, dc.ToAPI().GetMinStartDate().AsTime(), "handles min start date")
 
 	dur := &types.Duration{Seconds: 50}
 	dc = &DateCriteria{StartDateWindow: dur}
 	durStd, err := types.DurationFromProto(dur)
 	require.NoError(err)
-	dw := dc.ToApi().GetStartDateWindow()
+	dw := dc.ToAPI().GetStartDateWindow()
 	require.NotNil(dw)
 	require.Equal(durStd, dw.AsDuration(), "handles window date")
 }

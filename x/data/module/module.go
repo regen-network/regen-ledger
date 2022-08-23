@@ -19,7 +19,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
-	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpcgateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
@@ -57,7 +57,7 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.ak, a.bk)
 }
 
-//nolint:errcheck
+//nolint
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
 }

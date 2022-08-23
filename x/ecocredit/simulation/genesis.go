@@ -88,12 +88,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	rawJson, err := jsonTarget.JSON()
+	rawJSON, err := jsonTarget.JSON()
 	if err != nil {
 		panic(err)
 	}
 
-	bz, err := json.Marshal(rawJson)
+	bz, err := json.Marshal(rawJSON)
 	if err != nil {
 		panic(err)
 	}
@@ -120,13 +120,13 @@ func createClass(ctx context.Context, sStore api.StateStore, class *api.Class) (
 		}
 
 		return 0, err
-	} else {
-		if err := sStore.ClassSequenceTable().Update(ctx, &api.ClassSequence{
-			CreditTypeAbbrev: class.CreditTypeAbbrev,
-			NextSequence:     seq.NextSequence + 1,
-		}); err != nil {
-			return 0, err
-		}
+	}
+
+	if err := sStore.ClassSequenceTable().Update(ctx, &api.ClassSequence{
+		CreditTypeAbbrev: class.CreditTypeAbbrev,
+		NextSequence:     seq.NextSequence + 1,
+	}); err != nil {
+		return 0, err
 	}
 
 	return cKey, nil

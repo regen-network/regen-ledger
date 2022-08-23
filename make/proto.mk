@@ -26,6 +26,10 @@ DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuil
 
 proto-lint:
 	@$(DOCKER_BUF) lint --error-format=json
+	@protolint .
+
+proto-lint-fix:
+	@protolint -fix .
 
 proto-check-breaking:
 	@$(DOCKER_BUF) breaking --against https://github.com/regen-network/regen-ledger.git#branch=main

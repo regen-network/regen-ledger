@@ -15,7 +15,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -37,7 +37,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 		},
 		{
 			name: "valid",
-			args: []string{fmt.Sprint(s.sellOrderId)},
+			args: []string{fmt.Sprint(s.sellOrderID)},
 		},
 	}
 
@@ -63,7 +63,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -118,7 +118,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySellerCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -180,7 +180,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -242,7 +242,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenomsCmd() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string

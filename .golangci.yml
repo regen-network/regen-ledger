@@ -1,7 +1,5 @@
 run:
-  tests: false
-#   # timeout for analysis, e.g. 30s, 5m, default is 1m
-#   timeout: 5m
+  timeout: 5m
 
 linters:
   disable-all: true
@@ -11,61 +9,36 @@ linters:
     - depguard
     - dogsled
     - errcheck
+    - exportloopref
     - goconst
     - gocritic
-    - gofmt
-    - goimports
-    - golint
+    # TODO: investigate why golangci-lint-action is producing an error when latest golangci-lint does not locally
+    # - gofmt
+    # - goimports
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - maligned
     - misspell
     - nakedret
+    - nolintlint
     - prealloc
-    - scopelint
+    - revive
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert
-    - unused
     - unparam
-    - misspell
+    - unused
+    # TODO: consider enabling and resolving
     # - wsl
-    - nolintlint
 
 issues:
   exclude-rules:
-    - text: "Use of weak random number generator"
+    - text: "G404: Use of weak random number generator"
       linters:
         - gosec
-    - text: "comment on exported var"
-      linters:
-        - golint
-    - text: "don't use an underscore in package name"
-      linters:
-        - golint
-    - text: "ST1003:"
-      linters:
-        - stylecheck
-    # FIXME: Disabled until golangci-lint updates stylecheck with this fix:
-    # https://github.com/dominikh/go-tools/issues/389
-    - text: "ST1016:"
-      linters:
-        - stylecheck
-  max-issues-per-linter: 10000
-  max-same-issues: 10000
-  
+
 linters-settings:
   dogsled:
     max-blank-identifiers: 3
-  maligned:
-    # print struct with more effective memory layout or not, false by default
-    suggest-new: true
-  nolintlint:
-    allow-unused: false
-    allow-leading-space: true
-    require-explanation: false
-    require-specific: false

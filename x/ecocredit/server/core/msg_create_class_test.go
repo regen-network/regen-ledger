@@ -24,7 +24,7 @@ type createClassSuite struct {
 	allowlistEnabled     bool
 	allowedClassCreators []string
 	creditClassFee       []*v1beta1.Coin
-	classId              string
+	classID              string
 	res                  *core.MsgCreateClassResponse
 	err                  error
 }
@@ -37,7 +37,7 @@ func (s *createClassSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
+	s.classID = testClassID
 }
 
 func (s *createClassSuite) ACreditType() {
@@ -184,7 +184,7 @@ func (s *createClassSuite) ExpectClassIssuers(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &issuers)
 	require.NoError(s.t, err)
 
-	class, err := s.stateStore.ClassTable().GetById(s.ctx, s.classId)
+	class, err := s.stateStore.ClassTable().GetById(s.ctx, s.classID)
 	require.NoError(s.t, err)
 
 	for _, issuer := range issuers {

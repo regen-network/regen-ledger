@@ -44,7 +44,7 @@ func NewOrderBook(db ormdb.ModuleDB) (OrderBook, error) {
 
 type OrderBook interface {
 	// OnInsertBuyOrder gets called whenever a buy order is inserted into the marketplace state.
-	//OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1.BuyOrder) error
+	// OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1.BuyOrder) error
 
 	// OnInsertSellOrder gets called whenever a sell order is inserted into the marketplace state.
 	OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batch *ecocreditv1.Batch) error
@@ -61,6 +61,7 @@ func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 	return nil
 }
 */
+
 func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batch *ecocreditv1.Batch) error {
 	return nil
 }

@@ -21,6 +21,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/mocks"
 )
 
+const (
+	testURL = "https://foo.bar"
+)
+
 type baseSuite struct {
 	t      gocuke.TestingT
 	ctx    context.Context

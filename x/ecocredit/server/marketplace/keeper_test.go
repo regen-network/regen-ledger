@@ -8,9 +8,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -25,13 +26,13 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
-var (
-	gmAny = gomock.Any()
+const (
+	testClassID    = "C01"
+	testBatchDenom = "C01-001-20200101-20210101-001"
 )
 
 type baseSuite struct {
@@ -88,72 +89,6 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	return s
 }
 
-func (s *baseSuite) createSellOrder(msg *marketplace.MsgSell) []uint64 {
-	res, err := s.k.Sell(s.ctx, msg)
-	assert.NilError(s.t, err)
-	return res.SellOrderIds
-}
-
-func (s *baseSuite) getBalanceAndSupply(batchKey uint64, addr sdk.AccAddress) (*ecoApi.BatchBalance, *ecoApi.BatchSupply) {
-	bal, err := utils.GetBalance(s.ctx, s.coreStore.BatchBalanceTable(), addr, batchKey)
-	assert.NilError(s.t, err)
-	sup, err := s.coreStore.BatchSupplyTable().Get(s.ctx, batchKey)
-	assert.NilError(s.t, err)
-	return bal, sup
-}
-
-func (s *baseSuite) assertBalanceAndSupplyUpdated(orders []*marketplace.MsgBuyDirect_Order, b1, b2 *ecoApi.BatchBalance, s1, s2 *ecoApi.BatchSupply) {
-	purchaseTradable := math.NewDecFromInt64(0)
-	purchaseRetired := math.NewDecFromInt64(0)
-	for _, order := range orders {
-		if order.DisableAutoRetire {
-			qty, err := math.NewDecFromString(order.Quantity)
-			assert.NilError(s.t, err)
-			purchaseTradable, err = purchaseTradable.Add(qty)
-			assert.NilError(s.t, err)
-		} else {
-			qty, err := math.NewDecFromString(order.Quantity)
-			assert.NilError(s.t, err)
-			purchaseRetired, err = purchaseRetired.Add(qty)
-			assert.NilError(s.t, err)
-		}
-	}
-
-	balBeforeT, balBeforeR, _ := extractBalanceDecs(s.t, b1)
-	balAfterT, balAfterR, _ := extractBalanceDecs(s.t, b2)
-
-	supBeforeT, supBeforeR, _ := extractSupplyDecs(s.t, s1)
-	supAfterT, supAfterR, _ := extractSupplyDecs(s.t, s2)
-
-	expectedTradableBal, err := balBeforeT.Add(purchaseTradable)
-	assert.NilError(s.t, err)
-	expectedRetiredBal, err := balBeforeR.Add(purchaseRetired)
-	assert.NilError(s.t, err)
-	assert.Check(s.t, balAfterT.Equal(expectedTradableBal))
-	assert.Check(s.t, balAfterR.Equal(expectedRetiredBal))
-
-	expectedTradableSup, err := supBeforeT.Sub(purchaseRetired)
-	assert.NilError(s.t, err)
-	expectedRetiredSup, err := supBeforeR.Add(purchaseRetired)
-	assert.NilError(s.t, err)
-
-	assert.Check(s.t, expectedTradableSup.Equal(supAfterT))
-	assert.Check(s.t, expectedRetiredSup.Equal(supAfterR))
-
-}
-
-func extractBalanceDecs(t gocuke.TestingT, b *ecoApi.BatchBalance) (tradable, retired, escrowed math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(6, b.TradableAmount, b.RetiredAmount, b.EscrowedAmount)
-	assert.NilError(t, err)
-	return decs[0], decs[1], decs[2]
-}
-
-func extractSupplyDecs(t gocuke.TestingT, s *ecoApi.BatchSupply) (tradable, retired, cancelled math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(6, s.TradableAmount, s.RetiredAmount, s.CancelledAmount)
-	assert.NilError(t, err)
-	return decs[0], decs[1], decs[2]
-}
-
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
 func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoApi.BatchBalance, orderAmt math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.TradableAmount, balanceAfter.TradableAmount,
@@ -174,7 +109,7 @@ func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoAp
 }
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
-func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
+func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classID string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
 	assert.Check(s.t, len(s.addrs) > 0, "When calling `testSellSetup`, the base suite must have a non-empty `addrs`.")
 	assert.NilError(s.t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
 		Abbreviation: "C",
@@ -184,7 +119,7 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 	}))
 
 	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
-		Id:               classId,
+		Id:               classID,
 		Admin:            s.addrs[0],
 		Metadata:         "",
 		CreditTypeAbbrev: creditType.Abbreviation,

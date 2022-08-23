@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package server
 
 import (
@@ -14,10 +15,9 @@ import (
 
 type defineResolverSuite struct {
 	*baseSuite
-	alice       sdk.AccAddress
-	bob         sdk.AccAddress
-	resolverUrl string
-	err         error
+	alice sdk.AccAddress
+	bob   sdk.AccAddress
+	err   error
 }
 
 func TestDefineResolver(t *testing.T) {

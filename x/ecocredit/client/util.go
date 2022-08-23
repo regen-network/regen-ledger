@@ -17,7 +17,7 @@ import (
 
 func txFlags(cmd *cobra.Command) *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.MarkFlagRequired(flags.FlagFrom)
+	_ = cmd.MarkFlagRequired(flags.FlagFrom)
 	return cmd
 }
 

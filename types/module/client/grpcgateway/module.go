@@ -1,8 +1,10 @@
-package grpc_gateway
+package grpcgateway
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+
+	"github.com/cosmos/cosmos-sdk/client"
+
 	"github.com/regen-network/regen-ledger/types/module"
 )
 

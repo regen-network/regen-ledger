@@ -20,12 +20,12 @@ func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorBy
 		return nil, err
 	}
 
-	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
+	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("data record with IRI")
 	}
 
-	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataId.Id)
+	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataID.Id)
 	if err != nil {
 		return nil, err
 	}

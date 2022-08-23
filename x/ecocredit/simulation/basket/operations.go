@@ -26,9 +26,9 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgCreate = "op_weight_msg_create_basket"
-	OpWeightMsgPut    = "op_weight_msg_put_into_basket"
-	OpWeightMsgTake   = "op_weight_take_from_basket"
+	OpWeightMsgCreate = "op_weight_msg_create_basket"   //nolint:gosec
+	OpWeightMsgPut    = "op_weight_msg_put_into_basket" //nolint:gosec
+	OpWeightMsgTake   = "op_weight_take_from_basket"    //nolint:gosec
 )
 
 // basket operations weights
@@ -110,7 +110,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "not enough balance"), nil, nil
 		}
 
-		creditType, err := randomCreditType(r, ctx, qryClient)
+		creditType, err := randomCreditType(ctx, r, qryClient)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
 		}
@@ -119,8 +119,8 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "credit type not found"), nil, nil
 		}
 
-		classIds, op, err := randomClassIds(r, sdkCtx, qryClient, creditType.Abbreviation, TypeMsgPut)
-		if len(classIds) == 0 {
+		classIDs, op, err := randomClassIds(r, sdkCtx, qryClient, creditType.Abbreviation, TypeMsgPut)
+		if len(classIDs) == 0 {
 			return op, nil, err
 		}
 
@@ -133,7 +133,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			DisableAutoRetire: r.Float32() < 0.5,
 			Curator:           curator.Address.String(),
 			Exponent:          utils.RandomExponent(r, precision),
-			AllowedClasses:    classIds,
+			AllowedClasses:    classIDs,
 			CreditTypeAbbrev:  creditType.Abbreviation,
 			DateCriteria:      dateCriteria,
 		}
@@ -188,10 +188,9 @@ func randomDateCriteria(r *rand.Rand, ctx sdk.Context) *basket.DateCriteria {
 					Seconds: seconds,
 				},
 			}
-		} else {
-			return &basket.DateCriteria{
-				StartDateWindow: &gogotypes.Duration{Seconds: int64(seconds)},
-			}
+		}
+		return &basket.DateCriteria{
+			StartDateWindow: &gogotypes.Duration{Seconds: seconds},
 		}
 	}
 	return nil
@@ -251,11 +250,9 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 						classInfoList = append(classInfoList, *class)
 						max++
 					}
-				} else {
-					if utils.Contains(issuers, ownerAddr) {
-						classInfoList = append(classInfoList, *class)
-						max++
-					}
+				} else if utils.Contains(issuers, ownerAddr) {
+					classInfoList = append(classInfoList, *class)
+					max++
 				}
 
 				if max == 2 {
@@ -422,14 +419,13 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, nil
 			}
 
-			if iAmount == 0 {
+			switch {
+			case iAmount == 0:
 				continue
-			} else if iAmount == 1 {
+			case iAmount == 1:
 				amt = iAmount
-				break
-			} else {
+			default:
 				amt = simtypes.RandIntBetween(r, 1, iAmount)
-				break
 			}
 		}
 		if amt == 0 {
@@ -476,15 +472,15 @@ func randomClassIds(r *rand.Rand, ctx sdk.Context, qryClient core.QueryClient,
 	}
 
 	max := simtypes.RandIntBetween(r, 1, min(5, len(classes)))
-	var classIds []string
+	var classIDs []string
 	for i := 0; i < max; i++ {
 		class := classes[i]
 		if class.CreditTypeAbbrev == creditTypeAbbrev {
-			classIds = append(classIds, class.Id)
+			classIDs = append(classIDs, class.Id)
 		}
 	}
 
-	return classIds, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+	return classIDs, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
 func min(x, y int) int {
@@ -494,7 +490,7 @@ func min(x, y int) int {
 	return x
 }
 
-func randomCreditType(r *rand.Rand, ctx context.Context, qryClient core.QueryClient) (*core.CreditType, error) {
+func randomCreditType(ctx context.Context, r *rand.Rand, qryClient core.QueryClient) (*core.CreditType, error) {
 	res, err := qryClient.CreditTypes(ctx, &core.QueryCreditTypesRequest{})
 	if err != nil {
 		return nil, err

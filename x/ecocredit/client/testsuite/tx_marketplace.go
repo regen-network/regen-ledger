@@ -35,9 +35,9 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 		{
 			name: "missing from flag",
 			args: []string{
-				validJson,
+				validJSON,
 			},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
@@ -77,7 +77,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 		{
 			name: "invalid json format",
 			args: []string{
-				invalidJson,
+				invalidJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 			},
 			expErr:    true,
@@ -86,7 +86,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 		{
 			name: "duplicate json key",
 			args: []string{
-				duplicateJson,
+				duplicateJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 			},
 			expErr:    true,
@@ -95,21 +95,21 @@ func (s *IntegrationTestSuite) TestTxSell() {
 		{
 			name: "valid",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 			},
 		},
 		{
 			name: "valid from key-name",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
 		{
 			name: "valid with amino-json",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -117,9 +117,10 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := marketplaceclient.TxSellCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -143,7 +144,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	askPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
 	// create new sell orders to not interfere with other tests
-	sellOrderIds := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+	sellOrderIDs := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
 		Seller: s.addr1.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
@@ -162,21 +163,21 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	// using json package because array is not a proto message
 	bz, err := json.Marshal([]marketplace.MsgUpdateSellOrders_Update{
 		{
-			SellOrderId: sellOrderIds[0],
+			SellOrderId: sellOrderIDs[0],
 			NewQuantity: "20",
 			NewAskPrice: &askPrice,
 		},
 		{
-			SellOrderId: sellOrderIds[1],
+			SellOrderId: sellOrderIDs[1],
 			NewQuantity: "20",
 			NewAskPrice: &askPrice,
 		},
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -198,7 +199,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{validJson},
+			args:      []string{validJSON},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
@@ -214,7 +215,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		{
 			name: "invalid json format",
 			args: []string{
-				invalidJson,
+				invalidJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 			},
 			expErr:    true,
@@ -223,7 +224,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		{
 			name: "duplicate json key",
 			args: []string{
-				duplicateJson,
+				duplicateJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 			},
 			expErr:    true,
@@ -232,21 +233,21 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		{
 			name: "valid",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 			},
 		},
 		{
 			name: "valid from key-name",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
 		{
 			name: "valid with amino-json",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -254,9 +255,10 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := marketplaceclient.TxUpdateSellOrdersCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -277,7 +279,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 
 	buyer := s.addr2.String()
 
-	sellOrderId := fmt.Sprint(s.sellOrderId)
+	sellOrderID := fmt.Sprint(s.sellOrderID)
 	bidPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10).String()
 
 	testCases := []struct {
@@ -301,7 +303,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 		{
 			name: "missing from flag",
 			args: []string{
-				sellOrderId,
+				sellOrderID,
 				"10",
 				bidPrice,
 				"true",
@@ -312,7 +314,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 		{
 			name: "valid",
 			args: []string{
-				sellOrderId,
+				sellOrderID,
 				"10",
 				bidPrice,
 				"true",
@@ -322,7 +324,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				sellOrderId,
+				sellOrderID,
 				"10",
 				bidPrice,
 				"true",
@@ -332,7 +334,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				sellOrderId,
+				sellOrderID,
 				"10",
 				bidPrice,
 				"true",
@@ -343,9 +345,10 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := marketplaceclient.TxBuyDirectCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -371,13 +374,13 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 	// using json package because array is not a proto message
 	bz, err := json.Marshal([]marketplace.MsgBuyDirect_Order{
 		{
-			SellOrderId:       s.sellOrderId,
+			SellOrderId:       s.sellOrderID,
 			Quantity:          "10",
 			BidPrice:          &bidPrice,
 			DisableAutoRetire: true,
 		},
 		{
-			SellOrderId:            s.sellOrderId,
+			SellOrderId:            s.sellOrderID,
 			Quantity:               "10",
 			BidPrice:               &bidPrice,
 			RetirementJurisdiction: "US-WA",
@@ -385,9 +388,9 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -409,7 +412,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{validJson},
+			args:      []string{validJSON},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
@@ -425,7 +428,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 		{
 			name: "invalid json format",
 			args: []string{
-				invalidJson,
+				invalidJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, buyer),
 			},
 			expErr:    true,
@@ -434,7 +437,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 		{
 			name: "duplicate json key",
 			args: []string{
-				duplicateJson,
+				duplicateJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, buyer),
 			},
 			expErr:    true,
@@ -443,30 +446,31 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 		{
 			name: "valid",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, buyer),
 			},
 		},
 		{
 			name: "valid from key-name",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, "addr2"),
 			},
 		},
 		{
 			name: "valid with amino-json",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, buyer),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
 		},
 	}
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := marketplaceclient.TxBuyDirectBulkCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -508,7 +512,7 @@ func (s *IntegrationTestSuite) TestTxCancelSellOrder() {
 		{
 			name: "missing from flag",
 			args: []string{
-				fmt.Sprintf("%d", s.sellOrderId),
+				fmt.Sprintf("%d", s.sellOrderID),
 			},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
@@ -516,16 +520,17 @@ func (s *IntegrationTestSuite) TestTxCancelSellOrder() {
 		{
 			name: "valid",
 			args: []string{
-				fmt.Sprintf("%d", s.sellOrderId),
+				fmt.Sprintf("%d", s.sellOrderID),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, seller),
 			},
 		},
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := marketplaceclient.TxCancelSellOrderCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)

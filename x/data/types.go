@@ -14,11 +14,12 @@ func (ch ContentHash) Validate() error {
 	hashRaw := ch.GetRaw()
 	hashGraph := ch.GetGraph()
 
-	if hashRaw != nil && hashGraph != nil {
+	switch {
+	case hashRaw != nil && hashGraph != nil:
 		return sdkerrors.ErrInvalidRequest.Wrapf("content hash must be one of raw type or graph type")
-	} else if hashRaw != nil {
+	case hashRaw != nil:
 		return hashRaw.Validate()
-	} else if hashGraph != nil {
+	case hashGraph != nil:
 		return hashGraph.Validate()
 	}
 
