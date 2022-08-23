@@ -2,7 +2,6 @@ package core
 
 import (
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -233,20 +232,8 @@ func (s *bridgeSuite) ExpectEventWithProperties(a gocuke.DocString) {
 
 	require.Equal(s.t, string(proto.MessageName(&event)), eventBridge.Type)
 
-	for _, attr := range eventBridge.Attributes {
-		switch string(attr.Key) {
-		case "target":
-			require.Equal(s.t, event.Target, strings.Trim(string(attr.Value), `"`))
-		case "recipient":
-			require.Equal(s.t, event.Recipient, utils.AttributeValue(attr.Value))
-		case "contract":
-			require.Equal(s.t, event.Contract, utils.AttributeValue(attr.Value))
-		case "amount":
-			require.Equal(s.t, event.Amount, utils.AttributeValue(attr.Value))
-		default:
-			require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
-		}
-	}
+	err = utils.MatchEvent(event, eventBridge)
+	require.NoError(s.t, err)
 }
 
 func (s *bridgeSuite) ACreditBatchExists() {

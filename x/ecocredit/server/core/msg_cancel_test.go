@@ -288,18 +288,6 @@ func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
 
 	require.Equal(s.t, string(proto.MessageName(&event)), eventCancel.Type)
 
-	for _, attr := range eventCancel.Attributes {
-		switch string(attr.Key) {
-		case "owner":
-			require.Equal(s.t, event.Owner, utils.AttributeValue(attr.Value))
-		case "batch_denom":
-			require.Equal(s.t, event.BatchDenom, utils.AttributeValue(attr.Value))
-		case "amount":
-			require.Equal(s.t, event.Amount, utils.AttributeValue(attr.Value))
-		case "reason":
-			require.Equal(s.t, event.Reason, utils.AttributeValue(attr.Value))
-		default:
-			require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
-		}
-	}
+	err = utils.MatchEvent(event, eventCancel)
+	require.NoError(s.t, err)
 }

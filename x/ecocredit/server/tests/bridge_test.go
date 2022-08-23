@@ -9,17 +9,19 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type bridgeSuite struct {
@@ -149,7 +151,7 @@ func (s *bridgeSuite) ExpectCreditBatchWithProperties(a gocuke.DocString) {
 }
 
 func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocString) {
-	expected := &ecocreditv1.BatchSupply{}
+	expected := &api.BatchSupply{}
 	err := jsonpb.UnmarshalString(b.Content, expected)
 	require.NoError(s.t, err)
 
@@ -164,7 +166,7 @@ func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocStri
 }
 
 func (s *bridgeSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c gocuke.DocString) {
-	expected := &ecocreditv1.BatchBalance{}
+	expected := &api.BatchBalance{}
 	err := jsonpb.UnmarshalString(c.Content, expected)
 	require.NoError(s.t, err)
 
@@ -183,26 +185,14 @@ func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
 	var exists bool
 
 	for _, event := range s.sdkCtx.EventManager().Events() {
-		if event.Type == "regen.ecocredit.v1.EventBridgeReceive" {
+		if event.Type == string(proto.MessageName(&api.EventBridgeReceive{})) {
 			exists = true
 
 			var expected core.EventBridgeReceive
 			err := jsonpb.UnmarshalString(a.Content, &expected)
 			require.NoError(s.t, err)
 
-			for _, attr := range event.Attributes {
-				val, err := strconv.Unquote(string(attr.Value))
-				require.NoError(s.t, err)
-
-				switch string(attr.Key) {
-				case "project_id":
-					require.Equal(s.t, expected.ProjectId, val)
-				case "batch_denom":
-					require.Equal(s.t, expected.BatchDenom, val)
-				default:
-					require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
-				}
-			}
+			err = utils.MatchEvent(expected, event)
 		}
 	}
 
@@ -213,30 +203,14 @@ func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
 	var exists bool
 
 	for _, event := range s.sdkCtx.EventManager().Events() {
-		if event.Type == "regen.ecocredit.v1.EventBridge" {
+		if event.Type == string(proto.MessageName(&api.EventBridge{})) {
 			exists = true
 
 			var expected core.EventBridge
 			err := jsonpb.UnmarshalString(a.Content, &expected)
 			require.NoError(s.t, err)
 
-			for _, attr := range event.Attributes {
-				val, err := strconv.Unquote(string(attr.Value))
-				require.NoError(s.t, err)
-
-				switch string(attr.Key) {
-				case "target":
-					require.Equal(s.t, expected.Target, val)
-				case "recipient":
-					require.Equal(s.t, expected.Recipient, val)
-				case "contract":
-					require.Equal(s.t, expected.Contract, val)
-				case "amount":
-					require.Equal(s.t, expected.Amount, val)
-				default:
-					require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
-				}
-			}
+			err = utils.MatchEvent(expected, event)
 		}
 	}
 
