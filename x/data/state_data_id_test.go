@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package data
 
 import (
