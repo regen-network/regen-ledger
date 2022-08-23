@@ -66,7 +66,7 @@ Feature: MsgUpdateClassFees
     When the message is validated
     Then expect the error "invalid authority address: decoding bech32 failed: invalid bech32 string length 3"
 
-  Scenario: an error is returned if coin denom is invalid
+  Scenario: an error is returned if fee denom is not a valid bank denom
     Given the message
     """
     {
