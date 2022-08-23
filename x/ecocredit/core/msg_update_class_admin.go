@@ -24,7 +24,7 @@ func (m *MsgUpdateClassAdmin) ValidateBasic() error {
 	}
 
 	if err := ValidateClassID(m.ClassId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {

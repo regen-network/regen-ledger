@@ -168,7 +168,7 @@ func TestGenesisValidate(t *testing.T) {
 			},
 			defaultParams,
 			true,
-			"credit type abbreviation must be 1-3 uppercase latin letters",
+			"expected format [A-Z]{1,3}: parse error",
 		},
 		{
 			"invalid: credit type param",
@@ -189,7 +189,7 @@ func TestGenesisValidate(t *testing.T) {
 				return defaultParams
 			}(),
 			true,
-			"credit type precision is currently locked to 6",
+			"precision is currently locked to 6",
 		},
 		{
 			"invalid: bad addresses in allowlist",

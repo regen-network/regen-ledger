@@ -37,7 +37,7 @@ Feature: MsgSealBatch
     }
     """
     When the message is validated
-    Then expect the error "batch denom cannot be empty: parse error: invalid request"
+    Then expect the error "batch denom: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if batch denom is not formatted
     Given the message
@@ -48,4 +48,4 @@ Feature: MsgSealBatch
     }
     """
     When the message is validated
-    Then expect the error "invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "batch denom: expected format [A-Z]{1,3}[0-9]{2,}-[0-9]{3,}-[0-9]{8}-[0-9]{8}-[0-9]{3,}: parse error: invalid request"

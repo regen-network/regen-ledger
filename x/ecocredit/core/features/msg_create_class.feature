@@ -135,7 +135,7 @@ Feature: MsgCreateClass
     }
     """
     When the message is validated
-    Then expect the error "credit type abbreviation cannot be empty: parse error: invalid request"
+    Then expect the error "credit type abbrev: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if credit type abbreviation is not formatted
     Given the message
@@ -150,7 +150,7 @@ Feature: MsgCreateClass
     }
     """
     When the message is validated
-    Then expect the error "credit type abbreviation must be 1-3 uppercase latin letters: got foobar: parse error: invalid request"
+    Then expect the error "credit type abbrev: expected format [A-Z]{1,3}: parse error: invalid request"
 
   Scenario: an error is returned if fee denom is empty
     Given the message
