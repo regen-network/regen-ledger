@@ -1,0 +1,28 @@
+package marketplace
+
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+)
+
+// Validate performs basic validation of the Market state type
+func (m *Market) Validate() error {
+	if m.Id == 0 {
+		return ecocredit.ErrParseFailure.Wrapf("id cannot be zero")
+	}
+
+	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+		return err // returns parse error
+	}
+
+	if err := sdk.ValidateDenom(m.BankDenom); err != nil {
+		return ecocredit.ErrParseFailure.Wrapf("bank denom: %s", err)
+	}
+
+	if m.PrecisionModifier != 0 {
+		return ecocredit.ErrParseFailure.Wrapf("precision modifier must be zero")
+	}
+
+	return nil
+}
