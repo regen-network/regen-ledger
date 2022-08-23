@@ -10,6 +10,7 @@ import (
 )
 
 // MatchEvent matches the values in a proto message struct to the attributes in a sdk.Event.
+// This function cannot handle nested structs.
 func MatchEvent(event any, emitted sdk.Event) error {
 	tag := "json"
 	valOfEvent := reflect.ValueOf(event)
@@ -32,7 +33,12 @@ func MatchEvent(event any, emitted sdk.Event) error {
 		if !ok {
 			return fmt.Errorf("event has no attribute '%s'", key)
 		}
-		if underlyingValue := fmt.Sprintf("%v", underlying.Interface()); underlyingValue != val {
+		underlyingValue := fmt.Sprintf("%v", underlying.Interface())
+		// handle special case for null values
+		if underlyingValue == "<nil>" {
+			underlyingValue = "null"
+		}
+		if underlyingValue != val {
 			return fmt.Errorf("expected %s, got %s for field %s", underlyingValue, val, descriptor.Name)
 		}
 	}

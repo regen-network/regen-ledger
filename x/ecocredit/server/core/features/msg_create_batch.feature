@@ -443,4 +443,35 @@ Feature: Msg/CreateBatch
         "retired_amount": "10"
       }
       """
-      # sender will be filled at runtime with alice's address
+      And expect event create batch with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """
+
+    Scenario:  Events EventMint, EventTransfer, and EventCreateBatch are emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event mint with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "10",
+        "retired_amount": ""
+      }
+      """
+      And expect event transfer with properties
+      """
+      {
+        "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "10",
+        "retired_amount": ""
+      }
+      """
+      And expect event create batch with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """

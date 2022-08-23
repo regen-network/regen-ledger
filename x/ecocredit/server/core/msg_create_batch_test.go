@@ -3,6 +3,7 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 	"testing"
@@ -19,6 +20,29 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
+
+func TestSomething(t *testing.T) {
+	event := api.EventCreateBatch{
+		BatchDenom: "foo",
+		OriginTx: &api.OriginTx{
+			Id:       "bar",
+			Source:   "baz",
+			Contract: "qux",
+			Note:     "quzz",
+		},
+	}
+	s := setupBase(t)
+
+	err := s.sdkCtx.EventManager().EmitTypedEvent(&event)
+	require.NoError(t, err)
+
+	sdkEvents := s.sdkCtx.EventManager().Events()
+	lastEvent := sdkEvents[len(sdkEvents)-1]
+
+	for _, attr := range lastEvent.Attributes {
+		fmt.Printf("Key: %s\tValue: %s\n", string(attr.Key), string(attr.Value))
+	}
+}
 
 type createBatchSuite struct {
 	*baseSuite
@@ -449,6 +473,34 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 		EndDate:   s.endDate,
 	})
 	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a string, b string, c string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      c,
+				TradableAmount: b,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocString) {
+	var event api.EventCreateBatch
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *createBatchSuite) getProjectSequence(projectID string) uint64 {
