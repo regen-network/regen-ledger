@@ -200,7 +200,7 @@ func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
 				case "batch_denom":
 					require.Equal(s.t, expected.BatchDenom, val)
 				default:
-					require.Fail(s.t, "invalid attribute")
+					require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
 				}
 			}
 		}
@@ -234,7 +234,7 @@ func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
 				case "amount":
 					require.Equal(s.t, expected.Amount, val)
 				default:
-					require.Fail(s.t, "invalid attribute")
+					require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
 				}
 			}
 		}

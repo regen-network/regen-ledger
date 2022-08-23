@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"strings"
 
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -102,8 +101,4 @@ func RetireSupply(ctx context.Context, table ecoApi.BatchSupplyTable, batchKey u
 	supply.RetiredAmount = retired.String()
 
 	return table.Update(ctx, supply)
-}
-
-func attributeValue(bz []byte) string {
-	return strings.Trim(string(bz), `"`)
 }

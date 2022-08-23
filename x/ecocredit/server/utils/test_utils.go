@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"strings"
+
 	"github.com/golang/mock/gomock"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,4 +17,8 @@ func ExpectParamGet[T any](obj *T, paramKeeper *mocks.MockParamKeeper, key []byt
 	paramKeeper.EXPECT().Get(gmAny, key, &expectedType).Do(func(_ sdk.Context, _ []byte, param *T) {
 		*param = *obj
 	}).Times(times)
+}
+
+func AttributeValue(bz []byte) string {
+	return strings.Trim(string(bz), `"`)
 }

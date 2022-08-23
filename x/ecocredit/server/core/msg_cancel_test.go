@@ -14,6 +14,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type cancel struct {
@@ -290,13 +291,15 @@ func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
 	for _, attr := range eventCancel.Attributes {
 		switch string(attr.Key) {
 		case "owner":
-			require.Equal(s.t, event.Owner, attributeValue(attr.Value))
+			require.Equal(s.t, event.Owner, utils.AttributeValue(attr.Value))
 		case "batch_denom":
-			require.Equal(s.t, event.BatchDenom, attributeValue(attr.Value))
+			require.Equal(s.t, event.BatchDenom, utils.AttributeValue(attr.Value))
 		case "amount":
-			require.Equal(s.t, event.Amount, attributeValue(attr.Value))
+			require.Equal(s.t, event.Amount, utils.AttributeValue(attr.Value))
 		case "reason":
-			require.Equal(s.t, event.Reason, attributeValue(attr.Value))
+			require.Equal(s.t, event.Reason, utils.AttributeValue(attr.Value))
+		default:
+			require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
 		}
 	}
 }

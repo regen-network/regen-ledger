@@ -14,6 +14,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type bridgeSuite struct {
@@ -237,11 +238,13 @@ func (s *bridgeSuite) ExpectEventWithProperties(a gocuke.DocString) {
 		case "target":
 			require.Equal(s.t, event.Target, strings.Trim(string(attr.Value), `"`))
 		case "recipient":
-			require.Equal(s.t, event.Recipient, attributeValue(attr.Value))
+			require.Equal(s.t, event.Recipient, utils.AttributeValue(attr.Value))
 		case "contract":
-			require.Equal(s.t, event.Contract, attributeValue(attr.Value))
+			require.Equal(s.t, event.Contract, utils.AttributeValue(attr.Value))
 		case "amount":
-			require.Equal(s.t, event.Amount, attributeValue(attr.Value))
+			require.Equal(s.t, event.Amount, utils.AttributeValue(attr.Value))
+		default:
+			require.FailNowf(s.t, "unexpected attribute in event: %s", string(attr.Key))
 		}
 	}
 }
