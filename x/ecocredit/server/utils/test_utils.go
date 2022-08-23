@@ -46,11 +46,11 @@ func MatchEvent(event any, emitted sdk.Event) error {
 
 		// convert the underlying struct field value to a string
 		underlyingValue := fmt.Sprintf("%v", underlying.Interface())
-
 		// handle special case for null values
 		if underlyingValue == "<nil>" {
 			underlyingValue = "null"
-		} else if len(val) > 0 && val[0] == '{' { // handle nested struct case
+		}
+		if len(val) > 0 && val[0] == '{' { // handle nested struct case
 			// nested event structs end up as a json marshalled string, so we must unmarshal it
 			sdkEvent, err := jsonToEvent(val)
 			if err != nil {
@@ -77,11 +77,9 @@ func MatchEvent(event any, emitted sdk.Event) error {
 					return err
 				}
 			}
-		} else {
+		} else if underlyingValue != val {
 			// it's not a nested struct or nil, so we can just simply compare
-			if underlyingValue != val {
-				return fmt.Errorf("expected %s, got %s for field %s", underlyingValue, val, descriptor.Name)
-			}
+			return fmt.Errorf("expected %s, got %s for field %s", underlyingValue, val, descriptor.Name)
 		}
 	}
 	// check that no fields were missed. amount of exported struct fields should be equal to amount of attributes
