@@ -139,3 +139,94 @@ Feature: Msg/MintBatchCredits
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: events are emitted
+    Scenario: Events EventRetire, EventMint, and EventMintBatchCredits are emitted
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And a project with id "C01-001"
+      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      And an origin tx with properties
+      """
+      {
+        "id": "0xbca488b181e3dd66db06f0cccf083004c99a078bcaa70001579e465bb833fd67",
+        "source": "polygon",
+        "contract": "0x00192fb10df37c9fb26829eb2cc623cd1bf599e8",
+        "note": "hello"
+      }
+      """
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with retired amount "10" from "US-WA" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event retire with properties
+      """
+      {
+        "owner": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "amount": "10",
+        "jurisdiction": "US-WA"
+      }
+      """
+      And expect event mint with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "retired_amount": "10",
+        "tradable_amount": "0"
+      }
+      """
+      And expect event mint batch credits with properties
+      """
+      {
+      "batch_denom": "C01-001-20200101-20210101-001",
+      "origin_tx": {
+        "id": "0xbca488b181e3dd66db06f0cccf083004c99a078bcaa70001579e465bb833fd67",
+        "source": "polygon",
+        "contract": "0x00192fb10df37c9fb26829eb2cc623cd1bf599e8",
+        "note": "hello"
+        }
+      }
+      """
+
+    Scenario: Events EventTransfer, EventMint, and EventMintBatchCredits are emitted
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And a project with id "C01-001"
+      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      And an origin tx with properties
+      """
+      {
+        "id": "0xbca488b181e3dd66db06f0cccf083004c99a078bcaa70001579e465bb833fd67",
+        "source": "polygon",
+        "contract": "0x00192fb10df37c9fb26829eb2cc623cd1bf599e8",
+        "note": "hello"
+      }
+      """
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with tradable amount "10" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event transfer with properties
+      """
+      {
+        "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "10",
+        "retired_amount": ""
+      }
+      """
+      And expect event mint with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "retired_amount": "0",
+        "tradable_amount": "10"
+      }
+      """
+      And expect event mint batch credits with properties
+      """
+      {
+      "batch_denom": "C01-001-20200101-20210101-001",
+      "origin_tx": {
+        "id": "0xbca488b181e3dd66db06f0cccf083004c99a078bcaa70001579e465bb833fd67",
+        "source": "polygon",
+        "contract": "0x00192fb10df37c9fb26829eb2cc623cd1bf599e8",
+        "note": "hello"
+        }
+      }
+      """

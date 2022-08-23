@@ -41,7 +41,7 @@ func MatchEvent(event any, emitted sdk.Event) error {
 		// handle special case for null values
 		if underlyingValue == "<nil>" {
 			underlyingValue = "null"
-		} else if val[0] == '{' { // it's a nested struct
+		} else if len(val) > 0 && val[0] == '{' { // it's a nested struct
 			sdkEvent, err := jsonToEvent(val)
 			if err != nil {
 				return err

@@ -2,6 +2,7 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -14,6 +15,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type mintBatchCredits struct {
@@ -257,6 +259,93 @@ func (s *mintBatchCredits) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 	require.Equal(s.t, expected.CancelledAmount, balance.CancelledAmount)
+}
+
+func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomWithRetiredAmountFromTo(a, b, c, d string) {
+	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
+		Issuer:     s.alice.String(),
+		BatchDenom: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:              d,
+				RetiredAmount:          b,
+				RetirementJurisdiction: c,
+			},
+		},
+		OriginTx: s.originTx,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *mintBatchCredits) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event api.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) ExpectEventMintWithProperties(a gocuke.DocString) {
+	var event api.EventMint
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) ExpectEventMintBatchCreditsWithProperties(a gocuke.DocString) {
+	var event api.EventMintBatchCredits
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) AnOriginTxWithProperties(a gocuke.DocString) {
+	var ot core.OriginTx
+	err := json.Unmarshal([]byte(a.Content), &ot)
+	require.NoError(s.t, err)
+	s.originTx = &ot
+}
+
+func (s *mintBatchCredits) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event api.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Sender = s.k.moduleAddress.String()
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomWithTradableAmountTo(a string, b string, c string) {
+	s.res, s.err = s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
+		Issuer:     s.alice.String(),
+		BatchDenom: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      c,
+				TradableAmount: b,
+			},
+		},
+		OriginTx: s.originTx,
+	})
+	require.NoError(s.t, s.err)
 }
 
 func (s *mintBatchCredits) getBatchSequence(batchDenom string) uint64 {
