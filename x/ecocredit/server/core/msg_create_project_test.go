@@ -2,6 +2,7 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -14,6 +15,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type createProjectSuite struct {
@@ -175,6 +177,18 @@ func (s *createProjectSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, &res, s.res)
+}
+
+func (s *createProjectSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event api.EventCreateProject
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = utils.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *createProjectSuite) getProjectSequence(projectID string) uint64 {
