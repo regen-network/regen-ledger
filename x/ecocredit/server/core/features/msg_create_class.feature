@@ -241,8 +241,8 @@ Feature: Msg/CreateClass
 
     # no failing scenario - response should always be empty when message execution fails
 
-
   Rule: Event is emitted
+
   Background:
     Given a credit type with abbreviation "A"
 

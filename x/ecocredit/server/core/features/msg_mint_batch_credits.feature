@@ -141,6 +141,7 @@ Feature: Msg/MintBatchCredits
     # no failing scenario - state transitions only occur upon successful message execution
 
   Rule: events are emitted
+
     Background:
       Given ecocredit module address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
       Given a credit type with abbreviation "C"
@@ -156,6 +157,7 @@ Feature: Msg/MintBatchCredits
         "note": "hello"
       }
       """
+
     Scenario: Events EventRetire, EventMint, and EventMintBatchCredits are emitted
       When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with retired amount "10" from "US-WA" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event retire with properties

@@ -37,6 +37,7 @@ Feature: Msg/SealBatch
       Then expect the error "only the batch issuer can seal the batch: unauthorized"
 
   Rule: Event is emitted
+
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice

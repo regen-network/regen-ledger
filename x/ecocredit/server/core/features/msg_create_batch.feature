@@ -410,6 +410,7 @@ Feature: Msg/CreateBatch
     # no failing scenario - response should always be empty when message execution fails
 
   Rule: Events are emitted
+
     Background:
       Given a credit type with abbreviation "C"
       And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
@@ -480,6 +481,7 @@ Feature: Msg/CreateBatch
       """
 
   Rule: Events are emitted with origin tx
+
     Background:
       Given a credit type with abbreviation "C"
       And origin tx
