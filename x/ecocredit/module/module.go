@@ -132,7 +132,9 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 	marketplacetypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
 
 	m := server.NewMigrator(svr, a.legacySubspace)
-	cfg.RegisterMigration(ecocredit.ModuleName, 2, m.Migrate2to3)
+	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, m.Migrate2to3); err != nil {
+		panic(err)
+	}
 	a.Keeper = svr
 }
 
