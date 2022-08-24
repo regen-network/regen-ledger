@@ -30,12 +30,8 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address: " + err.Error())
 	}
 
-	if len(m.Name) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrapf("name cannot be empty")
-	}
-
 	if err := ValidateBasketName(m.Name); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("name: %s", err)
 	}
 
 	if len(m.Description) > descrMaxLen {

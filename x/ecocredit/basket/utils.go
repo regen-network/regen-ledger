@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -27,8 +28,8 @@ var (
 )
 
 // FormatBasketDenom formats denom and display denom:
-// - denom: eco.<m.Exponent><m.CreditTypeAbbrev>.<m.Name>
-// - display denom: eco.<m.CreditTypeAbbrev>.<m.Name>
+// - denom: eco.<exponent-prefix><credit-type-abbrev>.<name>
+// - display denom: eco.<credit-type-abbrev>.<name>
 func FormatBasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, string, error) {
 	exponentPrefix, err := core.ExponentToPrefix(exponent)
 	if err != nil {
@@ -41,22 +42,32 @@ func FormatBasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, 
 	return denom, displayDenom, nil
 }
 
-// ValidateBasketName validates a basket denomination conforms to the format
-// described in FormatBasketName. The return is nil if the denom is valid.
+// ValidateBasketName validates a basket name. The name must conform to the format
+// described in FormatBasketName. The return is nil if the name is valid.
 func ValidateBasketName(name string) error {
+	if name == "" {
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
+	}
 	matches := regexBasketName.FindStringSubmatch(name)
 	if matches == nil {
-		return fmt.Errorf("name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long")
+		return ecocredit.ErrParseFailure.Wrapf(
+			"must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long",
+		)
 	}
 	return nil
 }
 
-// ValidateBasketDenom validates a basket denomination conforms to the format
+// ValidateBasketDenom validates a basket denom. The denom must conform to the format
 // described in FormatBasketDenom. The return is nil if the denom is valid.
 func ValidateBasketDenom(denom string) error {
+	if denom == "" {
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
+	}
 	matches := regexBasketDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return fmt.Errorf("%s is not a valid basket denom", denom)
+		return ecocredit.ErrParseFailure.Wrapf(
+			"expected format eco.<exponent-prefix><credit-type-abbrev>.<name>",
+		)
 	}
 	return nil
 }
