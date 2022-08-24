@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -235,32 +237,12 @@ func (s *IntegrationTestSuite) TestQueryBasketFees() {
 	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name: "valid",
-			args: []string{},
-		},
-	}
+	cmd := client.QueryBasketFeesCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
 
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryBasketFeesCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				require.Error(err)
-				require.Contains(out.String(), tc.expErrMsg)
-			} else {
-				require.NoError(err)
-
-				var res basket.QueryBasketFeesResponse
-				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.NotEmpty(res.Fees)
-			}
-		})
-	}
+	var res basket.QueryBasketFeesResponse
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NotEmpty(res.Fees)
+	require.Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), math.NewInt(10))
 }

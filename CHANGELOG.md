@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `ClassSequence` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `OriginTxIndex` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `ProjectSequence` state validation checks
+- [#1391](https://github.com/regen-network/regen-ledger/pull/1391) Add `BasketFees` params query
 
 #### Changed
 
