@@ -506,7 +506,7 @@ Feature: Msg/CreateBatch
         "id": "0x123",
         "source": "polygon",
         "contract": "0x456",
-        "note": "hello"
+        "note": "credits from VCS-001"
       }
       """
       And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
@@ -523,7 +523,7 @@ Feature: Msg/CreateBatch
           "id": "0x123",
           "source": "polygon",
           "contract": "0x456",
-          "note": "hello"
+          "note": "credits from VCS-001"
         }
       }
       """
