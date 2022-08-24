@@ -1,6 +1,8 @@
 package basket
 
 import (
+	sdkerrors "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -13,11 +15,11 @@ func (m *Basket) Validate() error {
 	}
 
 	if err := ValidateBasketDenom(m.BasketDenom); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrap(err, "basket denom") // returns parse error
 	}
 
 	if err := ValidateBasketName(m.Name); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrap(err, "name") // returns parse error
 	}
 
 	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {

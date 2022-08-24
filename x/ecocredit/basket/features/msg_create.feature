@@ -121,7 +121,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name cannot be empty: invalid request"
+    Then expect the error "name: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if name does not start with an alphabetic character
     Given the message
@@ -132,7 +132,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if name includes non-alphanumeric characters
     Given the message
@@ -143,7 +143,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if name length is less than three characters
     Given the message
@@ -154,7 +154,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if name length is greater than eight characters
     Given the message
@@ -165,7 +165,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if description length is greater than 256 characters
     Given the message
