@@ -435,7 +435,7 @@ Feature: Msg/CreateBatch
       """
       {
         "batch_denom": "C01-001-20200101-20210101-001",
-        "tradable_amount": "",
+        "tradable_amount": "0",
         "retired_amount": "10"
       }
       """
@@ -448,7 +448,7 @@ Feature: Msg/CreateBatch
         "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
         "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
         "batch_denom": "C01-001-20200101-20210101-001",
-        "tradable_amount": "",
+        "tradable_amount": "0",
         "retired_amount": "10"
       }
       """
@@ -469,7 +469,7 @@ Feature: Msg/CreateBatch
       {
         "batch_denom": "C01-001-20200101-20210101-001",
         "tradable_amount": "10",
-        "retired_amount": ""
+        "retired_amount": "0"
       }
       """
 
@@ -482,7 +482,7 @@ Feature: Msg/CreateBatch
         "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
         "batch_denom": "C01-001-20200101-20210101-001",
         "tradable_amount": "10",
-        "retired_amount": ""
+        "retired_amount": "0"
       }
       """
 

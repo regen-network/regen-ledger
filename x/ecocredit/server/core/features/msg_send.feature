@@ -250,7 +250,7 @@ Feature: Msg/Send
         "sender": "regen1d466m547y09dgs6xvca7uxs5k2m2pmgspa9kal",
         "recipient": "regen10yhlcvh88sux4zmf67udhg5f5z2803z6jm0d25",
         "batch_denom": "C01-001-20200101-20210101-001",
-        "tradable_amount": "",
+        "tradable_amount": "0",
         "retired_amount": "10"
       }
       """
@@ -264,6 +264,6 @@ Feature: Msg/Send
         "recipient": "regen10yhlcvh88sux4zmf67udhg5f5z2803z6jm0d25",
         "batch_denom": "C01-001-20200101-20210101-001",
         "tradable_amount": "10",
-        "retired_amount": ""
+        "retired_amount": "0"
       }
       """
