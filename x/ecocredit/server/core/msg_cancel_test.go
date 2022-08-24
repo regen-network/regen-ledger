@@ -13,8 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type cancel struct {
@@ -294,6 +294,6 @@ func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
 
 	require.Equal(s.t, string(proto.MessageName(&event)), eventCancel.Type)
 
-	err = utils.MatchEvent(&event, eventCancel)
+	err = testutil.MatchEvent(&event, eventCancel)
 	require.NoError(s.t, err)
 }

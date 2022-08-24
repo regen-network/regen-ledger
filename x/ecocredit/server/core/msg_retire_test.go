@@ -12,8 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type retire struct {
@@ -239,10 +239,10 @@ func (s *retire) ExpectEventWithProperties(a gocuke.DocString) {
 	require.NoError(s.t, err)
 	event.Owner = s.alice.String()
 
-	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(&event, sdkEvent)
+	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
 }
 

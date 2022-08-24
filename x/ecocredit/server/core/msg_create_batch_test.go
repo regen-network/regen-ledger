@@ -16,8 +16,8 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type createBatchSuite struct {
@@ -403,10 +403,10 @@ func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
-	eventRetire, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	eventRetire, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(&event, eventRetire)
+	err = testutil.MatchEvent(&event, eventRetire)
 	require.NoError(s.t, err)
 }
 
@@ -415,9 +415,9 @@ func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
-	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
-	err = utils.MatchEvent(&event, sdkEvent)
+	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
 }
 
@@ -427,10 +427,10 @@ func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString)
 	require.NoError(s.t, err)
 	event.Sender = s.k.moduleAddress.String()
 
-	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(&event, sdkEvent)
+	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
 }
 
@@ -474,10 +474,10 @@ func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocStri
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
-	sdkEvent, found := utils.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(&event, sdkEvent)
+	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
 }
 

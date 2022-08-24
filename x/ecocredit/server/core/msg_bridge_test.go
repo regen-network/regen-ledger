@@ -12,8 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type bridgeSuite struct {
@@ -231,7 +231,7 @@ func (s *bridgeSuite) ExpectEventWithProperties(a gocuke.DocString) {
 	eventBridge := events[len(events)-1]
 
 	require.Equal(s.t, string(proto.MessageName(&event)), eventBridge.Type)
-	err = utils.MatchEvent(&event, eventBridge)
+	err = testutil.MatchEvent(&event, eventBridge)
 	require.NoError(s.t, err)
 }
 

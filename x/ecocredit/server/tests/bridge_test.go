@@ -19,7 +19,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type bridgeSuite struct {
@@ -184,10 +183,10 @@ func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
-	sdkEvent, found := utils.GetEvent(&expected, s.sdkCtx.EventManager().Events())
+	sdkEvent, found := testutil.GetEvent(&expected, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(&expected, sdkEvent)
+	err = testutil.MatchEvent(&expected, sdkEvent)
 	require.NoError(s.t, err)
 }
 
@@ -196,9 +195,9 @@ func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
-	sdkEvent, found := utils.GetEvent(&expected, s.sdkCtx.EventManager().Events())
+	sdkEvent, found := testutil.GetEvent(&expected, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = utils.MatchEvent(&expected, sdkEvent)
+	err = testutil.MatchEvent(&expected, sdkEvent)
 	require.NoError(s.t, err)
 }
