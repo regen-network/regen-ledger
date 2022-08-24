@@ -2,8 +2,6 @@ package v4
 
 import (
 	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
-	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
@@ -13,13 +11,14 @@ import (
 )
 
 // MigrateState performs in-place store migrations from v4.0 to v5.0.
-func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Codec, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
+func MigrateState(sdkCtx sdk.Context, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	// TODO: migrate core params
 
 	// migrate basket params
 	var params core.Params
 	subspace.GetParamSet(sdkCtx, &params)
 
+	// verify basket fee is valid
 	if err := params.BasketFee.Validate(); err != nil {
 		return err
 	}

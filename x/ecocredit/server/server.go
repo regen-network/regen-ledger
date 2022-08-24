@@ -30,9 +30,10 @@ type serverImpl struct {
 	BasketKeeper      basket.Keeper
 	MarketplaceKeeper marketplace.Keeper
 
-	db          ormdb.ModuleDB
-	stateStore  api.StateStore
-	basketStore basketapi.StateStore
+	db               ormdb.ModuleDB
+	stateStore       api.StateStore
+	basketStore      basketapi.StateStore
+	marketplaceStore marketApi.StateStore
 }
 
 func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
@@ -64,6 +65,7 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	coreStore, basketStore, marketStore := getStateStores(s.db)
 	s.stateStore = coreStore
 	s.basketStore = basketStore
+	s.marketplaceStore = marketStore
 	s.CoreKeeper = core.NewKeeper(coreStore, bankKeeper, s.legacySubspace, coreAddr, authority)
 	s.BasketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
 	s.MarketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.legacySubspace, authority)
@@ -89,4 +91,8 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 
 func (s serverImpl) QueryServers() (coretypes.QueryServer, baskettypes.QueryServer, marketplacetypes.QueryServer) {
 	return s.CoreKeeper, s.BasketKeeper, s.MarketplaceKeeper
+}
+
+func (s serverImpl) GetStateStores() (api.StateStore, basketapi.StateStore, marketApi.StateStore) {
+	return s.stateStore, s.basketStore, s.marketplaceStore
 }

@@ -121,7 +121,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
-	svr := server.NewServer(a.key, a, a.accountKeeper, a.bankKeeper, a.authority)
+	svr := server.NewServer(a.key, a.legacySubspace, a.accountKeeper, a.bankKeeper, a.authority)
 	coretypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
 	coretypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
 
@@ -130,6 +130,9 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 
 	marketplacetypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
 	marketplacetypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
+
+	m := server.NewMigrator(svr, a.legacySubspace)
+	cfg.RegisterMigration(ecocredit.ModuleName, 2, m.Migrate2to3)
 	a.Keeper = svr
 }
 
@@ -221,7 +224,7 @@ func (a Module) GetTxCmd() *cobra.Command {
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (Module) ConsensusVersion() uint64 { return 2 }
+func (Module) ConsensusVersion() uint64 { return 3 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
