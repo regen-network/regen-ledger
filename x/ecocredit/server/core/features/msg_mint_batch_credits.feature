@@ -158,7 +158,7 @@ Feature: Msg/MintBatchCredits
       }
       """
 
-    Scenario: Events EventRetire, EventMint, and EventMintBatchCredits are emitted
+    Scenario: Event EventRetire is emitted
       When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with retired amount "10" from "US-WA" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event retire with properties
       """
@@ -169,7 +169,10 @@ Feature: Msg/MintBatchCredits
         "jurisdiction": "US-WA"
       }
       """
-      And expect event mint with properties
+
+    Scenario: Event EventMint is emitted
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with retired amount "10" from "US-WA" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event mint with properties
       """
       {
         "batch_denom": "C01-001-20200101-20210101-001",
@@ -177,7 +180,10 @@ Feature: Msg/MintBatchCredits
         "tradable_amount": "0"
       }
       """
-      And expect event mint batch credits with properties
+
+    Scenario: Event EventMintBatchCredits is emitted
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with retired amount "10" from "US-WA" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event mint batch credits with properties
       """
       {
       "batch_denom": "C01-001-20200101-20210101-001",
@@ -190,7 +196,7 @@ Feature: Msg/MintBatchCredits
       }
       """
 
-    Scenario: Events EventTransfer, EventMint, and EventMintBatchCredits are emitted
+    Scenario: Event EventTransfer is emitted
       When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with tradable amount "10" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event transfer with properties
       """
@@ -202,7 +208,10 @@ Feature: Msg/MintBatchCredits
         "retired_amount": ""
       }
       """
-      And expect event mint with properties
+
+    Scenario: Event EventMint is emitted
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with tradable amount "10" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event mint with properties
       """
       {
         "batch_denom": "C01-001-20200101-20210101-001",
@@ -210,7 +219,10 @@ Feature: Msg/MintBatchCredits
         "tradable_amount": "10"
       }
       """
-      And expect event mint batch credits with properties
+
+    Scenario: Event EventMintBatchCredits is emitted
+      When alice attempts to mint credits with batch denom "C01-001-20200101-20210101-001" with tradable amount "10" to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event mint batch credits with properties
       """
       {
       "batch_denom": "C01-001-20200101-20210101-001",

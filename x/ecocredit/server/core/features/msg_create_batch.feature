@@ -417,7 +417,7 @@ Feature: Msg/CreateBatch
       And a credit class with class id "C01" and issuer alice
       And a project with project id "C01-001"
 
-    Scenario:  Events EventRetire, EventMint, EventTransfer, and EventCreateBatch are emitted
+    Scenario:  Event EventRetire is emitted
       When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
       Then expect event retire with properties
       """
@@ -428,7 +428,10 @@ Feature: Msg/CreateBatch
         "jurisdiction": "US-WA"
       }
       """
-      And expect event mint with properties
+
+    Scenario:  Event EventMint is emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event mint with properties
       """
       {
         "batch_denom": "C01-001-20200101-20210101-001",
@@ -436,7 +439,10 @@ Feature: Msg/CreateBatch
         "retired_amount": "10"
       }
       """
-      And expect event transfer with properties
+
+    Scenario:  Event EventTransfer is emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event transfer with properties
       """
       {
         "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
@@ -446,14 +452,17 @@ Feature: Msg/CreateBatch
         "retired_amount": "10"
       }
       """
-      And expect event create batch with properties
+
+    Scenario:  Event EventCreateBatch is emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event create batch with properties
       """
       {
         "batch_denom": "C01-001-20200101-20210101-001"
       }
       """
 
-    Scenario:  Events EventMint, EventTransfer, and EventCreateBatch are emitted
+    Scenario:  Event EventMint is emitted
       When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event mint with properties
       """
@@ -463,6 +472,9 @@ Feature: Msg/CreateBatch
         "retired_amount": ""
       }
       """
+
+    Scenario:  Event EventTransfer is emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       And expect event transfer with properties
       """
       {
@@ -473,12 +485,16 @@ Feature: Msg/CreateBatch
         "retired_amount": ""
       }
       """
-      And expect event create batch with properties
+
+    Scenario:  Event EventCreateBatch is emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event create batch with properties
       """
       {
         "batch_denom": "C01-001-20200101-20210101-001"
       }
       """
+
 
   Rule: Events are emitted with origin tx
 
@@ -497,7 +513,7 @@ Feature: Msg/CreateBatch
       And a credit class with class id "C01" and issuer alice
       And a project with project id "C01-001"
 
-    Scenario:  Events EventMint, EventTransfer, and EventCreateBatch are emitted
+    Scenario:  Event EventCreateBatch is emitted
       When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event create batch with properties
       """

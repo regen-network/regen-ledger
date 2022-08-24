@@ -230,7 +230,7 @@ Feature: Msg/Send
       And bobs address "regen10yhlcvh88sux4zmf67udhg5f5z2803z6jm0d25"
       And alice owns tradable credit amount "10"
 
-    Scenario: Events EventTransfer and EventRetire are emitted
+    Scenario: Event EventRetire is emitted
       When alice attempts to send credits to bob with retired amount "10" from "US-WA"
       Then expect event retire with properties
       """
@@ -241,7 +241,10 @@ Feature: Msg/Send
         "jurisdiction": "US-WA"
       }
       """
-      And expect event transfer with properties
+
+    Scenario: Event EventTransfer is emitted
+      When alice attempts to send credits to bob with retired amount "10" from "US-WA"
+      Then expect event transfer with properties
       """
       {
         "sender": "regen1d466m547y09dgs6xvca7uxs5k2m2pmgspa9kal",
