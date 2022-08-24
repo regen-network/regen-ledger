@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -538,7 +539,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr2"),
 			ProjectKey:   1,
-			Denom:        "C01-001-20180101-20200101-001",
+			Denom:        "C01-001-20200101-20210101-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
 			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -546,7 +547,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr3"),
 			ProjectKey:   1,
-			Denom:        "BIO02-001-00000000-00000000-001",
+			Denom:        "BIO02-001-20200101-20210101-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
 			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -588,16 +589,23 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	}
 	require.NoError(t, ss.ProjectTable().Insert(ormCtx, &project))
 
+	startDate1, err := types.ParseDate("start date", "2020-01-01")
+	require.NoError(t, err)
+	startDate2, err := types.ParseDate("start date", "2020-01-01")
+	require.NoError(t, err)
+
 	basketBalances := []*basketapi.BasketBalance{
 		{
-			BasketId:   1,
-			BatchDenom: "C01-001-20180101-20200101-001",
-			Balance:    "100",
+			BasketId:       1,
+			BatchDenom:     "C01-001-20200101-20210101-001",
+			Balance:        "100",
+			BatchStartDate: timestamppb.New(startDate1),
 		},
 		{
-			BasketId:   2,
-			BatchDenom: "BIO02-001-00000000-00000000-001",
-			Balance:    "10.000",
+			BasketId:       2,
+			BatchDenom:     "BIO02-001-20200101-20210101-001",
+			Balance:        "10.000",
+			BatchStartDate: timestamppb.New(startDate2),
 		},
 	}
 	for _, b := range basketBalances {
