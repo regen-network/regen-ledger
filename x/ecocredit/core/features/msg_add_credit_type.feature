@@ -58,7 +58,7 @@ Feature: MsgAddCreditType
     }
     """
     When the message is validated
-    Then expect the error "credit type abbreviation cannot be empty: parse error: invalid request"
+    Then expect the error "credit type: abbreviation: empty string is not allowed: parse error: invalid request"
   
   Scenario: an error is returned if credit type name is empty
     Given the message
@@ -74,7 +74,7 @@ Feature: MsgAddCreditType
     }
     """
     When the message is validated
-    Then expect the error "name cannot be empty: parse error: invalid request"
+    Then expect the error "credit type: name cannot be empty: parse error: invalid request"
   
   Scenario: an error is returned if credit type unit is empty
     Given the message
@@ -90,7 +90,7 @@ Feature: MsgAddCreditType
     }
     """
     When the message is validated
-    Then expect the error "unit cannot be empty: parse error: invalid request"
+    Then expect the error "credit type: unit cannot be empty: parse error: invalid request"
 
   Scenario: an error is returned if credit type precision is not 6
     Given the message
@@ -106,4 +106,4 @@ Feature: MsgAddCreditType
     }
     """
     When the message is validated
-    Then expect the error "credit type precision is currently locked to 6: parse error: invalid request"
+    Then expect the error "credit type: precision is currently locked to 6: parse error: invalid request"

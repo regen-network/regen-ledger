@@ -27,7 +27,7 @@ Feature: BasketClass
     }
     """
     When the basket class is validated
-    Then expect the error "class id cannot be empty: parse error"
+    Then expect the error "class id: empty string is not allowed: parse error"
 
   Scenario: an error is returned if class id is not formatted
     Given the basket class
@@ -38,4 +38,4 @@ Feature: BasketClass
     }
     """
     When the basket class is validated
-    Then expect the error "class ID didn't match the format: expected A00, got foo: parse error"
+    Then expect the error "class id: expected format <credit-type-abbrev><class-sequence>: parse error"

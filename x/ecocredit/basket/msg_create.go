@@ -39,7 +39,7 @@ func (m MsgCreate) ValidateBasic() error {
 	}
 
 	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbrev: %s", err)
 	}
 
 	if len(m.AllowedClasses) == 0 {
@@ -48,7 +48,7 @@ func (m MsgCreate) ValidateBasic() error {
 
 	for i := range m.AllowedClasses {
 		if err := core.ValidateClassID(m.AllowedClasses[i]); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrapf("allowed_classes[%d] is not a valid class ID: %s", i, err)
+			return sdkerrors.ErrInvalidRequest.Wrapf("allowed classes [%d]: %s", i, err)
 		}
 	}
 
