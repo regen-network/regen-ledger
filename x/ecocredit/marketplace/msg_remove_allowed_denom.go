@@ -27,8 +27,12 @@ func (m MsgRemoveAllowedDenom) ValidateBasic() error {
 		return sdkerrors.Wrapf(err, "invalid authority address")
 	}
 
+	if m.Denom == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("denom cannot be empty")
+	}
+
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("invalid bank denom: %s", err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("denom: %s", err.Error())
 	}
 
 	return nil

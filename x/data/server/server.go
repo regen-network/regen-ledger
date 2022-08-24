@@ -1,11 +1,15 @@
 package server
 
 import (
+	"encoding/json"
+
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/abci/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/server/hasher"
@@ -14,8 +18,15 @@ import (
 var _ data.MsgServer = serverImpl{}
 var _ data.QueryServer = serverImpl{}
 
+var _ Keeper = serverImpl{}
+
+type Keeper interface {
+	InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) ([]types.ValidatorUpdate, error)
+	ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error)
+	QueryServer() data.QueryServer
+}
+
 type serverImpl struct {
-	storeKey      storetypes.StoreKey
 	iriHasher     hasher.Hasher
 	stateStore    api.StateStore
 	db            ormdb.ModuleDB
@@ -23,7 +34,11 @@ type serverImpl struct {
 	accountKeeper data.AccountKeeper
 }
 
-func newServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
+func (s serverImpl) QueryServer() data.QueryServer {
+	return s
+}
+
+func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		panic(err)
@@ -40,20 +55,10 @@ func newServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.Bank
 	}
 
 	return serverImpl{
-		storeKey:      storeKey,
 		iriHasher:     hasher,
 		stateStore:    stateStore,
 		db:            db,
 		bankKeeper:    bk,
 		accountKeeper: ak,
 	}
-}
-
-func RegisterServices(configurator servermodule.Configurator, ak data.AccountKeeper, bk data.BankKeeper) {
-	impl := newServer(configurator.ModuleKey(), ak, bk)
-	data.RegisterMsgServer(configurator.MsgServer(), impl)
-	data.RegisterQueryServer(configurator.QueryServer(), impl)
-
-	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
-	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 }
