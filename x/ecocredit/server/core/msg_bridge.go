@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -22,7 +22,7 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 		return nil, err
 	}
 
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 		if err != nil {

@@ -37,15 +37,6 @@ func (app *RegenApp) ExportAppStateAndValidators(
 		genState[name] = v
 	}
 
-	// Export genesis state from new modules (that use ADR 33 approach)
-	// if they are not already part of genState
-	for name, v := range app.smm.ExportGenesis(ctx) {
-		if _, ok := genState[name]; ok {
-			return servertypes.ExportedApp{}, fmt.Errorf("genesis state already exported for %s module", name)
-		}
-		genState[name] = v
-	}
-
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err

@@ -46,7 +46,7 @@ var (
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient, mktQryClient marketplace.QueryClient) simulation.WeightedOperations {
+	qryClient core.QueryServer, mktQryClient marketplace.QueryServer) simulation.WeightedOperations {
 
 	var (
 		weightMsgBuyDirect       int
@@ -101,7 +101,7 @@ func WeightedOperations(
 
 // SimulateMsgBuyDirect generates a Marketplace/MsgBuyDirect with random values.
 func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient, mktQryClient marketplace.QueryClient) simtypes.Operation {
+	qryClient core.QueryServer, mktQryClient marketplace.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -173,7 +173,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 // SimulateMsgSell generates a Marketplace/MsgSell with random values.
 func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient) simtypes.Operation {
+	qryClient core.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, baseApp *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -268,7 +268,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 // SimulateMsgUpdateSellOrder generates a Marketplace/MsgUpdateSellOrder with random values.
 func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	coreQryClient core.QueryClient, mktQryClient marketplace.QueryClient) simtypes.Operation {
+	coreQryClient core.QueryServer, mktQryClient marketplace.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -295,6 +295,9 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		for i := 0; i < max; i++ {
 			askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 1, 50)))
 			exp := simtypes.RandTimestamp(r)
+			if exp.Before(sdkCtx.BlockTime()) {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, "sell order expiration in the past"), nil, nil
+			}
 			q, err := strconv.Atoi(orders[i].Quantity)
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, err.Error()), nil, nil
@@ -350,7 +353,7 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 
 // SimulateMsgCancelSellOrder generates a Marketplace/MsgCancelSellOrder with random values.
 func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient, mktQryClient marketplace.QueryClient) simtypes.Operation {
+	qryClient core.QueryServer, mktQryClient marketplace.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

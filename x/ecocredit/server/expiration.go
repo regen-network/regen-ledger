@@ -6,5 +6,5 @@ import (
 
 // PruneOrders checks if there are any expired sell or buy orders and removes them from state.
 func (s serverImpl) PruneOrders(ctx sdk.Context) error {
-	return s.marketplaceKeeper.PruneSellOrders(sdk.WrapSDKContext(ctx))
+	return s.MarketplaceKeeper.PruneSellOrders(sdk.WrapSDKContext(ctx))
 }
