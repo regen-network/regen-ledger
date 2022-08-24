@@ -1,6 +1,7 @@
 package v4
 
 import (
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -8,10 +9,33 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // MigrateState performs in-place store migrations from v4.0 to v5.0.
 func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Codec, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
+	// TODO: migrate core params
+
+	// migrate basket params
+	var params core.Params
+	subspace.GetParamSet(sdkCtx, &params)
+
+	if err := params.BasketFee.Validate(); err != nil {
+		return err
+	}
+
+	basketFees := []*basev1beta1.Coin{}
+	for _, coin := range params.BasketFee {
+		basketFees = append(basketFees, &basev1beta1.Coin{
+			Denom:  coin.Denom,
+			Amount: coin.Amount.String(),
+		})
+	}
+	if err := basketStore.BasketFeesTable().Save(sdkCtx, &basketapi.BasketFees{
+		Fees: basketFees,
+	}); err != nil {
+		return err
+	}
 
 	return nil
 }

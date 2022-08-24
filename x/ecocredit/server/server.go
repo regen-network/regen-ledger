@@ -25,9 +25,9 @@ import (
 type serverImpl struct {
 	storeKey storetypes.StoreKey
 
-	paramSpace    paramtypes.Subspace
-	bankKeeper    ecocredit.BankKeeper
-	accountKeeper ecocredit.AccountKeeper
+	legacySubspace paramtypes.Subspace
+	bankKeeper     ecocredit.BankKeeper
+	accountKeeper  ecocredit.AccountKeeper
 
 	coreKeeper        core.Keeper
 	basketKeeper      basket.Keeper
@@ -38,13 +38,13 @@ type serverImpl struct {
 	basketStore basketapi.StateStore
 }
 
-func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
+func newServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{
-		storeKey:      storeKey,
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
+		storeKey:       storeKey,
+		legacySubspace: legacySubspace,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
 	}
 
 	// ensure ecocredit module account is set
@@ -68,9 +68,9 @@ func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	coreStore, basketStore, marketStore := getStateStores(s.db)
 	s.stateStore = coreStore
 	s.basketStore = basketStore
-	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr, authority)
-	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr, authority)
-	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace, authority)
+	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.legacySubspace, coreAddr, authority)
+	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
+	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.legacySubspace, authority)
 
 	return s
 }
@@ -93,12 +93,12 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 
 func RegisterServices(
 	configurator server.Configurator,
-	paramSpace paramtypes.Subspace,
+	legacySubspace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	authority sdk.AccAddress,
 ) Keeper {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, authority)
+	impl := newServer(configurator.ModuleKey(), legacySubspace, accountKeeper, bankKeeper, authority)
 
 	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
 	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)

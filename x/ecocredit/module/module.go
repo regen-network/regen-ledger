@@ -40,29 +40,30 @@ import (
 )
 
 type Module struct {
-	paramSpace    paramtypes.Subspace
-	accountKeeper ecocredit.AccountKeeper
-	bankKeeper    ecocredit.BankKeeper
-	Keeper        server.Keeper
-	authority     sdk.AccAddress
+	// legacySubspace is used solely for migration of x/ecocredit managed parameters
+	legacySubspace paramtypes.Subspace
+	accountKeeper  ecocredit.AccountKeeper
+	bankKeeper     ecocredit.BankKeeper
+	Keeper         server.Keeper
+	authority      sdk.AccAddress
 }
 
 // NewModule returns a new Module object.
 func NewModule(
-	paramSpace paramtypes.Subspace,
+	legacySubspace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	authority sdk.AccAddress,
 ) *Module {
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
+	if !legacySubspace.HasKeyTable() {
+		legacySubspace = legacySubspace.WithKeyTable(coretypes.ParamKeyTable())
 	}
 
 	return &Module{
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
-		authority:     authority,
+		legacySubspace: legacySubspace,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
+		authority:      authority,
 	}
 }
 
@@ -86,7 +87,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
+	a.Keeper = server.RegisterServices(configurator, a.legacySubspace, a.accountKeeper, a.bankKeeper, a.authority)
 }
 
 //nolint:errcheck
