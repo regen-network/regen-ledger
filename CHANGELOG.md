@@ -21,6 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
 - [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Remove experimental app configuration
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove unused RegenApp functions for setting custom keepers.
+
+### types
+
+#### Removed
+
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove custom context, module manager, module keys, cli, rest, base module types
+
+#### Changed
+
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Refactor fixture factory to use baseApp routing and cosmos sdk module manager
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Rename FixtureFactory to Factory to prevent package stuttering
+
 
 ### x/data
 

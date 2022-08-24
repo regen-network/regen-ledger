@@ -1,10 +1,11 @@
-package server
+package fixture
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -21,22 +22,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
-type FixtureFactory struct {
+type Factory struct {
 	t       gocuke.TestingT
-	modules []module.Module
+	modules []sdkmodules.AppModule
 	signers []sdk.AccAddress
 	cdc     *codec.ProtoCodec
 	baseApp *baseapp.BaseApp
 }
 
-func NewFixtureFactory(t gocuke.TestingT, numSigners int) *FixtureFactory {
+func NewFixtureFactory(t gocuke.TestingT, numSigners int) *Factory {
 	signers := makeTestAddresses(numSigners)
-	return &FixtureFactory{
+	return &Factory{
 		t:       t,
 		signers: signers,
 		// cdc and baseApp are initialized here just for compatibility with legacy modules which don't use ADR 033
@@ -46,19 +45,23 @@ func NewFixtureFactory(t gocuke.TestingT, numSigners int) *FixtureFactory {
 	}
 }
 
-func (ff *FixtureFactory) SetModules(modules []module.Module) {
+func (ff *Factory) SetModules(modules []sdkmodules.AppModule) {
 	ff.modules = modules
+	// we append the mock module below in order to bypass the check for validator updates.
+	// since we are testing with a fixture with no validators, we must inject a mock module and
+	// force it to inject a validator update.
+	ff.modules = append(ff.modules, MockModule{})
 }
 
 // Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
 // has been migrated to ADR 033
-func (ff *FixtureFactory) Codec() *codec.ProtoCodec {
+func (ff *Factory) Codec() *codec.ProtoCodec {
 	return ff.cdc
 }
 
 // BaseApp is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
 // has been migrated to ADR 033
-func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
+func (ff *Factory) BaseApp() *baseapp.BaseApp {
 	return ff.baseApp
 }
 
@@ -72,43 +75,47 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff FixtureFactory) Setup() testutil.Fixture {
+func (ff Factory) Setup() testutil.Fixture {
 	cdc := ff.cdc
 	registry := cdc.InterfaceRegistry()
 	baseApp := ff.baseApp
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
-	mm := NewManager(baseApp, cdc)
-	err := mm.RegisterModules(ff.modules)
-	require.NoError(ff.t, err)
-	err = mm.CompleteInitialization()
-	require.NoError(ff.t, err)
-	err = baseApp.LoadLatestVersion()
+	mm := sdkmodules.NewManager(ff.modules...)
+	cfg := sdkmodules.NewConfigurator(cdc, baseApp.MsgServiceRouter(), baseApp.GRPCQueryRouter())
+	for _, module := range mm.Modules {
+		module.RegisterInterfaces(ff.cdc.InterfaceRegistry())
+		module.RegisterServices(cfg)
+	}
+
+	err := baseApp.LoadLatestVersion()
 	require.NoError(ff.t, err)
 
 	return fixture{
-		baseApp:               baseApp,
-		router:                mm.router,
-		cdc:                   cdc,
-		initGenesisHandlers:   mm.initGenesisHandlers,
-		exportGenesisHandlers: mm.exportGenesisHandlers,
-		t:                     ff.t,
-		signers:               ff.signers,
+		baseApp: baseApp,
+		mm:      mm,
+		cdc:     cdc,
+		router: &router{
+			cdc:                cdc.GRPCCodec(),
+			msgServiceRouter:   baseApp.MsgServiceRouter(),
+			queryServiceRouter: baseApp.GRPCQueryRouter(),
+		},
+		t:       ff.t,
+		signers: ff.signers,
 	}
 }
 
 type fixture struct {
-	baseApp               *baseapp.BaseApp
-	router                *router
-	cdc                   *codec.ProtoCodec
-	initGenesisHandlers   map[string]module.InitGenesisHandler
-	exportGenesisHandlers map[string]module.ExportGenesisHandler
-	t                     gocuke.TestingT
-	signers               []sdk.AccAddress
+	baseApp *baseapp.BaseApp
+	mm      *sdkmodules.Manager
+	router  *router
+	cdc     *codec.ProtoCodec
+	t       gocuke.TestingT
+	signers []sdk.AccAddress
 }
 
 func (f fixture) Context() context.Context {
-	return regentypes.Context{Context: f.baseApp.NewUncachedContext(false, tmproto.Header{})}
+	return f.baseApp.NewUncachedContext(false, tmproto.Header{})
 }
 
 func (f fixture) TxConn() grpc.ClientConnInterface {
@@ -124,11 +131,14 @@ func (f fixture) Signers() []sdk.AccAddress {
 }
 
 func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
-	return initGenesis(ctx, f.cdc, genesisData, []abci.ValidatorUpdate{}, f.initGenesisHandlers)
+	// we inject the mock module genesis in order to bypass the check for validator updates.
+	// since the testing fixture doesn't require validators/validator updates, the check fails otherwise.
+	genesisData[MockModule{}.Name()] = []byte(`{}`)
+	return f.mm.InitGenesis(ctx, f.cdc, genesisData), nil
 }
 
 func (f fixture) ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error) {
-	return exportGenesis(ctx, f.cdc, f.exportGenesisHandlers)
+	return f.mm.ExportGenesis(ctx, f.cdc), nil
 }
 
 func (f fixture) Codec() *codec.ProtoCodec {

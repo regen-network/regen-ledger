@@ -14,13 +14,13 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/fixture"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
-func NewEcocreditModule(ff *server.FixtureFactory) *ecocredit.Module {
+func NewEcocreditModule(ff *fixture.Factory) *ecocredit.Module {
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
 	amino := codec.NewLegacyAmino()
@@ -29,12 +29,14 @@ func NewEcocreditModule(ff *server.FixtureFactory) *ecocredit.Module {
 	params.RegisterInterfaces(cdc.InterfaceRegistry())
 
 	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
+	ecocreditKey := sdk.NewKVStoreKey(ecocredittypes.ModuleName)
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
 	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
 	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(ecocreditKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(bankKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(distKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
@@ -59,5 +61,5 @@ func NewEcocreditModule(ff *server.FixtureFactory) *ecocredit.Module {
 	)
 
 	_, _, addr := testdata.KeyTestPubAddr()
-	return ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, addr)
+	return ecocredit.NewModule(ecocreditKey, ecocreditSubspace, accountKeeper, bankKeeper, addr)
 }
