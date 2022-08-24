@@ -56,7 +56,7 @@ func TestUtils_MatchFields(t *testing.T) {
 
 func TestUtils_MatchFields_Nested(t *testing.T) {
 	event := api.EventMintBatchCredits{
-		BatchDenom: "C01-20010101-20050505-001",
+		BatchDenom: "C01-001-20010101-20050505-001",
 		OriginTx: &api.OriginTx{
 			Id:       "foo",
 			Source:   "bar",
