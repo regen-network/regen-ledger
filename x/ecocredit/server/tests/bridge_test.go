@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
@@ -13,10 +14,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/module"
-	"github.com/regen-network/regen-ledger/types/module/server"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/fixture"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -43,14 +42,14 @@ func TestBridgeIntegration(t *testing.T) {
 func (s *bridgeSuite) Before(t gocuke.TestingT) {
 	s.t = t
 
-	ff := server.NewFixtureFactory(t, 2)
-	ff.SetModules([]module.Module{
+	ff := fixture.NewFixtureFactory(t, 2)
+	ff.SetModules([]sdkmodules.AppModule{
 		NewEcocreditModule(ff),
 	})
 
 	s.fixture = ff.Setup()
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
 
 	s.ecocreditServer = ecocreditServer{
 		MsgClient:   core.NewMsgClient(s.fixture.TxConn()),
@@ -72,7 +71,7 @@ func (s *bridgeSuite) BridgeServiceCallsBridgeReceiveWithMessage(a gocuke.DocStr
 
 	// reset context events
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
 
 	_, s.err = s.ecocreditServer.BridgeReceive(s.ctx, &msg)
 }
@@ -84,7 +83,7 @@ func (s *bridgeSuite) RecipientCallsBridgeWithMessage(a gocuke.DocString) {
 
 	// reset context events
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
 
 	_, s.err = s.ecocreditServer.Bridge(s.ctx, &msg)
 }
@@ -149,7 +148,7 @@ func (s *bridgeSuite) ExpectCreditBatchWithProperties(a gocuke.DocString) {
 }
 
 func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocString) {
-	expected := &ecocreditv1.BatchSupply{}
+	expected := &api.BatchSupply{}
 	err := jsonpb.UnmarshalString(b.Content, expected)
 	require.NoError(s.t, err)
 
@@ -164,7 +163,7 @@ func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocStri
 }
 
 func (s *bridgeSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c gocuke.DocString) {
-	expected := &ecocreditv1.BatchBalance{}
+	expected := &api.BatchBalance{}
 	err := jsonpb.UnmarshalString(c.Content, expected)
 	require.NoError(s.t, err)
 
