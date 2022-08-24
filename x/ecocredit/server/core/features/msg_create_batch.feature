@@ -408,3 +408,122 @@ Feature: Msg/CreateBatch
       """
 
     # no failing scenario - response should always be empty when message execution fails
+
+  Rule: Events are emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
+      And a credit class with class id "C01" and issuer alice
+      And a project with project id "C01-001"
+
+    Scenario:  Event EventRetire is emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event retire with properties
+      """
+      {
+        "owner": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "amount": "10",
+        "jurisdiction": "US-WA"
+      }
+      """
+
+    Scenario:  Event EventMint is emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event mint with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "",
+        "retired_amount": "10"
+      }
+      """
+
+    Scenario:  Event EventTransfer is emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event transfer with properties
+      """
+      {
+        "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
+        "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "",
+        "retired_amount": "10"
+      }
+      """
+
+    Scenario:  Event EventCreateBatch is emitted
+      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      Then expect event create batch with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """
+
+    Scenario:  Event EventMint is emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event mint with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "10",
+        "retired_amount": ""
+      }
+      """
+
+    Scenario:  Event EventTransfer is emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      And expect event transfer with properties
+      """
+      {
+        "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
+        "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "10",
+        "retired_amount": ""
+      }
+      """
+
+    Scenario:  Event EventCreateBatch is emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event create batch with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """
+
+
+  Rule: Events are emitted with origin tx
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And origin tx
+      """
+      {
+        "id": "0x123",
+        "source": "polygon",
+        "contract": "0x456",
+        "note": "credits from VCS-001"
+      }
+      """
+      And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
+      And a credit class with class id "C01" and issuer alice
+      And a project with project id "C01-001"
+
+    Scenario:  Event EventCreateBatch is emitted
+      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      Then expect event create batch with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+          "origin_tx": {
+          "id": "0x123",
+          "source": "polygon",
+          "contract": "0x456",
+          "note": "credits from VCS-001"
+        }
+      }
+      """

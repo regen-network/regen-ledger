@@ -2,10 +2,14 @@
 package core
 
 import (
+	"encoding/json"
+	"strings"
 	"testing"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -15,10 +19,11 @@ import (
 
 type updateClassMetadata struct {
 	*baseSuite
-	alice sdk.AccAddress
-	bob   sdk.AccAddress
-	res   *core.MsgUpdateClassMetadataResponse
-	err   error
+	alice   sdk.AccAddress
+	bob     sdk.AccAddress
+	res     *core.MsgUpdateClassMetadataResponse
+	classId string
+	err     error
 }
 
 func TestUpdateClassMetadata(t *testing.T) {
@@ -42,7 +47,7 @@ func (s *updateClassMetadata) ACreditTypeWithAbbreviation(a string) {
 
 func (s *updateClassMetadata) ACreditClassWithClassIdAndAdminAlice(a string) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
-
+	s.classId = a
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,
 		Admin:            s.alice,
@@ -90,4 +95,29 @@ func (s *updateClassMetadata) ExpectCreditClassWithClassIdAndMetadata(a string, 
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, b.Content, class.Metadata)
+}
+
+func (s *updateClassMetadata) AliceUpdatesTheClassMetadata() {
+	newMetadata := rand.Str(5)
+	_, err := s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
+		Admin:       s.alice.String(),
+		ClassId:     s.classId,
+		NewMetadata: newMetadata,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *updateClassMetadata) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventUpdateClassMetadata
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	events := s.sdkCtx.EventManager().Events()
+	lastEvent := events[len(events)-1]
+
+	require.Equal(s.t, proto.MessageName(&event), lastEvent.Type)
+	require.Len(s.t, lastEvent.Attributes, 1) // should only have classID
+
+	classID := strings.Trim(string(lastEvent.Attributes[0].Value), `"`)
+	require.Equal(s.t, event.ClassId, classID)
 }
