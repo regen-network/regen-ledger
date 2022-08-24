@@ -1,4 +1,4 @@
-/*Package server defines fixture interfaces and implementations for testing
+/*Package testutil defines fixture interfaces and implementations for testing
 server implementations with multiple backends.
 
 Currently one backend - an in-memory store with no ABCI application is supported
@@ -20,8 +20,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-// FixtureFactory defines an interface for creating server test fixtures
-type FixtureFactory interface {
+// Factory defines an interface for creating server test fixtures
+type Factory interface {
 
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
 	Setup() Fixture

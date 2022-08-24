@@ -10,7 +10,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -18,7 +17,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
+	fixtureFactory testutil.Factory
 	fixture        testutil.Fixture
 
 	ctx         context.Context
@@ -35,7 +34,7 @@ type IntegrationTestSuite struct {
 	rawHash   *data.ContentHash_Raw   // hash2
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.Factory) *IntegrationTestSuite {
 	return &IntegrationTestSuite{fixtureFactory: fixtureFactory}
 }
 
@@ -44,7 +43,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
 	require.GreaterOrEqual(len(s.fixture.Signers()), 2)

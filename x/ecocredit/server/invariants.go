@@ -10,18 +10,18 @@ import (
 // RegisterInvariants registers the ecocredit module invariants.
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(ecocredit.ModuleName, "batch-supply", s.batchSupplyInvariant())
-	s.basketKeeper.RegisterInvariants(ir)
+	s.BasketKeeper.RegisterInvariants(ir)
 }
 
 func (s serverImpl) batchSupplyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		goCtx := sdk.WrapSDKContext(ctx)
-		basketBalances, err := s.basketKeeper.GetBasketBalanceMap(goCtx)
+		basketBalances, err := s.BasketKeeper.GetBasketBalanceMap(goCtx)
 		if err != nil {
 			return err.Error(), true
 		}
 
-		msg, broken := core.BatchSupplyInvariant(goCtx, s.coreKeeper, basketBalances)
+		msg, broken := core.BatchSupplyInvariant(goCtx, s.CoreKeeper, basketBalances)
 		return sdk.FormatInvariant(ecocredit.ModuleName, "batch-supply", msg), broken
 	}
 }
