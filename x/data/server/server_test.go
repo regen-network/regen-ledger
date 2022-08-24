@@ -52,7 +52,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	ctrl := gomock.NewController(t)
 	ak := mocks.NewMockAccountKeeper(ctrl)
 	bk := mocks.NewMockBankKeeper(ctrl)
-	s.server = newServer(sk, ak, bk)
+	s.server = NewServer(sk, ak, bk)
 
 	// set up addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()

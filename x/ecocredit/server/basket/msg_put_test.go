@@ -11,6 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	sdkMath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
@@ -45,11 +46,11 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addrs[0]
 	s.aliceTokenBalance = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkMath.NewInt(100),
 	}
 	s.basketTokenSupply = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkMath.NewInt(100),
 	}
 	s.classID = testClassID
 	s.creditTypeAbbrev = "C"
@@ -533,7 +534,7 @@ func (s *putSuite) calculateExpectedCoin(amount string) sdk.Coin {
 	dec, err := math.NewPositiveFixedDecFromString(amount, creditType.Precision)
 	if err != nil && strings.Contains(err.Error(), "exceeds maximum decimal places") {
 		// expected coins irrelevant if amount exceeds maximum decimal places
-		return sdk.NewCoin(s.basketDenom, sdk.NewInt(0))
+		return sdk.NewCoin(s.basketDenom, sdkMath.NewInt(0))
 	}
 	require.NoError(s.t, err)
 
@@ -543,5 +544,5 @@ func (s *putSuite) calculateExpectedCoin(amount string) sdk.Coin {
 	amtInt, err := tokenAmt.BigInt()
 	require.NoError(s.t, err)
 
-	return sdk.NewCoin(s.basketDenom, sdk.NewIntFromBigInt(amtInt))
+	return sdk.NewCoin(s.basketDenom, sdkMath.NewIntFromBigInt(amtInt))
 }
