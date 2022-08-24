@@ -82,6 +82,12 @@ func (s *retire) ACreditBatchWithDenom(a string) {
 	s.batchKey = bKey
 }
 
+func (s *retire) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
 func (s *retire) ACreditBatchFromCreditClassWithCreditType(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               s.classID,
@@ -267,12 +273,6 @@ func (s *retire) projectSetup() {
 	require.NoError(s.t, err)
 
 	s.projectKey = pKey
-}
-
-func (s *retire) AlicesAddress(a string) {
-	addr, err := sdk.AccAddressFromBech32(a)
-	require.NoError(s.t, err)
-	s.alice = addr
 }
 
 func (s *retire) creditBatchSetup() {
