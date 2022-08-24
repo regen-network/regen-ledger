@@ -179,7 +179,7 @@ func (s *bridgeSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c 
 }
 
 func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
-	var expected api.EventBridgeReceive
+	var expected core.EventBridgeReceive
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
@@ -191,7 +191,7 @@ func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
 }
 
 func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
-	var expected api.EventBridge
+	var expected core.EventBridge
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
