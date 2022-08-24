@@ -86,7 +86,7 @@ Feature: MsgMintBatchCredits
     }
     """
     When the message is validated
-    Then expect the error "batch denom: expected format [A-Z]{1,3}[0-9]{2,}-[0-9]{3,}-[0-9]{8}-[0-9]{8}-[0-9]{3,}: parse error: invalid request"
+    Then expect the error "batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
 
   Scenario: an error is returned if issuance is empty
    Given the message

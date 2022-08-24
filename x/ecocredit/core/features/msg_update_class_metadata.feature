@@ -60,7 +60,7 @@ Feature: MsgUpdateClassMetadata
     }
     """
     When the message is validated
-    Then expect the error "class id: expected format [A-Z]{1,3}[0-9]{2,}: parse error: invalid request"
+    Then expect the error "class id: expected format <credit-type-abbrev><class-sequence>: parse error: invalid request"
 
   Scenario: an error is returned if new metadata exceeds 256 characters
     Given the message

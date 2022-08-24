@@ -168,7 +168,7 @@ func TestGenesisValidate(t *testing.T) {
 			},
 			defaultParams,
 			true,
-			"expected format [A-Z]{1,3}: parse error",
+			"must be 1-3 uppercase alphabetic characters: parse error",
 		},
 		{
 			"invalid: credit type param",

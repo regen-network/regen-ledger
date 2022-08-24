@@ -29,7 +29,7 @@ Feature: CreditType
     }
     """
     When the credit type is validated
-    Then expect the error "abbreviation: expected format [A-Z]{1,3}: parse error"
+    Then expect the error "abbreviation: must be 1-3 uppercase alphabetic characters: parse error"
 
   Scenario: an error is returned if name is empty
     Given the credit type

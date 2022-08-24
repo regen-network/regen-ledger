@@ -200,7 +200,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "credit type abbrev: expected format [A-Z]{1,3}: parse error: invalid request"
+    Then expect the error "credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error: invalid request"
 
   Scenario: an error is returned if allowed credit classes is empty
     Given the message
@@ -242,7 +242,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "allowed classes [0]: expected format [A-Z]{1,3}[0-9]{2,}: parse error: invalid request"
+    Then expect the error "allowed classes [0]: expected format <credit-type-abbrev><class-sequence>: parse error: invalid request"
 
   Scenario Outline: an error is returned if more than one data criteria is provided
     Given the message

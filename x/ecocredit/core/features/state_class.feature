@@ -41,7 +41,7 @@ Feature: Class
     }
     """
     When the class is validated
-    Then expect the error "class id: expected format [A-Z]{1,3}[0-9]{2,}: parse error"
+    Then expect the error "class id: expected format <credit-type-abbrev><class-sequence>: parse error"
 
   Scenario: an error is returned if admin is empty
     Given the class
@@ -92,4 +92,4 @@ Feature: Class
     }
     """
     When the class is validated
-    Then expect the error "credit type abbrev: expected format [A-Z]{1,3}: parse error"
+    Then expect the error "credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error"

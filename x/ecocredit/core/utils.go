@@ -115,7 +115,7 @@ func ValidateCreditTypeAbbreviation(abbr string) error {
 	}
 	matches := regexCreditTypeAbbrev.FindStringSubmatch(abbr)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexCreditTypeAbbrev)
+		return ecocredit.ErrParseFailure.Wrapf("must be 1-3 uppercase alphabetic characters")
 	}
 	return nil
 }
@@ -128,7 +128,7 @@ func ValidateClassID(classID string) error {
 	}
 	matches := regexClassID.FindStringSubmatch(classID)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexClassID)
+		return ecocredit.ErrParseFailure.Wrap("expected format <credit-type-abbrev><class-sequence>")
 	}
 	return nil
 }
@@ -141,7 +141,7 @@ func ValidateProjectID(projectID string) error {
 	}
 	matches := regexProjectID.FindStringSubmatch(projectID)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexProjectID)
+		return ecocredit.ErrParseFailure.Wrap("expected format <class-id>-<project-sequence>")
 	}
 	return nil
 }
@@ -154,7 +154,9 @@ func ValidateBatchDenom(denom string) error {
 	}
 	matches := regexBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexBatchDenom)
+		return ecocredit.ErrParseFailure.Wrap(
+			"expected format <project-id>-<start_date>-<end_date>-<batch_sequence>",
+		)
 	}
 	return nil
 }
@@ -170,7 +172,9 @@ func ValidateJurisdiction(jurisdiction string) error {
 	}
 	matches := regexJurisdiction.FindStringSubmatch(jurisdiction)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrap("expected format <country-code>[-<region-code>[ <postal-code>]]")
+		return ecocredit.ErrParseFailure.Wrap(
+			"expected format <country-code>[-<region-code>[ <postal-code>]]",
+		)
 	}
 
 	return nil

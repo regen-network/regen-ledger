@@ -72,7 +72,7 @@ Feature: Project
     }
     """
     When the project is validated
-    Then expect the error "project id: expected format [A-Z]{1,3}[0-9]{2,}-[0-9]{3,}: parse error"
+    Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error"
 
   Scenario: an error is returned if admin is empty
     Given the project

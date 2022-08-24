@@ -27,7 +27,7 @@ Feature: ClassSequence
     }
     """
     When the class sequence is validated
-    Then expect the error "credit type abbrev: expected format [A-Z]{1,3}: parse error"
+    Then expect the error "credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error"
 
   Scenario: an error is returned if next sequence is empty
     Given the class sequence

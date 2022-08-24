@@ -87,7 +87,7 @@ Feature: Batch
     }
     """
     When the batch is validated
-    Then expect the error "denom: expected format [A-Z]{1,3}[0-9]{2,}-[0-9]{3,}-[0-9]{8}-[0-9]{8}-[0-9]{3,}: parse error"
+    Then expect the error "denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error"
 
   Scenario: an error is returned if metadata exceeds 256 characters
     Given the batch

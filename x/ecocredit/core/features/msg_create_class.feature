@@ -150,7 +150,7 @@ Feature: MsgCreateClass
     }
     """
     When the message is validated
-    Then expect the error "credit type abbrev: expected format [A-Z]{1,3}: parse error: invalid request"
+    Then expect the error "credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error: invalid request"
 
   Scenario: an error is returned if fee denom is empty
     Given the message
