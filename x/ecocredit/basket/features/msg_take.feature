@@ -52,7 +52,7 @@ Feature: MsgTake
     }
     """
     When the message is validated
-    Then expect the error "basket denom cannot be empty: invalid request"
+    Then expect the error "basket denom: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if basket denom is not formatted
     Given the message
@@ -63,7 +63,7 @@ Feature: MsgTake
     }
     """
     When the message is validated
-    Then expect the error "foo is not a valid basket denom: invalid request"
+    Then expect the error "basket denom: expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error: invalid request"
 
   Scenario: an error is returned if amount is empty
     Given the message

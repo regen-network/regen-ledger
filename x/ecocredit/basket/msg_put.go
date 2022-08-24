@@ -29,12 +29,8 @@ func (m MsgPut) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
 	}
 
-	if len(m.BasketDenom) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("basket denom cannot be empty")
-	}
-
 	if err := ValidateBasketDenom(m.BasketDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("basket denom: %s", err)
 	}
 
 	if len(m.Credits) > 0 {
