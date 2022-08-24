@@ -1,6 +1,8 @@
 package basket
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -29,18 +31,16 @@ func (m MsgPut) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
 	}
 
-	if len(m.BasketDenom) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("basket denom cannot be empty")
-	}
-
 	if err := ValidateBasketDenom(m.BasketDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("basket denom: %s", err)
 	}
 
 	if len(m.Credits) > 0 {
-		for _, credit := range m.Credits {
+		for i, credit := range m.Credits {
+			creditIndex := fmt.Sprintf("credits[%d]", i)
+
 			if err := core.ValidateBatchDenom(credit.BatchDenom); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+				return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom: %s", creditIndex, err)
 			}
 
 			if len(credit.Amount) == 0 {

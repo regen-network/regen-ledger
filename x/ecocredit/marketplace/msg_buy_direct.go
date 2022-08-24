@@ -70,7 +70,7 @@ func (m MsgBuyDirect) ValidateBasic() error {
 
 		if !order.DisableAutoRetire {
 			if err := core.ValidateJurisdiction(order.RetirementJurisdiction); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrapf("%s: %s", orderIndex, err)
+				return sdkerrors.ErrInvalidRequest.Wrapf("%s: retirement jurisdiction: %s", orderIndex, err)
 			}
 		}
 	}
