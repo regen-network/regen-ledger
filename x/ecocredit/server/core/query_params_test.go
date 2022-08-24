@@ -17,7 +17,7 @@ func TestQuery_Params(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	err := s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &ecocreditv1.AllowedClassCreator{
+	err := s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &ecocreditv1.AllowedClassCreator{
 		Address: s.addr,
 	})
 	assert.NilError(t, err)

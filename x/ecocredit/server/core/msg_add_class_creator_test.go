@@ -56,11 +56,11 @@ func (s *addClassCreator) ExpectClassCreatorWithProperties(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
 
-	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
+	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	require.NoError(s.t, err)
-
-	require.Equal(s.t, len(params.Params.AllowedClassCreators), 1)
-	require.Equal(s.t, msg.Creator, params.Params.AllowedClassCreators[0])
+	found, err := s.stateStore.AllowedClassCreatorTable().Has(s.ctx, creator)
+	require.NoError(s.t, err)
+	require.True(s.t, found)
 }
 
 func (s *addClassCreator) ExpectNoError() {

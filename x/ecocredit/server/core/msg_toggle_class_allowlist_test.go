@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"strconv"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -32,18 +33,14 @@ func (s *toggleClassCreatorAllowlist) AliceAttemptsToToggleClassAllowlistWithPro
 	_, s.err = s.k.ToggleCreditClassAllowlist(s.ctx, msg)
 }
 
-func (s *toggleClassCreatorAllowlist) ExpectClassAllowlistFlagToBeTrue() {
+func (s *toggleClassCreatorAllowlist) ExpectClassAllowlistFlagToBe(a string) {
+	isAllowed, err := strconv.ParseBool(a)
+	require.NoError(s.t, err)
+
 	res, err := s.stateStore.AllowListEnabledTable().Get(s.ctx)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, true, res.Enabled)
-}
-
-func (s *toggleClassCreatorAllowlist) ExpectClassAllowlistFlagToBeFalse() {
-	res, err := s.stateStore.AllowListEnabledTable().Get(s.ctx)
-	require.NoError(s.t, err)
-
-	require.Equal(s.t, false, res.Enabled)
+	require.Equal(s.t, isAllowed, res.Enabled)
 }
 
 func (s *toggleClassCreatorAllowlist) ExpectNoError() {

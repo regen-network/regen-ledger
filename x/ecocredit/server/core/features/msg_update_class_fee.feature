@@ -2,7 +2,6 @@ Feature: Msg/MsgUpdateClassFees
 
   The class fees can be updated:
   - when the authority is a governance account address
-  - when the provided class fees are valid
   - the class fees are updated
 
   Rule: The authority is a governance account
@@ -37,84 +36,6 @@ Feature: Msg/MsgUpdateClassFees
       """
       Then expect error contains "expected gov account as only signer for proposal message"
 
-  Rule: The class fees are valid
-
-    Scenario: the class fees are valid
-      When alice attempts to update class fees with properties
-      """
-      {
-        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "fees":[
-            {
-                "denom":"uregen",
-                "amount":"1000"
-            }
-        ]
-      }
-      """
-      Then expect no error
-      And expect class fees with properties 
-      """
-      {
-        "fees":[
-          {
-                "denom":"uregen",
-                "amount":"1000"
-          }
-        ]
-      }
-      """
-
-    Scenario: valid class fees empty 
-      When alice attempts to update class fees with properties
-      """
-      {
-        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "fees":[]
-      }
-      """
-      Then expect no error
-      And expect class fees with properties 
-      """
-      {
-        "fees":[]
-      }
-      """
-
-    Scenario: valid class fees (multiple tokens)
-      When alice attempts to update class fees with properties
-      """
-      {
-        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-        "fees":[
-          {
-            "denom": "uregen",
-            "amount": "1000"
-          },
-          {
-            "denom": "uatom",
-            "amount": "1000"
-          }
-        ]
-      }
-      """
-      Then expect no error
-      And expect class fees with properties 
-      """
-      {
-        "fees":[
-          {
-            "denom": "uregen",
-            "amount": "1000"
-          },
-          {
-            "denom": "uatom",
-            "amount": "1000"
-          }
-        ]
-      }
-      """
-
   Rule: The class fees are updated
     
     Scenario: valid empty class fees
@@ -125,10 +46,42 @@ Feature: Msg/MsgUpdateClassFees
         "fees":[]
       }
       """
-      Then expect no error
-      And expect class fees with properties 
+      Then expect class fees with properties 
       """
       {
         "fees":[]
+      }
+      """
+    
+  Scenario: valid class fees (multiple tokens)
+      When alice attempts to update class fees with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "fees":[
+          {
+            "denom": "uregen",
+            "amount": "1000"
+          },
+          {
+            "denom": "uatom",
+            "amount": "1000"
+          }
+        ]
+      }
+      """
+      Then expect class fees with properties
+      """
+      {
+        "fees":[
+          {
+            "denom": "uregen",
+            "amount": "1000"
+          },
+          {
+            "denom": "uatom",
+            "amount": "1000"
+          }
+        ]
       }
       """

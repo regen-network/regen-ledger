@@ -203,7 +203,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 
 	classCreators := genAllowedClassCreators(r, simState.Accounts)
 	for _, creator := range classCreators {
-		if err := ss.AllowedClassCreatorTable().Save(ctx, &api.AllowedClassCreator{
+		if err := ss.AllowedClassCreatorTable().Insert(ctx, &api.AllowedClassCreator{
 			Address: creator,
 		}); err != nil {
 			return err

@@ -39,7 +39,7 @@ func (s *removeClassClassCreator) ClassCreatorsWithProperties(a gocuke.DocString
 		creatorAddr, err := sdk.AccAddressFromBech32(creator)
 		require.NoError(s.t, err)
 
-		err = s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &ecocreditv1.AllowedClassCreator{
+		err = s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &ecocreditv1.AllowedClassCreator{
 			Address: creatorAddr,
 		})
 		require.NoError(s.t, err)
@@ -61,26 +61,31 @@ func (s *removeClassClassCreator) ExpectClassCreatorsWithProperties(a gocuke.Doc
 	err := json.Unmarshal([]byte(a.Content), &creators)
 	require.NoError(s.t, err)
 
-	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
+	itr, err := s.stateStore.AllowedClassCreatorTable().List(s.ctx, ecocreditv1.AllowedClassCreatorPrimaryKey{})
 	require.NoError(s.t, err)
 
 	found := 0
-	require.Equal(s.t, len(creators.Creators), len(params.Params.AllowedClassCreators))
-	for _, creator := range params.Params.AllowedClassCreators {
-		for _, creator1 := range creators.Creators {
-			if creator == creator1 {
+	for itr.Next() {
+		val, err := itr.Value()
+		require.NoError(s.t, err)
+		for _, creator := range creators.Creators {
+			if creator == sdk.AccAddress(val.Address).String() {
 				found++
 			}
 		}
+
 	}
+	itr.Close()
+
 	require.Equal(s.t, len(creators.Creators), found)
 }
 
 func (s *removeClassClassCreator) ExpectClassCreatorsListToBeEmpty() {
-	params, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
+	itr, err := s.stateStore.AllowedClassCreatorTable().List(s.ctx, ecocreditv1.AllowedClassCreatorPrimaryKey{})
 	require.NoError(s.t, err)
 
-	require.Zero(s.t, len(params.Params.AllowedClassCreators))
+	ok := itr.Next()
+	require.False(s.t, ok)
 }
 
 func (s *removeClassClassCreator) ExpectNoError() {

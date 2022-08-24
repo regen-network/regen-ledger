@@ -1,13 +1,13 @@
 Feature: Msg/RemoveClassCreator
 
   A class creator can be removed:
-  - when the class creator is exist
+  - when the class creator exists
   - when the authority is a governance account address
   - the class creator is removed
 
-  Rule: The class creator is exist
+  Rule: The class creator exists
 
-    Scenario: The class creator is exist
+    Scenario: The class creator exists
       Given class creators with properties
       """
       {
@@ -91,8 +91,7 @@ Feature: Msg/RemoveClassCreator
         "creator":"regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
       }
       """
-      Then expect no error
-      And expect class creators list to be empty
+      Then expect class creators list to be empty
 
     Scenario: The class creator is removed
     Given class creators with properties
@@ -112,8 +111,7 @@ Feature: Msg/RemoveClassCreator
         "creator":"regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
       }
       """
-      Then expect no error
-      And expect class creators with properties
+      Then expect class creators with properties
       """
       {
         "creators": [

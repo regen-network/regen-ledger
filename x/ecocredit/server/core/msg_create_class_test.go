@@ -70,7 +70,7 @@ func (s *createClassSuite) AliceIsAnApprovedCreditClassCreator() {
 		addr, err := sdk.AccAddressFromBech32(creator)
 		require.NoError(s.t, err)
 
-		err = s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &api.AllowedClassCreator{
+		err = s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &api.AllowedClassCreator{
 			Address: addr,
 		})
 		require.NoError(s.t, err)
