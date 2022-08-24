@@ -48,7 +48,7 @@ var (
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient, basketQryClient basket.QueryClient) simulation.WeightedOperations {
+	qryClient core.QueryServer, basketQryClient basket.QueryServer) simulation.WeightedOperations {
 
 	var (
 		weightMsgCreate int
@@ -92,7 +92,7 @@ func WeightedOperations(
 
 // SimulateMsgCreate generates a Basket/MsgCreate with random values.
 func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient) simtypes.Operation {
+	qryClient core.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -198,7 +198,7 @@ func randomDateCriteria(r *rand.Rand, ctx sdk.Context) *basket.DateCriteria {
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
 func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient, bsktQryClient basket.QueryClient) simtypes.Operation {
+	qryClient core.QueryServer, bsktQryClient basket.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -374,7 +374,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 // SimulateMsgTake generates a Basket/MsgTake with random values.
 func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient, bsktQryClient basket.QueryClient) simtypes.Operation {
+	qryClient core.QueryServer, bsktQryClient basket.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -460,7 +460,7 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	}
 }
 
-func randomClassIds(r *rand.Rand, ctx sdk.Context, qryClient core.QueryClient,
+func randomClassIds(r *rand.Rand, ctx sdk.Context, qryClient core.QueryServer,
 	creditTypeAbbrev string, msgType string) ([]string, simtypes.OperationMsg, error) {
 	classes, op, err := utils.GetClasses(ctx, r, qryClient, msgType)
 	if len(classes) == 0 {
@@ -490,7 +490,7 @@ func min(x, y int) int {
 	return x
 }
 
-func randomCreditType(ctx context.Context, r *rand.Rand, qryClient core.QueryClient) (*core.CreditType, error) {
+func randomCreditType(ctx context.Context, r *rand.Rand, qryClient core.QueryServer) (*core.CreditType, error) {
 	res, err := qryClient.CreditTypes(ctx, &core.QueryCreditTypesRequest{})
 	if err != nil {
 		return nil, err

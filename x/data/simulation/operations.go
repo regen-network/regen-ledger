@@ -43,7 +43,7 @@ const (
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak data.AccountKeeper, bk data.BankKeeper,
-	qryClient data.QueryClient) simulation.WeightedOperations {
+	qryClient data.QueryServer) simulation.WeightedOperations {
 
 	var (
 		weightMsgAnchor           int
@@ -204,7 +204,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 }
 
 // SimulateMsgDefineResolver generates a MsgDefineResolver with random values.
-func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryClient data.QueryClient) simtypes.Operation {
+func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryClient data.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -269,7 +269,7 @@ func genResolverURL(r *rand.Rand) string {
 
 // SimulateMsgRegisterResolver generates a MsgRegisterResolver with random values.
 func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
-	qryClient data.QueryClient) simtypes.Operation {
+	qryClient data.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

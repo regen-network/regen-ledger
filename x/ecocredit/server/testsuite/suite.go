@@ -38,7 +38,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
+	fixtureFactory testutil.Factory
 	fixture        testutil.Fixture
 
 	codec        *codec.ProtoCodec
@@ -54,7 +54,7 @@ type IntegrationTestSuite struct {
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
 
-	genesisCtx types.Context
+	genesisCtx sdk.Context
 	blockTime  time.Time
 }
 
@@ -72,7 +72,7 @@ var (
 	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFee}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		bankKeeper:     bankKeeper,
@@ -87,11 +87,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	// TODO clean up once types.Context merged upstream into sdk.Context
-	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-	s.genesisCtx = types.Context{Context: sdkCtx}
+	s.genesisCtx = sdkCtx
 
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
 	_, err := s.fixture.InitGenesis(s.sdkCtx, map[string]json.RawMessage{ecocredit.ModuleName: s.ecocreditGenesis()})

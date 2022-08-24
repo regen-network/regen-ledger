@@ -83,7 +83,7 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
 }
 
-func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) ([]*core.ClassInfo, simtypes.OperationMsg, error) {
+func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryServer, msgType string) ([]*core.ClassInfo, simtypes.OperationMsg, error) {
 	ctx := sdk.WrapSDKContext(sdkCtx)
 	res, err := qryClient.Classes(ctx, &core.QueryClassesRequest{})
 	if err != nil {
@@ -96,7 +96,7 @@ func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, ms
 	return res.Classes, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) (*core.ClassInfo, simtypes.OperationMsg, error) {
+func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryServer, msgType string) (*core.ClassInfo, simtypes.OperationMsg, error) {
 	classes, op, err := GetClasses(sdkCtx, r, qryClient, msgType)
 	if len(classes) == 0 {
 		return nil, op, err

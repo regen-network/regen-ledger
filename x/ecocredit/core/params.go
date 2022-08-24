@@ -1,6 +1,7 @@
 package core
 
 import (
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -8,8 +9,8 @@ import (
 
 var (
 	// This is a value of 20 REGEN
-	DefaultCreditClassFee   = sdk.NewInt(2e7)
-	DefaultBasketFee        = sdk.NewInt(2e7)
+	DefaultCreditClassFee   = math.NewInt(2e7)
+	DefaultBasketFee        = math.NewInt(2e7)
 	KeyCreditClassFee       = []byte("CreditClassFee")
 	KeyAllowedClassCreators = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled     = []byte("AllowlistEnabled")
