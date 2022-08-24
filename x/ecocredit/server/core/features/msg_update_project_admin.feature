@@ -47,3 +47,19 @@ Feature: Msg/UpdateProjectAdmin
       Then expect project with project id "C01-001" and admin bob
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01"
+      And a project with project id "C01-001" and admin alice
+
+    Scenario: EventUpdateProjectAdmin is emitted
+      When alice attempts to update project admin with project id "C01-001" and new admin bob
+      Then expect event with properties
+      """
+      {
+        "project_id": "C01-001"
+      }
+      """

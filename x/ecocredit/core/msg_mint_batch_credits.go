@@ -28,7 +28,7 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 	}
 
 	if err := ValidateBatchDenom(m.BatchDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("batch denom: %s", err)
 	}
 
 	if len(m.Issuance) == 0 {

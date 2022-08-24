@@ -127,7 +127,7 @@ Feature: MsgBridge
     }
     """
     When the message is validated
-    Then expect the error "credits[0]: batch denom cannot be empty: parse error: invalid request"
+    Then expect the error "credits[0]: batch denom: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if credits batch denom is not formatted
     Given the message
@@ -144,7 +144,7 @@ Feature: MsgBridge
     }
     """
     When the message is validated
-    Then expect the error "credits[0]: invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "credits[0]: batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
 
   Scenario: an error is returned if credits amount is empty
     Given the message

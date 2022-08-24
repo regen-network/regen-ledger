@@ -4,6 +4,7 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -23,7 +24,7 @@ func (m *Basket) Validate() error {
 	}
 
 	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrap(err, "credit type abbrev") // returns parse error
 	}
 
 	if err := m.DateCriteria.Validate(); err != nil {

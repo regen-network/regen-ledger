@@ -26,7 +26,7 @@ func (m *MsgUpdateClassIssuers) ValidateBasic() error {
 	}
 
 	if err := ValidateClassID(m.ClassId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
 
 	if len(m.AddIssuers) == 0 && len(m.RemoveIssuers) == 0 {

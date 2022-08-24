@@ -13,7 +13,7 @@ import (
 // Batch queries for information on a credit batch.
 func (k Keeper) Batch(ctx context.Context, request *core.QueryBatchRequest) (*core.QueryBatchResponse, error) {
 	if err := core.ValidateBatchDenom(request.BatchDenom); err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom: %s", err)
 	}
 
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, request.BatchDenom)

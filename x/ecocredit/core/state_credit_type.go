@@ -1,6 +1,8 @@
 package core
 
 import (
+	sdkerrors "cosmossdk.io/errors"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -11,7 +13,7 @@ const (
 // Validate performs basic validation of the ClassIssuer state type
 func (m *CreditType) Validate() error {
 	if err := ValidateCreditTypeAbbreviation(m.Abbreviation); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrapf(err, "abbreviation") // returns parse error
 	}
 
 	if len(m.Name) == 0 {
@@ -27,7 +29,7 @@ func (m *CreditType) Validate() error {
 	}
 
 	if m.Precision != PRECISION {
-		return ecocredit.ErrParseFailure.Wrapf("credit type precision is currently locked to %d", PRECISION)
+		return ecocredit.ErrParseFailure.Wrapf("precision is currently locked to %d", PRECISION)
 	}
 
 	return nil
