@@ -121,13 +121,13 @@ Feature: Msg/Cancel
         "cancelled_amount": "0"
         }
         """
-        When alice attempts to cancel credit amount "10" with reason "foo"
+        When alice attempts to cancel credit amount "10" with reason "transferring credits to another registry"
         Then expect event with properties
         """
         {
           "owner": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
           "batch_denom": "C01-001-20200101-20210101-001",
           "amount": "10",
-          "reason": "foo"
+          "reason": "transferring credits to another registry"
         }
         """
