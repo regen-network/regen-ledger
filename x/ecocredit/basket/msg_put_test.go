@@ -18,6 +18,10 @@ func TestMsgPut(t *testing.T) {
 	gocuke.NewRunner(t, &msgPutSuite{}).Path("./features/msg_put.feature").Run()
 }
 
+func (s *msgPutSuite) Before(t gocuke.TestingT) {
+	s.t = t
+}
+
 func (s *msgPutSuite) TheMessage(a gocuke.DocString) {
 	s.msg = &MsgPut{}
 	err := jsonpb.UnmarshalString(a.Content, s.msg)
