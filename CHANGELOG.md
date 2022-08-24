@@ -52,8 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `ClassSequence` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `OriginTxIndex` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `ProjectSequence` state validation checks
-- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `AddClassCreators` msg-based gov proposal.
-- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `RemoveClassCreators` msg-based gov proposal.
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `AddClassCreator` msg-based gov proposal.
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `RemoveClassCreator` msg-based gov proposal.
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `ToggleCreditClassAllowlist` msg-based gov proposal.
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `UpdateClassFees` msg-based gov proposal.
 
