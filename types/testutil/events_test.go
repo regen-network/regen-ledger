@@ -71,7 +71,7 @@ func TestUtils_MatchFields_Nested(t *testing.T) {
 
 	se := sdk.Event{
 		Attributes: []types.EventAttribute{
-			{Key: []byte("batch_denom"), Value: []byte("C01-20010101-20050505-001")},
+			{Key: []byte("batch_denom"), Value: []byte("C01-001-20010101-20050505-001")},
 			{Key: []byte("origin_tx"), Value: bz},
 		},
 	}

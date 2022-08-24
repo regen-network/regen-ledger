@@ -116,9 +116,9 @@ Feature: Msg/Cancel
         And the batch supply
         """
         {
-        "retired_amount": "0",
-        "tradable_amount": "10",
-        "cancelled_amount": "0"
+          "retired_amount": "0",
+          "tradable_amount": "10",
+          "cancelled_amount": "0"
         }
         """
         When alice attempts to cancel credit amount "10" with reason "transferring credits to another registry"
