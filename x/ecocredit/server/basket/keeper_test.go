@@ -1,4 +1,4 @@
-package basket_test
+package basket
 
 import (
 	"context"
@@ -24,7 +24,6 @@ import (
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 const (
@@ -36,7 +35,7 @@ type baseSuite struct {
 	t            gocuke.TestingT
 	db           ormdb.ModuleDB
 	ctx          context.Context
-	k            basket.Keeper
+	k            Keeper
 	ctrl         *gomock.Controller
 	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
@@ -77,7 +76,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	assert.NilError(t, err)
 
-	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authority)
+	s.k = NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authority)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 

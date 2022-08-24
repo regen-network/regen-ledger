@@ -184,3 +184,63 @@ Feature: Msg/Take
         | precision non-zero, credits decimal | 6         | 2500000      | 2.500000      |
 
     # no failing scenario - response should always be empty when message execution fails
+
+  Rule: Events are emitted
+
+    Background:
+      Given a credit type with abbreviation "C" and precision "6"
+      And a basket with credit type "C" and disable auto retire "true"
+      And basket token supply amount "2000000"
+      And Alice's address "regen10z82e5ztmrm4pujgummvmr7aqjzwlp6gz8k8xp"
+      And Ecocredit module's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      And Alice owns basket token amount "2000000"
+
+    Scenario: EventTake is emitted
+      When alice attempts to take credits with basket token amount "2000000"
+      Then expect event take with properties
+      """
+      {
+        "owner": "regen10z82e5ztmrm4pujgummvmr7aqjzwlp6gz8k8xp",
+        "basket_denom": "eco.uC.NCT",
+        "credits": [
+          {"batch_denom": "C01-001-20200101-20210101-001", "amount": "2.000000"}
+        ],
+        "amount": "2000000"
+      }
+      """
+
+    Scenario: EventRetire is emitted
+      When alice attempts to take credits with basket token amount "2000000" and retire on take "true" from "US-WA"
+      Then expect event retire with properties
+      """
+      {
+        "owner": "regen10z82e5ztmrm4pujgummvmr7aqjzwlp6gz8k8xp",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "amount": "2.000000",
+        "jurisdiction": "US-WA"
+      }
+      """
+
+    Scenario: EventTransfer is emitted when retire on take is true
+      When alice attempts to take credits with basket token amount "2000000" and retire on take "true" from "US-WA"
+      Then expect event transfer with properties
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen10z82e5ztmrm4pujgummvmr7aqjzwlp6gz8k8xp",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "retired_amount": "2.000000"
+      }
+      """
+
+    Scenario: EventTransfer is emitted when retire on take is false
+      When alice attempts to take credits with basket token amount "2000000" and retire on take "false"
+      Then expect event transfer with properties
+      """
+      {
+        "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient": "regen10z82e5ztmrm4pujgummvmr7aqjzwlp6gz8k8xp",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "2.000000"
+      }
+      """
