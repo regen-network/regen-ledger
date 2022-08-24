@@ -5,7 +5,7 @@ go 1.18
 require (
 	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.0
-	github.com/cosmos/ibc-go/v5 v5.0.0-beta1
+	github.com/cosmos/ibc-go/v5 v5.0.0-rc0
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/rakyll/statik v0.1.7
@@ -150,7 +150,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
 	google.golang.org/api v0.81.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.48.0 // indirect
+	google.golang.org/grpc v1.49.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
