@@ -276,3 +276,19 @@ Feature: Msg/UpdateSellOrders
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type
+      And an allowed denom
+
+    Scenario: EventUpdateSellOrder is emitted
+      Given alice created a sell order with id "1"
+      When alice attempts to update the sell order with id "1"
+      Then expect event with properties
+      """
+      {
+        "sell_order_id": 1
+      }
+      """

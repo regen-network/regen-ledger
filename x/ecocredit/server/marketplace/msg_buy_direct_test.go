@@ -2,6 +2,7 @@
 package marketplace
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -16,6 +17,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -509,6 +511,18 @@ func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+}
+
+func (s *buyDirectSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event marketplace.EventBuyDirect
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 // count is the number of sell orders created

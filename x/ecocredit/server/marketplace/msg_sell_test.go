@@ -2,6 +2,7 @@
 package marketplace
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 	"time"
@@ -16,6 +17,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -404,6 +406,18 @@ func (s *sellSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, res, s.res)
+}
+
+func (s *sellSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event marketplace.EventSell
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *sellSuite) aliceTradableBatchBalance() {

@@ -2,6 +2,7 @@
 package marketplace
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 	"time"
@@ -18,6 +19,7 @@ import (
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -404,6 +406,18 @@ func (s *updateSellOrdersSuite) ExpectSellOrderWithSellerAliceAndTheProperties(a
 	require.Equal(s.t, expected.DisableAutoRetire, order.DisableAutoRetire)
 	require.Equal(s.t, expected.MarketId, order.MarketId)
 	require.Equal(s.t, expected.Maker, order.Maker)
+}
+
+func (s *updateSellOrdersSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event marketplace.EventUpdateSellOrder
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *updateSellOrdersSuite) sellOrderSetup(count int) {

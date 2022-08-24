@@ -338,3 +338,18 @@ Feature: Msg/BuyDirect
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type
+
+    Scenario: EventBuyDirect is emitted
+      Given alice created a sell order with id "1"
+      When bob attempts to buy credits with sell order id "1"
+      Then expect event with properties
+      """
+      {
+        "sell_order_id": 1
+      }
+      """
