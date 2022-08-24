@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -283,7 +283,7 @@ func (s *cancel) AlicesAddress(a string) {
 }
 
 func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventCancel
+	var event core.EventCancel
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 	event.Owner = s.alice.String()
@@ -292,7 +292,7 @@ func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
 	events := s.sdkCtx.EventManager().Events()
 	eventCancel := events[len(events)-1]
 
-	require.Equal(s.t, string(proto.MessageName(&event)), eventCancel.Type)
+	require.Equal(s.t, proto.MessageName(&event), eventCancel.Type)
 
 	err = testutil.MatchEvent(&event, eventCancel)
 	require.NoError(s.t, err)

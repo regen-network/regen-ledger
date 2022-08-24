@@ -240,7 +240,7 @@ func (s *retire) AliceAttemptsToRetireCreditAmountFrom(a string, b string) {
 }
 
 func (s *retire) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventRetire
+	var event core.EventRetire
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 	event.Owner = s.alice.String()

@@ -284,7 +284,7 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmountFrom(a, b string)
 }
 
 func (s *send) ExpectEventRetireWithProperties(a gocuke.DocString) {
-	var event api.EventRetire
+	var event core.EventRetire
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -296,7 +296,7 @@ func (s *send) ExpectEventRetireWithProperties(a gocuke.DocString) {
 }
 
 func (s *send) ExpectEventTransferWithProperties(a gocuke.DocString) {
-	var event api.EventTransfer
+	var event core.EventTransfer
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

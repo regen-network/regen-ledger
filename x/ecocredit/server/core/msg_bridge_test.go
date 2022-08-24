@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -223,14 +223,14 @@ func (s *bridgeSuite) AliceAttemptsToBridgeCreditAmountFromTheCreditBatchTo(a, b
 }
 
 func (s *bridgeSuite) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventBridge
+	var event core.EventBridge
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
 	events := s.sdkCtx.EventManager().Events()
 	eventBridge := events[len(events)-1]
 
-	require.Equal(s.t, string(proto.MessageName(&event)), eventBridge.Type)
+	require.Equal(s.t, proto.MessageName(&event), eventBridge.Type)
 	err = testutil.MatchEvent(&event, eventBridge)
 	require.NoError(s.t, err)
 }

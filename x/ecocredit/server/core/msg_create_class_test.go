@@ -213,7 +213,7 @@ func (s *createClassSuite) ExpectTheResponse(a gocuke.DocString) {
 }
 
 func (s *createClassSuite) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventCreateClass
+	var event core.EventCreateClass
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

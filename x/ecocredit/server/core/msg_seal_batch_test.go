@@ -115,7 +115,7 @@ func (s *sealBatch) ExpectTheError(a string) {
 }
 
 func (s *sealBatch) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventSealBatch
+	var event core.EventSealBatch
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

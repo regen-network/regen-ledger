@@ -103,7 +103,7 @@ func (s *updateProjectMetadata) ExpectProjectWithProjectIdAndMetadata(a string, 
 }
 
 func (s *updateProjectMetadata) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventUpdateProjectMetadata
+	var event core.EventUpdateProjectMetadata
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

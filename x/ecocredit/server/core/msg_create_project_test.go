@@ -180,7 +180,7 @@ func (s *createProjectSuite) ExpectTheResponse(a gocuke.DocString) {
 }
 
 func (s *createProjectSuite) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventCreateProject
+	var event core.EventCreateProject
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

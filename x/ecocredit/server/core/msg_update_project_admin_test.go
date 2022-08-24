@@ -105,7 +105,7 @@ func (s *updateProjectAdmin) ExpectProjectWithProjectIdAndAdminBob(a string) {
 }
 
 func (s *updateProjectAdmin) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventUpdateProjectAdmin
+	var event core.EventUpdateProjectAdmin
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

@@ -191,7 +191,7 @@ Feature: Msg/MintBatchCredits
         "id": "0xbca488b181e3dd66db06f0cccf083004c99a078bcaa70001579e465bb833fd67",
         "source": "polygon",
         "contract": "0x00192fb10df37c9fb26829eb2cc623cd1bf599e8",
-        "note": "credits from VCS-001"
+        "note": "transaction confirmed by bridge service"
         }
       }
       """
@@ -230,7 +230,7 @@ Feature: Msg/MintBatchCredits
         "id": "0xbca488b181e3dd66db06f0cccf083004c99a078bcaa70001579e465bb833fd67",
         "source": "polygon",
         "contract": "0x00192fb10df37c9fb26829eb2cc623cd1bf599e8",
-        "note": "credits from VCS-001"
+        "note": "transaction confirmed by bridge service"
         }
       }
       """

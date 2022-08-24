@@ -278,7 +278,7 @@ func (s *mintBatchCredits) AliceAttemptsToMintCreditsWithBatchDenomWithRetiredAm
 }
 
 func (s *mintBatchCredits) ExpectEventRetireWithProperties(a gocuke.DocString) {
-	var event api.EventRetire
+	var event core.EventRetire
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -290,7 +290,7 @@ func (s *mintBatchCredits) ExpectEventRetireWithProperties(a gocuke.DocString) {
 }
 
 func (s *mintBatchCredits) ExpectEventMintWithProperties(a gocuke.DocString) {
-	var event api.EventMint
+	var event core.EventMint
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -302,7 +302,7 @@ func (s *mintBatchCredits) ExpectEventMintWithProperties(a gocuke.DocString) {
 }
 
 func (s *mintBatchCredits) ExpectEventMintBatchCreditsWithProperties(a gocuke.DocString) {
-	var event api.EventMintBatchCredits
+	var event core.EventMintBatchCredits
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -321,7 +321,7 @@ func (s *mintBatchCredits) AnOriginTxWithProperties(a gocuke.DocString) {
 }
 
 func (s *mintBatchCredits) ExpectEventTransferWithProperties(a gocuke.DocString) {
-	var event api.EventTransfer
+	var event core.EventTransfer
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 	event.Sender = s.k.moduleAddress.String()

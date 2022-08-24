@@ -399,7 +399,7 @@ func (s *createBatchSuite) ExpectTheResponse(a gocuke.DocString) {
 }
 
 func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
-	var event api.EventRetire
+	var event core.EventRetire
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -411,7 +411,7 @@ func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
 }
 
 func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
-	var event api.EventMint
+	var event core.EventMint
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -422,7 +422,7 @@ func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
 }
 
 func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
-	var event api.EventTransfer
+	var event core.EventTransfer
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 	event.Sender = s.k.moduleAddress.String()
@@ -470,7 +470,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a 
 }
 
 func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocString) {
-	var event api.EventCreateBatch
+	var event core.EventCreateBatch
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

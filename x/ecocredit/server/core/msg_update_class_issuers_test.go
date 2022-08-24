@@ -153,7 +153,7 @@ func (s *updateClassIssuers) ExpectCreditClassWithClassIdAndIssuers(a string, b 
 }
 
 func (s *updateClassIssuers) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventUpdateClassIssuers
+	var event core.EventUpdateClassIssuers
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

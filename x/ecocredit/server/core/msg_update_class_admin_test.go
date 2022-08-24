@@ -97,7 +97,7 @@ func (s *updateClassAdmin) ExpectCreditClassWithClassIdAndAdminBob(a string) {
 }
 
 func (s *updateClassAdmin) ExpectEventWithProperties(a gocuke.DocString) {
-	var event api.EventUpdateClassAdmin
+	var event core.EventUpdateClassAdmin
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
