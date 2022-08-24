@@ -42,7 +42,7 @@ func FormatBasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, 
 	return denom, displayDenom, nil
 }
 
-// ValidateBasketName validates a basket name. The name conforms to the format
+// ValidateBasketName validates a basket name. The name must conform to the format
 // described in FormatBasketName. The return is nil if the name is valid.
 func ValidateBasketName(name string) error {
 	if name == "" {
@@ -55,7 +55,7 @@ func ValidateBasketName(name string) error {
 	return nil
 }
 
-// ValidateBasketDenom validates a basket denom. The denom conforms to the format
+// ValidateBasketDenom validates a basket denom. The denom must conform to the format
 // described in FormatBasketDenom. The return is nil if the denom is valid.
 func ValidateBasketDenom(denom string) error {
 	if denom == "" {
