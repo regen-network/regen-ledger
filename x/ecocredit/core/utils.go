@@ -8,8 +8,6 @@ import (
 	"time"
 	"unicode"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -33,15 +31,17 @@ const (
 )
 
 var (
-	RegexClassID      = `[A-Z]{1,3}[0-9]{2,}`
-	RegexProjectID    = fmt.Sprintf(`%s-[A-Z0-9]{2,}`, RegexClassID)
-	RegexBatchDenom   = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectID)
-	RegexJurisdiction = `([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`
+	RegexCreditTypeAbbrev = `[A-Z]{1,3}` //nolint:gosec
+	RegexClassID          = fmt.Sprintf(`%s[0-9]{2,}`, RegexCreditTypeAbbrev)
+	RegexProjectID        = fmt.Sprintf(`%s-[0-9]{3,}`, RegexClassID)
+	RegexBatchDenom       = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectID)
+	RegexJurisdiction     = `([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`
 
-	regexClassID      = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassID))
-	regexProjectID    = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectID))
-	regexBatchDenom   = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexBatchDenom))
-	regexJurisdiction = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexJurisdiction))
+	regexCreditTypeAbbrev = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexCreditTypeAbbrev))
+	regexClassID          = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassID))
+	regexProjectID        = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectID))
+	regexBatchDenom       = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexBatchDenom))
+	regexJurisdiction     = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexJurisdiction))
 )
 
 // FormatClassID formats the unique identifier for a new credit class, based
@@ -111,11 +111,11 @@ func FormatBatchDenom(projectID string, batchSeqNo uint64, startDate, endDate *t
 // is only 1-3 uppercase letters. The return is nil if the abbreviation is valid.
 func ValidateCreditTypeAbbreviation(abbr string) error {
 	if abbr == "" {
-		return ecocredit.ErrParseFailure.Wrap("credit type abbreviation cannot be empty")
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
 	}
-	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
-	if !reAbbr.Match([]byte(abbr)) {
-		return ecocredit.ErrParseFailure.Wrapf("credit type abbreviation must be 1-3 uppercase latin letters: got %s", abbr)
+	matches := regexCreditTypeAbbrev.FindStringSubmatch(abbr)
+	if matches == nil {
+		return ecocredit.ErrParseFailure.Wrapf("must be 1-3 uppercase alphabetic characters")
 	}
 	return nil
 }
@@ -124,11 +124,11 @@ func ValidateCreditTypeAbbreviation(abbr string) error {
 // FormatClassID. The return is nil if the ID is valid.
 func ValidateClassID(classID string) error {
 	if classID == "" {
-		return ecocredit.ErrParseFailure.Wrap("class id cannot be empty")
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
 	}
 	matches := regexClassID.FindStringSubmatch(classID)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("class ID didn't match the format: expected A00, got %s", classID)
+		return ecocredit.ErrParseFailure.Wrap("expected format <credit-type-abbrev><class-sequence>")
 	}
 	return nil
 }
@@ -137,11 +137,11 @@ func ValidateClassID(classID string) error {
 // in FormatProjectID. The return is nil if the ID is valid.
 func ValidateProjectID(projectID string) error {
 	if projectID == "" {
-		return ecocredit.ErrParseFailure.Wrap("project id cannot be empty")
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
 	}
 	matches := regexProjectID.FindStringSubmatch(projectID)
 	if matches == nil {
-		return sdkerrors.Wrapf(ecocredit.ErrParseFailure, "invalid project id: %s", projectID)
+		return ecocredit.ErrParseFailure.Wrap("expected format <class-id>-<project-sequence>")
 	}
 	return nil
 }
@@ -150,11 +150,13 @@ func ValidateProjectID(projectID string) error {
 // described in FormatBatchDenom. The return is nil if the denom is valid.
 func ValidateBatchDenom(denom string) error {
 	if denom == "" {
-		return ecocredit.ErrParseFailure.Wrap("batch denom cannot be empty")
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
 	}
 	matches := regexBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrap("invalid batch denom: expected format A00-000-00000000-00000000-000")
+		return ecocredit.ErrParseFailure.Wrap(
+			"expected format <project-id>-<start_date>-<end_date>-<batch_sequence>",
+		)
 	}
 	return nil
 }
@@ -166,11 +168,13 @@ func ValidateBatchDenom(denom string) error {
 // with that information. The return is nil if the jurisdiction is valid.
 func ValidateJurisdiction(jurisdiction string) error {
 	if jurisdiction == "" {
-		return ecocredit.ErrParseFailure.Wrap("jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]")
+		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
 	}
 	matches := regexJurisdiction.FindStringSubmatch(jurisdiction)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("invalid jurisdiction: %s, expected format <country-code>[-<region-code>[ <postal-code>]]", jurisdiction)
+		return ecocredit.ErrParseFailure.Wrap(
+			"expected format <country-code>[-<region-code>[ <postal-code>]]",
+		)
 	}
 
 	return nil

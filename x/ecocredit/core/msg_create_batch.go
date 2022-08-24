@@ -28,7 +28,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	if err := ValidateProjectID(m.ProjectId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("project id: %s", err)
 	}
 
 	if len(m.Issuance) == 0 {

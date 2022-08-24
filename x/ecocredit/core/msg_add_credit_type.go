@@ -32,7 +32,7 @@ func (m *MsgAddCreditType) ValidateBasic() error {
 	}
 
 	if err := m.CreditType.Validate(); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type: %s", err)
 	}
 
 	return nil

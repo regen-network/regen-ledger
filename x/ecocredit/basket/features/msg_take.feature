@@ -125,7 +125,7 @@ Feature: MsgTake
     }
     """
     When the message is validated
-    Then expect the error "invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+    Then expect the error "retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
 
   Scenario: no error is returned if retirement jurisdiction is not formatted and retire on take is false
     Given the message
