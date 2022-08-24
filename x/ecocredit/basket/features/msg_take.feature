@@ -63,7 +63,7 @@ Feature: MsgTake
     }
     """
     When the message is validated
-    Then expect the error "basket denom: expected format eco.[a-zA-Z]{1,4}.[a-zA-Z][a-zA-Z0-9]{2,7}: parse error: invalid request"
+    Then expect the error "basket denom: expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error: invalid request"
 
   Scenario: an error is returned if amount is empty
     Given the message

@@ -28,8 +28,8 @@ var (
 )
 
 // FormatBasketDenom formats denom and display denom:
-// - denom: eco.<m.Exponent><m.CreditTypeAbbrev>.<m.Name>
-// - display denom: eco.<m.CreditTypeAbbrev>.<m.Name>
+// - denom: eco.<exponent-prefix><credit-type-abbrev>.<name>
+// - display denom: eco.<credit-type-abbrev>.<name>
 func FormatBasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, string, error) {
 	exponentPrefix, err := core.ExponentToPrefix(exponent)
 	if err != nil {
@@ -50,7 +50,9 @@ func ValidateBasketName(name string) error {
 	}
 	matches := regexBasketName.FindStringSubmatch(name)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexBasketName)
+		return ecocredit.ErrParseFailure.Wrapf(
+			"must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long",
+		)
 	}
 	return nil
 }
@@ -63,7 +65,9 @@ func ValidateBasketDenom(denom string) error {
 	}
 	matches := regexBasketDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("expected format %s", RegexBasketDenom)
+		return ecocredit.ErrParseFailure.Wrapf(
+			"expected format eco.<exponent-prefix><credit-type-abbrev>.<name>",
+		)
 	}
 	return nil
 }
