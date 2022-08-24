@@ -238,6 +238,18 @@ func (s *putSuite) ACreditBatchWithDenom(a string) {
 	require.NoError(s.t, err)
 }
 
+func (s *putSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
+func (s *putSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
+}
+
 func (s *putSuite) AliceOwnsCredits() {
 	classID := core.GetClassIDFromBatchDenom(s.batchDenom)
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
@@ -516,18 +528,6 @@ func (s *putSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
 
 	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
-}
-
-func (s *putSuite) AlicesAddress(a string) {
-	addr, err := sdk.AccAddressFromBech32(a)
-	require.NoError(s.t, err)
-	s.alice = addr
-}
-
-func (s *putSuite) EcocreditModulesAddress(a string) {
-	addr, err := sdk.AccAddressFromBech32(a)
-	require.NoError(s.t, err)
-	s.k.moduleAddress = addr
 }
 
 func (s *putSuite) ExpectEventPutWithProperties(a gocuke.DocString) {
