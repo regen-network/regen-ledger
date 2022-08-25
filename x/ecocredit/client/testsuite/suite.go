@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -21,6 +22,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
+	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -187,12 +189,26 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	marketStore, err := marketApi.NewStateStore(mdb)
 	require.NoError(err)
 
+	basketStore, err := basketApi.NewStateStore(mdb)
+	require.NoError(err)
+
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,
 	})
 
 	ctx := ormtable.WrapContextDefault(backend)
+
+	// add basket fees
+	err = basketStore.BasketFeesTable().Save(ctx, &basketApi.BasketFees{
+		Fees: []*basev1beta1.Coin{
+			{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: "10",
+			},
+		},
+	})
+	require.NoError(err)
 
 	// insert allowed denom
 	err = marketStore.AllowedDenomTable().Insert(ctx, &marketApi.AllowedDenom{

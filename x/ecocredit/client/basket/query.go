@@ -149,3 +149,34 @@ regen q ecocredit basket-balances eco.uC.NCT --limit 10 --offset 10
 
 	return cmd
 }
+
+// QueryBasketFeesCmd returns a query command that retrieves the basket fees.
+func QueryBasketFeesCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "basket-fees",
+		Short: "Retrieves the basket fees",
+		Long:  "Retrieves the basket fees",
+		Example: `
+regen q ecocredit basket-fees
+		`,
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			client := basket.NewQueryClient(ctx)
+			res, err := client.BasketFees(cmd.Context(), &basket.QueryBasketFeesRequest{})
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}

@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
@@ -34,19 +35,18 @@ const (
 )
 
 type baseSuite struct {
-	t            gocuke.TestingT
-	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	ctx          context.Context
-	k            Keeper
-	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
-	addr2        sdk.AccAddress
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *storetypes.KVStoreKey
-	sdkCtx       sdk.Context
-	authority    sdk.AccAddress
+	t          gocuke.TestingT
+	db         ormdb.ModuleDB
+	stateStore api.StateStore
+	ctx        context.Context
+	k          Keeper
+	ctrl       *gomock.Controller
+	addr       sdk.AccAddress
+	addr2      sdk.AccAddress
+	bankKeeper *mocks.MockBankKeeper
+	storeKey   *storetypes.KVStoreKey
+	sdkCtx     sdk.Context
+	authority  sdk.AccAddress
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -71,13 +71,15 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	s.authority, err = sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	require.NoError(t, err)
 
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress, s.authority)
+	basketStore, err := basketapi.NewStateStore(s.db)
+	assert.NilError(t, err)
+
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, s.authority)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 
