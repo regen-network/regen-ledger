@@ -22,26 +22,27 @@ import (
 )
 
 type serverImpl struct {
-	paramSpace    paramtypes.Subspace
-	bankKeeper    ecocredit.BankKeeper
-	accountKeeper ecocredit.AccountKeeper
+	legacySubspace paramtypes.Subspace
+	bankKeeper     ecocredit.BankKeeper
+	accountKeeper  ecocredit.AccountKeeper
 
 	CoreKeeper        core.Keeper
 	BasketKeeper      basket.Keeper
 	MarketplaceKeeper marketplace.Keeper
 
-	db          ormdb.ModuleDB
-	stateStore  api.StateStore
-	basketStore basketapi.StateStore
+	db               ormdb.ModuleDB
+	stateStore       api.StateStore
+	basketStore      basketapi.StateStore
+	marketplaceStore marketApi.StateStore
 }
 
 //nolint:revive
-func NewServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
+func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
+		legacySubspace: legacySubspace,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
 	}
 
 	// ensure ecocredit module account is set
@@ -65,9 +66,10 @@ func NewServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	coreStore, basketStore, marketStore := getStateStores(s.db)
 	s.stateStore = coreStore
 	s.basketStore = basketStore
+	s.marketplaceStore = marketStore
 	s.CoreKeeper = core.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, authority)
-	s.BasketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr, authority)
-	s.MarketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace, authority)
+	s.BasketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
+	s.MarketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.legacySubspace, authority)
 
 	return s
 }
@@ -90,4 +92,8 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 
 func (s serverImpl) QueryServers() (coretypes.QueryServer, baskettypes.QueryServer, marketplacetypes.QueryServer) {
 	return s.CoreKeeper, s.BasketKeeper, s.MarketplaceKeeper
+}
+
+func (s serverImpl) GetStateStores() (api.StateStore, basketapi.StateStore, marketApi.StateStore) {
+	return s.stateStore, s.basketStore, s.marketplaceStore
 }
