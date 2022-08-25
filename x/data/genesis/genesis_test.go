@@ -20,11 +20,15 @@ import (
 func TestValidateGenesis(t *testing.T) {
 	t.Parallel()
 
+	// initial setup
+
 	moduleDB, err := ormdb.NewModuleDB(&data.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 
 	ss, err := api.NewStateStore(moduleDB)
 	require.NoError(t, err)
+
+	// valid state (all state messages)
 
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 
@@ -65,4 +69,79 @@ func TestValidateGenesis(t *testing.T) {
 
 	err = ValidateGenesis(genesisJSON)
 	require.NoError(t, err)
+
+	// invalid DataID
+
+	ormCtx = ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+
+	require.NoError(t, ss.DataIDTable().Insert(ormCtx, &api.DataID{}))
+
+	target = ormjson.NewRawMessageTarget()
+	require.NoError(t, moduleDB.ExportJSON(ormCtx, target))
+
+	genesisJSON, err = target.JSON()
+	require.NoError(t, err)
+
+	err = ValidateGenesis(genesisJSON)
+	require.ErrorContains(t, err, "Error in JSON for table regen.data.v1.DataID")
+
+	// invalid DataAnchor
+
+	ormCtx = ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+
+	require.NoError(t, ss.DataAnchorTable().Insert(ormCtx, &api.DataAnchor{}))
+
+	target = ormjson.NewRawMessageTarget()
+	require.NoError(t, moduleDB.ExportJSON(ormCtx, target))
+
+	genesisJSON, err = target.JSON()
+	require.NoError(t, err)
+
+	err = ValidateGenesis(genesisJSON)
+	require.ErrorContains(t, err, "Error in JSON for table regen.data.v1.DataAnchor")
+
+	// invalid DataAttestor
+
+	ormCtx = ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+
+	require.NoError(t, ss.DataAttestorTable().Insert(ormCtx, &api.DataAttestor{}))
+
+	target = ormjson.NewRawMessageTarget()
+	require.NoError(t, moduleDB.ExportJSON(ormCtx, target))
+
+	genesisJSON, err = target.JSON()
+	require.NoError(t, err)
+
+	err = ValidateGenesis(genesisJSON)
+	require.ErrorContains(t, err, "Error in JSON for table regen.data.v1.DataAttestor")
+
+	// invalid Resolver
+
+	ormCtx = ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+
+	require.NoError(t, ss.ResolverTable().Insert(ormCtx, &api.Resolver{}))
+
+	target = ormjson.NewRawMessageTarget()
+	require.NoError(t, moduleDB.ExportJSON(ormCtx, target))
+
+	genesisJSON, err = target.JSON()
+	require.NoError(t, err)
+
+	err = ValidateGenesis(genesisJSON)
+	require.ErrorContains(t, err, "Error in JSON for table regen.data.v1.Resolver")
+
+	// invalid DataResolver
+
+	ormCtx = ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+
+	require.NoError(t, ss.DataResolverTable().Insert(ormCtx, &api.DataResolver{}))
+
+	target = ormjson.NewRawMessageTarget()
+	require.NoError(t, moduleDB.ExportJSON(ormCtx, target))
+
+	genesisJSON, err = target.JSON()
+	require.NoError(t, err)
+
+	err = ValidateGenesis(genesisJSON)
+	require.ErrorContains(t, err, "Error in JSON for table regen.data.v1.DataResolver")
 }
