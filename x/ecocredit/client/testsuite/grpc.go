@@ -537,16 +537,17 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryParams() {
-	require := s.Require()
+// TODO: #1363
+// func (s *IntegrationTestSuite) TestQueryParams() {
+// 	require := s.Require()
 
-	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, coreRoute))
-	require.NoError(err)
+// 	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, coreRoute))
+// 	require.NoError(err)
 
-	var res core.QueryParamsResponse
-	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
-	s.Require().Equal(core.DefaultParams(), *res.Params)
-}
+// 	var res core.QueryParamsResponse
+// 	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
+// 	s.Require().Equal(core.DefaultParams(), *res.Params)
+// }
 
 func (s *IntegrationTestSuite) TestCreditType() {
 	require := s.Require()

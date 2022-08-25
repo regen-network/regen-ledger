@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -65,4 +66,16 @@ func (s *removeAllowedDenomSuite) ExpectTheError(a string) {
 
 func (s *removeAllowedDenomSuite) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
+}
+
+func (s *removeAllowedDenomSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event marketplace.EventRemoveAllowedDenom
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

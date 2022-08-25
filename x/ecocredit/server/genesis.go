@@ -49,7 +49,7 @@ func (s serverImpl) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 		}
 	}
 
-	s.paramSpace.SetParamSet(ctx, &params)
+	s.legacySubspace.SetParamSet(ctx, &params)
 
 	return []abci.ValidatorUpdate{}, nil
 }
@@ -58,7 +58,7 @@ func (s serverImpl) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 func (s serverImpl) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error) {
 	// Get Params from the store and put them in the genesis state
 	var params core.Params
-	s.paramSpace.GetParamSet(ctx, &params)
+	s.legacySubspace.GetParamSet(ctx, &params)
 
 	jsonTarget := ormjson.NewRawMessageTarget()
 	err := s.db.ExportJSON(sdk.WrapSDKContext(ctx), jsonTarget)

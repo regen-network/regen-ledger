@@ -565,22 +565,23 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryParamsCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = outputFormat
-	require := s.Require()
+// TODO: #1363
+// func (s *IntegrationTestSuite) TestQueryParamsCmd() {
+// 	val := s.network.Validators[0]
+// 	clientCtx := val.ClientCtx
+// 	clientCtx.OutputFormat = "JSON"
+// 	require := s.Require()
 
-	cmd := coreclient.QueryParamsCmd()
-	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
-	require.NoError(err)
+// 	cmd := coreclient.QueryParamsCmd()
+// 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+// 	require.NoError(err)
 
-	var params core.QueryParamsResponse
-	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
-	require.NoError(err)
+// 	var params core.QueryParamsResponse
+// 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
+// 	require.NoError(err)
 
-	require.Equal(core.DefaultParams(), *params.Params)
-}
+// 	require.Equal(core.DefaultParams(), *params.Params)
+// }
 
 func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	require := s.Require()

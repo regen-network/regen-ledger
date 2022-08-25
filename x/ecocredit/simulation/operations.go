@@ -21,7 +21,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/basket"
 	marketplacesims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
@@ -246,10 +245,11 @@ func WeightedOperations(
 		),
 	}
 
-	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
+	// TODO: #1363
+	// basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
+	// ops = append(ops, basketOps...)
 	marketplaceOps := marketplacesims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient)
 
-	ops = append(ops, basketOps...)
 	return append(ops, marketplaceOps...)
 }
 
@@ -1047,6 +1047,10 @@ func SimulateMsgSealBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, q
 		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgSealBatch, project.Id)
 		if batch == nil {
 			return op, nil, err
+		}
+
+		if batch.Issuer != issuerAddr {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSealBatch, "only batch issuer can seal batch"), nil, nil
 		}
 
 		if !batch.Open {
