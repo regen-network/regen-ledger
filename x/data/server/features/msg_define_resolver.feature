@@ -24,6 +24,6 @@ Feature: Msg/DefineResolver
       And expect event with properties
       """
       {
-        "id": 1
+        "id": 2
       }
       """

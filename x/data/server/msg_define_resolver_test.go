@@ -11,6 +11,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -33,9 +34,9 @@ func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
-	_, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
-		Manager:     s.alice.String(),
-		ResolverUrl: a,
+	err := s.server.stateStore.ResolverTable().Insert(s.ctx, &api.Resolver{
+		Url:     a,
+		Manager: s.alice,
 	})
 	require.NoError(s.t, err)
 }
