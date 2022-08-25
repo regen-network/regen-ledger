@@ -152,7 +152,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 				Owner:        issuance.Recipient,
 				BatchDenom:   batchDenom,
-				Amount:       issuance.RetiredAmount,
+				Amount:       retiredAmount.String(),
 				Jurisdiction: issuance.RetirementJurisdiction,
 			}); err != nil {
 				return nil, err
@@ -161,8 +161,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventMint{
 			BatchDenom:     batchDenom,
-			TradableAmount: issuance.TradableAmount,
-			RetiredAmount:  issuance.RetiredAmount,
+			TradableAmount: tradableAmount.String(),
+			RetiredAmount:  retiredAmount.String(),
 		}); err != nil {
 			return nil, err
 		}
@@ -171,8 +171,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			Sender:         moduleAddrString, // ecocredit module
 			Recipient:      issuance.Recipient,
 			BatchDenom:     batchDenom,
-			TradableAmount: issuance.TradableAmount,
-			RetiredAmount:  issuance.RetiredAmount,
+			TradableAmount: tradableAmount.String(),
+			RetiredAmount:  retiredAmount.String(),
 		}); err != nil {
 			return nil, err
 		}

@@ -24,17 +24,8 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 	recipient, _ := sdk.AccAddressFromBech32(req.Recipient)
 
 	for _, credit := range req.Credits {
-		err := k.sendEcocredits(ctx, credit, recipient, sender)
+		err := k.sendEcocredits(sdkCtx, credit, recipient, sender)
 		if err != nil {
-			return nil, err
-		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
-			Sender:         req.Sender,
-			Recipient:      req.Recipient,
-			BatchDenom:     credit.BatchDenom,
-			TradableAmount: credit.TradableAmount,
-			RetiredAmount:  credit.RetiredAmount,
-		}); err != nil {
 			return nil, err
 		}
 
@@ -43,7 +34,8 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 	return &core.MsgSendResponse{}, nil
 }
 
-func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
+func (k Keeper) sendEcocredits(sdkCtx sdk.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
+	ctx := sdk.WrapSDKContext(sdkCtx)
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", credit.BatchDenom, err.Error())
@@ -155,7 +147,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		}); err != nil {
 			return err
 		}
-		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventRetire{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 			Owner:        to.String(),
 			BatchDenom:   credit.BatchDenom,
 			Amount:       sendAmtRetired.String(),
@@ -163,6 +155,15 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		}); err != nil {
 			return err
 		}
+	}
+	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
+		Sender:         from.String(),
+		Recipient:      to.String(),
+		BatchDenom:     credit.BatchDenom,
+		TradableAmount: sendAmtTradable.String(),
+		RetiredAmount:  sendAmtRetired.String(),
+	}); err != nil {
+		return err
 	}
 	return nil
 }
