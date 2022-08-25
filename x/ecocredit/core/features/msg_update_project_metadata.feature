@@ -49,7 +49,7 @@ Feature: MsgUpdateProjectMetadata
     }
     """
     When the message is validated
-    Then expect the error "project id cannot be empty: parse error: invalid request"
+    Then expect the error "project id: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if project id is not formatted
     Given the message
@@ -60,7 +60,7 @@ Feature: MsgUpdateProjectMetadata
     }
     """
     When the message is validated
-    Then expect the error "invalid project id: foo: parse error: invalid request"
+    Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error: invalid request"
 
   Scenario: an error is returned if new metadata exceeds 256 characters
     Given the message

@@ -1,16 +1,19 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -258,4 +261,39 @@ func (s *cancel) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	s.batchKey = bKey
+}
+
+func (s *cancel) AliceAttemptsToCancelCreditAmountWithReason(a, b string) {
+	s.res, s.err = s.k.Cancel(s.ctx, &core.MsgCancel{
+		Owner: s.alice.String(),
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+		Reason: b,
+	})
+}
+
+func (s *cancel) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
+func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventCancel
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Owner = s.alice.String()
+	event.BatchDenom = s.batchDenom
+
+	events := s.sdkCtx.EventManager().Events()
+	eventCancel := events[len(events)-1]
+
+	require.Equal(s.t, proto.MessageName(&event), eventCancel.Type)
+
+	err = testutil.MatchEvent(&event, eventCancel)
+	require.NoError(s.t, err)
 }

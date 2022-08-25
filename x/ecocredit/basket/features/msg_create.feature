@@ -121,7 +121,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name cannot be empty: invalid request"
+    Then expect the error "name: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if name does not start with an alphabetic character
     Given the message
@@ -132,7 +132,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if name includes non-alphanumeric characters
     Given the message
@@ -143,7 +143,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if name length is less than three characters
     Given the message
@@ -154,7 +154,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if name length is greater than eight characters
     Given the message
@@ -165,7 +165,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: invalid request"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error: invalid request"
 
   Scenario: an error is returned if description length is greater than 256 characters
     Given the message
@@ -188,7 +188,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "credit type abbreviation cannot be empty: parse error: invalid request"
+    Then expect the error "credit type abbrev: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if credit type abbreviation is not formatted
     Given the message
@@ -200,7 +200,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "credit type abbreviation must be 1-3 uppercase latin letters: got foobar: parse error: invalid request"
+    Then expect the error "credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error: invalid request"
 
   Scenario: an error is returned if allowed credit classes is empty
     Given the message
@@ -227,7 +227,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "allowed_classes[0] is not a valid class ID: class id cannot be empty: parse error: invalid request"
+    Then expect the error "allowed classes [0]: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if an allowed credit class is not formatted
     Given the message
@@ -242,7 +242,7 @@ Feature: MsgCreate
     }
     """
     When the message is validated
-    Then expect the error "allowed_classes[0] is not a valid class ID: class ID didn't match the format: expected A00, got foo: parse error: invalid request"
+    Then expect the error "allowed classes [0]: expected format <credit-type-abbrev><class-sequence>: parse error: invalid request"
 
   Scenario Outline: an error is returned if more than one data criteria is provided
     Given the message

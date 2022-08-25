@@ -1,15 +1,18 @@
 package core
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -203,4 +206,45 @@ func (s *bridgeSuite) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	s.batchKey = bKey
+}
+
+func (s *bridgeSuite) AliceAttemptsToBridgeCreditAmountFromTheCreditBatchTo(a, b string) {
+	s.res, s.err = s.k.Bridge(s.ctx, &core.MsgBridge{
+		Owner:     s.alice.String(),
+		Target:    s.target,
+		Recipient: b,
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+	})
+}
+
+func (s *bridgeSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventBridge
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	events := s.sdkCtx.EventManager().Events()
+	eventBridge := events[len(events)-1]
+
+	require.Equal(s.t, proto.MessageName(&event), eventBridge.Type)
+	err = testutil.MatchEvent(&event, eventBridge)
+	require.NoError(s.t, err)
+}
+
+func (s *bridgeSuite) ACreditBatchExists() {
+	s.creditBatchSetup()
+}
+
+func (s *bridgeSuite) BatchHasBatchContractEntryWithContractAddress(a string) {
+	s.contract = a
+	err := s.k.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: s.batchKey,
+		ClassKey: s.classKey,
+		Contract: s.contract,
+	})
+	require.NoError(s.t, err)
 }

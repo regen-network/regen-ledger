@@ -77,7 +77,7 @@ Feature: MsgCancel
     }
     """
     When the message is validated
-    Then expect the error "credits[0]: batch denom cannot be empty: parse error: invalid request"
+    Then expect the error "credits[0]: batch denom: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if credits amount is empty
     Given the message

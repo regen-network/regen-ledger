@@ -45,7 +45,7 @@ func (m *MsgSell) ValidateBasic() error {
 		orderIndex := fmt.Sprintf("orders[%d]", i)
 
 		if err := core.ValidateBatchDenom(order.BatchDenom); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: %s", orderIndex, err)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom: %s", orderIndex, err)
 		}
 
 		if len(order.Quantity) == 0 {

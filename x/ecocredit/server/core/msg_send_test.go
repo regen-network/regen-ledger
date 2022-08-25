@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -11,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -258,6 +260,57 @@ func (s *send) ExpectBatchSupply(a gocuke.DocString) {
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+}
+
+func (s *send) BobsAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.bob = addr
+}
+
+func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmountFrom(a, b string) {
+	s.res, s.err = s.k.Send(s.ctx, &core.MsgSend{
+		Sender:    s.alice.String(),
+		Recipient: s.bob.String(),
+		Credits: []*core.MsgSend_SendCredits{
+			{
+				BatchDenom:             s.batchDenom,
+				RetiredAmount:          a,
+				RetirementJurisdiction: b,
+			},
+		},
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *send) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event core.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *send) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event core.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *send) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *send) projectSetup() {
