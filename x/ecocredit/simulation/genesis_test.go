@@ -6,18 +6,22 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	"github.com/gogo/protobuf/proto"
-	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/stretchr/testify/require"
+	dbm "github.com/tendermint/tm-db"
 
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
@@ -41,14 +45,51 @@ func TestRandomizedGenState(t *testing.T) {
 
 	simulation.RandomizedGenState(&simState)
 
-	var wrapper map[string]json.RawMessage
-	require.NoError(t, json.Unmarshal(simState.GenState[ecocredit.ModuleName], &wrapper))
+	bz := simState.GenState[ecocredit.ModuleName]
 
-	var params core.Params
-	simState.Cdc.MustUnmarshalJSON(wrapper[proto.MessageName(&core.Params{})], &params)
+	db := dbm.NewMemDB()
+	backend := ormtable.NewBackend(ormtable.BackendOptions{
+		CommitmentStore: db,
+		IndexStore:      db,
+	})
 
-	require.Equal(t, params.AllowedClassCreators, []string{"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"})
-	require.Equal(t, params.AllowlistEnabled, true)
-	require.Equal(t, params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(9))))
-	require.Equal(t, params.AllowlistEnabled, true)
+	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+
+	ormCtx := ormtable.WrapContextDefault(backend)
+	coreStore, err := api.NewStateStore(ormdb)
+	require.NoError(t, err)
+
+	marketStore, err := marketapi.NewStateStore(ormdb)
+	require.NoError(t, err)
+
+	jsonSource, err := ormjson.NewRawMessageSource(bz)
+	require.NoError(t, err)
+
+	err = ormdb.ImportJSON(ormCtx, jsonSource)
+	require.NoError(t, err)
+
+	allowListEnabled, err := coreStore.AllowListEnabledTable().Get(ormCtx)
+	require.NoError(t, err)
+
+	require.True(t, allowListEnabled.Enabled)
+
+	creator, err := sdk.AccAddressFromBech32("regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4")
+	require.NoError(t, err)
+
+	_, err = coreStore.AllowedClassCreatorTable().Get(ormCtx, creator)
+	require.NoError(t, err)
+
+	classFees, err := coreStore.ClassFeesTable().Get(ormCtx)
+	require.NoError(t, err)
+	require.Len(t, classFees.Fees, 1)
+
+	require.Equal(t, classFees.Fees[0].Denom, sdk.DefaultBondDenom)
+	require.Equal(t, classFees.Fees[0].Amount, "8")
+
+	allowedDenom, err := marketStore.AllowedDenomTable().Get(ormCtx, sdk.DefaultBondDenom)
+	require.NoError(t, err)
+	require.Equal(t, allowedDenom.BankDenom, sdk.DefaultBondDenom)
+	require.Equal(t, allowedDenom.DisplayDenom, sdk.DefaultBondDenom)
+	require.Equal(t, allowedDenom.Exponent, uint32(18))
 }
