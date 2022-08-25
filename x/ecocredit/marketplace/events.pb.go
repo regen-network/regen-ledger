@@ -256,7 +256,9 @@ func (m *EventAllowDenom) GetDenom() string {
 	return ""
 }
 
-// EventRemoveAllowedDenom is an event emitted when a denom is removed from use in the marketplace.
+// EventRemoveAllowedDenom is an event emitted when a denom is removed from use
+// in the marketplace.
+//
 // Since Revision 1
 type EventRemoveAllowedDenom struct {
 	// denom is the bank denom (e.g. ibc/GLKHDSG423SGS) removed from the list of
