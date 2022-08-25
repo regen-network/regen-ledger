@@ -65,7 +65,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgUpdateClassIssuers issuer iteration")
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassIssuers{
+	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventUpdateClassIssuers{
 		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err

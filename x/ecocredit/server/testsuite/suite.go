@@ -40,7 +40,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
+	fixtureFactory testutil.Factory
 	fixture        testutil.Fixture
 
 	codec             *codec.ProtoCodec
@@ -58,7 +58,7 @@ type IntegrationTestSuite struct {
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
 
-	genesisCtx types.Context
+	genesisCtx sdk.Context
 	blockTime  time.Time
 }
 
@@ -76,7 +76,7 @@ var (
 	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFee}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.Factory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
@@ -92,11 +92,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	// TODO clean up once types.Context merged upstream into sdk.Context
-	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-	s.genesisCtx = types.Context{Context: sdkCtx}
+	s.genesisCtx = sdkCtx
 
 	ecocreditParams := core.DefaultParams()
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
@@ -674,28 +673,28 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "0.0001",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire to an invalid region",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire to an invalid postal code",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire without a jurisdiction",
 			toRetire:      "0.0001",
 			jurisdiction:  "",
 			expectErr:     true,
-			expErrMessage: "jurisdiction cannot be empty",
+			expErrMessage: "jurisdiction: empty string is not allowed",
 		},
 		{
 			name:              "can retire a small amount of credits",
@@ -820,7 +819,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't send to an invalid region",
@@ -828,7 +827,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't send to an invalid postal code",
@@ -836,7 +835,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:                 "can send some",

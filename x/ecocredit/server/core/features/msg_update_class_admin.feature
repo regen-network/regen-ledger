@@ -44,3 +44,19 @@ Feature: Msg/UpdateClassAdmin
       Then expect credit class with class id "C01" and admin bob
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and admin alice
+
+    Scenario: the credit class admin is updated
+      When alice attempts to update class admin with class id "C01" and new admin bob
+      Then expect credit class with class id "C01" and admin bob
+      And expect event with properties
+      """
+      {
+        "class_id": "C01"
+      }
+      """

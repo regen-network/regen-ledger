@@ -1,7 +1,10 @@
 package core
 
 import (
+	sdkerrors "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -12,7 +15,7 @@ func (m *Project) Validate() error {
 	}
 
 	if err := ValidateProjectID(m.Id); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrap(err, "project id") // returns parse error
 	}
 
 	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(m.Admin).String()); err != nil {
@@ -24,7 +27,7 @@ func (m *Project) Validate() error {
 	}
 
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrap(err, "jurisdiction") // returns parse error
 	}
 
 	if len(m.Metadata) > MaxMetadataLength {

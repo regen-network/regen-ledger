@@ -237,3 +237,17 @@ Feature: Msg/Create
       """
 
     # no failing scenario - response should always be empty when message execution fails
+
+  Rule: Event is emitted
+
+    Scenario: EventCreate is emitted
+      Given a credit type with abbreviation "C" and precision "6"
+      And alice's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      When alice attempts to create a basket with name "NCT"
+      Then expect event with properties
+      """
+      {
+        "curator": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "basket_denom": "eco.uC.NCT"
+      }
+      """

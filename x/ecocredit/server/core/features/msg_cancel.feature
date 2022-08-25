@@ -106,3 +106,28 @@ Feature: Msg/Cancel
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+      Scenario: EventCancel is emitted
+        Given a credit batch with denom "C01-001-20200101-20210101-001"
+        And alice's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
+        And alice owns tradable credit amount "10"
+        And the batch supply
+        """
+        {
+          "retired_amount": "0",
+          "tradable_amount": "10",
+          "cancelled_amount": "0"
+        }
+        """
+        When alice attempts to cancel credit amount "10" with reason "transferring credits to another registry"
+        Then expect event with properties
+        """
+        {
+          "owner": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "amount": "10",
+          "reason": "transferring credits to another registry"
+        }
+        """

@@ -16,11 +16,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -197,12 +199,12 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 		return err
 	}
 
-	basketStore, err := basketapi.NewStateStore(ormdb)
+	basketStore, err := basketv1.NewStateStore(ormdb)
 	if err != nil {
 		return err
 	}
 
-	bBalanceItr, err := basketStore.BasketBalanceTable().List(ormCtx, basketapi.BasketBalancePrimaryKey{})
+	bBalanceItr, err := basketStore.BasketBalanceTable().List(ormCtx, basketv1.BasketBalancePrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -244,6 +246,8 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 
 func validateMsg(m proto.Message) error {
 	switch m.(type) {
+
+	// ecocredit core
 	case *api.CreditType:
 		msg := &core.CreditType{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
@@ -255,21 +259,18 @@ func validateMsg(m proto.Message) error {
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
-
 		return msg.Validate()
 	case *api.ClassIssuer:
 		msg := &core.ClassIssuer{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
-
 		return msg.Validate()
 	case *api.Project:
 		msg := &core.Project{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
-
 		return msg.Validate()
 	case *api.Batch:
 		msg := &core.Batch{}
@@ -315,6 +316,46 @@ func validateMsg(m proto.Message) error {
 		return msg.Validate()
 	case *api.BatchContract:
 		msg := &core.BatchContract{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+
+	// basket submodule
+	case *basketv1.Basket:
+		msg := &basket.Basket{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *basketv1.BasketClass:
+		msg := &basket.BasketClass{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *basketv1.BasketBalance:
+		msg := &basket.BasketBalance{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+
+	// marketplace submodule
+	case *marketplacev1.SellOrder:
+		msg := &marketplace.SellOrder{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *marketplacev1.AllowedDenom:
+		msg := &marketplace.AllowedDenom{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *marketplacev1.Market:
+		msg := &marketplace.Market{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}

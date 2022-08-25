@@ -26,11 +26,12 @@ func (m *MsgSealBatch) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
 	}
+
 	if err := ValidateBatchDenom(m.BatchDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("batch denom: %s", err)
 	}
 
-	return ValidateBatchDenom(m.BatchDenom)
+	return nil
 }
 
 // GetSigners returns the expected signers for MsgSealBatch.

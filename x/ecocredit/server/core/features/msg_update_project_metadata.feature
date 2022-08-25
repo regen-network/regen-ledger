@@ -53,3 +53,19 @@ Feature: Msg/UpdateProjectMetadata
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01"
+      And a project with project id "C01-001" and admin alice
+
+    Scenario: EventUpdateProjectMetadata is emitted
+      When alice attempts to update project metadata with project id "C01-001"
+      Then expect event with properties
+      """
+      {
+        "project_id": "C01-001"
+      }
+      """

@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -37,7 +36,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, err
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassMetadata{
+	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventUpdateClassMetadata{
 		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
