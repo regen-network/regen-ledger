@@ -67,9 +67,4 @@ Feature: Msg/AddClassCreator
       }
       """
       Then expect no error
-      And expect class creator with properties
-      """
-      {
-        "creator":"regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
-      }
-      """
+      And expect "regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa" to exist in the class creator allowlist
