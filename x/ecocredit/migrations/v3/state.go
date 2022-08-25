@@ -10,7 +10,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// MigrateState performs in-place store migrations from v4.0 to v5.0.
+// MigrateState performs in-place store migrations from ConsensusVersion 2 to 3.
 func MigrateState(sdkCtx sdk.Context, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	// TODO: migrate core params
 
