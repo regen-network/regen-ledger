@@ -30,7 +30,7 @@ func (k Keeper) RemoveClassCreator(ctx context.Context, req *core.MsgRemoveClass
 	}
 
 	if err := k.stateStore.AllowedClassCreatorTable().Delete(ctx, classCreator); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to remove %s from class creator list", req.Creator)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to remove %s from class creator list: %s", req.Creator, err.Error())
 	}
 
 	return &core.MsgRemoveClassCreatorResponse{}, nil

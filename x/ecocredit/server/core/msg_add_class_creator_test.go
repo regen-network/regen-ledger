@@ -18,7 +18,7 @@ type addClassCreator struct {
 }
 
 func TestAddClassCreator(t *testing.T) {
-	gocuke.NewRunner(t, &addClassCreator{}).Path("./features/msg_add_class_creators.feature").Run()
+	gocuke.NewRunner(t, &addClassCreator{}).Path("./features/msg_add_class_creator.feature").Run()
 }
 
 func (s *addClassCreator) Before(t gocuke.TestingT) {
@@ -50,13 +50,8 @@ func (s *addClassCreator) AliceAttemptsToAddClassCreatorWithProperties(a gocuke.
 	_, s.err = s.k.AddClassCreator(s.ctx, msg)
 }
 
-func (s *addClassCreator) ExpectClassCreatorWithProperties(a gocuke.DocString) {
-	var msg *core.MsgAddClassCreator
-
-	err := json.Unmarshal([]byte(a.Content), &msg)
-	require.NoError(s.t, err)
-
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+func (s *addClassCreator) ExpectToExistInTheClassCreatorAllowlist(a string) {
+	creator, err := sdk.AccAddressFromBech32(a)
 	require.NoError(s.t, err)
 	found, err := s.stateStore.AllowedClassCreatorTable().Has(s.ctx, creator)
 	require.NoError(s.t, err)

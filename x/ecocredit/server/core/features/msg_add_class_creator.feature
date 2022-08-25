@@ -8,7 +8,7 @@ Feature: Msg/AddClassCreator
   Rule: The class creator does not exist
 
     Scenario: The class creator does not exist
-      When alice attempts to add class creators with properties
+      When alice attempts to add class creator with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -18,7 +18,7 @@ Feature: Msg/AddClassCreator
       Then expect no error
   
     Scenario: The class creator already exist
-      Given class creators with properties
+      Given class creator with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -51,7 +51,7 @@ Feature: Msg/AddClassCreator
       """
       {
         "authority":"regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
-        "creators":"regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
+        "creator":"regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
       }
       """
       Then expect error contains "expected gov account as only signer for proposal message"
@@ -59,7 +59,7 @@ Feature: Msg/AddClassCreator
   Rule: The class creator is added
 
     Scenario: The class creator is added
-      When alice attempts to add class creators with properties
+      When alice attempts to add class creator with properties
       """
       {
         "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -67,9 +67,4 @@ Feature: Msg/AddClassCreator
       }
       """
       Then expect no error
-      And expect class creator with properties
-      """
-      {
-        "creator":"regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa"
-      }
-      """
+      And expect "regen156d26rl52y3wl865pr5x9q2vqetuw9kf0642sa" to exist in the class creator allowlist

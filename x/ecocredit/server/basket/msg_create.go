@@ -33,6 +33,11 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
+	allowedFees = allowedFees.Sort()
+	if err := allowedFees.Validate(); err != nil {
+		return nil, err
+	}
+
 	// only check and charge fee if allowed fees is not empty
 	if len(allowedFees) > 0 {
 
