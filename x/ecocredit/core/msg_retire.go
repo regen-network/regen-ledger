@@ -38,7 +38,7 @@ func (m *MsgRetire) ValidateBasic() error {
 	}
 
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("jurisdiction: %s", err)
 	}
 
 	return nil

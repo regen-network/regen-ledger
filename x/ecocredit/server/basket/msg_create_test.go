@@ -1,7 +1,8 @@
 //nolint:revive,stylecheck
-package basket_test
+package basket
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -14,6 +15,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -95,6 +97,12 @@ func (s *createSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string
 		Precision:    s.creditTypePrecision,
 	})
 	require.NoError(s.t, err)
+}
+
+func (s *createSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *createSuite) ACreditClassWithId(a string) {
@@ -220,6 +228,18 @@ func (s *createSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, res, s.res)
+}
+
+func (s *createSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event basket.EventCreate
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *createSuite) createExpectCalls() {

@@ -1,6 +1,8 @@
 package basket
 
 import (
+	sdkerrors "cosmossdk.io/errors"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -12,7 +14,7 @@ func (m *BasketClass) Validate() error {
 	}
 
 	if err := core.ValidateClassID(m.ClassId); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrap(err, "class id") // returns parse error
 	}
 
 	return nil

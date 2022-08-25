@@ -49,4 +49,19 @@ Feature: Msg/UpdateClassMetadata
       regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
       """
 
-    # no failing scenario - state transitions only occur upon successful message execution
+      # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and admin alice
+
+    Scenario: EventUpdateClassMetadata is emitted
+      When alice updates the class metadata
+      Then expect event with properties
+      """
+      {
+        "class_id": "C01"
+      }
+      """

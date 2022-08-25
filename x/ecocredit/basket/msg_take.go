@@ -28,12 +28,8 @@ func (m MsgTake) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
 	}
 
-	if len(m.BasketDenom) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("basket denom cannot be empty")
-	}
-
 	if err := ValidateBasketDenom(m.BasketDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("basket denom: %s", err)
 	}
 
 	if len(m.Amount) == 0 {
@@ -58,13 +54,13 @@ func (m MsgTake) ValidateBasic() error {
 		// retirement_location is deprecated but still supported
 		if len(m.RetirementLocation) != 0 {
 			if err := core.ValidateJurisdiction(m.RetirementLocation); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+				return sdkerrors.ErrInvalidRequest.Wrapf("retirement location: %s", err)
 			}
 		}
 
 		if len(m.RetirementJurisdiction) != 0 {
 			if err := core.ValidateJurisdiction(m.RetirementJurisdiction); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err)
 			}
 		}
 	}

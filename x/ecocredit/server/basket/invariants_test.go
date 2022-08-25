@@ -1,4 +1,4 @@
-package basket_test
+package basket
 
 import (
 	"testing"
@@ -9,7 +9,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 type BasketWithSupply struct {
@@ -69,7 +68,7 @@ func TestBasketSupplyInvarint(t *testing.T) {
 	for _, tc := range tcs {
 		tc.bank.GetSupply(s.sdkCtx, "abc")
 
-		msg, _ := basket.SupplyInvariant(s.sdkCtx, store, tc.bank, basketBalances)
+		msg, _ := SupplyInvariant(s.sdkCtx, store, tc.bank, basketBalances)
 		if tc.msg != "" {
 			require.Contains(msg, tc.msg, tc.name)
 		} else {

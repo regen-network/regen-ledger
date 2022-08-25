@@ -30,7 +30,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 	}
 
 	if err := ValidateClassID(m.ClassId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
 
 	if len(m.Metadata) > MaxMetadataLength {
@@ -38,7 +38,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 	}
 
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("jurisdiction: %s", err)
 	}
 
 	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIDLength {

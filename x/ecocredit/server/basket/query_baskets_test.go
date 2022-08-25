@@ -1,4 +1,4 @@
-package basket_test
+package basket
 
 import (
 	"testing"

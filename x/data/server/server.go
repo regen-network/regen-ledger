@@ -38,6 +38,7 @@ func (s serverImpl) QueryServer() data.QueryServer {
 	return s
 }
 
+//nolint:revive
 func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
 	hasher, err := hasher.NewHasher()
 	if err != nil {

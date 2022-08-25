@@ -66,7 +66,7 @@ Feature: MsgCreateProject
     }
     """
     When the message is validated
-    Then expect the error "class id cannot be empty: parse error: invalid request"
+    Then expect the error "class id: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if class id is not formatted
     Given the message
@@ -77,7 +77,7 @@ Feature: MsgCreateProject
     }
     """
     When the message is validated
-    Then expect the error "class ID didn't match the format: expected A00, got foo: parse error: invalid request"
+    Then expect the error "class id: expected format <credit-type-abbrev><class-sequence>: parse error: invalid request"
 
   Scenario: an error is returned if metadata is exceeds 256 characters
     Given the message
@@ -101,7 +101,7 @@ Feature: MsgCreateProject
     }
     """
     When the message is validated
-    Then expect the error "jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+    Then expect the error "jurisdiction: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if jurisdiction is not formatted
     Given the message
@@ -114,7 +114,7 @@ Feature: MsgCreateProject
     }
     """
     When the message is validated
-    Then expect the error "invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+    Then expect the error "jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
 
   Scenario: an error is returned if reference id is exceeds 32 characters
     Given the message

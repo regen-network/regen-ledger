@@ -2,6 +2,7 @@
 package core
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -10,6 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -100,4 +102,16 @@ func (s *updateProjectAdmin) ExpectProjectWithProjectIdAndAdminBob(a string) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, s.bob.Bytes(), project.Admin)
+}
+
+func (s *updateProjectAdmin) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventUpdateProjectAdmin
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

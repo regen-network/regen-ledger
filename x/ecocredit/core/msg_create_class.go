@@ -53,7 +53,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if err := ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbrev: %s", err)
 	}
 
 	if m.Fee != nil {
