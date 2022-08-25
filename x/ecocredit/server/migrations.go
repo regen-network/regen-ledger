@@ -3,8 +3,7 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
-	v4 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v4"
+	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
 )
 
 // Migrator is a struct for handling in-place store migrations.
@@ -25,7 +24,7 @@ func NewMigrator(keeper Keeper, legacySubspace paramtypes.Subspace) Migrator {
 func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 
 	coreStore, basketStore, _ := m.keeper.GetStateStores()
-	if err := v4.MigrateState(ctx, coreStore, basketStore, m.legacySubspace); err != nil {
+	if err := v3.MigrateState(ctx, coreStore, basketStore, m.legacySubspace); err != nil {
 		return err
 	}
 

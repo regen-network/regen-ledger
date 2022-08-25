@@ -1,4 +1,4 @@
-package v4
+package v3
 
 import (
 	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"

@@ -1,4 +1,4 @@
-package v4_test
+package v3_test
 
 import (
 	"testing"
@@ -20,7 +20,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	v4 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v4"
+	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
 )
 
 func TestMigrations(t *testing.T) {
@@ -59,7 +59,7 @@ func TestMigrations(t *testing.T) {
 	basketStore, err := basketapi.NewStateStore(ormdb)
 	assert.NilError(t, err)
 
-	assert.NilError(t, v4.MigrateState(sdkCtx, coreStore, basketStore, paramStore))
+	assert.NilError(t, v3.MigrateState(sdkCtx, coreStore, basketStore, paramStore))
 
 	// verify basket params migrated to orm table
 	basketFees, err := basketStore.BasketFeesTable().Get(sdkCtx)
