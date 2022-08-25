@@ -65,7 +65,7 @@ func NewServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	coreStore, basketStore, marketStore := getStateStores(s.db)
 	s.stateStore = coreStore
 	s.basketStore = basketStore
-	s.CoreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr, authority)
+	s.CoreKeeper = core.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, authority)
 	s.BasketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr, authority)
 	s.MarketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace, authority)
 

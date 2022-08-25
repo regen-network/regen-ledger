@@ -11,6 +11,51 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 )
 
+func TestConvertCoinsToProtoCoins(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    sdk.Coins
+		expected []*basev1beta1.Coin
+	}{
+		{
+			"empty coins",
+			sdk.NewCoins(),
+			[]*basev1beta1.Coin{},
+		},
+		{
+			"single coin",
+			sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(10000))),
+			[]*basev1beta1.Coin{
+				{
+					Denom:  "uregen",
+					Amount: "10000",
+				},
+			},
+		},
+		{
+			"multiple coins",
+			sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(10000)), sdk.NewCoin("uatom", math.NewInt(2e7))),
+			[]*basev1beta1.Coin{
+				{
+					Denom:  "uatom",
+					Amount: "20000000",
+				},
+				{
+					Denom:  "uregen",
+					Amount: "10000",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := types.CoinsToProtoCoins(tc.input)
+			assert.ElementsMatch(t, result, tc.expected)
+		})
+	}
+}
+
 func TestConvertProtoCoinsToCoins(t *testing.T) {
 	testCases := []struct {
 		name     string
