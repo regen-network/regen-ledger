@@ -35,7 +35,7 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 }
 
 func (k Keeper) sendEcocredits(sdkCtx sdk.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
-	ctx := sdkCtx.Context()
+	ctx := sdk.WrapSDKContext(sdkCtx)
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", credit.BatchDenom, err.Error())
