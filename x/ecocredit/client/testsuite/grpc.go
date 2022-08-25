@@ -562,3 +562,27 @@ func (s *IntegrationTestSuite) TestCreditType() {
 	require.Equal(res.CreditType.Abbreviation, "C")
 	require.Equal(res.CreditType.Precision, uint32(6))
 }
+
+func (s *IntegrationTestSuite) TestAllBalances() {
+	require := s.Require()
+
+	url := fmt.Sprintf("%s/%s/all-balances?pagination.countTotal=true", s.val.APIAddress, coreRoute)
+	resp, err := rest.GetRequest(url)
+	require.NoError(err)
+
+	var res core.QueryAllBalancesResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.NotEmpty(res.Balances)
+	require.NotZero(res.Pagination.Total)
+
+	url = fmt.Sprintf("%s/%s/balances?pagination.countTotal=true", s.val.APIAddress, coreRoute)
+	resp, err = rest.GetRequest(url)
+	require.NoError(err)
+
+	res = core.QueryAllBalancesResponse{}
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.NotEmpty(res.Balances)
+	require.NotZero(res.Pagination.Total)
+}
