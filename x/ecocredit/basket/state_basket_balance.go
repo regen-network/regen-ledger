@@ -1,6 +1,8 @@
 package basket
 
 import (
+	sdkerrors "cosmossdk.io/errors"
+
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -13,7 +15,7 @@ func (m *BasketBalance) Validate() error {
 	}
 
 	if err := core.ValidateBatchDenom(m.BatchDenom); err != nil {
-		return err // returns parse error
+		return sdkerrors.Wrap(err, "batch denom") // returns parse error
 	}
 
 	if _, err := math.NewNonNegativeDecFromString(m.Balance); err != nil {

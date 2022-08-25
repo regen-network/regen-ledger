@@ -120,3 +120,18 @@ Feature: CreateProject
       """
 
     # no failing scenario - response should always be empty when message execution fails
+
+  Rule: event is emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and issuer alice
+
+    Scenario: EventCreateProject is emitted
+      When alice attempts to create a project with class id "C01"
+      Then expect event with properties
+      """
+      {
+        "project_id": "C01-001"
+      }
+      """

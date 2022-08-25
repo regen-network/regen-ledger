@@ -47,8 +47,7 @@ Feature: Basket
     }
     """
     When the basket is validated
-    # TODO: #1245
-    Then expect the error " is not a valid basket denom"
+    Then expect the error "basket denom: empty string is not allowed: parse error"
 
   Scenario: an error is returned if basket denom is not formatted
     Given the basket
@@ -59,7 +58,7 @@ Feature: Basket
     }
     """
     When the basket is validated
-    Then expect the error "foo is not a valid basket denom"
+    Then expect the error "basket denom: expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error"
 
   Scenario: an error is returned if name is empty
     Given the basket
@@ -70,8 +69,7 @@ Feature: Basket
     }
     """
     When the basket is validated
-    # TODO: #1245
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long"
+    Then expect the error "name: empty string is not allowed: parse error"
 
   Scenario: an error is returned if name is not formatted
     Given the basket
@@ -83,8 +81,7 @@ Feature: Basket
     }
     """
     When the basket is validated
-    # TODO: #1245
-    Then expect the error "name must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long"
+    Then expect the error "name: must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error"
 
   Scenario: an error is returned if credit type is empty
     Given the basket
@@ -96,7 +93,7 @@ Feature: Basket
     }
     """
     When the basket is validated
-    Then expect the error "credit type abbreviation cannot be empty: parse error"
+    Then expect the error "credit type abbrev: empty string is not allowed: parse error"
 
   Scenario: an error is returned if credit type is not formatted
     Given the basket
@@ -109,7 +106,7 @@ Feature: Basket
     }
     """
     When the basket is validated
-    Then expect the error "credit type abbreviation must be 1-3 uppercase latin letters: got 1: parse error"
+    Then expect the error "credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error"
 
   Scenario: an error is returned if curator is empty
     Given the basket

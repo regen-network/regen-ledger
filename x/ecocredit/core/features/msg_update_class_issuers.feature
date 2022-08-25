@@ -71,7 +71,7 @@ Feature: MsgUpdateClassIssuers
     }
     """
     When the message is validated
-    Then expect the error "class id cannot be empty: parse error: invalid request"
+    Then expect the error "class id: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if class id is not formatted
     Given the message
@@ -82,7 +82,7 @@ Feature: MsgUpdateClassIssuers
     }
     """
     When the message is validated
-    Then expect the error "class ID didn't match the format: expected A00, got foo: parse error: invalid request"
+    Then expect the error "class id: expected format <credit-type-abbrev><class-sequence>: parse error: invalid request"
 
   Scenario: an error is returned if new issuers and remove issuers is empty
     Given the message

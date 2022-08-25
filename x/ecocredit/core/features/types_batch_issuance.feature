@@ -95,7 +95,7 @@ Feature: BatchIssuance
     }
     """
     When the batch issuance is validated
-    Then expect the error "retirement jurisdiction: jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+    Then expect the error "retirement jurisdiction: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if issuance retired amount is positive and jurisdiction is not formatted
     Given the batch issuance
@@ -107,4 +107,4 @@ Feature: BatchIssuance
     }
     """
     When the batch issuance is validated
-    Then expect the error "retirement jurisdiction: invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+    Then expect the error "retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"

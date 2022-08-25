@@ -36,6 +36,7 @@ type serverImpl struct {
 	marketplaceStore marketApi.StateStore
 }
 
+//nolint:revive
 func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{

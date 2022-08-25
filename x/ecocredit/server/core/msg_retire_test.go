@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -11,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -78,6 +80,12 @@ func (s *retire) ACreditBatchWithDenom(a string) {
 	require.NoError(s.t, err)
 
 	s.batchKey = bKey
+}
+
+func (s *retire) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *retire) ACreditBatchFromCreditClassWithCreditType(a string) {
@@ -215,6 +223,33 @@ func (s *retire) ExpectBatchSupply(a gocuke.DocString) {
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+}
+
+func (s *retire) AliceAttemptsToRetireCreditAmountFrom(a string, b string) {
+	s.res, s.err = s.k.Retire(s.ctx, &core.MsgRetire{
+		Owner: s.alice.String(),
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+		Jurisdiction: b,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *retire) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Owner = s.alice.String()
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *retire) projectSetup() {

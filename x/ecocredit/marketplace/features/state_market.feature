@@ -29,7 +29,7 @@ Feature: Market
     }
     """
     When the market is validated
-    Then expect the error "credit type abbreviation cannot be empty: parse error"
+    Then expect the error "credit type abbrev: empty string is not allowed: parse error"
 
   Scenario: an error is returned if credit type is not formatted
     Given the market
@@ -40,7 +40,7 @@ Feature: Market
     }
     """
     When the market is validated
-    Then expect the error "credit type abbreviation must be 1-3 uppercase latin letters: got 1: parse error"
+    Then expect the error "credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error"
 
   Scenario: an error is returned if bank denom is empty
     Given the market

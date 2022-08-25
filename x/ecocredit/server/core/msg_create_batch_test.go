@@ -8,15 +8,15 @@ import (
 	"testing"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -32,6 +32,7 @@ type createBatchSuite struct {
 	tradableAmount   string
 	startDate        *time.Time
 	endDate          *time.Time
+	originTx         *core.OriginTx
 	res              *core.MsgCreateBatchResponse
 	err              error
 }
@@ -395,6 +396,102 @@ func (s *createBatchSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, &res, s.res)
+}
+
+func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event core.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	eventRetire, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, eventRetire)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
+	var event core.EventMint
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event core.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Sender = s.k.moduleAddress.String()
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom(a, b, c, d string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:              c,
+				RetiredAmount:          b,
+				RetirementJurisdiction: d,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a string, b string, c string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      c,
+				TradableAmount: b,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocString) {
+	var event core.EventCreateBatch
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
+}
+
+func (s *createBatchSuite) OriginTx(a gocuke.DocString) {
+	var ot core.OriginTx
+	err := json.Unmarshal([]byte(a.Content), &ot)
+	require.NoError(s.t, err)
+	s.originTx = &ot
 }
 
 func (s *createBatchSuite) getProjectSequence(projectID string) uint64 {

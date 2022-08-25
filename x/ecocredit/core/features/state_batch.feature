@@ -74,7 +74,7 @@ Feature: Batch
     }
     """
     When the batch is validated
-    Then expect the error "batch denom cannot be empty: parse error"
+    Then expect the error "denom: empty string is not allowed: parse error"
 
   Scenario: an error is returned if denom is not formatted
     Given the batch
@@ -87,7 +87,7 @@ Feature: Batch
     }
     """
     When the batch is validated
-    Then expect the error "invalid batch denom: expected format A00-000-00000000-00000000-000: parse error"
+    Then expect the error "denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error"
 
   Scenario: an error is returned if metadata exceeds 256 characters
     Given the batch
