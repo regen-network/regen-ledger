@@ -8,6 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -24,13 +25,23 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	if err := k.assertCanCreateClass(sdkCtx, adminAddress); err != nil {
+	if err := k.assertCanCreateClass(goCtx, adminAddress); err != nil {
 		return nil, err
 	}
 
-	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-	var allowedFees sdk.Coins
-	k.paramsKeeper.Get(sdkCtx, core.KeyCreditClassFee, &allowedFees)
+	var fees *api.ClassFees
+	fees, err = k.stateStore.ClassFeesTable().Get(goCtx)
+	if err != nil {
+		if !ormerrors.NotFound.Is(err) {
+			return nil, err
+		}
+		fees = &api.ClassFees{}
+	}
+
+	allowedFees, ok := types.ProtoCoinsToCoins(fees.Fees)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidType.Wrap("credit class fee")
+	}
 
 	// only check and charge fee if allowed fees is not empty
 	if allowedFees.Len() > 0 {
@@ -143,28 +154,22 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	return &core.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
-func (k Keeper) assertCanCreateClass(sdkCtx sdk.Context, adminAddress sdk.AccAddress) error {
-	var allowListEnabled bool
-	k.paramsKeeper.Get(sdkCtx, core.KeyAllowlistEnabled, &allowListEnabled)
-	if allowListEnabled {
-		var allowList []string
-		k.paramsKeeper.Get(sdkCtx, core.KeyAllowedClassCreators, &allowList)
-		if !k.isCreatorAllowListed(sdkCtx, allowList, adminAddress) {
-			return sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
+func (k Keeper) assertCanCreateClass(ctx context.Context, adminAddress sdk.AccAddress) error {
+	allowListEnabled, err := k.stateStore.AllowListEnabledTable().Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	if allowListEnabled.Enabled {
+		_, err := k.stateStore.AllowedClassCreatorTable().Get(ctx, adminAddress)
+		if err != nil {
+			if ormerrors.NotFound.Is(err) {
+				return sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
+			}
+			return err
 		}
 	}
 	return nil
-}
-
-func (k Keeper) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.AccAddress) bool {
-	for _, addr := range allowlist {
-		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
-		if designer.Equals(allowListedAddr) {
-			return true
-		}
-		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateClass address iteration")
-	}
-	return false
 }
 
 func (k Keeper) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress, creditClassFee sdk.Coins) error {
