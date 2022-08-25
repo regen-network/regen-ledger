@@ -5,6 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// ProtoCoinsToCoins constructs a new gogoproto coin set from protobuf coin set.
+// It will panic if the amount is negative or if the denomination is invalid.
 func ProtoCoinsToCoins(coins []*basev1beta1.Coin) (sdk.Coins, bool) {
 	result := make([]sdk.Coin, 0, len(coins))
 	for _, coin := range coins {
