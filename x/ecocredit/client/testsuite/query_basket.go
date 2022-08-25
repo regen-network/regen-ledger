@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -227,4 +229,20 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBasketFees() {
+	require := s.Require()
+
+	clientCtx := s.val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryBasketFeesCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
+
+	var res basket.QueryBasketFeesResponse
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.NotEmpty(res.Fees)
+	require.Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), math.NewInt(10))
 }

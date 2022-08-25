@@ -27,8 +27,8 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, accountKeeper := setup(t)
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper)
+	ff, _, bankKeeper, accountKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, bankKeeper, accountKeeper)
 	suite.Run(t, s)
 }
 
