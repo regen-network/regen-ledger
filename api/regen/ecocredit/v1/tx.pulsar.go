@@ -23305,9 +23305,7 @@ func (*MsgRemoveClassCreatorResponse) Descriptor() ([]byte, []int) {
 }
 
 // MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
-// type. Since
-//
-// Revision 1
+// type. Since Revision 1
 type MsgToggleCreditClassAllowlist struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -23354,9 +23352,7 @@ func (x *MsgToggleCreditClassAllowlist) GetEnabled() bool {
 }
 
 // MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist
-// response type.
-//
-// Since Revision 1
+// response type. Since Revision 1
 type MsgToggleCreditClassAllowlistResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

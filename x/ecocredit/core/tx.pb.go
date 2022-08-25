@@ -2295,9 +2295,7 @@ func (m *MsgRemoveClassCreatorResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRemoveClassCreatorResponse proto.InternalMessageInfo
 
 // MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
-// type. Since
-//
-// Revision 1
+// type. Since Revision 1
 type MsgToggleCreditClassAllowlist struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2353,9 +2351,7 @@ func (m *MsgToggleCreditClassAllowlist) GetEnabled() bool {
 }
 
 // MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist
-// response type.
-//
-// Since Revision 1
+// response type. Since Revision 1
 type MsgToggleCreditClassAllowlistResponse struct {
 }
 
@@ -2756,14 +2752,10 @@ type MsgClient interface {
 	// ToggleCreditClassAllowlist is a governance method that toggles the network
 	// allowlist to on or off. when on, the class creator allowlist is used to
 	// enforce which addresses may create classes. when off, any address may
-	// create classes.
-	//
-	// Since Revision 1
+	// create classes. Since Revision 1
 	ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggleCreditClassAllowlist, opts ...grpc.CallOption) (*MsgToggleCreditClassAllowlistResponse, error)
 	// UpdateClassFees is a governance method that allows for the addition and
-	// removal of fees to be used for the class creation fee.
-	//
-	// Since Revision 1
+	// removal of fees to be used for the class creation fee. Since Revision 1
 	UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error)
 }
 
@@ -3051,14 +3043,10 @@ type MsgServer interface {
 	// ToggleCreditClassAllowlist is a governance method that toggles the network
 	// allowlist to on or off. when on, the class creator allowlist is used to
 	// enforce which addresses may create classes. when off, any address may
-	// create classes.
-	//
-	// Since Revision 1
+	// create classes. Since Revision 1
 	ToggleCreditClassAllowlist(context.Context, *MsgToggleCreditClassAllowlist) (*MsgToggleCreditClassAllowlistResponse, error)
 	// UpdateClassFees is a governance method that allows for the addition and
-	// removal of fees to be used for the class creation fee.
-	//
-	// Since Revision 1
+	// removal of fees to be used for the class creation fee. Since Revision 1
 	UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error)
 }
 
