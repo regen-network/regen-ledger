@@ -7,21 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### General
+
+#### Changed
+
+- [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
+
 ### app
 
 #### Added
 
-- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to stable config
+- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to app configuration
 
 #### Changed
 
 - [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Move application entry point to root directory
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1350) Migrate from custom module manager to sdk module manager
 
 #### Removed
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
 - [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Remove experimental app configuration
-- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove unused RegenApp functions for setting custom keepers.
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove unused RegenApp functions for setting custom keepers
 
 ### types
 
@@ -31,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 
-- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Refactor fixture factory to use baseApp routing and cosmos sdk module manager
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Refactor fixture factory to use baseApp routing and Cosmos SDK module manager
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Rename FixtureFactory to Factory to prevent package stuttering
 
 
@@ -40,6 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - [#1351](https://github.com/regen-network/regen-ledger/pull/1351) Add `signer` option to transaction messages
+- [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `DataId` state validation checks
+- [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `DataAnchor` state validation checks
+- [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `DataAttestor` state validation checks
+- [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `Resolver` state validation checks
+- [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `DataResolver` state validation checks
 
 ### x/ecocredit
 
@@ -56,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1342) Add `AddAllowedDenom` msg-based gov proposal
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddCreditType` msg-based gov proposal
 - [#1346](https://github.com/regen-network/regen-ledger/pull/1346) Add `RemoveAllowedDenom` msg-based gov proposal
-- [#1349](https://github.com/regen-network/regen-ledger/pull/1349) Add `UpdateBasketFees` imsg-based gov proposal
+- [#1349](https://github.com/regen-network/regen-ledger/pull/1349) Add `UpdateBasketFees` msg-based gov proposal
 - [#1351](https://github.com/regen-network/regen-ledger/pull/1351) Add `signer` option to transaction messages
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchBalance` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchContract` state validation checks
