@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.v1;
 
+import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -320,4 +321,42 @@ message BatchContract {
   // executed when creating the transaction. This address will be used when
   // sending credits back to the source chain.
   string contract = 3;
+}
+
+// AllowedClassCreator is an allowed credit class creator.
+message AllowedClassCreator {
+  // This table is controlled via governance.
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 13,
+    primary_key : {fields : "address"}
+  };
+
+  // address is the address that is allowed to create credit classes
+  bytes address = 1;
+}
+
+// AllowListEnabled determines if the credit class creator allowlist is enabled.
+// When set to true, only the addresses in the AllowedClassCreator table can
+// create credit classes. When set to false, any address is free to create
+// credit classes.
+message AllowListEnabled {
+  // This table is controlled via governance.
+  option (cosmos.orm.v1alpha1.singleton) = {
+    id : 14
+  };
+
+  // enabled is whether or not the allow list is enabled.
+  bool enabled = 1;
+}
+
+// ClassFees is a list of coins that may be used as the fee
+// for credit class creation.
+message ClassFees {
+  // This table is controlled via governance.
+  option (cosmos.orm.v1alpha1.singleton) = {
+    id : 15
+  };
+
+  // fees is the fee required to create a credit class.
+  repeated cosmos.base.v1beta1.Coin fees = 1;
 }

@@ -10,12 +10,21 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func (app *RegenApp) registerUpgradeHandlers() {
 	upgradeName := "v5.0"
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+
+			// set regen module consensus version
+			fromVM[ecocredit.ModuleName] = 2
+			fromVM[data.ModuleName] = 1
+			app.UpgradeKeeper.SetModuleVersionMap(ctx, fromVM)
+
 			// transfer module consensus version has been bumped to 2
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		})
