@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -10,6 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -35,6 +37,12 @@ func (s *attestSuite) TheContentHash(a gocuke.DocString) {
 	s.ch = &data.ContentHash{}
 	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
+}
+
+func (s *attestSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
@@ -116,6 +124,18 @@ func (s *attestSuite) TheAttestorEntryForBobExistsWithTimestamp(a string) {
 	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataID, s.bob)
 	require.NoError(s.t, err)
 	require.Equal(s.t, attestTime, dataAttestor.Timestamp.AsTime())
+}
+
+func (s *attestSuite) EventIsEmittedWithProperties(a gocuke.DocString) {
+	var event data.EventAttest
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *attestSuite) getDataID() []byte {

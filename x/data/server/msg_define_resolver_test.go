@@ -2,6 +2,7 @@
 package server
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -10,6 +11,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -31,9 +34,9 @@ func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
-	_, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
-		Manager:     s.alice.String(),
-		ResolverUrl: a,
+	err := s.server.stateStore.ResolverTable().Insert(s.ctx, &api.Resolver{
+		Url:     a,
+		Manager: s.alice,
 	})
 	require.NoError(s.t, err)
 }
@@ -64,4 +67,16 @@ func (s *defineResolverSuite) ExpectTheResolverWithIdAndUrlAndManagerBob(a strin
 
 func (s *defineResolverSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
+}
+
+func (s *defineResolverSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event data.EventDefineResolver
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
