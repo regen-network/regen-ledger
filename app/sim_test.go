@@ -1,3 +1,5 @@
+//go:build !nosimulation
+
 package app
 
 import (
