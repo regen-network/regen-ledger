@@ -1,4 +1,4 @@
-name: Sims Nightly
+name: Sims-Nightly
 
 # **What it does**: Runs simulations (after-import, fast) on a
 # set schedule.

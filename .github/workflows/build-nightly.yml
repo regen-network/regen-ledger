@@ -1,4 +1,4 @@
-name: Build Nightly
+name: Build-Nightly
 
 # **What it does**: Builds the regen application on a set
 # schedule using the goreleaser configuration.
