@@ -61,3 +61,15 @@ Feature: Msg/CancelSellOrder
       Then expect no sell order with id "1"
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Scenario: EventCancelSellOrder is emitted
+      Given alice created a sell order with id "1"
+      When alice attempts to cancel the sell order with id "1"
+      Then expect event with properties
+      """
+      {
+        "sell_order_id": 1
+      }
+      """

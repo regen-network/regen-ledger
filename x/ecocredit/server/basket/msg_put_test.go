@@ -1,6 +1,7 @@
-package basket_test
+package basket
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -11,12 +12,14 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	sdkMath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -45,11 +48,11 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addrs[0]
 	s.aliceTokenBalance = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkMath.NewInt(100),
 	}
 	s.basketTokenSupply = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkMath.NewInt(100),
 	}
 	s.classID = testClassID
 	s.creditTypeAbbrev = "C"
@@ -233,6 +236,18 @@ func (s *putSuite) ACreditBatchWithDenom(a string) {
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)
+}
+
+func (s *putSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
+func (s *putSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
 }
 
 func (s *putSuite) AliceOwnsCredits() {
@@ -503,6 +518,30 @@ func (s *putSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.Equal(s.t, res, s.res)
 }
 
+func (s *putSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event core.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *putSuite) ExpectEventPutWithProperties(a gocuke.DocString) {
+	var event basket.EventPut
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
 func (s *putSuite) putExpectCalls() {
 	sendCoin := s.calculateExpectedCoin(s.tradableCredits)
 	sendCoins := sdk.NewCoins(sendCoin)
@@ -533,7 +572,7 @@ func (s *putSuite) calculateExpectedCoin(amount string) sdk.Coin {
 	dec, err := math.NewPositiveFixedDecFromString(amount, creditType.Precision)
 	if err != nil && strings.Contains(err.Error(), "exceeds maximum decimal places") {
 		// expected coins irrelevant if amount exceeds maximum decimal places
-		return sdk.NewCoin(s.basketDenom, sdk.NewInt(0))
+		return sdk.NewCoin(s.basketDenom, sdkMath.NewInt(0))
 	}
 	require.NoError(s.t, err)
 
@@ -543,5 +582,5 @@ func (s *putSuite) calculateExpectedCoin(amount string) sdk.Coin {
 	amtInt, err := tokenAmt.BigInt()
 	require.NoError(s.t, err)
 
-	return sdk.NewCoin(s.basketDenom, sdk.NewIntFromBigInt(amtInt))
+	return sdk.NewCoin(s.basketDenom, sdkMath.NewIntFromBigInt(amtInt))
 }

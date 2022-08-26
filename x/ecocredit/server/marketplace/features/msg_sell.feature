@@ -249,3 +249,19 @@ Feature: Msg/Sell
       """
 
     # no failing scenario - response should always be empty when message execution fails
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type
+      And an allowed denom
+
+    Scenario: EventSell is emitted
+      Given alice has a tradable batch balance with denom "C01-001-20200101-20210101-001"
+      When alice attempts to create a sell order with batch denom "C01-001-20200101-20210101-001"
+      Then expect event with properties
+      """
+      {
+        "sell_order_id": 1
+      }
+      """

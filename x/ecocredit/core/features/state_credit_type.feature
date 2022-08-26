@@ -19,7 +19,7 @@ Feature: CreditType
     {}
     """
     When the credit type is validated
-    Then expect the error "credit type abbreviation cannot be empty: parse error"
+    Then expect the error "abbreviation: empty string is not allowed: parse error"
 
   Scenario: an error is returned if abbreviation is not formatted
     Given the credit type
@@ -29,7 +29,7 @@ Feature: CreditType
     }
     """
     When the credit type is validated
-    Then expect the error "credit type abbreviation must be 1-3 uppercase latin letters: got 1: parse error"
+    Then expect the error "abbreviation: must be 1-3 uppercase alphabetic characters: parse error"
 
   Scenario: an error is returned if name is empty
     Given the credit type
@@ -74,4 +74,4 @@ Feature: CreditType
     }
     """
     When the credit type is validated
-    Then expect the error "credit type precision is currently locked to 6: parse error"
+    Then expect the error "precision is currently locked to 6: parse error"

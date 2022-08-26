@@ -14,3 +14,16 @@ Feature: Msg/DefineResolver
       Given alice has defined a resolver with url "https://foo.bar"
       When alice attempts to define a resolver with url "https://foo.bar"
       Then expect the error "a resolver with the same URL and manager already exists: unique key violation"
+
+  Rule: Event is emitted
+
+    Scenario: EventDefineResolver is emitted
+      Given alice has defined a resolver with url "https://foo.bar"
+      When bob attempts to define a resolver with url "https://foo.bar"
+      Then expect the resolver with id "2" and url "https://foo.bar" and manager bob
+      And expect event with properties
+      """
+      {
+        "id": 2
+      }
+      """

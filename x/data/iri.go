@@ -117,6 +117,10 @@ func init() {
 func ParseIRI(iri string) (*ContentHash, error) {
 	const regenPrefix = "regen:"
 
+	if iri == "" {
+		return nil, ErrInvalidIRI.Wrap("failed to parse IRI: empty string is not allowed")
+	}
+
 	if !strings.HasPrefix(iri, regenPrefix) {
 		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s prefix required", iri, regenPrefix)
 	}

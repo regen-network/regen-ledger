@@ -81,3 +81,18 @@ Feature: Msg/UpdateClassIssuers
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with class id "C01" and admin alice
+
+    Scenario: EventUpdateClassIssuers is emitted
+      When alice attempts to update class issuers with class id "C01"
+      Then expect event with properties
+      """
+      {
+        "class_id": "C01"
+      }
+      """

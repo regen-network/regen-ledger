@@ -26,7 +26,8 @@ service Msg {
   // be used for the basket creation fee.
   //
   // Since Revision 1
-  rpc UpdateBasketFees(MsgUpdateBasketFees) returns (MsgUpdateBasketFeesResponse);
+  rpc UpdateBasketFees(MsgUpdateBasketFees)
+      returns (MsgUpdateBasketFeesResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.

@@ -86,3 +86,22 @@ Feature: Msg/AddAllowedDenom
       }
       """
       Then expect the error "display denom REGEN already exists: conflict"
+
+  Rule: Event is emitted
+
+    Scenario: EventAllowDenom is emitted
+      When alice attempts to add a denom with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "bank_denom":"uregen",
+        "display_denom":"REGEN",
+        "exponent":6
+      }
+      """
+      Then expect event with properties
+      """
+      {
+        "denom": "uregen"
+      }
+      """

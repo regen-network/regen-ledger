@@ -30,12 +30,8 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address: " + err.Error())
 	}
 
-	if len(m.Name) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrapf("name cannot be empty")
-	}
-
 	if err := ValidateBasketName(m.Name); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("name: %s", err)
 	}
 
 	if len(m.Description) > descrMaxLen {
@@ -43,7 +39,7 @@ func (m MsgCreate) ValidateBasic() error {
 	}
 
 	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbrev: %s", err)
 	}
 
 	if len(m.AllowedClasses) == 0 {
@@ -52,7 +48,7 @@ func (m MsgCreate) ValidateBasic() error {
 
 	for i := range m.AllowedClasses {
 		if err := core.ValidateClassID(m.AllowedClasses[i]); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrapf("allowed_classes[%d] is not a valid class ID: %s", i, err)
+			return sdkerrors.ErrInvalidRequest.Wrapf("allowed classes [%d]: %s", i, err)
 		}
 	}
 

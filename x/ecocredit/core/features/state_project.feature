@@ -61,7 +61,7 @@ Feature: Project
     }
     """
     When the project is validated
-    Then expect the error "project id cannot be empty: parse error"
+    Then expect the error "project id: empty string is not allowed: parse error"
 
   Scenario: an error is returned if id is not formatted
     Given the project
@@ -72,7 +72,7 @@ Feature: Project
     }
     """
     When the project is validated
-    Then expect the error "invalid project id: foo: parse error"
+    Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error"
 
   Scenario: an error is returned if admin is empty
     Given the project
@@ -108,7 +108,7 @@ Feature: Project
     }
     """
     When the project is validated
-    Then expect the error "jurisdiction cannot be empty, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error"
+    Then expect the error "jurisdiction: empty string is not allowed: parse error"
 
   Scenario: an error is returned if jurisdiction is not formatted
     Given the project
@@ -122,7 +122,7 @@ Feature: Project
     }
     """
     When the project is validated
-    Then expect the error "invalid jurisdiction: foo, expected format <country-code>[-<region-code>[ <postal-code>]]: parse error"
+    Then expect the error "jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error"
 
   Scenario: an error is returned if metadata exceeds 256 characters
     Given the project

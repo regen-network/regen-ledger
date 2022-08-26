@@ -1,6 +1,7 @@
-package basket_test
+package basket
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -12,6 +13,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -166,6 +168,18 @@ func (s *takeSuite) ABasketWithCreditTypeAndCreditBalance(a string, b string) {
 	s.addBasketClassAndBalance(basketID, b)
 }
 
+func (s *takeSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
+func (s *takeSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
+}
+
 func (s *takeSuite) AliceOwnsBasketTokens() {
 	amount, ok := sdk.NewIntFromString(s.tokenAmount)
 	require.True(s.t, ok)
@@ -318,6 +332,60 @@ func (s *takeSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, res, s.res)
+}
+
+func (s *takeSuite) ExpectEventTakeWithProperties(a gocuke.DocString) {
+	var event basket.EventTake
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTakeFrom(a, b, c string) {
+	s.tokenAmount = a
+
+	retireOnTake, err := strconv.ParseBool(b)
+	require.NoError(s.t, err)
+
+	s.takeExpectCalls()
+
+	s.res, s.err = s.k.Take(s.ctx, &basket.MsgTake{
+		Owner:                  s.alice.String(),
+		BasketDenom:            s.basketDenom,
+		Amount:                 s.tokenAmount,
+		RetirementJurisdiction: c,
+		RetireOnTake:           retireOnTake,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event core.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event core.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *takeSuite) addBasketClassAndBalance(basketID uint64, creditAmount string) {

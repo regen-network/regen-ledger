@@ -67,3 +67,28 @@ Feature: Msg/Bridge
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Scenario: EventBridge is emitted
+      Given a credit batch exists
+      And batch has batch contract entry with contract address "0x6887246668a3b87f54deb3b94ba47a6f63f32985"
+      And alice owns tradable credit amount "10" from the credit batch
+      And the batch supply
+      """
+      {
+        "retired_amount": "0",
+        "tradable_amount": "10",
+        "cancelled_amount": "0"
+      }
+      """
+      When alice attempts to bridge credit amount "10" from the credit batch to "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+      Then expect event with properties
+      """
+      {
+        "target": "polygon",
+        "recipient": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+        "contract": "0x6887246668a3b87f54deb3b94ba47a6f63f32985",
+        "amount": "10"
+      }
+      """

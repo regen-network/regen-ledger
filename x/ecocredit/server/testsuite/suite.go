@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
-	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -20,8 +20,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
@@ -40,25 +38,23 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
+	fixtureFactory testutil.Factory
 	fixture        testutil.Fixture
 
-	codec             *codec.ProtoCodec
-	sdkCtx            sdk.Context
-	ctx               context.Context
-	msgClient         core.MsgClient
-	marketServer      marketServer
-	basketServer      basketServer
-	queryClient       core.QueryClient
-	paramsQueryClient params.QueryClient
-	signers           []sdk.AccAddress
-	basketFee         sdk.Coin
+	codec        *codec.ProtoCodec
+	sdkCtx       sdk.Context
+	ctx          context.Context
+	msgClient    core.MsgClient
+	marketServer marketServer
+	basketServer basketServer
+	queryClient  core.QueryClient
+	signers      []sdk.AccAddress
+	basketFee    sdk.Coin
 
-	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
 
-	genesisCtx types.Context
+	genesisCtx sdk.Context
 	blockTime  time.Time
 }
 
@@ -76,10 +72,9 @@ var (
 	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFee}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
-		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
 	}
@@ -92,18 +87,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	// TODO clean up once types.Context merged upstream into sdk.Context
-	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-	s.genesisCtx = types.Context{Context: sdkCtx}
+	s.genesisCtx = sdkCtx
 
-	ecocreditParams := core.DefaultParams()
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
 	_, err := s.fixture.InitGenesis(s.sdkCtx, map[string]json.RawMessage{ecocredit.ModuleName: s.ecocreditGenesis()})
 	s.Require().NoError(err)
-
-	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
@@ -112,7 +103,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
-	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
@@ -149,11 +139,22 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	})
 	s.Require().NoError(err)
 
+	// set default credit class fee
+	err = ss.ClassFeesTable().Save(ormCtx, &api.ClassFees{
+		Fees: []*basev1beta1.Coin{
+			{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: core.DefaultCreditClassFee.String(),
+			},
+		},
+	})
+	s.Require().NoError(err)
+
 	bs, err := basketApi.NewStateStore(modDB)
 	s.Require().NoError(err)
 
 	err = bs.BasketFeesTable().Save(ormCtx, &basketApi.BasketFees{
-		Fees: []*v1beta1.Coin{
+		Fees: []*basev1beta1.Coin{
 			{
 				Denom:  s.basketFee.Denom,
 				Amount: s.basketFee.Amount.String(),
@@ -674,28 +675,28 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "0.0001",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire to an invalid region",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire to an invalid postal code",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire without a jurisdiction",
 			toRetire:      "0.0001",
 			jurisdiction:  "",
 			expectErr:     true,
-			expErrMessage: "jurisdiction cannot be empty",
+			expErrMessage: "jurisdiction: empty string is not allowed",
 		},
 		{
 			name:              "can retire a small amount of credits",
@@ -820,7 +821,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't send to an invalid region",
@@ -828,7 +829,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't send to an invalid postal code",
@@ -836,7 +837,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:                 "can send some",
@@ -935,80 +936,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NotNil(querySupplyRes)
 				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
 				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
-			}
-		})
-	}
-
-	/****   TEST ALLOWLIST CREDIT CREATORS   ****/
-	allowlistCases := []struct {
-		name             string
-		creatorAcc       sdk.AccAddress
-		allowlist        []string
-		allowlistEnabled bool
-		wantErr          bool
-		errMsg           string
-	}{
-		{
-			name:             "valid allowlist and enabled",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          false,
-		},
-		{
-			name:             "valid multi addrs in allowlist",
-			allowlist:        []string{s.signers[0].String(), s.signers[1].String(), s.signers[2].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          false,
-		},
-		{
-			name:             "creator is not part of the allowlist",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[1],
-			allowlistEnabled: true,
-			wantErr:          true,
-			errMsg:           "not allowed",
-		},
-		{
-			name:             "valid allowlist but disabled - anyone can create credits",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: false,
-			wantErr:          false,
-		},
-		{
-			name:             "empty and enabled allowlist - nobody can create credits",
-			allowlist:        []string{},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          true,
-			errMsg:           "not allowed",
-		},
-	}
-
-	for _, tc := range allowlistCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			s.paramSpace.Set(s.sdkCtx, core.KeyAllowedClassCreators, tc.allowlist)
-			s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, tc.allowlistEnabled)
-
-			// fund the creator account
-			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFee)))
-
-			createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
-				Admin:            tc.creatorAcc.String(),
-				Issuers:          []string{issuer1, issuer2},
-				CreditTypeAbbrev: "C",
-				Metadata:         "",
-				Fee:              &createClassFee,
-			})
-			if tc.wantErr {
-				s.Require().Error(err)
-				s.Require().Nil(createClsRes)
-			} else {
-				s.Require().NoError(err)
-				s.Require().NotNil(createClsRes)
 			}
 		})
 	}

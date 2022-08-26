@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -36,9 +38,11 @@ func (m *MsgSend) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}
 
-	for _, credits := range m.Credits {
+	for i, credits := range m.Credits {
+		creditIndex := fmt.Sprintf("credits[%d]", i)
+
 		if err := ValidateBatchDenom(credits.BatchDenom); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom: %s", creditIndex, err)
 		}
 
 		if credits.TradableAmount == "" && credits.RetiredAmount == "" {
@@ -56,7 +60,7 @@ func (m *MsgSend) ValidateBasic() error {
 
 		if !retiredAmount.IsZero() {
 			if err = ValidateJurisdiction(credits.RetirementJurisdiction); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err.Error())
+				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err)
 			}
 		}
 	}

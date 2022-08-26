@@ -2,6 +2,7 @@
 package marketplace
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -14,6 +15,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -134,6 +136,18 @@ func (s *cancelSellOrder) ExpectNoSellOrderWithId(a string) {
 
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, id)
 	require.ErrorContains(s.t, err, ormerrors.NotFound.Error())
+}
+
+func (s *cancelSellOrder) ExpectEventWithProperties(a gocuke.DocString) {
+	var event marketplace.EventCancelSellOrder
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *cancelSellOrder) sellOrderSetup() {
