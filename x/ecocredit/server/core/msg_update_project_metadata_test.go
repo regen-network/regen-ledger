@@ -1,6 +1,8 @@
+//nolint:revive,stylecheck
 package core
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -9,6 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -40,7 +43,7 @@ func (s *updateProjectMetadata) ACreditTypeWithAbbreviation(a string) {
 }
 
 func (s *updateProjectMetadata) ACreditClassWithClassId(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,
@@ -97,4 +100,16 @@ func (s *updateProjectMetadata) ExpectProjectWithProjectIdAndMetadata(a string, 
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, b.Content, project.Metadata)
+}
+
+func (s *updateProjectMetadata) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventUpdateProjectMetadata
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

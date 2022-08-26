@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
@@ -25,50 +26,85 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
-	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	corev1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/core/v1alpha1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
+var (
+	_ module.AppModule           = &Module{}
+	_ module.AppModuleBasic      = Module{}
+	_ module.AppModuleSimulation = Module{}
+)
+
 type Module struct {
-	paramSpace    paramtypes.Subspace
-	accountKeeper ecocredit.AccountKeeper
-	bankKeeper    ecocredit.BankKeeper
-	Keeper        server.Keeper
-	authority     sdk.AccAddress
+	key storetypes.StoreKey
+	// legacySubspace is used solely for migration of x/ecocredit managed parameters
+	legacySubspace paramtypes.Subspace
+	accountKeeper  ecocredit.AccountKeeper
+	bankKeeper     ecocredit.BankKeeper
+	Keeper         server.Keeper
+	authority      sdk.AccAddress
 }
+
+func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
+	update, err := a.Keeper.InitGenesis(s, jsonCodec, message)
+	if err != nil {
+		panic(err)
+	}
+	return update
+}
+
+func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
+	m, err := a.Keeper.ExportGenesis(s, jsonCodec)
+	if err != nil {
+		panic(err)
+	}
+	return m
+}
+
+func (a Module) RegisterInvariants(reg sdk.InvariantRegistry) {
+	a.Keeper.RegisterInvariants(reg)
+}
+
+func (a Module) Route() sdk.Route {
+	return sdk.Route{}
+}
+
+func (a Module) QuerierRoute() string {
+	return ecocredit.ModuleName
+}
+
+func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier { return nil }
 
 // NewModule returns a new Module object.
 func NewModule(
-	paramSpace paramtypes.Subspace,
+	storeKey storetypes.StoreKey,
+	legacySubspace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	authority sdk.AccAddress,
 ) *Module {
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
+	if !legacySubspace.HasKeyTable() {
+		legacySubspace = legacySubspace.WithKeyTable(coretypes.ParamKeyTable())
 	}
 
 	return &Module{
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
-		authority:     authority,
+		key:            storeKey,
+		legacySubspace: legacySubspace,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
+		authority:      authority,
 	}
 }
 
 var _ module.AppModuleBasic = &Module{}
-var _ servermodule.Module = &Module{}
-var _ restmodule.Module = &Module{}
-var _ climodule.Module = &Module{}
 var _ module.AppModuleSimulation = &Module{}
 
 func (a Module) Name() string {
@@ -79,10 +115,27 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
 	marketplacetypes.RegisterTypes(registry)
+
+	// legacy types to support querying historical events
+	corev1alpha1.RegisterTypes(registry)
 }
 
-func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
+func (a *Module) RegisterServices(cfg module.Configurator) {
+	svr := server.NewServer(a.key, a.legacySubspace, a.accountKeeper, a.bankKeeper, a.authority)
+	coretypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
+	coretypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
+
+	baskettypes.RegisterMsgServer(cfg.MsgServer(), svr.BasketKeeper)
+	baskettypes.RegisterQueryServer(cfg.QueryServer(), svr.BasketKeeper)
+
+	marketplacetypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
+	marketplacetypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
+
+	m := server.NewMigrator(svr, a.legacySubspace)
+	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, m.Migrate2to3); err != nil {
+		panic(err)
+	}
+	a.Keeper = svr
 }
 
 //nolint:errcheck
@@ -173,7 +226,7 @@ func (a Module) GetTxCmd() *cobra.Command {
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (Module) ConsensusVersion() uint64 { return 2 }
+func (Module) ConsensusVersion() uint64 { return 3 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
@@ -198,18 +251,22 @@ func (Module) ProposalContents(simState module.SimulationState) []simtypes.Weigh
 
 // RandomizedParams creates randomized ecocredit param changes for the simulator.
 func (Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-	return simulation.ParamChanges()
+	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for ecocredit module's types
-func (Module) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-}
+func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 // WeightedOperations returns all the ecocredit module operations with their respective weights.
-// NOTE: This is no longer needed for the modules which uses ADR-33, ecocredit module `WeightedOperations`
-// registered in the `x/ecocredit/server` package.
-func (Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return nil
+func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	coreQuerier, basketQuerier, marketQuerier := a.Keeper.QueryServers()
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc,
+		a.accountKeeper, a.bankKeeper,
+		coreQuerier,
+		basketQuerier,
+		marketQuerier,
+	)
 }
 
 // BeginBlock checks if there are any expired sell or buy orders and removes them from state.

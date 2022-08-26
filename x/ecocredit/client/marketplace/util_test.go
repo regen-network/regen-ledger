@@ -13,10 +13,10 @@ import (
 )
 
 func TestParseSellOrders(t *testing.T) {
-	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `[
+	emptyJSON := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJSON := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJSON := testutil.WriteToNewTempFile(t, `[
 		{
 			"batch_denom": "C01-001-20200101-20210101-001",
 			"quantity": "10",
@@ -54,25 +54,25 @@ func TestParseSellOrders(t *testing.T) {
 		},
 		{
 			name:      "empty json object",
-			file:      emptyJson,
+			file:      emptyJSON,
 			expErr:    true,
 			expErrMsg: "cannot unmarshal object",
 		},
 		{
 			name:      "invalid json format",
-			file:      invalidJson,
+			file:      invalidJSON,
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
 		{
 			name:      "duplicate json keys",
-			file:      duplicateJson,
+			file:      duplicateJSON,
 			expErr:    true,
 			expErrMsg: "duplicate key",
 		},
 		{
 			name: "valid",
-			file: validJson,
+			file: validJSON,
 			expRes: []*marketplace.MsgSell_Order{
 				{
 					BatchDenom:        "C01-001-20200101-20210101-001",
@@ -105,10 +105,10 @@ func TestParseSellOrders(t *testing.T) {
 }
 
 func TestParseSellUpdates(t *testing.T) {
-	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `[
+	emptyJSON := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJSON := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJSON := testutil.WriteToNewTempFile(t, `[
 		{
 			"sell_order_id": 1,
 			"new_quantity": "10",
@@ -146,25 +146,25 @@ func TestParseSellUpdates(t *testing.T) {
 		},
 		{
 			name:      "empty json object",
-			file:      emptyJson,
+			file:      emptyJSON,
 			expErr:    true,
 			expErrMsg: "cannot unmarshal object",
 		},
 		{
 			name:      "invalid json format",
-			file:      invalidJson,
+			file:      invalidJSON,
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
 		{
 			name:      "duplicate json keys",
-			file:      duplicateJson,
+			file:      duplicateJSON,
 			expErr:    true,
 			expErrMsg: "duplicate key",
 		},
 		{
 			name: "valid",
-			file: validJson,
+			file: validJSON,
 			expRes: []*marketplace.MsgUpdateSellOrders_Update{
 				{
 					SellOrderId:       1,
@@ -197,10 +197,10 @@ func TestParseSellUpdates(t *testing.T) {
 }
 
 func TestParseBuyOrders(t *testing.T) {
-	emptyJson := testutil.WriteToNewTempFile(t, `{}`).Name()
-	invalidJson := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
-	validJson := testutil.WriteToNewTempFile(t, `[
+	emptyJSON := testutil.WriteToNewTempFile(t, `{}`).Name()
+	invalidJSON := testutil.WriteToNewTempFile(t, `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(t, `{"foo":"bar","foo":"baz"}`).Name()
+	validJSON := testutil.WriteToNewTempFile(t, `[
 		{
 			"sell_order_id": 1,
 			"quantity": "10",
@@ -236,25 +236,25 @@ func TestParseBuyOrders(t *testing.T) {
 		},
 		{
 			name:      "empty json object",
-			file:      emptyJson,
+			file:      emptyJSON,
 			expErr:    true,
 			expErrMsg: "cannot unmarshal object",
 		},
 		{
 			name:      "invalid json format",
-			file:      invalidJson,
+			file:      invalidJSON,
 			expErr:    true,
 			expErrMsg: "invalid character",
 		},
 		{
 			name:      "duplicate json keys",
-			file:      duplicateJson,
+			file:      duplicateJSON,
 			expErr:    true,
 			expErrMsg: "duplicate key",
 		},
 		{
 			name: "valid",
-			file: validJson,
+			file: validJSON,
 			expRes: []*marketplace.MsgBuyDirect_Order{
 				{
 					SellOrderId:       1,

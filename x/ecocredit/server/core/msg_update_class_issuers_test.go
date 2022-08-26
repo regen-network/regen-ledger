@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -10,6 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -45,7 +47,7 @@ func (s *updateClassIssuers) ACreditTypeWithAbbreviation(a string) {
 }
 
 func (s *updateClassIssuers) ACreditClassWithClassIdAndAdminAlice(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.k.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               a,
@@ -56,7 +58,7 @@ func (s *updateClassIssuers) ACreditClassWithClassIdAndAdminAlice(a string) {
 }
 
 func (s *updateClassIssuers) ACreditClassWithClassIdAdminAliceAndIssuers(a string, b gocuke.DocString) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,
@@ -148,4 +150,16 @@ func (s *updateClassIssuers) ExpectCreditClassWithClassIdAndIssuers(a string, b 
 
 		require.True(s.t, found)
 	}
+}
+
+func (s *updateClassIssuers) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventUpdateClassIssuers
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

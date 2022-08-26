@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -46,18 +47,20 @@ func TestValidateGenesis(t *testing.T) {
 
 	batches := []*api.Batch{
 		{
-			Issuer:     sdk.AccAddress("addr2"),
-			ProjectKey: 1,
-			Denom:      "BIO01-001-00000000-00000000-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr2"),
+			ProjectKey:   1,
+			Denom:        "BIO01-001-00000000-00000000-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 		{
-			Issuer:     sdk.AccAddress("addr3"),
-			ProjectKey: 1,
-			Denom:      "BIO02-001-00000000-00000000-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr3"),
+			ProjectKey:   1,
+			Denom:        "BIO02-001-00000000-00000000-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 	}
 	for _, b := range batches {
@@ -109,11 +112,11 @@ func TestValidateGenesis(t *testing.T) {
 
 	target := ormjson.NewRawMessageTarget()
 	require.NoError(t, modDB.ExportJSON(ormCtx, target))
-	genesisJson, err := target.JSON()
+	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = ValidateGenesis(genesisJson, params)
+	err = ValidateGenesis(genesisJSON, params)
 	require.NoError(t, err)
 }
 
@@ -166,7 +169,7 @@ func TestGenesisValidate(t *testing.T) {
 			},
 			defaultParams,
 			true,
-			"credit type abbreviation must be 1-3 uppercase latin letters",
+			"must be 1-3 uppercase alphabetic characters: parse error",
 		},
 		{
 			"invalid: credit type param",
@@ -187,7 +190,7 @@ func TestGenesisValidate(t *testing.T) {
 				return defaultParams
 			}(),
 			true,
-			"credit type precision is currently locked to 6",
+			"precision is currently locked to 6",
 		},
 		{
 			"invalid: bad addresses in allowlist",
@@ -534,18 +537,20 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 
 	batches := []*api.Batch{
 		{
-			Issuer:     sdk.AccAddress("addr2"),
-			ProjectKey: 1,
-			Denom:      "C01-001-20180101-20200101-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr2"),
+			ProjectKey:   1,
+			Denom:        "C01-001-20200101-20210101-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 		{
-			Issuer:     sdk.AccAddress("addr3"),
-			ProjectKey: 1,
-			Denom:      "BIO02-001-00000000-00000000-001",
-			StartDate:  &timestamppb.Timestamp{Seconds: 100},
-			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+			Issuer:       sdk.AccAddress("addr3"),
+			ProjectKey:   1,
+			Denom:        "BIO02-001-20200101-20210101-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 		},
 	}
 	for _, b := range batches {
@@ -584,16 +589,23 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	}
 	require.NoError(t, ss.ProjectTable().Insert(ormCtx, &project))
 
+	startDate1, err := types.ParseDate("start date", "2020-01-01")
+	require.NoError(t, err)
+	startDate2, err := types.ParseDate("start date", "2020-01-01")
+	require.NoError(t, err)
+
 	basketBalances := []*basketapi.BasketBalance{
 		{
-			BasketId:   1,
-			BatchDenom: "C01-001-20180101-20200101-001",
-			Balance:    "100",
+			BasketId:       1,
+			BatchDenom:     "C01-001-20200101-20210101-001",
+			Balance:        "100",
+			BatchStartDate: timestamppb.New(startDate1),
 		},
 		{
-			BasketId:   2,
-			BatchDenom: "BIO02-001-00000000-00000000-001",
-			Balance:    "10.000",
+			BasketId:       2,
+			BatchDenom:     "BIO02-001-20200101-20210101-001",
+			Balance:        "10.000",
+			BatchStartDate: timestamppb.New(startDate2),
 		},
 	}
 	for _, b := range basketBalances {
@@ -602,11 +614,11 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 
 	target := ormjson.NewRawMessageTarget()
 	require.NoError(t, modDB.ExportJSON(ormCtx, target))
-	genesisJson, err := target.JSON()
+	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
 	params := core.Params{AllowlistEnabled: true}
-	err = ValidateGenesis(genesisJson, params)
+	err = ValidateGenesis(genesisJSON, params)
 	require.NoError(t, err)
 }
 

@@ -1,6 +1,7 @@
-package basket_test
+package basket
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -12,6 +13,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -21,7 +23,7 @@ type takeSuite struct {
 	alice               sdk.AccAddress
 	aliceTokenBalance   sdk.Coin
 	basketTokenSupply   sdk.Coin
-	classId             string
+	classID             string
 	creditTypeAbbrev    string
 	creditTypePrecision uint32
 	batchDenom          string
@@ -47,7 +49,7 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 		Denom:  "eco.uC.NCT",
 		Amount: sdk.NewInt(100),
 	}
-	s.classId = "C01"
+	s.classID = testClassID
 	s.creditTypeAbbrev = "C"
 	s.creditTypePrecision = 6
 	s.batchDenom = "C01-001-20200101-20210101-001"
@@ -89,34 +91,34 @@ func (s *takeSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string) 
 }
 
 func (s *takeSuite) ABasket() {
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	// add balance with credit amount = token amount
-	s.addBasketClassAndBalance(basketId, s.tokenAmount)
+	s.addBasketClassAndBalance(basketID, s.tokenAmount)
 }
 
 func (s *takeSuite) ABasketWithDenom(a string) {
 	s.basketDenom = a
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	// add balance with credit amount = token amount
-	s.addBasketClassAndBalance(basketId, s.tokenAmount)
+	s.addBasketClassAndBalance(basketID, s.tokenAmount)
 }
 
 func (s *takeSuite) ABasketWithDisableAutoRetire(a string) {
 	disableAutoRetire, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       s.basketDenom,
 		CreditTypeAbbrev:  s.creditTypeAbbrev,
 		DisableAutoRetire: disableAutoRetire,
@@ -124,17 +126,17 @@ func (s *takeSuite) ABasketWithDisableAutoRetire(a string) {
 	require.NoError(s.t, err)
 
 	// add balance with credit amount = token amount
-	s.addBasketClassAndBalance(basketId, s.tokenAmount)
+	s.addBasketClassAndBalance(basketID, s.tokenAmount)
 }
 
 func (s *takeSuite) ABasketWithCreditBalance(a string) {
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	s.addBasketClassAndBalance(basketId, a)
+	s.addBasketClassAndBalance(basketID, a)
 }
 
 func (s *takeSuite) ABasketWithCreditTypeAndDisableAutoRetire(a string, b string) {
@@ -143,7 +145,7 @@ func (s *takeSuite) ABasketWithCreditTypeAndDisableAutoRetire(a string, b string
 	disableAutoRetire, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       s.basketDenom,
 		CreditTypeAbbrev:  s.creditTypeAbbrev,
 		DisableAutoRetire: disableAutoRetire,
@@ -151,19 +153,31 @@ func (s *takeSuite) ABasketWithCreditTypeAndDisableAutoRetire(a string, b string
 	require.NoError(s.t, err)
 
 	// add balance with credit amount = token amount
-	s.addBasketClassAndBalance(basketId, s.tokenAmount)
+	s.addBasketClassAndBalance(basketID, s.tokenAmount)
 }
 
 func (s *takeSuite) ABasketWithCreditTypeAndCreditBalance(a string, b string) {
 	s.creditTypeAbbrev = a
 
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketID, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	s.addBasketClassAndBalance(basketId, b)
+	s.addBasketClassAndBalance(basketID, b)
+}
+
+func (s *takeSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
+func (s *takeSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
 }
 
 func (s *takeSuite) AliceOwnsBasketTokens() {
@@ -320,18 +334,72 @@ func (s *takeSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.Equal(s.t, res, s.res)
 }
 
-func (s *takeSuite) addBasketClassAndBalance(basketId uint64, creditAmount string) {
+func (s *takeSuite) ExpectEventTakeWithProperties(a gocuke.DocString) {
+	var event basket.EventTake
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTakeFrom(a, b, c string) {
+	s.tokenAmount = a
+
+	retireOnTake, err := strconv.ParseBool(b)
+	require.NoError(s.t, err)
+
+	s.takeExpectCalls()
+
+	s.res, s.err = s.k.Take(s.ctx, &basket.MsgTake{
+		Owner:                  s.alice.String(),
+		BasketDenom:            s.basketDenom,
+		Amount:                 s.tokenAmount,
+		RetirementJurisdiction: c,
+		RetireOnTake:           retireOnTake,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event core.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event core.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *takeSuite) addBasketClassAndBalance(basketID uint64, creditAmount string) {
 	err := s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
+		BasketId: basketID,
+		ClassId:  s.classID,
 	})
 	require.NoError(s.t, err)
 
-	classId := core.GetClassIdFromBatchDenom(s.batchDenom)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+	classID := core.GetClassIDFromBatchDenom(s.batchDenom)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
+		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -354,7 +422,7 @@ func (s *takeSuite) addBasketClassAndBalance(basketId uint64, creditAmount strin
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
-		BasketId:   basketId,
+		BasketId:   basketID,
 		BatchDenom: s.batchDenom,
 		Balance:    creditAmount,
 	})

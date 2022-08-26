@@ -3,9 +3,10 @@ package marketplace
 import (
 	"strconv"
 
+	"github.com/spf13/cobra"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -26,12 +27,12 @@ func QuerySellOrderCmd() *cobra.Command {
 			}
 
 			client := marketplace.NewQueryClient(ctx)
-			sellOrderId, err := strconv.ParseUint(args[0], 10, 64)
+			sellOrderID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
 			}
 			res, err := client.SellOrder(cmd.Context(), &marketplace.QuerySellOrderRequest{
-				SellOrderId: sellOrderId,
+				SellOrderId: sellOrderID,
 			})
 			if err != nil {
 				return err

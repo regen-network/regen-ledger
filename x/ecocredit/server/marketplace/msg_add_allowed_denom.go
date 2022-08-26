@@ -24,7 +24,7 @@ func (k Keeper) AddAllowedDenom(ctx context.Context, req *marketplace.MsgAddAllo
 		DisplayDenom: req.DisplayDenom,
 		Exponent:     req.Exponent,
 	}); err != nil {
-		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+		if ormerrors.AlreadyExists.Is(err) {
 			return nil, sdkerrors.ErrConflict.Wrapf("bank denom %s already exists", req.BankDenom)
 		} else if ormerrors.UniqueKeyViolation.Is(err) {
 			return nil, sdkerrors.ErrConflict.Wrapf("display denom %s already exists", req.DisplayDenom)
@@ -34,7 +34,11 @@ func (k Keeper) AddAllowedDenom(ctx context.Context, req *marketplace.MsgAddAllo
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventAllowDenom{Denom: req.BankDenom})
+	if err := sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventAllowDenom{
+		Denom: req.BankDenom,
+	}); err != nil {
+		return nil, err
+	}
 
 	return &marketplace.MsgAddAllowedDenomResponse{}, nil
 }

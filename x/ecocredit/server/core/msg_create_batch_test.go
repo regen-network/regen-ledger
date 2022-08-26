@@ -1,3 +1,4 @@
+//nolint:revive,stylecheck
 package core
 
 import (
@@ -7,15 +8,15 @@ import (
 	"testing"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -24,14 +25,14 @@ type createBatchSuite struct {
 	alice            sdk.AccAddress
 	bob              sdk.AccAddress
 	creditTypeAbbrev string
-	classId          string
+	classID          string
 	classKey         uint64
-	projectId        string
+	projectID        string
 	projectKey       uint64
-	batchKey         uint64
 	tradableAmount   string
 	startDate        *time.Time
 	endDate          *time.Time
+	originTx         *core.OriginTx
 	res              *core.MsgCreateBatchResponse
 	err              error
 }
@@ -45,8 +46,8 @@ func (s *createBatchSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addr
 	s.bob = s.addr2
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.projectId = "C01-001"
+	s.classID = testClassID
+	s.projectID = testProjectID
 	s.tradableAmount = "10"
 
 	startDate, err := types.ParseDate("start date", "2020-01-01")
@@ -85,7 +86,7 @@ func (s *createBatchSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b s
 
 func (s *createBatchSuite) ACreditClassWithIssuerAlice() {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -100,7 +101,7 @@ func (s *createBatchSuite) ACreditClassWithIssuerAlice() {
 }
 
 func (s *createBatchSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               a,
@@ -118,9 +119,9 @@ func (s *createBatchSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 }
 
 func (s *createBatchSuite) AProjectWithProjectId(a string) {
-	classId := core.GetClassIdFromProjectId(a)
+	classID := core.GetClassIDFromProjectID(a)
 
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classId)
+	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classID)
 	require.NoError(s.t, err)
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
@@ -397,8 +398,104 @@ func (s *createBatchSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.Equal(s.t, &res, s.res)
 }
 
-func (s *createBatchSuite) getProjectSequence(projectId string) uint64 {
-	str := strings.Split(projectId, "-")
+func (s *createBatchSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event core.EventRetire
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	eventRetire, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, eventRetire)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) ExpectEventMintWithProperties(a gocuke.DocString) {
+	var event core.EventMint
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event core.EventTransfer
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Sender = s.k.moduleAddress.String()
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom(a, b, c, d string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:              c,
+				RetiredAmount:          b,
+				RetirementJurisdiction: d,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a string, b string, c string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      c,
+				TradableAmount: b,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocString) {
+	var event core.EventCreateBatch
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
+}
+
+func (s *createBatchSuite) OriginTx(a gocuke.DocString) {
+	var ot core.OriginTx
+	err := json.Unmarshal([]byte(a.Content), &ot)
+	require.NoError(s.t, err)
+	s.originTx = &ot
+}
+
+func (s *createBatchSuite) getProjectSequence(projectID string) uint64 {
+	str := strings.Split(projectID, "-")
 	seq, err := strconv.ParseUint(str[1], 10, 32)
 	require.NoError(s.t, err)
 	return seq

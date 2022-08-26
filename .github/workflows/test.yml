@@ -11,7 +11,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
       - release/v*
 
 concurrency:
@@ -28,8 +28,8 @@ jobs:
         with:
           PATTERNS: |
             **/**.go
-            go.mod
-            go.sum
+            **/go.mod
+            **/go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
@@ -38,7 +38,7 @@ jobs:
         run: make test-cover
         if: env.GIT_DIFF
       - name: Upload codecov report
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           flags: ${{matrix.envs}}
           file: coverage.txt
@@ -52,8 +52,8 @@ jobs:
         with:
           PATTERNS: |
             **/**.go
-            go.mod
-            go.sum
+            **/go.mod
+            **/go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'

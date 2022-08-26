@@ -25,7 +25,7 @@ func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAt
 		return nil, err
 	}
 
-	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
+	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrap("data record with IRI")
 	}
@@ -37,7 +37,7 @@ func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAt
 
 	it, err := s.stateStore.DataAttestorTable().List(
 		ctx,
-		api.DataAttestorIdAttestorIndexKey{}.WithId(dataId.Id),
+		api.DataAttestorIdAttestorIndexKey{}.WithId(dataID.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {

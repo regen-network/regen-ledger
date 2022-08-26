@@ -23,8 +23,8 @@ func (m MsgUpdateProjectAdmin) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateProjectId(m.ProjectId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	if err := ValidateProjectID(m.ProjectId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("project id: %s", err)
 	}
 
 	if _, err := types.AccAddressFromBech32(m.NewAdmin); err != nil {

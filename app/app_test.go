@@ -5,8 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 func TestSimAppExportAndBlockedAddrs(t *testing.T) {

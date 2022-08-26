@@ -46,7 +46,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid",
 			args: []string{
 				"NCT1",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
+				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classID),
 				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
 				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
@@ -56,7 +56,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid from key-name",
 			args: []string{
 				"NCT2",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
+				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classID),
 				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
 				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
@@ -66,7 +66,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid with amino-json",
 			args: []string{
 				"NCT3",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
+				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classID),
 				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
 				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
@@ -76,9 +76,10 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := basketclient.TxCreateBasketCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -108,9 +109,9 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -132,7 +133,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{s.basketDenom, validJson},
+			args:      []string{s.basketDenom, validJSON},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
@@ -150,7 +151,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "invalid json format",
 			args: []string{
 				s.basketDenom,
-				invalidJson,
+				invalidJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
 			expErr:    true,
@@ -160,7 +161,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "duplicate json key",
 			args: []string{
 				s.basketDenom,
-				duplicateJson,
+				duplicateJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
 			expErr:    true,
@@ -170,7 +171,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "valid",
 			args: []string{
 				s.basketDenom,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
 		},
@@ -178,7 +179,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "valid from key-name",
 			args: []string{
 				s.basketDenom,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
@@ -186,7 +187,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "valid with amino-json",
 			args: []string{
 				s.basketDenom,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -194,9 +195,10 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := basketclient.TxPutInBasketCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -275,9 +277,10 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := basketclient.TxTakeFromBasketCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)

@@ -3,26 +3,38 @@ package basket
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/errors"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	var allowedFees sdk.Coins
-	k.paramsKeeper.Get(sdkCtx, core.KeyBasketFee, &allowedFees)
+	fee, err := k.stateStore.BasketFeesTable().Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	allowedFees, ok := types.ProtoCoinsToCoins(fee.Fees)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")
+	}
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
+		return nil, err
+	}
+
+	allowedFees = allowedFees.Sort()
+	if err := allowedFees.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -103,12 +115,12 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
-		DateCriteria:      msg.DateCriteria.ToApi(),
+		DateCriteria:      msg.DateCriteria.ToAPI(),
 		Exponent:          creditType.Precision, // exponent is no longer used but set until removed
 		Name:              msg.Name,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "basket with name %s already exists", msg.Name)
+		return nil, ormerrors.UniqueKeyViolation.Wrapf("basket with name %s already exists", msg.Name)
 	}
 	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
 		return nil, err

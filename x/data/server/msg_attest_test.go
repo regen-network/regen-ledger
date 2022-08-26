@@ -1,15 +1,17 @@
 package server
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -35,6 +37,12 @@ func (s *attestSuite) TheContentHash(a gocuke.DocString) {
 	s.ch = &data.ContentHash{}
 	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
+}
+
+func (s *attestSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
@@ -89,9 +97,9 @@ func (s *attestSuite) TheAnchorEntryExistsWithTimestamp(a string) {
 	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
-	dataId := s.getDataId()
+	dataID := s.getDataID()
 
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataID)
 	require.NoError(s.t, err)
 	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
 }
@@ -100,9 +108,9 @@ func (s *attestSuite) TheAttestorEntryForAliceExistsWithTimestamp(a string) {
 	attestTime, err := types.ParseDate("attest timestamp", a)
 	require.NoError(s.t, err)
 
-	dataId := s.getDataId()
+	dataID := s.getDataID()
 
-	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId, s.alice)
+	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataID, s.alice)
 	require.NoError(s.t, err)
 	require.Equal(s.t, attestTime, dataAttestor.Timestamp.AsTime())
 }
@@ -111,21 +119,33 @@ func (s *attestSuite) TheAttestorEntryForBobExistsWithTimestamp(a string) {
 	attestTime, err := types.ParseDate("attest timestamp", a)
 	require.NoError(s.t, err)
 
-	dataId := s.getDataId()
+	dataID := s.getDataID()
 
-	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId, s.bob)
+	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataID, s.bob)
 	require.NoError(s.t, err)
 	require.Equal(s.t, attestTime, dataAttestor.Timestamp.AsTime())
 }
 
-func (s *attestSuite) getDataId() []byte {
+func (s *attestSuite) EventIsEmittedWithProperties(a gocuke.DocString) {
+	var event data.EventAttest
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *attestSuite) getDataID() []byte {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	dataID, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
 	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
+	require.NotNil(s.t, dataID)
 
-	return dataId.Id
+	return dataID.Id
 }

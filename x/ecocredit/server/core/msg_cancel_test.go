@@ -1,16 +1,19 @@
 package core
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -18,9 +21,9 @@ type cancel struct {
 	*baseSuite
 	alice            sdk.AccAddress
 	creditTypeAbbrev string
-	classId          string
+	classID          string
 	classKey         uint64
-	projectId        string
+	projectID        string
 	projectKey       uint64
 	batchDenom       string
 	batchKey         uint64
@@ -37,9 +40,9 @@ func (s *cancel) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.projectId = "C01-001"
-	s.batchDenom = "C01-001-20200101-20210101-001"
+	s.classID = testClassID
+	s.projectID = testProjectID
+	s.batchDenom = testBatchDenom
 	s.tradableAmount = "10"
 }
 
@@ -82,7 +85,7 @@ func (s *cancel) ACreditBatchWithDenom(a string) {
 
 func (s *cancel) ACreditBatchFromCreditClassWithCreditType(a string) {
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: a,
 	})
 	require.NoError(s.t, err)
@@ -90,7 +93,7 @@ func (s *cancel) ACreditBatchFromCreditClassWithCreditType(a string) {
 	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectId,
+		Id:       s.projectID,
 		ClassKey: cKey,
 	})
 	require.NoError(s.t, err)
@@ -224,7 +227,7 @@ func (s *cancel) projectSetup() {
 	require.NoError(s.t, err)
 
 	cKey, err := s.k.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -232,7 +235,7 @@ func (s *cancel) projectSetup() {
 	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectId,
+		Id:       s.projectID,
 		ClassKey: cKey,
 	})
 	require.NoError(s.t, err)
@@ -258,4 +261,39 @@ func (s *cancel) creditBatchSetup() {
 	require.NoError(s.t, err)
 
 	s.batchKey = bKey
+}
+
+func (s *cancel) AliceAttemptsToCancelCreditAmountWithReason(a, b string) {
+	s.res, s.err = s.k.Cancel(s.ctx, &core.MsgCancel{
+		Owner: s.alice.String(),
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+		Reason: b,
+	})
+}
+
+func (s *cancel) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
+func (s *cancel) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventCancel
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+	event.Owner = s.alice.String()
+	event.BatchDenom = s.batchDenom
+
+	events := s.sdkCtx.EventManager().Events()
+	eventCancel := events[len(events)-1]
+
+	require.Equal(s.t, proto.MessageName(&event), eventCancel.Type)
+
+	err = testutil.MatchEvent(&event, eventCancel)
+	require.NoError(s.t, err)
 }

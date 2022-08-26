@@ -1,7 +1,9 @@
 package ormstore
 
-import storetypes "github.com/cosmos/cosmos-sdk/types"
-import "github.com/cosmos/cosmos-sdk/orm/types/kv"
+import (
+	"github.com/cosmos/cosmos-sdk/orm/types/kv"
+	storetypes "github.com/cosmos/cosmos-sdk/types"
+)
 
 type storeWrapper struct {
 	store storetypes.KVStore

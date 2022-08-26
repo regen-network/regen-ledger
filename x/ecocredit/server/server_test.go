@@ -3,22 +3,23 @@ package server_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/types/module"
-	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/fixture"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
@@ -26,8 +27,8 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, accountKeeper := setup(t)
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper)
+	ff, _, bankKeeper, accountKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, bankKeeper, accountKeeper)
 	suite.Run(t, s)
 }
 
@@ -37,8 +38,8 @@ func TestGenesis(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
-	ff := server.NewFixtureFactory(t, 8)
+func setup(t *testing.T) (*fixture.Factory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
+	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
 	amino := codec.NewLegacyAmino()
@@ -50,9 +51,11 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
 	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
+	ecoKey := sdk.NewKVStoreKey(ecocredittypes.ModuleName)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
 	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
+	baseApp.MountStore(ecoKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(bankKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(distKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
@@ -76,9 +79,9 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	_, _, authority := testdata.KeyTestPubAddr()
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, authority)
-	ff.SetModules([]module.Module{ecocreditModule})
+	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
+	ecocreditModule := ecocredit.NewModule(ecoKey, ecocreditSubspace, accountKeeper, bankKeeper, authority)
+	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 
 	return ff, ecocreditSubspace, bankKeeper, accountKeeper
 }

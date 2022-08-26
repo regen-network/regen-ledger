@@ -147,7 +147,6 @@ Feature: Msg/UpdateSellOrders
       And an allowed denom with bank denom "regen"
       And an allowed denom with bank denom "atom"
       And alice created a sell order with batch denom "C01-001-20200101-20210101-001" and ask denom "regen"
-      And a market with credit type "C" and bank denom "regen"
 
     Scenario: credit type and bank denom pair is unique
       When alice attempts to update the sell order with ask denom "atom"
@@ -277,3 +276,19 @@ Feature: Msg/UpdateSellOrders
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type
+      And an allowed denom
+
+    Scenario: EventUpdateSellOrder is emitted
+      Given alice created a sell order with id "1"
+      When alice attempts to update the sell order with id "1"
+      Then expect event with properties
+      """
+      {
+        "sell_order_id": 1
+      }
+      """

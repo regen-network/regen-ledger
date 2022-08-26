@@ -57,11 +57,11 @@ func TestQuery_Batches(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Batches))
-	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch)
+	assertBatchEqual(s.ctx, t, s.k, res.Batches[0], batch)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 }
 
-func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchInfo, batch *api.Batch) {
+func assertBatchEqual(ctx context.Context, t *testing.T, k Keeper, received *core.BatchInfo, batch *api.Batch) {
 	issuer := sdk.AccAddress(batch.Issuer)
 
 	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)

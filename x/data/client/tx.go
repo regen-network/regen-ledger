@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/x/data"
 
-	sdkclient "github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/spf13/cobra"
+	"github.com/regen-network/regen-ledger/x/data"
 )
 
 // TxCmd returns a root CLI command handler for all x/data transaction commands.
@@ -24,7 +24,7 @@ func TxCmd(name string) *cobra.Command {
 		Short:                      "Data transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
-		RunE:                       sdkclient.ValidateCmd,
+		RunE:                       client.ValidateCmd,
 	}
 
 	cmd.AddCommand(
@@ -45,7 +45,7 @@ func MsgAnchorCmd() *cobra.Command {
 			"hash, effectively providing a tamper resistant timestamp.",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -85,7 +85,7 @@ Attest to the veracity of more than one entry using a comma-separated (no spaces
 		Example: "regen tx data attest regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -140,19 +140,19 @@ Flags:
 		Example: "regen tx data define-resolver https://foo.bar --from manager",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			resolverUrl := args[0]
-			if _, err := url.ParseRequestURI(resolverUrl); err != nil {
+			resolverURL := args[0]
+			if _, err := url.ParseRequestURI(resolverURL); err != nil {
 				return err
 			}
 
 			msg := data.MsgDefineResolver{
 				Manager:     clientCtx.GetFromAddress().String(),
-				ResolverUrl: resolverUrl,
+				ResolverUrl: resolverURL,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -194,7 +194,7 @@ Flags:
 			`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}

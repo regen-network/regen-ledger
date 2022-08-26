@@ -24,7 +24,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 		return nil, err
 	}
 
-	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
+	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrap("data record with IRI")
 	}
@@ -36,7 +36,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 
 	it, err := s.stateStore.DataResolverTable().List(
 		ctx,
-		api.DataResolverPrimaryKey{}.WithId(dataId.Id),
+		api.DataResolverPrimaryKey{}.WithId(dataID.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {

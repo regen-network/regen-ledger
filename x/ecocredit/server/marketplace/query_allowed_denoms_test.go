@@ -3,8 +3,9 @@ package marketplace
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"gotest.tools/v3/assert"
+
+	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"

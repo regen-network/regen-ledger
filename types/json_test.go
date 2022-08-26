@@ -44,11 +44,12 @@ func TestCheckDuplicateKey(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		input, expErr, expErrMsg := tc.input, tc.expErr, tc.expErrMsg
 		t.Run(tc.name, func(t *testing.T) {
-			err := CheckDuplicateKey(json.NewDecoder(strings.NewReader(tc.input)), nil)
-			if tc.expErr {
+			err := CheckDuplicateKey(json.NewDecoder(strings.NewReader(input)), nil)
+			if expErr {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
+				require.Contains(t, err.Error(), expErrMsg)
 			} else {
 				require.NoError(t, err)
 			}

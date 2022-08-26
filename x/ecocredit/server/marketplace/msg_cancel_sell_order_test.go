@@ -1,6 +1,8 @@
+//nolint:revive,stylecheck
 package marketplace
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -13,6 +15,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -21,9 +24,9 @@ type cancelSellOrder struct {
 	alice            sdk.AccAddress
 	bob              sdk.AccAddress
 	creditTypeAbbrev string
-	classId          string
+	classID          string
 	batchDenom       string
-	sellOrderId      uint64
+	sellOrderID      uint64
 	askPrice         *sdk.Coin
 	quantity         string
 	res              *marketplace.MsgCancelSellOrderResponse
@@ -39,8 +42,8 @@ func (s *cancelSellOrder) Before(t gocuke.TestingT) {
 	s.alice = s.addrs[0]
 	s.bob = s.addrs[1]
 	s.creditTypeAbbrev = "C"
-	s.classId = "C01"
-	s.batchDenom = "C01-001-20200101-20210101-001"
+	s.classID = testClassID
+	s.batchDenom = testBatchDenom
 	s.askPrice = &sdk.Coin{
 		Denom:  "regen",
 		Amount: sdk.NewInt(100),
@@ -52,7 +55,7 @@ func (s *cancelSellOrder) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.sellOrderId = id
+	s.sellOrderID = id
 
 	s.sellOrderSetup()
 }
@@ -61,7 +64,7 @@ func (s *cancelSellOrder) AliceCreatedASellOrderWithIdAndQuantity(a string, b st
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.sellOrderId = id
+	s.sellOrderID = id
 	s.quantity = b
 
 	s.sellOrderSetup()
@@ -135,9 +138,21 @@ func (s *cancelSellOrder) ExpectNoSellOrderWithId(a string) {
 	require.ErrorContains(s.t, err, ormerrors.NotFound.Error())
 }
 
+func (s *cancelSellOrder) ExpectEventWithProperties(a gocuke.DocString) {
+	var event marketplace.EventCancelSellOrder
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
 func (s *cancelSellOrder) sellOrderSetup() {
 	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
-		Id:               s.classId,
+		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -166,7 +181,7 @@ func (s *cancelSellOrder) sellOrderSetup() {
 	})
 	require.NoError(s.t, err)
 
-	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &api.SellOrder{
+	sellOrderID, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &api.SellOrder{
 		Seller:    s.alice,
 		BatchKey:  batchKey,
 		Quantity:  s.quantity,
@@ -174,5 +189,5 @@ func (s *cancelSellOrder) sellOrderSetup() {
 		AskAmount: s.askPrice.Amount.String(),
 	})
 	require.NoError(s.t, err)
-	require.Equal(s.t, sellOrderId, s.sellOrderId)
+	require.Equal(s.t, sellOrderID, s.sellOrderID)
 }

@@ -17,7 +17,7 @@ import (
 	regen "github.com/regen-network/regen-ledger/v4/app"
 )
 
-func TestAppAfterImport(t *testing.T) {
+func TestAfterImport(t *testing.T) {
 	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-after-import", "simulation")
 	if skip {
 		t.Skip("skipping app-after-import simulation")

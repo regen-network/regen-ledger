@@ -15,7 +15,7 @@ import (
 func TestSellOrdersByBatch(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t, 2)
-	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classID, start, end, creditType)
 
 	// make another batch
 	otherDenom := "C01-19990101-20290101-001"
@@ -37,7 +37,7 @@ func TestSellOrdersByBatch(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
+	assertOrderEqual(s.ctx, t, s.k, res.SellOrders[0], order1)
 	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// query the second denom
@@ -47,7 +47,7 @@ func TestSellOrdersByBatch(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
+	assertOrderEqual(s.ctx, t, s.k, res.SellOrders[0], order2)
 	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// bad denom should error

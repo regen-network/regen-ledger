@@ -1,4 +1,4 @@
-/*Package server defines fixture interfaces and implementations for testing
+/*Package testutil defines fixture interfaces and implementations for testing
 server implementations with multiple backends.
 
 Currently one backend - an in-memory store with no ABCI application is supported
@@ -13,14 +13,15 @@ import (
 	"context"
 	"encoding/json"
 
+	"google.golang.org/grpc"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"google.golang.org/grpc"
 )
 
-// FixtureFactory defines an interface for creating server test fixtures
-type FixtureFactory interface {
+// Factory defines an interface for creating server test fixtures
+type Factory interface {
 
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
 	Setup() Fixture

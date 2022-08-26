@@ -1,4 +1,4 @@
-package basket_test
+package basket
 
 import (
 	"testing"
@@ -9,12 +9,11 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 type BasketWithSupply struct {
 	supply int64
-	b      api.Basket
+	b      *api.Basket
 }
 
 type BankSupplyMock map[string]sdk.Coin
@@ -31,14 +30,14 @@ func TestBasketSupplyInvarint(t *testing.T) {
 	s := setupBase(t)
 
 	baskets := []BasketWithSupply{
-		{10, api.Basket{BasketDenom: "bb1", Name: "b1"}},
-		{20, api.Basket{BasketDenom: "bb2", Name: "b2"}},
+		{10, &api.Basket{BasketDenom: "bb1", Name: "b1"}},
+		{20, &api.Basket{BasketDenom: "bb2", Name: "b2"}},
 	}
 	store := s.stateStore.BasketTable()
 	basketBalances := map[uint64]math.Dec{}
 	correctBalances := BankSupplyMock{}
 	for _, b := range baskets {
-		id, err := store.InsertReturningID(s.ctx, &b.b)
+		id, err := store.InsertReturningID(s.ctx, b.b)
 		require.NoError(err)
 		basketBalances[id] = math.NewDecFromInt64(b.supply)
 		correctBalances[b.b.BasketDenom] = sdk.NewInt64Coin(b.b.BasketDenom, b.supply)
@@ -69,7 +68,7 @@ func TestBasketSupplyInvarint(t *testing.T) {
 	for _, tc := range tcs {
 		tc.bank.GetSupply(s.sdkCtx, "abc")
 
-		msg, _ := basket.BasketSupplyInvariant(s.sdkCtx, store, tc.bank, basketBalances)
+		msg, _ := SupplyInvariant(s.sdkCtx, store, tc.bank, basketBalances)
 		if tc.msg != "" {
 			require.Contains(msg, tc.msg, tc.name)
 		} else {

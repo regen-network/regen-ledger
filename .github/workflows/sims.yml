@@ -11,7 +11,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
       - release/v*
 
 concurrency:
@@ -27,8 +27,8 @@ jobs:
         with:
           PATTERNS: |
             **/**.go
-            go.mod
-            go.sum
+            **/go.mod
+            **/go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
@@ -44,8 +44,8 @@ jobs:
         with:
           PATTERNS: |
             **/**.go
-            go.mod
-            go.sum
+            **/go.mod
+            **/go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'

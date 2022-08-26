@@ -123,12 +123,13 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 		// check time window match
 		var minStartDate time.Time
 		var criteria = basket.DateCriteria
-		if criteria.MinStartDate != nil {
+		switch {
+		case criteria.MinStartDate != nil:
 			minStartDate = criteria.MinStartDate.AsTime()
-		} else if criteria.StartDateWindow != nil {
+		case criteria.StartDateWindow != nil:
 			window := criteria.StartDateWindow.AsDuration()
 			minStartDate = blockTime.Add(-window)
-		} else if criteria.YearsInThePast != 0 {
+		case criteria.YearsInThePast != 0:
 			year := blockTime.Year() - int(criteria.YearsInThePast)
 			minStartDate = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
 		}
@@ -141,19 +142,19 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 
 	}
 
-	classId := core.GetClassIdFromBatchDenom(batch.Denom)
+	classID := core.GetClassIDFromBatchDenom(batch.Denom)
 
 	// check credit class match
-	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
+	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classID)
 	if err != nil {
 		return err
 	}
 	if !found {
-		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classId)
+		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classID)
 	}
 
 	// check credit type match
-	class, err := k.coreStore.ClassTable().GetById(ctx, classId)
+	class, err := k.coreStore.ClassTable().GetById(ctx, classID)
 	if err != nil {
 		return err
 	}
@@ -165,7 +166,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 }
 
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basketId uint64, batch *ecoApi.Batch, exponent uint32) error {
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basketID uint64, batch *ecoApi.Batch, exponent uint32) error {
 	// update user balance, subtracting from their tradable balance
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batch.Key)
 	if err != nil {
@@ -186,11 +187,11 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 
 	// update basket balance with amount sent, adding to the basket's balance.
 	var bal *api.BasketBalance
-	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basketId, batch.Denom)
+	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basketID, batch.Denom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &api.BasketBalance{
-				BasketId:       basketId,
+				BasketId:       basketID,
 				BatchDenom:     batch.Denom,
 				Balance:        amt.String(),
 				BatchStartDate: batch.StartDate,

@@ -12,10 +12,12 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/client"
 )
 
+const outputFormat = "JSON"
+
 func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -62,7 +64,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 func (s *IntegrationTestSuite) TestQueryAnchorByHashCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
 	require.NoError(err)
@@ -120,7 +122,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorByHashCmd() {
 func (s *IntegrationTestSuite) TestQueryAttestationsByAttestorCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -181,7 +183,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestorCmd() {
 func (s *IntegrationTestSuite) TestQueryAttestationsByIRICmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -242,7 +244,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRICmd() {
 func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
 	require.NoError(err)
@@ -314,7 +316,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHashCmd() {
 func (s *IntegrationTestSuite) TestQueryResolverCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -361,7 +363,7 @@ func (s *IntegrationTestSuite) TestQueryResolverCmd() {
 func (s *IntegrationTestSuite) TestQueryResolversByIRICmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -422,7 +424,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRICmd() {
 func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
 	require.NoError(err)
@@ -494,7 +496,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByHashCmd() {
 func (s *IntegrationTestSuite) TestQueryResolversByURLCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -555,7 +557,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByURLCmd() {
 func (s *IntegrationTestSuite) TestConvertIRIToHashCmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	testCases := []struct {
 		name      string
@@ -602,7 +604,7 @@ func (s *IntegrationTestSuite) TestConvertIRIToHashCmd() {
 func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
 	require := s.Require()
 	clientCtx := s.val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
+	clientCtx.OutputFormat = outputFormat
 
 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(s.hash1)
 	require.NoError(err)

@@ -8,7 +8,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-const MaxReferenceIdLength = 32
+const MaxReferenceIDLength = 32
 
 var _ legacytx.LegacyMsg = &MsgCreateProject{}
 
@@ -29,8 +29,8 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateClassId(m.ClassId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
 
 	if len(m.Metadata) > MaxMetadataLength {
@@ -38,11 +38,11 @@ func (m *MsgCreateProject) ValidateBasic() error {
 	}
 
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("jurisdiction: %s", err)
 	}
 
-	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIdLength {
-		return ecocredit.ErrMaxLimit.Wrapf("reference id: max length %d", MaxReferenceIdLength)
+	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIDLength {
+		return ecocredit.ErrMaxLimit.Wrapf("reference id: max length %d", MaxReferenceIDLength)
 	}
 
 	return nil

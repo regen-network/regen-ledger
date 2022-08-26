@@ -38,7 +38,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		Id:       req.OriginTx.Id,
 		Source:   req.OriginTx.Source,
 	}); err != nil {
-		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+		if ormerrors.AlreadyExists.Is(err) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
 		}
 		return nil, err
@@ -90,7 +90,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 				Owner:        iss.Recipient,
 				BatchDenom:   req.BatchDenom,
-				Amount:       iss.RetiredAmount,
+				Amount:       retired.String(),
 				Jurisdiction: iss.RetirementJurisdiction,
 			}); err != nil {
 				return nil, err
@@ -111,8 +111,8 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 				Sender:         moduleAddrString, // ecocredit module
 				Recipient:      iss.Recipient,
 				BatchDenom:     req.BatchDenom,
-				TradableAmount: iss.TradableAmount,
-				RetiredAmount:  iss.RetiredAmount,
+				TradableAmount: tradable.String(),
+				RetiredAmount:  retired.String(),
 			}); err != nil {
 				return nil, err
 			}

@@ -8,9 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -20,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -29,16 +31,15 @@ import (
 )
 
 type baseSuite struct {
-	t            *testing.T
-	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	ctx          context.Context
-	k            coreserver.Keeper
-	ctrl         *gomock.Controller
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *storetypes.KVStoreKey
-	sdkCtx       sdk.Context
+	t          *testing.T
+	db         ormdb.ModuleDB
+	stateStore api.StateStore
+	ctx        context.Context
+	k          coreserver.Keeper
+	ctrl       *gomock.Controller
+	bankKeeper *mocks.MockBankKeeper
+	storeKey   *storetypes.KVStoreKey
+	sdkCtx     sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -63,10 +64,12 @@ func setupBase(t *testing.T) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	_, _, authorityAddress := testdata.KeyTestPubAddr()
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authorityAddress)
+
+	basketStore, err := basketapi.NewStateStore(s.db)
+	assert.NilError(t, err)
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, authorityAddress)
 
 	return s
 }
@@ -270,8 +273,8 @@ func TestBatchSupplyInvariant(t *testing.T) {
 		tc := tc
 		suite := setupBase(t)
 		t.Run(tc.msg, func(t *testing.T) {
-			initBalances(t, suite.ctx, suite.stateStore, tc.balances)
-			initSupply(t, suite.ctx, suite.stateStore, tc.supply)
+			initBalances(suite.ctx, t, suite.stateStore, tc.balances)
+			initSupply(suite.ctx, t, suite.stateStore, tc.supply)
 
 			msg, broken := coreserver.BatchSupplyInvariant(suite.ctx, suite.k, tc.basketBalance)
 			if tc.expBroken {
@@ -283,7 +286,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 	}
 }
 
-func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances []*core.BatchBalance) {
+func initBalances(ctx context.Context, t *testing.T, ss api.StateStore, balances []*core.BatchBalance) {
 	for _, b := range balances {
 		_, err := math.NewNonNegativeDecFromString(b.TradableAmount)
 		require.NoError(t, err)
@@ -298,7 +301,7 @@ func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances
 	}
 }
 
-func initSupply(t *testing.T, ctx context.Context, ss api.StateStore, supply []*core.BatchSupply) {
+func initSupply(ctx context.Context, t *testing.T, ss api.StateStore, supply []*core.BatchSupply) {
 	for _, s := range supply {
 		err := ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 			BatchKey:        s.BatchKey,

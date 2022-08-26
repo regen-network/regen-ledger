@@ -35,3 +35,20 @@ Feature: Msg/SealBatch
     Scenario: the issuer is the credit batch issuer
       When bob attempts to seal batch with denom "C01-001-20200101-20210101-001"
       Then expect the error "only the batch issuer can seal the batch: unauthorized"
+
+  Rule: Event is emitted
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And a project with id "C01-001"
+      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+
+    Scenario: EventSealBatch is emitted
+      When alice attempts to seal batch with denom "C01-001-20200101-20210101-001"
+      Then expect event with properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001"
+      }
+      """

@@ -33,7 +33,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func TestAppImportExport(t *testing.T) {
+func TestImportExport(t *testing.T) {
 	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-import-export", "simulation")
 	if skip {
 		t.Skip("skipping app-import-export simulation")

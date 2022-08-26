@@ -17,7 +17,7 @@ import (
 	regen "github.com/regen-network/regen-ledger/v4/app"
 )
 
-func TestAppDeterminism(t *testing.T) {
+func TestDeterminism(t *testing.T) {
 	if !simapp.FlagEnabledValue {
 		t.Skip("skipping app-determinism simulation")
 	}

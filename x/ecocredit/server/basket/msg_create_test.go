@@ -1,6 +1,8 @@
-package basket_test
+//nolint:revive,stylecheck
+package basket
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -13,6 +15,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -21,12 +24,12 @@ type createSuite struct {
 	*baseSuite
 	alice               sdk.AccAddress
 	aliceBalance        sdk.Coin
-	params              core.Params
 	basketName          string
 	creditTypeAbbrev    string
 	creditTypePrecision uint32
 	res                 *basket.MsgCreateResponse
 	err                 error
+	basketFee           sdk.Coins
 }
 
 func TestCreate(t *testing.T) {
@@ -45,7 +48,13 @@ func (s *createSuite) AllowedBasketFee(a string) {
 	basketFee, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
 
-	s.params.BasketFee = basketFee
+	_, err = s.k.UpdateBasketFees(s.ctx, &basket.MsgUpdateBasketFees{
+		Authority:  "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+		BasketFees: basketFee,
+	})
+	require.NoError(s.t, err)
+
+	s.basketFee = basketFee
 }
 
 func (s *createSuite) ACreditType() {
@@ -90,8 +99,14 @@ func (s *createSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string
 	require.NoError(s.t, err)
 }
 
+func (s *createSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
 func (s *createSuite) ACreditClassWithId(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
 
 	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
 		Id:               a,
@@ -215,26 +230,30 @@ func (s *createSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.Equal(s.t, res, s.res)
 }
 
-func (s *createSuite) createExpectCalls() {
-	var basketFee sdk.Coins
+func (s *createSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event basket.EventCreate
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
 
-	s.paramsKeeper.EXPECT().
-		Get(s.sdkCtx, core.KeyBasketFee, &basketFee).
-		Do(func(ctx sdk.Context, key []byte, basketFee *sdk.Coins) {
-			*basketFee = s.params.BasketFee
-		}).
-		AnyTimes() // not expected on failed attempt
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *createSuite) createExpectCalls() {
 
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 
-	if len(s.params.BasketFee) == 1 {
-		expectedFee = s.params.BasketFee[0]
+	if len(s.basketFee) == 1 {
+		expectedFee = s.basketFee[0]
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
-	if len(s.params.BasketFee) == 2 {
-		expectedFee = s.params.BasketFee[1]
+	if len(s.basketFee) == 2 {
+		expectedFee = s.basketFee[1]
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
@@ -246,7 +265,7 @@ func (s *createSuite) createExpectCalls() {
 	s.bankKeeper.EXPECT().
 		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, expectedFees).
 		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
-			if s.params.BasketFee != nil {
+			if s.basketFee != nil {
 				// simulate token balance update unavailable with mocks
 				s.aliceBalance = s.aliceBalance.Sub(expectedFee)
 			}

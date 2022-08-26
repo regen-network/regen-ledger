@@ -68,3 +68,30 @@ Feature: Msg/RemoveAllowedDenom
       }
       """
       Then expect the error "allowed denom uregen: not found"
+
+  Rule: Event is emitted
+
+    Scenario: EventRemoveAllowedDenom is emitted
+      Given an allowed denom with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "bank_denom":"uregen",
+        "display_denom":"REGEN",
+        "exponent":6
+      }
+      """
+      When alice attempts to remove a bank denom with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "denom":"uregen"
+      }
+      """
+      Then expect no error
+      And expect event with properties
+      """
+      {
+        "denom": "uregen"
+      }
+      """

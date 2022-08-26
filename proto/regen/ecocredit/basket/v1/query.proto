@@ -3,6 +3,8 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "regen/ecocredit/basket/v1/state.proto";
 import "regen/ecocredit/basket/v1/types.proto";
@@ -50,6 +52,13 @@ service Query {
       } ]
     };
   }
+
+  // BasketFees returns list of fees that can be used for creating basket.
+  // Since Revision 1
+  rpc BasketFees(QueryBasketFeesRequest) returns (QueryBasketFeesResponse) {
+    option (google.api.http).get = "/regen/ecocredit/basket/v1/basket-fees";
+  }
+
 }
 
 // QueryBasketRequest is the Query/Basket request type.
@@ -188,4 +197,19 @@ message BasketBalanceInfo {
 
   // balance is the amount of ecocredits held in the basket
   string balance = 2;
+}
+
+// QueryBasketFeesRequest is the Query/BasketFees request type.
+// Since Revision 1
+message QueryBasketFeesRequest { }
+
+// QueryBasketFeesResponse is the Query/BasketFees response type.
+// Since Revision 1
+message QueryBasketFeesResponse {
+
+  // fees is the BasketFees message type
+  repeated cosmos.base.v1beta1.Coin fees = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }

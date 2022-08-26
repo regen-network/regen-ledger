@@ -1,15 +1,17 @@
 package server
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -81,12 +83,24 @@ func (s *anchorSuite) TheAnchorEntryExistsWithTimestamp(a string) {
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	dataID, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
 	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
+	require.NotNil(s.t, dataID)
 
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId.Id)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataID.Id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataAnchor)
 	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
+}
+
+func (s *anchorSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event data.EventAnchor
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }

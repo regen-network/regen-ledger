@@ -23,8 +23,8 @@ func (m *MsgUpdateClassAdmin) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
-	if err := ValidateClassId(m.ClassId); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {

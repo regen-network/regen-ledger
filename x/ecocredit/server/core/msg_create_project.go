@@ -8,13 +8,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // CreateProject creates a new project for a specific credit class.
 func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (*core.MsgCreateProjectResponse, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
@@ -36,7 +35,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 	}
 
 	// check if non-empty reference id is unique within the scope of the credit class
-	err = k.verifyReferenceId(ctx, classInfo.Key, req.ReferenceId)
+	err = k.verifyReferenceID(ctx, classInfo.Key, req.ReferenceId)
 	if err != nil {
 		return nil, err
 	}
@@ -84,20 +83,20 @@ func (k Keeper) genProjectID(ctx context.Context, classKey uint64, classID strin
 		return "", err
 	}
 
-	return core.FormatProjectId(classID, nextSeq), nil
+	return core.FormatProjectID(classID, nextSeq), nil
 }
 
-// verifyReferenceId prevents multiple projects from having the same reference id within the
+// verifyReferenceID prevents multiple projects from having the same reference id within the
 // scope of a credit class. We verify this here at the message server level rather than at the
 // ORM level because reference id is optional and therefore multiple projects within the scope
 // of a credit class can have an empty reference id (see BridgeReceive for more information)
-func (k Keeper) verifyReferenceId(ctx context.Context, classKey uint64, referenceId string) error {
-	if referenceId == "" {
+func (k Keeper) verifyReferenceID(ctx context.Context, classKey uint64, referenceID string) error {
+	if referenceID == "" {
 		// reference id is optional so an empty reference id is valid
 		return nil
 	}
 
-	key := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(classKey, referenceId)
+	key := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(classKey, referenceID)
 	it, err := k.stateStore.ProjectTable().List(ctx, key)
 	if err != nil {
 		return err
@@ -105,7 +104,7 @@ func (k Keeper) verifyReferenceId(ctx context.Context, classKey uint64, referenc
 	defer it.Close()
 	if it.Next() {
 		return sdkerrors.ErrInvalidRequest.Wrapf(
-			"a project with reference id %s already exists within this credit class", referenceId,
+			"a project with reference id %s already exists within this credit class", referenceID,
 		)
 	}
 
