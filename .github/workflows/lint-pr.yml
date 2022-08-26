@@ -1,4 +1,4 @@
-name: Lint-PR
+name: Title
 
 # **What it does**: Runs a linter on pull request titles that
 # ensures titles adhere to semantic commits.
