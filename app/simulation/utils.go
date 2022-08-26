@@ -10,6 +10,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	regen "github.com/regen-network/regen-ledger/v4/app"
 )
 
@@ -40,7 +41,7 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 	return simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp,
 		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
-		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
+		simtypes.RandomAccounts,
 		regen.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),
 		config,

@@ -8,7 +8,7 @@ SIM_TEST_DIR = ./app/simulation
 
 SEED ?= 1
 PERIOD ?= 5
-NUM_BLOCKS ?= 50
+NUM_BLOCKS ?= 20
 BLOCK_SIZE ?= 200
 GENESIS ?= ${HOME}/.regen/config/genesis.json
 

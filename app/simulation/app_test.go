@@ -12,7 +12,7 @@ import (
 )
 
 func TestApp(t *testing.T) {
-	cfg, db, dir, logger, skip, err := simapp.SetupSimulation("app-simulation", "simulation")
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-simulation", "simulation")
 	if skip {
 		t.Skip("skipping application simulation")
 	}
@@ -38,14 +38,14 @@ func TestApp(t *testing.T) {
 	require.Equal(t, regen.AppName, app.Name())
 
 	// run randomized simulation
-	_, simParams, simErr := simulateFromSeed(t, app, cfg)
+	_, simParams, simErr := simulateFromSeed(t, app, config)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, cfg, simParams)
+	err = simapp.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
-	if cfg.Commit {
+	if config.Commit {
 		simapp.PrintStats(db)
 	}
 }

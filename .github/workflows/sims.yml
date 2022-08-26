@@ -1,7 +1,7 @@
 name: Sims
 
-# **What it does**: Runs simulations (determinism, import-export)
-# when go files have been modified.
+# **What it does**: Runs application simulations when go files
+# have been modified.
 #
 # **Why we have it**: Ensures the application is production ready.
 #
@@ -70,7 +70,7 @@ jobs:
       - run: make sim-import-export
         if: env.GIT_DIFF
 
-  sim-after-import:
+  after-import:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

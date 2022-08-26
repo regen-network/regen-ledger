@@ -1,7 +1,7 @@
 name: Sims Nightly
 
-# **What it does**: Runs simulations (full, after-import) on a
-# set schedule.
+# **What it does**: Runs application simulations with increased
+# block numbers on a set schedule.
 #
 # **Why we have it**: Ensures the application is production ready.
 #
