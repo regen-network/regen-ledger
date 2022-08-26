@@ -27,6 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            **/go.mod
+            **/go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
@@ -65,6 +70,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            **/go.mod
+            **/go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
@@ -83,6 +93,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            **/go.mod
+            **/go.sum
       - uses: actions/download-artifact@v2
         with:
           name: coverage-app
@@ -115,6 +130,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            **/go.mod
+            **/go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
