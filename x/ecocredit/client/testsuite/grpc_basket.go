@@ -186,3 +186,19 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestQueryBasketParams() {
+	require := s.Require()
+
+	bz, err := rest.GetRequest(fmt.Sprintf(
+		"%s/%s/basket-fees",
+		s.val.APIAddress,
+		basketRoute,
+	))
+	require.NoError(err)
+	require.NotContains(string(bz), "code")
+
+	var res basket.QueryBasketFeesResponse
+	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+	require.NotEmpty(res.Fees)
+}

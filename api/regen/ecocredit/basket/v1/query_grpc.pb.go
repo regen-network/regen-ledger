@@ -30,6 +30,9 @@ type QueryClient interface {
 	BasketBalances(ctx context.Context, in *QueryBasketBalancesRequest, opts ...grpc.CallOption) (*QueryBasketBalancesResponse, error)
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(ctx context.Context, in *QueryBasketBalanceRequest, opts ...grpc.CallOption) (*QueryBasketBalanceResponse, error)
+	// BasketFees returns list of fees that can be used for creating basket.
+	// Since Revision 1
+	BasketFees(ctx context.Context, in *QueryBasketFeesRequest, opts ...grpc.CallOption) (*QueryBasketFeesResponse, error)
 }
 
 type queryClient struct {
@@ -76,6 +79,15 @@ func (c *queryClient) BasketBalance(ctx context.Context, in *QueryBasketBalanceR
 	return out, nil
 }
 
+func (c *queryClient) BasketFees(ctx context.Context, in *QueryBasketFeesRequest, opts ...grpc.CallOption) (*QueryBasketFeesResponse, error) {
+	out := new(QueryBasketFeesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Query/BasketFees", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -88,6 +100,9 @@ type QueryServer interface {
 	BasketBalances(context.Context, *QueryBasketBalancesRequest) (*QueryBasketBalancesResponse, error)
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(context.Context, *QueryBasketBalanceRequest) (*QueryBasketBalanceResponse, error)
+	// BasketFees returns list of fees that can be used for creating basket.
+	// Since Revision 1
+	BasketFees(context.Context, *QueryBasketFeesRequest) (*QueryBasketFeesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -106,6 +121,9 @@ func (UnimplementedQueryServer) BasketBalances(context.Context, *QueryBasketBala
 }
 func (UnimplementedQueryServer) BasketBalance(context.Context, *QueryBasketBalanceRequest) (*QueryBasketBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BasketBalance not implemented")
+}
+func (UnimplementedQueryServer) BasketFees(context.Context, *QueryBasketFeesRequest) (*QueryBasketFeesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BasketFees not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -192,6 +210,24 @@ func _Query_BasketBalance_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BasketFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBasketFeesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BasketFees(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.basket.v1.Query/BasketFees",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BasketFees(ctx, req.(*QueryBasketFeesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -214,6 +250,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BasketBalance",
 			Handler:    _Query_BasketBalance_Handler,
+		},
+		{
+			MethodName: "BasketFees",
+			Handler:    _Query_BasketFees_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

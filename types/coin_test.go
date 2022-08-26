@@ -11,7 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 )
 
-func TestConvertCoinsToProtobuf(t *testing.T) {
+func TestConvertCoinsToProtoCoins(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    sdk.Coins

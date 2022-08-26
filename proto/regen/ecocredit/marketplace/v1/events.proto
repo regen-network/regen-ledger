@@ -42,3 +42,14 @@ message EventAllowDenom {
   // allowed denoms for use in the marketplace.
   string denom = 1;
 }
+
+// EventRemoveAllowedDenom is an event emitted when a denom is removed from use
+// in the marketplace.
+//
+// Since Revision 1
+message EventRemoveAllowedDenom {
+
+  // denom is the bank denom (e.g. ibc/GLKHDSG423SGS) removed from the list of
+  // allowed denoms for use in the marketplace.
+  string denom = 1;
+}

@@ -90,7 +90,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 				Owner:        iss.Recipient,
 				BatchDenom:   req.BatchDenom,
-				Amount:       iss.RetiredAmount,
+				Amount:       retired.String(),
 				Jurisdiction: iss.RetirementJurisdiction,
 			}); err != nil {
 				return nil, err
@@ -111,8 +111,8 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 				Sender:         moduleAddrString, // ecocredit module
 				Recipient:      iss.Recipient,
 				BatchDenom:     req.BatchDenom,
-				TradableAmount: iss.TradableAmount,
-				RetiredAmount:  iss.RetiredAmount,
+				TradableAmount: tradable.String(),
+				RetiredAmount:  retired.String(),
 			}); err != nil {
 				return nil, err
 			}

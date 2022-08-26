@@ -44,12 +44,13 @@ var (
 )
 
 type Module struct {
-	key           storetypes.StoreKey
-	paramSpace    paramtypes.Subspace
-	accountKeeper ecocredit.AccountKeeper
-	bankKeeper    ecocredit.BankKeeper
-	Keeper        server.Keeper
-	authority     sdk.AccAddress
+	key storetypes.StoreKey
+	// legacySubspace is used solely for migration of x/ecocredit managed parameters
+	legacySubspace paramtypes.Subspace
+	accountKeeper  ecocredit.AccountKeeper
+	bankKeeper     ecocredit.BankKeeper
+	Keeper         server.Keeper
+	authority      sdk.AccAddress
 }
 
 func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
@@ -85,21 +86,21 @@ func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier { ret
 // NewModule returns a new Module object.
 func NewModule(
 	storeKey storetypes.StoreKey,
-	paramSpace paramtypes.Subspace,
+	legacySubspace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	authority sdk.AccAddress,
 ) *Module {
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
+	if !legacySubspace.HasKeyTable() {
+		legacySubspace = legacySubspace.WithKeyTable(coretypes.ParamKeyTable())
 	}
 
 	return &Module{
-		key:           storeKey,
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
-		authority:     authority,
+		key:            storeKey,
+		legacySubspace: legacySubspace,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
+		authority:      authority,
 	}
 }
 
@@ -120,7 +121,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
-	svr := server.NewServer(a.key, a.paramSpace, a.accountKeeper, a.bankKeeper, a.authority)
+	svr := server.NewServer(a.key, a.legacySubspace, a.accountKeeper, a.bankKeeper, a.authority)
 	coretypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
 	coretypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
 
@@ -129,6 +130,11 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 
 	marketplacetypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
 	marketplacetypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
+
+	m := server.NewMigrator(svr, a.legacySubspace)
+	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, m.Migrate2to3); err != nil {
+		panic(err)
+	}
 	a.Keeper = svr
 }
 
@@ -220,7 +226,7 @@ func (a Module) GetTxCmd() *cobra.Command {
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (Module) ConsensusVersion() uint64 { return 2 }
+func (Module) ConsensusVersion() uint64 { return 3 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
