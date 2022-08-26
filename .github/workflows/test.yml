@@ -14,6 +14,9 @@ on:
       - main
       - release/v*
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -22,6 +25,8 @@ jobs:
   tests:
     name: Sub modules test and code coverage
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
