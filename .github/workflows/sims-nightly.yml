@@ -12,6 +12,9 @@ on:
     # Runs "at 1am every day"
     - cron: "0 0 * * *"
 
+env:
+  NUM_BLOCKS: 500
+
 jobs:
   app:
     runs-on: ubuntu-latest
@@ -27,7 +30,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=500 make sim-app
+      - run: make sim-app
         if: env.GIT_DIFF
 
   app-multi-seed:
@@ -44,7 +47,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=500 make sim-app-multi-seed
+      - run: make sim-app-multi-seed
         if: env.GIT_DIFF
 
   determinism:
@@ -61,7 +64,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=500 make sim-determinism
+      - run: make sim-determinism
         if: env.GIT_DIFF
 
   import-export:
@@ -78,10 +81,10 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=500 make sim-import-export
+      - run: make sim-import-export
         if: env.GIT_DIFF
 
-  sim-after-import:
+  after-import:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -95,5 +98,5 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=500 make sim-after-import
+      - run: make sim-after-import
         if: env.GIT_DIFF

@@ -39,7 +39,9 @@ func interBlockCacheOpt() func(*baseapp.BaseApp) {
 
 func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config) (bool, simulation.Params, error) {
 	return simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp,
+		t,
+		os.Stdout,
+		app.BaseApp,
 		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simtypes.RandomAccounts,
 		regen.SimulationOperations(app, app.AppCodec(), config),

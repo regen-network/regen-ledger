@@ -122,7 +122,7 @@ func TestImportExport(t *testing.T) {
 		{app.GetKey(govtypes.StoreKey), newApp.GetKey(govtypes.StoreKey), [][]byte{}},
 		{app.GetKey(group.ModuleName), newApp.GetKey(group.ModuleName), [][]byte{}},
 		{app.GetKey(minttypes.StoreKey), newApp.GetKey(minttypes.StoreKey), [][]byte{}},
-		//{app.GetKey(paramtypes.StoreKey), newApp.GetKey(paramtypes.StoreKey), [][]byte{}}, // FIXME
+		// {app.GetKey(paramtypes.StoreKey), newApp.GetKey(paramtypes.StoreKey), [][]byte{}}, // FIXME
 		{app.GetKey(slashingtypes.StoreKey), newApp.GetKey(slashingtypes.StoreKey), [][]byte{}},
 		{app.GetKey(stakingtypes.StoreKey), newApp.GetKey(stakingtypes.StoreKey), [][]byte{
 			stakingtypes.UnbondingQueueKey,
