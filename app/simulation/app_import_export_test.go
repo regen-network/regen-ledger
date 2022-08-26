@@ -6,9 +6,6 @@ import (
 	"os"
 	"testing"
 
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
-	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -18,9 +15,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -29,6 +28,7 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 
 	regen "github.com/regen-network/regen-ledger/v4/app"
+	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -147,9 +147,17 @@ func TestImportExport(t *testing.T) {
 		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, skp.Prefixes)
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
 
-		fmt.Printf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
+		fmt.Printf(
+			"compared %d different key/value pairs between %s and %s\n",
+			len(failedKVAs), skp.A, skp.B,
+		)
 
-		simLog := simapp.GetSimulationLog(skp.A.Name(), app.SimulationManager().StoreDecoders, failedKVAs, failedKVBs)
+		simLog := simapp.GetSimulationLog(
+			skp.A.Name(),
+			app.SimulationManager().StoreDecoders,
+			failedKVAs,
+			failedKVBs,
+		)
 		require.Equal(t, len(failedKVAs), 0, simLog)
 	}
 }

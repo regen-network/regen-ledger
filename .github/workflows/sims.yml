@@ -33,7 +33,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: make sim-app
+      - run: NUM_BLOCKS=20 make sim-app
         if: env.GIT_DIFF
 
   determinism:
@@ -50,7 +50,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: make sim-determinism
+      - run: NUM_BLOCKS=20 make sim-determinism
         if: env.GIT_DIFF
 
   import-export:
@@ -67,7 +67,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: make sim-import-export
+      - run: NUM_BLOCKS=5 make sim-import-export
         if: env.GIT_DIFF
 
   after-import:
@@ -84,5 +84,5 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: make sim-after-import
+      - run: NUM_BLOCKS=5 make sim-after-import
         if: env.GIT_DIFF
