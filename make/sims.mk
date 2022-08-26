@@ -63,13 +63,13 @@ sim-determinism:
 sim-import-export: runsim
 	@echo "Running import export simulation..."
 	@echo "Period=$(PERIOD) NumBlocks=$(NUM_BLOCKS)"
-	runsim -Jobs=4 -SimAppPkg=$(SIM_TEST_DIR) -ExitOnFail \
+	runsim -Jobs=4 -SimAppPkg=$(SIM_TEST_DIR) -ExitOnFail -Seeds $(SEEDS) \
 		$(NUM_BLOCKS) $(PERIOD) TestImportExport
 
 sim-after-import: runsim
 	@echo "Running app after import simulation..."
 	@echo "Period=$(PERIOD) NumBlocks=$(NUM_BLOCKS)"
-	runsim -Jobs=4 -SimAppPkg=$(SIM_TEST_DIR) -ExitOnFail \
+	runsim -Jobs=4 -SimAppPkg=$(SIM_TEST_DIR) -ExitOnFail -Seeds $(SEEDS) \
 		$(NUM_BLOCKS) $(PERIOD) TestAfterImport
 
 .PHONY: runsim sim-app sim-app-genesis sim-app-multi-seed sim-app-multi-seed-genesis \

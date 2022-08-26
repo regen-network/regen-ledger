@@ -18,6 +18,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SEEDS: 1,2,3
+  NUM_BLOCKS: 20
+
 jobs:
   app:
     runs-on: ubuntu-latest
@@ -33,7 +37,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=20 make sim-app
+      - run: make sim-app
         if: env.GIT_DIFF
 
   determinism:
@@ -50,7 +54,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=20 make sim-determinism
+      - run: make sim-determinism
         if: env.GIT_DIFF
 
   import-export:
@@ -67,7 +71,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=5 make sim-import-export
+      - run: make sim-import-export
         if: env.GIT_DIFF
 
   after-import:
@@ -84,5 +88,5 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: NUM_BLOCKS=5 make sim-after-import
+      - run: make sim-after-import
         if: env.GIT_DIFF
