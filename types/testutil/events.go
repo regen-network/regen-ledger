@@ -25,7 +25,8 @@ func MatchEvent(expected proto.Message, emitted sdk.Event) error {
 // the proto.MessageName of the passed msg.
 func GetEvent(msg proto.Message, events []sdk.Event) (e sdk.Event, found bool) {
 	eventName := proto.MessageName(msg)
-	for _, e := range events {
+	for i := len(events) - 1; i >= 0; i-- {
+		e = events[i]
 		if eventName == e.Type {
 			return e, true
 		}
