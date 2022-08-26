@@ -106,7 +106,7 @@ import (
 )
 
 const (
-	appName = "regen"
+	AppName = "regen"
 
 	// EnvPrefix environment variable prefix used to map environment
 	// variables to command flags
@@ -211,7 +211,7 @@ type RegenApp struct {
 	ScopedIBCMockKeeper  capabilitykeeper.ScopedKeeper
 
 	// the module manager
-	mm *module.Manager
+	ModuleManager *module.Manager
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -238,7 +238,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
-	bApp := baseapp.NewBaseApp(appName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
+	bApp := baseapp.NewBaseApp(AppName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
@@ -398,7 +398,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
-	app.mm = module.NewManager(
+	app.ModuleManager = module.NewManager(
 		append([]module.AppModule{
 			genutil.NewAppModule(
 				app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
@@ -430,7 +430,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
-	app.mm.SetOrderBeginBlockers(
+	app.ModuleManager.SetOrderBeginBlockers(
 		append([]string{
 			upgradetypes.ModuleName,
 			capabilitytypes.ModuleName,
@@ -455,7 +455,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			ibctransfertypes.ModuleName,
 		}, setCustomOrderBeginBlocker()...)...,
 	)
-	app.mm.SetOrderEndBlockers(
+	app.ModuleManager.SetOrderEndBlockers(
 		append([]string{
 			crisistypes.ModuleName,
 			govtypes.ModuleName,
@@ -485,7 +485,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
-	app.mm.SetOrderInitGenesis(
+	app.ModuleManager.SetOrderInitGenesis(
 		append([]string{
 			capabilitytypes.ModuleName,
 			authtypes.ModuleName,
@@ -511,10 +511,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		}, setCustomOrderInitGenesis()...)...,
 	)
 
-	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
+	app.ModuleManager.RegisterInvariants(&app.CrisisKeeper)
+	app.ModuleManager.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-	app.mm.RegisterServices(app.configurator)
+	app.ModuleManager.RegisterServices(app.configurator)
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
@@ -582,7 +582,7 @@ func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	resp := app.mm.BeginBlock(ctx, req)
+	resp := app.ModuleManager.BeginBlock(ctx, req)
 	events := app.smm.BeginBlock(ctx, req)
 	resp.Events = append(resp.Events, events...)
 	return resp
@@ -590,7 +590,7 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 
 // EndBlocker application updates every end block
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	resp := app.mm.EndBlock(ctx, req)
+	resp := app.ModuleManager.EndBlock(ctx, req)
 	events, vals := app.smm.EndBlock(ctx, req)
 	if len(resp.ValidatorUpdates) > 0 && len(vals) > 0 {
 		panic("validator EndBlock updates already set by the SDK Module Manager")
@@ -606,8 +606,8 @@ func (app *RegenApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abc
 	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
-	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
-	res := app.mm.InitGenesis(ctx, app.appCodec, genesisState)
+	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap())
+	res := app.ModuleManager.InitGenesis(ctx, app.appCodec, genesisState)
 	return app.smm.InitGenesis(ctx, genesisState, res.Validators)
 }
 

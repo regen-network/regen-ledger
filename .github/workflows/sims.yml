@@ -1,6 +1,6 @@
 name: Sims
 
-# **What it does**: Runs simulations (nondeterminism, import-export)
+# **What it does**: Runs simulations (determinism, import-export)
 # when go files have been modified.
 #
 # **Why we have it**: Ensures the application is production ready.
@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sim-nondeterminism:
+  app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,11 +33,10 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - name: Run sim-nondeterminism
-        run: make sim-regen-nondeterminism
+      - run: make sim-app
         if: env.GIT_DIFF
 
-  sim-import-export:
+  determinism:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -51,6 +50,39 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - name: Run sim-import-export
-        run: make sim-regen-import-export
+      - run: make sim-determinism
+        if: env.GIT_DIFF
+
+  import-export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: make sim-import-export
+        if: env.GIT_DIFF
+
+  sim-after-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: make sim-after-import
         if: env.GIT_DIFF

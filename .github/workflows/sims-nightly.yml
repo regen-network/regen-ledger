@@ -1,6 +1,6 @@
 name: Sims Nightly
 
-# **What it does**: Runs simulations (after-import, fast) on a
+# **What it does**: Runs simulations (full, after-import) on a
 # set schedule.
 #
 # **Why we have it**: Ensures the application is production ready.
@@ -13,22 +13,87 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
+  app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-app
+        if: env.GIT_DIFF
+
+  app-multi-seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-app-multi-seed
+        if: env.GIT_DIFF
+
+  determinism:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-determinism
+        if: env.GIT_DIFF
+
+  import-export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-import-export
+        if: env.GIT_DIFF
+
   sim-after-import:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - name: Run sim-after-import
-        run: make sim-regen-after-import
-
-  sim-fast:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
-      - name: Run sim-fast
-        run: make sim-regen-fast
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-after-import
+        if: env.GIT_DIFF
