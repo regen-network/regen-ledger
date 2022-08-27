@@ -38,7 +38,7 @@ test-x-ecocredit:
 
 test-integration:
 	@echo "Testing Integration"
-	@go test ./app/testsuite/... -tags=nosimulation \
+	@go test ./app/testsuite/... \
 		-coverpkg=./... -coverprofile=coverage-integration.out -covermode=atomic
 
 test-coverage:
