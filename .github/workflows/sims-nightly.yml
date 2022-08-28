@@ -1,7 +1,7 @@
 name: Sims Nightly
 
-# **What it does**: Runs application simulations with increased
-# block numbers on a set schedule.
+# **What it does**: Runs application simulations with multiple seeds
+# and increased block numbers on a set schedule.
 #
 # **Why we have it**: Ensures the application is production ready.
 #
@@ -11,9 +11,6 @@ on:
   schedule:
     # Runs "at 1am every day"
     - cron: "0 0 * * *"
-
-env:
-  SEEDS: 2,3,5,7,11,13,17,19,23,29
 
 jobs:
   app:
