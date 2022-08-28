@@ -142,10 +142,7 @@ build: go.sum go-version
 build-linux:
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
 
-clean:
-	rm -rf $(BUILD_DIR)
-
-.PHONY: build build-linux install clean
+.PHONY: build build-linux install
 
 ###############################################################################
 ###                               Go Version                                ###
@@ -239,7 +236,6 @@ format:
 
 tools: go-version
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	go install github.com/client9/misspell/cmd/misspell@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/yoheimuta/protolint/cmd/protolint@latest
 
@@ -295,6 +291,7 @@ swagger: proto-swagger-gen
 ###############################################################################
 
 DOCKER := $(shell which docker)
+LOCALNET_DIR = $(CURDIR)/.testnets
 
 localnet-build-env:
 	$(MAKE) -C contrib/images regen-env
@@ -312,3 +309,13 @@ localnet-stop:
 	docker-compose down -v
 
 .PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
+
+###############################################################################
+###                                 Clean                                   ###
+###############################################################################
+
+clean:
+	rm -rf $(BUILD_DIR)
+	rm -rf $(LOCALNET_DIR)
+
+.PHONY: clean

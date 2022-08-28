@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  regennode0:
-    container_name: regennode0
-    image: "regenledger/regen-env"
+  regen-node-0:
+    container_name: regen-node-0
+    image: "regen-ledger/regen-env"
     ports:
       - "26656-26657:26656-26657"
       - "1317:1317"
@@ -22,9 +22,9 @@ services:
       localnet:
         ipv4_address: 192.168.10.2
 
-  regennode1:
-    container_name: regennode1
-    image: "regenledger/regen-env"
+  regen-node-1:
+    container_name: regen-node-1
+    image: "regen-ledger/regen-env"
     ports:
       - "26666-26667:26656-26657"
       - "1318:1317"
@@ -43,9 +43,9 @@ services:
       localnet:
         ipv4_address: 192.168.10.3
 
-  regennode2:
-    container_name: regennode2
-    image: "regenledger/regen-env"
+  regen-node-2:
+    container_name: regen-node-2
+    image: "regen-ledger/regen-env"
     environment:
       - DEBUG=1
       - ID=2
@@ -64,9 +64,9 @@ services:
       localnet:
         ipv4_address: 192.168.10.4
 
-  regennode3:
-    container_name: regennode3
-    image: "regenledger/regen-env"
+  regen-node-3:
+    container_name: regen-node-3
+    image: "regen-ledger/regen-env"
     environment:
       - DEBUG=1
       - ID=3
