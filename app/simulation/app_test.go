@@ -12,9 +12,9 @@ import (
 )
 
 func TestApp(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-simulation", "simulation")
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("app", "simulation")
 	if skip {
-		t.Skip("skipping application simulation")
+		t.Skip("skipping app simulation")
 	}
 	require.NoError(t, err, "simulation setup failed")
 

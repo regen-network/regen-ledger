@@ -17,7 +17,7 @@ import (
 	regen "github.com/regen-network/regen-ledger/v4/app"
 )
 
-func TestDeterminism(t *testing.T) {
+func TestAppDeterminism(t *testing.T) {
 	if !simapp.FlagEnabledValue {
 		t.Skip("skipping app-determinism simulation")
 	}
@@ -60,7 +60,7 @@ func TestDeterminism(t *testing.T) {
 			require.Equal(t, regen.AppName, app.Name())
 
 			fmt.Printf(
-				"running app-state-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
+				"running app-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
 				config.Seed, i+1, numSeeds, j+1, numTimesToRunPerSeed,
 			)
 

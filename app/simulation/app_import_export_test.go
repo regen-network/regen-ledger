@@ -32,8 +32,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func TestImportExport(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-import-export", "simulation")
+func TestAppImportExport(t *testing.T) {
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-import-export", "sim-1")
 	if skip {
 		t.Skip("skipping app-import-export simulation")
 	}
@@ -77,7 +77,7 @@ func TestImportExport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
-	_, newDB, newDir, _, _, err := simapp.SetupSimulation("app-import-export-2", "simulation-2")
+	_, newDB, newDir, _, _, err := simapp.SetupSimulation("app-import-export-2", "sim-2")
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {

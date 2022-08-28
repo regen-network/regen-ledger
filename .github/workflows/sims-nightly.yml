@@ -13,10 +13,10 @@ on:
     - cron: "0 0 * * *"
 
 env:
-  NUM_BLOCKS: 100
+  SEEDS: 2,3,5,7,11,13,17,19,23,29
 
 jobs:
-  app-multi-seed:
+  app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,24 +30,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: make sim-app-multi-seed
-        if: env.GIT_DIFF
-
-  determinism:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: 'go.mod'
-        if: env.GIT_DIFF
-      - run: make sim-determinism
+      - run: NUM_BLOCKS=500 make sim-app-multi-seed
         if: env.GIT_DIFF
 
   import-export:
@@ -64,7 +47,7 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: make sim-import-export
+      - run: NUM_BLOCKS=500 make sim-import-export-multi-seed
         if: env.GIT_DIFF
 
   after-import:
@@ -81,5 +64,22 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - run: make sim-after-import
+      - run: NUM_BLOCKS=500 make sim-after-import-multi-seed
+        if: env.GIT_DIFF
+
+  determinism:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=100 make sim-determinism-multi-seed
         if: env.GIT_DIFF

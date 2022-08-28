@@ -17,8 +17,8 @@ import (
 	regen "github.com/regen-network/regen-ledger/v4/app"
 )
 
-func TestAfterImport(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-after-import", "simulation")
+func TestAppAfterImport(t *testing.T) {
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-after-import-1", "sim-1")
 	if skip {
 		t.Skip("skipping app-after-import simulation")
 	}
@@ -67,7 +67,7 @@ func TestAfterImport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
-	_, newDB, newDir, _, _, err := simapp.SetupSimulation("app-after-import-2", "simulation-2")
+	_, newDB, newDir, _, _, err := simapp.SetupSimulation("app-after-import-2", "sim-2")
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
