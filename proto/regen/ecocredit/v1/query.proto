@@ -517,7 +517,7 @@ message QueryAllBalancesResponse {
 
   // balances are a list of balances from different credit batches that the
   // account holds.
-  repeated BatchBalanceInfo balances = 1;
+  repeated CreditBalances balances = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
