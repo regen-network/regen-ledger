@@ -13,9 +13,11 @@ on:
     # Runs "at 1am every day"
     - cron: "0 0 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

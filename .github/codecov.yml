@@ -33,7 +33,6 @@ comment:
   require_changes: true
 
 ignore:
-  - "mocks"
   - "**/mocks"
   - "**/simulation"
   - "**/*.cosmos_orm.go"
