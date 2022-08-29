@@ -20,7 +20,7 @@ require (
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
-	pgregory.net/rapid v0.4.8
+	pgregory.net/rapid v0.5.1
 )
 
 require (
