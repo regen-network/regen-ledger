@@ -74,7 +74,7 @@ func TestMigrations(t *testing.T) {
 	assert.Equal(t, basketFees.Fees[1].Denom, "uregen")
 	assert.Equal(t, basketFees.Fees[1].Amount, "2000000")
 
-	// verify core state migrated to orm tale
+	// verify core state migrated to orm table
 	classFees, err := coreStore.ClassFeesTable().Get(sdkCtx)
 	assert.NilError(t, err)
 
