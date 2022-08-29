@@ -1,7 +1,7 @@
 name: Sims Nightly
 
-# **What it does**: Runs simulations (after-import, fast) on a
-# set schedule.
+# **What it does**: Runs application simulations with multiple seeds
+# and increased block numbers on a set schedule.
 #
 # **Why we have it**: Ensures the application is production ready.
 #
@@ -13,22 +13,70 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  sim-after-import:
+  app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - name: Run sim-after-import
-        run: make sim-regen-after-import
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-app-multi-seed
+        if: env.GIT_DIFF
 
-  sim-fast:
+  import-export:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - name: Run sim-fast
-        run: make sim-regen-fast
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-import-export-multi-seed
+        if: env.GIT_DIFF
+
+  after-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=500 make sim-after-import-multi-seed
+        if: env.GIT_DIFF
+
+  determinism:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=100 make sim-determinism-multi-seed
+        if: env.GIT_DIFF
