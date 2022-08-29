@@ -3,6 +3,8 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
@@ -183,7 +185,9 @@ service Query {
   }
 
   // Params queries the ecocredit module parameters.
+  // Deprecated (Since Revision 1): This rpc will be removed in the next version.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option deprecated            = true;
     option (google.api.http).get = "/regen/ecocredit/v1/params";
   }
 
@@ -195,6 +199,27 @@ service Query {
         {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"}
       ]
     };
+  }
+
+  // AllowedClassCreators queries allowed credit class creators list.
+  //
+  // Since Revision 1
+  rpc AllowedClassCreators(QueryAllowedClassCreatorsRequest) returns (QueryAllowedClassCreatorsResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/allowed-class-creators";
+  }
+
+  // CreditClassFees queries the class creation fee.
+  //
+  // Since Revision 1
+  rpc CreditClassFees (QueryCreditClassFeesRequest) returns (QueryCreditClassFeesResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
+  }
+
+    // CreditClassAllowlistEnabled queries the class creation fee.
+  //
+  // Since Revision 1
+  rpc CreditClassAllowlistEnabled (QueryCreditClassAllowlistEnabledRequest) returns (QueryCreditClassAllowlistEnabledResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/class-allowlist-enabled";
   }
 }
 
@@ -643,4 +668,51 @@ message BatchBalanceInfo {
   // sell order is created and taken out of escrow when the sell order is either
   // cancelled, updated with a reduced quantity, or processed.
   string escrowed_amount = 5;
+}
+
+// ClassCreatorInfo is the human-readable class creator information.
+message ClassCreatorInfo {
+  // address is the address that is allowed to create credit classes
+  string address = 1;
+}
+
+// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request type.
+message QueryAllowedClassCreatorsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response type.
+message QueryAllowedClassCreatorsResponse {
+  // class_creators is the list of allowed credit class creators.
+  repeated ClassCreatorInfo class_creators = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryCreditClassAllowlistEnabledRequest is the Query/CreditClassAllowlistEnabled request type.
+message QueryCreditClassAllowlistEnabledRequest {
+
+}
+
+// QueryCreditClassAllowlistEnabledResponse is the Query/CreditClassAllowlistEnabled response type.
+message QueryCreditClassAllowlistEnabledResponse {
+  // allowlist_enabled is the state/AllowListEnabled type.
+  AllowListEnabled allowlist_enabled = 1;
+}
+
+// QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
+message QueryCreditClassFeesRequest {
+
+}
+
+// QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
+message QueryCreditClassFeesResponse {
+
+  // fees is the ClassFees message type
+  repeated cosmos.base.v1beta1.Coin fees = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
