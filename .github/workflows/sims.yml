@@ -1,9 +1,10 @@
 name: Sims
 
-# **What it does**: Runs simulations (nondeterminism, import-export)
-# when go files have been modified.
+# **What it does**: Runs application simulations when go files
+# have been modified.
 #
-# **Why we have it**: Ensures the application is production ready.
+# **Why we have it**: Ensures simulations are functioning for
+# more thorough nightly runs.
 #
 # **What does it impact**: Application stability.
 
@@ -19,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sim-nondeterminism:
+  app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,11 +34,44 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - name: Run sim-nondeterminism
-        run: make sim-regen-nondeterminism
+      - run: NUM_BLOCKS=100 make sim-app
         if: env.GIT_DIFF
 
-  sim-import-export:
+  import-export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=100 make sim-import-export
+        if: env.GIT_DIFF
+
+  after-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF
+      - run: NUM_BLOCKS=100 make sim-after-import
+        if: env.GIT_DIFF
+
+  determinism:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -51,6 +85,5 @@ jobs:
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - name: Run sim-import-export
-        run: make sim-regen-import-export
+      - run: NUM_BLOCKS=20 make sim-determinism
         if: env.GIT_DIFF
