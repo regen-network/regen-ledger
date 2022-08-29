@@ -3,6 +3,7 @@ package simulation
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	dbm "github.com/tendermint/tm-db"
@@ -103,9 +104,10 @@ func generateGenesisState(ormCtx context.Context, r *rand.Rand, ss api.StateStor
 			return err
 		}
 
+		domain := simtypes.RandStringOfLength(r, 3)
 		manager, _ := simtypes.RandomAcc(r, simState.Accounts)
 		resolverID, err := ss.ResolverTable().InsertReturningID(ormCtx, &api.Resolver{
-			Url:     "https://foo.bar",
+			Url:     fmt.Sprintf("https://%s.foo", domain),
 			Manager: manager.Address,
 		})
 		if err != nil {

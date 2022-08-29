@@ -1,0 +1,23 @@
+name: Tests Nightly
+
+# **What it does**: Runs liveness test on a set schedule.
+#
+# **Why we have it**: Ensures the application is production ready.
+#
+# **What does it impact**: Application stability.
+
+on:
+  schedule:
+    # Runs "at 1am every day"
+    - cron: "0 0 * * *"
+
+jobs:
+  liveness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+      - run: make localnet-start
+      - run: ./scripts/test_liveness.sh 100 5 100 10 localhost
