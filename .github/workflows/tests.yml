@@ -1,0 +1,142 @@
+name: Tests
+
+# **What it does**: Runs unit and integration tests when go files
+# have been modified and provides code coverage reports.
+#
+# **Why we have it**: Ensures the application is production ready.
+#
+# **What does it impact**: Application stability.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - release/v*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ["app", "types", "x/data", "x/ecocredit"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            **/go.mod
+            **/go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - run: make test-app
+        if: |
+          (env.GIT_DIFF && matrix.module == 'app') ||
+          github.ref == 'refs/heads/main'
+      - run: make test-types
+        if: |
+          (env.GIT_DIFF && matrix.module == 'types') ||
+          github.ref == 'refs/heads/main'
+      - run: make test-x-data
+        if: |
+          (env.GIT_DIFF && matrix.module == 'x/data') ||
+          github.ref == 'refs/heads/main'
+      - run: make test-x-ecocredit
+        if: |
+          (env.GIT_DIFF && matrix.module == 'x/ecocredit') ||
+          github.ref == 'refs/heads/main'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-app
+          path: coverage-app.out
+        if: |
+          (env.GIT_DIFF && matrix.module == 'app') ||
+          github.ref == 'refs/heads/main'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-types
+          path: coverage-types.out
+        if: |
+          (env.GIT_DIFF && matrix.module == 'types') ||
+          github.ref == 'refs/heads/main'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-x-data
+          path: coverage-x-data.out
+        if: |
+          (env.GIT_DIFF && matrix.module == 'x/data') ||
+          github.ref == 'refs/heads/main'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-x-ecocredit
+          path: coverage-x-ecocredit.out
+        if: |
+          (env.GIT_DIFF && matrix.module == 'x/ecocredit') ||
+          github.ref == 'refs/heads/main'
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            **/go.mod
+            **/go.sum
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - run: make test-integration
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-integration
+          path: coverage-integration.out
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: [unit, integration]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
+        with:
+          PATTERNS: |
+            **/**.go
+            **/go.mod
+            **/go.sum
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage-app
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage-types
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage-x-data
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage-x-ecocredit
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage-integration
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - run: make test-coverage
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
+      - uses: codecov/codecov-action@v3
+        with:
+          file: coverage.txt
+        if: env.GIT_DIFF || github.ref == 'refs/heads/main'
