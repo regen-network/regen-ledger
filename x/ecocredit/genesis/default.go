@@ -1,4 +1,4 @@
-package marketplace
+package genesis
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"

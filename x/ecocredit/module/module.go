@@ -32,7 +32,6 @@ import (
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	corev1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/core/v1alpha1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
@@ -171,7 +170,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	allowedDenoms := marketplacetypes.DefaultAllowedDenoms()
+	allowedDenoms := genesis.DefaultAllowedDenoms()
 	err = genesis.MergeAllowedDenomsIntoTarget(allowedDenoms, jsonTarget)
 	if err != nil {
 		panic(err)
