@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
@@ -21,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -33,6 +33,7 @@ import (
 	corev1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/core/v1alpha1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
@@ -114,7 +115,7 @@ func (a Module) Name() string {
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
-	marketplacetypes.RegisterTypes(registry)
+	markettypes.RegisterTypes(registry)
 
 	// legacy types to support querying historical events
 	corev1alpha1.RegisterTypes(registry)
@@ -128,8 +129,8 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 	baskettypes.RegisterMsgServer(cfg.MsgServer(), svr.BasketKeeper)
 	baskettypes.RegisterQueryServer(cfg.QueryServer(), svr.BasketKeeper)
 
-	marketplacetypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
-	marketplacetypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
+	markettypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
+	markettypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
 
 	m := server.NewMigrator(svr, a.legacySubspace)
 	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, m.Migrate2to3); err != nil {
@@ -142,7 +143,7 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ctx := context.Background()
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
-	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
+	markettypes.RegisterQueryHandlerClient(ctx, mux, markettypes.NewQueryClient(clientCtx))
 	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
 }
 
@@ -233,7 +234,7 @@ func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	baskettypes.RegisterLegacyAminoCodec(cdc)
 	coretypes.RegisterLegacyAminoCodec(cdc)
-	marketplacetypes.RegisterLegacyAminoCodec(cdc)
+	markettypes.RegisterLegacyAminoCodec(cdc)
 }
 
 // AppModuleSimulation functions

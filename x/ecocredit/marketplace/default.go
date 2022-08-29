@@ -1,10 +1,14 @@
 package marketplace
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+)
 
 // DefaultAllowedDenoms returns a default set of allowed denoms.
-func DefaultAllowedDenoms() []AllowedDenom {
-	return []AllowedDenom{
+func DefaultAllowedDenoms() []types.AllowedDenom {
+	return []types.AllowedDenom{
 		{
 			BankDenom:    sdk.DefaultBondDenom,
 			DisplayDenom: sdk.DefaultBondDenom,
