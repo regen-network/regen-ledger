@@ -13,7 +13,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v0.6.2
 	github.com/regen-network/regen-ledger/api v0.8.0
-	github.com/rs/zerolog v1.27.0
+	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
 	github.com/tendermint/tendermint v0.34.21
