@@ -13,10 +13,11 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/basket/keeper"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
 )
@@ -27,7 +28,7 @@ type serverImpl struct {
 	accountKeeper  ecocredit.AccountKeeper
 
 	CoreKeeper        core.Keeper
-	BasketKeeper      basket.Keeper
+	BasketKeeper      basketkeeper.Keeper
 	MarketplaceKeeper marketplace.Keeper
 
 	db               ormdb.ModuleDB
@@ -52,9 +53,9 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	}
 
 	// ensure basket submodule account is set
-	basketAddr := s.accountKeeper.GetModuleAddress(baskettypes.BasketSubModuleName)
+	basketAddr := s.accountKeeper.GetModuleAddress(basket.BasketSubModuleName)
 	if basketAddr == nil {
-		panic(fmt.Sprintf("%s module account has not been set", baskettypes.BasketSubModuleName))
+		panic(fmt.Sprintf("%s module account has not been set", basket.BasketSubModuleName))
 	}
 
 	var err error
@@ -68,7 +69,7 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
 	s.CoreKeeper = core.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, authority)
-	s.BasketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
+	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
 	s.MarketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.legacySubspace, authority)
 
 	return s

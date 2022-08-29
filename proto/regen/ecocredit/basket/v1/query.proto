@@ -9,7 +9,7 @@ import "google/api/annotations.proto";
 import "regen/ecocredit/basket/v1/state.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // Msg is the regen.ecocredit.basket.v1 Query service.
 service Query {

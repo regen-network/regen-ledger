@@ -15,7 +15,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
-	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -51,9 +51,9 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassAdminCmd(),
 		TxUpdateProjectAdminCmd(),
 		TxUpdateProjectMetadataCmd(),
-		basketcli.TxCreateBasketCmd(),
-		basketcli.TxPutInBasketCmd(),
-		basketcli.TxTakeFromBasketCmd(),
+		basketclient.TxCreateBasketCmd(),
+		basketclient.TxPutInBasketCmd(),
+		basketclient.TxTakeFromBasketCmd(),
 		marketplacecli.TxSellCmd(),
 		marketplacecli.TxUpdateSellOrdersCmd(),
 		marketplacecli.TxBuyDirectCmd(),

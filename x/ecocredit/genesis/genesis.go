@@ -22,7 +22,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -323,19 +323,19 @@ func validateMsg(m proto.Message) error {
 
 	// basket submodule
 	case *basketv1.Basket:
-		msg := &basket.Basket{}
+		msg := &baskettypes.Basket{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
 	case *basketv1.BasketClass:
-		msg := &basket.BasketClass{}
+		msg := &baskettypes.BasketClass{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
 	case *basketv1.BasketBalance:
-		msg := &basket.BasketBalance{}
+		msg := &baskettypes.BasketBalance{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
