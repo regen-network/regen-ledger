@@ -20,7 +20,7 @@ func TestQuery_AllowedClassCreators(t *testing.T) {
 	assert.Equal(t, len(res.ClassCreators), 0)
 
 	// add one class creator
-	err = s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &ecocreditv1.AllowedClassCreator{
+	err = s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &ecocreditv1.AllowedClassCreator{
 		Address: sdk.AccAddress("creator1"),
 	})
 	assert.NilError(t, err)
@@ -30,7 +30,7 @@ func TestQuery_AllowedClassCreators(t *testing.T) {
 	assert.Equal(t, len(res.ClassCreators), 1)
 
 	// add another class creator
-	err = s.stateStore.AllowedClassCreatorTable().Save(s.ctx, &ecocreditv1.AllowedClassCreator{
+	err = s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &ecocreditv1.AllowedClassCreator{
 		Address: sdk.AccAddress("creator2"),
 	})
 	assert.NilError(t, err)

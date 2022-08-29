@@ -875,7 +875,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedClassCreators() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	cmd := coreclient.QueryCreditClassCreatorsCmd()
+	cmd := coreclient.QueryAllowedClassCreatorsCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 
 	s.Require().NoError(err, out.String())

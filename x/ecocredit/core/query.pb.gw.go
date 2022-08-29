@@ -4117,7 +4117,7 @@ var (
 
 	pattern_Query_CreditClassFees_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1", "credit-class-fees"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_CreditClassAllowlistEnabled_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1", "class-allowlist-enabled"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_CreditClassAllowlistEnabled_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1", "credit-class-allowlist-enabled"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -47,6 +48,13 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
+	err = s.k.marketStore.AllowedDenomTable().Insert(s.ctx, &marketplacev1.AllowedDenom{
+		BankDenom:    "uregen",
+		DisplayDenom: "REGEN",
+		Exponent:     6,
+	})
+	assert.NilError(t, err)
+
 	result, err := s.k.Params(s.ctx, &core.QueryParamsRequest{})
 	assert.NilError(t, err)
 
@@ -54,4 +62,6 @@ func TestQuery_Params(t *testing.T) {
 	assert.DeepEqual(t, result.Params.AllowedClassCreators, []string{s.addr.String()})
 	assert.Equal(t, result.Params.CreditClassFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))).String())
 	assert.Equal(t, result.Params.BasketFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))).String())
+	assert.Equal(t, len(result.AllowedDenoms), 1)
+	assert.Equal(t, result.AllowedDenoms[0].BankDenom, "uregen")
 }

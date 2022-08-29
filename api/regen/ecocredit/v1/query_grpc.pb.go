@@ -79,7 +79,7 @@ type QueryClient interface {
 	//
 	// Since Revision 1
 	CreditClassFees(ctx context.Context, in *QueryCreditClassFeesRequest, opts ...grpc.CallOption) (*QueryCreditClassFeesResponse, error)
-	// CreditClassAllowlistEnabled queries the class creation fee.
+	// CreditClassAllowlistEnabled queries the credit class creator allowlist flag.
 	//
 	// Since Revision 1
 	CreditClassAllowlistEnabled(ctx context.Context, in *QueryCreditClassAllowlistEnabledRequest, opts ...grpc.CallOption) (*QueryCreditClassAllowlistEnabledResponse, error)
@@ -362,7 +362,7 @@ type QueryServer interface {
 	//
 	// Since Revision 1
 	CreditClassFees(context.Context, *QueryCreditClassFeesRequest) (*QueryCreditClassFeesResponse, error)
-	// CreditClassAllowlistEnabled queries the class creation fee.
+	// CreditClassAllowlistEnabled queries the credit class creator allowlist flag.
 	//
 	// Since Revision 1
 	CreditClassAllowlistEnabled(context.Context, *QueryCreditClassAllowlistEnabledRequest) (*QueryCreditClassAllowlistEnabledResponse, error)

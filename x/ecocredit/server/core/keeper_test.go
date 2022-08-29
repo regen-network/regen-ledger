@@ -23,6 +23,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
@@ -79,7 +80,10 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	basketStore, err := basketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, s.authority)
+	marketStore, err := marketplaceapi.NewStateStore(s.db)
+	assert.NilError(t, err)
+
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, s.authority)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 

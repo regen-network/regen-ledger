@@ -40,7 +40,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryProjectCmd(),
 		QueryParamsCmd(),
 		QueryCreditTypeCmd(),
-		QueryCreditClassCreatorsCmd(),
+		QueryAllowedClassCreatorsCmd(),
 		QueryCreditClassAllowlistEnabledCmd(),
 		QueryCreditClassFeesCmd(),
 		basketcli.QueryBasketCmd(),
@@ -590,8 +590,8 @@ func QueryCreditClassAllowlistEnabledCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:     "credit-class-allowlist-enabled",
 		Short:   "Retrieve the credit class allow-list flag",
-		Long:    "Retrieve the credit class allow-list enable/disable flag",
-		Example: "regen q ecocredit credit-class-fees",
+		Long:    "Retrieve the credit class allow-list flag",
+		Example: "regen q ecocredit credit-class-allowlist-enabled",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -603,16 +603,16 @@ func QueryCreditClassAllowlistEnabledCmd() *cobra.Command {
 	})
 }
 
-// QueryCreditClassCreatorsCmd returns a query command that retrives list of allowed
+// QueryAllowedClassCreatorsCmd returns a query command that retrives list of allowed
 // credit class creators with pagination.
-func QueryCreditClassCreatorsCmd() *cobra.Command {
+func QueryAllowedClassCreatorsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "credit-class-creators",
+		Use:   "allowed-class-creators",
 		Short: "Retrieve the allowed credit class creators",
 		Long:  "Retrieve the list of allowed credit class creators with pagination",
 		Example: `
-		regen q ecocredit credit-class-creators
-		regen q ecocredit credit-class-creators --limit 10`,
+		regen q ecocredit allowed-class-creators
+		regen q ecocredit allowed-class-creators --limit 10`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {

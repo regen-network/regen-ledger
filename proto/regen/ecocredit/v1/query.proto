@@ -218,13 +218,13 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
   }
 
-  // CreditClassAllowlistEnabled queries the class creation fee.
+  // CreditClassAllowlistEnabled queries the credit class creator allowlist flag.
   //
   // Since Revision 1
   rpc CreditClassAllowlistEnabled(QueryCreditClassAllowlistEnabledRequest)
       returns (QueryCreditClassAllowlistEnabledResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1/class-allowlist-enabled";
+        "/regen/ecocredit/v1/credit-class-allowlist-enabled";
   }
 }
 
@@ -557,11 +557,33 @@ message QueryCreditTypesResponse {
 // QueryParamsRequest is the Query/Params request type.
 message QueryParamsRequest {}
 
+// AllowedDenom represents the information for an allowed ask/bid denom.
+message AllowedDenomInfo {
+  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+  string bank_denom = 1;
+
+  // display_denom is the denom to display to the user and is informational.
+  // Because the denom is likely an IBC denom, this should be chosen by
+  // governance to represent the consensus trusted name of the denom.
+  string display_denom = 2;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 3;
+}
+
 // QueryParamsResponse is the Query/Params response type.
 message QueryParamsResponse {
 
   // params defines the parameters of the ecocredit module.
   Params params = 1;
+
+  // allowed_denoms is a list of coin denoms allowed to use in the ask price of
+  // sell orders.
+  //
+  // Since Revision 1
+  repeated AllowedDenomInfo allowed_denoms = 2;
+
 }
 
 // QueryCreditTypeRequest is the Query/CreditType request type
@@ -684,7 +706,7 @@ message ClassCreatorInfo {
 // QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
 // type.
 //
-// Since: Revision 1
+// Since Revision 1
 message QueryAllowedClassCreatorsRequest {
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
@@ -693,7 +715,7 @@ message QueryAllowedClassCreatorsRequest {
 // QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
 // type.
 //
-// Since: Revision 1
+// Since Revision 1
 message QueryAllowedClassCreatorsResponse {
   // class_creators is the list of allowed credit class creators.
   repeated ClassCreatorInfo class_creators = 1;
@@ -705,13 +727,13 @@ message QueryAllowedClassCreatorsResponse {
 // QueryCreditClassAllowlistEnabledRequest is the
 // Query/CreditClassAllowlistEnabled request type.
 //
-// Since: Revision 1
+// Since Revision 1
 message QueryCreditClassAllowlistEnabledRequest {}
 
 // QueryCreditClassAllowlistEnabledResponse is the
 // Query/CreditClassAllowlistEnabled response type.
 //
-// Since: Revision 1
+// Since Revision 1
 message QueryCreditClassAllowlistEnabledResponse {
   // allowlist_enabled is the state/AllowListEnabled type.
   AllowListEnabled allowlist_enabled = 1;
@@ -719,12 +741,12 @@ message QueryCreditClassAllowlistEnabledResponse {
 
 // QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
 //
-// Since: Revision 1
+// Since Revision 1
 message QueryCreditClassFeesRequest {}
 
 // QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
 //
-// Since: Revision 1
+// Since Revision 1
 message QueryCreditClassFeesResponse {
   // fees is the ClassFees message type
   repeated cosmos.base.v1beta1.Coin fees = 1 [
