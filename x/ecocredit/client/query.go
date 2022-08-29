@@ -40,6 +40,9 @@ func QueryCmd(name string) *cobra.Command {
 		QueryProjectCmd(),
 		QueryParamsCmd(),
 		QueryCreditTypeCmd(),
+		QueryCreditClassCreatorsCmd(),
+		QueryCreditClassAllowlistEnabledCmd(),
+		QueryCreditClassFeesCmd(),
 		basketcli.QueryBasketCmd(),
 		basketcli.QueryBasketsCmd(),
 		basketcli.QueryBasketBalanceCmd(),
@@ -457,6 +460,7 @@ func QueryCreditTypesCmd() *cobra.Command {
 }
 
 // QueryParamsCmd returns ecocredit module parameters.
+// Deprecated: Use individual params query instead.
 func QueryParamsCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:     "params",
@@ -560,4 +564,74 @@ func QueryCreditTypeCmd() *cobra.Command {
 			return printQueryResponse(ctx, res, err)
 		},
 	})
+}
+
+// QueryCreditClassFeesCmd returns a query command that retrives the credit class fees.
+func QueryCreditClassFeesCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:     "credit-class-fees",
+		Short:   "Retrieve the credit class fees",
+		Long:    "Retrieve the credit class fess",
+		Example: "regen q ecocredit credit-class-fees",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.CreditClassFees(cmd.Context(), &core.QueryCreditClassFeesRequest{})
+			return printQueryResponse(ctx, res, err)
+		},
+	})
+}
+
+// QueryCreditClassAllowlistEnabledCmd returns a query command that retrives the
+// class allow-list enable/disable flag.
+func QueryCreditClassAllowlistEnabledCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:     "credit-class-allowlist-enabled",
+		Short:   "Retrieve the credit class allow-list flag",
+		Long:    "Retrieve the credit class allow-list enable/disable flag",
+		Example: "regen q ecocredit credit-class-fees",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.CreditClassAllowlistEnabled(cmd.Context(), &core.QueryCreditClassAllowlistEnabledRequest{})
+			return printQueryResponse(ctx, res, err)
+		},
+	})
+}
+
+// QueryCreditClassCreatorsCmd returns a query command that retrives list of allowed
+// credit class creators with pagination.
+func QueryCreditClassCreatorsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "credit-class-creators",
+		Short: "Retrieve the allowed credit class creators",
+		Long:  "Retrieve the list of allowed credit class creators with pagination",
+		Example: `
+		regen q ecocredit credit-class-creators
+		regen q ecocredit credit-class-creators --limit 10`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.AllowedClassCreators(cmd.Context(), &core.QueryAllowedClassCreatorsRequest{
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "batches-by-project")
+
+	return qflags(cmd)
 }

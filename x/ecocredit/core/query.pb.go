@@ -2490,7 +2490,10 @@ func (m *ClassCreatorInfo) GetAddress() string {
 	return ""
 }
 
-// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request type.
+// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
+// type.
+//
+// Since: Revision 1
 type QueryAllowedClassCreatorsRequest struct {
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -2536,7 +2539,10 @@ func (m *QueryAllowedClassCreatorsRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response type.
+// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
+// type.
+//
+// Since: Revision 1
 type QueryAllowedClassCreatorsResponse struct {
 	// class_creators is the list of allowed credit class creators.
 	ClassCreators []*ClassCreatorInfo `protobuf:"bytes,1,rep,name=class_creators,json=classCreators,proto3" json:"class_creators,omitempty"`
@@ -2591,7 +2597,10 @@ func (m *QueryAllowedClassCreatorsResponse) GetPagination() *query.PageResponse 
 	return nil
 }
 
-// QueryCreditClassAllowlistEnabledRequest is the Query/CreditClassAllowlistEnabled request type.
+// QueryCreditClassAllowlistEnabledRequest is the
+// Query/CreditClassAllowlistEnabled request type.
+//
+// Since: Revision 1
 type QueryCreditClassAllowlistEnabledRequest struct {
 }
 
@@ -2630,7 +2639,10 @@ func (m *QueryCreditClassAllowlistEnabledRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCreditClassAllowlistEnabledRequest proto.InternalMessageInfo
 
-// QueryCreditClassAllowlistEnabledResponse is the Query/CreditClassAllowlistEnabled response type.
+// QueryCreditClassAllowlistEnabledResponse is the
+// Query/CreditClassAllowlistEnabled response type.
+//
+// Since: Revision 1
 type QueryCreditClassAllowlistEnabledResponse struct {
 	// allowlist_enabled is the state/AllowListEnabled type.
 	AllowlistEnabled *AllowListEnabled `protobuf:"bytes,1,opt,name=allowlist_enabled,json=allowlistEnabled,proto3" json:"allowlist_enabled,omitempty"`
@@ -2679,6 +2691,8 @@ func (m *QueryCreditClassAllowlistEnabledResponse) GetAllowlistEnabled() *AllowL
 }
 
 // QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
+//
+// Since: Revision 1
 type QueryCreditClassFeesRequest struct {
 }
 
@@ -2716,6 +2730,8 @@ func (m *QueryCreditClassFeesRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryCreditClassFeesRequest proto.InternalMessageInfo
 
 // QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
+//
+// Since: Revision 1
 type QueryCreditClassFeesResponse struct {
 	// fees is the ClassFees message type
 	Fees github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=fees,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"fees"`
@@ -3021,7 +3037,8 @@ type QueryClient interface {
 	// See Types/CreditType for more details.
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
-	// Deprecated (Since Revision 1): This rpc will be removed in the next version.
+	// Deprecated (Since Revision 1): This rpc will be removed in the next
+	// version.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// CreditType queries credit type information by abbreviation.
 	CreditType(ctx context.Context, in *QueryCreditTypeRequest, opts ...grpc.CallOption) (*QueryCreditTypeResponse, error)
@@ -3300,7 +3317,8 @@ type QueryServer interface {
 	// See Types/CreditType for more details.
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
-	// Deprecated (Since Revision 1): This rpc will be removed in the next version.
+	// Deprecated (Since Revision 1): This rpc will be removed in the next
+	// version.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// CreditType queries credit type information by abbreviation.
 	CreditType(context.Context, *QueryCreditTypeRequest) (*QueryCreditTypeResponse, error)

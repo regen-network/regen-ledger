@@ -12,6 +12,18 @@ func DefaultParams() Params {
 	)
 }
 
+// DefaultCreditTypes returns a default credit class fees.
+func DefaultCreditClassFees() ClassFees {
+	return ClassFees{
+		Fees: []*sdk.Coin{
+			{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: DefaultCreditClassFee,
+			},
+		},
+	}
+}
+
 // DefaultCreditTypes returns a default set of credit types.
 func DefaultCreditTypes() []CreditType {
 	return []CreditType{

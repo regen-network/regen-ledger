@@ -14,7 +14,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 )
 
 // InitGenesis performs genesis initialization for the ecocredit module. It
@@ -62,11 +61,6 @@ func (s serverImpl) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.Ra
 
 	jsonTarget := ormjson.NewRawMessageTarget()
 	err := s.db.ExportJSON(sdk.WrapSDKContext(ctx), jsonTarget)
-	if err != nil {
-		return nil, err
-	}
-
-	err = genesis.MergeParamsIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		return nil, err
 	}

@@ -27686,7 +27686,10 @@ func (x *ClassCreatorInfo) GetAddress() string {
 	return ""
 }
 
-// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request type.
+// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
+// type.
+//
+// Since: Revision 1
 type QueryAllowedClassCreatorsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -27723,7 +27726,10 @@ func (x *QueryAllowedClassCreatorsRequest) GetPagination() *v1beta1.PageRequest 
 	return nil
 }
 
-// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response type.
+// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
+// type.
+//
+// Since: Revision 1
 type QueryAllowedClassCreatorsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -27769,7 +27775,10 @@ func (x *QueryAllowedClassCreatorsResponse) GetPagination() *v1beta1.PageRespons
 	return nil
 }
 
-// QueryCreditClassAllowlistEnabledRequest is the Query/CreditClassAllowlistEnabled request type.
+// QueryCreditClassAllowlistEnabledRequest is the
+// Query/CreditClassAllowlistEnabled request type.
+//
+// Since: Revision 1
 type QueryCreditClassAllowlistEnabledRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -27796,7 +27805,10 @@ func (*QueryCreditClassAllowlistEnabledRequest) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{47}
 }
 
-// QueryCreditClassAllowlistEnabledResponse is the Query/CreditClassAllowlistEnabled response type.
+// QueryCreditClassAllowlistEnabledResponse is the
+// Query/CreditClassAllowlistEnabled response type.
+//
+// Since: Revision 1
 type QueryCreditClassAllowlistEnabledResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -27834,6 +27846,8 @@ func (x *QueryCreditClassAllowlistEnabledResponse) GetAllowlistEnabled() *AllowL
 }
 
 // QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
+//
+// Since: Revision 1
 type QueryCreditClassFeesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -27861,6 +27875,8 @@ func (*QueryCreditClassFeesRequest) Descriptor() ([]byte, []int) {
 }
 
 // QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
+//
+// Since: Revision 1
 type QueryCreditClassFeesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
