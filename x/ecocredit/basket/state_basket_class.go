@@ -2,9 +2,8 @@ package basket
 
 import (
 	sdkerrors "cosmossdk.io/errors"
-
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 // Validate performs basic validation of the BasketClass state type
@@ -13,7 +12,7 @@ func (m *BasketClass) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("basket id cannot be zero")
 	}
 
-	if err := core.ValidateClassID(m.ClassId); err != nil {
+	if err := base.ValidateClassID(m.ClassId); err != nil {
 		return sdkerrors.Wrap(err, "class id") // returns parse error
 	}
 

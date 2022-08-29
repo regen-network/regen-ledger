@@ -8,16 +8,16 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 type createSuite struct {
@@ -58,7 +58,7 @@ func (s *createSuite) AllowedBasketFee(a string) {
 }
 
 func (s *createSuite) ACreditType() {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -66,7 +66,7 @@ func (s *createSuite) ACreditType() {
 }
 
 func (s *createSuite) ACreditTypeWithAbbreviation(a string) {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: a,
 		Precision:    s.creditTypePrecision,
 	})
@@ -79,7 +79,7 @@ func (s *createSuite) ACreditTypeWithPrecision(b string) {
 
 	s.creditTypePrecision = uint32(precision)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -92,7 +92,7 @@ func (s *createSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string
 
 	s.creditTypePrecision = uint32(precision)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: a,
 		Precision:    s.creditTypePrecision,
 	})
@@ -106,9 +106,9 @@ func (s *createSuite) AlicesAddress(a string) {
 }
 
 func (s *createSuite) ACreditClassWithId(a string) {
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(a)
+	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(a)
 
-	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
+	err := s.coreStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               a,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})

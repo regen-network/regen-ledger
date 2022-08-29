@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 const coreRoute = "regen/ecocredit/v1"
@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryClassesResponse
+			var res types.QueryClassesResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Classes)
@@ -70,7 +70,7 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryClassResponse
+			var res types.QueryClassResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Class)
@@ -103,7 +103,7 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectResponse
+			var res types.QueryProjectResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Project)
 		})
@@ -138,7 +138,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectsResponse
+			var res types.QueryProjectsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
 
@@ -190,7 +190,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectsByClassResponse
+			var res types.QueryProjectsByClassResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
 
@@ -247,7 +247,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectsByReferenceIdResponse
+			var res types.QueryProjectsByReferenceIdResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
 
@@ -287,7 +287,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesResponse
+			var res types.QueryBatchesResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -329,7 +329,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesByIssuerResponse
+			var res types.QueryBatchesByIssuerResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -371,7 +371,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesByClassResponse
+			var res types.QueryBatchesByClassResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -413,7 +413,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesResponse
+			var res types.QueryBatchesResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -447,7 +447,7 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchResponse
+			var res types.QueryBatchResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batch)
@@ -463,7 +463,7 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
-	var res core.QueryCreditTypesResponse
+	var res types.QueryCreditTypesResponse
 	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
 	require.Greater(len(res.CreditTypes), 0)
@@ -495,7 +495,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBalanceResponse
+			var res types.QueryBalanceResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
@@ -527,7 +527,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QuerySupplyResponse
+			var res types.QuerySupplyResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
@@ -556,7 +556,7 @@ func (s *IntegrationTestSuite) TestCreditType() {
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
-	var res core.QueryCreditTypeResponse
+	var res types.QueryCreditTypeResponse
 	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
 	require.Equal(res.CreditType.Abbreviation, "C")

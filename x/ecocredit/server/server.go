@@ -13,11 +13,11 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
 )
 
@@ -26,7 +26,7 @@ type serverImpl struct {
 	bankKeeper     ecocredit.BankKeeper
 	accountKeeper  ecocredit.AccountKeeper
 
-	CoreKeeper        core.Keeper
+	CoreKeeper        basekeeper.Keeper
 	BasketKeeper      basket.Keeper
 	MarketplaceKeeper marketplace.Keeper
 
@@ -67,7 +67,7 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	s.stateStore = coreStore
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
-	s.CoreKeeper = core.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, authority)
+	s.CoreKeeper = basekeeper.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, authority)
 	s.BasketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
 	s.MarketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.legacySubspace, authority)
 
@@ -90,7 +90,7 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 	return coreStore, basketStore, marketStore
 }
 
-func (s serverImpl) QueryServers() (coretypes.QueryServer, baskettypes.QueryServer, marketplacetypes.QueryServer) {
+func (s serverImpl) QueryServers() (basetypes.QueryServer, baskettypes.QueryServer, marketplacetypes.QueryServer) {
 	return s.CoreKeeper, s.BasketKeeper, s.MarketplaceKeeper
 }
 

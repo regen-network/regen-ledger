@@ -20,9 +20,9 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	"github.com/regen-network/regen-ledger/types/fixture"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	"github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
 
@@ -51,7 +51,7 @@ func setup(t *testing.T) (*fixture.Factory, paramstypes.Subspace, bankkeeper.Bas
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
 	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
-	ecoKey := sdk.NewKVStoreKey(ecocredittypes.ModuleName)
+	ecoKey := sdk.NewKVStoreKey(ecocredit.ModuleName)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
 	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
@@ -63,11 +63,11 @@ func setup(t *testing.T) (*fixture.Factory, paramstypes.Subspace, bankkeeper.Bas
 
 	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
 	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
-	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
+	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredit.ModuleName)
 
 	maccPerms := map[string][]string{
 		minttypes.ModuleName:       {authtypes.Minter},
-		ecocredittypes.ModuleName:  {authtypes.Burner},
+		ecocredit.ModuleName:       {authtypes.Burner},
 		basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
@@ -80,7 +80,7 @@ func setup(t *testing.T) (*fixture.Factory, paramstypes.Subspace, bankkeeper.Bas
 	)
 
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	ecocreditModule := ecocredit.NewModule(ecoKey, ecocreditSubspace, accountKeeper, bankKeeper, authority)
+	ecocreditModule := module.NewModule(ecoKey, ecocreditSubspace, accountKeeper, bankKeeper, authority)
 	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 
 	return ff, ecocreditSubspace, bankKeeper, accountKeeper

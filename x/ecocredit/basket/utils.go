@@ -5,7 +5,7 @@ import (
 	"regexp"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 const (
@@ -31,7 +31,7 @@ var (
 // - denom: eco.<exponent-prefix><credit-type-abbrev>.<name>
 // - display denom: eco.<credit-type-abbrev>.<name>
 func FormatBasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, string, error) {
-	exponentPrefix, err := core.ExponentToPrefix(exponent)
+	exponentPrefix, err := base.ExponentToPrefix(exponent)
 	if err != nil {
 		return "", "", err
 	}

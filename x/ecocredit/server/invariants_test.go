@@ -6,9 +6,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"gotest.tools/v3/assert"
-
 	dbm "github.com/tendermint/tm-db"
+	"gotest.tools/v3/assert"
 
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -22,20 +21,20 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	coreserver "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
 type baseSuite struct {
 	t          *testing.T
 	db         ormdb.ModuleDB
-	stateStore api.StateStore
+	stateStore baseapi.StateStore
 	ctx        context.Context
-	k          coreserver.Keeper
+	k          basekeeper.Keeper
 	ctrl       *gomock.Controller
 	bankKeeper *mocks.MockBankKeeper
 	storeKey   *storetypes.KVStoreKey
@@ -48,7 +47,7 @@ func setupBase(t *testing.T) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.stateStore, err = api.NewStateStore(s.db)
+	s.stateStore, err = baseapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
@@ -69,7 +68,7 @@ func setupBase(t *testing.T) *baseSuite {
 
 	basketStore, err := basketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, authorityAddress)
+	s.k = basekeeper.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, authorityAddress)
 
 	return s
 }
@@ -80,14 +79,14 @@ func TestBatchSupplyInvariant(t *testing.T) {
 
 	testCases := []struct {
 		msg           string
-		balances      []*core.BatchBalance
-		supply        []*core.BatchSupply
+		balances      []*basetypes.BatchBalance
+		supply        []*basetypes.BatchSupply
 		basketBalance map[uint64]math.Dec
 		expBroken     bool
 	}{
 		{
 			"valid test case",
-			[]*core.BatchBalance{
+			[]*basetypes.BatchBalance{
 				{
 					Address:        acc1,
 					BatchKey:       1,
@@ -95,7 +94,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 					RetiredAmount:  "110",
 				},
 			},
-			[]*core.BatchSupply{
+			[]*basetypes.BatchSupply{
 				{
 					BatchKey:       1,
 					TradableAmount: "220",
@@ -107,7 +106,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 		},
 		{
 			"valid test case multiple denom",
-			[]*core.BatchBalance{
+			[]*basetypes.BatchBalance{
 				{
 					Address:        acc1,
 					BatchKey:       1,
@@ -121,7 +120,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 					RetiredAmount:  "100.1234",
 				},
 			},
-			[]*core.BatchSupply{
+			[]*basetypes.BatchSupply{
 				{
 					BatchKey:       1,
 					TradableAmount: "320.579",
@@ -138,7 +137,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 		},
 		{
 			"fail with error tradable balance not found",
-			[]*core.BatchBalance{
+			[]*basetypes.BatchBalance{
 				{
 					Address:        acc1,
 					BatchKey:       1,
@@ -150,7 +149,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 					TradableAmount: "210.456",
 				},
 			},
-			[]*core.BatchSupply{
+			[]*basetypes.BatchSupply{
 				{
 					BatchKey:       1,
 					TradableAmount: "310.579",
@@ -167,7 +166,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 		},
 		{
 			"fail with error supply does not match",
-			[]*core.BatchBalance{
+			[]*basetypes.BatchBalance{
 				{
 					Address:        acc1,
 					BatchKey:       1,
@@ -179,7 +178,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 					TradableAmount: "1234",
 				},
 			},
-			[]*core.BatchSupply{
+			[]*basetypes.BatchSupply{
 				{
 					BatchKey:       1,
 					TradableAmount: "310.579",
@@ -196,7 +195,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 		},
 		{
 			"valid case escrowed balance",
-			[]*core.BatchBalance{
+			[]*basetypes.BatchBalance{
 				{
 					Address:        acc1,
 					BatchKey:       1,
@@ -212,7 +211,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 					EscrowedAmount: "766",
 				},
 			},
-			[]*core.BatchSupply{
+			[]*basetypes.BatchSupply{
 				{
 					BatchKey:       1,
 					TradableAmount: "110",
@@ -229,7 +228,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 		},
 		{
 			"valid case multiple account",
-			[]*core.BatchBalance{
+			[]*basetypes.BatchBalance{
 				{
 					Address:        acc1,
 					BatchKey:       1,
@@ -252,7 +251,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 					EscrowedAmount: "766",
 				},
 			},
-			[]*core.BatchSupply{
+			[]*basetypes.BatchSupply{
 				{
 					BatchKey:       1,
 					TradableAmount: "2110",
@@ -276,7 +275,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			initBalances(suite.ctx, t, suite.stateStore, tc.balances)
 			initSupply(suite.ctx, t, suite.stateStore, tc.supply)
 
-			msg, broken := coreserver.BatchSupplyInvariant(suite.ctx, suite.k, tc.basketBalance)
+			msg, broken := basekeeper.BatchSupplyInvariant(suite.ctx, suite.k, tc.basketBalance)
 			if tc.expBroken {
 				require.True(t, broken, msg)
 			} else {
@@ -286,12 +285,12 @@ func TestBatchSupplyInvariant(t *testing.T) {
 	}
 }
 
-func initBalances(ctx context.Context, t *testing.T, ss api.StateStore, balances []*core.BatchBalance) {
+func initBalances(ctx context.Context, t *testing.T, ss baseapi.StateStore, balances []*basetypes.BatchBalance) {
 	for _, b := range balances {
 		_, err := math.NewNonNegativeDecFromString(b.TradableAmount)
 		require.NoError(t, err)
 
-		require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+		require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 			Address:        b.Address,
 			BatchKey:       b.BatchKey,
 			TradableAmount: b.TradableAmount,
@@ -301,9 +300,9 @@ func initBalances(ctx context.Context, t *testing.T, ss api.StateStore, balances
 	}
 }
 
-func initSupply(ctx context.Context, t *testing.T, ss api.StateStore, supply []*core.BatchSupply) {
+func initSupply(ctx context.Context, t *testing.T, ss baseapi.StateStore, supply []*basetypes.BatchSupply) {
 	for _, s := range supply {
-		err := ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+		err := ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 			BatchKey:        s.BatchKey,
 			TradableAmount:  s.TradableAmount,
 			RetiredAmount:   s.RetiredAmount,

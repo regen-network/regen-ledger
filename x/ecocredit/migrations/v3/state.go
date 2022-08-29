@@ -1,21 +1,21 @@
 package v3
 
 import (
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 // MigrateState performs in-place store migrations from ConsensusVersion 2 to 3.
-func MigrateState(sdkCtx sdk.Context, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
+func MigrateState(sdkCtx sdk.Context, ss baseapi.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	// TODO: migrate core params
 
 	// migrate basket params
-	var params core.Params
+	var params basetypes.Params
 	subspace.GetParamSet(sdkCtx, &params)
 
 	// verify basket fee is valid
@@ -23,9 +23,9 @@ func MigrateState(sdkCtx sdk.Context, ss api.StateStore, basketStore basketapi.S
 		return err
 	}
 
-	basketFees := []*basev1beta1.Coin{}
+	basketFees := []*sdkbase.Coin{}
 	for _, coin := range params.BasketFee {
-		basketFees = append(basketFees, &basev1beta1.Coin{
+		basketFees = append(basketFees, &sdkbase.Coin{
 			Denom:  coin.Denom,
 			Amount: coin.Amount.String(),
 		})

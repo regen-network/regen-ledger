@@ -4,9 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
-
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgTake{}
@@ -53,13 +52,13 @@ func (m MsgTake) ValidateBasic() error {
 
 		// retirement_location is deprecated but still supported
 		if len(m.RetirementLocation) != 0 {
-			if err := core.ValidateJurisdiction(m.RetirementLocation); err != nil {
+			if err := base.ValidateJurisdiction(m.RetirementLocation); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("retirement location: %s", err)
 			}
 		}
 
 		if len(m.RetirementJurisdiction) != 0 {
-			if err := core.ValidateJurisdiction(m.RetirementJurisdiction); err != nil {
+			if err := base.ValidateJurisdiction(m.RetirementJurisdiction); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err)
 			}
 		}
