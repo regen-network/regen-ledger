@@ -26,7 +26,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			app.UpgradeKeeper.SetModuleVersionMap(ctx, fromVM)
 
 			// transfer module consensus version has been bumped to 2
-			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+			return app.ModuleManager.RunMigrations(ctx, app.configurator, fromVM)
 		})
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
