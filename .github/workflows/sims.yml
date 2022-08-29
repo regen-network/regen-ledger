@@ -15,6 +15,9 @@ on:
       - main
       - release/v*
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -22,6 +25,8 @@ concurrency:
 jobs:
   app:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
@@ -39,6 +44,8 @@ jobs:
 
   import-export:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
@@ -56,6 +63,8 @@ jobs:
 
   after-import:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
@@ -73,6 +82,8 @@ jobs:
 
   determinism:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6

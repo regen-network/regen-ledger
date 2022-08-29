@@ -14,6 +14,9 @@ on:
       - main
       - release/v*
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -21,6 +24,8 @@ concurrency:
 jobs:
   unit:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     strategy:
       matrix:
         module: ["app", "types", "x/data", "x/ecocredit"]
@@ -83,6 +88,8 @@ jobs:
 
   integration:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
@@ -105,6 +112,8 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read  # for technote-space/get-diff-action to get git reference
     needs: [unit, integration]
     steps:
       - uses: actions/checkout@v3
