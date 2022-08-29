@@ -107,6 +107,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetProjectIdFromBatchDenom` to `GetProjectIDFromBatchDenom`
 - [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetCreditTypeAbbrevFromClassId` to `GetCreditTypeAbbrevFromClassID`
 - [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `BasketSupplyInvariant` to `SupplyInvariant`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/core` to `ecocredit/base/types/v1`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/client` core commands to `ecocredit/base/client`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/server/core` to `ecocredit/base/keeper`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/simulation` core operations to `ecocredit/base/simulation`
 
 ### Fixed
 
