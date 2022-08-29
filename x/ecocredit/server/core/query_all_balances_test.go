@@ -34,6 +34,7 @@ func TestQueryAllBalances(t *testing.T) {
 	res, err := s.k.AllBalances(s.ctx, &core.QueryAllBalancesRequest{Pagination: &query.PageRequest{Limit: 10, CountTotal: true}})
 	assert.NilError(t, err)
 	assert.Equal(t, len(res.Balances), 2)
+	assert.Equal(t, res.Pagination.Total, uint64(3))
 
 	bal1 := res.Balances[0]
 	bal2 := res.Balances[1]
