@@ -117,29 +117,3 @@ message CreditTypeProposal {
   // passes.
   CreditType credit_type = 3;
 }
-
-// CreditBalances represents a collection of credits a given address owns.
-message CreditBalances {
-
-  // address is the address of the holder of the credits.
-  string address = 1;
-
-  // balances are the
-  CreditBalance balances = 2;
-}
-
-// CreditBalance represents the total added ecocredit balances across multiple batch denoms.
-message CreditBalance {
-
-  // batch_denoms are the batch denoms of the ecocredits owned.
-  repeated string batch_denoms = 1;
-
-  // tradable_amount is the tradable amount of ecocredits.
-  string tradable_amount = 2;
-
-  // retired_amount is the retired amount of ecocredits.
-  string retired_amount = 3;
-
-  // escrowed_amount is the escrowed amount of ecocredits.
-  string escrowed_amount = 4;
-}
