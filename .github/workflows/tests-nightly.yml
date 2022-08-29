@@ -1,4 +1,4 @@
-name: Test Nightly
+name: Tests Nightly
 
 # **What it does**: Runs liveness test on a set schedule.
 #

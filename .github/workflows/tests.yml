@@ -1,4 +1,4 @@
-name: Test
+name: Tests
 
 # **What it does**: Runs unit and integration tests when go files
 # have been modified and provides code coverage reports.
