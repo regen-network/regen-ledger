@@ -7,9 +7,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/types/math"
@@ -21,38 +23,47 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgBuy             = "op_weight_msg_buy_direct"        //nolint:gosec
-	OpWeightMsgSell            = "op_weight_msg_sell"              //nolint:gosec
-	OpWeightMsgUpdateSellOrder = "op_weight_msg_update_sell_order" //nolint:gosec
-	OpWeightMsgCancelSellOrder = "op_weight_msg_cancel_sell_order" //nolint:gosec
+	OpWeightMsgBuy                = "op_weight_msg_buy_direct"           //nolint:gosec
+	OpWeightMsgSell               = "op_weight_msg_sell"                 //nolint:gosec
+	OpWeightMsgUpdateSellOrder    = "op_weight_msg_update_sell_order"    //nolint:gosec
+	OpWeightMsgCancelSellOrder    = "op_weight_msg_cancel_sell_order"    //nolint:gosec
+	OpWeightMsgAddAllowedDenom    = "op_weight_msg_add_allowed_denom"    //nolint:gosec
+	OpWeightMsgRemoveAllowedDenom = "op_weight_msg_remove_allowed_denom" //nolint:gosec
 )
 
 // basket operations weights
 const (
-	WeightBuyDirect       = 100
-	WeightSell            = 100
-	WeightUpdateSellOrder = 100
-	WeightCancelSellOrder = 100
+	WeightBuyDirect          = 100
+	WeightSell               = 100
+	WeightUpdateSellOrder    = 100
+	WeightCancelSellOrder    = 100
+	WeightAddAllowedDenom    = 100
+	WeightRemoveAllowedDenom = 100
 )
 
 // ecocredit message types
 var (
-	TypeMsgBuyDirect       = marketplace.MsgBuyDirect{}.Route()
-	TypeMsgSell            = marketplace.MsgSell{}.Route()
-	TypeMsgUpdateSellOrder = marketplace.MsgUpdateSellOrders{}.Route()
-	TypeMsgCancelSellOrder = marketplace.MsgCancelSellOrder{}.Route()
+	TypeMsgBuyDirect          = marketplace.MsgBuyDirect{}.Route()
+	TypeMsgSell               = marketplace.MsgSell{}.Route()
+	TypeMsgUpdateSellOrder    = marketplace.MsgUpdateSellOrders{}.Route()
+	TypeMsgCancelSellOrder    = marketplace.MsgCancelSellOrder{}.Route()
+	TypeMsgAddAllowedDenom    = marketplace.MsgAddAllowedDenom{}.Route()
+	TypeMsgRemoveAllowedDenom = marketplace.MsgRemoveAllowedDenom{}.Route()
 )
 
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryServer, mktQryClient marketplace.QueryServer) simulation.WeightedOperations {
+	qryClient core.QueryServer, mktQryClient marketplace.QueryServer,
+	authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
-		weightMsgBuyDirect       int
-		weightMsgSell            int
-		weightMsgUpdateSellOrder int
-		weightMsgCancelSellOrder int
+		weightMsgBuyDirect          int
+		weightMsgSell               int
+		weightMsgUpdateSellOrder    int
+		weightMsgCancelSellOrder    int
+		weightMsgAddAllowedDenom    int
+		weightMsgRemoveAllowedDenom int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,
@@ -79,6 +90,18 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgAddAllowedDenom, &weightMsgAddAllowedDenom, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddAllowedDenom = WeightAddAllowedDenom
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgRemoveAllowedDenom, &weightMsgRemoveAllowedDenom, nil,
+		func(_ *rand.Rand) {
+			weightMsgRemoveAllowedDenom = WeightRemoveAllowedDenom
+		},
+	)
+
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgBuyDirect,
@@ -95,6 +118,14 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgCancelSellOrder,
 			SimulateMsgCancelSellOrder(ak, bk, qryClient, mktQryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgAddAllowedDenom,
+			SimulateMsgAddAllowedDenom(ak, bk, authority),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgRemoveAllowedDenom,
+			SimulateMsgRemoveAllowedDenom(ak, bk, mktQryClient, authority),
 		),
 	}
 }
@@ -389,6 +420,119 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgAddAllowedDenom)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
+		msg := marketplace.MsgAddAllowedDenom{
+			Authority:    authority.String(),
+			BankDenom:    simtypes.RandStringOfLength(r, 4),
+			DisplayDenom: simtypes.RandStringOfLength(r, 4),
+			Exponent:     6,
+		}
+
+		any, err := codectypes.NewAnyWithValue(&msg)
+		if err != nil {
+			return simtypes.NoOpMsg(TypeMsgAddAllowedDenom, TypeMsgAddAllowedDenom, err.Error()), nil, err
+		}
+
+		proposalMsg := govtypes.MsgSubmitProposal{
+			InitialDeposit: initialDeposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+			Messages:       []*codectypes.Any{any},
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             &proposalMsg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	mktClient marketplace.QueryServer,
+	authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		response, err := mktClient.AllowedDenoms(sdkCtx, &marketplace.QueryAllowedDenomsRequest{})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveAllowedDenom, err.Error()), nil, err
+		}
+
+		if len(response.AllowedDenoms) == 0 {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveAllowedDenom, "no allowed denom present"), nil, nil
+		}
+
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgAddAllowedDenom)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
+		msg := marketplace.MsgRemoveAllowedDenom{
+			Authority: authority.String(),
+			Denom:     response.AllowedDenoms[0].BankDenom,
+		}
+
+		any, err := codectypes.NewAnyWithValue(&msg)
+		if err != nil {
+			return simtypes.NoOpMsg(TypeMsgAddAllowedDenom, TypeMsgAddAllowedDenom, err.Error()), nil, err
+		}
+
+		proposalMsg := govtypes.MsgSubmitProposal{
+			InitialDeposit: initialDeposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+			Messages:       []*codectypes.Any{any},
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             &proposalMsg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      *account,

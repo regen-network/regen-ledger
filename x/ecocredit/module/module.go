@@ -266,6 +266,7 @@ func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 		coreQuerier,
 		basketQuerier,
 		marketQuerier,
+		a.authority,
 	)
 }
 
