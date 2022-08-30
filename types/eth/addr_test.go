@@ -23,11 +23,11 @@ func TestAddr(t *testing.T) {
 }
 
 func testValidAddress(t *rapid.T) {
-	addr := genValidAddress.Draw(t, "addr").(string)
+	addr := genValidAddress.Draw(t, "addr")
 	require.True(t, IsValidAddress(addr))
 }
 
 func testInvalidAddress(t *rapid.T) {
-	addr := genInvalidAddress.Draw(t, "addr").(string)
+	addr := genInvalidAddress.Draw(t, "addr")
 	require.False(t, IsValidAddress(addr))
 }

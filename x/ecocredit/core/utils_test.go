@@ -22,8 +22,8 @@ func TestUtils(t *testing.T) {
 }
 
 func testFormatClassID(t *rapid.T) {
-	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
+	creditType := genCreditType.Draw(t, "creditType")
+	classSeq := rapid.Uint64().Draw(t, "classSeq")
 
 	classID := FormatClassID(creditType.Abbreviation, classSeq)
 
@@ -34,14 +34,14 @@ func testFormatClassID(t *rapid.T) {
 }
 
 func testInvalidClassID(t *rapid.T) {
-	classID := genInvalidClassID.Draw(t, "classID").(string)
+	classID := genInvalidClassID.Draw(t, "classID")
 	require.Error(t, ValidateClassID(classID))
 }
 
 func testFormatProjectID(t *rapid.T) {
-	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq").(uint64)
+	creditType := genCreditType.Draw(t, "creditType")
+	classSeq := rapid.Uint64().Draw(t, "classSeq")
+	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
 
 	classID := FormatClassID(creditType.Abbreviation, classSeq)
 	projectID := FormatProjectID(classID, projectSeq)
@@ -53,17 +53,17 @@ func testFormatProjectID(t *rapid.T) {
 }
 
 func testInvalidProjectID(t *rapid.T) {
-	projectID := genInvalidProjectID.Draw(t, "projectID").(string)
+	projectID := genInvalidProjectID.Draw(t, "projectID")
 	require.Error(t, ValidateProjectID(projectID))
 }
 
 func testFormatBatchDenom(t *rapid.T) {
-	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq").(uint64)
-	batchSeq := rapid.Uint64().Draw(t, "batchSeq").(uint64)
-	startDate := genTime.Draw(t, "startDate").(*time.Time)
-	endDate := genTime.Draw(t, "endDate").(*time.Time)
+	creditType := genCreditType.Draw(t, "creditType")
+	classSeq := rapid.Uint64().Draw(t, "classSeq")
+	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
+	batchSeq := rapid.Uint64().Draw(t, "batchSeq")
+	startDate := genTime.Draw(t, "startDate")
+	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditType.Abbreviation, classSeq)
 	projectID := FormatProjectID(classID, projectSeq)
@@ -77,14 +77,14 @@ func testFormatBatchDenom(t *rapid.T) {
 }
 
 func testInvalidBatchDenom(t *rapid.T) {
-	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom").(string)
+	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom")
 	require.Error(t, ValidateBatchDenom(batchDenom))
 }
 
 func testGetClassIDFromProjectID(t *rapid.T) {
-	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq").(uint64)
+	creditType := genCreditType.Draw(t, "creditType")
+	classSeq := rapid.Uint64().Draw(t, "classSeq")
+	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
 
 	classID := FormatClassID(creditType.Abbreviation, classSeq)
 	projectID := FormatProjectID(classID, projectSeq)
@@ -94,12 +94,12 @@ func testGetClassIDFromProjectID(t *rapid.T) {
 }
 
 func testGetClassIDFromBatchDenom(t *rapid.T) {
-	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq").(uint64)
-	batchSeq := rapid.Uint64().Draw(t, "batchSeq").(uint64)
-	startDate := genTime.Draw(t, "startDate").(*time.Time)
-	endDate := genTime.Draw(t, "endDate").(*time.Time)
+	creditType := genCreditType.Draw(t, "creditType")
+	classSeq := rapid.Uint64().Draw(t, "classSeq")
+	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
+	batchSeq := rapid.Uint64().Draw(t, "batchSeq")
+	startDate := genTime.Draw(t, "startDate")
+	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditType.Abbreviation, classSeq)
 	projectID := FormatProjectID(classID, projectSeq)
@@ -111,12 +111,12 @@ func testGetClassIDFromBatchDenom(t *rapid.T) {
 }
 
 func testGetProjectIDFromBatchDenom(t *rapid.T) {
-	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq").(uint64)
-	batchSeq := rapid.Uint64().Draw(t, "batchSeq").(uint64)
-	startDate := genTime.Draw(t, "startDate").(*time.Time)
-	endDate := genTime.Draw(t, "endDate").(*time.Time)
+	creditType := genCreditType.Draw(t, "creditType")
+	classSeq := rapid.Uint64().Draw(t, "classSeq")
+	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
+	batchSeq := rapid.Uint64().Draw(t, "batchSeq")
+	startDate := genTime.Draw(t, "startDate")
+	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditType.Abbreviation, classSeq)
 	projectID := FormatProjectID(classID, projectSeq)
@@ -128,8 +128,8 @@ func testGetProjectIDFromBatchDenom(t *rapid.T) {
 }
 
 func testGetCreditTypeAbbrevFromClassID(t *rapid.T) {
-	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
+	creditType := genCreditType.Draw(t, "creditType")
+	classSeq := rapid.Uint64().Draw(t, "classSeq")
 
 	classID := FormatClassID(creditType.Abbreviation, classSeq)
 	result := GetCreditTypeAbbrevFromClassID(classID)
@@ -138,7 +138,7 @@ func testGetCreditTypeAbbrevFromClassID(t *rapid.T) {
 
 // genCreditType generates an empty credit type with a random valid abbreviation
 var genCreditType = rapid.Custom(func(t *rapid.T) *CreditType {
-	abbr := rapid.StringMatching(`[A-Z]{1,3}`).Draw(t, "abbr").(string)
+	abbr := rapid.StringMatching(`[A-Z]{1,3}`).Draw(t, "abbr")
 	return &CreditType{
 		Abbreviation: abbr,
 	}
@@ -167,8 +167,8 @@ var genInvalidBatchDenom = rapid.OneOf(
 // genTime generates time values up to the year ~9999 to avoid overflowing the
 // denomination format.
 var genTime = rapid.Custom(func(t *rapid.T) *time.Time {
-	secs := rapid.Int64Range(0, 2e11).Draw(t, "secs").(int64)
-	nanos := rapid.Int64Range(0, 1e15).Draw(t, "nanos").(int64)
+	secs := rapid.Int64Range(0, 2e11).Draw(t, "secs")
+	nanos := rapid.Int64Range(0, 1e15).Draw(t, "nanos")
 	time := time.Unix(secs, nanos)
 	return &time
 })
