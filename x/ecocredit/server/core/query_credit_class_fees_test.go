@@ -52,7 +52,6 @@ func TestQuery_CreditClassFees(t *testing.T) {
 	result, err = s.k.CreditClassFees(s.ctx, &core.QueryCreditClassFeesRequest{})
 	assert.NilError(t, err)
 
-	fmt.Println(result)
 	assert.Equal(t, result.Fees.Len(), 2)
 	assert.Equal(t, result.Fees.AmountOf("uregen").Equal(math.NewInt(1e7)), true)
 
