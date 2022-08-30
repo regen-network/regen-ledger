@@ -557,7 +557,7 @@ message QueryCreditTypesResponse {
 // QueryParamsRequest is the Query/Params request type.
 message QueryParamsRequest {}
 
-// AllowedDenom represents the information for an allowed ask/bid denom.
+// AllowedDenom represents the information for an allowed ask denom.
 message AllowedDenomInfo {
   // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
   string bank_denom = 1;
