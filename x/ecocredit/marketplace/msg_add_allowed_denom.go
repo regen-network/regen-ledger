@@ -2,12 +2,12 @@ package marketplace
 
 import (
 	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 )
 
 var _ legacytx.LegacyMsg = &MsgAddAllowedDenom{}

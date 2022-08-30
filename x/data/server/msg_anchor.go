@@ -6,6 +6,7 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 
 	"cosmossdk.io/errors"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
