@@ -8,13 +8,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 

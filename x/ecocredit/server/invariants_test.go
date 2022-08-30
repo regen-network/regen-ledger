@@ -69,6 +69,7 @@ func setupBase(t *testing.T) *baseSuite {
 
 	basketStore, err := basketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
+
 	marketStore, err := marketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 

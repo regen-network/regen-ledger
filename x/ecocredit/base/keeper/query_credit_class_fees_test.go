@@ -4,11 +4,12 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"gotest.tools/v3/assert"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 func TestQuery_CreditClassFees(t *testing.T) {
@@ -20,8 +21,8 @@ func TestQuery_CreditClassFees(t *testing.T) {
 	assert.Equal(t, result.Fees.Len(), 0)
 
 	// initialize credit class fees
-	err = s.stateStore.ClassFeesTable().Save(s.ctx, &ecocreditv1.ClassFees{
-		Fees: []*basev1beta1.Coin{
+	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  "uatom",
 				Amount: "20000000",
@@ -36,8 +37,8 @@ func TestQuery_CreditClassFees(t *testing.T) {
 	assert.Equal(t, result.Fees.AmountOf("uatom").Equal(math.NewInt(2e7)), true)
 
 	// initialize credit class fees
-	err = s.stateStore.ClassFeesTable().Save(s.ctx, &ecocreditv1.ClassFees{
-		Fees: []*basev1beta1.Coin{
+	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  "uatom",
 				Amount: "20000000",

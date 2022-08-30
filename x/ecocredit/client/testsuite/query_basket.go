@@ -6,9 +6,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )

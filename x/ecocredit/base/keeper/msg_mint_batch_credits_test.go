@@ -9,13 +9,13 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 

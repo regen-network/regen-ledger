@@ -24,6 +24,6 @@ type Keeper interface {
 	RegisterInvariants(sdk.InvariantRegistry)
 	InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) ([]types.ValidatorUpdate, error)
 	ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error)
-	GetStateStores() (api.StateStore, basketapi.StateStore, marketapi.StateStore)
 	QueryServers() (basetypes.QueryServer, baskettypes.QueryServer, markettypes.QueryServer)
+	GetStateStores() (api.StateStore, basketapi.StateStore, marketapi.StateStore)
 }

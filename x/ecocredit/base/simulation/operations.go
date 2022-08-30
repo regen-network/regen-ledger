@@ -15,11 +15,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	marketsims "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/simulation"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"

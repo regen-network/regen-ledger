@@ -14,8 +14,8 @@ func TestOriginTxValidate(t *testing.T) {
 
 	tcs := []struct {
 		name string
-		err string
-		o   OriginTx
+		err  string
+		o    OriginTx
 	}{
 		{
 			"empty id",

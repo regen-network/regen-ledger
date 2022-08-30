@@ -2,10 +2,10 @@ package genesis
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 // DefaultParams returns a default set of parameters.

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/protobuf/proto"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 )
 
 func (s *GenesisTestSuite) TestInitExportGenesis() {

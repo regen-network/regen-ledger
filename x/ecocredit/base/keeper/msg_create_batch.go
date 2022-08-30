@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -13,6 +12,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )

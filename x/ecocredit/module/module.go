@@ -159,12 +159,6 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	params := genesis.DefaultParams()
-	err = genesis.MergeParamsIntoTarget(cdc, &params, jsonTarget)
-	if err != nil {
-		panic(err)
-	}
-
 	creditTypes := genesis.DefaultCreditTypes()
 	err = genesis.MergeCreditTypesIntoTarget(creditTypes, jsonTarget)
 	if err != nil {
