@@ -22,6 +22,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -69,7 +70,10 @@ func setupBase(t *testing.T) *baseSuite {
 
 	basketStore, err := basketapi.NewStateStore(s.db)
 	assert.NilError(t, err)
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, authorityAddress)
+
+	marketStore, err := marketplaceapi.NewStateStore(s.db)
+	assert.NilError(t, err)
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, authorityAddress)
 
 	return s
 }

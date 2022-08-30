@@ -5,10 +5,17 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
+	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
@@ -635,4 +642,66 @@ func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, s
 	jsn, err := target.JSON()
 	require.NoError(t, err)
 	return jsn
+}
+
+func TestMergeClassFeesIntoTarget(t *testing.T) {
+	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	assert.NilError(t, err)
+
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err = db.DefaultJSON(jsonTarget)
+	assert.NilError(t, err)
+
+	classFees := core.DefaultCreditClassFees()
+	err = MergeCreditClassFeesIntoTarget(cdc, classFees, jsonTarget)
+	assert.NilError(t, err)
+
+	raw, err := jsonTarget.JSON()
+	assert.NilError(t, err)
+
+	jsonSource, err := ormjson.NewRawMessageSource(raw)
+	assert.NilError(t, err)
+
+	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&classFees)))
+	assert.NilError(t, err)
+
+	var expected api.ClassFees
+	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &expected)
+	assert.NilError(t, err)
+
+	assert.Equal(t, len(classFees.Fees), 1)
+	assert.Equal(t, classFees.Fees[0].Amount.String(), expected.Fees[0].Amount)
+	assert.Equal(t, classFees.Fees[0].Denom, expected.Fees[0].Denom)
+}
+
+func TestMergeBasketFeesIntoTarget(t *testing.T) {
+	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	assert.NilError(t, err)
+
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err = db.DefaultJSON(jsonTarget)
+	assert.NilError(t, err)
+
+	basketFees := DefaultBasketFees()
+	err = MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
+	assert.NilError(t, err)
+
+	raw, err := jsonTarget.JSON()
+	assert.NilError(t, err)
+
+	jsonSource, err := ormjson.NewRawMessageSource(raw)
+	assert.NilError(t, err)
+
+	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&basketFees)))
+	assert.NilError(t, err)
+
+	var expected basketapi.BasketFees
+	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &expected)
+	assert.NilError(t, err)
+
+	assert.Equal(t, len(basketFees.Fees), 1)
+	assert.Equal(t, basketFees.Fees[0].Amount.String(), expected.Fees[0].Amount)
+	assert.Equal(t, basketFees.Fees[0].Denom, expected.Fees[0].Denom)
 }

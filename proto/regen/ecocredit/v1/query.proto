@@ -3,6 +3,8 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
@@ -193,7 +195,10 @@ service Query {
   }
 
   // Params queries the ecocredit module parameters.
+  // Deprecated (Since Revision 1): This rpc will be removed in the next
+  // version.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option deprecated = true;
     option (google.api.http).get = "/regen/ecocredit/v1/params";
   }
 
@@ -205,6 +210,31 @@ service Query {
         {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"}
       ]
     };
+  }
+
+  // AllowedClassCreators queries allowed credit class creators list.
+  //
+  // Since Revision 1
+  rpc AllowedClassCreators(QueryAllowedClassCreatorsRequest)
+      returns (QueryAllowedClassCreatorsResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/allowed-class-creators";
+  }
+
+  // CreditClassFees queries the class creation fee.
+  //
+  // Since Revision 1
+  rpc CreditClassFees(QueryCreditClassFeesRequest)
+      returns (QueryCreditClassFeesResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
+  }
+
+  // CreditClassAllowlistEnabled queries the credit class creator allowlist flag.
+  //
+  // Since Revision 1
+  rpc CreditClassAllowlistEnabled(QueryCreditClassAllowlistEnabledRequest)
+      returns (QueryCreditClassAllowlistEnabledResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/credit-class-allowlist-enabled";
   }
 }
 
@@ -559,11 +589,33 @@ message QueryCreditTypesResponse {
 // QueryParamsRequest is the Query/Params request type.
 message QueryParamsRequest {}
 
+// AllowedDenom represents the information for an allowed ask denom.
+message AllowedDenomInfo {
+  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+  string bank_denom = 1;
+
+  // display_denom is the denom to display to the user and is informational.
+  // Because the denom is likely an IBC denom, this should be chosen by
+  // governance to represent the consensus trusted name of the denom.
+  string display_denom = 2;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 3;
+}
+
 // QueryParamsResponse is the Query/Params response type.
 message QueryParamsResponse {
 
   // params defines the parameters of the ecocredit module.
   Params params = 1;
+
+  // allowed_denoms is a list of bank denoms allowed to be used in the ask price of
+  // sell orders.
+  //
+  // Since Revision 1
+  repeated AllowedDenomInfo allowed_denoms = 2;
+
 }
 
 // QueryCreditTypeRequest is the Query/CreditType request type
@@ -675,4 +727,57 @@ message BatchBalanceInfo {
   // sell order is created and taken out of escrow when the sell order is either
   // cancelled, updated with a reduced quantity, or processed.
   string escrowed_amount = 5;
+}
+
+// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
+// type.
+//
+// Since Revision 1
+message QueryAllowedClassCreatorsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
+// type.
+//
+// Since Revision 1
+message QueryAllowedClassCreatorsResponse {
+  // class_creators is the list of allowed credit class creators.
+  repeated string class_creators = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
+//
+// Since Revision 1
+message QueryCreditClassFeesRequest {}
+
+// QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
+//
+// Since Revision 1
+message QueryCreditClassFeesResponse {
+  // fees is the ClassFees message type
+  repeated cosmos.base.v1beta1.Coin fees = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// QueryCreditClassAllowlistEnabledRequest is the
+// Query/CreditClassAllowlistEnabled request type.
+//
+// Since Revision 1
+message QueryCreditClassAllowlistEnabledRequest {}
+
+// QueryCreditClassAllowlistEnabledResponse is the
+// Query/CreditClassAllowlistEnabled response type.
+//
+// Since Revision 1
+message QueryCreditClassAllowlistEnabledResponse {
+  // allowlist_enabled determines whether or not the allowlist for creating
+  // credit classes is enabled.
+  bool allowlist_enabled = 1;
 }

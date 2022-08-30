@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -18,6 +19,7 @@ type Keeper struct {
 	moduleAddress sdk.AccAddress
 
 	basketStore basketapi.StateStore
+	marketStore marketplaceapi.StateStore
 
 	// the address capable of executing ecocredit params messages. Typically, this
 	// should be the x/gov module account.
@@ -29,6 +31,7 @@ func NewKeeper(
 	bk ecocredit.BankKeeper,
 	ma sdk.AccAddress,
 	basketStore basketapi.StateStore,
+	marketStore marketplaceapi.StateStore,
 	authority sdk.AccAddress,
 ) Keeper {
 	return Keeper{
@@ -37,5 +40,6 @@ func NewKeeper(
 		moduleAddress: ma,
 		basketStore:   basketStore,
 		authority:     authority,
+		marketStore:   marketStore,
 	}
 }

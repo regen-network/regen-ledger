@@ -513,3 +513,49 @@ func MergeAllowedDenomsIntoTarget(messages []markettypes.AllowedDenom, target or
 
 	return w.Close()
 }
+
+// MergeCreditClassFeesIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeCreditClassFeesIntoTarget(
+	cdc codec.JSONCodec,
+	creditClassFees core.ClassFees,
+	target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&creditClassFees)))
+	if err != nil {
+		return err
+	}
+
+	bz, err := cdc.MarshalJSON(&creditClassFees)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(bz)
+	if err != nil {
+		return err
+	}
+
+	return w.Close()
+}
+
+// MergeBasketFeesIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeBasketFeesIntoTarget(
+	cdc codec.JSONCodec,
+	basketFees baskettypes.BasketFees,
+	target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&basketFees)))
+	if err != nil {
+		return err
+	}
+
+	bz, err := cdc.MarshalJSON(&basketFees)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(bz)
+	if err != nil {
+		return err
+	}
+
+	return w.Close()
+}

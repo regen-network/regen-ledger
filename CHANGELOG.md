@@ -86,6 +86,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`
 - [#1416](https://github.com/regen-network/regen-ledger/pull/1416) Add `QueryAllBalances` query
 - [#1417](https://github.com/regen-network/regen-ledger/pull/1417) Add ecocredit params state migration
+- [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `AllowedClassCreators` params query
+- [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassFees` params query
+- [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
+
 
 #### Changed
 

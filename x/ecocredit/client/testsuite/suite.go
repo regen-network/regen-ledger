@@ -204,7 +204,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
-				Amount: "10",
+				Amount: core.DefaultBasketFee.String(),
 			},
 		},
 	})
@@ -229,6 +229,33 @@ func (s *IntegrationTestSuite) setupGenesis() {
 		Name:         "carbon",
 		Unit:         "metric ton CO2 equivalent",
 		Precision:    6,
+	})
+	require.NoError(err)
+
+	// set credit class fees
+	err = coreStore.ClassFeesTable().Save(ctx, &api.ClassFees{
+		Fees: []*sdkbase.Coin{
+			{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: core.DefaultCreditClassFee.String(),
+			},
+		},
+	})
+	require.NoError(err)
+
+	// set credit class allow list
+	err = coreStore.AllowListEnabledTable().Save(ctx, &api.AllowListEnabled{
+		Enabled: false,
+	})
+	require.NoError(err)
+
+	// set allowed credit class creators
+	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &api.AllowedClassCreator{
+		Address: sdk.AccAddress("issuer1"),
+	})
+	require.NoError(err)
+	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &api.AllowedClassCreator{
+		Address: sdk.AccAddress("issuer2"),
 	})
 	require.NoError(err)
 

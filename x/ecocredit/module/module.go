@@ -158,14 +158,20 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	params := coretypes.DefaultParams()
-	err = genesis.MergeParamsIntoTarget(cdc, &params, jsonTarget)
+	creditTypes := coretypes.DefaultCreditTypes()
+	err = genesis.MergeCreditTypesIntoTarget(creditTypes, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
 
-	creditTypes := coretypes.DefaultCreditTypes()
-	err = genesis.MergeCreditTypesIntoTarget(creditTypes, jsonTarget)
+	creditClassFees := coretypes.DefaultCreditClassFees()
+	err = genesis.MergeCreditClassFeesIntoTarget(cdc, creditClassFees, jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	basketFees := genesis.DefaultBasketFees()
+	err = genesis.MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
