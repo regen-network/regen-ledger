@@ -1,8 +1,7 @@
 package marketplace
 
 import (
-	sdkerrors "cosmossdk.io/errors"
-
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -16,7 +15,7 @@ func (m *Market) Validate() error {
 	}
 
 	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return sdkerrors.Wrap(err, "credit type abbrev") // returns parse error
+		return errors.Wrap(err, "credit type abbrev") // returns parse error
 	}
 
 	if m.BankDenom == "" {
