@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -29,9 +29,9 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
@@ -130,7 +130,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// create a basket and set test value
-	s.basketDenom = s.createBasket(s.val.ClientCtx, &basket.MsgCreate{
+	s.basketDenom = s.createBasket(s.val.ClientCtx, &baskettypes.MsgCreate{
 		Curator:          s.addr1.String(),
 		Name:             "NCT",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
@@ -139,10 +139,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// put credits in basket (for testing basket balance)
-	s.putInBasket(s.val.ClientCtx, &basket.MsgPut{
+	s.putInBasket(s.val.ClientCtx, &baskettypes.MsgPut{
 		Owner:       s.addr1.String(),
 		BasketDenom: s.basketDenom,
-		Credits: []*basket.BasketCredit{
+		Credits: []*baskettypes.BasketCredit{
 			{
 				BatchDenom: s.batchDenom,
 				Amount:     "1000",
@@ -201,7 +201,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 
 	// add basket fees
 	err = basketStore.BasketFeesTable().Save(ctx, &basketapi.BasketFees{
-		Fees: []*basev1beta1.Coin{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
 				Amount: "10",
@@ -409,7 +409,7 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 	return ""
 }
 
-func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *basket.MsgCreate) (basketDenom string) {
+func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baskettypes.MsgCreate) (basketDenom string) {
 	require := s.Require()
 
 	cmd := basketclient.TxCreateBasketCmd()
@@ -429,7 +429,7 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	require.Zero(res.Code, res.RawLog)
 
 	for _, event := range res.Logs[0].Events {
-		if event.Type == proto.MessageName(&basket.EventCreate{}) {
+		if event.Type == proto.MessageName(&baskettypes.EventCreate{}) {
 			for _, attr := range event.Attributes {
 				if attr.Key == "basket_denom" {
 					return strings.Trim(attr.Value, "\"")
@@ -443,7 +443,7 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	return ""
 }
 
-func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket.MsgPut) {
+func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *baskettypes.MsgPut) {
 	require := s.Require()
 
 	// using json because array of BasketCredit is not a proto message

@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
 const basketRoute = "regen/ecocredit/basket/v1"
@@ -35,7 +35,7 @@ func (s *IntegrationTestSuite) TestQueryBasket() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketResponse
+			var res baskettypes.QueryBasketResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Basket) // deprecated
 			require.NotEmpty(res.BasketInfo)
@@ -71,7 +71,7 @@ func (s *IntegrationTestSuite) TestQueryBaskets() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketsResponse
+			var res baskettypes.QueryBasketsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Baskets) // deprecated
 			require.NotEmpty(res.BasketsInfo)
@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalance() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketBalanceResponse
+			var res baskettypes.QueryBasketBalanceResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Balance)
 		})
@@ -172,7 +172,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketBalancesResponse
+			var res baskettypes.QueryBasketBalancesResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Balances) // deprecated
 			require.NotEmpty(res.BalancesInfo)
@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) TestQueryBasketParams() {
 	require.NoError(err)
 	require.NotContains(string(bz), "code")
 
-	var res basket.QueryBasketFeesResponse
+	var res baskettypes.QueryBasketFeesResponse
 	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 	require.NotEmpty(res.Fees)
 }

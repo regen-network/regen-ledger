@@ -28,7 +28,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
@@ -64,8 +64,8 @@ type marketServer struct {
 }
 
 type basketServer struct {
-	basket.QueryClient
-	basket.MsgClient
+	baskettypes.QueryClient
+	baskettypes.MsgClient
 }
 
 var (
@@ -98,7 +98,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
-	s.basketServer = basketServer{basket.NewQueryClient(s.fixture.QueryConn()), basket.NewMsgClient(s.fixture.TxConn())}
+	s.basketServer = basketServer{baskettypes.NewQueryClient(s.fixture.QueryConn()), baskettypes.NewMsgClient(s.fixture.TxConn())}
 
 	s.marketServer = marketServer{markettypes.NewQueryClient(s.fixture.QueryConn()), markettypes.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
@@ -196,7 +196,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	s.fundAccount(user, sdk.NewCoins(balanceBefore))
 
 	// create a basket
-	res, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
+	res, err := s.basketServer.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:           s.signers[0].String(),
 		Name:              "BASKET",
 		Exponent:          6,
@@ -210,7 +210,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	basketDenom := res.BasketDenom
 
 	// check it was created
-	qRes, err := s.basketServer.Baskets(s.ctx, &basket.QueryBasketsRequest{})
+	qRes, err := s.basketServer.Baskets(s.ctx, &baskettypes.QueryBasketsRequest{})
 	require.NoError(err)
 	require.Len(qRes.Baskets, 1)
 	require.Equal(qRes.Baskets[0].BasketDenom, basketDenom)
@@ -222,10 +222,10 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// put some BAZ credits in the basket
 	creditAmtDeposited := math.NewDecFromInt64(3)
-	pRes, err := s.basketServer.Put(s.ctx, &basket.MsgPut{
+	pRes, err := s.basketServer.Put(s.ctx, &baskettypes.MsgPut{
 		Owner:       user.String(),
 		BasketDenom: basketDenom,
-		Credits:     []*basket.BasketCredit{{BatchDenom: batchDenom, Amount: creditAmtDeposited.String()}},
+		Credits:     []*baskettypes.BasketCredit{{BatchDenom: batchDenom, Amount: creditAmtDeposited.String()}},
 	})
 	require.NoError(err)
 	basketTokensReceived, err := math.NewPositiveDecFromString(pRes.AmountReceived)
@@ -238,7 +238,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Equal(i64BT, basketBal.Amount.Int64())
 
 	// make sure the basket has the credits now.
-	basketBalance, err := s.basketServer.BasketBalance(s.ctx, &basket.QueryBasketBalanceRequest{
+	basketBalance, err := s.basketServer.BasketBalance(s.ctx, &baskettypes.QueryBasketBalanceRequest{
 		BasketDenom: basketDenom,
 		BatchDenom:  batchDenom,
 	})
@@ -261,7 +261,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.NoError(s.bankKeeper.SendCoins(s.sdkCtx, user, user2, sdk.NewCoins(sdk.NewInt64Coin(basketDenom, i64BT))))
 
 	// user2 can take all the credits from the basket
-	tRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
+	tRes, err := s.basketServer.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:                  user2.String(),
 		BasketDenom:            basketDenom,
 		Amount:                 basketTokensReceived.String(),
@@ -273,7 +273,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Equal(tRes.Credits[0].Amount, creditAmtDeposited.String())
 
 	// user shouldn't be able to take any since we sent our tokens to user2
-	noRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
+	noRes, err := s.basketServer.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:                  user.String(),
 		BasketDenom:            basketDenom,
 		Amount:                 basketTokensReceived.String(),
@@ -285,7 +285,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Nil(noRes)
 
 	// there should be nothing left in the basket
-	bRes, err := s.basketServer.BasketBalance(s.ctx, &basket.QueryBasketBalanceRequest{
+	bRes, err := s.basketServer.BasketBalance(s.ctx, &baskettypes.QueryBasketBalanceRequest{
 		BasketDenom: basketDenom,
 		BatchDenom:  batchDenom,
 	})
@@ -298,7 +298,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
 
 	// create a retire enabled basket
-	resR, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
+	resR, err := s.basketServer.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:           s.signers[0].String(),
 		Name:              "RETIRE",
 		Exponent:          6,
@@ -314,10 +314,10 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	creditsToDeposit := math.NewDecFromInt64(3)
 
 	// put some credits in the basket
-	pRes, err = s.basketServer.Put(s.ctx, &basket.MsgPut{
+	pRes, err = s.basketServer.Put(s.ctx, &baskettypes.MsgPut{
 		Owner:       user.String(),
 		BasketDenom: basketDenom,
-		Credits:     []*basket.BasketCredit{{Amount: creditsToDeposit.String(), BatchDenom: batchDenom}},
+		Credits:     []*baskettypes.BasketCredit{{Amount: creditsToDeposit.String(), BatchDenom: batchDenom}},
 	})
 	require.NoError(err)
 
@@ -325,7 +325,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.NoError(err)
 
 	// take them out of the basket, retiring them
-	tRes, err = s.basketServer.Take(s.ctx, &basket.MsgTake{
+	tRes, err = s.basketServer.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:                  user.String(),
 		BasketDenom:            basketDenom,
 		Amount:                 amountBasketCoins.String(),

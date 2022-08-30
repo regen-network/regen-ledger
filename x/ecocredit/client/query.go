@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 )
@@ -40,11 +40,11 @@ func QueryCmd(name string) *cobra.Command {
 		QueryProjectCmd(),
 		QueryParamsCmd(),
 		QueryCreditTypeCmd(),
-		basketcli.QueryBasketCmd(),
-		basketcli.QueryBasketsCmd(),
-		basketcli.QueryBasketBalanceCmd(),
-		basketcli.QueryBasketBalancesCmd(),
-		basketcli.QueryBasketFeesCmd(),
+		basketclient.QueryBasketCmd(),
+		basketclient.QueryBasketsCmd(),
+		basketclient.QueryBasketBalanceCmd(),
+		basketclient.QueryBasketBalancesCmd(),
+		basketclient.QueryBasketFeesCmd(),
 		marketclient.QuerySellOrderCmd(),
 		marketclient.QuerySellOrdersCmd(),
 		marketclient.QuerySellOrdersBySellerCmd(),

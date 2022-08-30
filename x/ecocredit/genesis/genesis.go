@@ -16,13 +16,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
@@ -199,12 +199,12 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 		return err
 	}
 
-	basketStore, err := basketApi.NewStateStore(ormdb)
+	basketStore, err := basketapi.NewStateStore(ormdb)
 	if err != nil {
 		return err
 	}
 
-	bBalanceItr, err := basketStore.BasketBalanceTable().List(ormCtx, basketApi.BasketBalancePrimaryKey{})
+	bBalanceItr, err := basketStore.BasketBalanceTable().List(ormCtx, basketapi.BasketBalancePrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -322,20 +322,20 @@ func validateMsg(m proto.Message) error {
 		return msg.Validate()
 
 	// basket submodule
-	case *basketApi.Basket:
-		msg := &basket.Basket{}
+	case *basketapi.Basket:
+		msg := &baskettypes.Basket{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *basketApi.BasketClass:
-		msg := &basket.BasketClass{}
+	case *basketapi.BasketClass:
+		msg := &baskettypes.BasketClass{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *basketApi.BasketBalance:
-		msg := &basket.BasketBalance{}
+	case *basketapi.BasketBalance:
+		msg := &baskettypes.BasketBalance{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
