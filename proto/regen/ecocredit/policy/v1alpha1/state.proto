@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package regen.ecocredit.policy.v1alpha1;
+
+import "cosmos/orm/v1alpha1/orm.proto";
+
+// ProjectIssuance defines a project issuance policy and the table within which
+// the policy is stored.
+message ProjectIssuance {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 1,
+    primary_key : {fields : "id", auto_increment : true}
+    index : {id : 1, fields : "project_id"}
+    index : {id : 2, fields : "recipient"}
+  };
+
+  // id is the unique identifier and table row of the project issuance policy.
+  uint64 id = 1;
+
+  // project_id is the unique identifier of the project that the issuance policy
+  // applies to. The project issuance policy will require all credits from this
+  // project to be issued in compliance with this policy.
+  string project_id = 2;
+
+  // percent is the percentage of each credit issuance that will be issued to
+  // the recipient. The value is represented as a decimal string that must be
+  // less than 1 with a maximum precision of 6.
+  string percent = 3;
+
+  // recipient is the address of the account that will receive the percent of
+  // each credit issuance.
+  bytes recipient = 4;
+
+  // auto_retire is a boolean that determines whether the credits will be
+  // retired upon issuance or remain in a tradable state.
+  bool auto_retire = 5;
+
+  // retirement_jurisdiction is the jurisdiction of the recipient and is only
+  // required if auto-retire is enabled.
+  string retirement_jurisdiction = 6;
+}
