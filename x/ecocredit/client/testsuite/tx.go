@@ -8,10 +8,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
@@ -97,7 +97,7 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCreateClassCmd()
+			cmd := client.TxCreateClassCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -180,7 +180,7 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCreateProjectCmd()
+			cmd := client.TxCreateProjectCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -203,16 +203,16 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 	issuer := s.addr1.String()
 	recipient := s.addr2.String()
 
-	startDate, err := types.ParseDate("start date", "2020-01-01")
+	startDate, err := regentypes.ParseDate("start date", "2020-01-01")
 	require.NoError(err)
 
-	endDate, err := types.ParseDate("end date", "2021-01-01")
+	endDate, err := regentypes.ParseDate("end date", "2021-01-01")
 	require.NoError(err)
 
-	bz, err := s.val.ClientCtx.Codec.MarshalJSON(&core.MsgCreateBatch{
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(&types.MsgCreateBatch{
 		Issuer:    issuer,
 		ProjectId: s.projectID,
-		Issuance: []*core.BatchIssuance{
+		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:              recipient,
 				TradableAmount:         "10",
@@ -314,7 +314,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCreateBatchCmd()
+			cmd := client.TxCreateBatchCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -384,14 +384,14 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 				s.batchDenom,
 				recipient,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
-				fmt.Sprintf("--%s=%s", coreclient.FlagRetirementJurisdiction, retirementJurisdiction),
+				fmt.Sprintf("--%s=%s", client.FlagRetirementJurisdiction, retirementJurisdiction),
 			},
 		},
 	}
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxSendCmd()
+			cmd := client.TxSendCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -415,7 +415,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 	recipient := s.addr2.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]core.MsgSend_SendCredits{
+	bz, err := json.Marshal([]types.MsgSend_SendCredits{
 		{
 			BatchDenom:             s.batchDenom,
 			TradableAmount:         "10",
@@ -522,7 +522,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxSendBulkCmd()
+			cmd := client.TxSendBulkCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -545,7 +545,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 	owner := s.addr1.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]core.Credits{
+	bz, err := json.Marshal([]types.Credits{
 		{
 			BatchDenom: s.batchDenom,
 			Amount:     "10",
@@ -645,7 +645,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxRetireCmd()
+			cmd := client.TxRetireCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -668,7 +668,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	owner := s.addr1.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]core.Credits{
+	bz, err := json.Marshal([]types.Credits{
 		{
 			BatchDenom: s.batchDenom,
 			Amount:     "10",
@@ -768,7 +768,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCancelCmd()
+			cmd := client.TxCancelCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -792,7 +792,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	newAdmin := s.addr2.String()
 
 	// create new credit class to not interfere with other tests
-	classID1 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classID1 := s.createClass(s.val.ClientCtx, &types.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
@@ -801,7 +801,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	})
 
 	// create new credit class to not interfere with other tests
-	classID2 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classID2 := s.createClass(s.val.ClientCtx, &types.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
@@ -810,7 +810,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	})
 
 	// create new credit class to not interfere with other tests
-	classID3 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classID3 := s.createClass(s.val.ClientCtx, &types.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
@@ -875,7 +875,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateClassAdminCmd()
+			cmd := client.TxUpdateClassAdminCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -935,7 +935,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 			name: "valid add issuer",
 			args: []string{
 				s.classID,
-				fmt.Sprintf("--%s=%s", coreclient.FlagAddIssuers, issuer),
+				fmt.Sprintf("--%s=%s", client.FlagAddIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
 		},
@@ -943,7 +943,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 			name: "valid remove issuer",
 			args: []string{
 				s.classID,
-				fmt.Sprintf("--%s=%s", coreclient.FlagRemoveIssuers, issuer),
+				fmt.Sprintf("--%s=%s", client.FlagRemoveIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
 		},
@@ -951,7 +951,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 			name: "valid from key-name",
 			args: []string{
 				s.classID,
-				fmt.Sprintf("--%s=%s", coreclient.FlagAddIssuers, issuer),
+				fmt.Sprintf("--%s=%s", client.FlagAddIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
@@ -959,7 +959,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 			name: "valid with amino-json",
 			args: []string{
 				s.classID,
-				fmt.Sprintf("--%s=%s", coreclient.FlagRemoveIssuers, issuer),
+				fmt.Sprintf("--%s=%s", client.FlagRemoveIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -969,7 +969,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateClassIssuersCmd()
+			cmd := client.TxUpdateClassIssuersCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -1048,7 +1048,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateClassMetadataCmd()
+			cmd := client.TxUpdateClassMetadataCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -1072,7 +1072,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	newAdmin := s.addr2.String()
 
 	// create new project in order to not interfere with other tests
-	projectID1 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectID1 := s.createProject(s.val.ClientCtx, &types.MsgCreateProject{
 		Admin:        admin,
 		ClassId:      s.classID,
 		Metadata:     "metadata",
@@ -1081,7 +1081,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	})
 
 	// create new project in order to not interfere with other tests
-	projectID2 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectID2 := s.createProject(s.val.ClientCtx, &types.MsgCreateProject{
 		Admin:        admin,
 		ClassId:      s.classID,
 		Metadata:     "metadata",
@@ -1090,7 +1090,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	})
 
 	// create new project in order to not interfere with other tests
-	projectID3 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectID3 := s.createProject(s.val.ClientCtx, &types.MsgCreateProject{
 		Admin:        admin,
 		ClassId:      s.classID,
 		Metadata:     "metadata",
@@ -1155,7 +1155,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateProjectAdminCmd()
+			cmd := client.TxUpdateProjectAdminCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -1234,7 +1234,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateProjectMetadataCmd()
+			cmd := client.TxUpdateProjectMetadataCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {

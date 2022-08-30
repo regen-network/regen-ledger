@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/mux"
@@ -21,18 +20,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	basesims "github.com/regen-network/regen-ledger/x/ecocredit/base/simulation"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	basetypesv1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1alpha1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-	corev1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/core/v1alpha1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
@@ -92,7 +93,7 @@ func NewModule(
 	authority sdk.AccAddress,
 ) *Module {
 	if !legacySubspace.HasKeyTable() {
-		legacySubspace = legacySubspace.WithKeyTable(coretypes.ParamKeyTable())
+		legacySubspace = legacySubspace.WithKeyTable(basetypes.ParamKeyTable())
 	}
 
 	return &Module{
@@ -113,23 +114,23 @@ func (a Module) Name() string {
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	baskettypes.RegisterTypes(registry)
-	coretypes.RegisterTypes(registry)
-	marketplacetypes.RegisterTypes(registry)
+	basetypes.RegisterTypes(registry)
+	markettypes.RegisterTypes(registry)
 
 	// legacy types to support querying historical events
-	corev1alpha1.RegisterTypes(registry)
+	basetypesv1alpha1.RegisterTypes(registry)
 }
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
 	svr := server.NewServer(a.key, a.legacySubspace, a.accountKeeper, a.bankKeeper, a.authority)
-	coretypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
-	coretypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
+	basetypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
+	basetypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
 
 	baskettypes.RegisterMsgServer(cfg.MsgServer(), svr.BasketKeeper)
 	baskettypes.RegisterQueryServer(cfg.QueryServer(), svr.BasketKeeper)
 
-	marketplacetypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
-	marketplacetypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
+	markettypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
+	markettypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
 
 	m := server.NewMigrator(svr, a.legacySubspace)
 	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, m.Migrate2to3); err != nil {
@@ -141,9 +142,9 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ctx := context.Background()
+	basetypes.RegisterQueryHandlerClient(ctx, mux, basetypes.NewQueryClient(clientCtx))
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
-	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
-	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
+	markettypes.RegisterQueryHandlerClient(ctx, mux, markettypes.NewQueryClient(clientCtx))
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
@@ -158,19 +159,25 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	params := coretypes.DefaultParams()
-	err = genesis.MergeParamsIntoTarget(cdc, &params, jsonTarget)
-	if err != nil {
-		panic(err)
-	}
-
-	creditTypes := coretypes.DefaultCreditTypes()
+	creditTypes := genesis.DefaultCreditTypes()
 	err = genesis.MergeCreditTypesIntoTarget(creditTypes, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
 
-	allowedDenoms := marketplacetypes.DefaultAllowedDenoms()
+	creditClassFees := genesis.DefaultCreditClassFees()
+	err = genesis.MergeCreditClassFeesIntoTarget(cdc, creditClassFees, jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	basketFees := genesis.DefaultBasketFees()
+	err = genesis.MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	allowedDenoms := genesis.DefaultAllowedDenoms()
 	err = genesis.MergeAllowedDenomsIntoTarget(allowedDenoms, jsonTarget)
 	if err != nil {
 		panic(err)
@@ -200,7 +207,7 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return err
 	}
 
-	var params coretypes.Params
+	var params basetypes.Params
 	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&params)))
 	if err != nil {
 		return err
@@ -231,9 +238,9 @@ func (Module) ConsensusVersion() uint64 { return 3 }
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	basetypes.RegisterLegacyAminoCodec(cdc)
 	baskettypes.RegisterLegacyAminoCodec(cdc)
-	coretypes.RegisterLegacyAminoCodec(cdc)
-	marketplacetypes.RegisterLegacyAminoCodec(cdc)
+	markettypes.RegisterLegacyAminoCodec(cdc)
 }
 
 // AppModuleSimulation functions
@@ -260,7 +267,7 @@ func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns all the ecocredit module operations with their respective weights.
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	coreQuerier, basketQuerier, marketQuerier := a.Keeper.QueryServers()
-	return simulation.WeightedOperations(
+	return basesims.WeightedOperations(
 		simState.AppParams, simState.Cdc,
 		a.accountKeeper, a.bankKeeper,
 		coreQuerier,
