@@ -10,7 +10,6 @@ import (
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	// "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // Params queries the ecocredit module parameters.
