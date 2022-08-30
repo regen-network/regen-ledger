@@ -122,8 +122,7 @@ service Msg {
   // AddClassCreator is a governance method that allows the addition of new
   // address to the class creation allowlist.
   // Since Revision 1
-  rpc AddClassCreator(MsgAddClassCreator)
-      returns (MsgAddClassCreatorResponse);
+  rpc AddClassCreator(MsgAddClassCreator) returns (MsgAddClassCreatorResponse);
 
   // RemoveClassCreator is a governance method that removes
   // address from the creation allowlist.

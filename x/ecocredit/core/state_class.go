@@ -1,7 +1,7 @@
 package core
 
 import (
-	sdkerrors "cosmossdk.io/errors"
+	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -15,7 +15,7 @@ func (m *Class) Validate() error {
 	}
 
 	if err := ValidateClassID(m.Id); err != nil {
-		return sdkerrors.Wrap(err, "class id") // returns parse error
+		return errors.Wrap(err, "class id") // returns parse error
 	}
 
 	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(m.Admin).String()); err != nil {
@@ -27,7 +27,7 @@ func (m *Class) Validate() error {
 	}
 
 	if err := ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return sdkerrors.Wrap(err, "credit type abbrev") // returns parse error
+		return errors.Wrap(err, "credit type abbrev") // returns parse error
 	}
 
 	return nil

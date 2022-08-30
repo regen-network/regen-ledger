@@ -1,8 +1,9 @@
 package core
 
 import (
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -24,7 +25,7 @@ func (m MsgAddClassCreator) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgAddClassCreator) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrapf(err, "invalid authority address")
+		return errors.Wrapf(err, "invalid authority address")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Creator); err != nil {

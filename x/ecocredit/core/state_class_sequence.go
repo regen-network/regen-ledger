@@ -1,7 +1,7 @@
 package core
 
 import (
-	sdkerrors "cosmossdk.io/errors"
+	"cosmossdk.io/errors"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -9,7 +9,7 @@ import (
 // Validate performs basic validation of the ClassSequence state type
 func (m *ClassSequence) Validate() error {
 	if err := ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return sdkerrors.Wrap(err, "credit type abbrev") // returns parse error
+		return errors.Wrap(err, "credit type abbrev") // returns parse error
 	}
 
 	if m.NextSequence == 0 {

@@ -7,7 +7,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/marketplace/v1/state.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
 // Msg is the regen.ecocredit.marketplace.v1 Query service.
 service Query {

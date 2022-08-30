@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 const marketplaceRoute = "regen/ecocredit/marketplace/v1"
@@ -35,7 +35,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrderResponse
+			var res types.QuerySellOrderResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrder)
 		})
@@ -70,7 +70,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrdersResponse
+			var res types.QuerySellOrdersResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrders)
 
@@ -126,7 +126,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrdersByBatchResponse
+			var res types.QuerySellOrdersByBatchResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrders)
 
@@ -182,7 +182,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrdersBySellerResponse
+			var res types.QuerySellOrdersBySellerResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrders)
 
@@ -223,7 +223,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QueryAllowedDenomsResponse
+			var res types.QueryAllowedDenomsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.AllowedDenoms)
 

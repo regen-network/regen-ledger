@@ -58,7 +58,6 @@ service Query {
   rpc BasketFees(QueryBasketFeesRequest) returns (QueryBasketFeesResponse) {
     option (google.api.http).get = "/regen/ecocredit/basket/v1/basket-fees";
   }
-
 }
 
 // QueryBasketRequest is the Query/Basket request type.
@@ -201,7 +200,7 @@ message BasketBalanceInfo {
 
 // QueryBasketFeesRequest is the Query/BasketFees request type.
 // Since Revision 1
-message QueryBasketFeesRequest { }
+message QueryBasketFeesRequest {}
 
 // QueryBasketFeesResponse is the Query/BasketFees response type.
 // Since Revision 1

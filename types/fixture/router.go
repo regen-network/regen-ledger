@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"cosmossdk.io/errors"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -55,7 +57,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			sdkCtx := sdk.UnwrapSDKContext(ctx)
 			handler := rtr.msgServiceRouter.HandlerByTypeURL(typeURL)
 			if handler == nil {
-				return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", typeURL)
+				return errors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", typeURL)
 			}
 
 			res, err := handler(sdkCtx, msg)

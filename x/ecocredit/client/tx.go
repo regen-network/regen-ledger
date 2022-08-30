@@ -16,7 +16,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types"
 	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
-	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -54,11 +54,11 @@ func TxCmd(name string) *cobra.Command {
 		basketclient.TxCreateBasketCmd(),
 		basketclient.TxPutInBasketCmd(),
 		basketclient.TxTakeFromBasketCmd(),
-		marketplacecli.TxSellCmd(),
-		marketplacecli.TxUpdateSellOrdersCmd(),
-		marketplacecli.TxBuyDirectCmd(),
-		marketplacecli.TxBuyDirectBulkCmd(),
-		marketplacecli.TxCancelSellOrderCmd(),
+		marketclient.TxSellCmd(),
+		marketclient.TxUpdateSellOrdersCmd(),
+		marketclient.TxBuyDirectCmd(),
+		marketclient.TxBuyDirectBulkCmd(),
+		marketclient.TxCancelSellOrderCmd(),
 	)
 	return cmd
 }

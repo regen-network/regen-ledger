@@ -10,7 +10,7 @@ import (
 
 func GogoPageReqToPulsarPageReq(from *query.PageRequest) (*queryv1beta1.PageRequest, error) {
 	if from == nil {
-		return &queryv1beta1.PageRequest{}, nil
+		return &queryv1beta1.PageRequest{Limit: query.DefaultLimit}, nil
 	}
 
 	to := &queryv1beta1.PageRequest{}
