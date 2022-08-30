@@ -121,7 +121,7 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAddAllowedDenom,
-			SimulateMsgAddAllowedDenom(ak, bk, authority),
+			SimulateMsgAddAllowedDenom(ak, bk, mktQryClient, authority),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRemoveAllowedDenom,
@@ -433,7 +433,8 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 	}
 }
 
-func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, authority sdk.AccAddress) simtypes.Operation {
+func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient marketplace.QueryServer, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -446,11 +447,21 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return op, nil, err
 		}
 
+		bankDenom := simtypes.RandStringOfLength(r, 4)
+		res, err := qryClient.AllowedDenoms(sdkCtx, &marketplace.QueryAllowedDenomsRequest{})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, err.Error()), nil, err
+		}
+
+		if isDenomExists(res.AllowedDenoms, bankDenom) {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, fmt.Sprintf("denom %s already exists", bankDenom)), nil, nil
+		}
+
 		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
 		msg := marketplace.MsgAddAllowedDenom{
 			Authority:    authority.String(),
-			BankDenom:    simtypes.RandStringOfLength(r, 4),
-			DisplayDenom: simtypes.RandStringOfLength(r, 4),
+			BankDenom:    bankDenom,
+			DisplayDenom: bankDenom,
 			Exponent:     6,
 		}
 
@@ -485,6 +496,16 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 	}
 }
 
+func isDenomExists(allowedDenom []*marketplace.AllowedDenom, bankDenom string) bool {
+	for _, denom := range allowedDenom {
+		if denom.BankDenom == bankDenom {
+			return true
+		}
+	}
+
+	return false
+}
+
 func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	mktClient marketplace.QueryServer,
 	authority sdk.AccAddress) simtypes.Operation {
@@ -512,7 +533,7 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
 		msg := marketplace.MsgRemoveAllowedDenom{
 			Authority: authority.String(),
-			Denom:     response.AllowedDenoms[0].BankDenom,
+			Denom:     response.AllowedDenoms[r.Intn(len(response.AllowedDenoms))].BankDenom,
 		}
 
 		any, err := codectypes.NewAnyWithValue(&msg)

@@ -26,34 +26,39 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgCreate = "op_weight_msg_create_basket"   //nolint:gosec
-	OpWeightMsgPut    = "op_weight_msg_put_into_basket" //nolint:gosec
-	OpWeightMsgTake   = "op_weight_take_from_basket"    //nolint:gosec
+	OpWeightMsgCreate           = "op_weight_msg_create_basket"   //nolint:gosec
+	OpWeightMsgPut              = "op_weight_msg_put_into_basket" //nolint:gosec
+	OpWeightMsgTake             = "op_weight_take_from_basket"    //nolint:gosec
+	OpWeightMsgUpdateBasketFees = "op_weight_update_basket_fees"  //nolint:gosec
 )
 
 // basket operations weights
 const (
-	WeightCreate = 100
-	WeightPut    = 100
-	WeightTake   = 100
+	WeightCreate           = 100
+	WeightPut              = 100
+	WeightTake             = 100
+	WeightUpdateBasketFees = 100
 )
 
 // ecocredit message types
 var (
-	TypeMsgCreate = basket.MsgCreate{}.Route()
-	TypeMsgPut    = basket.MsgPut{}.Route()
-	TypeMsgTake   = basket.MsgTake{}.Route()
+	TypeMsgCreate           = basket.MsgCreate{}.Route()
+	TypeMsgPut              = basket.MsgPut{}.Route()
+	TypeMsgTake             = basket.MsgTake{}.Route()
+	TypeMsgUpdateBasketFees = basket.MsgUpdateBasketFees{}.Route()
 )
 
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryServer, basketQryClient basket.QueryServer) simulation.WeightedOperations {
+	qryClient core.QueryServer, basketQryClient basket.QueryServer,
+	authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
-		weightMsgCreate int
-		weightMsgPut    int
-		weightMsgTake   int
+		weightMsgCreate           int
+		weightMsgPut              int
+		weightMsgTake             int
+		weightMsgUpdateBasketFees int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreate, &weightMsgCreate, nil,
@@ -74,6 +79,12 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateBasketFees, &weightMsgUpdateBasketFees, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateBasketFees = WeightUpdateBasketFees
+		},
+	)
+
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreate,
@@ -87,6 +98,21 @@ func WeightedOperations(
 			weightMsgTake,
 			SimulateMsgTake(ak, bk, qryClient, basketQryClient),
 		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateBasketFees,
+			SimulateMsgUpdateBasketFees(ak, bk, qryClient, basketQryClient, authority),
+		),
+	}
+}
+
+// SimulateMsgCreate generates a Basket/MsgUpdateBasketFees with random values.
+func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient core.QueryServer,
+	basketQryClient basket.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "unable to generate mock tx"), nil, nil
 	}
 }
 

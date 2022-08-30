@@ -246,7 +246,7 @@ func WeightedOperations(
 		),
 	}
 
-	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
+	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient, authority)
 	ops = append(ops, basketOps...)
 	marketplaceOps := marketplacesims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient, authority)
 
