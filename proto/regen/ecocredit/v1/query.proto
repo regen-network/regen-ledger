@@ -578,7 +578,7 @@ message QueryParamsResponse {
   // params defines the parameters of the ecocredit module.
   Params params = 1;
 
-  // allowed_denoms is a list of coin denoms allowed to use in the ask price of
+  // allowed_denoms is a list of bank denoms allowed to be used in the ask price of
   // sell orders.
   //
   // Since Revision 1
