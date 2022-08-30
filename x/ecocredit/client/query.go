@@ -589,8 +589,8 @@ func QueryCreditClassFeesCmd() *cobra.Command {
 func QueryCreditClassAllowlistEnabledCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:     "credit-class-allowlist-enabled",
-		Short:   "Retrieve the credit class allow-list flag",
-		Long:    "Retrieve the credit class allow-list flag",
+		Short:   "Retrieve the credit class allow-list setting",
+		Long:    "Retrieve the credit class allow-list setting",
 		Example: "regen q ecocredit credit-class-allowlist-enabled",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
