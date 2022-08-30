@@ -14,8 +14,6 @@ func (k Keeper) CreditClassAllowlistEnabled(ctx context.Context, request *core.Q
 	}
 
 	return &core.QueryCreditClassAllowlistEnabledResponse{
-		AllowlistEnabled: &core.AllowListEnabled{
-			Enabled: result.Enabled,
-		},
+		AllowlistEnabled: result.Enabled,
 	}, nil
 }

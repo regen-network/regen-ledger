@@ -14,7 +14,7 @@ func TestQuery_AllowlistEnabledTest(t *testing.T) {
 
 	res, err := s.k.CreditClassAllowlistEnabled(s.ctx, &core.QueryCreditClassAllowlistEnabledRequest{})
 	assert.NilError(t, err)
-	assert.Equal(t, res.AllowlistEnabled.Enabled, false)
+	assert.Equal(t, res.AllowlistEnabled, false)
 
 	err = s.stateStore.AllowListEnabledTable().Save(s.ctx, &ecocreditv1.AllowListEnabled{
 		Enabled: true,
@@ -23,5 +23,5 @@ func TestQuery_AllowlistEnabledTest(t *testing.T) {
 
 	res, err = s.k.CreditClassAllowlistEnabled(s.ctx, &core.QueryCreditClassAllowlistEnabledRequest{})
 	assert.NilError(t, err)
-	assert.Equal(t, res.AllowlistEnabled.Enabled, true)
+	assert.Equal(t, res.AllowlistEnabled, true)
 }

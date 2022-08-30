@@ -23,16 +23,14 @@ func (k Keeper) AllowedClassCreators(ctx context.Context, req *core.QueryAllowed
 	}
 	defer itr.Close()
 
-	classCreators := make([]*core.ClassCreatorInfo, 0, 8) // pre-allocate some cap space
+	classCreators := make([]string, 0, 8) // pre-allocate some cap space
 	for itr.Next() {
 		val, err := itr.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		classCreators = append(classCreators, &core.ClassCreatorInfo{
-			Address: sdk.AccAddress(val.Address).String(),
-		})
+		classCreators = append(classCreators, sdk.AccAddress(val.Address).String())
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(itr.PageResponse())

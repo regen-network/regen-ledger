@@ -697,12 +697,6 @@ message BatchBalanceInfo {
   string escrowed_amount = 5;
 }
 
-// ClassCreatorInfo is the human-readable class creator information.
-message ClassCreatorInfo {
-  // address is the address that is allowed to create credit classes
-  string address = 1;
-}
-
 // QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
 // type.
 //
@@ -718,25 +712,10 @@ message QueryAllowedClassCreatorsRequest {
 // Since Revision 1
 message QueryAllowedClassCreatorsResponse {
   // class_creators is the list of allowed credit class creators.
-  repeated ClassCreatorInfo class_creators = 1;
+  repeated string class_creators = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QueryCreditClassAllowlistEnabledRequest is the
-// Query/CreditClassAllowlistEnabled request type.
-//
-// Since Revision 1
-message QueryCreditClassAllowlistEnabledRequest {}
-
-// QueryCreditClassAllowlistEnabledResponse is the
-// Query/CreditClassAllowlistEnabled response type.
-//
-// Since Revision 1
-message QueryCreditClassAllowlistEnabledResponse {
-  // allowlist_enabled is the state/AllowListEnabled type.
-  AllowListEnabled allowlist_enabled = 1;
 }
 
 // QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
@@ -753,4 +732,20 @@ message QueryCreditClassFeesResponse {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+}
+
+// QueryCreditClassAllowlistEnabledRequest is the
+// Query/CreditClassAllowlistEnabled request type.
+//
+// Since Revision 1
+message QueryCreditClassAllowlistEnabledRequest {}
+
+// QueryCreditClassAllowlistEnabledResponse is the
+// Query/CreditClassAllowlistEnabled response type.
+//
+// Since Revision 1
+message QueryCreditClassAllowlistEnabledResponse {
+  // allowlist_enabled determines whether or not the allowlist for creating
+  // credit classes is enabled.
+  bool allowlist_enabled = 1;
 }
