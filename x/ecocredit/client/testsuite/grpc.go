@@ -146,8 +146,6 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -198,8 +196,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -255,8 +251,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -544,9 +538,9 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 // 	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, coreRoute))
 // 	require.NoError(err)
 
-// 	var res core.QueryParamsResponse
+// 	var res types.QueryParamsResponse
 // 	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
-// 	s.Require().Equal(core.DefaultParams(), *res.Params)
+// 	s.Require().Equal(types.DefaultParams(), *res.Params)
 // }
 
 func (s *IntegrationTestSuite) TestCreditType() {
@@ -561,4 +555,28 @@ func (s *IntegrationTestSuite) TestCreditType() {
 	require.NoError(err)
 	require.Equal(res.CreditType.Abbreviation, "C")
 	require.Equal(res.CreditType.Precision, uint32(6))
+}
+
+func (s *IntegrationTestSuite) TestAllBalances() {
+	require := s.Require()
+
+	url := fmt.Sprintf("%s/%s/all-balances?pagination.countTotal=true", s.val.APIAddress, coreRoute)
+	resp, err := rest.GetRequest(url)
+	require.NoError(err)
+
+	var res types.QueryAllBalancesResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.NotEmpty(res.Balances)
+	require.NotZero(res.Pagination.Total)
+
+	url = fmt.Sprintf("%s/%s/balances?pagination.countTotal=true", s.val.APIAddress, coreRoute)
+	resp, err = rest.GetRequest(url)
+	require.NoError(err)
+
+	res = types.QueryAllBalancesResponse{}
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.NotEmpty(res.Balances)
+	require.NotZero(res.Pagination.Total)
 }

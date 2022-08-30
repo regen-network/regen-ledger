@@ -6,7 +6,7 @@ package regen.ecocredit.basket.v1;
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // BasketCredit represents the information for a credit batch inside a basket.
 message BasketCredit {

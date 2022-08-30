@@ -6,8 +6,15 @@ import (
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 
 	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/base/client"
-	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
+)
+
+const (
+	FlagAddIssuers             string = "add-issuers"
+	FlagRemoveIssuers          string = "remove-issuers"
+	FlagReferenceID            string = "reference-id"
+	FlagRetirementJurisdiction string = "retirement-jurisdiction"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -37,11 +44,11 @@ func TxCmd(name string) *cobra.Command {
 		basketcli.TxCreateBasketCmd(),
 		basketcli.TxPutInBasketCmd(),
 		basketcli.TxTakeFromBasketCmd(),
-		marketplacecli.TxSellCmd(),
-		marketplacecli.TxUpdateSellOrdersCmd(),
-		marketplacecli.TxBuyDirectCmd(),
-		marketplacecli.TxBuyDirectBulkCmd(),
-		marketplacecli.TxCancelSellOrderCmd(),
+		marketclient.TxSellCmd(),
+		marketclient.TxUpdateSellOrdersCmd(),
+		marketclient.TxBuyDirectCmd(),
+		marketclient.TxBuyDirectBulkCmd(),
+		marketclient.TxCancelSellOrderCmd(),
 	)
 	return cmd
 }

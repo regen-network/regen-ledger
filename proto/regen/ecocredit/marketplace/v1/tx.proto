@@ -7,7 +7,7 @@ import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
 // Msg is the regen.ecocredit.marketplace.v1 Msg service.
 service Msg {

@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestTxSell() {
@@ -21,7 +21,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	askPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]marketplace.MsgSell_Order{
+	bz, err := json.Marshal([]types.MsgSell_Order{
 		{
 			BatchDenom: s.batchDenom,
 			Quantity:   "10",
@@ -119,7 +119,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.TxSellCmd()
+			cmd := client.TxSellCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -144,9 +144,9 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	askPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
 	// create new sell orders to not interfere with other tests
-	sellOrderIDs := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+	sellOrderIDs := s.createSellOrder(s.val.ClientCtx, &types.MsgSell{
 		Seller: s.addr1.String(),
-		Orders: []*marketplace.MsgSell_Order{
+		Orders: []*types.MsgSell_Order{
 			{
 				BatchDenom: s.batchDenom,
 				Quantity:   "10",
@@ -161,7 +161,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	})
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]marketplace.MsgUpdateSellOrders_Update{
+	bz, err := json.Marshal([]types.MsgUpdateSellOrders_Update{
 		{
 			SellOrderId: sellOrderIDs[0],
 			NewQuantity: "20",
@@ -257,7 +257,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.TxUpdateSellOrdersCmd()
+			cmd := client.TxUpdateSellOrdersCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -347,7 +347,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.TxBuyDirectCmd()
+			cmd := client.TxBuyDirectCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -372,7 +372,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 	bidPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]marketplace.MsgBuyDirect_Order{
+	bz, err := json.Marshal([]types.MsgBuyDirect_Order{
 		{
 			SellOrderId:       s.sellOrderID,
 			Quantity:          "10",
@@ -469,7 +469,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.TxBuyDirectBulkCmd()
+			cmd := client.TxBuyDirectBulkCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -529,7 +529,7 @@ func (s *IntegrationTestSuite) TestTxCancelSellOrder() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.TxCancelSellOrderCmd()
+			cmd := client.TxCancelSellOrderCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {

@@ -15,13 +15,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	marketplacesims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/marketplace"
+
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	marketsims "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/simulation"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
@@ -81,8 +82,8 @@ var (
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer, basketQryClient basket.QueryServer,
-	mktQryClient marketplace.QueryServer) simulation.WeightedOperations {
+	qryClient types.QueryServer, basketQryClient baskettypes.QueryServer,
+	mktQryClient markettypes.QueryServer) simulation.WeightedOperations {
 
 	var (
 		weightMsgCreateClass           int
@@ -248,7 +249,7 @@ func WeightedOperations(
 	// TODO: #1363
 	// basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
 	// ops = append(ops, basketOps...)
-	marketplaceOps := marketplacesims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient)
+	marketplaceOps := marketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient)
 
 	return append(ops, marketplaceOps...)
 }

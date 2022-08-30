@@ -1,8 +1,10 @@
 package v1
 
 import (
-	sdkerrors "cosmossdk.io/errors"
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
@@ -22,7 +24,7 @@ func (m *Batch) Validate() error {
 	}
 
 	if err := base.ValidateBatchDenom(m.Denom); err != nil {
-		return sdkerrors.Wrap(err, "denom") // returns parse error
+		return errors.Wrap(err, "denom") // returns parse error
 	}
 
 	if len(m.Metadata) > base.MaxMetadataLength {

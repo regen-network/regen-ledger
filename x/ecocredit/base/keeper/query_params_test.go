@@ -5,10 +5,11 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	baskettypes "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	markettypes "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -28,7 +29,7 @@ func TestQuery_Params(t *testing.T) {
 	assert.NilError(t, err)
 
 	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
-		Fees: []*basev1beta1.Coin{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
 				Amount: "100",
@@ -37,8 +38,8 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	err = s.k.basketStore.BasketFeesTable().Save(s.ctx, &basketv1.BasketFees{
-		Fees: []*basev1beta1.Coin{
+	err = s.k.basketStore.BasketFeesTable().Save(s.ctx, &baskettypes.BasketFees{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
 				Amount: "1000",
@@ -48,10 +49,20 @@ func TestQuery_Params(t *testing.T) {
 	assert.NilError(t, err)
 
 	result, err := s.k.Params(s.ctx, &types.QueryParamsRequest{})
+	err = s.k.marketStore.AllowedDenomTable().Insert(s.ctx, &markettypes.AllowedDenom{
+		BankDenom:    "uregen",
+		DisplayDenom: "REGEN",
+		Exponent:     6,
+	})
+	assert.NilError(t, err)
+
+	result, err = s.k.Params(s.ctx, &types.QueryParamsRequest{})
 	assert.NilError(t, err)
 
 	assert.Equal(t, result.Params.AllowlistEnabled, true)
 	assert.DeepEqual(t, result.Params.AllowedClassCreators, []string{s.addr.String()})
 	assert.Equal(t, result.Params.CreditClassFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))).String())
 	assert.Equal(t, result.Params.BasketFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))).String())
+	assert.Equal(t, len(result.AllowedDenoms), 1)
+	assert.Equal(t, result.AllowedDenoms[0].BankDenom, "uregen")
 }

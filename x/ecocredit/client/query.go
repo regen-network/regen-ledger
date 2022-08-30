@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/base/client"
-	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 )
 
 // QueryCmd returns the parent command for all x/ecocredit query commands.
@@ -38,16 +38,19 @@ func QueryCmd(name string) *cobra.Command {
 		baseclient.QueryProjectCmd(),
 		baseclient.QueryParamsCmd(),
 		baseclient.QueryCreditTypeCmd(),
-		basketcli.QueryBasketCmd(),
-		basketcli.QueryBasketsCmd(),
-		basketcli.QueryBasketBalanceCmd(),
-		basketcli.QueryBasketBalancesCmd(),
-		basketcli.QueryBasketFeesCmd(),
-		marketplacecli.QuerySellOrderCmd(),
-		marketplacecli.QuerySellOrdersCmd(),
-		marketplacecli.QuerySellOrdersBySellerCmd(),
-		marketplacecli.QuerySellOrdersByBatchCmd(),
-		marketplacecli.QueryAllowedDenomsCmd(),
+		baseclient.QueryAllowedClassCreatorsCmd(),
+		baseclient.QueryCreditClassAllowlistEnabledCmd(),
+		baseclient.QueryCreditClassFeesCmd(),
+		basketclient.QueryBasketCmd(),
+		basketclient.QueryBasketsCmd(),
+		basketclient.QueryBasketBalanceCmd(),
+		basketclient.QueryBasketBalancesCmd(),
+		basketclient.QueryBasketFeesCmd(),
+		marketclient.QuerySellOrderCmd(),
+		marketclient.QuerySellOrdersCmd(),
+		marketclient.QuerySellOrdersBySellerCmd(),
+		marketclient.QuerySellOrdersByBatchCmd(),
+		marketclient.QueryAllowedDenomsCmd(),
 	)
 	return cmd
 }

@@ -4,7 +4,7 @@ package regen.ecocredit.marketplace.v1;
 
 import "regen/ecocredit/marketplace/v1/state.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
 // AllowDenomProposal is a gov Content type for approving a denom for use in the
 // marketplace.

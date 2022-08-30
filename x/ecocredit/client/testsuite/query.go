@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -566,23 +567,25 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 	}
 }
 
-// TODO: #1363
-// func (s *IntegrationTestSuite) TestQueryParamsCmd() {
-// 	val := s.network.Validators[0]
-// 	clientCtx := val.ClientCtx
-// 	clientCtx.OutputFormat = "JSON"
-// 	require := s.Require()
+func (s *IntegrationTestSuite) TestQueryParamsCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
 
-// 	cmd := client.QueryParamsCmd()
-// 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
-// 	require.NoError(err)
+	cmd := client.QueryParamsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
 
-// 	var params core.QueryParamsResponse
-// 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
-// 	require.NoError(err)
+	var params types.QueryParamsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
+	require.NoError(err)
 
-// 	require.Equal(core.DefaultParams(), *params.Params)
-// }
+	require.Equal(genesis.DefaultParams().BasketFee, params.Params.BasketFee)
+	require.Equal(genesis.DefaultParams().CreditClassFee, params.Params.CreditClassFee)
+	require.False(params.Params.AllowlistEnabled)
+	require.Equal([]string{sdk.AccAddress("issuer1").String(), sdk.AccAddress("issuer2").String()}, params.Params.AllowedClassCreators)
+}
 
 func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	require := s.Require()
@@ -866,4 +869,52 @@ func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedClassCreators() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryAllowedClassCreatorsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryAllowedClassCreatorsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Len(res.ClassCreators, 2)
+	s.Require().Equal(res.ClassCreators[0], sdk.AccAddress("issuer1").String())
+	s.Require().Equal(res.ClassCreators[1], sdk.AccAddress("issuer2").String())
+}
+
+func (s *IntegrationTestSuite) TestQueryCreditClassAllowlistEnableCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryCreditClassAllowlistEnabledCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryCreditClassAllowlistEnabledResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().False(res.AllowlistEnabled)
+}
+
+func (s *IntegrationTestSuite) TestQueryCreditClassFeesCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryCreditClassFeesCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryCreditClassFeesResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Equal(res.Fees.Len(), 1)
+	s.Require().Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), types.DefaultCreditClassFee)
 }

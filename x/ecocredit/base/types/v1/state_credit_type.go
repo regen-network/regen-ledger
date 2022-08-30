@@ -1,7 +1,8 @@
 package v1
 
 import (
-	sdkerrors "cosmossdk.io/errors"
+	"cosmossdk.io/errors"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
@@ -13,7 +14,7 @@ const (
 // Validate performs basic validation of the ClassIssuer state type
 func (m *CreditType) Validate() error {
 	if err := base.ValidateCreditTypeAbbreviation(m.Abbreviation); err != nil {
-		return sdkerrors.Wrapf(err, "abbreviation") // returns parse error
+		return errors.Wrapf(err, "abbreviation") // returns parse error
 	}
 
 	if len(m.Name) == 0 {
