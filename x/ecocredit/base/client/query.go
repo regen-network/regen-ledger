@@ -586,3 +586,36 @@ func QueryAllowedClassCreatorsCmd() *cobra.Command {
 
 	return qflags(cmd)
 }
+
+// QueryAllBalances returns a query command that retrieves a list of all ecocredit balances
+// with pagination.
+func QueryAllBalances() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "all-balances",
+		Short: "Retrieve all ecocredit balances",
+		Long:  "Retrieve all ecocredit balances across all addresses and batch denoms with pagination",
+		Example: `
+		regen q ecocredit all-balances
+		regen q ecocredit all-balances --limit 10
+		`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.AllBalances(cmd.Context(), &types.QueryAllBalancesRequest{
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "all-balances")
+
+	return qflags(cmd)
+}

@@ -918,3 +918,19 @@ func (s *IntegrationTestSuite) TestQueryCreditClassFeesCmd() {
 	s.Require().Equal(res.Fees.Len(), 1)
 	s.Require().Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), types.DefaultCreditClassFee)
 }
+
+func (s *IntegrationTestSuite) TestQueryAllBalancesCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryAllBalances()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{fmt.Sprintf("--%s", flags.FlagCountTotal)})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryAllBalancesResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Greater(len(res.Balances), 0)
+	s.Require().Greater(res.Pagination.Total, uint64(0))
+}
