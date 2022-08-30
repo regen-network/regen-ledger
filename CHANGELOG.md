@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1342) Add `AddAllowedDenom` msg-based gov proposal
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddCreditType` msg-based gov proposal
 - [#1346](https://github.com/regen-network/regen-ledger/pull/1346) Add `RemoveAllowedDenom` msg-based gov proposal
-- [#1349](https://github.com/regen-network/regen-ledger/pull/1349) Add `UpdateBasketFees` imsg-based gov proposal
+- [#1349](https://github.com/regen-network/regen-ledger/pull/1349) Add `UpdateBasketFees` msg-based gov proposal
 - [#1351](https://github.com/regen-network/regen-ledger/pull/1351) Add `signer` option to transaction messages
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchBalance` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchContract` state validation checks
@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `UpdateClassFees` msg-based gov proposal
 - [#1391](https://github.com/regen-network/regen-ledger/pull/1391) Add `BasketFees` params query
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`
+- [#1416](https://github.com/regen-network/regen-ledger/pull/1416) Add `QueryAllBalances` query
 
 #### Changed
 
