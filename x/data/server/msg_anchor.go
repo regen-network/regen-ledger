@@ -5,9 +5,10 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
+	"cosmossdk.io/errors"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -90,7 +91,7 @@ func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri st
 
 		timestamp, err := gogotypes.TimestampProto(sdkCtx.BlockTime())
 		if err != nil {
-			return nil, sdkerrors.Wrap(err, "invalid block time")
+			return nil, errors.Wrap(err, "invalid block time")
 		}
 
 		err = s.stateStore.DataAnchorTable().Insert(ctx, &api.DataAnchor{

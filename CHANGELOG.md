@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Refactor fixture factory to use baseApp routing and Cosmos SDK module manager
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Rename FixtureFactory to Factory to prevent package stuttering
+- [#1433](https://github.com/regen-network/regen-ledger/pull/1433) Add default page request limit when page request is nil
 
 
 ### x/data
@@ -83,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `UpdateClassFees` msg-based gov proposal
 - [#1391](https://github.com/regen-network/regen-ledger/pull/1391) Add `BasketFees` params query
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`
+- [#1416](https://github.com/regen-network/regen-ledger/pull/1416) Add `QueryAllBalances` query
 - [#1417](https://github.com/regen-network/regen-ledger/pull/1417) Add ecocredit params state migration
 
 #### Changed

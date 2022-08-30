@@ -1,6 +1,8 @@
 package core
 
 import (
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -19,14 +21,14 @@ func (i *BatchIssuance) Validate() error {
 
 	if i.TradableAmount != "" {
 		if _, err := math.NewNonNegativeDecFromString(i.TradableAmount); err != nil {
-			return sdkerrors.Wrap(err, "tradable amount")
+			return errors.Wrap(err, "tradable amount")
 		}
 	}
 
 	if i.RetiredAmount != "" {
 		retiredAmount, err := math.NewNonNegativeDecFromString(i.RetiredAmount)
 		if err != nil {
-			return sdkerrors.Wrap(err, "retired amount")
+			return errors.Wrap(err, "retired amount")
 		}
 
 		if !retiredAmount.IsZero() {

@@ -1,7 +1,7 @@
 package basket
 
 import (
-	sdkerrors "cosmossdk.io/errors"
+	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -16,15 +16,15 @@ func (m *Basket) Validate() error {
 	}
 
 	if err := ValidateBasketDenom(m.BasketDenom); err != nil {
-		return sdkerrors.Wrap(err, "basket denom") // returns parse error
+		return errors.Wrap(err, "basket denom") // returns parse error
 	}
 
 	if err := ValidateBasketName(m.Name); err != nil {
-		return sdkerrors.Wrap(err, "name") // returns parse error
+		return errors.Wrap(err, "name") // returns parse error
 	}
 
 	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
-		return sdkerrors.Wrap(err, "credit type abbrev") // returns parse error
+		return errors.Wrap(err, "credit type abbrev") // returns parse error
 	}
 
 	if err := m.DateCriteria.Validate(); err != nil {

@@ -6,9 +6,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"cosmossdk.io/errors"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -23,9 +24,9 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			return nil, sdkerrors.Wrapf(err, "basket %s not found", request.BasketDenom)
+			return nil, errors.Wrapf(err, "basket %s not found", request.BasketDenom)
 		}
-		return nil, sdkerrors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
+		return nil, errors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
 	}
 
 	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

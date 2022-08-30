@@ -166,6 +166,16 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/balances/{address}";
   }
 
+  // AllBalances queries all credit balances.
+  //
+  // Since Revision 1
+  rpc AllBalances(QueryAllBalancesRequest) returns (QueryAllBalancesResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/all-balances"
+      additional_bindings : [ {get : "/regen/ecocredit/v1/balances"} ]
+    };
+  }
+
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
     option (google.api.http) = {
@@ -482,6 +492,28 @@ message QueryBalancesRequest {
 
 // QueryBalancesResponse is the Query/Balances response type.
 message QueryBalancesResponse {
+
+  // balances are a list of balances from different credit batches that the
+  // account holds.
+  repeated BatchBalanceInfo balances = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryAllBalancesRequest is the Query/AllBalances request type.
+//
+// Since Revision 1
+message QueryAllBalancesRequest {
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllBalancesResponse is the Query/AllBalances response type.
+//
+// Since Revision 1
+message QueryAllBalancesResponse {
 
   // balances are a list of balances from different credit batches that the
   // account holds.
