@@ -883,8 +883,8 @@ func (s *IntegrationTestSuite) TestQueryAllowedClassCreators() {
 	var res core.QueryAllowedClassCreatorsResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	s.Require().Len(res.ClassCreators, 2)
-	s.Require().Equal(res.ClassCreators[0].Address, sdk.AccAddress("issuer1").String())
-	s.Require().Equal(res.ClassCreators[1].Address, sdk.AccAddress("issuer2").String())
+	s.Require().Equal(res.ClassCreators[0], sdk.AccAddress("issuer1").String())
+	s.Require().Equal(res.ClassCreators[1], sdk.AccAddress("issuer2").String())
 }
 
 func (s *IntegrationTestSuite) TestQueryCreditClassAllowlistEnableCmd() {
@@ -899,7 +899,7 @@ func (s *IntegrationTestSuite) TestQueryCreditClassAllowlistEnableCmd() {
 
 	var res core.QueryCreditClassAllowlistEnabledResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	s.Require().False(res.AllowlistEnabled.Enabled)
+	s.Require().False(res.AllowlistEnabled)
 }
 
 func (s *IntegrationTestSuite) TestQueryCreditClassFeesCmd() {
