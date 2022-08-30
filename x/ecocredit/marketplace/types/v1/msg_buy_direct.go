@@ -3,13 +3,13 @@ package v1
 import (
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
+
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgBuyDirect{}
@@ -69,7 +69,7 @@ func (m MsgBuyDirect) ValidateBasic() error {
 		}
 
 		if !order.DisableAutoRetire {
-			if err := core.ValidateJurisdiction(order.RetirementJurisdiction); err != nil {
+			if err := base.ValidateJurisdiction(order.RetirementJurisdiction); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("%s: retirement jurisdiction: %s", orderIndex, err)
 			}
 		}

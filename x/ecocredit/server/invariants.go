@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
 )
 
 // RegisterInvariants registers the ecocredit module invariants.
@@ -21,7 +21,7 @@ func (s serverImpl) batchSupplyInvariant() sdk.Invariant {
 			return err.Error(), true
 		}
 
-		msg, broken := core.BatchSupplyInvariant(goCtx, s.CoreKeeper, basketBalances)
+		msg, broken := basekeeper.BatchSupplyInvariant(goCtx, s.CoreKeeper, basketBalances)
 		return sdk.FormatInvariant(ecocredit.ModuleName, "batch-supply", msg), broken
 	}
 }

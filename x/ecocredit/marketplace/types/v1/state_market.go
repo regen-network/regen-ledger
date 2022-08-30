@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 // Validate performs basic validation of the Market state type
@@ -15,7 +15,7 @@ func (m *Market) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("id cannot be zero")
 	}
 
-	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+	if err := base.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
 		return errors.Wrap(err, "credit type abbrev") // returns parse error
 	}
 

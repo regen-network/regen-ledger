@@ -4,13 +4,12 @@ import (
 	"context"
 
 	sdkmath "cosmossdk.io/math"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
@@ -99,7 +98,7 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 			return err
 		}
 		buyerBal.TradableAmount = tradableBalance.String()
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{
 			Sender:         sdk.AccAddress(sellOrder.Seller).String(),
 			Recipient:      buyerAcc.String(),
 			BatchDenom:     opts.batchDenom,
@@ -141,7 +140,7 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 		if err = k.coreStore.BatchSupplyTable().Update(ctx, supply); err != nil {
 			return err
 		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventRetire{
 			Owner:        buyerAcc.String(),
 			BatchDenom:   opts.batchDenom,
 			Amount:       purchaseQty.String(),

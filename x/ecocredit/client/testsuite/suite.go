@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -24,15 +24,15 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/base/client"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
@@ -87,7 +87,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.setupTestAccounts()
 
 	// create test credit class
-	s.classID = s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	s.classID = s.createClass(s.val.ClientCtx, &basetypes.MsgCreateClass{
 		Admin:            s.addr1.String(),
 		Issuers:          []string{s.addr1.String()},
 		Metadata:         "metadata",
@@ -99,7 +99,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.projectReferenceID = "VCS-001"
 
 	// create test project
-	s.projectID = s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	s.projectID = s.createProject(s.val.ClientCtx, &basetypes.MsgCreateProject{
 		Admin:        s.addr1.String(),
 		ClassId:      s.classID,
 		Metadata:     "metadata",
@@ -114,10 +114,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	require.NoError(err)
 
 	// create test credit batch
-	s.batchDenom = s.createBatch(s.val.ClientCtx, &core.MsgCreateBatch{
+	s.batchDenom = s.createBatch(s.val.ClientCtx, &basetypes.MsgCreateBatch{
 		Issuer:    s.addr1.String(),
 		ProjectId: s.projectID,
-		Issuance: []*core.BatchIssuance{
+		Issuance: []*basetypes.BatchIssuance{
 			{
 				Recipient:              s.addr1.String(),
 				TradableAmount:         "10000",
@@ -130,7 +130,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// create a basket and set test value
-	s.basketDenom = s.createBasket(s.val.ClientCtx, &basket.MsgCreate{
+	s.basketDenom = s.createBasket(s.val.ClientCtx, &baskettypes.MsgCreate{
 		Curator:          s.addr1.String(),
 		Name:             "NCT",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
@@ -139,10 +139,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// put credits in basket (for testing basket balance)
-	s.putInBasket(s.val.ClientCtx, &basket.MsgPut{
+	s.putInBasket(s.val.ClientCtx, &baskettypes.MsgPut{
 		Owner:       s.addr1.String(),
 		BasketDenom: s.basketDenom,
-		Credits: []*basket.BasketCredit{
+		Credits: []*baskettypes.BasketCredit{
 			{
 				BatchDenom: s.batchDenom,
 				Amount:     "1000",
@@ -183,7 +183,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	mdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(err)
 
-	coreStore, err := api.NewStateStore(mdb)
+	coreStore, err := baseapi.NewStateStore(mdb)
 	require.NoError(err)
 
 	marketStore, err := marketapi.NewStateStore(mdb)
@@ -201,10 +201,10 @@ func (s *IntegrationTestSuite) setupGenesis() {
 
 	// add basket fees
 	err = basketStore.BasketFeesTable().Save(ctx, &basketapi.BasketFees{
-		Fees: []*basev1beta1.Coin{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
-				Amount: "10",
+				Amount: basetypes.DefaultBasketFee.String(),
 			},
 		},
 	})
@@ -224,11 +224,38 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	s.creditTypeAbbrev = "C"
 
 	// insert credit type
-	err = coreStore.CreditTypeTable().Insert(ctx, &api.CreditType{
+	err = coreStore.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Name:         "carbon",
 		Unit:         "metric ton CO2 equivalent",
 		Precision:    6,
+	})
+	require.NoError(err)
+
+	// set credit class fees
+	err = coreStore.ClassFeesTable().Save(ctx, &baseapi.ClassFees{
+		Fees: []*sdkbase.Coin{
+			{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: basetypes.DefaultCreditClassFee.String(),
+			},
+		},
+	})
+	require.NoError(err)
+
+	// set credit class allow list
+	err = coreStore.AllowListEnabledTable().Save(ctx, &baseapi.AllowListEnabled{
+		Enabled: false,
+	})
+	require.NoError(err)
+
+	// set allowed credit class creators
+	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
+		Address: sdk.AccAddress("issuer1"),
+	})
+	require.NoError(err)
+	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
+		Address: sdk.AccAddress("issuer2"),
 	})
 	require.NoError(err)
 
@@ -237,7 +264,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	err = mdb.ExportJSON(ctx, target)
 	require.NoError(err)
 
-	params := core.DefaultParams()
+	params := genesis.DefaultParams()
 
 	// set credit class and basket fees
 	s.creditClassFee = params.CreditClassFee
@@ -305,10 +332,10 @@ func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sd
 	require.Zero(res.Code, res.RawLog)
 }
 
-func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (classID string) {
+func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basetypes.MsgCreateClass) (classID string) {
 	require := s.Require()
 
-	cmd := coreclient.TxCreateClassCmd()
+	cmd := baseclient.TxCreateClassCmd()
 	args := []string{
 		strings.Join(msg.Issuers, ","),
 		msg.CreditTypeAbbrev,
@@ -325,7 +352,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 	require.Zero(res.Code, res.RawLog)
 
 	for _, e := range res.Logs[0].Events {
-		if e.Type == proto.MessageName(&core.EventCreateClass{}) {
+		if e.Type == proto.MessageName(&basetypes.EventCreateClass{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "class_id" {
 					return strings.Trim(attr.Value, "\"")
@@ -339,10 +366,10 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 	return ""
 }
 
-func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (projectID string) {
+func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *basetypes.MsgCreateProject) (projectID string) {
 	require := s.Require()
 
-	cmd := coreclient.TxCreateProjectCmd()
+	cmd := baseclient.TxCreateProjectCmd()
 	args := []string{
 		msg.ClassId,
 		msg.Jurisdiction,
@@ -359,7 +386,7 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 	require.Zero(res.Code, res.RawLog)
 
 	for _, e := range res.Logs[0].Events {
-		if e.Type == proto.MessageName(&core.EventCreateProject{}) {
+		if e.Type == proto.MessageName(&basetypes.EventCreateProject{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "project_id" {
 					return strings.Trim(attr.Value, "\"")
@@ -373,7 +400,7 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core
 	return ""
 }
 
-func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.MsgCreateBatch) (batchDenom string) {
+func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *basetypes.MsgCreateBatch) (batchDenom string) {
 	require := s.Require()
 
 	bz, err := clientCtx.Codec.MarshalJSON(msg)
@@ -381,7 +408,7 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 
 	jsonFile := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
-	cmd := coreclient.TxCreateBatchCmd()
+	cmd := baseclient.TxCreateBatchCmd()
 	args := []string{
 		jsonFile,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Issuer),
@@ -395,7 +422,7 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 	require.Zero(res.Code, res.RawLog)
 
 	for _, e := range res.Logs[0].Events {
-		if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
+		if e.Type == proto.MessageName(&basetypes.EventCreateBatch{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "batch_denom" {
 					return strings.Trim(attr.Value, "\"")
@@ -409,7 +436,7 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 	return ""
 }
 
-func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *basket.MsgCreate) (basketDenom string) {
+func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baskettypes.MsgCreate) (basketDenom string) {
 	require := s.Require()
 
 	cmd := basketclient.TxCreateBasketCmd()
@@ -429,7 +456,7 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	require.Zero(res.Code, res.RawLog)
 
 	for _, event := range res.Logs[0].Events {
-		if event.Type == proto.MessageName(&basket.EventCreate{}) {
+		if event.Type == proto.MessageName(&baskettypes.EventCreate{}) {
 			for _, attr := range event.Attributes {
 				if attr.Key == "basket_denom" {
 					return strings.Trim(attr.Value, "\"")
@@ -443,7 +470,7 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	return ""
 }
 
-func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket.MsgPut) {
+func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *baskettypes.MsgPut) {
 	require := s.Require()
 
 	// using json because array of BasketCredit is not a proto message

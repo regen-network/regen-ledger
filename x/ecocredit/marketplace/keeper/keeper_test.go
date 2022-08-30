@@ -22,10 +22,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
@@ -38,7 +38,7 @@ const (
 type baseSuite struct {
 	t            gocuke.TestingT
 	db           ormdb.ModuleDB
-	coreStore    ecoApi.StateStore
+	coreStore    baseapi.StateStore
 	marketStore  api.StateStore
 	ctx          context.Context
 	k            Keeper
@@ -56,7 +56,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.coreStore, err = ecoApi.NewStateStore(s.db)
+	s.coreStore, err = baseapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 	s.marketStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
@@ -90,7 +90,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 }
 
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoApi.BatchBalance, orderAmt math.Dec) {
+func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *baseapi.BatchBalance, orderAmt math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.TradableAmount, balanceAfter.TradableAmount,
 		balanceBefore.EscrowedAmount, balanceAfter.EscrowedAmount)
 	assert.NilError(t, err)
@@ -109,22 +109,22 @@ func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoAp
 }
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
-func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classID string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
+func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classID string, start, end *timestamppb.Timestamp, creditType basetypes.CreditType) {
 	assert.Check(s.t, len(s.addrs) > 0, "When calling `testSellSetup`, the base suite must have a non-empty `addrs`.")
-	assert.NilError(s.t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
+	assert.NilError(s.t, s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
 
-	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
+	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               classID,
 		Admin:            s.addrs[0],
 		Metadata:         "",
 		CreditTypeAbbrev: creditType.Abbreviation,
 	}))
-	assert.NilError(s.t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
+	assert.NilError(s.t, s.coreStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
 		Metadata:   "",
@@ -142,14 +142,14 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classID s
 		DisplayDenom: displayDenom,
 		Exponent:     1,
 	}))
-	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       1,
 		Address:        s.addrs[0],
 		TradableAmount: "100",
 		RetiredAmount:  "100",
 		EscrowedAmount: "0",
 	}))
-	assert.NilError(s.t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
+	assert.NilError(s.t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
 		BatchKey:        1,
 		TradableAmount:  "100",
 		RetiredAmount:   "100",

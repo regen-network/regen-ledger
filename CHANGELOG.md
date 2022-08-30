@@ -87,6 +87,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`
 - [#1416](https://github.com/regen-network/regen-ledger/pull/1416) Add `QueryAllBalances` query
 - [#1417](https://github.com/regen-network/regen-ledger/pull/1417) Add ecocredit params state migration
+- [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `AllowedClassCreators` params query
+- [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassFees` params query
+- [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
+
 
 #### Changed
 
@@ -114,6 +118,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/client/marketplace` to `ecocredit/marketplace/client`
 - [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/server/marketplace` to `ecocredit/marketplace/keeper`
 - [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/simulation/marketplace` to `ecocredit/marketplace/simulation`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/basket` to `ecocredit/basket/types/v1`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/client/basket` to `ecocredit/basket/client`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/server/basket` to `ecocredit/basket/keeper`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/simulation/basket` to `ecocredit/basket/simulation`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/core` to `ecocredit/base/types/v1`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/client` core commands to `ecocredit/base/client`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/server/core` to `ecocredit/base/keeper`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/simulation` core operations to `ecocredit/base/simulation`
 
 ### Fixed
 

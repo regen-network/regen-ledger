@@ -15,6 +15,7 @@ import (
 	icahost "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host"
 	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -105,7 +106,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 	datamodule "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 
 	// unnamed import of statik for swagger UI support
@@ -161,16 +162,16 @@ var (
 	// module account permissions
 	maccPerms = func() map[string][]string {
 		perms := map[string][]string{
-			authtypes.FeeCollectorName:     nil,
-			distrtypes.ModuleName:          nil,
+			authtypes.FeeCollectorName:      nil,
+			distrtypes.ModuleName:           nil,
 			icatypes.ModuleName:            nil,
-			minttypes.ModuleName:           {authtypes.Minter},
-			stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-			stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-			govtypes.ModuleName:            {authtypes.Burner},
-			ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-			ecocredit.ModuleName:           {authtypes.Burner},
-			basket.BasketSubModuleName:     {authtypes.Burner, authtypes.Minter},
+			minttypes.ModuleName:            {authtypes.Minter},
+			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
+			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
+			govtypes.ModuleName:             {authtypes.Burner},
+			ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+			ecocredit.ModuleName:            {authtypes.Burner},
+			baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 		}
 
 		return perms

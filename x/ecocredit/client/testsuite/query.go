@@ -5,10 +5,12 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 )
 
 const outputFormat = "JSON"
@@ -18,20 +20,20 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	val2 := s.network.Validators[1]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
-	classID := s.createClass(clientCtx, &core.MsgCreateClass{
+	classID := s.createClass(clientCtx, &types.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &core.DefaultParams().CreditClassFee[0],
+		Fee:              &genesis.DefaultParams().CreditClassFee[0],
 	})
 
-	classID2 := s.createClass(clientCtx, &core.MsgCreateClass{
+	classID2 := s.createClass(clientCtx, &types.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &core.DefaultParams().CreditClassFee[0],
+		Fee:              &genesis.DefaultParams().CreditClassFee[0],
 	})
 
 	classIDs := [2]string{classID, classID2}
@@ -67,7 +69,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryClassesCmd()
+			cmd := client.QueryClassesCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -75,7 +77,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryClassesResponse
+				var res types.QueryClassesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				if tc.expectedAmtClasses > 0 {
@@ -98,12 +100,12 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
-	class := &core.MsgCreateClass{
+	class := &types.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "hi",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &core.DefaultParams().CreditClassFee[0],
+		Fee:              &genesis.DefaultParams().CreditClassFee[0],
 	}
 
 	classID := s.createClass(clientCtx, class)
@@ -113,7 +115,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		args           []string
 		expectErr      bool
 		expectedErrMsg string
-		expectedClass  *core.ClassInfo
+		expectedClass  *types.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -131,7 +133,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 			name:      "valid credit class",
 			args:      []string{classID},
 			expectErr: false,
-			expectedClass: &core.ClassInfo{
+			expectedClass: &types.ClassInfo{
 				Id:               classID,
 				Admin:            val.Address.String(),
 				Metadata:         class.Metadata,
@@ -142,7 +144,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryClassCmd()
+			cmd := client.QueryClassCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -150,7 +152,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryClassResponse
+				var res types.QueryClassResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expectedClass, res.Class)
 			}
@@ -185,7 +187,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchesCmd()
+			cmd := client.QueryBatchesCmd()
 			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -193,7 +195,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchesResponse
+				var res types.QueryBatchesResponse
 				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().True(len(res.Batches) > 0)
 				s.Require().NotNil(res.Pagination)
@@ -242,7 +244,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuerCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchesByIssuerCmd()
+			cmd := client.QueryBatchesByIssuerCmd()
 			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -250,7 +252,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuerCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchesByIssuerResponse
+				var res types.QueryBatchesByIssuerResponse
 				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().True(len(res.Batches) > 0)
 				s.Require().NotNil(res.Pagination)
@@ -299,7 +301,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClassCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchesByClassCmd()
+			cmd := client.QueryBatchesByClassCmd()
 			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -307,7 +309,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClassCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchesByClassResponse
+				var res types.QueryBatchesByClassResponse
 				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().True(len(res.Batches) > 0)
 				s.Require().NotNil(res.Pagination)
@@ -356,7 +358,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProjectCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchesByProjectCmd()
+			cmd := client.QueryBatchesByProjectCmd()
 			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -364,7 +366,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProjectCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchesByProjectResponse
+				var res types.QueryBatchesByProjectResponse
 				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().True(len(res.Batches) > 0)
 				s.Require().NotNil(res.Pagination)
@@ -410,7 +412,7 @@ func (s *IntegrationTestSuite) TestQueryBatchCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchCmd()
+			cmd := client.QueryBatchCmd()
 			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -418,7 +420,7 @@ func (s *IntegrationTestSuite) TestQueryBatchCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchResponse
+				var res types.QueryBatchResponse
 				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Batch.Denom, s.batchDenom)
 			}
@@ -462,7 +464,7 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchBalanceCmd()
+			cmd := client.QueryBatchBalanceCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -470,7 +472,7 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBalanceResponse
+				var res types.QueryBalanceResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Balance.Address, val.Address.String())
 				s.Require().NotEmpty(res.Balance.TradableAmount)
@@ -512,7 +514,7 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchSupplyCmd()
+			cmd := client.QueryBatchSupplyCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -520,7 +522,7 @@ func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QuerySupplyResponse
+				var res types.QuerySupplyResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().NotEmpty(res.TradableAmount)
 				s.Require().NotEmpty(res.RetiredAmount)
@@ -549,7 +551,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryCreditTypesCmd()
+			cmd := client.QueryCreditTypesCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -557,7 +559,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryCreditTypesResponse
+				var res types.QueryCreditTypesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Greater(len(res.CreditTypes), 0)
 			}
@@ -565,23 +567,25 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 	}
 }
 
-// TODO: #1363
-// func (s *IntegrationTestSuite) TestQueryParamsCmd() {
-// 	val := s.network.Validators[0]
-// 	clientCtx := val.ClientCtx
-// 	clientCtx.OutputFormat = "JSON"
-// 	require := s.Require()
+func (s *IntegrationTestSuite) TestQueryParamsCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
 
-// 	cmd := coreclient.QueryParamsCmd()
-// 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
-// 	require.NoError(err)
+	cmd := client.QueryParamsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
 
-// 	var params core.QueryParamsResponse
-// 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
-// 	require.NoError(err)
+	var params types.QueryParamsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
+	require.NoError(err)
 
-// 	require.Equal(core.DefaultParams(), *params.Params)
-// }
+	require.Equal(genesis.DefaultParams().BasketFee, params.Params.BasketFee)
+	require.Equal(genesis.DefaultParams().CreditClassFee, params.Params.CreditClassFee)
+	require.False(params.Params.AllowlistEnabled)
+	require.Equal([]string{sdk.AccAddress("issuer1").String(), sdk.AccAddress("issuer2").String()}, params.Params.AllowedClassCreators)
+}
 
 func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	require := s.Require()
@@ -615,7 +619,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryProjectsCmd()
+			cmd := client.QueryProjectsCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				require.Error(err)
@@ -623,7 +627,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 			} else {
 				require.NoError(err)
 
-				var res core.QueryProjectsResponse
+				var res types.QueryProjectsResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Projects)
 
@@ -676,7 +680,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryProjectsByClassCmd()
+			cmd := client.QueryProjectsByClassCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				require.Error(err)
@@ -684,7 +688,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClassCmd() {
 			} else {
 				require.NoError(err)
 
-				var res core.QueryProjectsByClassResponse
+				var res types.QueryProjectsByClassResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Projects)
 
@@ -729,7 +733,7 @@ func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryProjectCmd()
+			cmd := client.QueryProjectCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				require.Error(err)
@@ -737,7 +741,7 @@ func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 			} else {
 				require.NoError(err)
 
-				var res core.QueryProjectResponse
+				var res types.QueryProjectResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Project)
 			}
@@ -752,12 +756,12 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 	clientCtx.OutputFormat = outputFormat
 	require := s.Require()
 
-	classID := s.createClass(clientCtx, &core.MsgCreateClass{
+	classID := s.createClass(clientCtx, &types.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &core.DefaultParams().CreditClassFee[0],
+		Fee:              &genesis.DefaultParams().CreditClassFee[0],
 	})
 
 	testCases := []struct {
@@ -791,7 +795,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryClassIssuersCmd()
+			cmd := client.QueryClassIssuersCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				require.Error(err)
@@ -799,7 +803,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 			} else {
 				require.NoError(err, out.String())
 
-				var res core.QueryClassIssuersResponse
+				var res types.QueryClassIssuersResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				if tc.numItems > 0 {
 					require.Len(res.Issuers, tc.numItems)
@@ -849,7 +853,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryCreditTypeCmd()
+			cmd := client.QueryCreditTypeCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -857,7 +861,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryCreditTypeResponse
+				var res types.QueryCreditTypeResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.CreditType.Abbreviation, "C")
 				s.Require().Equal(res.CreditType.Precision, uint32(6))
@@ -865,4 +869,52 @@ func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedClassCreators() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryAllowedClassCreatorsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryAllowedClassCreatorsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Len(res.ClassCreators, 2)
+	s.Require().Equal(res.ClassCreators[0], sdk.AccAddress("issuer1").String())
+	s.Require().Equal(res.ClassCreators[1], sdk.AccAddress("issuer2").String())
+}
+
+func (s *IntegrationTestSuite) TestQueryCreditClassAllowlistEnableCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryCreditClassAllowlistEnabledCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryCreditClassAllowlistEnabledResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().False(res.AllowlistEnabled)
+}
+
+func (s *IntegrationTestSuite) TestQueryCreditClassFeesCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryCreditClassFeesCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryCreditClassFeesResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Equal(res.Fees.Len(), 1)
+	s.Require().Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), types.DefaultCreditClassFee)
 }

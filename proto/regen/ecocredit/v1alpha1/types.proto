@@ -6,7 +6,7 @@ import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core/v1alpha1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1alpha1";
 
 // ClassInfo represents the high-level on-chain information for a credit class.
 message ClassInfo {
