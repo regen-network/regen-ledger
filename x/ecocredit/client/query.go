@@ -603,7 +603,7 @@ func QueryCreditClassAllowlistEnabledCmd() *cobra.Command {
 	})
 }
 
-// QueryAllowedClassCreatorsCmd returns a query command that retrives list of allowed
+// QueryAllowedClassCreatorsCmd returns a query command that retrives the list of allowed
 // credit class creators with pagination.
 func QueryAllowedClassCreatorsCmd() *cobra.Command {
 	cmd := &cobra.Command{
