@@ -1,6 +1,8 @@
 package core
 
 import (
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -33,7 +35,7 @@ func (m *MsgCancel) ValidateBasic() error {
 
 	for i, credits := range m.Credits {
 		if err := credits.Validate(); err != nil {
-			return sdkerrors.Wrapf(err, "credits[%d]", i)
+			return errors.Wrapf(err, "credits[%d]", i)
 		}
 	}
 

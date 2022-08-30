@@ -1,6 +1,8 @@
 package marketplace
 
 import (
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -24,7 +26,7 @@ func (m MsgRemoveAllowedDenom) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m MsgRemoveAllowedDenom) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrapf(err, "invalid authority address")
+		return errors.Wrapf(err, "invalid authority address")
 	}
 
 	if m.Denom == "" {
