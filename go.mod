@@ -11,7 +11,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.1.0
 	github.com/regen-network/regen-ledger/x/data v1.0.0
-	github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.0.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.1.0
 	github.com/regen-network/regen-ledger/x/group v1.0.0-beta2
 	github.com/rs/zerolog v1.26.0
 	github.com/spf13/cast v1.4.1
@@ -151,8 +151,6 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
-
-replace github.com/regen-network/regen-ledger/x/ecocredit/v2 => ./x/ecocredit
 
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
