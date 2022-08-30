@@ -136,6 +136,8 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 				require.Len(res.Attestations, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -193,6 +195,8 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
 				require.Len(res.Attestations, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -247,6 +251,8 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
 				require.Len(res.Attestations, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -319,6 +325,8 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
 				require.Len(res.Resolvers, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -373,6 +381,8 @@ func (s *IntegrationTestSuite) TestQueryResolversByHash() {
 				require.Len(res.Resolvers, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -424,6 +434,8 @@ func (s *IntegrationTestSuite) TestQueryResolversByURL() {
 				require.Len(res.Resolvers, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
+			} else {
+				require.Empty(res.Pagination)
 			}
 		})
 	}
