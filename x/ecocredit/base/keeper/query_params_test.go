@@ -48,7 +48,6 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	result, err := s.k.Params(s.ctx, &types.QueryParamsRequest{})
 	err = s.k.marketStore.AllowedDenomTable().Insert(s.ctx, &markettypes.AllowedDenom{
 		BankDenom:    "uregen",
 		DisplayDenom: "REGEN",
@@ -56,7 +55,7 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	result, err = s.k.Params(s.ctx, &types.QueryParamsRequest{})
+	result, err := s.k.Params(s.ctx, &types.QueryParamsRequest{})
 	assert.NilError(t, err)
 
 	assert.Equal(t, result.Params.AllowlistEnabled, true)

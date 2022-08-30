@@ -14,7 +14,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
@@ -91,7 +90,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 
 	// mint and send tokens to depositor
 	coinsToSend := sdk.Coins{sdk.NewCoin(basket.BasketDenom, amountReceived)}
-	if err = k.bankKeeper.MintCoins(sdkCtx, baskettypes.BasketSubModuleName, coinsToSend); err != nil {
+	if err = k.bankKeeper.MintCoins(sdkCtx, basketsub.BasketSubModuleName, coinsToSend); err != nil {
 		return nil, err
 	}
 	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, basketsub.BasketSubModuleName, ownerAddr, coinsToSend); err != nil {

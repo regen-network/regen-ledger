@@ -24,7 +24,6 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -234,7 +233,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class fees
-	err = coreStore.ClassFeesTable().Save(ctx, &api.ClassFees{
+	err = coreStore.ClassFeesTable().Save(ctx, &baseapi.ClassFees{
 		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
@@ -245,17 +244,17 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class allow list
-	err = coreStore.AllowListEnabledTable().Save(ctx, &api.AllowListEnabled{
+	err = coreStore.AllowListEnabledTable().Save(ctx, &baseapi.AllowListEnabled{
 		Enabled: false,
 	})
 	require.NoError(err)
 
 	// set allowed credit class creators
-	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &api.AllowedClassCreator{
+	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
 		Address: sdk.AccAddress("issuer1"),
 	})
 	require.NoError(err)
-	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &api.AllowedClassCreator{
+	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
 		Address: sdk.AccAddress("issuer2"),
 	})
 	require.NoError(err)
