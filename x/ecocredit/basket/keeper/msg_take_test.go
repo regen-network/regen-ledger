@@ -12,11 +12,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 type takeSuite struct {
@@ -60,7 +61,7 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *takeSuite) ACreditType() {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -70,7 +71,7 @@ func (s *takeSuite) ACreditType() {
 func (s *takeSuite) ACreditTypeWithAbbreviation(a string) {
 	s.creditTypeAbbrev = a
 
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -84,7 +85,7 @@ func (s *takeSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string) 
 	s.creditTypeAbbrev = a
 	s.creditTypePrecision = uint32(precision)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -366,7 +367,7 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTa
 }
 
 func (s *takeSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
-	var event core.EventRetire
+	var event basetypes.EventRetire
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -378,7 +379,7 @@ func (s *takeSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
 }
 
 func (s *takeSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
-	var event core.EventTransfer
+	var event basetypes.EventTransfer
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
@@ -396,27 +397,27 @@ func (s *takeSuite) addBasketClassAndBalance(basketID uint64, creditAmount strin
 	})
 	require.NoError(s.t, err)
 
-	classID := core.GetClassIDFromBatchDenom(s.batchDenom)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
+	classID := base.GetClassIDFromBatchDenom(s.batchDenom)
+	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
 		ClassKey: classKey,
 	})
 	require.NoError(s.t, err)
 
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 		ProjectKey: projectKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &coreapi.BatchSupply{
+	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
 		BatchKey:       batchKey,
 		TradableAmount: creditAmount,
 	})

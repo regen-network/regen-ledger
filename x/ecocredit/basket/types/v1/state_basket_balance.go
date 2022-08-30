@@ -5,7 +5,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 // Validate performs basic validation of the BasketBalance state type
@@ -14,7 +14,7 @@ func (m *BasketBalance) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("basket id cannot be zero")
 	}
 
-	if err := core.ValidateBatchDenom(m.BatchDenom); err != nil {
+	if err := base.ValidateBatchDenom(m.BatchDenom); err != nil {
 		return errors.Wrap(err, "batch denom") // returns parse error
 	}
 

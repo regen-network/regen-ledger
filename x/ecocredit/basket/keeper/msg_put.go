@@ -9,12 +9,13 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
@@ -76,7 +77,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 		// update the total amount received so far
 		amountReceived = amountReceived.Add(tokens[0].Amount)
 
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{
 			Sender:         ownerString,
 			Recipient:      moduleAddrString, // basket submodule
 			BatchDenom:     credit.BatchDenom,
@@ -115,7 +116,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batch *ecoApi.Batch) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batch *baseapi.Batch) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
@@ -143,7 +144,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 
 	}
 
-	classID := core.GetClassIDFromBatchDenom(batch.Denom)
+	classID := base.GetClassIDFromBatchDenom(batch.Denom)
 
 	// check credit class match
 	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classID)
@@ -167,7 +168,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 }
 
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basketID uint64, batch *ecoApi.Batch, exponent uint32) error {
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basketID uint64, batch *baseapi.Batch, exponent uint32) error {
 	// update user balance, subtracting from their tradable balance
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batch.Key)
 	if err != nil {

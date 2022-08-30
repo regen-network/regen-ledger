@@ -7,7 +7,6 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	gogoproto "github.com/gogo/protobuf/proto"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -23,9 +22,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 func TestValidateGenesis(t *testing.T) {
@@ -34,10 +34,10 @@ func TestValidateGenesis(t *testing.T) {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
-	ss, err := api.NewStateStore(modDB)
+	ss, err := baseapi.NewStateStore(modDB)
 	require.NoError(t, err)
 
-	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &baseapi.CreditType{
 		Abbreviation: "BIO",
 		Name:         "biodiversity",
 		Unit:         "acres",
@@ -45,14 +45,14 @@ func TestValidateGenesis(t *testing.T) {
 	}))
 
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
-		&api.BatchBalance{
+		&baseapi.BatchBalance{
 			BatchKey:       1,
 			Address:        sdk.AccAddress("addr1"),
 			TradableAmount: "90.003",
 			RetiredAmount:  "9.997",
 		}))
 
-	batches := []*api.Batch{
+	batches := []*baseapi.Batch{
 		{
 			Issuer:       sdk.AccAddress("addr2"),
 			ProjectKey:   1,
@@ -75,13 +75,13 @@ func TestValidateGenesis(t *testing.T) {
 	}
 
 	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
-		&api.BatchSupply{
+		&baseapi.BatchSupply{
 			BatchKey:       1,
 			TradableAmount: "90.003",
 			RetiredAmount:  "9.997",
 		}))
 
-	classes := []*api.Class{
+	classes := []*baseapi.Class{
 		{
 			Id:               "BIO001",
 			Admin:            sdk.AccAddress("addr4"),
@@ -97,7 +97,7 @@ func TestValidateGenesis(t *testing.T) {
 		require.NoError(t, ss.ClassTable().Insert(ormCtx, c))
 	}
 
-	projects := []*api.Project{
+	projects := []*baseapi.Project{
 		{
 			Id:           "P01-001",
 			Admin:        sdk.AccAddress("addr6"),
@@ -122,7 +122,7 @@ func TestValidateGenesis(t *testing.T) {
 	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
-	params := core.Params{AllowlistEnabled: true}
+	params := basetypes.Params{AllowlistEnabled: true}
 	err = ValidateGenesis(genesisJSON, params)
 	require.NoError(t, err)
 }
@@ -130,26 +130,26 @@ func TestValidateGenesis(t *testing.T) {
 func TestGenesisValidate(t *testing.T) {
 	t.Parallel()
 
-	defaultParams := core.DefaultParams()
+	defaultParams := DefaultParams()
 	addr1 := sdk.AccAddress("foobar")
 	addr2 := sdk.AccAddress("fooBarBaz")
 	testCases := []struct {
 		id         string
-		setupState func(ctx context.Context, ss api.StateStore)
-		params     core.Params
+		setupState func(ctx context.Context, ss baseapi.StateStore)
+		params     basetypes.Params
 		expectErr  bool
 		errorMsg   string
 	}{
 		{
 			"valid: no credit batches",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "C",
 					Name:         "carbon",
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
-				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+				require.NoError(t, ss.ClassTable().Insert(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
@@ -161,14 +161,14 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"invalid credit type abbreviation",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "1234",
 					Name:         "carbon",
 					Unit:         "kg",
 					Precision:    6,
 				}))
-				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+				require.NoError(t, ss.ClassTable().Insert(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
@@ -180,20 +180,20 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"invalid: credit type param",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassTable().Insert(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				}))
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "C",
 					Name:         "carbon",
 					Unit:         "kg",
 					Precision:    7,
 				}))
 			},
-			func() core.Params {
+			func() basetypes.Params {
 				return defaultParams
 			}(),
 			true,
@@ -201,10 +201,10 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"invalid: bad addresses in allowlist",
-			func(ctx context.Context, ss api.StateStore) {
+			func(ctx context.Context, ss baseapi.StateStore) {
 			},
-			func() core.Params {
-				p := core.DefaultParams()
+			func() basetypes.Params {
+				p := DefaultParams()
 				p.AllowlistEnabled = true
 				p.AllowedClassCreators = []string{"-=!?#09)("}
 				return p
@@ -214,8 +214,8 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"invalid: type id does not match param id",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassTable().Insert(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "F",
@@ -227,29 +227,29 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"expect error: balances are missing",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "C",
 					Name:         "carbon",
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
 				denom := "C01-001-00000000-00000000-001"
-				key, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+				key, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
 
-				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     key,
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
-				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        denom,
@@ -258,7 +258,7 @@ func TestGenesisValidate(t *testing.T) {
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 400},
 				})
 				require.NoError(t, err)
-				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 					BatchKey:       bKey,
 					TradableAmount: "400.456",
 				}))
@@ -269,22 +269,22 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"expect error: invalid supply",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "C",
 					Name:         "carbon",
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
 				denom := "C01-001-00000000-00000000-001"
-				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
 
-				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     cKey,
@@ -292,7 +292,7 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 
-				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        denom,
@@ -301,13 +301,13 @@ func TestGenesisValidate(t *testing.T) {
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 				})
 				require.NoError(t, err)
-				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 					BatchKey:       bKey,
 					Address:        addr1,
 					TradableAmount: "100",
 					RetiredAmount:  "100",
 				}))
-				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 					BatchKey:        bKey,
 					TradableAmount:  "10",
 					RetiredAmount:   "",
@@ -320,27 +320,27 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"valid test case",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "C",
 					Name:         "carbon",
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
-				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
-				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     cKey,
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
-				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        "C01-001-00000000-00000000-001",
@@ -349,20 +349,20 @@ func TestGenesisValidate(t *testing.T) {
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 				})
 				require.NoError(t, err)
-				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 					BatchKey:       bKey,
 					Address:        addr1,
 					TradableAmount: "100.123",
 					RetiredAmount:  "100.123",
 					EscrowedAmount: "10.000",
 				}))
-				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 					BatchKey:       bKey,
 					Address:        addr2,
 					TradableAmount: "100.123",
 					RetiredAmount:  "100.123",
 				}))
-				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 					BatchKey:       bKey,
 					TradableAmount: "210.246",
 					RetiredAmount:  "200.246",
@@ -374,47 +374,47 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"valid test case, multiple classes and credit types",
-			func(ctx context.Context, ss api.StateStore) {
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "C",
 					Name:         "carbon",
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 					Abbreviation: "BIO",
 					Name:         "biodiversity",
 					Unit:         "acres",
 					Precision:    6,
 				}))
 
-				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
-				cKeyBIO, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+				cKeyBIO, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
 					Id:               "BIO01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "BIO",
 				})
 				require.NoError(t, err)
-				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     cKey,
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
-				pKeyBIO, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+				pKeyBIO, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P02-001",
 					Admin:        addr1,
 					ClassKey:     cKeyBIO,
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
-				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        "C01-001-00000000-00000000-001",
@@ -423,7 +423,7 @@ func TestGenesisValidate(t *testing.T) {
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 				})
 				require.NoError(t, err)
-				bKeyBIO, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+				bKeyBIO, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKeyBIO,
 					Denom:        "BIO01-001-00000000-00000000-001",
@@ -432,7 +432,7 @@ func TestGenesisValidate(t *testing.T) {
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 				})
 				require.NoError(t, err)
-				bKey2, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+				bKey2, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        "C01-001-00000000-00000000-002",
@@ -441,45 +441,45 @@ func TestGenesisValidate(t *testing.T) {
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
 				})
 				require.NoError(t, err)
-				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 					BatchKey:       bKey,
 					Address:        addr1,
 					TradableAmount: "100.123",
 					RetiredAmount:  "100.123",
 				}))
-				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 					BatchKey:       bKey2,
 					Address:        addr2,
 					TradableAmount: "100.123",
 					RetiredAmount:  "100.123",
 				}))
-				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 					BatchKey:       bKeyBIO,
 					Address:        addr1,
 					TradableAmount: "105.2",
 					EscrowedAmount: "102.2",
 					RetiredAmount:  "207.1",
 				}))
-				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &baseapi.BatchBalance{
 					BatchKey:       bKeyBIO,
 					Address:        addr2,
 					TradableAmount: "101.1",
 					RetiredAmount:  "404.1",
 				}))
-				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 					BatchKey:        bKey,
 					TradableAmount:  "100.123",
 					RetiredAmount:   "100.123",
 					CancelledAmount: "",
 				}))
-				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 					BatchKey:        bKey2,
 					TradableAmount:  "100.123",
 					RetiredAmount:   "100.123",
 					CancelledAmount: "",
 				}))
 
-				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &baseapi.BatchSupply{
 					BatchKey:        bKeyBIO,
 					TradableAmount:  "308.5",
 					RetiredAmount:   "611.2",
@@ -512,13 +512,13 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
-	ss, err := api.NewStateStore(modDB)
+	ss, err := baseapi.NewStateStore(modDB)
 	require.NoError(t, err)
 
 	bsktStore, err := basketapi.NewStateStore(modDB)
 	require.NoError(t, err)
 
-	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &baseapi.CreditType{
 		Abbreviation: "BIO",
 		Name:         "biodiversity",
 		Unit:         "acres",
@@ -526,7 +526,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	}))
 
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
-		&api.BatchBalance{
+		&baseapi.BatchBalance{
 			BatchKey:       1,
 			Address:        sdk.AccAddress("addr1"),
 			TradableAmount: "90.003",
@@ -534,7 +534,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 		}))
 
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
-		&api.BatchBalance{
+		&baseapi.BatchBalance{
 			BatchKey:       2,
 			Address:        sdk.AccAddress("addr1"),
 			TradableAmount: "1.234",
@@ -542,7 +542,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 			RetiredAmount:  "0",
 		}))
 
-	batches := []*api.Batch{
+	batches := []*baseapi.Batch{
 		{
 			Issuer:       sdk.AccAddress("addr2"),
 			ProjectKey:   1,
@@ -565,7 +565,7 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	}
 
 	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
-		&api.BatchSupply{
+		&baseapi.BatchSupply{
 			BatchKey:       1,
 			TradableAmount: "190.003",
 			RetiredAmount:  "9.997",
@@ -573,21 +573,21 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	)
 
 	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
-		&api.BatchSupply{
+		&baseapi.BatchSupply{
 			BatchKey:       2,
 			TradableAmount: "12.468",
 			RetiredAmount:  "0",
 		}),
 	)
 
-	class := api.Class{
+	class := baseapi.Class{
 		Id:               "BIO001",
 		Admin:            sdk.AccAddress("addr4"),
 		CreditTypeAbbrev: "BIO",
 	}
 	require.NoError(t, ss.ClassTable().Insert(ormCtx, &class))
 
-	project := api.Project{
+	project := baseapi.Project{
 		Id:           "P01-001",
 		Admin:        sdk.AccAddress("addr6"),
 		ClassKey:     1,
@@ -624,17 +624,17 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
-	params := core.Params{AllowlistEnabled: true}
+	params := basetypes.Params{AllowlistEnabled: true}
 	err = ValidateGenesis(genesisJSON, params)
 	require.NoError(t, err)
 }
 
 // setupStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
-func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss api.StateStore)) json.RawMessage {
+func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss baseapi.StateStore)) json.RawMessage {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
-	ss, err := api.NewStateStore(modDB)
+	ss, err := baseapi.NewStateStore(modDB)
 	require.NoError(t, err)
 	setupFunc(ormCtx, ss)
 	target := ormjson.NewRawMessageTarget()
@@ -653,7 +653,7 @@ func TestMergeClassFeesIntoTarget(t *testing.T) {
 	err = db.DefaultJSON(jsonTarget)
 	assert.NilError(t, err)
 
-	classFees := core.DefaultCreditClassFees()
+	classFees := DefaultCreditClassFees()
 	err = MergeCreditClassFeesIntoTarget(cdc, classFees, jsonTarget)
 	assert.NilError(t, err)
 
@@ -666,7 +666,7 @@ func TestMergeClassFeesIntoTarget(t *testing.T) {
 	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&classFees)))
 	assert.NilError(t, err)
 
-	var expected api.ClassFees
+	var expected baseapi.ClassFees
 	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &expected)
 	assert.NilError(t, err)
 

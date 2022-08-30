@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 // InitGenesis performs genesis initialization for the ecocredit module. It
@@ -29,7 +30,7 @@ func (s serverImpl) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 		return nil, err
 	}
 
-	var params core.Params
+	var params basetypes.Params
 	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&params)))
 	if err != nil {
 		return nil, err
@@ -56,7 +57,7 @@ func (s serverImpl) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 // ExportGenesis will dump the ecocredit module state into a serializable GenesisState.
 func (s serverImpl) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) (json.RawMessage, error) {
 	// Get Params from the store and put them in the genesis state
-	var params core.Params
+	var params basetypes.Params
 	s.legacySubspace.GetParamSet(ctx, &params)
 
 	jsonTarget := ormjson.NewRawMessageTarget()

@@ -10,16 +10,16 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/basket/keeper"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	marketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/keeper"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
 type serverImpl struct {
@@ -27,12 +27,12 @@ type serverImpl struct {
 	bankKeeper     ecocredit.BankKeeper
 	accountKeeper  ecocredit.AccountKeeper
 
-	CoreKeeper        core.Keeper
+	CoreKeeper        basekeeper.Keeper
 	BasketKeeper      basketkeeper.Keeper
 	MarketplaceKeeper marketkeeper.Keeper
 
 	db               ormdb.ModuleDB
-	stateStore       api.StateStore
+	stateStore       baseapi.StateStore
 	basketStore      basketapi.StateStore
 	marketplaceStore marketapi.StateStore
 }
@@ -68,15 +68,15 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	s.stateStore = coreStore
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
-	s.CoreKeeper = core.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, marketStore, authority)
+	s.CoreKeeper = basekeeper.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, marketStore, authority)
 	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
 	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, coreStore, bankKeeper, s.legacySubspace, authority)
 
 	return s
 }
 
-func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, marketapi.StateStore) {
-	coreStore, err := api.NewStateStore(db)
+func getStateStores(db ormdb.ModuleDB) (baseapi.StateStore, basketapi.StateStore, marketapi.StateStore) {
+	coreStore, err := baseapi.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
@@ -91,10 +91,10 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 	return coreStore, basketStore, marketStore
 }
 
-func (s serverImpl) QueryServers() (coretypes.QueryServer, baskettypes.QueryServer, markettypes.QueryServer) {
+func (s serverImpl) QueryServers() (basetypes.QueryServer, baskettypes.QueryServer, markettypes.QueryServer) {
 	return s.CoreKeeper, s.BasketKeeper, s.MarketplaceKeeper
 }
 
-func (s serverImpl) GetStateStores() (api.StateStore, basketapi.StateStore, marketapi.StateStore) {
+func (s serverImpl) GetStateStores() (baseapi.StateStore, basketapi.StateStore, marketapi.StateStore) {
 	return s.stateStore, s.basketStore, s.marketplaceStore
 }

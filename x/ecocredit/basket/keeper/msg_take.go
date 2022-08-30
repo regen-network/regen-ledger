@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	sdkMath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -12,10 +13,10 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
 func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeResponse, error) {
@@ -194,10 +195,10 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		return err
 	}
 	if !retire {
-		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
+		if err = basekeeper.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 			return err
 		}
-		return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
+		return sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{
 			Sender:         k.moduleAddress.String(), // basket submodule
 			Recipient:      owner.String(),
 			BatchDenom:     batchDenom,
@@ -205,13 +206,13 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		})
 	}
 
-	if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
+	if err = basekeeper.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 		return err
 	}
-	if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
+	if err = basekeeper.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
 		return err
 	}
-	err = sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
+	err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{
 		Sender:        k.moduleAddress.String(), // basket submodule
 		Recipient:     owner.String(),
 		BatchDenom:    batchDenom,
@@ -220,7 +221,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 	if err != nil {
 		return err
 	}
-	return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventRetire{
+	return sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventRetire{
 		Owner:        owner.String(),
 		BatchDenom:   batchDenom,
 		Amount:       amount.String(),

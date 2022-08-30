@@ -10,7 +10,7 @@ import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1";
 
 // Msg is the regen.ecocredit.v1 Query service.
 service Query {

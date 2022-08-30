@@ -14,7 +14,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
@@ -46,7 +46,7 @@ var (
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryServer, mktQryClient types.QueryServer) simulation.WeightedOperations {
+	qryClient basetypes.QueryServer, mktQryClient types.QueryServer) simulation.WeightedOperations {
 
 	var (
 		weightMsgBuyDirect       int
@@ -101,7 +101,7 @@ func WeightedOperations(
 
 // SimulateMsgBuyDirect generates a Marketplace/MsgBuyDirect with random values.
 func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+	qryClient basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -173,7 +173,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 // SimulateMsgSell generates a Marketplace/MsgSell with random values.
 func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryServer) simtypes.Operation {
+	qryClient basetypes.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, baseApp *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -186,7 +186,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		batchRes, err := qryClient.BatchesByIssuer(ctx, &core.QueryBatchesByIssuerRequest{Issuer: seller.Address.String()})
+		batchRes, err := qryClient.BatchesByIssuer(ctx, &basetypes.QueryBatchesByIssuerRequest{Issuer: seller.Address.String()})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 		}
@@ -202,7 +202,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		sellOrders := make([]*types.MsgSell_Order, max)
 		for i := 0; i < max; i++ {
-			bal, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{Address: sellerAddr, BatchDenom: batches[i].Denom})
+			bal, err := qryClient.Balance(ctx, &basetypes.QueryBalanceRequest{Address: sellerAddr, BatchDenom: batches[i].Denom})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 			}
@@ -268,7 +268,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 // SimulateMsgUpdateSellOrder generates a Marketplace/MsgUpdateSellOrder with random values.
 func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	coreQryClient core.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+	coreQryClient basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -353,7 +353,7 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 
 // SimulateMsgCancelSellOrder generates a Marketplace/MsgCancelSellOrder with random values.
 func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+	qryClient basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

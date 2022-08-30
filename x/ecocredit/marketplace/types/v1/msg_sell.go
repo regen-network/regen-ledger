@@ -9,7 +9,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgSell{}
@@ -44,7 +44,7 @@ func (m *MsgSell) ValidateBasic() error {
 		// an individual order in a list of orders fails to process
 		orderIndex := fmt.Sprintf("orders[%d]", i)
 
-		if err := core.ValidateBatchDenom(order.BatchDenom); err != nil {
+		if err := base.ValidateBatchDenom(order.BatchDenom); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom: %s", orderIndex, err)
 		}
 

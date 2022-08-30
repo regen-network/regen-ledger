@@ -10,7 +10,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgPut{}
@@ -40,7 +40,7 @@ func (m MsgPut) ValidateBasic() error {
 		for i, credit := range m.Credits {
 			creditIndex := fmt.Sprintf("credits[%d]", i)
 
-			if err := core.ValidateBatchDenom(credit.BatchDenom); err != nil {
+			if err := base.ValidateBatchDenom(credit.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom: %s", creditIndex, err)
 			}
 

@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 func RandomExponent(r *rand.Rand, precision uint32) uint32 {
@@ -83,20 +83,20 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
 }
 
-func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryServer, msgType string) ([]*core.ClassInfo, simtypes.OperationMsg, error) {
+func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient basetypes.QueryServer, msgType string) ([]*basetypes.ClassInfo, simtypes.OperationMsg, error) {
 	ctx := sdk.WrapSDKContext(sdkCtx)
-	res, err := qryClient.Classes(ctx, &core.QueryClassesRequest{})
+	res, err := qryClient.Classes(ctx, &basetypes.QueryClassesRequest{})
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			return []*core.ClassInfo{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no classes"), nil
+			return []*basetypes.ClassInfo{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no classes"), nil
 		}
-		return []*core.ClassInfo{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+		return []*basetypes.ClassInfo{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
 	}
 
 	return res.Classes, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryServer, msgType string) (*core.ClassInfo, simtypes.OperationMsg, error) {
+func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient basetypes.QueryServer, msgType string) (*basetypes.ClassInfo, simtypes.OperationMsg, error) {
 	classes, op, err := GetClasses(sdkCtx, r, qryClient, msgType)
 	if len(classes) == 0 {
 		return nil, op, err

@@ -18,12 +18,12 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
@@ -36,7 +36,7 @@ import (
 // - the retired amount of each credit batch complies with the credit type precision
 // - the calculated total amount of each credit batch matches the total supply
 // An error is returned if any of these validation checks fail.
-func ValidateGenesis(data json.RawMessage, params core.Params) error {
+func ValidateGenesis(data json.RawMessage, params basetypes.Params) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 	}
 
 	ormCtx := ormtable.WrapContextDefault(backend)
-	ss, err := api.NewStateStore(ormdb)
+	ss, err := baseapi.NewStateStore(ormdb)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 	}
 
 	abbrevToPrecision := make(map[string]uint32) // map of credit abbreviation to precision
-	ctItr, err := ss.CreditTypeTable().List(ormCtx, &api.CreditTypePrimaryKey{})
+	ctItr, err := ss.CreditTypeTable().List(ormCtx, &baseapi.CreditTypePrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 	}
 	ctItr.Close()
 
-	cItr, err := ss.ClassTable().List(ormCtx, api.ClassPrimaryKey{})
+	cItr, err := ss.ClassTable().List(ormCtx, baseapi.ClassPrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 	}
 
 	projectKeyToClassKey := make(map[uint64]uint64) // map of project key to class key
-	pItr, err := ss.ProjectTable().List(ormCtx, api.ProjectPrimaryKey{})
+	pItr, err := ss.ProjectTable().List(ormCtx, baseapi.ProjectPrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 
 	batchIDToPrecision := make(map[uint64]uint32) // map of batchID to precision
 	batchDenomToIDMap := make(map[string]uint64)  // map of batchDenom to batchID
-	bItr, err := ss.BatchTable().List(ormCtx, api.BatchPrimaryKey{})
+	bItr, err := ss.BatchTable().List(ormCtx, baseapi.BatchPrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -158,7 +158,7 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 
 	batchIDToCalSupply := make(map[uint64]math.Dec) // map of batchID to calculated supply
 	batchIDToSupply := make(map[uint64]math.Dec)    // map of batchID to actual supply
-	bsItr, err := ss.BatchSupplyTable().List(ormCtx, api.BatchSupplyPrimaryKey{})
+	bsItr, err := ss.BatchSupplyTable().List(ormCtx, baseapi.BatchSupplyPrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -248,74 +248,74 @@ func validateMsg(m proto.Message) error {
 	switch m.(type) {
 
 	// ecocredit core
-	case *api.CreditType:
-		msg := &core.CreditType{}
+	case *baseapi.CreditType:
+		msg := &basetypes.CreditType{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.Class:
-		msg := &core.Class{}
+	case *baseapi.Class:
+		msg := &basetypes.Class{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.ClassIssuer:
-		msg := &core.ClassIssuer{}
+	case *baseapi.ClassIssuer:
+		msg := &basetypes.ClassIssuer{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.Project:
-		msg := &core.Project{}
+	case *baseapi.Project:
+		msg := &basetypes.Project{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.Batch:
-		msg := &core.Batch{}
+	case *baseapi.Batch:
+		msg := &basetypes.Batch{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.ClassSequence:
-		msg := &core.ClassSequence{}
+	case *baseapi.ClassSequence:
+		msg := &basetypes.ClassSequence{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.ProjectSequence:
-		msg := &core.ProjectSequence{}
+	case *baseapi.ProjectSequence:
+		msg := &basetypes.ProjectSequence{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.BatchSequence:
-		msg := &core.BatchSequence{}
+	case *baseapi.BatchSequence:
+		msg := &basetypes.BatchSequence{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.BatchBalance:
-		msg := &core.BatchBalance{}
+	case *baseapi.BatchBalance:
+		msg := &basetypes.BatchBalance{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.BatchSupply:
-		msg := &core.BatchSupply{}
+	case *baseapi.BatchSupply:
+		msg := &basetypes.BatchSupply{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.OriginTxIndex:
-		msg := &core.OriginTxIndex{}
+	case *baseapi.OriginTxIndex:
+		msg := &basetypes.OriginTxIndex{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *api.BatchContract:
-		msg := &core.BatchContract{}
+	case *baseapi.BatchContract:
+		msg := &basetypes.BatchContract{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
@@ -365,8 +365,8 @@ func validateMsg(m proto.Message) error {
 	return nil
 }
 
-func calculateSupply(ctx context.Context, batchIDToPrecision map[uint64]uint32, ss api.StateStore, batchIDToSupply map[uint64]math.Dec) error {
-	bbItr, err := ss.BatchBalanceTable().List(ctx, api.BatchBalancePrimaryKey{})
+func calculateSupply(ctx context.Context, batchIDToPrecision map[uint64]uint32, ss baseapi.StateStore, batchIDToSupply map[uint64]math.Dec) error {
+	bbItr, err := ss.BatchBalanceTable().List(ctx, baseapi.BatchBalancePrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -473,7 +473,7 @@ func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, targe
 }
 
 // MergeCreditTypesIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeCreditTypesIntoTarget(messages []core.CreditType, target ormjson.WriteTarget) error {
+func MergeCreditTypesIntoTarget(messages []basetypes.CreditType, target ormjson.WriteTarget) error {
 	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&messages[0])))
 	if err != nil {
 		return err
@@ -517,7 +517,7 @@ func MergeAllowedDenomsIntoTarget(messages []markettypes.AllowedDenom, target or
 // MergeCreditClassFeesIntoTarget merges params message into the ormjson.WriteTarget.
 func MergeCreditClassFeesIntoTarget(
 	cdc codec.JSONCodec,
-	creditClassFees core.ClassFees,
+	creditClassFees basetypes.ClassFees,
 	target ormjson.WriteTarget) error {
 	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&creditClassFees)))
 	if err != nil {

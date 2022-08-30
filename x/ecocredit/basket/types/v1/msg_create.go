@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 const descrMaxLen = 256
@@ -39,7 +39,7 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("description length cannot be greater than %d characters", descrMaxLen)
 	}
 
-	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+	if err := base.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbrev: %s", err)
 	}
 
@@ -48,7 +48,7 @@ func (m MsgCreate) ValidateBasic() error {
 	}
 
 	for i := range m.AllowedClasses {
-		if err := core.ValidateClassID(m.AllowedClasses[i]); err != nil {
+		if err := base.ValidateClassID(m.AllowedClasses[i]); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("allowed classes [%d]: %s", i, err)
 		}
 	}

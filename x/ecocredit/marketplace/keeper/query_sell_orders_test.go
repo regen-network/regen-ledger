@@ -12,7 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
@@ -22,7 +22,7 @@ var (
 	start, end    = timestamppb.Now(), timestamppb.Now()
 	validAskDenom = sdk.DefaultBondDenom
 	ask           = sdk.NewInt64Coin(validAskDenom, 10)
-	creditType    = core.CreditType{Name: "carbon", Abbreviation: "C", Unit: "tonnes", Precision: 6}
+	creditType    = basetypes.CreditType{Name: "carbon", Abbreviation: "C", Unit: "tonnes", Precision: 6}
 )
 
 func TestSellOrders(t *testing.T) {

@@ -18,7 +18,7 @@ import (
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
@@ -107,8 +107,8 @@ func (s *sellSuite) AnAllowedDenomWithBankDenom(a string) {
 }
 
 func (s *sellSuite) ACreditBatchWithBatchDenom(a string) {
-	classID := core.GetClassIDFromBatchDenom(a)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassID(classID)
+	classID := base.GetClassIDFromBatchDenom(a)
+	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
 		Id:               classID,
@@ -142,8 +142,8 @@ func (s *sellSuite) AliceHasATradableBatchBalance() {
 
 func (s *sellSuite) AliceHasATradableBatchBalanceWithDenom(a string) {
 	s.batchDenom = a
-	s.classID = core.GetClassIDFromBatchDenom(s.batchDenom)
-	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassID(s.classID)
+	s.classID = base.GetClassIDFromBatchDenom(s.batchDenom)
+	s.creditTypeAbbrev = base.GetCreditTypeAbbrevFromClassID(s.classID)
 
 	s.aliceTradableBatchBalance()
 }
@@ -156,8 +156,8 @@ func (s *sellSuite) AliceHasATradableBatchBalanceWithAmount(a string) {
 
 func (s *sellSuite) AliceHasATradableBatchBalanceWithDenomAndAmount(a string, b string) {
 	s.batchDenom = a
-	s.classID = core.GetClassIDFromBatchDenom(s.batchDenom)
-	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassID(s.classID)
+	s.classID = base.GetClassIDFromBatchDenom(s.batchDenom)
+	s.creditTypeAbbrev = base.GetCreditTypeAbbrevFromClassID(s.classID)
 	s.aliceTradableAmount = b
 
 	s.aliceTradableBatchBalance()

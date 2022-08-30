@@ -8,9 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func (s *IntegrationTestSuite) TestQueryBasketCmd() {
@@ -244,5 +244,5 @@ func (s *IntegrationTestSuite) TestQueryBasketFees() {
 	var res types.QueryBasketFeesResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.NotEmpty(res.Fees)
-	require.Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), core.DefaultBasketFee)
+	require.Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), basetypes.DefaultBasketFee)
 }

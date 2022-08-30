@@ -2,9 +2,9 @@ package v1
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 // Validate performs basic validation of the AllowedDenom state type
@@ -25,7 +25,7 @@ func (m *AllowedDenom) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("display denom: %s", err)
 	}
 
-	if _, err := core.ExponentToPrefix(m.Exponent); err != nil {
+	if _, err := base.ExponentToPrefix(m.Exponent); err != nil {
 		return err // returns parse error
 	}
 
