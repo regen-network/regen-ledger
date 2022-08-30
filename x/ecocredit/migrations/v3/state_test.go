@@ -40,11 +40,14 @@ func TestMigrations(t *testing.T) {
 
 	paramStore.WithKeyTable(core.ParamKeyTable())
 
+	creator1 := sdk.AccAddress("creator1")
+	creator2 := sdk.AccAddress("creator2")
+
 	// initialize params
 	paramStore.SetParamSet(sdkCtx, &core.Params{
-		CreditClassFee:       sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))),
+		CreditClassFee:       sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)), sdk.NewCoin("uregen", sdk.NewInt(2000000))),
 		BasketFee:            sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)), sdk.NewCoin("uregen", sdk.NewInt(2000000))),
-		AllowedClassCreators: []string{},
+		AllowedClassCreators: []string{creator1.String(), creator2.String()},
 		AllowlistEnabled:     true,
 	})
 
@@ -70,4 +73,32 @@ func TestMigrations(t *testing.T) {
 	assert.Equal(t, basketFees.Fees[0].Amount, "10")
 	assert.Equal(t, basketFees.Fees[1].Denom, "uregen")
 	assert.Equal(t, basketFees.Fees[1].Amount, "2000000")
+
+	// verify core state migrated to orm table
+	classFees, err := coreStore.ClassFeesTable().Get(sdkCtx)
+	assert.NilError(t, err)
+
+	assert.Equal(t, len(classFees.Fees), 2)
+	assert.Equal(t, classFees.Fees[0].Denom, sdk.DefaultBondDenom)
+	assert.Equal(t, classFees.Fees[0].Amount, "10")
+	assert.Equal(t, classFees.Fees[1].Denom, "uregen")
+	assert.Equal(t, classFees.Fees[1].Amount, "2000000")
+
+	allowedListEnabled, err := coreStore.AllowListEnabledTable().Get(sdkCtx)
+	assert.NilError(t, err)
+	assert.Equal(t, allowedListEnabled.Enabled, true)
+
+	itr, err := coreStore.AllowedClassCreatorTable().List(sdkCtx, api.AllowedClassCreatorPrimaryKey{})
+	assert.NilError(t, err)
+
+	var expected []string
+	for itr.Next() {
+		val, err := itr.Value()
+		assert.NilError(t, err)
+
+		expected = append(expected, sdk.AccAddress(val.Address).String())
+	}
+	itr.Close()
+
+	assert.DeepEqual(t, params.AllowedClassCreators, expected)
 }

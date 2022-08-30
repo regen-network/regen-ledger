@@ -205,7 +205,7 @@ Feature: Msg/MintBatchCredits
         "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
         "batch_denom": "C01-001-20200101-20210101-001",
         "tradable_amount": "10",
-        "retired_amount": ""
+        "retired_amount": "0"
       }
       """
 

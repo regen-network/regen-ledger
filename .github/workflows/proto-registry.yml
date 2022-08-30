@@ -1,4 +1,4 @@
-name: Proto-Registry
+name: Proto Registry
 
 # **What it does**: Pushes proto files to buf schema registry when
 # proto files have been modified (https://buf.build/regen/regen-ledger).
@@ -14,6 +14,9 @@ on:
       - main
     paths:
       - 'proto/**'
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

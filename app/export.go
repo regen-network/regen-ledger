@@ -33,7 +33,7 @@ func (app *RegenApp) ExportAppStateAndValidators(
 	}
 
 	genState := map[string]json.RawMessage{}
-	for name, v := range app.mm.ExportGenesis(ctx, app.appCodec) {
+	for name, v := range app.ModuleManager.ExportGenesis(ctx, app.appCodec) {
 		genState[name] = v
 	}
 

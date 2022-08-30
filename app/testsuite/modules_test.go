@@ -1,5 +1,4 @@
-//go:build norace
-// +build norace
+//go:build !nointegration
 
 package testsuite
 
