@@ -22,7 +22,7 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
 	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -31,7 +31,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
@@ -59,8 +59,8 @@ type IntegrationTestSuite struct {
 }
 
 type marketServer struct {
-	marketplace.QueryClient
-	marketplace.MsgClient
+	markettypes.QueryClient
+	markettypes.MsgClient
 }
 
 type basketServer struct {
@@ -100,7 +100,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().GreaterOrEqual(len(s.signers), 8)
 	s.basketServer = basketServer{basket.NewQueryClient(s.fixture.QueryConn()), basket.NewMsgClient(s.fixture.TxConn())}
 
-	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
+	s.marketServer = marketServer{markettypes.NewQueryClient(s.fixture.QueryConn()), markettypes.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
 }
@@ -122,10 +122,10 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	ormCtx := ormtable.WrapContextDefault(backend)
 	ss, err := api.NewStateStore(modDB)
 	s.Require().NoError(err)
-	ms, err := marketApi.NewStateStore(modDB)
+	ms, err := marketapi.NewStateStore(modDB)
 	s.Require().NoError(err)
 
-	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
+	err = ms.AllowedDenomTable().Insert(ormCtx, &marketapi.AllowedDenom{
 		BankDenom:    sdk.DefaultBondDenom,
 		DisplayDenom: sdk.DefaultBondDenom,
 	})
@@ -950,9 +950,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(err)
 	order2QtyDec, err := math.NewDecFromString(order2Qty)
 	s.Require().NoError(err)
-	createSellOrder, err := s.marketServer.Sell(s.ctx, &marketplace.MsgSell{
+	createSellOrder, err := s.marketServer.Sell(s.ctx, &markettypes.MsgSell{
 		Seller: sellerAcc.String(),
-		Orders: []*marketplace.MsgSell_Order{
+		Orders: []*markettypes.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
 				Quantity:          order1Qty,
@@ -983,9 +983,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	buyerAccBefore := s.getAccountInfo(buyerAcc, batchDenom, coinPrice.Denom)
 	sellerAccBefore := s.getAccountInfo(sellerAcc, batchDenom, coinPrice.Denom)
-	_, err = s.marketServer.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+	_, err = s.marketServer.BuyDirect(s.ctx, &markettypes.MsgBuyDirect{
 		Buyer: buyerAcc.String(),
-		Orders: []*marketplace.MsgBuyDirect_Order{
+		Orders: []*markettypes.MsgBuyDirect_Order{
 			{
 				SellOrderId:            orderID1,
 				Quantity:               order1Qty,

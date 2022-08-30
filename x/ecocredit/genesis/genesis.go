@@ -16,15 +16,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 // ValidateGenesis performs basic validation for the following:
@@ -199,12 +199,12 @@ func ValidateGenesis(data json.RawMessage, params core.Params) error {
 		return err
 	}
 
-	basketStore, err := basketv1.NewStateStore(ormdb)
+	basketStore, err := basketApi.NewStateStore(ormdb)
 	if err != nil {
 		return err
 	}
 
-	bBalanceItr, err := basketStore.BasketBalanceTable().List(ormCtx, basketv1.BasketBalancePrimaryKey{})
+	bBalanceItr, err := basketStore.BasketBalanceTable().List(ormCtx, basketApi.BasketBalancePrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -322,19 +322,19 @@ func validateMsg(m proto.Message) error {
 		return msg.Validate()
 
 	// basket submodule
-	case *basketv1.Basket:
+	case *basketApi.Basket:
 		msg := &basket.Basket{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *basketv1.BasketClass:
+	case *basketApi.BasketClass:
 		msg := &basket.BasketClass{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *basketv1.BasketBalance:
+	case *basketApi.BasketBalance:
 		msg := &basket.BasketBalance{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
@@ -342,20 +342,20 @@ func validateMsg(m proto.Message) error {
 		return msg.Validate()
 
 	// marketplace submodule
-	case *marketplacev1.SellOrder:
-		msg := &marketplace.SellOrder{}
+	case *marketapi.SellOrder:
+		msg := &markettypes.SellOrder{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *marketplacev1.AllowedDenom:
-		msg := &marketplace.AllowedDenom{}
+	case *marketapi.AllowedDenom:
+		msg := &markettypes.AllowedDenom{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 		return msg.Validate()
-	case *marketplacev1.Market:
-		msg := &marketplace.Market{}
+	case *marketapi.Market:
+		msg := &markettypes.Market{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
@@ -494,7 +494,7 @@ func MergeCreditTypesIntoTarget(messages []core.CreditType, target ormjson.Write
 }
 
 // MergeAllowedDenomsIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeAllowedDenomsIntoTarget(messages []marketplace.AllowedDenom, target ormjson.WriteTarget) error {
+func MergeAllowedDenomsIntoTarget(messages []markettypes.AllowedDenom, target ormjson.WriteTarget) error {
 	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&messages[0])))
 	if err != nil {
 		return err
