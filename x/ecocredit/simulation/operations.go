@@ -18,10 +18,10 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	marketplacesims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/marketplace"
+	marketsims "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/simulation"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
@@ -81,8 +81,8 @@ var (
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryServer, basketQryClient basket.QueryServer,
-	mktQryClient marketplace.QueryServer) simulation.WeightedOperations {
+	qryClient core.QueryServer, basketQryClient baskettypes.QueryServer,
+	mktQryClient markettypes.QueryServer) simulation.WeightedOperations {
 
 	var (
 		weightMsgCreateClass           int
@@ -248,7 +248,7 @@ func WeightedOperations(
 	// TODO: #1363
 	// basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
 	// ops = append(ops, basketOps...)
-	marketplaceOps := marketplacesims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient)
+	marketplaceOps := marketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient)
 
 	return append(ops, marketplaceOps...)
 }

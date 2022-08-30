@@ -1,12 +1,13 @@
 package data
 
-import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+import "cosmossdk.io/errors"
 
 const DataCodespace = "regen.data"
 
 var (
-	ErrInvalidIRI                  = sdkerrors.Register(DataCodespace, 2, "invalid IRI")
-	ErrInvalidMediaExtension       = sdkerrors.Register(DataCodespace, 3, "invalid media extension")
-	ErrUnauthorizedResolverManager = sdkerrors.Register(DataCodespace, 4, "unauthorized resolver manager")
-	ErrParseFailure                = sdkerrors.Register(DataCodespace, 5, "parse error")
+	ErrInvalidIRI                  = errors.Register(DataCodespace, 2, "invalid IRI")
+	ErrInvalidMediaExtension       = errors.Register(DataCodespace, 3, "invalid media extension")
+	ErrUnauthorizedResolverManager = errors.Register(DataCodespace, 4, "unauthorized resolver manager")
+	ErrParseFailure                = errors.Register(DataCodespace, 5, "parse error")
 )
+

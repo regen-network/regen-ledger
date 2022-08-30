@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
@@ -46,9 +46,9 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid",
 			args: []string{
 				"NCT1",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classID),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
-				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
+				fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+				fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
 			},
 		},
@@ -56,9 +56,9 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid from key-name",
 			args: []string{
 				"NCT2",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classID),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
-				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
+				fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+				fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
@@ -66,9 +66,9 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid with amino-json",
 			args: []string{
 				"NCT3",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classID),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
-				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
+				fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+				fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -78,7 +78,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := basketclient.TxCreateBasketCmd()
+			cmd := client.TxCreateBasketCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -101,7 +101,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 	owner := s.addr1.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]*basket.BasketCredit{
+	bz, err := json.Marshal([]*types.BasketCredit{
 		{
 			BatchDenom: s.batchDenom,
 			Amount:     "10",
@@ -197,7 +197,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := basketclient.TxPutInBasketCmd()
+			cmd := client.TxPutInBasketCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
@@ -249,8 +249,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				s.basketDenom,
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
-				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
-				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
+				fmt.Sprintf("--%s=true", client.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", client.FlagRetirementJurisdiction),
 			},
 		},
 		{
@@ -259,8 +259,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				s.basketDenom,
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
-				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
-				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
+				fmt.Sprintf("--%s=true", client.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", client.FlagRetirementJurisdiction),
 			},
 		},
 		{
@@ -270,8 +270,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
-				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
-				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
+				fmt.Sprintf("--%s=true", client.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", client.FlagRetirementJurisdiction),
 			},
 		},
 	}
@@ -279,7 +279,7 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 	for _, tc := range testCases {
 		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := basketclient.TxTakeFromBasketCmd()
+			cmd := client.TxTakeFromBasketCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {

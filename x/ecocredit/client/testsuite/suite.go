@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -22,20 +22,20 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
-	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 type IntegrationTestSuite struct {
@@ -130,7 +130,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// create a basket and set test value
-	s.basketDenom = s.createBasket(s.val.ClientCtx, &basket.MsgCreate{
+	s.basketDenom = s.createBasket(s.val.ClientCtx, &baskettypes.MsgCreate{
 		Curator:          s.addr1.String(),
 		Name:             "NCT",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
@@ -139,10 +139,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	})
 
 	// put credits in basket (for testing basket balance)
-	s.putInBasket(s.val.ClientCtx, &basket.MsgPut{
+	s.putInBasket(s.val.ClientCtx, &baskettypes.MsgPut{
 		Owner:       s.addr1.String(),
 		BasketDenom: s.basketDenom,
-		Credits: []*basket.BasketCredit{
+		Credits: []*baskettypes.BasketCredit{
 			{
 				BatchDenom: s.batchDenom,
 				Amount:     "1000",
@@ -153,9 +153,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	askPrice := sdk.NewInt64Coin(s.allowedDenoms[0], 10)
 
 	// create sell orders with first test account and set test values
-	sellOrderIDs := s.createSellOrder(s.val.ClientCtx, &marketplace.MsgSell{
+	sellOrderIDs := s.createSellOrder(s.val.ClientCtx, &markettypes.MsgSell{
 		Seller: s.addr1.String(),
-		Orders: []*marketplace.MsgSell_Order{
+		Orders: []*markettypes.MsgSell_Order{
 			{
 				BatchDenom:        s.batchDenom,
 				Quantity:          "1000",
@@ -186,10 +186,10 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	coreStore, err := api.NewStateStore(mdb)
 	require.NoError(err)
 
-	marketStore, err := marketApi.NewStateStore(mdb)
+	marketStore, err := marketapi.NewStateStore(mdb)
 	require.NoError(err)
 
-	basketStore, err := basketApi.NewStateStore(mdb)
+	basketStore, err := basketapi.NewStateStore(mdb)
 	require.NoError(err)
 
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
@@ -200,8 +200,8 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	ctx := ormtable.WrapContextDefault(backend)
 
 	// add basket fees
-	err = basketStore.BasketFeesTable().Save(ctx, &basketApi.BasketFees{
-		Fees: []*basev1beta1.Coin{
+	err = basketStore.BasketFeesTable().Save(ctx, &basketapi.BasketFees{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
 				Amount: core.DefaultBasketFee.String(),
@@ -211,7 +211,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// insert allowed denom
-	err = marketStore.AllowedDenomTable().Insert(ctx, &marketApi.AllowedDenom{
+	err = marketStore.AllowedDenomTable().Insert(ctx, &marketapi.AllowedDenom{
 		BankDenom:    sdk.DefaultBondDenom,
 		DisplayDenom: sdk.DefaultBondDenom,
 	})
@@ -234,7 +234,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 
 	// set credit class fees
 	err = coreStore.ClassFeesTable().Save(ctx, &api.ClassFees{
-		Fees: []*basev1beta1.Coin{
+		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
 				Amount: core.DefaultCreditClassFee.String(),
@@ -436,7 +436,7 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 	return ""
 }
 
-func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *basket.MsgCreate) (basketDenom string) {
+func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baskettypes.MsgCreate) (basketDenom string) {
 	require := s.Require()
 
 	cmd := basketclient.TxCreateBasketCmd()
@@ -456,7 +456,7 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	require.Zero(res.Code, res.RawLog)
 
 	for _, event := range res.Logs[0].Events {
-		if event.Type == proto.MessageName(&basket.EventCreate{}) {
+		if event.Type == proto.MessageName(&baskettypes.EventCreate{}) {
 			for _, attr := range event.Attributes {
 				if attr.Key == "basket_denom" {
 					return strings.Trim(attr.Value, "\"")
@@ -470,7 +470,7 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	return ""
 }
 
-func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket.MsgPut) {
+func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *baskettypes.MsgPut) {
 	require := s.Require()
 
 	// using json because array of BasketCredit is not a proto message
@@ -494,7 +494,7 @@ func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket
 	require.Zero(res.Code, res.RawLog)
 }
 
-func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) (sellOrderIDs []uint64) {
+func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *markettypes.MsgSell) (sellOrderIDs []uint64) {
 	require := s.Require()
 
 	// using json package because array is not a proto message
@@ -503,7 +503,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 
 	jsonFile := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
-	cmd := marketplaceclient.TxSellCmd()
+	cmd := marketclient.TxSellCmd()
 	args := []string{
 		jsonFile,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Seller),
@@ -518,7 +518,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 
 	orderIDs := make([]uint64, 0, len(msg.Orders))
 	for _, event := range res.Logs[0].Events {
-		if event.Type == proto.MessageName(&marketplace.EventSell{}) {
+		if event.Type == proto.MessageName(&markettypes.EventSell{}) {
 			for _, attr := range event.Attributes {
 				if attr.Key == "sell_order_id" {
 					orderID, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)

@@ -113,6 +113,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetProjectIdFromBatchDenom` to `GetProjectIDFromBatchDenom`
 - [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetCreditTypeAbbrevFromClassId` to `GetCreditTypeAbbrevFromClassID`
 - [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `BasketSupplyInvariant` to `SupplyInvariant`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/marketplace` to `ecocredit/marketplace/types/v1`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/client/marketplace` to `ecocredit/marketplace/client`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/server/marketplace` to `ecocredit/marketplace/keeper`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/simulation/marketplace` to `ecocredit/marketplace/simulation`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/basket` to `ecocredit/basket/types/v1`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/client/basket` to `ecocredit/basket/client`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/server/basket` to `ecocredit/basket/keeper`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/simulation/basket` to `ecocredit/basket/simulation`
 
 ### Fixed
 

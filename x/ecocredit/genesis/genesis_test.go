@@ -25,7 +25,6 @@ import (
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -685,7 +684,7 @@ func TestMergeBasketFeesIntoTarget(t *testing.T) {
 	err = db.DefaultJSON(jsonTarget)
 	assert.NilError(t, err)
 
-	basketFees := baskettypes.DefaultBasketFees()
+	basketFees := DefaultBasketFees()
 	err = MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
 	assert.NilError(t, err)
 

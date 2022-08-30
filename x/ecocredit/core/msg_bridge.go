@@ -3,9 +3,12 @@ package core
 import (
 	"fmt"
 
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
+
 	"github.com/regen-network/regen-ledger/types/eth"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -62,7 +65,7 @@ func (m *MsgBridge) ValidateBasic() error {
 		}
 
 		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
-			return sdkerrors.Wrapf(err, "%s: amount", creditIndex)
+			return errors.Wrapf(err, "%s: amount", creditIndex)
 		}
 	}
 

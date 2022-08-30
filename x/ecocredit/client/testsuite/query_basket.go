@@ -8,8 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	client "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -53,7 +53,7 @@ func (s *IntegrationTestSuite) TestQueryBasketCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketResponse
+				var res types.QueryBasketResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Basket) // deprecated
 				require.NotEmpty(res.BasketInfo)
@@ -103,7 +103,7 @@ func (s *IntegrationTestSuite) TestQueryBasketsCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketsResponse
+				var res types.QueryBasketsResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Baskets) // deprecated
 				require.NotEmpty(res.BasketsInfo)
@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalanceCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketBalanceResponse
+				var res types.QueryBasketBalanceResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Balance)
 			}
@@ -215,7 +215,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketBalancesResponse
+				var res types.QueryBasketBalancesResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Balances) // deprecated
 				require.NotEmpty(res.BalancesInfo)
@@ -241,7 +241,7 @@ func (s *IntegrationTestSuite) TestQueryBasketFees() {
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 	require.NoError(err)
 
-	var res basket.QueryBasketFeesResponse
+	var res types.QueryBasketFeesResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.NotEmpty(res.Fees)
 	require.Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), core.DefaultBasketFee)

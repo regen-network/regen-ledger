@@ -1,6 +1,8 @@
 package core
 
 import (
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -74,7 +76,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 
 	if _, err := math.NewPositiveDecFromString(m.Batch.Amount); err != nil {
-		return sdkerrors.Wrap(err, "batch amount")
+		return errors.Wrap(err, "batch amount")
 	}
 
 	if m.Batch.StartDate == nil {
