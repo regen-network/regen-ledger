@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package regen.ecocredit.contract.v1alpha1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/orm/v1alpha1/orm.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/contract/v1alpha1/types.proto";
+
+// Contract defines a forward contract and the table within which the forward
+// contract is stored.
+message Contract {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 1,
+    primary_key : {fields : "id", auto_increment : true}
+  };
+
+  // id is the table row identifier of the contract.
+  uint64 id = 1;
+
+  // project_id is the unique identifier of the project.
+  string project_id = 2;
+
+  // status is the status of the contract (e.g. "proposed", "approved").
+  ContractStatus status = 3;
+
+  // metadata is any arbitrary string that includes or references additional
+  // information about the contract such as estimated total supply, forward
+  // contract supply, and estimated price per credit type unit.
+  google.protobuf.Timestamp metadata = 4;
+
+  // funds_to_collect is the denom and amount the project is collecting.
+  cosmos.base.v1beta1.Coin funds_to_collect = 5;
+
+  // volume_percentage is the percent of all credits issued that will be
+  // available to purchase in shares.
+  string volume_percentage = 6;
+
+  // start_date is the delivery start date.
+  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the delivery end date.
+  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+}

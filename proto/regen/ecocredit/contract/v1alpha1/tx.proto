@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package regen.ecocredit.contract.v1alpha1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+// Msg is the regen.ecocredit.contract.v1alpha1 Msg service.
+service Msg {
+
+  // Create creates a new forward contract. A new contract starts with status
+  // proposed and only the class admin can approve the contract.
+  rpc Create(MsgCreate) returns (MsgCreateResponse);
+
+  // Update updates a proposed forward contract. A contract can only be updated
+  // by the project admin before the contract is accepted.
+  rpc Update(MsgUpdate) returns (MsgUpdateResponse);
+
+  // Cancel cancels a forward contract. A contract can only be cancelled by the
+  // project admin before the contract is accepted.
+  rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+
+  // Approve approves a proposed forward contract, changing the status of the
+  // contract to accepted and preventing any further changes. Only an approved
+  // credit class issuer can accept the contract.
+  rpc Approve(MsgApprove) returns (MsgApproveResponse);
+}
+
+// MsgCreate is the Msg/Create request type.
+message MsgCreate {
+  option (cosmos.msg.v1.signer) = "project_admin";
+
+  // project_id is the unique identifier of the project.
+  string project_id = 1;
+
+  // project_admin is the admin of the project.
+  string project_admin = 2;
+
+  // metadata is any arbitrary string that includes or references additional
+  // information about the contract such as estimated total supply, forward
+  // contract supply, and estimated price per credit type unit.
+  string metadata = 3;
+
+  // funds_to_collect is the denom and amount the project is collecting.
+  cosmos.base.v1beta1.Coin funds_to_collect = 4;
+
+  // volume_percentage is the percent of all credits issued that will be
+  // available to purchase in shares.
+  string volume_percentage = 5;
+
+  // start_date is the delivery start date.
+  google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the delivery end date.
+  google.protobuf.Timestamp end_date = 7 [ (gogoproto.stdtime) = true ];
+}
+
+// MsgCreateResponse is the Msg/Create response type.
+message MsgCreateResponse {
+
+  // id is the unique identifier of the created contract.
+  uint64 id = 1;
+}
+
+// MsgUpdate is the Msg/Update request type.
+message MsgUpdate {
+  option (cosmos.msg.v1.signer) = "funder";
+
+  // id is the unique identifier of the contract.
+  uint64 id = 1;
+
+  // project_admin is the admin of the project.
+  string project_admin = 2;
+
+  // metadata is any arbitrary string that includes or references additional
+  // information about the contract such as estimated total supply, forward
+  // contract supply, and estimated price per credit type unit.
+  string metadata = 3;
+
+  // funds_to_collect is the denom and amount the project is collecting.
+  cosmos.base.v1beta1.Coin funds_to_collect = 4;
+
+  // volume_percentage is the percent of all credits issued that will be
+  // available to purchase in shares.
+  string volume_percentage = 5;
+
+  // start_date is the delivery start date.
+  google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the delivery end date.
+  google.protobuf.Timestamp end_date = 7 [ (gogoproto.stdtime) = true ];
+}
+
+// MsgUpdateResponse is the Msg/Update response type.
+message MsgUpdateResponse {}
+
+// MsgCancel is the Msg/Cancel request type.
+message MsgCancel {
+  option (cosmos.msg.v1.signer) = "project_admin";
+
+  // id is the unique identifier of the contract.
+  uint64 id = 1;
+
+  // project_admin is the admin of the project.
+  string project_admin = 2;
+}
+
+// MsgCancelResponse is the Msg/Cancel response type.
+message MsgCancelResponse {}
+
+// MsgApprove is the Msg/Approve request type.
+message MsgApprove {
+  option (cosmos.msg.v1.signer) = "class_issuer";
+
+  // id is the unique identifier of the contract.
+  uint64 id = 1;
+
+  // class_issuer is the address of the credit class issuer that is approving
+  // the contract on behalf of the credit class.
+  string class_issuer = 2;
+}
+
+// MsgApproveResponse is the Msg/Approve response type.
+message MsgApproveResponse {}
