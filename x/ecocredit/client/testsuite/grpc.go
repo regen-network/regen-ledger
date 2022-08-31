@@ -594,9 +594,9 @@ func (s *IntegrationTestSuite) TestBalancesByBatch() {
 		require.NotZero(res.Pagination.Total)
 	}
 
-	url := fmt.Sprintf("%s/%s/balances-by-batch/%s?pagination.countTotal=true", s.val.APIAddress, coreRoute, s.batchDenom)
+	url := fmt.Sprintf("%s/%s/balances-by-batch/%s?pagination.countTotal=true", s.val.APIAddress, baseRoute, s.batchDenom)
 	checkQuery(url)
 
-	url = fmt.Sprintf("%s/%s/batches/%s/balances?pagination.countTotal=true", s.val.APIAddress, coreRoute, s.batchDenom)
+	url = fmt.Sprintf("%s/%s/batches/%s/balances?pagination.countTotal=true", s.val.APIAddress, baseRoute, s.batchDenom)
 	checkQuery(url)
 }
