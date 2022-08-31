@@ -9,6 +9,11 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
+var (
+	_ types.MsgServer   = Keeper{}
+	_ types.QueryServer = Keeper{}
+)
+
 // Keeper is the basket keeper.
 type Keeper struct {
 	stateStore    api.StateStore
@@ -18,9 +23,6 @@ type Keeper struct {
 	moduleAddress sdk.AccAddress
 	authority     sdk.AccAddress
 }
-
-var _ types.MsgServer = Keeper{}
-var _ types.QueryServer = Keeper{}
 
 // NewKeeper returns a new keeper instance.
 func NewKeeper(
