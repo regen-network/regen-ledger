@@ -19,7 +19,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	"github.com/regen-network/regen-ledger/types/fixture"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/module"
@@ -38,7 +38,7 @@ func TestGenesis(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (*fixture.Factory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
+func setup(t *testing.T) (fixture.Factory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
 	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()

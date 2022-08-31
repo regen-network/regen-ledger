@@ -26,7 +26,7 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
@@ -37,8 +37,8 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.Factory
-	fixture        testutil.Fixture
+	fixtureFactory fixture.Factory
+	fixture        fixture.Fixture
 
 	codec        *codec.ProtoCodec
 	sdkCtx       sdk.Context
@@ -71,7 +71,7 @@ var (
 	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultCreditClassFee}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		bankKeeper:     bankKeeper,

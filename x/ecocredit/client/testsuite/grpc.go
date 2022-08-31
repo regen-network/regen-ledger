@@ -580,3 +580,23 @@ func (s *IntegrationTestSuite) TestAllBalances() {
 	require.NotEmpty(res.Balances)
 	require.NotZero(res.Pagination.Total)
 }
+
+func (s *IntegrationTestSuite) TestBalancesByBatch() {
+	require := s.Require()
+
+	checkQuery := func(url string) {
+		resp, err := rest.GetRequest(url)
+		require.NoError(err)
+		var res types.QueryBalancesByBatchResponse
+		err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+		require.NoError(err)
+		require.NotEmpty(res.Balances)
+		require.NotZero(res.Pagination.Total)
+	}
+
+	url := fmt.Sprintf("%s/%s/balances-by-batch/%s?pagination.countTotal=true", s.val.APIAddress, coreRoute, s.batchDenom)
+	checkQuery(url)
+
+	url = fmt.Sprintf("%s/%s/batches/%s/balances?pagination.countTotal=true", s.val.APIAddress, coreRoute, s.batchDenom)
+	checkQuery(url)
+}

@@ -15,15 +15,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/fixture"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 type bridgeSuite struct {
 	t               gocuke.TestingT
-	fixture         testutil.Fixture
+	fixture         fixture.Fixture
 	ctx             context.Context
 	sdkCtx          sdk.Context
 	ecocreditServer ecocreditServer
