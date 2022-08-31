@@ -44,16 +44,16 @@ var (
 )
 
 const (
-	ConsensusVersion = 3
+	ConsensusVersion = 3 // ConsensusVersion is the module consensus version
 )
 
 // Module implements the AppModule interface.
 type Module struct {
 	key           storetypes.StoreKey
+	authority     sdk.AccAddress
+	Keeper        server.Keeper
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
-	Keeper        server.Keeper
-	authority     sdk.AccAddress
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
 	legacySubspace paramtypes.Subspace
@@ -67,6 +67,7 @@ func NewModule(
 	bankKeeper ecocredit.BankKeeper,
 	legacySubspace paramtypes.Subspace,
 ) *Module {
+
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
 	if !legacySubspace.HasKeyTable() {
 		legacySubspace = legacySubspace.WithKeyTable(basetypes.ParamKeyTable())
@@ -153,7 +154,7 @@ func (m Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 // RegisterLegacyAminoCodec implements AppModule/RegisterLegacyAminoCodec.
-func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+func (m Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	basetypes.RegisterLegacyAminoCodec(cdc)
 	baskettypes.RegisterLegacyAminoCodec(cdc)
 	markettypes.RegisterLegacyAminoCodec(cdc)

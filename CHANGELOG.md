@@ -42,7 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Rename FixtureFactory to Factory to prevent package stuttering
 - [#1433](https://github.com/regen-network/regen-ledger/pull/1433) Add default page request limit when page request is nil
 
-
 ### x/data
 
 #### Added
@@ -62,11 +61,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `AddCreditType` proposal handler has been removed.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `AllowedDenom` proposal handler has been removed.
-
+- [#1452](https://github.com/regen-network/regen-ledger/pull/1452) The `NewModule` method in `ecocredit/module` requires an `authority` address and store `key`.
 
 #### Added
 
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1342) Add `AddAllowedDenom` msg-based gov proposal
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddAllowedDenom` msg-based gov proposal
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddCreditType` msg-based gov proposal
 - [#1346](https://github.com/regen-network/regen-ledger/pull/1346) Add `RemoveAllowedDenom` msg-based gov proposal
 - [#1349](https://github.com/regen-network/regen-ledger/pull/1349) Add `UpdateBasketFees` msg-based gov proposal
@@ -89,7 +88,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `AllowedClassCreators` params query
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassFees` params query
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
-
 
 #### Changed
 
