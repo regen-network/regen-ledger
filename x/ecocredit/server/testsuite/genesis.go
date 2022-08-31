@@ -12,7 +12,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
@@ -124,8 +124,8 @@ func (s *GenesisTestSuite) exportGenesisState(ctx sdk.Context) map[string]json.R
 type GenesisTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.Factory
-	fixture        testutil.Fixture
+	fixtureFactory fixture.Factory
+	fixture        fixture.Fixture
 	signers        []sdk.AccAddress
 
 	paramSpace paramstypes.Subspace
@@ -134,7 +134,7 @@ type GenesisTestSuite struct {
 	genesisCtx sdk.Context
 }
 
-func NewGenesisTestSuite(fixtureFactory testutil.Factory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *GenesisTestSuite {
+func NewGenesisTestSuite(fixtureFactory fixture.Factory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *GenesisTestSuite {
 	return &GenesisTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,

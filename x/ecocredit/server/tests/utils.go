@@ -14,13 +14,13 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	"github.com/regen-network/regen-ledger/types/fixture"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
-func NewEcocreditModule(ff *fixture.Factory) *ecocredit.Module {
+func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
 	amino := codec.NewLegacyAmino()
