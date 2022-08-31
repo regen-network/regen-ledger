@@ -168,6 +168,19 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/balances/{address}";
   }
 
+  // BalancesByBatch queries all credit balances from a given batch.
+  //
+  // Since Revision 1
+  rpc BalancesByBatch(QueryBalancesByBatchRequest)
+      returns (QueryBalancesByBatchResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/balances-by-batch/{batch_denom}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/{batch_denom}/balances"}
+      ]
+    };
+  }
+
   // AllBalances queries all credit balances.
   //
   // Since Revision 1
@@ -228,7 +241,8 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
   }
 
-  // CreditClassAllowlistEnabled queries the credit class creator allowlist flag.
+  // CreditClassAllowlistEnabled queries the credit class creator allowlist
+  // flag.
   //
   // Since Revision 1
   rpc CreditClassAllowlistEnabled(QueryCreditClassAllowlistEnabledRequest)
@@ -531,6 +545,31 @@ message QueryBalancesResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryBalancesByBatchRequest is the Query/BalancesByBatch request type.
+//
+// Since Revision 1
+message QueryBalancesByBatchRequest {
+
+  // batch_denom is the denom of the batch to query by.
+  string batch_denom = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBalancesByBatchResponse is the Query/BalancesByBatch response type.
+//
+// Since Revision 1
+message QueryBalancesByBatchResponse {
+
+  // balances are a list of balances from different credit batches that the
+  // account holds.
+  repeated BatchBalanceInfo balances = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 // QueryAllBalancesRequest is the Query/AllBalances request type.
 //
 // Since Revision 1
@@ -610,12 +649,11 @@ message QueryParamsResponse {
   // params defines the parameters of the ecocredit module.
   Params params = 1;
 
-  // allowed_denoms is a list of bank denoms allowed to be used in the ask price of
-  // sell orders.
+  // allowed_denoms is a list of bank denoms allowed to be used in the ask price
+  // of sell orders.
   //
   // Since Revision 1
   repeated AllowedDenomInfo allowed_denoms = 2;
-
 }
 
 // QueryCreditTypeRequest is the Query/CreditType request type
