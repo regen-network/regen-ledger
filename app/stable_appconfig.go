@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
@@ -54,4 +55,14 @@ func (app *RegenApp) setCustomAnteHandler(cfg client.TxConfig) (sdk.AnteHandler,
 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 		},
 	)
+}
+
+func (app *RegenApp) setPostHandler() {
+	if app.BankKeeper == nil {
+		panic("cannot instantiate app post handler when app.BankKeeper is nil")
+	}
+	postDecorators := []sdk.AnteDecorator{
+		posthandler.NewTipDecorator(app.BankKeeper),
+	}
+	app.SetPostHandler(sdk.ChainAnteDecorators(postDecorators...))
 }
