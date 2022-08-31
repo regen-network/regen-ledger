@@ -13,13 +13,14 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"google.golang.org/grpc"
 
+	abci "github.com/tendermint/tendermint/abci/types"
+
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 )
 
 // Factory defines an interface for creating server test fixtures
