@@ -164,7 +164,7 @@ var (
 		perms := map[string][]string{
 			authtypes.FeeCollectorName:      nil,
 			distrtypes.ModuleName:           nil,
-			icatypes.ModuleName:            nil,
+			icatypes.ModuleName:             nil,
 			minttypes.ModuleName:            {authtypes.Minter},
 			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
 			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
@@ -432,10 +432,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ecocreditMod,
 		dataMod,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		// TODO: decide if we want to be a controller chain. For now, we only setup the host.
-		//	this means actions can be executed on Regen Ledger from another chain.
-		// 	however, until we add the controller, Regen Ledger accounts will not be able to execute messages
-		// 	on other chains.
+		// TODO: wire up controller https://github.com/regen-network/regen-ledger/issues/1453
 		ica.NewAppModule(nil, app.ICAHostKeeper),
 	)
 
