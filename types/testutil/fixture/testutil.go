@@ -21,11 +21,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
-type Factory struct {
+var _ Factory = &factoryImpl{}
+
+type factoryImpl struct {
 	t       gocuke.TestingT
 	modules []sdkmodules.AppModule
 	signers []sdk.AccAddress
@@ -33,9 +33,9 @@ type Factory struct {
 	baseApp *baseapp.BaseApp
 }
 
-func NewFixtureFactory(t gocuke.TestingT, numSigners int) *Factory {
+func NewFixtureFactory(t gocuke.TestingT, numSigners int) Factory {
 	signers := makeTestAddresses(numSigners)
-	return &Factory{
+	return &factoryImpl{
 		t:       t,
 		signers: signers,
 		// cdc and baseApp are initialized here just for compatibility with legacy modules which don't use ADR 033
@@ -45,7 +45,7 @@ func NewFixtureFactory(t gocuke.TestingT, numSigners int) *Factory {
 	}
 }
 
-func (ff *Factory) SetModules(modules []sdkmodules.AppModule) {
+func (ff *factoryImpl) SetModules(modules []sdkmodules.AppModule) {
 	ff.modules = modules
 	// we append the mock module below in order to bypass the check for validator updates.
 	// since we are testing with a fixture with no validators, we must inject a mock module and
@@ -55,13 +55,13 @@ func (ff *Factory) SetModules(modules []sdkmodules.AppModule) {
 
 // Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
 // has been migrated to ADR 033
-func (ff *Factory) Codec() *codec.ProtoCodec {
+func (ff *factoryImpl) Codec() *codec.ProtoCodec {
 	return ff.cdc
 }
 
 // BaseApp is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
 // has been migrated to ADR 033
-func (ff *Factory) BaseApp() *baseapp.BaseApp {
+func (ff *factoryImpl) BaseApp() *baseapp.BaseApp {
 	return ff.baseApp
 }
 
@@ -75,7 +75,7 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff Factory) Setup() testutil.Fixture {
+func (ff factoryImpl) Setup() Fixture {
 	cdc := ff.cdc
 	registry := cdc.InterfaceRegistry()
 	baseApp := ff.baseApp

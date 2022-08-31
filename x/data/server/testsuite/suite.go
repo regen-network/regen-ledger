@@ -10,15 +10,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.Factory
-	fixture        testutil.Fixture
+	fixtureFactory fixture.Factory
+	fixture        fixture.Fixture
 
 	ctx         context.Context
 	sdkCtx      sdk.Context
@@ -34,7 +34,7 @@ type IntegrationTestSuite struct {
 	rawHash   *data.ContentHash_Raw   // hash2
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.Factory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory fixture.Factory) *IntegrationTestSuite {
 	return &IntegrationTestSuite{fixtureFactory: fixtureFactory}
 }
 

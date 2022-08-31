@@ -1,4 +1,4 @@
-/*Package testutil defines fixture interfaces and implementations for testing
+/*Package fixture defines fixture interfaces and implementations for testing
 server implementations with multiple backends.
 
 Currently one backend - an in-memory store with no ABCI application is supported
@@ -7,12 +7,14 @@ in configuration.Fixture.
 A multi-node in-process ABCI-based backend for full integration tests is planned
 based on to the Cosmos SDK in-process integration test framework.
 */
-package testutil
+package fixture
 
 import (
 	"context"
 	"encoding/json"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"google.golang.org/grpc"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -25,6 +27,15 @@ type Factory interface {
 
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
 	Setup() Fixture
+
+	// BaseApp returns the baseApp used in the test fixture..
+	BaseApp() *baseapp.BaseApp
+
+	// Codec returns the codec.
+	Codec() *codec.ProtoCodec
+
+	// SetModules sets the modules to be used in the test fixture.
+	SetModules(modules []sdkmodules.AppModule)
 }
 
 // Fixture defines an interface for interacting with app services in tests
