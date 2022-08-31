@@ -297,7 +297,7 @@ localnet-build-env:
 	$(MAKE) -C contrib/images regen-env
 
 localnet-build-nodes:
-	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data regenledger/regen-env \
+	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data regen-ledger/regen-env \
 			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test
 	docker-compose up -d
 
