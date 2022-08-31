@@ -40,6 +40,6 @@ func TestQueryAllBalances(t *testing.T) {
 	assert.Equal(t, res.Pagination.Total, uint64(3))
 
 	for i, bal := range res.Balances {
-		assertBalanceEqual(s.ctx, t, s.k, bal, balances[i])
+		s.assertBalanceEqual(bal, balances[i])
 	}
 }

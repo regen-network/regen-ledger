@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"context"
 	"testing"
 
 	"gotest.tools/v3/assert"
@@ -36,7 +35,7 @@ func TestQuery_Balances(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Balances))
-	assertBalanceEqual(s.ctx, t, s.k, res.Balances[0], balance1)
+	s.assertBalanceEqual(res.Balances[0], balance1)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	_, _, noBalAddr := testdata.KeyTestPubAddr()
@@ -49,11 +48,11 @@ func TestQuery_Balances(t *testing.T) {
 	assert.Equal(t, 0, len(res.Balances))
 }
 
-func assertBalanceEqual(ctx context.Context, t *testing.T, k Keeper, received *types.BatchBalanceInfo, balance *api.BatchBalance) {
+func (s *baseSuite) assertBalanceEqual(received *types.BatchBalanceInfo, balance *api.BatchBalance) {
 	addr := sdk.AccAddress(balance.Address)
 
-	batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
-	assert.NilError(t, err)
+	batch, err := s.k.stateStore.BatchTable().Get(s.ctx, balance.BatchKey)
+	assert.NilError(s.t, err)
 
 	info := types.BatchBalanceInfo{
 		Address:        addr.String(),
@@ -63,5 +62,5 @@ func assertBalanceEqual(ctx context.Context, t *testing.T, k Keeper, received *t
 		EscrowedAmount: balance.EscrowedAmount,
 	}
 
-	assert.DeepEqual(t, info, *received)
+	assert.DeepEqual(s.t, info, *received)
 }
