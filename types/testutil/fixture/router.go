@@ -14,8 +14,6 @@ import (
 	"github.com/gogo/protobuf/proto"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc/encoding"
-
-	"github.com/regen-network/regen-ledger/types"
 )
 
 type router struct {
@@ -24,7 +22,7 @@ type router struct {
 	queryServiceRouter *baseapp.GRPCQueryRouter
 }
 
-func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.Msg) error) (types.Invoker, error) {
+func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.Msg) error) (Invoker, error) {
 	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
 		req, ok := request.(proto.Message)
 		if !ok {
@@ -110,7 +108,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 		signerMap[signer.String()] = true
 	}
 
-	return func(callInfo CallInfo) (types.Invoker, error) {
+	return func(callInfo CallInfo) (Invoker, error) {
 		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.Msg) error {
 			for _, signer := range req.GetSigners() {
 				if _, found := signerMap[signer.String()]; !found {
@@ -123,7 +121,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 }
 
 func (rtr *router) testQueryFactory() InvokerFactory {
-	return func(callInfo CallInfo) (types.Invoker, error) {
+	return func(callInfo CallInfo) (Invoker, error) {
 		return rtr.invoker(callInfo.Method, nil)
 	}
 }

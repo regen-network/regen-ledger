@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### types
 
+#### API Breaking Changes
+
+- [#1451](https://github.com/regen-network/regen-ledger/pull/1451) ModuleID, AddressHash, InvokerFactory, and CallInfo were moved to `types/testutil/fixture`
+
 #### Removed
 
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove custom context, module manager, module keys, cli, rest, base module types
@@ -41,7 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Refactor fixture factory to use baseApp routing and Cosmos SDK module manager
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Rename FixtureFactory to Factory to prevent package stuttering
 - [#1433](https://github.com/regen-network/regen-ledger/pull/1433) Add default page request limit when page request is nil
-
 
 ### x/data
 
