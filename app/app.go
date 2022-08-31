@@ -12,6 +12,9 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
+	icacontroller "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
 	icahost "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host"
 	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
@@ -164,7 +167,7 @@ var (
 		perms := map[string][]string{
 			authtypes.FeeCollectorName:      nil,
 			distrtypes.ModuleName:           nil,
-			icatypes.ModuleName:            nil,
+			icatypes.ModuleName:             nil,
 			minttypes.ModuleName:            {authtypes.Minter},
 			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
 			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
@@ -210,17 +213,21 @@ type RegenApp struct {
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ICAHostKeeper    *icahostkeeper.Keeper
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 	GroupKeeper      groupkeeper.Keeper
 
+	// ICA keepers
+	ICAHostKeeper       *icahostkeeper.Keeper
+	ICAControllerKeeper *icacontrollerkeeper.Keeper
+
 	// make scoped keepers public for test purposes
-	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
+	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	ModuleManager *module.Manager
@@ -256,7 +263,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		authzkeeper.StoreKey,
 		ibchost.StoreKey, ibctransfertypes.StoreKey, group.StoreKey,
 		ecocredit.ModuleName, data.ModuleName,
-		icahosttypes.StoreKey,
+		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -283,6 +290,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.ScopedIBCKeeper = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	app.ScopedTransferKeeper = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	app.ScopedICAHostKeeper = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
@@ -359,12 +367,25 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.MsgServiceRouter(),
 	)
 	app.ICAHostKeeper = &icaHostKeeper
-
 	icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
+
+	icaControllerKeeper := icacontrollerkeeper.NewKeeper(
+		appCodec,
+		app.keys[icacontrollertypes.StoreKey],
+		app.GetSubspace(icacontrollertypes.SubModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.ScopedICAHostKeeper, // TODO(Tyler): change to scoped controller keeper
+		app.BaseApp.MsgServiceRouter(),
+	)
+	app.ICAControllerKeeper = &icaControllerKeeper
+	icaControllerStack := icacontroller.NewIBCMiddleware(transferIBCModule, *app.ICAControllerKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.
+		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -432,11 +453,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ecocreditMod,
 		dataMod,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		// TODO: decide if we want to be a controller chain. For now, we only setup the host.
-		//	this means actions can be executed on Regen Ledger from another chain.
-		// 	however, until we add the controller, Regen Ledger accounts will not be able to execute messages
-		// 	on other chains.
-		ica.NewAppModule(nil, app.ICAHostKeeper),
+		ica.NewAppModule(app.ICAControllerKeeper, app.ICAHostKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -744,6 +761,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(ecocredit.DefaultParamspace)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 
 	return paramsKeeper
 }
