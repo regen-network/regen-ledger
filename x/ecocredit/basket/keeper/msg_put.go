@@ -36,7 +36,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 	}
 
 	// get the credit type
-	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, basket.CreditTypeAbbrev)
+	creditType, err := k.baseStore.CreditTypeTable().Get(ctx, basket.CreditTypeAbbrev)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 	moduleAddrString := k.moduleAddress.String()
 	for _, credit := range req.Credits {
 		// get credit batch
-		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
+		batch, err := k.baseStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch %s: %s", credit.BatchDenom, err.Error())
 		}
@@ -156,7 +156,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	}
 
 	// check credit type match
-	class, err := k.coreStore.ClassTable().GetById(ctx, classID)
+	class, err := k.baseStore.ClassTable().GetById(ctx, classID)
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance
 func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basketID uint64, batch *baseapi.Batch, exponent uint32) error {
 	// update user balance, subtracting from their tradable balance
-	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batch.Key)
+	userBal, err := k.baseStore.BatchBalanceTable().Get(ctx, sender, batch.Key)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf("could not get batch %s balance for %s", batch.Denom, sender.String())
 	}
@@ -183,7 +183,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 		return ecocredit.ErrInsufficientCredits.Wrapf("cannot put %v credits into the basket with a balance of %v: %s", amt, tradable, err.Error())
 	}
 	userBal.TradableAmount = newTradable.String()
-	if err = k.coreStore.BatchBalanceTable().Update(ctx, userBal); err != nil {
+	if err = k.baseStore.BatchBalanceTable().Update(ctx, userBal); err != nil {
 		return err
 	}
 

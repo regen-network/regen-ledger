@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
@@ -12,7 +12,7 @@ import (
 // Keeper is the basket keeper.
 type Keeper struct {
 	stateStore    api.StateStore
-	coreStore     ecoApi.StateStore
+	baseStore     baseapi.StateStore
 	bankKeeper    ecocredit.BankKeeper
 	paramsKeeper  ecocredit.ParamKeeper
 	moduleAddress sdk.AccAddress
@@ -25,7 +25,7 @@ var _ types.QueryServer = Keeper{}
 // NewKeeper returns a new keeper instance.
 func NewKeeper(
 	ss api.StateStore,
-	cs ecoApi.StateStore,
+	cs baseapi.StateStore,
 	bk ecocredit.BankKeeper,
 	pk ecocredit.ParamKeeper,
 	ma sdk.AccAddress,
@@ -33,7 +33,7 @@ func NewKeeper(
 ) Keeper {
 	return Keeper{
 		stateStore:    ss,
-		coreStore:     cs,
+		baseStore:     cs,
 		bankKeeper:    bk,
 		paramsKeeper:  pk,
 		moduleAddress: ma,

@@ -71,7 +71,7 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 		return escrowedDec.String(), tradableDec.String(), nil
 	}
 
-	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellerAddr, batchKey)
+	bal, err := k.baseStore.BatchBalanceTable().Get(ctx, sellerAddr, batchKey)
 	if err != nil {
 		return err
 	}
@@ -80,5 +80,5 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 		return err
 	}
 
-	return k.coreStore.BatchBalanceTable().Update(ctx, bal)
+	return k.baseStore.BatchBalanceTable().Update(ctx, bal)
 }

@@ -123,8 +123,8 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
 	svr := server.NewServer(a.key, a.legacySubspace, a.accountKeeper, a.bankKeeper, a.authority)
-	basetypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
-	basetypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
+	basetypes.RegisterMsgServer(cfg.MsgServer(), svr.BaseKeeper)
+	basetypes.RegisterQueryServer(cfg.QueryServer(), svr.BaseKeeper)
 
 	baskettypes.RegisterMsgServer(cfg.MsgServer(), svr.BasketKeeper)
 	baskettypes.RegisterQueryServer(cfg.QueryServer(), svr.BasketKeeper)
