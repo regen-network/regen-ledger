@@ -155,8 +155,8 @@ func TestDec(t *testing.T) {
 }
 
 // TODO: Think a bit more about the probability distribution of Dec
-var genDec *rapid.Generator = rapid.Custom(func(t *rapid.T) Dec {
-	f := rapid.Float64().Draw(t, "f").(float64)
+var genDec *rapid.Generator[Dec] = rapid.Custom(func(t *rapid.T) Dec {
+	f := rapid.Float64().Draw(t, "f")
 	dec, err := NewDecFromString(fmt.Sprintf("%g", f))
 	require.NoError(t, err)
 	return dec
@@ -169,8 +169,8 @@ type floatAndDec struct {
 }
 
 // Generate a Dec value along with the float used to create it
-var genFloatAndDec *rapid.Generator = rapid.Custom(func(t *rapid.T) floatAndDec {
-	f := rapid.Float64().Draw(t, "f").(float64)
+var genFloatAndDec *rapid.Generator[floatAndDec] = rapid.Custom(func(t *rapid.T) floatAndDec {
+	f := rapid.Float64().Draw(t, "f")
 	dec, err := NewDecFromString(fmt.Sprintf("%g", f))
 	require.NoError(t, err)
 	return floatAndDec{f, dec}
@@ -178,7 +178,7 @@ var genFloatAndDec *rapid.Generator = rapid.Custom(func(t *rapid.T) floatAndDec 
 
 // Property: n == NewDecFromInt64(n).Int64()
 func testDecInt64(t *rapid.T) {
-	nIn := rapid.Int64().Draw(t, "n").(int64)
+	nIn := rapid.Int64().Draw(t, "n")
 	nOut, err := NewDecFromInt64(nIn).Int64()
 
 	require.NoError(t, err)
@@ -187,7 +187,7 @@ func testDecInt64(t *rapid.T) {
 
 // Property: invalid_number_string(s) => NewDecFromString(s) == err
 func testInvalidNewDecFromString(t *rapid.T) {
-	s := rapid.StringMatching("[[:alpha:]]+").Draw(t, "s").(string)
+	s := rapid.StringMatching("[[:alpha:]]+").Draw(t, "s")
 	_, err := NewDecFromString(s)
 	require.Error(t, err)
 }
@@ -200,7 +200,7 @@ func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 		rapid.StringMatching(`^-\d*\.?\d+$`).Filter(
 			func(s string) bool { return !strings.HasPrefix(s, "-0") && !strings.HasPrefix(s, "-.0") },
 		),
-	).Draw(t, "s").(string)
+	).Draw(t, "s")
 	_, err := NewNonNegativeDecFromString(s)
 	require.Error(t, err)
 }
@@ -208,14 +208,14 @@ func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 // Property: invalid_number_string(s) || IsNegative(s) || NumDecimals(s) > n
 //             => NewNonNegativeFixedDecFromString(s, n) == err
 func testInvalidNewNonNegativeFixedDecFromString(t *rapid.T) {
-	n := rapid.Uint32Range(0, 999).Draw(t, "n").(uint32)
+	n := rapid.Uint32Range(0, 999).Draw(t, "n")
 	s := rapid.OneOf(
 		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+$`).Filter(
 			func(s string) bool { return !strings.HasPrefix(s, "-0") && !strings.HasPrefix(s, "-.0") },
 		),
 		rapid.StringMatching(fmt.Sprintf(`\d*\.\d{%d,}`, n+1)),
-	).Draw(t, "s").(string)
+	).Draw(t, "s")
 	_, err := NewNonNegativeFixedDecFromString(s, n)
 	require.Error(t, err)
 }
@@ -226,7 +226,7 @@ func testInvalidNewPositiveDecFromString(t *rapid.T) {
 	s := rapid.OneOf(
 		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+|0$`),
-	).Draw(t, "s").(string)
+	).Draw(t, "s")
 	_, err := NewPositiveDecFromString(s)
 	require.Error(t, err)
 }
@@ -234,19 +234,19 @@ func testInvalidNewPositiveDecFromString(t *rapid.T) {
 // Property: invalid_number_string(s) || IsNegative(s) || IsZero(s) || NumDecimals(s) > n
 //             => NewPositiveFixedDecFromString(s) == err
 func testInvalidNewPositiveFixedDecFromString(t *rapid.T) {
-	n := rapid.Uint32Range(0, 999).Draw(t, "n").(uint32)
+	n := rapid.Uint32Range(0, 999).Draw(t, "n")
 	s := rapid.OneOf(
 		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+|0$`),
 		rapid.StringMatching(fmt.Sprintf(`\d*\.\d{%d,}`, n+1)),
-	).Draw(t, "s").(string)
+	).Draw(t, "s")
 	_, err := NewPositiveFixedDecFromString(s, n)
 	require.Error(t, err)
 }
 
 // Property: 0 + a == a
 func testAddLeftIdentity(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	zero := NewDecFromInt64(0)
 
 	b, err := zero.Add(a)
@@ -257,7 +257,7 @@ func testAddLeftIdentity(t *rapid.T) {
 
 // Property: a + 0 == a
 func testAddRightIdentity(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	zero := NewDecFromInt64(0)
 
 	b, err := a.Add(zero)
@@ -268,8 +268,8 @@ func testAddRightIdentity(t *rapid.T) {
 
 // Property: a + b == b + a
 func testAddCommutative(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
 
 	c, err := a.Add(b)
 	require.NoError(t, err)
@@ -282,9 +282,9 @@ func testAddCommutative(t *rapid.T) {
 
 // Property: (a + b) + c == a + (b + c)
 func testAddAssociative(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
-	c := genDec.Draw(t, "c").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
+	c := genDec.Draw(t, "c")
 
 	// (a + b) + c
 	d, err := a.Add(b)
@@ -305,7 +305,7 @@ func testAddAssociative(t *rapid.T) {
 
 // Property: a - 0 == a
 func testSubRightIdentity(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	zero := NewDecFromInt64(0)
 
 	b, err := a.Sub(zero)
@@ -316,7 +316,7 @@ func testSubRightIdentity(t *rapid.T) {
 
 // Property: a - a == 0
 func testSubZero(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	zero := NewDecFromInt64(0)
 
 	b, err := a.Sub(a)
@@ -327,7 +327,7 @@ func testSubZero(t *rapid.T) {
 
 // Property: 1 * a == a
 func testMulLeftIdentity(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	one := NewDecFromInt64(1)
 
 	b, err := one.Mul(a)
@@ -338,7 +338,7 @@ func testMulLeftIdentity(t *rapid.T) {
 
 // Property: a * 1 == a
 func testMulRightIdentity(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	one := NewDecFromInt64(1)
 
 	b, err := a.Mul(one)
@@ -349,8 +349,8 @@ func testMulRightIdentity(t *rapid.T) {
 
 // Property: a * b == b * a
 func testMulCommutative(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
 
 	c, err := a.Mul(b)
 	require.NoError(t, err)
@@ -363,9 +363,9 @@ func testMulCommutative(t *rapid.T) {
 
 // Property: (a * b) * c == a * (b * c)
 func testMulAssociative(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
-	c := genDec.Draw(t, "c").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
+	c := genDec.Draw(t, "c")
 
 	// (a * b) * c
 	d, err := a.Mul(b)
@@ -386,8 +386,8 @@ func testMulAssociative(t *rapid.T) {
 
 // Property: (a - b) + b == a
 func testSubAdd(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
 
 	c, err := a.Sub(b)
 	require.NoError(t, err)
@@ -400,8 +400,8 @@ func testSubAdd(t *rapid.T) {
 
 // Property: (a + b) - b == a
 func testAddSub(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
 
 	c, err := a.Add(b)
 	require.NoError(t, err)
@@ -414,7 +414,7 @@ func testAddSub(t *rapid.T) {
 
 // Property: a * 0 = 0
 func testMulZero(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	zero := Dec{}
 
 	c, err := a.Mul(zero)
@@ -425,7 +425,7 @@ func testMulZero(t *rapid.T) {
 // Property: a/a = 1
 func testSelfQuo(t *rapid.T) {
 	decNotZero := func(d Dec) bool { return !d.IsZero() }
-	a := genDec.Filter(decNotZero).Draw(t, "a").(Dec)
+	a := genDec.Filter(decNotZero).Draw(t, "a")
 	one := NewDecFromInt64(1)
 
 	b, err := a.Quo(a)
@@ -435,7 +435,7 @@ func testSelfQuo(t *rapid.T) {
 
 // Property: a/1 = a
 func testQuoByOne(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a")
 	one := NewDecFromInt64(1)
 
 	b, err := a.Quo(one)
@@ -446,8 +446,8 @@ func testQuoByOne(t *rapid.T) {
 // Property: (a * b) / a == b
 func testMulQuoA(t *rapid.T) {
 	decNotZero := func(d Dec) bool { return !d.IsZero() }
-	a := genDec.Filter(decNotZero).Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
+	a := genDec.Filter(decNotZero).Draw(t, "a")
+	b := genDec.Draw(t, "b")
 
 	c, err := a.Mul(b)
 	require.NoError(t, err)
@@ -461,8 +461,8 @@ func testMulQuoA(t *rapid.T) {
 // Property: (a * b) / b == a
 func testMulQuoB(t *rapid.T) {
 	decNotZero := func(d Dec) bool { return !d.IsZero() }
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Filter(decNotZero).Draw(t, "b").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Filter(decNotZero).Draw(t, "b")
 
 	c, err := a.Mul(b)
 	require.NoError(t, err)
@@ -476,9 +476,9 @@ func testMulQuoB(t *rapid.T) {
 // Property: (a * 10^b) / 10^b == a using MulExact and QuoExact
 // and a with no more than b decimal places (b <= 32).
 func testMulQuoExact(t *rapid.T) {
-	b := rapid.Uint32Range(0, 32).Draw(t, "b").(uint32)
+	b := rapid.Uint32Range(0, 32).Draw(t, "b")
 	decPrec := func(d Dec) bool { return d.NumDecimalPlaces() <= b }
-	a := genDec.Filter(decPrec).Draw(t, "a").(Dec)
+	a := genDec.Filter(decPrec).Draw(t, "a")
 
 	c := NewDecFinite(1, int32(b))
 
@@ -494,10 +494,10 @@ func testMulQuoExact(t *rapid.T) {
 // Property: (a / b) * b == a using QuoExact and MulExact and
 // a as an integer.
 func testQuoMulExact(t *rapid.T) {
-	a := rapid.Uint64().Draw(t, "a").(uint64)
+	a := rapid.Uint64().Draw(t, "a")
 	aDec, err := NewDecFromString(fmt.Sprintf("%d", a))
 	require.NoError(t, err)
-	b := rapid.Uint32Range(0, 32).Draw(t, "b").(uint32)
+	b := rapid.Uint32Range(0, 32).Draw(t, "b")
 	c := NewDecFinite(1, int32(b))
 
 	require.NoError(t, err)
@@ -513,23 +513,23 @@ func testQuoMulExact(t *rapid.T) {
 
 // Property: Cmp(a, b) == -Cmp(b, a)
 func testCmpInverse(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
 
 	require.Equal(t, a.Cmp(b), -b.Cmp(a))
 }
 
 // Property: Equal(a, b) == Equal(b, a)
 func testEqualCommutative(t *rapid.T) {
-	a := genDec.Draw(t, "a").(Dec)
-	b := genDec.Draw(t, "b").(Dec)
+	a := genDec.Draw(t, "a")
+	b := genDec.Draw(t, "b")
 
 	require.Equal(t, a.Equal(b), b.Equal(a))
 }
 
 // Property: isZero(f) == isZero(NewDecFromString(f.String()))
 func testIsZero(t *rapid.T) {
-	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec").(floatAndDec)
+	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec")
 	f, dec := floatAndDec.float, floatAndDec.dec
 
 	require.Equal(t, f == 0, dec.IsZero())
@@ -538,7 +538,7 @@ func testIsZero(t *rapid.T) {
 
 // Property: isNegative(f) == isNegative(NewDecFromString(f.String()))
 func testIsNegative(t *rapid.T) {
-	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec").(floatAndDec)
+	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec")
 	f, dec := floatAndDec.float, floatAndDec.dec
 
 	require.Equal(t, f < 0, dec.IsNegative())
@@ -546,7 +546,7 @@ func testIsNegative(t *rapid.T) {
 
 // Property: isPositive(f) == isPositive(NewDecFromString(f.String()))
 func testIsPositive(t *rapid.T) {
-	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec").(floatAndDec)
+	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec")
 	f, dec := floatAndDec.float, floatAndDec.dec
 
 	require.Equal(t, f > 0, dec.IsPositive())
@@ -554,7 +554,7 @@ func testIsPositive(t *rapid.T) {
 
 // Property: floatDecimalPlaces(f) == NumDecimalPlaces(NewDecFromString(f.String()))
 func testNumDecimalPlaces(t *rapid.T) {
-	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec").(floatAndDec)
+	floatAndDec := genFloatAndDec.Draw(t, "floatAndDec")
 	f, dec := floatAndDec.float, floatAndDec.dec
 
 	require.Equal(t, floatDecimalPlaces(t, f), dec.NumDecimalPlaces())
