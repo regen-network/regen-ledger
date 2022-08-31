@@ -59,6 +59,10 @@ type QueryClient interface {
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
 	// Balances queries all credit balances the given account holds.
 	Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error)
+	// BalancesByBatch queries all credit balances from a given batch.
+	//
+	// Since Revision 1
+	BalancesByBatch(ctx context.Context, in *QueryBalancesByBatchRequest, opts ...grpc.CallOption) (*QueryBalancesByBatchResponse, error)
 	// AllBalances queries all credit balances.
 	//
 	// Since Revision 1
@@ -83,7 +87,8 @@ type QueryClient interface {
 	//
 	// Since Revision 1
 	CreditClassFees(ctx context.Context, in *QueryCreditClassFeesRequest, opts ...grpc.CallOption) (*QueryCreditClassFeesResponse, error)
-	// CreditClassAllowlistEnabled queries the credit class creator allowlist flag.
+	// CreditClassAllowlistEnabled queries the credit class creator allowlist
+	// flag.
 	//
 	// Since Revision 1
 	CreditClassAllowlistEnabled(ctx context.Context, in *QueryCreditClassAllowlistEnabledRequest, opts ...grpc.CallOption) (*QueryCreditClassAllowlistEnabledResponse, error)
@@ -241,6 +246,15 @@ func (c *queryClient) Balances(ctx context.Context, in *QueryBalancesRequest, op
 	return out, nil
 }
 
+func (c *queryClient) BalancesByBatch(ctx context.Context, in *QueryBalancesByBatchRequest, opts ...grpc.CallOption) (*QueryBalancesByBatchResponse, error) {
+	out := new(QueryBalancesByBatchResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BalancesByBatch", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) AllBalances(ctx context.Context, in *QueryAllBalancesRequest, opts ...grpc.CallOption) (*QueryAllBalancesResponse, error) {
 	out := new(QueryAllBalancesResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/AllBalances", in, out, opts...)
@@ -355,6 +369,10 @@ type QueryServer interface {
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
 	// Balances queries all credit balances the given account holds.
 	Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error)
+	// BalancesByBatch queries all credit balances from a given batch.
+	//
+	// Since Revision 1
+	BalancesByBatch(context.Context, *QueryBalancesByBatchRequest) (*QueryBalancesByBatchResponse, error)
 	// AllBalances queries all credit balances.
 	//
 	// Since Revision 1
@@ -379,7 +397,8 @@ type QueryServer interface {
 	//
 	// Since Revision 1
 	CreditClassFees(context.Context, *QueryCreditClassFeesRequest) (*QueryCreditClassFeesResponse, error)
-	// CreditClassAllowlistEnabled queries the credit class creator allowlist flag.
+	// CreditClassAllowlistEnabled queries the credit class creator allowlist
+	// flag.
 	//
 	// Since Revision 1
 	CreditClassAllowlistEnabled(context.Context, *QueryCreditClassAllowlistEnabledRequest) (*QueryCreditClassAllowlistEnabledResponse, error)
@@ -437,6 +456,9 @@ func (UnimplementedQueryServer) Balance(context.Context, *QueryBalanceRequest) (
 }
 func (UnimplementedQueryServer) Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Balances not implemented")
+}
+func (UnimplementedQueryServer) BalancesByBatch(context.Context, *QueryBalancesByBatchRequest) (*QueryBalancesByBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BalancesByBatch not implemented")
 }
 func (UnimplementedQueryServer) AllBalances(context.Context, *QueryAllBalancesRequest) (*QueryAllBalancesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllBalances not implemented")
@@ -763,6 +785,24 @@ func _Query_Balances_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BalancesByBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBalancesByBatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BalancesByBatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/BalancesByBatch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BalancesByBatch(ctx, req.(*QueryBalancesByBatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_AllBalances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryAllBalancesRequest)
 	if err := dec(in); err != nil {
@@ -977,6 +1017,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Balances",
 			Handler:    _Query_Balances_Handler,
+		},
+		{
+			MethodName: "BalancesByBatch",
+			Handler:    _Query_BalancesByBatch_Handler,
 		},
 		{
 			MethodName: "AllBalances",
