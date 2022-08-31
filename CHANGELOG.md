@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to app configuration
+- [#1454](https://github.com/regen-network/regen-ledger/pull/1454) Add transaction tips to the application post handler.
 
 #### Changed
 
