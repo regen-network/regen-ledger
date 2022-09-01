@@ -10,8 +10,10 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
-var _ types.MsgServer = &Keeper{}
-var _ types.QueryServer = &Keeper{}
+var (
+	_ types.MsgServer = &Keeper{}
+	_ types.QueryServer = &Keeper{}
+)
 
 type Keeper struct {
 	stateStore    api.StateStore
