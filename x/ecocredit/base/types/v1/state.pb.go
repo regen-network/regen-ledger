@@ -1105,6 +1105,10 @@ func (m *ClassFees) GetFees() []*types1.Coin {
 
 // AllowedBridgeChains is a list of chain names that are approved to bridge
 // ecocredits to.
+// NOTE: chain_names MUST be converted to uppercase before writing to and
+// reading from this table in order to keep entries consistent.
+//
+// Since Revision 1
 type AllowedBridgeChains struct {
 	// chain_name is the name of the chain allowed to bridge ecocredits to.
 	ChainName string `protobuf:"bytes,1,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
