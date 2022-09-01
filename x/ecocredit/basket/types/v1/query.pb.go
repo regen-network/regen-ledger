@@ -655,7 +655,7 @@ func (m *BasketBalanceInfo) GetBalance() string {
 
 // QueryBasketFeesRequest is the Query/BasketFees request type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryBasketFeesRequest struct {
 }
 
@@ -694,7 +694,7 @@ var xxx_messageInfo_QueryBasketFeesRequest proto.InternalMessageInfo
 
 // QueryBasketFeesResponse is the Query/BasketFees response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryBasketFeesResponse struct {
 	// fees is the BasketFees message type
 	Fees github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=fees,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"fees"`

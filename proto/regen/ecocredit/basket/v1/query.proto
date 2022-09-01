@@ -201,12 +201,12 @@ message BasketBalanceInfo {
 
 // QueryBasketFeesRequest is the Query/BasketFees request type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryBasketFeesRequest {}
 
 // QueryBasketFeesResponse is the Query/BasketFees response type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryBasketFeesResponse {
 
   // fees is the BasketFees message type
