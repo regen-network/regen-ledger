@@ -210,17 +210,17 @@ Feature: Msg/BridgeReceive
 
     # no failing scenario - state transitions only occur upon successful message execution
 
-  Rule: The OriginTx source must be in the AllowedBridgeChains table
+  Rule: The OriginTx source must be in the AllowedBridgeChain table
 
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
       And allowed bridge chain "polygon"
 
-    Scenario: the OriginTx source is in the AllowedBridgeChains table
+    Scenario: the OriginTx source is in the AllowedBridgeChain table
       When alice attempts to bridge credits with OriginTx Source "polygon"
       Then expect no error
 
-    Scenario: the OriginTx source is not in the AllowedBridgeChains table
+    Scenario: the OriginTx source is not in the AllowedBridgeChain table
       When alice attempts to bridge credits with OriginTx Source "solana"
       Then expect the error "solana is not an authorized bridge source: unauthorized"

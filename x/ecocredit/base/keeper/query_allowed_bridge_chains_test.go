@@ -13,9 +13,9 @@ func TestQueryAllowedBridgeChains(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	chains := []string{"ethereum", "polygon", "solana"}
+	chains := []string{"ETHEREUM", "POLYGON", "SOLANA"}
 	for _, chain := range chains {
-		err := s.stateStore.AllowedBridgeChainsTable().Insert(s.ctx, &api.AllowedBridgeChains{ChainName: chain})
+		err := s.stateStore.AllowedBridgeChainTable().Insert(s.ctx, &api.AllowedBridgeChain{ChainName: chain})
 		require.NoError(t, err)
 	}
 

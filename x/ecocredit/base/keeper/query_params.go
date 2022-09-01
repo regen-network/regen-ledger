@@ -80,7 +80,7 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 	}
 
 	var allowedBridgeChains []string
-	it, err := k.stateStore.AllowedBridgeChainsTable().List(ctx, api.AllowedBridgeChainsPrimaryKey{})
+	it, err := k.stateStore.AllowedBridgeChainTable().List(ctx, api.AllowedBridgeChainPrimaryKey{})
 	if err != nil {
 		return nil, err
 	}

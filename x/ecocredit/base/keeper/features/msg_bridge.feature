@@ -99,7 +99,7 @@ Feature: Msg/Bridge
       }
       """
 
-  Rule: The target must be in the AllowedBridgeChains table
+  Rule: The target must be in the AllowedBridgeChain table
 
     Background:
       Given the target "polygon" is an allowed bridge chain

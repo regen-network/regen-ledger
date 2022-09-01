@@ -8,7 +8,7 @@ import (
 )
 
 func (k Keeper) AllowedBridgeChains(ctx context.Context, _ *types.QueryAllowedBridgeChainsRequest) (*types.QueryAllowedBridgeChainsResponse, error) {
-	it, err := k.stateStore.AllowedBridgeChainsTable().List(ctx, api.AllowedBridgeChainsPrimaryKey{})
+	it, err := k.stateStore.AllowedBridgeChainTable().List(ctx, api.AllowedBridgeChainPrimaryKey{})
 	if err != nil {
 		return nil, err
 	}

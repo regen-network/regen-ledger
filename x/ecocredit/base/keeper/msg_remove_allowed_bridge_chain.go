@@ -18,7 +18,7 @@ func (k Keeper) RemoveAllowedBridgeChain(ctx context.Context, req *types.MsgRemo
 
 	chainName := strings.ToUpper(req.ChainName)
 
-	err := k.stateStore.AllowedBridgeChainsTable().Delete(ctx, &api.AllowedBridgeChains{ChainName: chainName})
+	err := k.stateStore.AllowedBridgeChainTable().Delete(ctx, &api.AllowedBridgeChain{ChainName: chainName})
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not delete chain name %s: %s", chainName, err.Error())
 	}

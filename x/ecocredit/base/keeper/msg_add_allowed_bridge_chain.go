@@ -18,7 +18,7 @@ func (k Keeper) AddAllowedBridgeChain(ctx context.Context, req *types.MsgAddAllo
 
 	chainName := strings.ToUpper(req.ChainName)
 
-	err := k.stateStore.AllowedBridgeChainsTable().Insert(ctx, &api.AllowedBridgeChains{ChainName: chainName})
+	err := k.stateStore.AllowedBridgeChainTable().Insert(ctx, &api.AllowedBridgeChain{ChainName: chainName})
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not insert chain name %s: %s", req.ChainName, err.Error())
 	}

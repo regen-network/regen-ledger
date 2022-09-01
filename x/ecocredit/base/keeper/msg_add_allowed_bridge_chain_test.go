@@ -26,7 +26,7 @@ func (s *addAllowedBridgeChainSuite) Before(t gocuke.TestingT) {
 
 func (s *addAllowedBridgeChainSuite) ExpectChainNameToExist(a string) {
 	chainName := a
-	found, err := s.stateStore.AllowedBridgeChainsTable().Has(s.ctx, chainName)
+	found, err := s.stateStore.AllowedBridgeChainTable().Has(s.ctx, chainName)
 	require.NoError(s.t, err)
 	require.True(s.t, found)
 }
