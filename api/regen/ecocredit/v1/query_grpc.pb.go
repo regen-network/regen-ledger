@@ -92,6 +92,11 @@ type QueryClient interface {
 	//
 	// Since Revision 1
 	CreditClassAllowlistEnabled(ctx context.Context, in *QueryCreditClassAllowlistEnabledRequest, opts ...grpc.CallOption) (*QueryCreditClassAllowlistEnabledResponse, error)
+	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
+	// operations.
+	//
+	// Since Revision 1
+	AllowedBridgeChains(ctx context.Context, in *QueryAllowedBridgeChainsRequest, opts ...grpc.CallOption) (*QueryAllowedBridgeChainsResponse, error)
 }
 
 type queryClient struct {
@@ -328,6 +333,15 @@ func (c *queryClient) CreditClassAllowlistEnabled(ctx context.Context, in *Query
 	return out, nil
 }
 
+func (c *queryClient) AllowedBridgeChains(ctx context.Context, in *QueryAllowedBridgeChainsRequest, opts ...grpc.CallOption) (*QueryAllowedBridgeChainsResponse, error) {
+	out := new(QueryAllowedBridgeChainsResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/AllowedBridgeChains", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -402,6 +416,11 @@ type QueryServer interface {
 	//
 	// Since Revision 1
 	CreditClassAllowlistEnabled(context.Context, *QueryCreditClassAllowlistEnabledRequest) (*QueryCreditClassAllowlistEnabledResponse, error)
+	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
+	// operations.
+	//
+	// Since Revision 1
+	AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -483,6 +502,9 @@ func (UnimplementedQueryServer) CreditClassFees(context.Context, *QueryCreditCla
 }
 func (UnimplementedQueryServer) CreditClassAllowlistEnabled(context.Context, *QueryCreditClassAllowlistEnabledRequest) (*QueryCreditClassAllowlistEnabledResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreditClassAllowlistEnabled not implemented")
+}
+func (UnimplementedQueryServer) AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllowedBridgeChains not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -947,6 +969,24 @@ func _Query_CreditClassAllowlistEnabled_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_AllowedBridgeChains_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllowedBridgeChainsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllowedBridgeChains(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/AllowedBridgeChains",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllowedBridgeChains(ctx, req.(*QueryAllowedBridgeChainsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1053,6 +1093,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreditClassAllowlistEnabled",
 			Handler:    _Query_CreditClassAllowlistEnabled_Handler,
+		},
+		{
+			MethodName: "AllowedBridgeChains",
+			Handler:    _Query_AllowedBridgeChains_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

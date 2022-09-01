@@ -1,7 +1,7 @@
 Feature: Msg/RemoveAllowedBridgeChain
 
   A chain can be removed from the list of allowed bridge chains:
-  - when the authority is the governance module account address
+  - when the authority is the governance account
   - when the chain name already exists in the state
 
 

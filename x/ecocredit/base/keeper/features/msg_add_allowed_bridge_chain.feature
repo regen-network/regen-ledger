@@ -1,7 +1,7 @@
 Feature: Msg/AddAllowedBridgeChain
 
   A chain can be added to the list of allowed bridge chains:
-  - when the authority is the governance module account address
+  - when the authority is the governance account
   - when the chain name doesn't already exist in the state
 
 
