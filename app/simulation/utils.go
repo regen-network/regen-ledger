@@ -10,6 +10,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
 
 	regen "github.com/regen-network/regen-ledger/v4/app"
 )
@@ -49,4 +50,22 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 		config,
 		app.AppCodec(),
 	)
+}
+
+// removeICAFromSimulation is a utility function that removes from genesis exporting due to a panic bug.
+//
+// TODO: remove after https://github.com/cosmos/ibc-go/issues/2151 is resolved
+func removeICAFromSimulation(app *regen.RegenApp) {
+	remove := func(target string, mods []string) []string {
+		for i, mod := range mods {
+			if mod == target {
+				return append(mods[:i], mods[i+1:]...)
+			}
+		}
+		return mods
+	}
+
+	icaModName := ica.AppModule{}.Name()
+
+	app.ModuleManager.OrderExportGenesis = remove(icaModName, app.ModuleManager.OrderExportGenesis)
 }
