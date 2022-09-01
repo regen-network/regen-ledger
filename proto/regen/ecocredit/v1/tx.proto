@@ -142,14 +142,14 @@ service Msg {
   rpc UpdateClassFees(MsgUpdateClassFees) returns (MsgUpdateClassFeesResponse);
 
   // AddAllowedBridgeChain is a governance method that allows for the
-  // addition of chains to bridge ecocredits to.
+  // addition of a chain to bridge ecocredits to.
   //
   // Since Revision 1
   rpc AddAllowedBridgeChain(MsgAddAllowedBridgeChain)
       returns (MsgAddAllowedBridgeChainResponse);
 
-  // AddAllowedBridgeChain is a governance method that allows for the
-  // removal of chains to bridge ecocredits to.
+  // RemoveAllowedBridgeChain is a governance method that allows for the
+  // removal of a chain to bridge ecocredits to.
   //
   // Since Revision 1
   rpc RemoveAllowedBridgeChain(MsgRemoveAllowedBridgeChain)
@@ -717,7 +717,7 @@ message MsgRemoveAllowedBridgeChain {
 }
 
 // MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
-// respones type.
+// response type.
 //
 // Since Revision 1
 message MsgRemoveAllowedBridgeChainResponse {}

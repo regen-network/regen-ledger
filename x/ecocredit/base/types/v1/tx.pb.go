@@ -2640,7 +2640,7 @@ func (m *MsgRemoveAllowedBridgeChain) GetChainName() string {
 }
 
 // MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
-// respones type.
+// response type.
 //
 // Since Revision 1
 type MsgRemoveAllowedBridgeChainResponse struct {
@@ -2964,12 +2964,12 @@ type MsgClient interface {
 	// removal of fees to be used for the class creation fee. Since Revision 1
 	UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
-	// addition of chains to bridge ecocredits to.
+	// addition of a chain to bridge ecocredits to.
 	//
 	// Since Revision 1
 	AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error)
-	// AddAllowedBridgeChain is a governance method that allows for the
-	// removal of chains to bridge ecocredits to.
+	// RemoveAllowedBridgeChain is a governance method that allows for the
+	// removal of a chain to bridge ecocredits to.
 	//
 	// Since Revision 1
 	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
@@ -3283,12 +3283,12 @@ type MsgServer interface {
 	// removal of fees to be used for the class creation fee. Since Revision 1
 	UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
-	// addition of chains to bridge ecocredits to.
+	// addition of a chain to bridge ecocredits to.
 	//
 	// Since Revision 1
 	AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error)
-	// AddAllowedBridgeChain is a governance method that allows for the
-	// removal of chains to bridge ecocredits to.
+	// RemoveAllowedBridgeChain is a governance method that allows for the
+	// removal of a chain to bridge ecocredits to.
 	//
 	// Since Revision 1
 	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)

@@ -25264,7 +25264,7 @@ func (x *MsgRemoveAllowedBridgeChain) GetChainName() string {
 }
 
 // MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
-// respones type.
+// response type.
 //
 // Since Revision 1
 type MsgRemoveAllowedBridgeChainResponse struct {
