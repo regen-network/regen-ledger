@@ -99,7 +99,7 @@ func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRet
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgRetire credit iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgRetire credit iteration")
 	}
 	return &types.MsgRetireResponse{}, nil
 }

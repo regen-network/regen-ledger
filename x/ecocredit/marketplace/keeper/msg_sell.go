@@ -103,7 +103,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/marketplace/MsgSell order iteration")
 	}
 
 	return &types.MsgSellResponse{SellOrderIds: sellOrderIDs}, nil

@@ -247,7 +247,7 @@ func ValidateGenesis(data json.RawMessage, params basetypes.Params) error {
 func validateMsg(m proto.Message) error {
 	switch m.(type) {
 
-	// ecocredit core
+	// ecocredit base
 	case *baseapi.CreditType:
 		msg := &basetypes.CreditType{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {

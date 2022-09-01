@@ -86,7 +86,7 @@ func (k Keeper) Cancel(ctx context.Context, req *types.MsgCancel) (*types.MsgCan
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCancel credit iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCancel credit iteration")
 	}
 	return &types.MsgCancelResponse{}, nil
 }

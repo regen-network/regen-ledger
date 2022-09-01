@@ -142,7 +142,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateClass issuer iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCreateClass issuer iteration")
 	}
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&types.EventCreateClass{
