@@ -25,7 +25,7 @@ service Msg {
   // UpdateBasketFees is a governance method that allows for updating of fees to
   // be used for the basket creation fee.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc UpdateBasketFees(MsgUpdateBasketFees)
       returns (MsgUpdateBasketFeesResponse);
 }
@@ -164,7 +164,8 @@ message MsgTakeResponse {
 }
 
 // MsgUpdateBasketFees is the Msg/UpdateBasketFees request type.
-// Since Revision 1
+//
+// Since Revision 2
 message MsgUpdateBasketFees {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -180,5 +181,6 @@ message MsgUpdateBasketFees {
 }
 
 // MsgUpdateBasketFeesResponse is the Msg/UpdateBasketFees response type.
-// Since Revision 1
+//
+// Since Revision 2
 message MsgUpdateBasketFeesResponse {}

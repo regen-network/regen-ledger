@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-// Revision 1
 package regen.ecocredit.basket.v1;
 
 import "google/protobuf/duration.proto";

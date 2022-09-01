@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-// Revision 1
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
@@ -107,6 +106,8 @@ message BasketBalance {
 
 // BasketFees are valid coin denoms and amounts that may be used as the fee
 // for basket creation.
+//
+// Since Revision 2
 message BasketFees {
   // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.singleton) = {
