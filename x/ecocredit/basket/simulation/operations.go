@@ -12,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -23,6 +24,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
@@ -92,7 +94,7 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreate,
-			SimulateMsgCreate(ak, bk, qryClient),
+			SimulateMsgCreate(ak, bk, qryClient, basketQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgPut,
@@ -109,77 +111,16 @@ func WeightedOperations(
 	}
 }
 
-// SimulateMsgCreate generates a Basket/MsgUpdateBasketFees with random values.
-func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient basetypes.QueryServer,
-	basketQryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
-	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
-		proposer, _ := simtypes.RandomAcc(r, accs)
-		proposerAddr := proposer.Address.String()
-
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateBasketFees)
-		if spendable == nil {
-			return op, nil, err
-		}
-
-		params := govk.GetDepositParams(sdkCtx)
-		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
-		switch {
-		case skip:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "skip deposit"), nil, nil
-		case err != nil:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "unable to generate deposit"), nil, err
-		}
-
-		fees := utils.RandomFees(r)
-		msg := types.MsgUpdateBasketFees{
-			Authority:  authority.String(),
-			BasketFees: fees,
-		}
-
-		any, err := codectypes.NewAnyWithValue(&msg)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, err.Error()), nil, err
-		}
-
-		proposalMsg := govtypes.MsgSubmitProposal{
-			InitialDeposit: deposit,
-			Proposer:       proposerAddr,
-			Metadata:       simtypes.RandStringOfLength(r, 10),
-			Messages:       []*codectypes.Any{any},
-		}
-
-		txCtx := simulation.OperationInput{
-			R:               r,
-			App:             app,
-			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
-			Cdc:             nil,
-			Msg:             &proposalMsg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
-			SimAccount:      *account,
-			AccountKeeper:   ak,
-			Bankkeeper:      bk,
-			ModuleName:      ecocredit.ModuleName,
-			CoinsSpentInMsg: spendable,
-		}
-
-		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
-	}
-}
-
 // SimulateMsgCreate generates a Basket/MsgCreate with random values.
 func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient basetypes.QueryServer) simtypes.Operation {
+	baseClient basetypes.QueryServer, client types.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		curator, _ := simtypes.RandomAcc(r, accs)
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		res, err := qryClient.Params(ctx, &basetypes.QueryParamsRequest{})
+		res, err := baseClient.Params(ctx, &basetypes.QueryParamsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
 		}
@@ -190,7 +131,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "not enough balance"), nil, nil
 		}
 
-		creditType, err := randomCreditType(ctx, r, qryClient)
+		creditType, err := randomCreditType(ctx, r, baseClient)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
 		}
@@ -199,20 +140,38 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "credit type not found"), nil, nil
 		}
 
-		classIDs, op, err := randomClassIds(r, sdkCtx, qryClient, creditType.Abbreviation, TypeMsgPut)
+		classIDs, op, err := randomClassIds(r, sdkCtx, baseClient, creditType.Abbreviation, TypeMsgPut)
 		if len(classIDs) == 0 {
 			return op, nil, err
 		}
 
 		precision := creditType.Precision
+		exponent := utils.RandomExponent(r, precision)
+		basketName := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 8))
+		denom, _, err := basket.FormatBasketDenom(basketName, creditType.Abbreviation, exponent)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "failed to generate basket denom"), nil, err
+		}
+
+		result, err := client.Basket(sdkCtx, &types.QueryBasketRequest{
+			BasketDenom: denom,
+		})
+		if err != nil && !ormerrors.NotFound.Is(err) {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
+		}
+
+		if result != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, fmt.Sprintf("basket with name %s already exists", basketName)), nil, nil
+		}
+
 		dateCriteria := randomDateCriteria(r, sdkCtx)
 		msg := &types.MsgCreate{
-			Name:              simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 8)),
+			Name:              basketName,
 			Description:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 256)),
 			Fee:               params.BasketFee,
 			DisableAutoRetire: r.Float32() < 0.5,
 			Curator:           curator.Address.String(),
-			Exponent:          utils.RandomExponent(r, precision),
+			Exponent:          exponent,
 			AllowedClasses:    classIDs,
 			CreditTypeAbbrev:  creditType.Abbreviation,
 			DateCriteria:      dateCriteria,
@@ -530,6 +489,67 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      owner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+// SimulateMsgCreate generates a Basket/MsgUpdateBasketFees with random values.
+func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient basetypes.QueryServer,
+	basketQryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateBasketFees)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "unable to generate deposit"), nil, err
+		}
+
+		fees := utils.RandomFees(r)
+		msg := types.MsgUpdateBasketFees{
+			Authority:  authority.String(),
+			BasketFees: fees,
+		}
+
+		any, err := codectypes.NewAnyWithValue(&msg)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, err.Error()), nil, err
+		}
+
+		proposalMsg := govtypes.MsgSubmitProposal{
+			InitialDeposit: deposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+			Messages:       []*codectypes.Any{any},
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             &proposalMsg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
