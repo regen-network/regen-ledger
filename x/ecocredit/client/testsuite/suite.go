@@ -183,7 +183,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	mdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(err)
 
-	coreStore, err := baseapi.NewStateStore(mdb)
+	baseStore, err := baseapi.NewStateStore(mdb)
 	require.NoError(err)
 
 	marketStore, err := marketapi.NewStateStore(mdb)
@@ -224,7 +224,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	s.creditTypeAbbrev = "C"
 
 	// insert credit type
-	err = coreStore.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
+	err = baseStore.CreditTypeTable().Insert(ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Name:         "carbon",
 		Unit:         "metric ton CO2 equivalent",
@@ -233,7 +233,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class fees
-	err = coreStore.ClassFeesTable().Save(ctx, &baseapi.ClassFees{
+	err = baseStore.ClassFeesTable().Save(ctx, &baseapi.ClassFees{
 		Fees: []*sdkbase.Coin{
 			{
 				Denom:  sdk.DefaultBondDenom,
@@ -244,17 +244,17 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class allow list
-	err = coreStore.AllowListEnabledTable().Save(ctx, &baseapi.AllowListEnabled{
+	err = baseStore.AllowListEnabledTable().Save(ctx, &baseapi.AllowListEnabled{
 		Enabled: false,
 	})
 	require.NoError(err)
 
 	// set allowed credit class creators
-	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
+	err = baseStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
 		Address: sdk.AccAddress("issuer1"),
 	})
 	require.NoError(err)
-	err = coreStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
+	err = baseStore.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
 		Address: sdk.AccAddress("issuer2"),
 	})
 	require.NoError(err)

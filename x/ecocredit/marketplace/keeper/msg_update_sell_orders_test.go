@@ -16,7 +16,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -70,14 +70,14 @@ func (s *updateSellOrdersSuite) ABlockTimeWithTimestamp(a string) {
 }
 
 func (s *updateSellOrdersSuite) ACreditType() {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *updateSellOrdersSuite) ACreditTypeWithAbbreviation(a string) {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: a,
 	})
 	require.NoError(s.t, err)
@@ -87,7 +87,7 @@ func (s *updateSellOrdersSuite) ACreditTypeWithPrecision(a string) {
 	precision, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err = s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    uint32(precision),
 	})
@@ -348,20 +348,20 @@ func (s *updateSellOrdersSuite) ExpectTheError(a string) {
 }
 
 func (s *updateSellOrdersSuite) ExpectAliceTradableCreditBalance(a string) {
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, a, balance.TradableAmount)
 }
 
 func (s *updateSellOrdersSuite) ExpectAliceEscrowedCreditBalance(a string) {
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, a, balance.EscrowedAmount)
@@ -432,25 +432,25 @@ func (s *updateSellOrdersSuite) sellOrderSetup(count int) {
 		totalQuantity = t.String()
 	}
 
-	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 		Denom: s.batchDenom,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
+	err = s.baseStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       batchKey,
 		Address:        s.alice,
 		EscrowedAmount: totalQuantity,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &coreapi.BatchSupply{
+	err = s.baseStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
 		BatchKey:       batchKey,
 		TradableAmount: totalQuantity,
 	})
@@ -487,20 +487,20 @@ func (s *updateSellOrdersSuite) sellOrderSetup(count int) {
 }
 
 func (s *updateSellOrdersSuite) aliceBatchBalance() {
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	if err == ormerrors.NotFound {
-		classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+		classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 			Id:               s.classID,
 			CreditTypeAbbrev: s.creditTypeAbbrev,
 		})
 		require.NoError(s.t, err)
 
-		projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+		projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
 			ClassKey: classKey,
 		})
 		require.NoError(s.t, err)
 
-		batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+		batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 			ProjectKey: projectKey,
 			Denom:      s.batchDenom,
 		})
@@ -512,7 +512,7 @@ func (s *updateSellOrdersSuite) aliceBatchBalance() {
 	}
 
 	// Save because batch balance may already exist from sell order setup
-	err = s.coreStore.BatchBalanceTable().Save(s.ctx, &coreapi.BatchBalance{
+	err = s.baseStore.BatchBalanceTable().Save(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       batch.Key,
 		Address:        s.alice,
 		TradableAmount: s.aliceTradableAmount,

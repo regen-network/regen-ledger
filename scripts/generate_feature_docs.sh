@@ -44,9 +44,9 @@ mkdir -p $eco_types_dir
 
 eco_readme="# Features\n\n"
 eco_readme+="## Types\n\n"
-eco_readme+="### Core\n\n"
+eco_readme+="### Base\n\n"
 
-for file in $(find ./x/ecocredit/core/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
+for file in $(find ./x/ecocredit/base/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")
   eco_readme+="- [$name](./types/$name.html)\n"
   "$GOBIN/gherkin2markdown" "$file" > "$eco_types_dir/$name.md"
@@ -69,7 +69,7 @@ for file in $(find ./x/ecocredit/marketplace/features -path -prune -o -name '*.f
 done
 
 eco_readme+="## Server\n\n"
-eco_readme+="### Core\n\n"
+eco_readme+="### Base\n\n"
 
 for file in $(find ./x/ecocredit/server/core -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")

@@ -33,14 +33,14 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 		// an individual order in a list of orders fails to process
 		orderIndex := fmt.Sprintf("orders[%d]", i)
 
-		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
+		batch, err := k.baseStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 				"%s: batch denom %s: %s", orderIndex, order.BatchDenom, err.Error(),
 			)
 		}
 
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.baseStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -103,7 +103,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/marketplace/MsgSell order iteration")
 	}
 
 	return &types.MsgSellResponse{SellOrderIds: sellOrderIDs}, nil
@@ -127,7 +127,7 @@ func (k Keeper) getOrCreateMarketID(ctx context.Context, creditTypeAbbrev, bankD
 }
 
 func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
-	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchKey)
+	bal, err := k.baseStore.BatchBalanceTable().Get(ctx, account, batchKey)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf(
 			"%s: credit quantity: %v, tradable balance: 0", orderIndex, quantity,
@@ -159,5 +159,5 @@ func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sd
 	bal.TradableAmount = newTradable.String()
 	bal.EscrowedAmount = newEscrowed.String()
 
-	return k.coreStore.BatchBalanceTable().Update(ctx, bal)
+	return k.baseStore.BatchBalanceTable().Update(ctx, bal)
 }

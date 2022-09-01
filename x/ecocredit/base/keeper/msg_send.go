@@ -27,7 +27,7 @@ func (k Keeper) Send(ctx context.Context, req *types.MsgSend) (*types.MsgSendRes
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSend credit iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgSend credit iteration")
 	}
 	return &types.MsgSendResponse{}, nil
 }

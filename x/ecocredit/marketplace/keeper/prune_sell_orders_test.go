@@ -39,14 +39,14 @@ func TestSell_Prune(t *testing.T) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// get the balance before pruning
-	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
+	balBefore, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 
 	// prune the orders
 	err = s.k.PruneSellOrders(s.ctx)
 	assert.NilError(t, err)
 
-	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
+	balAfter, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 
 	// we can reuse this function and pass the negated amount to get our desired behavior.

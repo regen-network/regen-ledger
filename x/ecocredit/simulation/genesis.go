@@ -194,7 +194,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
-	// generate core params
+	// generate base params
 	if err := ss.AllowListEnabledTable().Save(ctx, &api.AllowListEnabled{
 		Enabled: genAllowListEnabled(r),
 	}); err != nil {

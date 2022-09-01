@@ -61,7 +61,7 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *takeSuite) ACreditType() {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -71,7 +71,7 @@ func (s *takeSuite) ACreditType() {
 func (s *takeSuite) ACreditTypeWithAbbreviation(a string) {
 	s.creditTypeAbbrev = a
 
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -85,7 +85,7 @@ func (s *takeSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string) 
 	s.creditTypeAbbrev = a
 	s.creditTypePrecision = uint32(precision)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	err = s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -281,20 +281,20 @@ func (s *takeSuite) ExpectTheError(a string) {
 }
 
 func (s *takeSuite) ExpectAliceTradableCreditBalanceAmount(a string) {
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, a, balance.TradableAmount)
 }
 
 func (s *takeSuite) ExpectAliceRetiredCreditBalanceAmount(a string) {
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, a, balance.RetiredAmount)
@@ -400,24 +400,24 @@ func (s *takeSuite) addBasketClassAndBalance(basketID uint64, creditAmount strin
 	classID := base.GetClassIDFromBatchDenom(s.batchDenom)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
 		ClassKey: classKey,
 	})
 	require.NoError(s.t, err)
 
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
+	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 		ProjectKey: projectKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
+	err = s.baseStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
 		BatchKey:       batchKey,
 		TradableAmount: creditAmount,
 	})

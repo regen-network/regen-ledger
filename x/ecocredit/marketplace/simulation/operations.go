@@ -268,7 +268,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 // SimulateMsgUpdateSellOrder generates a Marketplace/MsgUpdateSellOrder with random values.
 func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	coreQryClient basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+	baseQryClient basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

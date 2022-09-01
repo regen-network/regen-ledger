@@ -9,7 +9,7 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
-const coreRoute = "regen/ecocredit/v1"
+const baseRoute = "regen/ecocredit/v1"
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
 	testCases := []struct {
@@ -19,12 +19,12 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/classes", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/classes", s.val.APIAddress, baseRoute),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/classes?pagination.limit=1", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/classes?pagination.limit=1", s.val.APIAddress, baseRoute),
 			true,
 		},
 	}
@@ -55,11 +55,11 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/class/%s", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/class/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/classes/%s", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/classes/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 	}
 
@@ -88,11 +88,11 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, coreRoute, s.projectID),
+			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, baseRoute, s.projectID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, coreRoute, s.projectID),
+			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, baseRoute, s.projectID),
 		},
 	}
 
@@ -119,14 +119,14 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/projects", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/projects", s.val.APIAddress, baseRoute),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf(
 				"%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
-				coreRoute,
+				baseRoute,
 			),
 		},
 	}
@@ -160,24 +160,24 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf(
 				"%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
-				coreRoute,
+				baseRoute,
 				s.classID,
 			),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, baseRoute, s.classID),
 		},
 	}
 
@@ -213,7 +213,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 			fmt.Sprintf(
 				"%s/%s/projects-by-reference-id/%s",
 				s.val.APIAddress,
-				coreRoute,
+				baseRoute,
 				s.projectReferenceID,
 			),
 		},
@@ -222,7 +222,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 			fmt.Sprintf(
 				"%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
-				coreRoute,
+				baseRoute,
 				s.projectReferenceID,
 			),
 		},
@@ -230,7 +230,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 			"valid alternative",
 			fmt.Sprintf("%s/%s/projects/reference-id/%s",
 				s.val.APIAddress,
-				coreRoute,
+				baseRoute,
 				s.projectReferenceID,
 			),
 		},
@@ -264,12 +264,12 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/batches", s.val.APIAddress, baseRoute),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches?pagination.limit=2", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/batches?pagination.limit=2", s.val.APIAddress, baseRoute),
 			true,
 		},
 	}
@@ -301,17 +301,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s/%s/batches-by-issuer/%s", s.val.APIAddress, baseRoute, s.addr1),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-issuer/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s/%s/batches-by-issuer/%s?pagination.limit=2", s.val.APIAddress, baseRoute, s.addr1),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s/%s/batches/issuer/%s", s.val.APIAddress, baseRoute, s.addr1),
 			false,
 		},
 	}
@@ -343,17 +343,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-class/%s", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/batches-by-class/%s", s.val.APIAddress, baseRoute, s.classID),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/batches-by-class/%s?pagination.limit=2", s.val.APIAddress, baseRoute, s.classID),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/class/%s", s.val.APIAddress, coreRoute, s.classID),
+			fmt.Sprintf("%s/%s/batches/class/%s", s.val.APIAddress, baseRoute, s.classID),
 			false,
 		},
 	}
@@ -385,17 +385,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-project/%s", s.val.APIAddress, coreRoute, s.projectID),
+			fmt.Sprintf("%s/%s/batches-by-project/%s", s.val.APIAddress, baseRoute, s.projectID),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectID),
+			fmt.Sprintf("%s/%s/batches-by-project/%s?pagination.limit=2", s.val.APIAddress, baseRoute, s.projectID),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/project/%s", s.val.APIAddress, coreRoute, s.projectID),
+			fmt.Sprintf("%s/%s/batches/project/%s", s.val.APIAddress, baseRoute, s.projectID),
 			false,
 		},
 	}
@@ -426,11 +426,11 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batch/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/batch/%s", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/batches/%s", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 	}
 
@@ -453,7 +453,7 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
 
-	url := fmt.Sprintf("%s/%s/credit-types", s.val.APIAddress, coreRoute)
+	url := fmt.Sprintf("%s/%s/credit-types", s.val.APIAddress, baseRoute)
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
@@ -470,15 +470,15 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/balance/%s/%s", s.val.APIAddress, coreRoute, s.batchDenom, s.addr1),
+			fmt.Sprintf("%s/%s/balance/%s/%s", s.val.APIAddress, baseRoute, s.batchDenom, s.addr1),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/%s/balance/%s", s.val.APIAddress, coreRoute, s.batchDenom, s.addr1),
+			fmt.Sprintf("%s/%s/batches/%s/balance/%s", s.val.APIAddress, baseRoute, s.batchDenom, s.addr1),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/balances/%s/batch/%s", s.val.APIAddress, coreRoute, s.addr1, s.batchDenom),
+			fmt.Sprintf("%s/%s/balances/%s/batch/%s", s.val.APIAddress, baseRoute, s.addr1, s.batchDenom),
 		},
 	}
 
@@ -506,11 +506,11 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/supply/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/supply/%s", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/%s/supply", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/batches/%s/supply", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 	}
 
@@ -535,7 +535,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 // func (s *IntegrationTestSuite) TestQueryParams() {
 // 	require := s.Require()
 
-// 	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, coreRoute))
+// 	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, baseRoute))
 // 	require.NoError(err)
 
 // 	var res types.QueryParamsResponse
@@ -546,7 +546,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 func (s *IntegrationTestSuite) TestCreditType() {
 	require := s.Require()
 
-	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, coreRoute, "C")
+	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, baseRoute, "C")
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
@@ -560,7 +560,7 @@ func (s *IntegrationTestSuite) TestCreditType() {
 func (s *IntegrationTestSuite) TestAllBalances() {
 	require := s.Require()
 
-	url := fmt.Sprintf("%s/%s/all-balances?pagination.countTotal=true", s.val.APIAddress, coreRoute)
+	url := fmt.Sprintf("%s/%s/all-balances?pagination.countTotal=true", s.val.APIAddress, baseRoute)
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
@@ -570,7 +570,7 @@ func (s *IntegrationTestSuite) TestAllBalances() {
 	require.NotEmpty(res.Balances)
 	require.NotZero(res.Pagination.Total)
 
-	url = fmt.Sprintf("%s/%s/balances?pagination.countTotal=true", s.val.APIAddress, coreRoute)
+	url = fmt.Sprintf("%s/%s/balances?pagination.countTotal=true", s.val.APIAddress, baseRoute)
 	resp, err = rest.GetRequest(url)
 	require.NoError(err)
 
@@ -594,9 +594,9 @@ func (s *IntegrationTestSuite) TestBalancesByBatch() {
 		require.NotZero(res.Pagination.Total)
 	}
 
-	url := fmt.Sprintf("%s/%s/balances-by-batch/%s?pagination.countTotal=true", s.val.APIAddress, coreRoute, s.batchDenom)
+	url := fmt.Sprintf("%s/%s/balances-by-batch/%s?pagination.countTotal=true", s.val.APIAddress, baseRoute, s.batchDenom)
 	checkQuery(url)
 
-	url = fmt.Sprintf("%s/%s/batches/%s/balances?pagination.countTotal=true", s.val.APIAddress, coreRoute, s.batchDenom)
+	url = fmt.Sprintf("%s/%s/batches/%s/balances?pagination.countTotal=true", s.val.APIAddress, baseRoute, s.batchDenom)
 	checkQuery(url)
 }

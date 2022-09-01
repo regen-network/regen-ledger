@@ -27,7 +27,7 @@ type serverImpl struct {
 	bankKeeper     ecocredit.BankKeeper
 	accountKeeper  ecocredit.AccountKeeper
 
-	CoreKeeper        basekeeper.Keeper
+	BaseKeeper        basekeeper.Keeper
 	BasketKeeper      basketkeeper.Keeper
 	MarketplaceKeeper marketkeeper.Keeper
 
@@ -47,8 +47,8 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	}
 
 	// ensure ecocredit module account is set
-	coreAddr := s.accountKeeper.GetModuleAddress(ecocredit.ModuleName)
-	if coreAddr == nil {
+	baseAddr := s.accountKeeper.GetModuleAddress(ecocredit.ModuleName)
+	if baseAddr == nil {
 		panic(fmt.Sprintf("%s module account has not been set", ecocredit.ModuleName))
 	}
 
@@ -64,19 +64,19 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 		panic(err)
 	}
 
-	coreStore, basketStore, marketStore := getStateStores(s.db)
-	s.stateStore = coreStore
+	baseStore, basketStore, marketStore := getStateStores(s.db)
+	s.stateStore = baseStore
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
-	s.CoreKeeper = basekeeper.NewKeeper(coreStore, bankKeeper, coreAddr, basketStore, marketStore, authority)
-	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, coreStore, bankKeeper, s.legacySubspace, basketAddr, authority)
-	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, coreStore, bankKeeper, s.legacySubspace, authority)
+	s.BaseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
+	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, s.legacySubspace, basketAddr, authority)
+	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, s.legacySubspace, authority)
 
 	return s
 }
 
 func getStateStores(db ormdb.ModuleDB) (baseapi.StateStore, basketapi.StateStore, marketapi.StateStore) {
-	coreStore, err := baseapi.NewStateStore(db)
+	baseStore, err := baseapi.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
@@ -88,11 +88,11 @@ func getStateStores(db ormdb.ModuleDB) (baseapi.StateStore, basketapi.StateStore
 	if err != nil {
 		panic(err)
 	}
-	return coreStore, basketStore, marketStore
+	return baseStore, basketStore, marketStore
 }
 
 func (s serverImpl) QueryServers() (basetypes.QueryServer, baskettypes.QueryServer, markettypes.QueryServer) {
-	return s.CoreKeeper, s.BasketKeeper, s.MarketplaceKeeper
+	return s.BaseKeeper, s.BasketKeeper, s.MarketplaceKeeper
 }
 
 func (s serverImpl) GetStateStores() (baseapi.StateStore, basketapi.StateStore, marketapi.StateStore) {

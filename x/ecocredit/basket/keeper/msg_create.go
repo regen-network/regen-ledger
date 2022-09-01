@@ -99,7 +99,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 		}
 	}
 
-	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, msg.CreditTypeAbbrev)
+	creditType, err := k.baseStore.CreditTypeTable().Get(ctx, msg.CreditTypeAbbrev)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 			"could not get credit type with abbreviation %s: %s", msg.CreditTypeAbbrev, err.Error(),
@@ -168,7 +168,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string, creditTypeAbbrev string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, class := range allowedClasses {
-		classInfo, err := k.coreStore.ClassTable().GetById(ctx, class)
+		classInfo, err := k.baseStore.ClassTable().GetById(ctx, class)
 		if err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit class %s: %s", class, err.Error())
 		}

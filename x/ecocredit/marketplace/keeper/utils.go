@@ -60,7 +60,7 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 	}
 
 	// remove the credits from the seller's escrowed balance
-	sellerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellOrder.Seller, sellOrder.BatchKey)
+	sellerBal, err := k.baseStore.BatchBalanceTable().Get(ctx, sellOrder.Seller, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
@@ -73,16 +73,16 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 		return err
 	}
 	sellerBal.EscrowedAmount = escrowBal.String()
-	if err = k.coreStore.BatchBalanceTable().Update(ctx, sellerBal); err != nil {
+	if err = k.baseStore.BatchBalanceTable().Update(ctx, sellerBal); err != nil {
 		return err
 	}
 
 	// update the buyers balance and the batch supply
-	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, sellOrder.BatchKey)
+	supply, err := k.baseStore.BatchSupplyTable().Get(ctx, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
-	buyerBal, err := utils.GetBalance(ctx, k.coreStore.BatchBalanceTable(), buyerAcc, sellOrder.BatchKey)
+	buyerBal, err := utils.GetBalance(ctx, k.baseStore.BatchBalanceTable(), buyerAcc, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 			return err
 		}
 		supply.RetiredAmount = supplyRetired.String()
-		if err = k.coreStore.BatchSupplyTable().Update(ctx, supply); err != nil {
+		if err = k.baseStore.BatchSupplyTable().Update(ctx, supply); err != nil {
 			return err
 		}
 		if err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventRetire{
@@ -149,7 +149,7 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 			return err
 		}
 	}
-	if err = k.coreStore.BatchBalanceTable().Save(ctx, buyerBal); err != nil {
+	if err = k.baseStore.BatchBalanceTable().Save(ctx, buyerBal); err != nil {
 		return err
 	}
 

@@ -57,7 +57,7 @@ func TestRandomizedGenState(t *testing.T) {
 	require.NoError(t, err)
 
 	ormCtx := ormtable.WrapContextDefault(backend)
-	coreStore, err := api.NewStateStore(ormdb)
+	baseStore, err := api.NewStateStore(ormdb)
 	require.NoError(t, err)
 
 	marketStore, err := marketapi.NewStateStore(ormdb)
@@ -69,7 +69,7 @@ func TestRandomizedGenState(t *testing.T) {
 	err = ormdb.ImportJSON(ormCtx, jsonSource)
 	require.NoError(t, err)
 
-	allowListEnabled, err := coreStore.AllowListEnabledTable().Get(ormCtx)
+	allowListEnabled, err := baseStore.AllowListEnabledTable().Get(ormCtx)
 	require.NoError(t, err)
 
 	require.True(t, allowListEnabled.Enabled)
@@ -77,10 +77,10 @@ func TestRandomizedGenState(t *testing.T) {
 	creator, err := sdk.AccAddressFromBech32("regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4")
 	require.NoError(t, err)
 
-	_, err = coreStore.AllowedClassCreatorTable().Get(ormCtx, creator)
+	_, err = baseStore.AllowedClassCreatorTable().Get(ormCtx, creator)
 	require.NoError(t, err)
 
-	classFees, err := coreStore.ClassFeesTable().Get(ormCtx)
+	classFees, err := baseStore.ClassFeesTable().Get(ormCtx)
 	require.NoError(t, err)
 	require.Len(t, classFees.Fees, 1)
 

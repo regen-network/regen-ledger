@@ -28,7 +28,7 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 		return nil, err
 	}
 
-	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, basket.CreditTypeAbbrev)
+	creditType, err := k.baseStore.CreditTypeTable().Get(ctx, basket.CreditTypeAbbrev)
 	if err != nil {
 		return nil, err
 	}
@@ -190,12 +190,12 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 
 func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, retire bool, jurisdiction string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	batch, err := k.coreStore.BatchTable().GetByDenom(ctx, batchDenom)
+	batch, err := k.baseStore.BatchTable().GetByDenom(ctx, batchDenom)
 	if err != nil {
 		return err
 	}
 	if !retire {
-		if err = basekeeper.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
+		if err = basekeeper.AddAndSaveBalance(ctx, k.baseStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 			return err
 		}
 		return sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{
@@ -206,10 +206,10 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		})
 	}
 
-	if err = basekeeper.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
+	if err = basekeeper.RetireAndSaveBalance(ctx, k.baseStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 		return err
 	}
-	if err = basekeeper.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
+	if err = basekeeper.RetireSupply(ctx, k.baseStore.BatchSupplyTable(), batch.Key, amount); err != nil {
 		return err
 	}
 	err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{

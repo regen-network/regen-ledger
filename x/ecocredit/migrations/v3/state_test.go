@@ -58,13 +58,13 @@ func TestMigrations(t *testing.T) {
 
 	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	coreStore, err := baseapi.NewStateStore(ormdb)
+	baseStore, err := baseapi.NewStateStore(ormdb)
 	assert.NilError(t, err)
 
 	basketStore, err := basketapi.NewStateStore(ormdb)
 	assert.NilError(t, err)
 
-	assert.NilError(t, v3.MigrateState(sdkCtx, coreStore, basketStore, paramStore))
+	assert.NilError(t, v3.MigrateState(sdkCtx, baseStore, basketStore, paramStore))
 
 	// verify basket params migrated to orm table
 	basketFees, err := basketStore.BasketFeesTable().Get(sdkCtx)
@@ -77,7 +77,7 @@ func TestMigrations(t *testing.T) {
 	assert.Equal(t, basketFees.Fees[1].Amount, "2000000")
 
 	// verify core state migrated to orm table
-	classFees, err := coreStore.ClassFeesTable().Get(sdkCtx)
+	classFees, err := baseStore.ClassFeesTable().Get(sdkCtx)
 	assert.NilError(t, err)
 
 	assert.Equal(t, len(classFees.Fees), 2)
@@ -86,11 +86,11 @@ func TestMigrations(t *testing.T) {
 	assert.Equal(t, classFees.Fees[1].Denom, "uregen")
 	assert.Equal(t, classFees.Fees[1].Amount, "2000000")
 
-	allowedListEnabled, err := coreStore.AllowListEnabledTable().Get(sdkCtx)
+	allowedListEnabled, err := baseStore.AllowListEnabledTable().Get(sdkCtx)
 	assert.NilError(t, err)
 	assert.Equal(t, allowedListEnabled.Enabled, true)
 
-	itr, err := coreStore.AllowedClassCreatorTable().List(sdkCtx, baseapi.AllowedClassCreatorPrimaryKey{})
+	itr, err := baseStore.AllowedClassCreatorTable().List(sdkCtx, baseapi.AllowedClassCreatorPrimaryKey{})
 	assert.NilError(t, err)
 
 	var expected []string
