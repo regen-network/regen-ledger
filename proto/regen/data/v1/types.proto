@@ -6,6 +6,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // ContentHash specifies a hash-based content identifier for a piece of data.
 message ContentHash {
+
   // Raw specifies "raw" data which does not specify a deterministic, canonical
   // encoding. Users of these hashes MUST maintain a copy of the hashed data
   // which is preserved bit by bit. All other content encodings specify a
@@ -53,6 +54,7 @@ message ContentHash {
 
 // DigestAlgorithm is the hash digest algorithm
 enum DigestAlgorithm {
+
   // unspecified and invalid
   DIGEST_ALGORITHM_UNSPECIFIED = 0;
 
@@ -62,6 +64,7 @@ enum DigestAlgorithm {
 
 // RawMediaType defines MIME media types to be used with a ContentHash.Raw hash.
 enum RawMediaType {
+
   // RAW_MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
   RAW_MEDIA_TYPE_UNSPECIFIED = 0;
 
@@ -125,6 +128,7 @@ enum RawMediaType {
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
 enum GraphCanonicalizationAlgorithm {
+
   // unspecified and invalid
   GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
 
@@ -134,12 +138,14 @@ enum GraphCanonicalizationAlgorithm {
 
 // GraphMerkleTree is the graph merkle tree type used for hashing, if any
 enum GraphMerkleTree {
+
   // unspecified and valid
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
 }
 
 // ContentHashes contains list of content ContentHash.
 message ContentHashes {
+
   // data is a list of content hashes which the resolver claims to serve.
   repeated ContentHash content_hashes = 1;
 }

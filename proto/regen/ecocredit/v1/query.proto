@@ -208,6 +208,7 @@ service Query {
   }
 
   // Params queries the ecocredit module parameters.
+  //
   // Deprecated (Since Revision 1): This rpc will be removed in the next
   // version.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
@@ -772,6 +773,7 @@ message BatchBalanceInfo {
 //
 // Since Revision 1
 message QueryAllowedClassCreatorsRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
@@ -781,6 +783,7 @@ message QueryAllowedClassCreatorsRequest {
 //
 // Since Revision 1
 message QueryAllowedClassCreatorsResponse {
+
   // class_creators is the list of allowed credit class creators.
   repeated string class_creators = 1;
 
@@ -797,6 +800,7 @@ message QueryCreditClassFeesRequest {}
 //
 // Since Revision 1
 message QueryCreditClassFeesResponse {
+
   // fees is the ClassFees message type
   repeated cosmos.base.v1beta1.Coin fees = 1 [
     (gogoproto.nullable) = false,
@@ -815,6 +819,7 @@ message QueryCreditClassAllowlistEnabledRequest {}
 //
 // Since Revision 1
 message QueryCreditClassAllowlistEnabledResponse {
+
   // allowlist_enabled determines whether or not the allowlist for creating
   // credit classes is enabled.
   bool allowlist_enabled = 1;
