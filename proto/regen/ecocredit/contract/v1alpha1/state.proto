@@ -30,12 +30,12 @@ message Contract {
   // contract supply, and estimated price per credit type unit.
   google.protobuf.Timestamp metadata = 4;
 
-  // funds_to_collect is the denom and amount the project is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 5;
-
   // volume_percentage is the percent of all credits issued that will be
   // available to purchase in shares.
-  string volume_percentage = 6;
+  string volume_percentage = 5;
+
+  // funds_to_collect is the denom and amount the project is collecting.
+  cosmos.base.v1beta1.Coin funds_to_collect = 6;
 
   // start_date is the delivery start date.
   google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];

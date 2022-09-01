@@ -26,6 +26,10 @@ service Msg {
   // contract to accepted and preventing any further changes. Only an approved
   // credit class issuer can accept the contract.
   rpc Approve(MsgApprove) returns (MsgApproveResponse);
+
+  // FundProject sends funds to a project in return for a share of the contract
+  // and therefore ownership of future credits issued from the project.
+  rpc FundProject(MsgFundProject) returns (MsgFundProjectResponse);
 }
 
 // MsgCreate is the Msg/Create request type.
@@ -39,16 +43,17 @@ message MsgCreate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract such as estimated total supply, forward
-  // contract supply, and estimated price per credit type unit.
+  // information about the contract including the initial amount of funds to
+  // collect, the initial volume percentage offered, estimated total supply,
+  // forward contract supply, and estimated price per credit type unit.
   string metadata = 3;
-
-  // funds_to_collect is the denom and amount the project is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 4;
 
   // volume_percentage is the percent of all credits issued that will be
   // available to purchase in shares.
-  string volume_percentage = 5;
+  string volume_percentage = 4;
+
+  // funds_to_collect is the denom and amount the project is collecting.
+  cosmos.base.v1beta1.Coin funds_to_collect = 5;
 
   // start_date is the delivery start date.
   google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
@@ -66,7 +71,7 @@ message MsgCreateResponse {
 
 // MsgUpdate is the Msg/Update request type.
 message MsgUpdate {
-  option (cosmos.msg.v1.signer) = "funder";
+  option (cosmos.msg.v1.signer) = "project_admin";
 
   // id is the unique identifier of the contract.
   uint64 id = 1;
@@ -75,16 +80,17 @@ message MsgUpdate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract such as estimated total supply, forward
-  // contract supply, and estimated price per credit type unit.
+  // information about the contract including the initial amount of funds to
+  // collect, the initial volume percentage offered, estimated total supply,
+  // forward contract supply, and estimated price per credit type unit.
   string metadata = 3;
-
-  // funds_to_collect is the denom and amount the project is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 4;
 
   // volume_percentage is the percent of all credits issued that will be
   // available to purchase in shares.
-  string volume_percentage = 5;
+  string volume_percentage = 4;
+
+  // funds_to_collect is the denom and amount the project is collecting.
+  cosmos.base.v1beta1.Coin funds_to_collect = 5;
 
   // start_date is the delivery start date.
   google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
@@ -124,3 +130,26 @@ message MsgApprove {
 
 // MsgApproveResponse is the Msg/Approve response type.
 message MsgApproveResponse {}
+
+// MsgFundProject is the Msg/FundProject request type.
+message MsgFundProject {
+  option (cosmos.msg.v1.signer) = "funder";
+
+  // id is the unique identifier of the contract.
+  uint64 id = 1;
+
+  // funder is the address of the account funding the project and receiving a
+  // share of the contract in return.
+  string funder = 2;
+
+  // volume_percentage is the percent of all credits issued that the funder will
+  // receive.
+  string volume_percentage = 3;
+
+  // funds is the token denom and amount the funder is providing in return for
+  // the specified volume percentage.
+  cosmos.base.v1beta1.Coin funds = 4;
+}
+
+// MsgFundProjectResponse is the Msg/FundProject response type.
+message MsgFundProjectResponse {}
