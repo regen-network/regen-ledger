@@ -32,7 +32,7 @@ type MsgClient interface {
 	// UpdateBasketFees is a governance method that allows for updating of fees to
 	// be used for the basket creation fee.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBasketFees(ctx context.Context, in *MsgUpdateBasketFees, opts ...grpc.CallOption) (*MsgUpdateBasketFeesResponse, error)
 }
 
@@ -94,7 +94,7 @@ type MsgServer interface {
 	// UpdateBasketFees is a governance method that allows for updating of fees to
 	// be used for the basket creation fee.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBasketFees(context.Context, *MsgUpdateBasketFees) (*MsgUpdateBasketFeesResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

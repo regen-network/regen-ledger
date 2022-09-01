@@ -283,7 +283,7 @@ func (m *MsgUpdateSellOrders) GetUpdates() []*MsgUpdateSellOrders_Update {
 
 // Update is an update to an existing sell order.
 type MsgUpdateSellOrders_Update struct {
-	//  sell_order_id is the ID of an existing sell order.
+	// sell_order_id is the ID of an existing sell order.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 	// new_quantity is the updated quantity of credits available to sell, if it
 	// is set to zero then the order is cancelled.
@@ -677,6 +677,7 @@ func (m *MsgBuyDirectResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgBuyDirectResponse proto.InternalMessageInfo
 
 // MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+//
 // Since Revision 1
 type MsgAddAllowedDenom struct {
 	// authority is the address of the governance account.
@@ -754,6 +755,7 @@ func (m *MsgAddAllowedDenom) GetExponent() uint32 {
 }
 
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+//
 // Since Revision 1
 type MsgAddAllowedDenomResponse struct {
 }
@@ -792,6 +794,7 @@ func (m *MsgAddAllowedDenomResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgAddAllowedDenomResponse proto.InternalMessageInfo
 
 // MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+//
 // Since Revision 1
 type MsgRemoveAllowedDenom struct {
 	// authority is the address of the governance account.
@@ -848,6 +851,7 @@ func (m *MsgRemoveAllowedDenom) GetDenom() string {
 }
 
 // MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+//
 // Since Revision 1
 type MsgRemoveAllowedDenomResponse struct {
 }
@@ -993,9 +997,11 @@ type MsgClient interface {
 	BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error)
 	// AddAllowedDenom is a governance method that allows the addition of
 	// new allowed denom.
+	//
 	// Since Revision 1
 	AddAllowedDenom(ctx context.Context, in *MsgAddAllowedDenom, opts ...grpc.CallOption) (*MsgAddAllowedDenomResponse, error)
 	// RemoveAllowedDenom is a governance method that removes allowed denom.
+	//
 	// Since Revision 1
 	RemoveAllowedDenom(ctx context.Context, in *MsgRemoveAllowedDenom, opts ...grpc.CallOption) (*MsgRemoveAllowedDenomResponse, error)
 }
@@ -1074,9 +1080,11 @@ type MsgServer interface {
 	BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error)
 	// AddAllowedDenom is a governance method that allows the addition of
 	// new allowed denom.
+	//
 	// Since Revision 1
 	AddAllowedDenom(context.Context, *MsgAddAllowedDenom) (*MsgAddAllowedDenomResponse, error)
 	// RemoveAllowedDenom is a governance method that removes allowed denom.
+	//
 	// Since Revision 1
 	RemoveAllowedDenom(context.Context, *MsgRemoveAllowedDenom) (*MsgRemoveAllowedDenomResponse, error)
 }

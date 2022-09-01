@@ -9719,7 +9719,10 @@ func (x *BatchContract) GetContract() string {
 	return ""
 }
 
-// AllowedClassCreator is an allowed credit class creator.
+// AllowedClassCreator is an allowed credit class creator. This table is
+// controlled via governance.
+//
+// Since Revision 1
 type AllowedClassCreator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9759,7 +9762,9 @@ func (x *AllowedClassCreator) GetAddress() []byte {
 // AllowListEnabled determines if the credit class creator allowlist is enabled.
 // When set to true, only the addresses in the AllowedClassCreator table can
 // create credit classes. When set to false, any address is free to create
-// credit classes.
+// credit classes. This table is controlled via governance.
+//
+// Since Revision 1
 type AllowListEnabled struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9796,8 +9801,10 @@ func (x *AllowListEnabled) GetEnabled() bool {
 	return false
 }
 
-// ClassFees is a list of coins that may be used as the fee
-// for credit class creation.
+// ClassFees is a list of coins that may be used as the fee for credit class
+// creation. This table is controlled via governance.
+//
+// Since Revision 1
 type ClassFees struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9837,6 +9844,7 @@ func (x *ClassFees) GetFees() []*v1beta1.Coin {
 // AllowedBridgeChain is a list of chains that are allowed to be used in
 // bridging operations. NOTE: chain_names MUST be converted to uppercase before
 // writing to and reading from this table in order to keep entries consistent.
+// This table is controlled via governance.
 //
 // Since Revision 1
 type AllowedBridgeChain struct {

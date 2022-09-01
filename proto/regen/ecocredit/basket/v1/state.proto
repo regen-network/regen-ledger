@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-// Revision 1
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
@@ -78,6 +77,7 @@ message BasketClass {
 
   // basket_id is the ID of the basket
   uint64 basket_id = 1;
+
   // class_id is the id of the credit class that is allowed to be deposited in
   // the basket
   string class_id = 2;
@@ -107,6 +107,8 @@ message BasketBalance {
 
 // BasketFees are valid coin denoms and amounts that may be used as the fee
 // for basket creation.
+//
+// Since Revision 2
 message BasketFees {
   // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.singleton) = {
