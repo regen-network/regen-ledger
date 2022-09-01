@@ -11,10 +11,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/types/math"
@@ -112,7 +115,48 @@ func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-		return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "unable to generate mock tx"), nil, nil
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateBasketFees)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
+		msg := basket.MsgUpdateBasketFees{
+			Authority:  authority.String(),
+			BasketFees: sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, r.Int63())),
+		}
+
+		any, err := codectypes.NewAnyWithValue(&msg)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, err.Error()), nil, err
+		}
+
+		proposalMsg := govtypes.MsgSubmitProposal{
+			InitialDeposit: initialDeposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+			Messages:       []*codectypes.Any{any},
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             &proposalMsg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
 	}
 }
 
