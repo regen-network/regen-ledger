@@ -23155,6 +23155,7 @@ func (x *MsgBridgeReceiveResponse) GetProjectId() string {
 }
 
 // MsgAddClassCreator is the Msg/AddClassCreator request type.
+//
 // Since Revision 1
 type MsgAddClassCreator struct {
 	state         protoimpl.MessageState
@@ -23202,6 +23203,7 @@ func (x *MsgAddClassCreator) GetCreator() string {
 }
 
 // MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
+//
 // Since Revision 1
 type MsgAddClassCreatorResponse struct {
 	state         protoimpl.MessageState
@@ -23230,6 +23232,7 @@ func (*MsgAddClassCreatorResponse) Descriptor() ([]byte, []int) {
 }
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
+//
 // Since Revision 1
 type MsgRemoveClassCreator struct {
 	state         protoimpl.MessageState
@@ -23277,6 +23280,7 @@ func (x *MsgRemoveClassCreator) GetCreator() string {
 }
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
+//
 // Since Revision 1
 type MsgRemoveClassCreatorResponse struct {
 	state         protoimpl.MessageState
@@ -23305,7 +23309,9 @@ func (*MsgRemoveClassCreatorResponse) Descriptor() ([]byte, []int) {
 }
 
 // MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
-// type. Since Revision 1
+// type.
+//
+// Since Revision 1
 type MsgToggleCreditClassAllowlist struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -23352,7 +23358,9 @@ func (x *MsgToggleCreditClassAllowlist) GetEnabled() bool {
 }
 
 // MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist
-// response type. Since Revision 1
+// response type.
+//
+// Since Revision 1
 type MsgToggleCreditClassAllowlistResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -23380,6 +23388,7 @@ func (*MsgToggleCreditClassAllowlistResponse) Descriptor() ([]byte, []int) {
 }
 
 // MsgUpdateClassFees is the Msg/UpdateClassFees request type.
+//
 // Since Revision 1
 type MsgUpdateClassFees struct {
 	state         protoimpl.MessageState
@@ -23428,6 +23437,7 @@ func (x *MsgUpdateClassFees) GetFees() []*v1beta1.Coin {
 }
 
 // MsgUpdateClassFeesResponse is the Msg/UpdateClassFees response type.
+//
 // Since Revision 1
 type MsgUpdateClassFeesResponse struct {
 	state         protoimpl.MessageState

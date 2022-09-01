@@ -323,9 +323,11 @@ message BatchContract {
   string contract = 3;
 }
 
-// AllowedClassCreator is an allowed credit class creator.
+// AllowedClassCreator is an allowed credit class creator. This table is
+// controlled via governance.
+//
+// Since Revision 1
 message AllowedClassCreator {
-  // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.table) = {
     id : 13,
     primary_key : {fields : "address"}
@@ -338,9 +340,10 @@ message AllowedClassCreator {
 // AllowListEnabled determines if the credit class creator allowlist is enabled.
 // When set to true, only the addresses in the AllowedClassCreator table can
 // create credit classes. When set to false, any address is free to create
-// credit classes.
+// credit classes. This table is controlled via governance.
+//
+// Since Revision 1
 message AllowListEnabled {
-  // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.singleton) = {
     id : 14
   };
@@ -349,10 +352,11 @@ message AllowListEnabled {
   bool enabled = 1;
 }
 
-// ClassFees is a list of coins that may be used as the fee
-// for credit class creation.
+// ClassFees is a list of coins that may be used as the fee for credit class
+// creation. This table is controlled via governance.
+//
+// Since Revision 1
 message ClassFees {
-  // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.singleton) = {
     id : 15
   };

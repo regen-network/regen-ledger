@@ -54,7 +54,8 @@ service Query {
   }
 
   // BasketFees returns list of fees that can be used for creating basket.
-  // Since Revision 1
+  //
+  // Since Revision 2
   rpc BasketFees(QueryBasketFeesRequest) returns (QueryBasketFeesResponse) {
     option (google.api.http).get = "/regen/ecocredit/basket/v1/basket-fees";
   }
@@ -199,11 +200,13 @@ message BasketBalanceInfo {
 }
 
 // QueryBasketFeesRequest is the Query/BasketFees request type.
-// Since Revision 1
+//
+// Since Revision 2
 message QueryBasketFeesRequest {}
 
 // QueryBasketFeesResponse is the Query/BasketFees response type.
-// Since Revision 1
+//
+// Since Revision 2
 message QueryBasketFeesResponse {
 
   // fees is the BasketFees message type

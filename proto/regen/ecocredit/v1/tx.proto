@@ -116,16 +116,19 @@ service Msg {
 
   // AddCreditType is a governance method that allows the addition of new
   // credit types to the network.
+  //
   // Since Revision 1
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
   // AddClassCreator is a governance method that allows the addition of new
   // address to the class creation allowlist.
+  //
   // Since Revision 1
   rpc AddClassCreator(MsgAddClassCreator) returns (MsgAddClassCreatorResponse);
 
   // RemoveClassCreator is a governance method that removes
   // address from the creation allowlist.
+  //
   // Since Revision 1
   rpc RemoveClassCreator(MsgRemoveClassCreator)
       returns (MsgRemoveClassCreatorResponse);
@@ -133,12 +136,16 @@ service Msg {
   // ToggleCreditClassAllowlist is a governance method that toggles the network
   // allowlist to on or off. when on, the class creator allowlist is used to
   // enforce which addresses may create classes. when off, any address may
-  // create classes. Since Revision 1
+  // create classes.
+  //
+  // Since Revision 1
   rpc ToggleCreditClassAllowlist(MsgToggleCreditClassAllowlist)
       returns (MsgToggleCreditClassAllowlistResponse);
 
   // UpdateClassFees is a governance method that allows for the addition and
-  // removal of fees to be used for the class creation fee. Since Revision 1
+  // removal of fees to be used for the class creation fee.
+  //
+  // Since Revision 1
   rpc UpdateClassFees(MsgUpdateClassFees) returns (MsgUpdateClassFeesResponse);
 }
 
@@ -601,6 +608,7 @@ message MsgBridgeReceiveResponse {
 }
 
 // MsgAddClassCreator is the Msg/AddClassCreator request type.
+//
 // Since Revision 1
 message MsgAddClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
@@ -613,10 +621,12 @@ message MsgAddClassCreator {
 }
 
 // MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
+//
 // Since Revision 1
 message MsgAddClassCreatorResponse {}
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
+//
 // Since Revision 1
 message MsgRemoveClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
@@ -629,11 +639,14 @@ message MsgRemoveClassCreator {
 }
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
+//
 // Since Revision 1
 message MsgRemoveClassCreatorResponse {}
 
 // MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
-// type. Since Revision 1
+// type.
+//
+// Since Revision 1
 message MsgToggleCreditClassAllowlist {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -645,10 +658,13 @@ message MsgToggleCreditClassAllowlist {
 }
 
 // MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist
-// response type. Since Revision 1
+// response type.
+//
+// Since Revision 1
 message MsgToggleCreditClassAllowlistResponse {}
 
 // MsgUpdateClassFees is the Msg/UpdateClassFees request type.
+//
 // Since Revision 1
 message MsgUpdateClassFees {
   option (cosmos.msg.v1.signer) = "authority";
@@ -665,5 +681,6 @@ message MsgUpdateClassFees {
 }
 
 // MsgUpdateClassFeesResponse is the Msg/UpdateClassFees response type.
+//
 // Since Revision 1
 message MsgUpdateClassFeesResponse {}

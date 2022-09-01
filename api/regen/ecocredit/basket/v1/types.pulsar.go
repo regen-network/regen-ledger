@@ -1066,8 +1066,6 @@ func (x *fastReflection_DateCriteria) ProtoMethods() *protoiface.Methods {
 // 	protoc        (unknown)
 // source: regen/ecocredit/basket/v1/types.proto
 
-// Revision 1
-
 const (
 	// Verify that this generated code is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)

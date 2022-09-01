@@ -7012,7 +7012,8 @@ func (x *BasketBalanceInfo) GetBalance() string {
 }
 
 // QueryBasketFeesRequest is the Query/BasketFees request type.
-// Since Revision 1
+//
+// Since Revision 2
 type QueryBasketFeesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -7040,7 +7041,8 @@ func (*QueryBasketFeesRequest) Descriptor() ([]byte, []int) {
 }
 
 // QueryBasketFeesResponse is the Query/BasketFees response type.
-// Since Revision 1
+//
+// Since Revision 2
 type QueryBasketFeesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

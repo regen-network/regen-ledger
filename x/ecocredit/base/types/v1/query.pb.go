@@ -3315,6 +3315,7 @@ type QueryClient interface {
 	// See Types/CreditType for more details.
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
+	//
 	// Deprecated (Since Revision 1): This rpc will be removed in the next
 	// version.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
@@ -3622,6 +3623,7 @@ type QueryServer interface {
 	// See Types/CreditType for more details.
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
+	//
 	// Deprecated (Since Revision 1): This rpc will be removed in the next
 	// version.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
