@@ -120,8 +120,8 @@ func (m Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 // RegisterServices implements AppModule/RegisterServices.
 func (m *Module) RegisterServices(cfg module.Configurator) {
 	svr := server.NewServer(m.key, m.legacySubspace, m.accountKeeper, m.bankKeeper, m.authority)
-	basetypes.RegisterMsgServer(cfg.MsgServer(), svr.CoreKeeper)
-	basetypes.RegisterQueryServer(cfg.QueryServer(), svr.CoreKeeper)
+	basetypes.RegisterMsgServer(cfg.MsgServer(), svr.BaseKeeper)
+	basetypes.RegisterQueryServer(cfg.QueryServer(), svr.BaseKeeper)
 
 	baskettypes.RegisterMsgServer(cfg.MsgServer(), svr.BasketKeeper)
 	baskettypes.RegisterQueryServer(cfg.QueryServer(), svr.BasketKeeper)
@@ -133,6 +133,7 @@ func (m *Module) RegisterServices(cfg module.Configurator) {
 	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, migrator.Migrate2to3); err != nil {
 		panic(err)
 	}
+
 	m.Keeper = svr
 }
 
@@ -300,13 +301,13 @@ func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 // WeightedOperations implements AppModuleSimulation/WeightedOperations.
 func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	coreServer, basketServer, marketServer := m.Keeper.QueryServers()
+	baseServer, basketServer, marketServer := m.Keeper.QueryServers()
 	return basesims.WeightedOperations(
 		simState.AppParams,
 		simState.Cdc,
 		m.accountKeeper,
 		m.bankKeeper,
-		coreServer,
+		baseServer,
 		basketServer,
 		marketServer,
 	)

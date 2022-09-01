@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
@@ -71,7 +71,7 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *buyDirectSuite) ACreditType() {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
@@ -81,7 +81,7 @@ func (s *buyDirectSuite) ACreditTypeWithPrecision(a string) {
 	precision, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err = s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    uint32(precision),
 	})
@@ -114,48 +114,48 @@ func (s *buyDirectSuite) BobHasABankBalanceWithAmount(a string) {
 }
 
 func (s *buyDirectSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
-	balance := &coreapi.BatchBalance{}
+	balance := &baseapi.BatchBalance{}
 	err := jsonpb.UnmarshalString(a.Content, balance)
 	require.NoError(s.t, err)
 
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
 	balance.BatchKey = batch.Key
 	balance.Address = s.alice
 
 	// Save because the balance already exists from createSellOrders
-	err = s.coreStore.BatchBalanceTable().Save(s.ctx, balance)
+	err = s.baseStore.BatchBalanceTable().Save(s.ctx, balance)
 	require.NoError(s.t, err)
 }
 
 func (s *buyDirectSuite) BobHasTheBatchBalance(a gocuke.DocString) {
-	balance := &coreapi.BatchBalance{}
+	balance := &baseapi.BatchBalance{}
 	err := jsonpb.UnmarshalString(a.Content, balance)
 	require.NoError(s.t, err)
 
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
 	balance.BatchKey = batch.Key
 	balance.Address = s.bob
 
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, balance)
+	err = s.baseStore.BatchBalanceTable().Insert(s.ctx, balance)
 	require.NoError(s.t, err)
 }
 
 func (s *buyDirectSuite) TheBatchSupply(a gocuke.DocString) {
-	balance := &coreapi.BatchSupply{}
+	balance := &baseapi.BatchSupply{}
 	err := jsonpb.UnmarshalString(a.Content, balance)
 	require.NoError(s.t, err)
 
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
 	balance.BatchKey = batch.Key
 
 	// Save because the supply already exists from createSellOrders
-	err = s.coreStore.BatchSupplyTable().Save(s.ctx, balance)
+	err = s.baseStore.BatchSupplyTable().Save(s.ctx, balance)
 	require.NoError(s.t, err)
 }
 
@@ -467,14 +467,14 @@ func (s *buyDirectSuite) ExpectBobBankBalance(a string) {
 }
 
 func (s *buyDirectSuite) ExpectAliceBatchBalance(a gocuke.DocString) {
-	expected := &coreapi.BatchBalance{}
+	expected := &baseapi.BatchBalance{}
 	err := jsonpb.UnmarshalString(a.Content, expected)
 	require.NoError(s.t, err)
 
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
@@ -483,14 +483,14 @@ func (s *buyDirectSuite) ExpectAliceBatchBalance(a gocuke.DocString) {
 }
 
 func (s *buyDirectSuite) ExpectBobBatchBalance(a gocuke.DocString) {
-	expected := &coreapi.BatchBalance{}
+	expected := &baseapi.BatchBalance{}
 	err := jsonpb.UnmarshalString(a.Content, expected)
 	require.NoError(s.t, err)
 
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.bob, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.bob, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
@@ -499,14 +499,14 @@ func (s *buyDirectSuite) ExpectBobBatchBalance(a gocuke.DocString) {
 }
 
 func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
-	expected := &coreapi.BatchSupply{}
+	expected := &baseapi.BatchSupply{}
 	err := jsonpb.UnmarshalString(a.Content, expected)
 	require.NoError(s.t, err)
 
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchSupplyTable().Get(s.ctx, batch.Key)
+	balance, err := s.baseStore.BatchSupplyTable().Get(s.ctx, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
@@ -538,25 +538,25 @@ func (s *buyDirectSuite) createSellOrders(count int) {
 		totalQuantity = t.String()
 	}
 
-	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 		Denom: s.batchDenom,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
+	err = s.baseStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       batchKey,
 		Address:        s.alice,
 		EscrowedAmount: totalQuantity,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &coreapi.BatchSupply{
+	err = s.baseStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
 		BatchKey:       batchKey,
 		TradableAmount: totalQuantity,
 	})

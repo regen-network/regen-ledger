@@ -59,7 +59,7 @@ func (s *createSuite) AllowedBasketFee(a string) {
 }
 
 func (s *createSuite) ACreditType() {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -67,7 +67,7 @@ func (s *createSuite) ACreditType() {
 }
 
 func (s *createSuite) ACreditTypeWithAbbreviation(a string) {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: a,
 		Precision:    s.creditTypePrecision,
 	})
@@ -80,7 +80,7 @@ func (s *createSuite) ACreditTypeWithPrecision(b string) {
 
 	s.creditTypePrecision = uint32(precision)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	err = s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
@@ -93,7 +93,7 @@ func (s *createSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string
 
 	s.creditTypePrecision = uint32(precision)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	err = s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: a,
 		Precision:    s.creditTypePrecision,
 	})
@@ -109,7 +109,7 @@ func (s *createSuite) AlicesAddress(a string) {
 func (s *createSuite) ACreditClassWithId(a string) {
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(a)
 
-	err := s.coreStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               a,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})

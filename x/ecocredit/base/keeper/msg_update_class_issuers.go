@@ -46,7 +46,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *types.MsgUpdateClas
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgUpdateClassIssuers issuer iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgUpdateClassIssuers issuer iteration")
 	}
 
 	// add the new issuers
@@ -62,7 +62,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *types.MsgUpdateClas
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgUpdateClassIssuers issuer iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgUpdateClassIssuers issuer iteration")
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventUpdateClassIssuers{

@@ -21,7 +21,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
@@ -39,7 +39,7 @@ type baseSuite struct {
 	ctrl         *gomock.Controller
 	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
-	coreStore    ecoApi.StateStore
+	baseStore    baseapi.StateStore
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *storetypes.KVStoreKey
@@ -54,7 +54,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
-	s.coreStore, err = ecoApi.NewStateStore(s.db)
+	s.baseStore, err = baseapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
@@ -76,8 +76,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	assert.NilError(t, err)
 
-	s.k = NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authority)
-	s.coreStore, err = ecoApi.NewStateStore(s.db)
+	s.k = NewKeeper(s.stateStore, s.baseStore, s.bankKeeper, s.paramsKeeper, moduleAddress, authority)
+	s.baseStore, err = baseapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	// add test addresses

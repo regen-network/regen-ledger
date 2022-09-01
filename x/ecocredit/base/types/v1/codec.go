@@ -17,22 +17,22 @@ func RegisterTypes(registry codectypes.InterfaceRegistry) {
 }
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateClass{}, "regen.core/MsgCreateClass", nil)
-	cdc.RegisterConcrete(&MsgCreateProject{}, "regen.core/MsgCreateProject", nil)
-	cdc.RegisterConcrete(&MsgCancel{}, "regen.core/MsgCancel", nil)
-	cdc.RegisterConcrete(&MsgCreateBatch{}, "regen.core/MsgCreateBatch", nil)
-	cdc.RegisterConcrete(&MsgMintBatchCredits{}, "regen.core/MsgMintBatchCredits", nil)
-	cdc.RegisterConcrete(&MsgSealBatch{}, "regen.core/MsgSealBatch", nil)
-	cdc.RegisterConcrete(&MsgRetire{}, "regen.core/MsgRetire", nil)
-	cdc.RegisterConcrete(&MsgSend{}, "regen.core/MsgSend", nil)
-	cdc.RegisterConcrete(&MsgUpdateClassAdmin{}, "regen.core/MsgUpdateClassAdmin", nil)
-	cdc.RegisterConcrete(&MsgUpdateClassMetadata{}, "regen.core/MsgUpdateClassMetadata", nil)
-	cdc.RegisterConcrete(&MsgUpdateClassIssuers{}, "regen.core/MsgUpdateClassIssuers", nil)
-	cdc.RegisterConcrete(&MsgUpdateProjectAdmin{}, "regen.core/MsgUpdateProjectAdmin", nil)
-	cdc.RegisterConcrete(&MsgUpdateProjectMetadata{}, "regen.core/MsgUpdateProjectMetadata", nil)
-	cdc.RegisterConcrete(&CreditTypeProposal{}, "regen.core/CreditTypeProposal", nil)
-	cdc.RegisterConcrete(&MsgBridgeReceive{}, "regen.core/MsgBridgeReceive", nil)
-	cdc.RegisterConcrete(&MsgAddCreditType{}, "regen.core/MsgAddCreditType", nil)
+	cdc.RegisterConcrete(&MsgCreateClass{}, "regen/MsgCreateClass", nil)
+	cdc.RegisterConcrete(&MsgCreateProject{}, "regen/MsgCreateProject", nil)
+	cdc.RegisterConcrete(&MsgCancel{}, "regen/MsgCancel", nil)
+	cdc.RegisterConcrete(&MsgCreateBatch{}, "regen/MsgCreateBatch", nil)
+	cdc.RegisterConcrete(&MsgMintBatchCredits{}, "regen/MsgMintBatchCredits", nil)
+	cdc.RegisterConcrete(&MsgSealBatch{}, "regen/MsgSealBatch", nil)
+	cdc.RegisterConcrete(&MsgRetire{}, "regen/MsgRetire", nil)
+	cdc.RegisterConcrete(&MsgSend{}, "regen/MsgSend", nil)
+	cdc.RegisterConcrete(&MsgUpdateClassAdmin{}, "regen/MsgUpdateClassAdmin", nil)
+	cdc.RegisterConcrete(&MsgUpdateClassMetadata{}, "regen/MsgUpdateClassMetadata", nil)
+	cdc.RegisterConcrete(&MsgUpdateClassIssuers{}, "regen/MsgUpdateClassIssuers", nil)
+	cdc.RegisterConcrete(&MsgUpdateProjectAdmin{}, "regen/MsgUpdateProjectAdmin", nil)
+	cdc.RegisterConcrete(&MsgUpdateProjectMetadata{}, "regen/MsgUpdateProjectMetadata", nil)
+	cdc.RegisterConcrete(&CreditTypeProposal{}, "regen/CreditTypeProposal", nil)
+	cdc.RegisterConcrete(&MsgBridgeReceive{}, "regen/MsgBridgeReceive", nil)
+	cdc.RegisterConcrete(&MsgAddCreditType{}, "regen/MsgAddCreditType", nil)
 }
 
 var (

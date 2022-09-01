@@ -11,7 +11,7 @@ import (
 )
 
 // MigrateState performs in-place store migrations from ConsensusVersion 2 to 3.
-func MigrateState(sdkCtx sdk.Context, coreStore baseapi.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
+func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	var params basetypes.Params
 	subspace.GetParamSet(sdkCtx, &params)
 
@@ -22,14 +22,14 @@ func MigrateState(sdkCtx sdk.Context, coreStore baseapi.StateStore, basketStore 
 
 	// migrate credit class fees
 	classFees := regentypes.CoinsToProtoCoins(params.CreditClassFee)
-	if err := coreStore.ClassFeesTable().Save(sdkCtx, &baseapi.ClassFees{
+	if err := baseStore.ClassFeesTable().Save(sdkCtx, &baseapi.ClassFees{
 		Fees: classFees,
 	}); err != nil {
 		return err
 	}
 
 	// migrate credit class allow list
-	if err := coreStore.AllowListEnabledTable().Save(sdkCtx, &baseapi.AllowListEnabled{
+	if err := baseStore.AllowListEnabledTable().Save(sdkCtx, &baseapi.AllowListEnabled{
 		Enabled: params.AllowlistEnabled,
 	}); err != nil {
 		return err
@@ -42,7 +42,7 @@ func MigrateState(sdkCtx sdk.Context, coreStore baseapi.StateStore, basketStore 
 			return err
 		}
 
-		if err := coreStore.AllowedClassCreatorTable().Save(sdkCtx, &baseapi.AllowedClassCreator{
+		if err := baseStore.AllowedClassCreatorTable().Save(sdkCtx, &baseapi.AllowedClassCreator{
 			Address: addr,
 		}); err != nil {
 			return err

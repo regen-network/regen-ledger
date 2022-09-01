@@ -47,11 +47,11 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		}
 
 		// check decimal places does not exceed credit type precision
-		batch, err := k.coreStore.BatchTable().Get(ctx, sellOrder.BatchKey)
+		batch, err := k.baseStore.BatchTable().Get(ctx, sellOrder.BatchKey)
 		if err != nil {
 			return nil, err
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.baseStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}

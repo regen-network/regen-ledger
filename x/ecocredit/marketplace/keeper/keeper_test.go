@@ -38,7 +38,7 @@ const (
 type baseSuite struct {
 	t            gocuke.TestingT
 	db           ormdb.ModuleDB
-	coreStore    baseapi.StateStore
+	baseStore    baseapi.StateStore
 	marketStore  api.StateStore
 	ctx          context.Context
 	k            Keeper
@@ -56,7 +56,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.coreStore, err = baseapi.NewStateStore(s.db)
+	s.baseStore, err = baseapi.NewStateStore(s.db)
 	assert.NilError(t, err)
 	s.marketStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
@@ -78,7 +78,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 
 	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	assert.NilError(s.t, err)
-	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper, authority)
+	s.k = NewKeeper(s.marketStore, s.baseStore, s.bankKeeper, s.paramsKeeper, authority)
 
 	// set test accounts
 	for i := 0; i < numAddresses; i++ {
@@ -111,20 +111,20 @@ func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *basea
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classID string, start, end *timestamppb.Timestamp, creditType basetypes.CreditType) {
 	assert.Check(s.t, len(s.addrs) > 0, "When calling `testSellSetup`, the base suite must have a non-empty `addrs`.")
-	assert.NilError(s.t, s.coreStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
+	assert.NilError(s.t, s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
 
-	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+	assert.NilError(s.t, s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               classID,
 		Admin:            s.addrs[0],
 		Metadata:         "",
 		CreditTypeAbbrev: creditType.Abbreviation,
 	}))
-	assert.NilError(s.t, s.coreStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
+	assert.NilError(s.t, s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
 		Metadata:   "",
@@ -142,14 +142,14 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classID s
 		DisplayDenom: displayDenom,
 		Exponent:     1,
 	}))
-	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
+	assert.NilError(s.t, s.k.baseStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       1,
 		Address:        s.addrs[0],
 		TradableAmount: "100",
 		RetiredAmount:  "100",
 		EscrowedAmount: "0",
 	}))
-	assert.NilError(s.t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
+	assert.NilError(s.t, s.k.baseStore.BatchSupplyTable().Insert(s.ctx, &baseapi.BatchSupply{
 		BatchKey:        1,
 		TradableAmount:  "100",
 		RetiredAmount:   "100",

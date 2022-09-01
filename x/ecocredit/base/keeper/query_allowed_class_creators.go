@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -18,7 +18,7 @@ func (k Keeper) AllowedClassCreators(ctx context.Context, req *types.QueryAllowe
 		return nil, err
 	}
 
-	itr, err := k.stateStore.AllowedClassCreatorTable().List(ctx, ecocreditv1.AllowedClassCreatorAddressIndexKey{}, ormlist.Paginate(pg))
+	itr, err := k.stateStore.AllowedClassCreatorTable().List(ctx, baseapi.AllowedClassCreatorAddressIndexKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
