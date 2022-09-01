@@ -9,7 +9,7 @@ import "google/api/annotations.proto";
 import "regen/ecocredit/basket/v1/state.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // Msg is the regen.ecocredit.basket.v1 Query service.
 service Query {
@@ -58,7 +58,6 @@ service Query {
   rpc BasketFees(QueryBasketFeesRequest) returns (QueryBasketFeesResponse) {
     option (google.api.http).get = "/regen/ecocredit/basket/v1/basket-fees";
   }
-
 }
 
 // QueryBasketRequest is the Query/Basket request type.
@@ -201,7 +200,7 @@ message BasketBalanceInfo {
 
 // QueryBasketFeesRequest is the Query/BasketFees request type.
 // Since Revision 1
-message QueryBasketFeesRequest { }
+message QueryBasketFeesRequest {}
 
 // QueryBasketFeesResponse is the Query/BasketFees response type.
 // Since Revision 1

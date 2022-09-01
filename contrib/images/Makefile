@@ -1,10 +1,10 @@
 all: regen-env
 
 regen-env: regen-rmi
-	docker build --tag regenledger/regen-env -f regen-env/Dockerfile \
+	docker build --tag regen-ledger/regen-env -f regen-env/Dockerfile \
     		$(shell git rev-parse --show-toplevel)
 
 regen-rmi:
-	docker rmi regenledger/regen-env 2>/dev/null; true
+	docker rmi regen-ledger/regen-env 2>/dev/null; true
 
 .PHONY: all regen-env regen-rmi

@@ -7,7 +7,6 @@ require (
 	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.1
 	github.com/cosmos/cosmos-sdk/api v0.1.0
-	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
@@ -27,7 +26,7 @@ require (
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 	gotest.tools/v3 v3.3.0
-	pgregory.net/rapid v0.4.8
+	pgregory.net/rapid v0.5.2
 )
 
 require (
@@ -56,6 +55,7 @@ require (
 	github.com/confio/ics23/go v0.7.0 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.1 // indirect
@@ -130,7 +130,7 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rs/cors v1.8.2 // indirect
-	github.com/rs/zerolog v1.27.0 // indirect
+	github.com/rs/zerolog v1.28.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect

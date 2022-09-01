@@ -5,6 +5,8 @@ import (
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"
+	v1beta11 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	_ "github.com/gogo/protobuf/gogoproto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
@@ -16158,6 +16160,2086 @@ func (x *fastReflection_QueryBalancesResponse) ProtoMethods() *protoiface.Method
 }
 
 var (
+	md_QueryBalancesByBatchRequest             protoreflect.MessageDescriptor
+	fd_QueryBalancesByBatchRequest_batch_denom protoreflect.FieldDescriptor
+	fd_QueryBalancesByBatchRequest_pagination  protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryBalancesByBatchRequest = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryBalancesByBatchRequest")
+	fd_QueryBalancesByBatchRequest_batch_denom = md_QueryBalancesByBatchRequest.Fields().ByName("batch_denom")
+	fd_QueryBalancesByBatchRequest_pagination = md_QueryBalancesByBatchRequest.Fields().ByName("pagination")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryBalancesByBatchRequest)(nil)
+
+type fastReflection_QueryBalancesByBatchRequest QueryBalancesByBatchRequest
+
+func (x *QueryBalancesByBatchRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryBalancesByBatchRequest)(x)
+}
+
+func (x *QueryBalancesByBatchRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[32]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryBalancesByBatchRequest_messageType fastReflection_QueryBalancesByBatchRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryBalancesByBatchRequest_messageType{}
+
+type fastReflection_QueryBalancesByBatchRequest_messageType struct{}
+
+func (x fastReflection_QueryBalancesByBatchRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryBalancesByBatchRequest)(nil)
+}
+func (x fastReflection_QueryBalancesByBatchRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryBalancesByBatchRequest)
+}
+func (x fastReflection_QueryBalancesByBatchRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBalancesByBatchRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryBalancesByBatchRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBalancesByBatchRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryBalancesByBatchRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryBalancesByBatchRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryBalancesByBatchRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryBalancesByBatchRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryBalancesByBatchRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryBalancesByBatchRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryBalancesByBatchRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.BatchDenom != "" {
+		value := protoreflect.ValueOfString(x.BatchDenom)
+		if !f(fd_QueryBalancesByBatchRequest_batch_denom, value) {
+			return
+		}
+	}
+	if x.Pagination != nil {
+		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		if !f(fd_QueryBalancesByBatchRequest_pagination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryBalancesByBatchRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.batch_denom":
+		return x.BatchDenom != ""
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.pagination":
+		return x.Pagination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.batch_denom":
+		x.BatchDenom = ""
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.pagination":
+		x.Pagination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryBalancesByBatchRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.batch_denom":
+		value := x.BatchDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.pagination":
+		value := x.Pagination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.batch_denom":
+		x.BatchDenom = value.Interface().(string)
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.pagination":
+		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.pagination":
+		if x.Pagination == nil {
+			x.Pagination = new(v1beta1.PageRequest)
+		}
+		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.batch_denom":
+		panic(fmt.Errorf("field batch_denom of message regen.ecocredit.v1.QueryBalancesByBatchRequest is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryBalancesByBatchRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.batch_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.QueryBalancesByBatchRequest.pagination":
+		m := new(v1beta1.PageRequest)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryBalancesByBatchRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryBalancesByBatchRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryBalancesByBatchRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryBalancesByBatchRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryBalancesByBatchRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryBalancesByBatchRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.BatchDenom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Pagination != nil {
+			l = options.Size(x.Pagination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryBalancesByBatchRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Pagination != nil {
+			encoded, err := options.Marshal(x.Pagination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.BatchDenom) > 0 {
+			i -= len(x.BatchDenom)
+			copy(dAtA[i:], x.BatchDenom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BatchDenom)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryBalancesByBatchRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBalancesByBatchRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBalancesByBatchRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.BatchDenom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Pagination == nil {
+					x.Pagination = &v1beta1.PageRequest{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_QueryBalancesByBatchResponse_1_list)(nil)
+
+type _QueryBalancesByBatchResponse_1_list struct {
+	list *[]*BatchBalanceInfo
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BatchBalanceInfo)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BatchBalanceInfo)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) AppendMutable() protoreflect.Value {
+	v := new(BatchBalanceInfo)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) NewElement() protoreflect.Value {
+	v := new(BatchBalanceInfo)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryBalancesByBatchResponse_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_QueryBalancesByBatchResponse            protoreflect.MessageDescriptor
+	fd_QueryBalancesByBatchResponse_balances   protoreflect.FieldDescriptor
+	fd_QueryBalancesByBatchResponse_pagination protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryBalancesByBatchResponse = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryBalancesByBatchResponse")
+	fd_QueryBalancesByBatchResponse_balances = md_QueryBalancesByBatchResponse.Fields().ByName("balances")
+	fd_QueryBalancesByBatchResponse_pagination = md_QueryBalancesByBatchResponse.Fields().ByName("pagination")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryBalancesByBatchResponse)(nil)
+
+type fastReflection_QueryBalancesByBatchResponse QueryBalancesByBatchResponse
+
+func (x *QueryBalancesByBatchResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryBalancesByBatchResponse)(x)
+}
+
+func (x *QueryBalancesByBatchResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[33]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryBalancesByBatchResponse_messageType fastReflection_QueryBalancesByBatchResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryBalancesByBatchResponse_messageType{}
+
+type fastReflection_QueryBalancesByBatchResponse_messageType struct{}
+
+func (x fastReflection_QueryBalancesByBatchResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryBalancesByBatchResponse)(nil)
+}
+func (x fastReflection_QueryBalancesByBatchResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryBalancesByBatchResponse)
+}
+func (x fastReflection_QueryBalancesByBatchResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBalancesByBatchResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryBalancesByBatchResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBalancesByBatchResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryBalancesByBatchResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryBalancesByBatchResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryBalancesByBatchResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryBalancesByBatchResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryBalancesByBatchResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryBalancesByBatchResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryBalancesByBatchResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.Balances) != 0 {
+		value := protoreflect.ValueOfList(&_QueryBalancesByBatchResponse_1_list{list: &x.Balances})
+		if !f(fd_QueryBalancesByBatchResponse_balances, value) {
+			return
+		}
+	}
+	if x.Pagination != nil {
+		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		if !f(fd_QueryBalancesByBatchResponse_pagination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryBalancesByBatchResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.balances":
+		return len(x.Balances) != 0
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.pagination":
+		return x.Pagination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.balances":
+		x.Balances = nil
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.pagination":
+		x.Pagination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryBalancesByBatchResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.balances":
+		if len(x.Balances) == 0 {
+			return protoreflect.ValueOfList(&_QueryBalancesByBatchResponse_1_list{})
+		}
+		listValue := &_QueryBalancesByBatchResponse_1_list{list: &x.Balances}
+		return protoreflect.ValueOfList(listValue)
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.pagination":
+		value := x.Pagination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.balances":
+		lv := value.List()
+		clv := lv.(*_QueryBalancesByBatchResponse_1_list)
+		x.Balances = *clv.list
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.pagination":
+		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.balances":
+		if x.Balances == nil {
+			x.Balances = []*BatchBalanceInfo{}
+		}
+		value := &_QueryBalancesByBatchResponse_1_list{list: &x.Balances}
+		return protoreflect.ValueOfList(value)
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.pagination":
+		if x.Pagination == nil {
+			x.Pagination = new(v1beta1.PageResponse)
+		}
+		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryBalancesByBatchResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.balances":
+		list := []*BatchBalanceInfo{}
+		return protoreflect.ValueOfList(&_QueryBalancesByBatchResponse_1_list{list: &list})
+	case "regen.ecocredit.v1.QueryBalancesByBatchResponse.pagination":
+		m := new(v1beta1.PageResponse)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesByBatchResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryBalancesByBatchResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryBalancesByBatchResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryBalancesByBatchResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryBalancesByBatchResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryBalancesByBatchResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryBalancesByBatchResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryBalancesByBatchResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryBalancesByBatchResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.Balances) > 0 {
+			for _, e := range x.Balances {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.Pagination != nil {
+			l = options.Size(x.Pagination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryBalancesByBatchResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Pagination != nil {
+			encoded, err := options.Marshal(x.Pagination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Balances) > 0 {
+			for iNdEx := len(x.Balances) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Balances[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryBalancesByBatchResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBalancesByBatchResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBalancesByBatchResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Balances", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Balances = append(x.Balances, &BatchBalanceInfo{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Balances[len(x.Balances)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Pagination == nil {
+					x.Pagination = &v1beta1.PageResponse{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryAllBalancesRequest            protoreflect.MessageDescriptor
+	fd_QueryAllBalancesRequest_pagination protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryAllBalancesRequest = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryAllBalancesRequest")
+	fd_QueryAllBalancesRequest_pagination = md_QueryAllBalancesRequest.Fields().ByName("pagination")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryAllBalancesRequest)(nil)
+
+type fastReflection_QueryAllBalancesRequest QueryAllBalancesRequest
+
+func (x *QueryAllBalancesRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryAllBalancesRequest)(x)
+}
+
+func (x *QueryAllBalancesRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[34]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryAllBalancesRequest_messageType fastReflection_QueryAllBalancesRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryAllBalancesRequest_messageType{}
+
+type fastReflection_QueryAllBalancesRequest_messageType struct{}
+
+func (x fastReflection_QueryAllBalancesRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryAllBalancesRequest)(nil)
+}
+func (x fastReflection_QueryAllBalancesRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryAllBalancesRequest)
+}
+func (x fastReflection_QueryAllBalancesRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllBalancesRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryAllBalancesRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllBalancesRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryAllBalancesRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryAllBalancesRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryAllBalancesRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryAllBalancesRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryAllBalancesRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryAllBalancesRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryAllBalancesRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Pagination != nil {
+		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		if !f(fd_QueryAllBalancesRequest_pagination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryAllBalancesRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesRequest.pagination":
+		return x.Pagination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesRequest.pagination":
+		x.Pagination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryAllBalancesRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesRequest.pagination":
+		value := x.Pagination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesRequest.pagination":
+		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesRequest.pagination":
+		if x.Pagination == nil {
+			x.Pagination = new(v1beta1.PageRequest)
+		}
+		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryAllBalancesRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesRequest.pagination":
+		m := new(v1beta1.PageRequest)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryAllBalancesRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryAllBalancesRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryAllBalancesRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryAllBalancesRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryAllBalancesRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryAllBalancesRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Pagination != nil {
+			l = options.Size(x.Pagination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllBalancesRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Pagination != nil {
+			encoded, err := options.Marshal(x.Pagination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllBalancesRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllBalancesRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllBalancesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Pagination == nil {
+					x.Pagination = &v1beta1.PageRequest{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_QueryAllBalancesResponse_1_list)(nil)
+
+type _QueryAllBalancesResponse_1_list struct {
+	list *[]*BatchBalanceInfo
+}
+
+func (x *_QueryAllBalancesResponse_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryAllBalancesResponse_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_QueryAllBalancesResponse_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BatchBalanceInfo)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryAllBalancesResponse_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BatchBalanceInfo)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryAllBalancesResponse_1_list) AppendMutable() protoreflect.Value {
+	v := new(BatchBalanceInfo)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryAllBalancesResponse_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryAllBalancesResponse_1_list) NewElement() protoreflect.Value {
+	v := new(BatchBalanceInfo)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryAllBalancesResponse_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_QueryAllBalancesResponse            protoreflect.MessageDescriptor
+	fd_QueryAllBalancesResponse_balances   protoreflect.FieldDescriptor
+	fd_QueryAllBalancesResponse_pagination protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryAllBalancesResponse = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryAllBalancesResponse")
+	fd_QueryAllBalancesResponse_balances = md_QueryAllBalancesResponse.Fields().ByName("balances")
+	fd_QueryAllBalancesResponse_pagination = md_QueryAllBalancesResponse.Fields().ByName("pagination")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryAllBalancesResponse)(nil)
+
+type fastReflection_QueryAllBalancesResponse QueryAllBalancesResponse
+
+func (x *QueryAllBalancesResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryAllBalancesResponse)(x)
+}
+
+func (x *QueryAllBalancesResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[35]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryAllBalancesResponse_messageType fastReflection_QueryAllBalancesResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryAllBalancesResponse_messageType{}
+
+type fastReflection_QueryAllBalancesResponse_messageType struct{}
+
+func (x fastReflection_QueryAllBalancesResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryAllBalancesResponse)(nil)
+}
+func (x fastReflection_QueryAllBalancesResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryAllBalancesResponse)
+}
+func (x fastReflection_QueryAllBalancesResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllBalancesResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryAllBalancesResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllBalancesResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryAllBalancesResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryAllBalancesResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryAllBalancesResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryAllBalancesResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryAllBalancesResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryAllBalancesResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryAllBalancesResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.Balances) != 0 {
+		value := protoreflect.ValueOfList(&_QueryAllBalancesResponse_1_list{list: &x.Balances})
+		if !f(fd_QueryAllBalancesResponse_balances, value) {
+			return
+		}
+	}
+	if x.Pagination != nil {
+		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		if !f(fd_QueryAllBalancesResponse_pagination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryAllBalancesResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.balances":
+		return len(x.Balances) != 0
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.pagination":
+		return x.Pagination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.balances":
+		x.Balances = nil
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.pagination":
+		x.Pagination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryAllBalancesResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.balances":
+		if len(x.Balances) == 0 {
+			return protoreflect.ValueOfList(&_QueryAllBalancesResponse_1_list{})
+		}
+		listValue := &_QueryAllBalancesResponse_1_list{list: &x.Balances}
+		return protoreflect.ValueOfList(listValue)
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.pagination":
+		value := x.Pagination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.balances":
+		lv := value.List()
+		clv := lv.(*_QueryAllBalancesResponse_1_list)
+		x.Balances = *clv.list
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.pagination":
+		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.balances":
+		if x.Balances == nil {
+			x.Balances = []*BatchBalanceInfo{}
+		}
+		value := &_QueryAllBalancesResponse_1_list{list: &x.Balances}
+		return protoreflect.ValueOfList(value)
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.pagination":
+		if x.Pagination == nil {
+			x.Pagination = new(v1beta1.PageResponse)
+		}
+		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryAllBalancesResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.balances":
+		list := []*BatchBalanceInfo{}
+		return protoreflect.ValueOfList(&_QueryAllBalancesResponse_1_list{list: &list})
+	case "regen.ecocredit.v1.QueryAllBalancesResponse.pagination":
+		m := new(v1beta1.PageResponse)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllBalancesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllBalancesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryAllBalancesResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryAllBalancesResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryAllBalancesResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllBalancesResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryAllBalancesResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryAllBalancesResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryAllBalancesResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.Balances) > 0 {
+			for _, e := range x.Balances {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.Pagination != nil {
+			l = options.Size(x.Pagination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllBalancesResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Pagination != nil {
+			encoded, err := options.Marshal(x.Pagination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Balances) > 0 {
+			for iNdEx := len(x.Balances) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Balances[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllBalancesResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllBalancesResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllBalancesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Balances", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Balances = append(x.Balances, &BatchBalanceInfo{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Balances[len(x.Balances)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Pagination == nil {
+					x.Pagination = &v1beta1.PageResponse{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_QuerySupplyRequest             protoreflect.MessageDescriptor
 	fd_QuerySupplyRequest_batch_denom protoreflect.FieldDescriptor
 )
@@ -16177,7 +18259,7 @@ func (x *QuerySupplyRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QuerySupplyRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[32]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[36]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16601,7 +18683,7 @@ func (x *QuerySupplyResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QuerySupplyResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[33]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17143,7 +19225,7 @@ func (x *QueryCreditTypesRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryCreditTypesRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[34]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17552,7 +19634,7 @@ func (x *QueryCreditTypesResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryCreditTypesResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[35]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17993,7 +20075,7 @@ func (x *QueryParamsRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryParamsRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[36]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[40]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18332,14 +20414,599 @@ func (x *fastReflection_QueryParamsRequest) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_QueryParamsResponse        protoreflect.MessageDescriptor
-	fd_QueryParamsResponse_params protoreflect.FieldDescriptor
+	md_AllowedDenomInfo               protoreflect.MessageDescriptor
+	fd_AllowedDenomInfo_bank_denom    protoreflect.FieldDescriptor
+	fd_AllowedDenomInfo_display_denom protoreflect.FieldDescriptor
+	fd_AllowedDenomInfo_exponent      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_AllowedDenomInfo = File_regen_ecocredit_v1_query_proto.Messages().ByName("AllowedDenomInfo")
+	fd_AllowedDenomInfo_bank_denom = md_AllowedDenomInfo.Fields().ByName("bank_denom")
+	fd_AllowedDenomInfo_display_denom = md_AllowedDenomInfo.Fields().ByName("display_denom")
+	fd_AllowedDenomInfo_exponent = md_AllowedDenomInfo.Fields().ByName("exponent")
+}
+
+var _ protoreflect.Message = (*fastReflection_AllowedDenomInfo)(nil)
+
+type fastReflection_AllowedDenomInfo AllowedDenomInfo
+
+func (x *AllowedDenomInfo) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AllowedDenomInfo)(x)
+}
+
+func (x *AllowedDenomInfo) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[41]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_AllowedDenomInfo_messageType fastReflection_AllowedDenomInfo_messageType
+var _ protoreflect.MessageType = fastReflection_AllowedDenomInfo_messageType{}
+
+type fastReflection_AllowedDenomInfo_messageType struct{}
+
+func (x fastReflection_AllowedDenomInfo_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AllowedDenomInfo)(nil)
+}
+func (x fastReflection_AllowedDenomInfo_messageType) New() protoreflect.Message {
+	return new(fastReflection_AllowedDenomInfo)
+}
+func (x fastReflection_AllowedDenomInfo_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AllowedDenomInfo
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_AllowedDenomInfo) Descriptor() protoreflect.MessageDescriptor {
+	return md_AllowedDenomInfo
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_AllowedDenomInfo) Type() protoreflect.MessageType {
+	return _fastReflection_AllowedDenomInfo_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_AllowedDenomInfo) New() protoreflect.Message {
+	return new(fastReflection_AllowedDenomInfo)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_AllowedDenomInfo) Interface() protoreflect.ProtoMessage {
+	return (*AllowedDenomInfo)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_AllowedDenomInfo) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.BankDenom != "" {
+		value := protoreflect.ValueOfString(x.BankDenom)
+		if !f(fd_AllowedDenomInfo_bank_denom, value) {
+			return
+		}
+	}
+	if x.DisplayDenom != "" {
+		value := protoreflect.ValueOfString(x.DisplayDenom)
+		if !f(fd_AllowedDenomInfo_display_denom, value) {
+			return
+		}
+	}
+	if x.Exponent != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.Exponent)
+		if !f(fd_AllowedDenomInfo_exponent, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_AllowedDenomInfo) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.AllowedDenomInfo.bank_denom":
+		return x.BankDenom != ""
+	case "regen.ecocredit.v1.AllowedDenomInfo.display_denom":
+		return x.DisplayDenom != ""
+	case "regen.ecocredit.v1.AllowedDenomInfo.exponent":
+		return x.Exponent != uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedDenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedDenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AllowedDenomInfo) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.AllowedDenomInfo.bank_denom":
+		x.BankDenom = ""
+	case "regen.ecocredit.v1.AllowedDenomInfo.display_denom":
+		x.DisplayDenom = ""
+	case "regen.ecocredit.v1.AllowedDenomInfo.exponent":
+		x.Exponent = uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedDenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedDenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_AllowedDenomInfo) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.AllowedDenomInfo.bank_denom":
+		value := x.BankDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.AllowedDenomInfo.display_denom":
+		value := x.DisplayDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.AllowedDenomInfo.exponent":
+		value := x.Exponent
+		return protoreflect.ValueOfUint32(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedDenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedDenomInfo does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AllowedDenomInfo) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.AllowedDenomInfo.bank_denom":
+		x.BankDenom = value.Interface().(string)
+	case "regen.ecocredit.v1.AllowedDenomInfo.display_denom":
+		x.DisplayDenom = value.Interface().(string)
+	case "regen.ecocredit.v1.AllowedDenomInfo.exponent":
+		x.Exponent = uint32(value.Uint())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedDenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedDenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AllowedDenomInfo) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.AllowedDenomInfo.bank_denom":
+		panic(fmt.Errorf("field bank_denom of message regen.ecocredit.v1.AllowedDenomInfo is not mutable"))
+	case "regen.ecocredit.v1.AllowedDenomInfo.display_denom":
+		panic(fmt.Errorf("field display_denom of message regen.ecocredit.v1.AllowedDenomInfo is not mutable"))
+	case "regen.ecocredit.v1.AllowedDenomInfo.exponent":
+		panic(fmt.Errorf("field exponent of message regen.ecocredit.v1.AllowedDenomInfo is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedDenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedDenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_AllowedDenomInfo) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.AllowedDenomInfo.bank_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.AllowedDenomInfo.display_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.AllowedDenomInfo.exponent":
+		return protoreflect.ValueOfUint32(uint32(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedDenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedDenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_AllowedDenomInfo) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.AllowedDenomInfo", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_AllowedDenomInfo) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AllowedDenomInfo) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_AllowedDenomInfo) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_AllowedDenomInfo) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*AllowedDenomInfo)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.BankDenom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.DisplayDenom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Exponent != 0 {
+			n += 1 + runtime.Sov(uint64(x.Exponent))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*AllowedDenomInfo)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Exponent != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Exponent))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.DisplayDenom) > 0 {
+			i -= len(x.DisplayDenom)
+			copy(dAtA[i:], x.DisplayDenom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DisplayDenom)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.BankDenom) > 0 {
+			i -= len(x.BankDenom)
+			copy(dAtA[i:], x.BankDenom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BankDenom)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*AllowedDenomInfo)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowedDenomInfo: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowedDenomInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BankDenom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.BankDenom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DisplayDenom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.DisplayDenom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Exponent", wireType)
+				}
+				x.Exponent = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Exponent |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_QueryParamsResponse_2_list)(nil)
+
+type _QueryParamsResponse_2_list struct {
+	list *[]*AllowedDenomInfo
+}
+
+func (x *_QueryParamsResponse_2_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryParamsResponse_2_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_QueryParamsResponse_2_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AllowedDenomInfo)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryParamsResponse_2_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*AllowedDenomInfo)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryParamsResponse_2_list) AppendMutable() protoreflect.Value {
+	v := new(AllowedDenomInfo)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryParamsResponse_2_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryParamsResponse_2_list) NewElement() protoreflect.Value {
+	v := new(AllowedDenomInfo)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryParamsResponse_2_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_QueryParamsResponse                protoreflect.MessageDescriptor
+	fd_QueryParamsResponse_params         protoreflect.FieldDescriptor
+	fd_QueryParamsResponse_allowed_denoms protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_query_proto_init()
 	md_QueryParamsResponse = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryParamsResponse")
 	fd_QueryParamsResponse_params = md_QueryParamsResponse.Fields().ByName("params")
+	fd_QueryParamsResponse_allowed_denoms = md_QueryParamsResponse.Fields().ByName("allowed_denoms")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryParamsResponse)(nil)
@@ -18351,7 +21018,7 @@ func (x *QueryParamsResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryParamsResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[37]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[42]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18413,6 +21080,12 @@ func (x *fastReflection_QueryParamsResponse) Range(f func(protoreflect.FieldDesc
 			return
 		}
 	}
+	if len(x.AllowedDenoms) != 0 {
+		value := protoreflect.ValueOfList(&_QueryParamsResponse_2_list{list: &x.AllowedDenoms})
+		if !f(fd_QueryParamsResponse_allowed_denoms, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -18430,6 +21103,8 @@ func (x *fastReflection_QueryParamsResponse) Has(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.QueryParamsResponse.params":
 		return x.Params != nil
+	case "regen.ecocredit.v1.QueryParamsResponse.allowed_denoms":
+		return len(x.AllowedDenoms) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryParamsResponse"))
@@ -18448,6 +21123,8 @@ func (x *fastReflection_QueryParamsResponse) Clear(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.QueryParamsResponse.params":
 		x.Params = nil
+	case "regen.ecocredit.v1.QueryParamsResponse.allowed_denoms":
+		x.AllowedDenoms = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryParamsResponse"))
@@ -18467,6 +21144,12 @@ func (x *fastReflection_QueryParamsResponse) Get(descriptor protoreflect.FieldDe
 	case "regen.ecocredit.v1.QueryParamsResponse.params":
 		value := x.Params
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "regen.ecocredit.v1.QueryParamsResponse.allowed_denoms":
+		if len(x.AllowedDenoms) == 0 {
+			return protoreflect.ValueOfList(&_QueryParamsResponse_2_list{})
+		}
+		listValue := &_QueryParamsResponse_2_list{list: &x.AllowedDenoms}
+		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryParamsResponse"))
@@ -18489,6 +21172,10 @@ func (x *fastReflection_QueryParamsResponse) Set(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.QueryParamsResponse.params":
 		x.Params = value.Message().Interface().(*Params)
+	case "regen.ecocredit.v1.QueryParamsResponse.allowed_denoms":
+		lv := value.List()
+		clv := lv.(*_QueryParamsResponse_2_list)
+		x.AllowedDenoms = *clv.list
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryParamsResponse"))
@@ -18514,6 +21201,12 @@ func (x *fastReflection_QueryParamsResponse) Mutable(fd protoreflect.FieldDescri
 			x.Params = new(Params)
 		}
 		return protoreflect.ValueOfMessage(x.Params.ProtoReflect())
+	case "regen.ecocredit.v1.QueryParamsResponse.allowed_denoms":
+		if x.AllowedDenoms == nil {
+			x.AllowedDenoms = []*AllowedDenomInfo{}
+		}
+		value := &_QueryParamsResponse_2_list{list: &x.AllowedDenoms}
+		return protoreflect.ValueOfList(value)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryParamsResponse"))
@@ -18530,6 +21223,9 @@ func (x *fastReflection_QueryParamsResponse) NewField(fd protoreflect.FieldDescr
 	case "regen.ecocredit.v1.QueryParamsResponse.params":
 		m := new(Params)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "regen.ecocredit.v1.QueryParamsResponse.allowed_denoms":
+		list := []*AllowedDenomInfo{}
+		return protoreflect.ValueOfList(&_QueryParamsResponse_2_list{list: &list})
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryParamsResponse"))
@@ -18603,6 +21299,12 @@ func (x *fastReflection_QueryParamsResponse) ProtoMethods() *protoiface.Methods 
 			l = options.Size(x.Params)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if len(x.AllowedDenoms) > 0 {
+			for _, e := range x.AllowedDenoms {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -18631,6 +21333,22 @@ func (x *fastReflection_QueryParamsResponse) ProtoMethods() *protoiface.Methods 
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.AllowedDenoms) > 0 {
+			for iNdEx := len(x.AllowedDenoms) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.AllowedDenoms[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x12
+			}
 		}
 		if x.Params != nil {
 			encoded, err := options.Marshal(x.Params)
@@ -18731,6 +21449,40 @@ func (x *fastReflection_QueryParamsResponse) ProtoMethods() *protoiface.Methods 
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AllowedDenoms", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AllowedDenoms = append(x.AllowedDenoms, &AllowedDenomInfo{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AllowedDenoms[len(x.AllowedDenoms)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -18786,7 +21538,7 @@ func (x *QueryCreditTypeRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryCreditTypeRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[38]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19206,7 +21958,7 @@ func (x *QueryCreditTypeResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryCreditTypeResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[39]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19647,7 +22399,7 @@ func (x *ClassInfo) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ClassInfo) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[40]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20263,7 +23015,7 @@ func (x *ProjectInfo) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProjectInfo) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[41]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21007,7 +23759,7 @@ func (x *BatchInfo) ProtoReflect() protoreflect.Message {
 }
 
 func (x *BatchInfo) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[42]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[47]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21904,7 +24656,7 @@ func (x *BatchBalanceInfo) ProtoReflect() protoreflect.Message {
 }
 
 func (x *BatchBalanceInfo) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[43]
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[48]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22517,6 +25269,2616 @@ func (x *fastReflection_BatchBalanceInfo) ProtoMethods() *protoiface.Methods {
 				}
 				x.EscrowedAmount = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryAllowedClassCreatorsRequest            protoreflect.MessageDescriptor
+	fd_QueryAllowedClassCreatorsRequest_pagination protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryAllowedClassCreatorsRequest = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryAllowedClassCreatorsRequest")
+	fd_QueryAllowedClassCreatorsRequest_pagination = md_QueryAllowedClassCreatorsRequest.Fields().ByName("pagination")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryAllowedClassCreatorsRequest)(nil)
+
+type fastReflection_QueryAllowedClassCreatorsRequest QueryAllowedClassCreatorsRequest
+
+func (x *QueryAllowedClassCreatorsRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryAllowedClassCreatorsRequest)(x)
+}
+
+func (x *QueryAllowedClassCreatorsRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[49]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryAllowedClassCreatorsRequest_messageType fastReflection_QueryAllowedClassCreatorsRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryAllowedClassCreatorsRequest_messageType{}
+
+type fastReflection_QueryAllowedClassCreatorsRequest_messageType struct{}
+
+func (x fastReflection_QueryAllowedClassCreatorsRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryAllowedClassCreatorsRequest)(nil)
+}
+func (x fastReflection_QueryAllowedClassCreatorsRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryAllowedClassCreatorsRequest)
+}
+func (x fastReflection_QueryAllowedClassCreatorsRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllowedClassCreatorsRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllowedClassCreatorsRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryAllowedClassCreatorsRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryAllowedClassCreatorsRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryAllowedClassCreatorsRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Pagination != nil {
+		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		if !f(fd_QueryAllowedClassCreatorsRequest_pagination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsRequest.pagination":
+		return x.Pagination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsRequest.pagination":
+		x.Pagination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsRequest.pagination":
+		value := x.Pagination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsRequest.pagination":
+		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsRequest.pagination":
+		if x.Pagination == nil {
+			x.Pagination = new(v1beta1.PageRequest)
+		}
+		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsRequest.pagination":
+		m := new(v1beta1.PageRequest)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryAllowedClassCreatorsRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryAllowedClassCreatorsRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryAllowedClassCreatorsRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Pagination != nil {
+			l = options.Size(x.Pagination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllowedClassCreatorsRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Pagination != nil {
+			encoded, err := options.Marshal(x.Pagination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllowedClassCreatorsRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllowedClassCreatorsRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllowedClassCreatorsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Pagination == nil {
+					x.Pagination = &v1beta1.PageRequest{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_QueryAllowedClassCreatorsResponse_1_list)(nil)
+
+type _QueryAllowedClassCreatorsResponse_1_list struct {
+	list *[]string
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message QueryAllowedClassCreatorsResponse at list field ClassCreators as it is not of Message kind"))
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_QueryAllowedClassCreatorsResponse_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_QueryAllowedClassCreatorsResponse                protoreflect.MessageDescriptor
+	fd_QueryAllowedClassCreatorsResponse_class_creators protoreflect.FieldDescriptor
+	fd_QueryAllowedClassCreatorsResponse_pagination     protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryAllowedClassCreatorsResponse = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryAllowedClassCreatorsResponse")
+	fd_QueryAllowedClassCreatorsResponse_class_creators = md_QueryAllowedClassCreatorsResponse.Fields().ByName("class_creators")
+	fd_QueryAllowedClassCreatorsResponse_pagination = md_QueryAllowedClassCreatorsResponse.Fields().ByName("pagination")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryAllowedClassCreatorsResponse)(nil)
+
+type fastReflection_QueryAllowedClassCreatorsResponse QueryAllowedClassCreatorsResponse
+
+func (x *QueryAllowedClassCreatorsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryAllowedClassCreatorsResponse)(x)
+}
+
+func (x *QueryAllowedClassCreatorsResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[50]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryAllowedClassCreatorsResponse_messageType fastReflection_QueryAllowedClassCreatorsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryAllowedClassCreatorsResponse_messageType{}
+
+type fastReflection_QueryAllowedClassCreatorsResponse_messageType struct{}
+
+func (x fastReflection_QueryAllowedClassCreatorsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryAllowedClassCreatorsResponse)(nil)
+}
+func (x fastReflection_QueryAllowedClassCreatorsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryAllowedClassCreatorsResponse)
+}
+func (x fastReflection_QueryAllowedClassCreatorsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllowedClassCreatorsResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAllowedClassCreatorsResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryAllowedClassCreatorsResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryAllowedClassCreatorsResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryAllowedClassCreatorsResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.ClassCreators) != 0 {
+		value := protoreflect.ValueOfList(&_QueryAllowedClassCreatorsResponse_1_list{list: &x.ClassCreators})
+		if !f(fd_QueryAllowedClassCreatorsResponse_class_creators, value) {
+			return
+		}
+	}
+	if x.Pagination != nil {
+		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		if !f(fd_QueryAllowedClassCreatorsResponse_pagination, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.class_creators":
+		return len(x.ClassCreators) != 0
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.pagination":
+		return x.Pagination != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.class_creators":
+		x.ClassCreators = nil
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.pagination":
+		x.Pagination = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.class_creators":
+		if len(x.ClassCreators) == 0 {
+			return protoreflect.ValueOfList(&_QueryAllowedClassCreatorsResponse_1_list{})
+		}
+		listValue := &_QueryAllowedClassCreatorsResponse_1_list{list: &x.ClassCreators}
+		return protoreflect.ValueOfList(listValue)
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.pagination":
+		value := x.Pagination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.class_creators":
+		lv := value.List()
+		clv := lv.(*_QueryAllowedClassCreatorsResponse_1_list)
+		x.ClassCreators = *clv.list
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.pagination":
+		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.class_creators":
+		if x.ClassCreators == nil {
+			x.ClassCreators = []string{}
+		}
+		value := &_QueryAllowedClassCreatorsResponse_1_list{list: &x.ClassCreators}
+		return protoreflect.ValueOfList(value)
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.pagination":
+		if x.Pagination == nil {
+			x.Pagination = new(v1beta1.PageResponse)
+		}
+		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.class_creators":
+		list := []string{}
+		return protoreflect.ValueOfList(&_QueryAllowedClassCreatorsResponse_1_list{list: &list})
+	case "regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.pagination":
+		m := new(v1beta1.PageResponse)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryAllowedClassCreatorsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryAllowedClassCreatorsResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryAllowedClassCreatorsResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryAllowedClassCreatorsResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.ClassCreators) > 0 {
+			for _, s := range x.ClassCreators {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.Pagination != nil {
+			l = options.Size(x.Pagination)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllowedClassCreatorsResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Pagination != nil {
+			encoded, err := options.Marshal(x.Pagination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.ClassCreators) > 0 {
+			for iNdEx := len(x.ClassCreators) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.ClassCreators[iNdEx])
+				copy(dAtA[i:], x.ClassCreators[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassCreators[iNdEx])))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryAllowedClassCreatorsResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllowedClassCreatorsResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAllowedClassCreatorsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassCreators", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ClassCreators = append(x.ClassCreators, string(dAtA[iNdEx:postIndex]))
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Pagination == nil {
+					x.Pagination = &v1beta1.PageResponse{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryCreditClassFeesRequest protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryCreditClassFeesRequest = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryCreditClassFeesRequest")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryCreditClassFeesRequest)(nil)
+
+type fastReflection_QueryCreditClassFeesRequest QueryCreditClassFeesRequest
+
+func (x *QueryCreditClassFeesRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassFeesRequest)(x)
+}
+
+func (x *QueryCreditClassFeesRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[51]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryCreditClassFeesRequest_messageType fastReflection_QueryCreditClassFeesRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryCreditClassFeesRequest_messageType{}
+
+type fastReflection_QueryCreditClassFeesRequest_messageType struct{}
+
+func (x fastReflection_QueryCreditClassFeesRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassFeesRequest)(nil)
+}
+func (x fastReflection_QueryCreditClassFeesRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassFeesRequest)
+}
+func (x fastReflection_QueryCreditClassFeesRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassFeesRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryCreditClassFeesRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassFeesRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryCreditClassFeesRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryCreditClassFeesRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryCreditClassFeesRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassFeesRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryCreditClassFeesRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryCreditClassFeesRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryCreditClassFeesRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryCreditClassFeesRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryCreditClassFeesRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryCreditClassFeesRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryCreditClassFeesRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryCreditClassFeesRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryCreditClassFeesRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryCreditClassFeesRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryCreditClassFeesRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryCreditClassFeesRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassFeesRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassFeesRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassFeesRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassFeesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_QueryCreditClassFeesResponse_1_list)(nil)
+
+type _QueryCreditClassFeesResponse_1_list struct {
+	list *[]*v1beta11.Coin
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*v1beta11.Coin)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*v1beta11.Coin)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) AppendMutable() protoreflect.Value {
+	v := new(v1beta11.Coin)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) NewElement() protoreflect.Value {
+	v := new(v1beta11.Coin)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryCreditClassFeesResponse_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_QueryCreditClassFeesResponse      protoreflect.MessageDescriptor
+	fd_QueryCreditClassFeesResponse_fees protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryCreditClassFeesResponse = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryCreditClassFeesResponse")
+	fd_QueryCreditClassFeesResponse_fees = md_QueryCreditClassFeesResponse.Fields().ByName("fees")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryCreditClassFeesResponse)(nil)
+
+type fastReflection_QueryCreditClassFeesResponse QueryCreditClassFeesResponse
+
+func (x *QueryCreditClassFeesResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassFeesResponse)(x)
+}
+
+func (x *QueryCreditClassFeesResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[52]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryCreditClassFeesResponse_messageType fastReflection_QueryCreditClassFeesResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryCreditClassFeesResponse_messageType{}
+
+type fastReflection_QueryCreditClassFeesResponse_messageType struct{}
+
+func (x fastReflection_QueryCreditClassFeesResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassFeesResponse)(nil)
+}
+func (x fastReflection_QueryCreditClassFeesResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassFeesResponse)
+}
+func (x fastReflection_QueryCreditClassFeesResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassFeesResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryCreditClassFeesResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassFeesResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryCreditClassFeesResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryCreditClassFeesResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryCreditClassFeesResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassFeesResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryCreditClassFeesResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryCreditClassFeesResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryCreditClassFeesResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.Fees) != 0 {
+		value := protoreflect.ValueOfList(&_QueryCreditClassFeesResponse_1_list{list: &x.Fees})
+		if !f(fd_QueryCreditClassFeesResponse_fees, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryCreditClassFeesResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassFeesResponse.fees":
+		return len(x.Fees) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassFeesResponse.fees":
+		x.Fees = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryCreditClassFeesResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassFeesResponse.fees":
+		if len(x.Fees) == 0 {
+			return protoreflect.ValueOfList(&_QueryCreditClassFeesResponse_1_list{})
+		}
+		listValue := &_QueryCreditClassFeesResponse_1_list{list: &x.Fees}
+		return protoreflect.ValueOfList(listValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassFeesResponse.fees":
+		lv := value.List()
+		clv := lv.(*_QueryCreditClassFeesResponse_1_list)
+		x.Fees = *clv.list
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassFeesResponse.fees":
+		if x.Fees == nil {
+			x.Fees = []*v1beta11.Coin{}
+		}
+		value := &_QueryCreditClassFeesResponse_1_list{list: &x.Fees}
+		return protoreflect.ValueOfList(value)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryCreditClassFeesResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassFeesResponse.fees":
+		list := []*v1beta11.Coin{}
+		return protoreflect.ValueOfList(&_QueryCreditClassFeesResponse_1_list{list: &list})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassFeesResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassFeesResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryCreditClassFeesResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryCreditClassFeesResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryCreditClassFeesResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassFeesResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryCreditClassFeesResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryCreditClassFeesResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryCreditClassFeesResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.Fees) > 0 {
+			for _, e := range x.Fees {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassFeesResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Fees) > 0 {
+			for iNdEx := len(x.Fees) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Fees[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassFeesResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassFeesResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassFeesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Fees", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Fees = append(x.Fees, &v1beta11.Coin{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Fees[len(x.Fees)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryCreditClassAllowlistEnabledRequest protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryCreditClassAllowlistEnabledRequest = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryCreditClassAllowlistEnabledRequest")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryCreditClassAllowlistEnabledRequest)(nil)
+
+type fastReflection_QueryCreditClassAllowlistEnabledRequest QueryCreditClassAllowlistEnabledRequest
+
+func (x *QueryCreditClassAllowlistEnabledRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassAllowlistEnabledRequest)(x)
+}
+
+func (x *QueryCreditClassAllowlistEnabledRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[53]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType{}
+
+type fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType struct{}
+
+func (x fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassAllowlistEnabledRequest)(nil)
+}
+func (x fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassAllowlistEnabledRequest)
+}
+func (x fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassAllowlistEnabledRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassAllowlistEnabledRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryCreditClassAllowlistEnabledRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassAllowlistEnabledRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryCreditClassAllowlistEnabledRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryCreditClassAllowlistEnabledRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassAllowlistEnabledRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassAllowlistEnabledRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassAllowlistEnabledRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassAllowlistEnabledRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryCreditClassAllowlistEnabledResponse                   protoreflect.MessageDescriptor
+	fd_QueryCreditClassAllowlistEnabledResponse_allowlist_enabled protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_query_proto_init()
+	md_QueryCreditClassAllowlistEnabledResponse = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryCreditClassAllowlistEnabledResponse")
+	fd_QueryCreditClassAllowlistEnabledResponse_allowlist_enabled = md_QueryCreditClassAllowlistEnabledResponse.Fields().ByName("allowlist_enabled")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryCreditClassAllowlistEnabledResponse)(nil)
+
+type fastReflection_QueryCreditClassAllowlistEnabledResponse QueryCreditClassAllowlistEnabledResponse
+
+func (x *QueryCreditClassAllowlistEnabledResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassAllowlistEnabledResponse)(x)
+}
+
+func (x *QueryCreditClassAllowlistEnabledResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_query_proto_msgTypes[54]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType{}
+
+type fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType struct{}
+
+func (x fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryCreditClassAllowlistEnabledResponse)(nil)
+}
+func (x fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassAllowlistEnabledResponse)
+}
+func (x fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassAllowlistEnabledResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryCreditClassAllowlistEnabledResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryCreditClassAllowlistEnabledResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryCreditClassAllowlistEnabledResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryCreditClassAllowlistEnabledResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.AllowlistEnabled != false {
+		value := protoreflect.ValueOfBool(x.AllowlistEnabled)
+		if !f(fd_QueryCreditClassAllowlistEnabledResponse_allowlist_enabled, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse.allowlist_enabled":
+		return x.AllowlistEnabled != false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse.allowlist_enabled":
+		x.AllowlistEnabled = false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse.allowlist_enabled":
+		value := x.AllowlistEnabled
+		return protoreflect.ValueOfBool(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse.allowlist_enabled":
+		x.AllowlistEnabled = value.Bool()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse.allowlist_enabled":
+		panic(fmt.Errorf("field allowlist_enabled of message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse.allowlist_enabled":
+		return protoreflect.ValueOfBool(false)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryCreditClassAllowlistEnabledResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryCreditClassAllowlistEnabledResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.AllowlistEnabled {
+			n += 2
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassAllowlistEnabledResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.AllowlistEnabled {
+			i--
+			if x.AllowlistEnabled {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryCreditClassAllowlistEnabledResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassAllowlistEnabledResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryCreditClassAllowlistEnabledResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AllowlistEnabled", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.AllowlistEnabled = bool(v != 0)
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -23950,6 +29312,191 @@ func (x *QueryBalancesResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
+// QueryBalancesByBatchRequest is the Query/BalancesByBatch request type.
+//
+// Since Revision 1
+type QueryBalancesByBatchRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// batch_denom is the denom of the batch to query by.
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (x *QueryBalancesByBatchRequest) Reset() {
+	*x = QueryBalancesByBatchRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[32]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryBalancesByBatchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryBalancesByBatchRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryBalancesByBatchRequest.ProtoReflect.Descriptor instead.
+func (*QueryBalancesByBatchRequest) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *QueryBalancesByBatchRequest) GetBatchDenom() string {
+	if x != nil {
+		return x.BatchDenom
+	}
+	return ""
+}
+
+func (x *QueryBalancesByBatchRequest) GetPagination() *v1beta1.PageRequest {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+// QueryBalancesByBatchResponse is the Query/BalancesByBatch response type.
+//
+// Since Revision 1
+type QueryBalancesByBatchResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// balances are a list of balances from different credit batches that the
+	// account holds.
+	Balances []*BatchBalanceInfo `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (x *QueryBalancesByBatchResponse) Reset() {
+	*x = QueryBalancesByBatchResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[33]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryBalancesByBatchResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryBalancesByBatchResponse) ProtoMessage() {}
+
+// Deprecated: Use QueryBalancesByBatchResponse.ProtoReflect.Descriptor instead.
+func (*QueryBalancesByBatchResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *QueryBalancesByBatchResponse) GetBalances() []*BatchBalanceInfo {
+	if x != nil {
+		return x.Balances
+	}
+	return nil
+}
+
+func (x *QueryBalancesByBatchResponse) GetPagination() *v1beta1.PageResponse {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+// QueryAllBalancesRequest is the Query/AllBalances request type.
+//
+// Since Revision 1
+type QueryAllBalancesRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// pagination defines an optional pagination for the request.
+	Pagination *v1beta1.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (x *QueryAllBalancesRequest) Reset() {
+	*x = QueryAllBalancesRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[34]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryAllBalancesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryAllBalancesRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryAllBalancesRequest.ProtoReflect.Descriptor instead.
+func (*QueryAllBalancesRequest) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *QueryAllBalancesRequest) GetPagination() *v1beta1.PageRequest {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+// QueryAllBalancesResponse is the Query/AllBalances response type.
+//
+// Since Revision 1
+type QueryAllBalancesResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// balances are a list of balances from different credit batches that the
+	// account holds.
+	Balances []*BatchBalanceInfo `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (x *QueryAllBalancesResponse) Reset() {
+	*x = QueryAllBalancesResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[35]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryAllBalancesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryAllBalancesResponse) ProtoMessage() {}
+
+// Deprecated: Use QueryAllBalancesResponse.ProtoReflect.Descriptor instead.
+func (*QueryAllBalancesResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *QueryAllBalancesResponse) GetBalances() []*BatchBalanceInfo {
+	if x != nil {
+		return x.Balances
+	}
+	return nil
+}
+
+func (x *QueryAllBalancesResponse) GetPagination() *v1beta1.PageResponse {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
 // QuerySupplyRequest is the Query/Supply request type.
 type QuerySupplyRequest struct {
 	state         protoimpl.MessageState
@@ -23963,7 +29510,7 @@ type QuerySupplyRequest struct {
 func (x *QuerySupplyRequest) Reset() {
 	*x = QuerySupplyRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[32]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[36]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -23977,7 +29524,7 @@ func (*QuerySupplyRequest) ProtoMessage() {}
 
 // Deprecated: Use QuerySupplyRequest.ProtoReflect.Descriptor instead.
 func (*QuerySupplyRequest) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{32}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *QuerySupplyRequest) GetBatchDenom() string {
@@ -24007,7 +29554,7 @@ type QuerySupplyResponse struct {
 func (x *QuerySupplyResponse) Reset() {
 	*x = QuerySupplyResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[33]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24021,7 +29568,7 @@ func (*QuerySupplyResponse) ProtoMessage() {}
 
 // Deprecated: Use QuerySupplyResponse.ProtoReflect.Descriptor instead.
 func (*QuerySupplyResponse) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{33}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *QuerySupplyResponse) GetTradableAmount() string {
@@ -24055,7 +29602,7 @@ type QueryCreditTypesRequest struct {
 func (x *QueryCreditTypesRequest) Reset() {
 	*x = QueryCreditTypesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[34]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24069,7 +29616,7 @@ func (*QueryCreditTypesRequest) ProtoMessage() {}
 
 // Deprecated: Use QueryCreditTypesRequest.ProtoReflect.Descriptor instead.
 func (*QueryCreditTypesRequest) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{34}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{38}
 }
 
 // QueryCreditTypesRequest is the Query/Credit_Types response type
@@ -24085,7 +29632,7 @@ type QueryCreditTypesResponse struct {
 func (x *QueryCreditTypesResponse) Reset() {
 	*x = QueryCreditTypesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[35]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24099,7 +29646,7 @@ func (*QueryCreditTypesResponse) ProtoMessage() {}
 
 // Deprecated: Use QueryCreditTypesResponse.ProtoReflect.Descriptor instead.
 func (*QueryCreditTypesResponse) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{35}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *QueryCreditTypesResponse) GetCreditTypes() []*CreditType {
@@ -24119,7 +29666,7 @@ type QueryParamsRequest struct {
 func (x *QueryParamsRequest) Reset() {
 	*x = QueryParamsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[36]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[40]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24133,7 +29680,65 @@ func (*QueryParamsRequest) ProtoMessage() {}
 
 // Deprecated: Use QueryParamsRequest.ProtoReflect.Descriptor instead.
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{36}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{40}
+}
+
+// AllowedDenom represents the information for an allowed ask denom.
+type AllowedDenomInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+	BankDenom string `protobuf:"bytes,1,opt,name=bank_denom,json=bankDenom,proto3" json:"bank_denom,omitempty"`
+	// display_denom is the denom to display to the user and is informational.
+	// Because the denom is likely an IBC denom, this should be chosen by
+	// governance to represent the consensus trusted name of the denom.
+	DisplayDenom string `protobuf:"bytes,2,opt,name=display_denom,json=displayDenom,proto3" json:"display_denom,omitempty"`
+	// exponent is the exponent that relates the denom to the display_denom and is
+	// informational
+	Exponent uint32 `protobuf:"varint,3,opt,name=exponent,proto3" json:"exponent,omitempty"`
+}
+
+func (x *AllowedDenomInfo) Reset() {
+	*x = AllowedDenomInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[41]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AllowedDenomInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AllowedDenomInfo) ProtoMessage() {}
+
+// Deprecated: Use AllowedDenomInfo.ProtoReflect.Descriptor instead.
+func (*AllowedDenomInfo) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *AllowedDenomInfo) GetBankDenom() string {
+	if x != nil {
+		return x.BankDenom
+	}
+	return ""
+}
+
+func (x *AllowedDenomInfo) GetDisplayDenom() string {
+	if x != nil {
+		return x.DisplayDenom
+	}
+	return ""
+}
+
+func (x *AllowedDenomInfo) GetExponent() uint32 {
+	if x != nil {
+		return x.Exponent
+	}
+	return 0
 }
 
 // QueryParamsResponse is the Query/Params response type.
@@ -24144,12 +29749,17 @@ type QueryParamsResponse struct {
 
 	// params defines the parameters of the ecocredit module.
 	Params *Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
+	// allowed_denoms is a list of bank denoms allowed to be used in the ask price
+	// of sell orders.
+	//
+	// Since Revision 1
+	AllowedDenoms []*AllowedDenomInfo `protobuf:"bytes,2,rep,name=allowed_denoms,json=allowedDenoms,proto3" json:"allowed_denoms,omitempty"`
 }
 
 func (x *QueryParamsResponse) Reset() {
 	*x = QueryParamsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[37]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[42]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24163,12 +29773,19 @@ func (*QueryParamsResponse) ProtoMessage() {}
 
 // Deprecated: Use QueryParamsResponse.ProtoReflect.Descriptor instead.
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{37}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *QueryParamsResponse) GetParams() *Params {
 	if x != nil {
 		return x.Params
+	}
+	return nil
+}
+
+func (x *QueryParamsResponse) GetAllowedDenoms() []*AllowedDenomInfo {
+	if x != nil {
+		return x.AllowedDenoms
 	}
 	return nil
 }
@@ -24186,7 +29803,7 @@ type QueryCreditTypeRequest struct {
 func (x *QueryCreditTypeRequest) Reset() {
 	*x = QueryCreditTypeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[38]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24200,7 +29817,7 @@ func (*QueryCreditTypeRequest) ProtoMessage() {}
 
 // Deprecated: Use QueryCreditTypeRequest.ProtoReflect.Descriptor instead.
 func (*QueryCreditTypeRequest) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{38}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *QueryCreditTypeRequest) GetAbbreviation() string {
@@ -24223,7 +29840,7 @@ type QueryCreditTypeResponse struct {
 func (x *QueryCreditTypeResponse) Reset() {
 	*x = QueryCreditTypeResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[39]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24237,7 +29854,7 @@ func (*QueryCreditTypeResponse) ProtoMessage() {}
 
 // Deprecated: Use QueryCreditTypeResponse.ProtoReflect.Descriptor instead.
 func (*QueryCreditTypeResponse) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{39}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *QueryCreditTypeResponse) GetCreditType() *CreditType {
@@ -24267,7 +29884,7 @@ type ClassInfo struct {
 func (x *ClassInfo) Reset() {
 	*x = ClassInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[40]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24281,7 +29898,7 @@ func (*ClassInfo) ProtoMessage() {}
 
 // Deprecated: Use ClassInfo.ProtoReflect.Descriptor instead.
 func (*ClassInfo) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{40}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *ClassInfo) GetId() string {
@@ -24337,7 +29954,7 @@ type ProjectInfo struct {
 func (x *ProjectInfo) Reset() {
 	*x = ProjectInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[41]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24351,7 +29968,7 @@ func (*ProjectInfo) ProtoMessage() {}
 
 // Deprecated: Use ProjectInfo.ProtoReflect.Descriptor instead.
 func (*ProjectInfo) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{41}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ProjectInfo) GetId() string {
@@ -24429,7 +30046,7 @@ type BatchInfo struct {
 func (x *BatchInfo) Reset() {
 	*x = BatchInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[42]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[47]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24443,7 +30060,7 @@ func (*BatchInfo) ProtoMessage() {}
 
 // Deprecated: Use BatchInfo.ProtoReflect.Descriptor instead.
 func (*BatchInfo) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{42}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *BatchInfo) GetIssuer() string {
@@ -24526,7 +30143,7 @@ type BatchBalanceInfo struct {
 func (x *BatchBalanceInfo) Reset() {
 	*x = BatchBalanceInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[43]
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[48]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -24540,7 +30157,7 @@ func (*BatchBalanceInfo) ProtoMessage() {}
 
 // Deprecated: Use BatchBalanceInfo.ProtoReflect.Descriptor instead.
 func (*BatchBalanceInfo) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{43}
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *BatchBalanceInfo) GetAddress() string {
@@ -24578,6 +30195,234 @@ func (x *BatchBalanceInfo) GetEscrowedAmount() string {
 	return ""
 }
 
+// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
+// type.
+//
+// Since Revision 1
+type QueryAllowedClassCreatorsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// pagination defines an optional pagination for the request.
+	Pagination *v1beta1.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (x *QueryAllowedClassCreatorsRequest) Reset() {
+	*x = QueryAllowedClassCreatorsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[49]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryAllowedClassCreatorsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryAllowedClassCreatorsRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryAllowedClassCreatorsRequest.ProtoReflect.Descriptor instead.
+func (*QueryAllowedClassCreatorsRequest) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *QueryAllowedClassCreatorsRequest) GetPagination() *v1beta1.PageRequest {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
+// type.
+//
+// Since Revision 1
+type QueryAllowedClassCreatorsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// class_creators is the list of allowed credit class creators.
+	ClassCreators []string `protobuf:"bytes,1,rep,name=class_creators,json=classCreators,proto3" json:"class_creators,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (x *QueryAllowedClassCreatorsResponse) Reset() {
+	*x = QueryAllowedClassCreatorsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[50]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryAllowedClassCreatorsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryAllowedClassCreatorsResponse) ProtoMessage() {}
+
+// Deprecated: Use QueryAllowedClassCreatorsResponse.ProtoReflect.Descriptor instead.
+func (*QueryAllowedClassCreatorsResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *QueryAllowedClassCreatorsResponse) GetClassCreators() []string {
+	if x != nil {
+		return x.ClassCreators
+	}
+	return nil
+}
+
+func (x *QueryAllowedClassCreatorsResponse) GetPagination() *v1beta1.PageResponse {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+// QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
+//
+// Since Revision 1
+type QueryCreditClassFeesRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *QueryCreditClassFeesRequest) Reset() {
+	*x = QueryCreditClassFeesRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[51]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryCreditClassFeesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryCreditClassFeesRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryCreditClassFeesRequest.ProtoReflect.Descriptor instead.
+func (*QueryCreditClassFeesRequest) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{51}
+}
+
+// QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
+//
+// Since Revision 1
+type QueryCreditClassFeesResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// fees is the ClassFees message type
+	Fees []*v1beta11.Coin `protobuf:"bytes,1,rep,name=fees,proto3" json:"fees,omitempty"`
+}
+
+func (x *QueryCreditClassFeesResponse) Reset() {
+	*x = QueryCreditClassFeesResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[52]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryCreditClassFeesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryCreditClassFeesResponse) ProtoMessage() {}
+
+// Deprecated: Use QueryCreditClassFeesResponse.ProtoReflect.Descriptor instead.
+func (*QueryCreditClassFeesResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *QueryCreditClassFeesResponse) GetFees() []*v1beta11.Coin {
+	if x != nil {
+		return x.Fees
+	}
+	return nil
+}
+
+// QueryCreditClassAllowlistEnabledRequest is the
+// Query/CreditClassAllowlistEnabled request type.
+//
+// Since Revision 1
+type QueryCreditClassAllowlistEnabledRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *QueryCreditClassAllowlistEnabledRequest) Reset() {
+	*x = QueryCreditClassAllowlistEnabledRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[53]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryCreditClassAllowlistEnabledRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryCreditClassAllowlistEnabledRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryCreditClassAllowlistEnabledRequest.ProtoReflect.Descriptor instead.
+func (*QueryCreditClassAllowlistEnabledRequest) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{53}
+}
+
+// QueryCreditClassAllowlistEnabledResponse is the
+// Query/CreditClassAllowlistEnabled response type.
+//
+// Since Revision 1
+type QueryCreditClassAllowlistEnabledResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// allowlist_enabled determines whether or not the allowlist for creating
+	// credit classes is enabled.
+	AllowlistEnabled bool `protobuf:"varint,1,opt,name=allowlist_enabled,json=allowlistEnabled,proto3" json:"allowlist_enabled,omitempty"`
+}
+
+func (x *QueryCreditClassAllowlistEnabledResponse) Reset() {
+	*x = QueryCreditClassAllowlistEnabledResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_query_proto_msgTypes[54]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryCreditClassAllowlistEnabledResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryCreditClassAllowlistEnabledResponse) ProtoMessage() {}
+
+// Deprecated: Use QueryCreditClassAllowlistEnabledResponse.ProtoReflect.Descriptor instead.
+func (*QueryCreditClassAllowlistEnabledResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *QueryCreditClassAllowlistEnabledResponse) GetAllowlistEnabled() bool {
+	if x != nil {
+		return x.AllowlistEnabled
+	}
+	return false
+}
+
 var File_regen_ecocredit_v1_query_proto protoreflect.FileDescriptor
 
 var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
@@ -24587,79 +30432,101 @@ var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
 	0x74, 0x2e, 0x76, 0x31, 0x1a, 0x2a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73,
 	0x65, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f,
 	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e,
-	0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f,
-	0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
-	0x1e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2f, 0x76, 0x31, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
-	0x1e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0x5d, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73,
+	0x1a, 0x1e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73, 0x65, 0x2f, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61,
+	0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x5d, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c,
+	0x61, 0x73, 0x73, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x22, 0x98, 0x01, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c,
+	0x61, 0x73, 0x73, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a,
+	0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x63,
+	0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x98,
-	0x01, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73,
-	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c,
-	0x61, 0x73, 0x73, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73,
-	0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
-	0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70,
-	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x7a, 0x0a, 0x1a, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x46, 0x0a,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
-	0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61,
-	0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9f, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43,
-	0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73,
-	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x12, 0x47,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
+	0x7a, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x42,
+	0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a,
+	0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64,
+	0x6d, 0x69, 0x6e, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52,
+	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9f, 0x01, 0x0a, 0x1b,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64,
+	0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x63,
+	0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
+	0x31, 0x2e, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x63, 0x6c, 0x61,
+	0x73, 0x73, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2e, 0x0a,
+	0x11, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x22, 0x49, 0x0a,
+	0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x33, 0x0a, 0x05, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x6e, 0x66,
+	0x6f, 0x52, 0x05, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x22, 0x7d, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12,
+	0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
+	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x7e, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x47,
 	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
 	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
 	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2e, 0x0a, 0x11, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x22, 0x49, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x33, 0x0a,
-	0x05, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x05, 0x63, 0x6c, 0x61,
-	0x73, 0x73, 0x22, 0x7d, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19,
-	0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72,
-	0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x22, 0x7e, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49,
-	0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18,
-	0x0a, 0x07, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x07, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
-	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x22, 0x5e, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72,
-	0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x22, 0x9d, 0x01, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x70,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x5e, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
+	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9d, 0x01, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x3b, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x18, 0x01, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x47,
+	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
+	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x80, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73,
+	0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73,
+	0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa4, 0x01, 0x0a, 0x1c, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x43, 0x6c,
+	0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x70,
 	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e,
 	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
 	0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08,
@@ -24668,527 +30535,653 @@ var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
 	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
 	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x22, 0x80, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a,
-	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
-	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa4, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72,
-	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x8e, 0x01, 0x0a, 0x21,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x52,
-	0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e,
-	0x63, 0x65, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xaa, 0x01, 0x0a,
-	0x22, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79,
-	0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73,
-	0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
-	0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70,
-	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x7b, 0x0a, 0x1b, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69,
-	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69,
-	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x46,
-	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
-	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
-	0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa4, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x34, 0x0a,
-	0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x49, 0x64, 0x22, 0x51, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x07, 0x70,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x70,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x5d, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
-	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
-	0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61,
-	0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x98, 0x01, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
-	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37,
-	0x0a, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07,
-	0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e,
-	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x22, 0x7d, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73,
-	0x42, 0x79, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e,
-	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
-	0xa0, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73,
-	0x42, 0x79, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x37, 0x0a, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f,
-	0x52, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72,
-	0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x22, 0x7f, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68,
-	0x65, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70,
-	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75,
-	0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x22, 0x85, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74,
-	0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa1, 0x01, 0x0a, 0x1d,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72,
-	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a,
-	0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62,
-	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x6e, 0x22, 0x8e, 0x01, 0x0a, 0x21, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x73, 0x42, 0x79, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x65, 0x66, 0x65, 0x72,
+	0x65, 0x6e, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72,
+	0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26,
+	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65,
+	0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x22, 0xaa, 0x01, 0x0a, 0x22, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49,
+	0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x70, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
+	0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
 	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
 	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
-	0x9f, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73,
-	0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x37, 0x0a, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x52,
-	0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
+	0x7b, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73,
+	0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14,
+	0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61,
+	0x64, 0x6d, 0x69, 0x6e, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa4, 0x01, 0x0a,
+	0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79,
+	0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a,
+	0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x1f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f,
+	0x52, 0x08, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27,
+	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65,
+	0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x22, 0x34, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
+	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x51, 0x0a, 0x14, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x39, 0x0a, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49,
+	0x6e, 0x66, 0x6f, 0x52, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x5d, 0x0a, 0x13,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52,
+	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x98, 0x01, 0x0a, 0x14,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x47, 0x0a,
+	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
+	0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61,
+	0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x7d, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x46, 0x0a,
+	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
+	0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61,
+	0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa0, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74,
+	0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12,
+	0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
+	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x7f, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49,
+	0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62,
+	0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70,
+	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x85, 0x01, 0x0a, 0x1c, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
+	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72,
+	0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x22, 0xa1, 0x01, 0x0a, 0x1d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68,
+	0x65, 0x73, 0x42, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x18, 0x01,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49,
+	0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9f, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63,
+	0x68, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x47,
+	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
+	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x34, 0x0a, 0x11, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1f, 0x0a, 0x0b,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x49, 0x0a,
+	0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x33, 0x0a, 0x05, 0x62, 0x61, 0x74, 0x63, 0x68, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66,
+	0x6f, 0x52, 0x05, 0x62, 0x61, 0x74, 0x63, 0x68, 0x22, 0x50, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74,
+	0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x56, 0x0a, 0x14, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x3e, 0x0a, 0x07, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x42, 0x61,
+	0x6c, 0x61, 0x6e, 0x63, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62, 0x61, 0x6c, 0x61, 0x6e,
+	0x63, 0x65, 0x22, 0x78, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e,
+	0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa2, 0x01, 0x0a,
+	0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x40, 0x0a, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63,
+	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61,
+	0x74, 0x63, 0x68, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08,
+	0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
 	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
 	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
 	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x22, 0x34, 0x0a, 0x11, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f,
-	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74,
-	0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x49, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x33, 0x0a,
-	0x05, 0x62, 0x61, 0x74, 0x63, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x05, 0x62, 0x61, 0x74,
-	0x63, 0x68, 0x22, 0x50, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e,
-	0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e,
-	0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44,
-	0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x56, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c,
-	0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3e, 0x0a, 0x07,
-	0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e,
+	0x6e, 0x22, 0x86, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e,
+	0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e,
+	0x6f, 0x6d, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa9, 0x01, 0x0a, 0x1c, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x61,
+	0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x40, 0x0a, 0x08, 0x62,
+	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x24, 0x2e,
 	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
 	0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x49,
-	0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x22, 0x78, 0x0a, 0x14,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x46,
-	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x6e, 0x66, 0x6f, 0x52, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0x47, 0x0a,
+	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
+	0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61,
+	0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x61, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41,
+	0x6c, 0x6c, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62,
+	0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70,
+	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa5, 0x01, 0x0a, 0x18, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x40, 0x0a, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63,
+	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61,
+	0x74, 0x63, 0x68, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08,
+	0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
+	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x22, 0x35, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68,
+	0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61,
+	0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x90, 0x01, 0x0a, 0x13, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61,
+	0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74,
+	0x69, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0d, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
+	0x12, 0x29, 0x0a, 0x10, 0x63, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x64, 0x5f, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x61, 0x6e, 0x63,
+	0x65, 0x6c, 0x6c, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x19, 0x0a, 0x17, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x5d, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x41, 0x0a, 0x0c, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70,
+	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0b, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x73, 0x22, 0x14, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x72, 0x0a, 0x10, 0x41,
+	0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x12,
+	0x1d, 0x0a, 0x0a, 0x62, 0x61, 0x6e, 0x6b, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x62, 0x61, 0x6e, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x23,
+	0x0a, 0x0d, 0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x44, 0x65,
+	0x6e, 0x6f, 0x6d, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x22,
+	0x96, 0x01, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x73, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x4b, 0x0a, 0x0e, 0x61,
+	0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x73, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64,
+	0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0d, 0x61, 0x6c, 0x6c, 0x6f, 0x77,
+	0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x73, 0x22, 0x3c, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76,
+	0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x5a, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x3f, 0x0a, 0x0b, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0a, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79,
+	0x70, 0x65, 0x22, 0x7b, 0x0a, 0x09, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x6e, 0x66, 0x6f, 0x12,
+	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12,
+	0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x12, 0x2c, 0x0a, 0x12, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65,
+	0x5f, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x41, 0x62, 0x62, 0x72, 0x65, 0x76, 0x22,
+	0xb1, 0x01, 0x0a, 0x0b, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12,
+	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12,
+	0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69,
+	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64,
+	0x12, 0x22, 0x0a, 0x0c, 0x6a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0x12, 0x21, 0x0a, 0x0c, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x69, 0x64,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63,
+	0x65, 0x49, 0x64, 0x22, 0xbb, 0x02, 0x0a, 0x09, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66,
+	0x6f, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f,
+	0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1a,
+	0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x39, 0x0a, 0x0a, 0x73, 0x74,
+	0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x73, 0x74, 0x61, 0x72,
+	0x74, 0x44, 0x61, 0x74, 0x65, 0x12, 0x35, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x5f, 0x64, 0x61, 0x74,
+	0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x52, 0x07, 0x65, 0x6e, 0x64, 0x44, 0x61, 0x74, 0x65, 0x12, 0x3f, 0x0a, 0x0d,
+	0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x07, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
+	0x0c, 0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x44, 0x61, 0x74, 0x65, 0x12, 0x12, 0x0a,
+	0x04, 0x6f, 0x70, 0x65, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x6f, 0x70, 0x65,
+	0x6e, 0x22, 0xc6, 0x01, 0x0a, 0x10, 0x42, 0x61, 0x74, 0x63, 0x68, 0x42, 0x61, 0x6c, 0x61, 0x6e,
+	0x63, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f,
+	0x6d, 0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64,
+	0x61, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65,
+	0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x12, 0x27, 0x0a, 0x0f, 0x65, 0x73, 0x63, 0x72, 0x6f, 0x77, 0x65, 0x64, 0x5f, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x65, 0x73, 0x63, 0x72,
+	0x6f, 0x77, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x6a, 0x0a, 0x20, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46,
+	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
 	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
 	0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa2, 0x01, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x40, 0x0a, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x42, 0x61, 0x6c,
-	0x61, 0x6e, 0x63, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63,
-	0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x35, 0x0a, 0x12, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e,
-	0x6f, 0x6d, 0x22, 0x90, 0x01, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70, 0x70,
-	0x6c, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72,
-	0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f,
-	0x75, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x61,
-	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74,
-	0x69, 0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x63, 0x61,
-	0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x64, 0x41,
-	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x19, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x22, 0x5d, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54,
-	0x79, 0x70, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x41, 0x0a, 0x0c,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79,
-	0x70, 0x65, 0x52, 0x0b, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x73, 0x22,
-	0x14, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x49, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61,
-	0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x06,
-	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x22, 0x3c, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54,
-	0x79, 0x70, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x62,
-	0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x5a,
-	0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3f, 0x0a, 0x0b, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0a,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x22, 0x7b, 0x0a, 0x09, 0x43, 0x6c,
-	0x61, 0x73, 0x73, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x1a, 0x0a,
-	0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2c, 0x0a, 0x12, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x5f, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x18,
-	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70,
-	0x65, 0x41, 0x62, 0x62, 0x72, 0x65, 0x76, 0x22, 0xb1, 0x01, 0x0a, 0x0b, 0x50, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x19, 0x0a,
-	0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x22, 0x0a, 0x0c, 0x6a, 0x75, 0x72, 0x69,
-	0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
-	0x6a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x0a, 0x08,
-	0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x65, 0x66, 0x65,
-	0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b,
-	0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x22, 0xbb, 0x02, 0x0a, 0x09,
-	0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73,
-	0x75, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65,
-	0x72, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64,
-	0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0x12, 0x39, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65,
-	0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
-	0x6d, 0x70, 0x52, 0x09, 0x73, 0x74, 0x61, 0x72, 0x74, 0x44, 0x61, 0x74, 0x65, 0x12, 0x35, 0x0a,
-	0x08, 0x65, 0x6e, 0x64, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x07, 0x65, 0x6e, 0x64,
-	0x44, 0x61, 0x74, 0x65, 0x12, 0x3f, 0x0a, 0x0d, 0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65,
-	0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
-	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0c, 0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63,
-	0x65, 0x44, 0x61, 0x74, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6f, 0x70, 0x65, 0x6e, 0x18, 0x08, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x04, 0x6f, 0x70, 0x65, 0x6e, 0x22, 0xc6, 0x01, 0x0a, 0x10, 0x42, 0x61,
-	0x74, 0x63, 0x68, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x18,
-	0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63,
-	0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62,
-	0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72, 0x61,
-	0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74, 0x69,
-	0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x27, 0x0a, 0x0f, 0x65, 0x73, 0x63,
-	0x72, 0x6f, 0x77, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0e, 0x65, 0x73, 0x63, 0x72, 0x6f, 0x77, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x32, 0xe3, 0x1e, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x81, 0x01, 0x0a,
-	0x07, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x93, 0x01, 0x0a, 0x21, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x0e,
+	0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x01,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x1d, 0x0a, 0x1b,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x46, 0x65, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x7f, 0x0a, 0x1c, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46,
+	0x65, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x04, 0x66,
+	0x65, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73,
+	0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x04, 0x66, 0x65, 0x65, 0x73, 0x22, 0x29, 0x0a, 0x27,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x57, 0x0a, 0x28, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f, 0x77,
+	0x6c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x11, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74,
+	0x5f, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10,
+	0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64,
+	0x32, 0xbd, 0x26, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x81, 0x01, 0x0a, 0x07, 0x43,
+	0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23, 0x82, 0xd3, 0xe4, 0x93, 0x02,
+	0x1d, 0x12, 0x1b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x12, 0xd4,
+	0x01, 0x0a, 0x0e, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69,
+	0x6e, 0x12, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
 	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x1d, 0x12, 0x1b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73,
-	0x12, 0xd4, 0x01, 0x0a, 0x0e, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64,
-	0x6d, 0x69, 0x6e, 0x12, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c,
-	0x61, 0x73, 0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c,
-	0x61, 0x73, 0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x61, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x5b, 0x12, 0x2c, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
-	0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x61, 0x64, 0x6d,
-	0x69, 0x6e, 0x2f, 0x7b, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x7d, 0x5a, 0x2b, 0x12, 0x29, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
-	0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f,
-	0x7b, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x7d, 0x12, 0xae, 0x01, 0x0a, 0x05, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x12, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
 	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x56, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x50, 0x12, 0x24, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c,
-	0x61, 0x73, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x28,
-	0x12, 0x26, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2f, 0x7b, 0x63,
-	0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x12, 0xd3, 0x01, 0x0a, 0x0c, 0x43, 0x6c, 0x61,
-	0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x66, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x60, 0x12, 0x2c,
-	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2d, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72,
-	0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x30, 0x12, 0x2e,
+	0x73, 0x65, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x61, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x5b, 0x12, 0x2c, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f,
+	0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x61, 0x64, 0x6d, 0x69, 0x6e,
+	0x2f, 0x7b, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x7d, 0x5a, 0x2b, 0x12, 0x29, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f,
+	0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x7b, 0x61,
+	0x64, 0x6d, 0x69, 0x6e, 0x7d, 0x12, 0xae, 0x01, 0x0a, 0x05, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12,
+	0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x56,
+	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x50, 0x12, 0x24, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73,
+	0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x28, 0x12, 0x26,
 	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
 	0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61,
-	0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x2f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x85,
-	0x01, 0x0a, 0x08, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x28, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x12, 0xd3, 0x01, 0x0a, 0x0c, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
 	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x24, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e, 0x12, 0x1c, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72,
-	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x94, 0x02, 0x0a, 0x0f, 0x50, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x43,
-	0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79,
-	0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x9d, 0x01,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x96, 0x01, 0x12, 0x30, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2f, 0x7b,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x2f, 0x12, 0x2d, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31,
-	0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2f,
-	0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x31, 0x12, 0x2f, 0x2f, 0x72,
+	0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x66, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x60, 0x12, 0x2c, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
+	0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2d, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x2f,
+	0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x30, 0x12, 0x2e, 0x2f, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
 	0x31, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73,
-	0x5f, 0x69, 0x64, 0x7d, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x87, 0x02,
-	0x0a, 0x15, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x52, 0x65, 0x66, 0x65,
-	0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x12, 0x35, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x52, 0x65, 0x66, 0x65,
-	0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x36,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x73, 0x42, 0x79, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x7f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x79, 0x12, 0x3b,
-	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2d, 0x62, 0x79, 0x2d,
-	0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x2d, 0x69, 0x64, 0x2f, 0x7b, 0x72, 0x65,
-	0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x3a, 0x12, 0x38, 0x2f,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f,
-	0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x66, 0x65,
-	0x72, 0x65, 0x6e, 0x63, 0x65, 0x2d, 0x69, 0x64, 0x2f, 0x7b, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65,
-	0x6e, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x7d, 0x12, 0xd9, 0x01, 0x0a, 0x0f, 0x50, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x2f, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79,
-	0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72,
+	0x5f, 0x69, 0x64, 0x7d, 0x2f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x85, 0x01, 0x0a,
+	0x08, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x24,
+	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e, 0x12, 0x1c, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x73, 0x12, 0x94, 0x02, 0x0a, 0x0f, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
+	0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x43, 0x6c,
+	0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x9d, 0x01, 0x82, 0xd3,
+	0xe4, 0x93, 0x02, 0x96, 0x01, 0x12, 0x30, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2f, 0x7b, 0x63, 0x6c,
+	0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x2f, 0x12, 0x2d, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2f, 0x7b, 0x63,
+	0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x31, 0x12, 0x2f, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f,
+	0x63, 0x6c, 0x61, 0x73, 0x73, 0x65, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69,
+	0x64, 0x7d, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x12, 0x87, 0x02, 0x0a, 0x15,
+	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65,
+	0x6e, 0x63, 0x65, 0x49, 0x64, 0x12, 0x35, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65,
+	0x6e, 0x63, 0x65, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x36, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
 	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42,
-	0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x63,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x5d, 0x12, 0x2d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x7b, 0x61,
-	0x64, 0x6d, 0x69, 0x6e, 0x7d, 0x5a, 0x2c, 0x12, 0x2a, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x7b, 0x61, 0x64, 0x6d,
-	0x69, 0x6e, 0x7d, 0x12, 0xbb, 0x01, 0x0a, 0x07, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12,
-	0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x5d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x57, 0x12, 0x28, 0x2f, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f,
-	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x2b, 0x12, 0x29, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64,
-	0x7d, 0x12, 0x81, 0x01, 0x0a, 0x07, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x27, 0x2e,
+	0x79, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x7f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x79, 0x12, 0x3b, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
+	0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x72, 0x65,
+	0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x2d, 0x69, 0x64, 0x2f, 0x7b, 0x72, 0x65, 0x66, 0x65,
+	0x72, 0x65, 0x6e, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x3a, 0x12, 0x38, 0x2f, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31,
+	0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65,
+	0x6e, 0x63, 0x65, 0x2d, 0x69, 0x64, 0x2f, 0x7b, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63,
+	0x65, 0x5f, 0x69, 0x64, 0x7d, 0x12, 0xd9, 0x01, 0x0a, 0x0f, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x73, 0x42, 0x79, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x41, 0x64,
+	0x6d, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x42, 0x79, 0x41,
+	0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x63, 0x82, 0xd3,
+	0xe4, 0x93, 0x02, 0x5d, 0x12, 0x2d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x7b, 0x61, 0x64, 0x6d,
+	0x69, 0x6e, 0x7d, 0x5a, 0x2c, 0x12, 0x2a, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x7b, 0x61, 0x64, 0x6d, 0x69, 0x6e,
+	0x7d, 0x12, 0xbb, 0x01, 0x0a, 0x07, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x27, 0x2e,
 	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52,
+	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
 	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x23, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1d, 0x12, 0x1b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61,
-	0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0xdb, 0x01, 0x0a, 0x0f, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65,
-	0x73, 0x42, 0x79, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x49, 0x73, 0x73,
-	0x75, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x49, 0x73,
-	0x73, 0x75, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x65, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x5f, 0x12, 0x2e, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65,
-	0x73, 0x2d, 0x62, 0x79, 0x2d, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x73, 0x73,
-	0x75, 0x65, 0x72, 0x7d, 0x5a, 0x2d, 0x12, 0x2b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
+	0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x5d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x57, 0x12, 0x28, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69,
+	0x64, 0x7d, 0x5a, 0x2b, 0x12, 0x29, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x7d, 0x12,
+	0x81, 0x01, 0x0a, 0x07, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x12, 0x27, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23,
+	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1d, 0x12, 0x1b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
 	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63,
-	0x68, 0x65, 0x73, 0x2f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x73, 0x73, 0x75,
-	0x65, 0x72, 0x7d, 0x12, 0xda, 0x01, 0x0a, 0x0e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42,
-	0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x67, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x61, 0x12,
-	0x2f, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2d, 0x62, 0x79, 0x2d,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d,
-	0x5a, 0x2e, 0x12, 0x2c, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2f,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d,
-	0x12, 0xe8, 0x01, 0x0a, 0x10, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72,
-	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x68, 0x65, 0x73, 0x12, 0xdb, 0x01, 0x0a, 0x0f, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42,
+	0x79, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x49, 0x73, 0x73, 0x75, 0x65,
+	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x49, 0x73, 0x73, 0x75,
+	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x65, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x5f, 0x12, 0x2e, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2d,
+	0x62, 0x79, 0x2d, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x73, 0x73, 0x75, 0x65,
+	0x72, 0x7d, 0x5a, 0x2d, 0x12, 0x2b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65,
+	0x73, 0x2f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72,
+	0x7d, 0x12, 0xda, 0x01, 0x0a, 0x0e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x43,
+	0x6c, 0x61, 0x73, 0x73, 0x12, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x67, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x61, 0x12, 0x2f, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f,
+	0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x63, 0x6c,
+	0x61, 0x73, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x2e,
+	0x12, 0x2c, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2f, 0x63, 0x6c,
+	0x61, 0x73, 0x73, 0x2f, 0x7b, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x7d, 0x12, 0xe8,
+	0x01, 0x0a, 0x10, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x12, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61,
+	0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
 	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
 	0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x42, 0x79, 0x50, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6f, 0x82, 0xd3, 0xe4, 0x93,
-	0x02, 0x69, 0x12, 0x33, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2d,
-	0x62, 0x79, 0x2d, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x32, 0x12, 0x30, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62,
-	0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x2f, 0x7b,
-	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x7d, 0x12, 0xb4, 0x01, 0x0a, 0x05,
-	0x42, 0x61, 0x74, 0x63, 0x68, 0x12, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x5c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x56, 0x12, 0x27, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
-	0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64,
-	0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x5a, 0x2b, 0x12, 0x29, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x69,
+	0x12, 0x33, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2d, 0x62, 0x79,
+	0x2d, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x5f, 0x69, 0x64, 0x7d, 0x5a, 0x32, 0x12, 0x30, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
 	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74,
-	0x63, 0x68, 0x65, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x7d, 0x12, 0x98, 0x02, 0x0a, 0x07, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x27,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x63, 0x68, 0x65, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x2f, 0x7b, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x7d, 0x12, 0xb4, 0x01, 0x0a, 0x05, 0x42, 0x61,
+	0x74, 0x63, 0x68, 0x12, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61,
+	0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x5c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x56, 0x12, 0x27, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e,
+	0x6f, 0x6d, 0x7d, 0x5a, 0x2b, 0x12, 0x29, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68,
+	0x65, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d,
+	0x12, 0x98, 0x02, 0x0a, 0x07, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x27, 0x2e, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
+	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0xb9, 0x01, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0xb2, 0x01, 0x12, 0x33, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62,
+	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65,
+	0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x5a, 0x3d,
+	0x12, 0x3b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2f, 0x7b, 0x62,
+	0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x62, 0x61, 0x6c, 0x61,
+	0x6e, 0x63, 0x65, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x5a, 0x3c, 0x12,
+	0x3a, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x2f, 0x7b, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2f, 0x7b, 0x62,
+	0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x12, 0x8f, 0x01, 0x0a, 0x08,
+	0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c,
+	0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2e, 0x82,
+	0xd3, 0xe4, 0x93, 0x02, 0x28, 0x12, 0x26, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e,
+	0x63, 0x65, 0x73, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x12, 0xe7, 0x01,
+	0x0a, 0x0f, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x61, 0x74, 0x63,
+	0x68, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61,
+	0x6e, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c,
+	0x61, 0x6e, 0x63, 0x65, 0x73, 0x42, 0x79, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x71, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x6b, 0x12, 0x33, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
+	0x31, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x2d, 0x62, 0x79, 0x2d, 0x62, 0x61,
+	0x74, 0x63, 0x68, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
+	0x7d, 0x5a, 0x34, 0x12, 0x32, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73,
+	0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x62,
+	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0xb2, 0x01, 0x0a, 0x0b, 0x41, 0x6c, 0x6c, 0x42,
+	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
 	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0xb9, 0x01, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0xb2, 0x01, 0x12, 0x33, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31,
-	0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f,
-	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d,
-	0x5a, 0x3d, 0x12, 0x3b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2f,
-	0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x62, 0x61,
-	0x6c, 0x61, 0x6e, 0x63, 0x65, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x5a,
-	0x3c, 0x12, 0x3a, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x2f,
-	0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2f,
-	0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x12, 0x8f, 0x01,
-	0x0a, 0x08, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0x28, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
-	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x2e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x28, 0x12, 0x26, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x6c,
-	0x61, 0x6e, 0x63, 0x65, 0x73, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x12,
-	0xbf, 0x01, 0x0a, 0x06, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70,
-	0x70, 0x6c, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x64, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x5e, 0x12, 0x28, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x2f,
-	0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x5a, 0x32, 0x12,
-	0x30, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2f, 0x7b, 0x62, 0x61,
-	0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x73, 0x75, 0x70, 0x70, 0x6c,
-	0x79, 0x12, 0x92, 0x01, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65,
-	0x73, 0x12, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c,
+	0x72, 0x79, 0x41, 0x6c, 0x6c, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41,
+	0x6c, 0x6c, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x48, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x42, 0x12, 0x20, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f,
+	0x61, 0x6c, 0x6c, 0x2d, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x5a, 0x1e, 0x12, 0x1c,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0xbf, 0x01, 0x0a,
+	0x06, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70, 0x70, 0x6c, 0x79,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x64, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x5e,
+	0x12, 0x28, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x2f, 0x7b, 0x62, 0x61,
+	0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x5a, 0x32, 0x12, 0x30, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
+	0x31, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x65, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68,
+	0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x73, 0x75, 0x70, 0x70, 0x6c, 0x79, 0x12, 0x92,
+	0x01, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x2b,
 	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
 	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54,
-	0x79, 0x70, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x28, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x22, 0x12, 0x20, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2d, 0x74, 0x79, 0x70, 0x65, 0x73, 0x12, 0x7d, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d,
-	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x22, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x12, 0x1a, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x70,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0xd0, 0x01, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x54, 0x79, 0x70, 0x65, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x69, 0x82,
-	0xd3, 0xe4, 0x93, 0x02, 0x63, 0x12, 0x2e, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2d, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x7b, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x5a, 0x31, 0x12, 0x2f, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2d, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2f, 0x7b, 0x61, 0x62, 0x62, 0x72, 0x65,
-	0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d,
+	0x79, 0x70, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x28, 0x82, 0xd3, 0xe4, 0x93, 0x02,
+	0x22, 0x12, 0x20, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2d, 0x74, 0x79,
+	0x70, 0x65, 0x73, 0x12, 0x80, 0x01, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x26,
 	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45,
-	0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65,
-	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52,
-	0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a,
-	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x25, 0x88, 0x02, 0x01, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x12, 0x1a, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f,
+	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0xd0, 0x01, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x69,
+	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x63, 0x12, 0x2e, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2d, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x7b, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x5a, 0x31, 0x12, 0x2f, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2d, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2f, 0x7b, 0x61, 0x62, 0x62, 0x72,
+	0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x12, 0xb7, 0x01, 0x0a, 0x14, 0x41, 0x6c,
+	0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x73, 0x12, 0x34, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c,
+	0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x35, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x32, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x2c, 0x12, 0x2a, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x6c, 0x6c,
+	0x6f, 0x77, 0x65, 0x64, 0x2d, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2d, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x73, 0x12, 0xa3, 0x01, 0x0a, 0x0f, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c,
+	0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65,
+	0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x27, 0x12, 0x25, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2d, 0x63,
+	0x6c, 0x61, 0x73, 0x73, 0x2d, 0x66, 0x65, 0x65, 0x73, 0x12, 0xd4, 0x01, 0x0a, 0x1b, 0x43, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69,
+	0x73, 0x74, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x3b, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41,
+	0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x3c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x6f,
+	0x77, 0x6c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x3a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x34, 0x12, 0x32, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
+	0x31, 0x2f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2d, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x2d, 0x61,
+	0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x2d, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64,
+	0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77,
+	0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02,
+	0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -25203,149 +31196,181 @@ func file_regen_ecocredit_v1_query_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_v1_query_proto_rawDescData
 }
 
-var file_regen_ecocredit_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_regen_ecocredit_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 55)
 var file_regen_ecocredit_v1_query_proto_goTypes = []interface{}{
-	(*QueryClassesRequest)(nil),                // 0: regen.ecocredit.v1.QueryClassesRequest
-	(*QueryClassesResponse)(nil),               // 1: regen.ecocredit.v1.QueryClassesResponse
-	(*QueryClassesByAdminRequest)(nil),         // 2: regen.ecocredit.v1.QueryClassesByAdminRequest
-	(*QueryClassesByAdminResponse)(nil),        // 3: regen.ecocredit.v1.QueryClassesByAdminResponse
-	(*QueryClassRequest)(nil),                  // 4: regen.ecocredit.v1.QueryClassRequest
-	(*QueryClassResponse)(nil),                 // 5: regen.ecocredit.v1.QueryClassResponse
-	(*QueryClassIssuersRequest)(nil),           // 6: regen.ecocredit.v1.QueryClassIssuersRequest
-	(*QueryClassIssuersResponse)(nil),          // 7: regen.ecocredit.v1.QueryClassIssuersResponse
-	(*QueryProjectsRequest)(nil),               // 8: regen.ecocredit.v1.QueryProjectsRequest
-	(*QueryProjectsResponse)(nil),              // 9: regen.ecocredit.v1.QueryProjectsResponse
-	(*QueryProjectsByClassRequest)(nil),        // 10: regen.ecocredit.v1.QueryProjectsByClassRequest
-	(*QueryProjectsByClassResponse)(nil),       // 11: regen.ecocredit.v1.QueryProjectsByClassResponse
-	(*QueryProjectsByReferenceIdRequest)(nil),  // 12: regen.ecocredit.v1.QueryProjectsByReferenceIdRequest
-	(*QueryProjectsByReferenceIdResponse)(nil), // 13: regen.ecocredit.v1.QueryProjectsByReferenceIdResponse
-	(*QueryProjectsByAdminRequest)(nil),        // 14: regen.ecocredit.v1.QueryProjectsByAdminRequest
-	(*QueryProjectsByAdminResponse)(nil),       // 15: regen.ecocredit.v1.QueryProjectsByAdminResponse
-	(*QueryProjectRequest)(nil),                // 16: regen.ecocredit.v1.QueryProjectRequest
-	(*QueryProjectResponse)(nil),               // 17: regen.ecocredit.v1.QueryProjectResponse
-	(*QueryBatchesRequest)(nil),                // 18: regen.ecocredit.v1.QueryBatchesRequest
-	(*QueryBatchesResponse)(nil),               // 19: regen.ecocredit.v1.QueryBatchesResponse
-	(*QueryBatchesByIssuerRequest)(nil),        // 20: regen.ecocredit.v1.QueryBatchesByIssuerRequest
-	(*QueryBatchesByIssuerResponse)(nil),       // 21: regen.ecocredit.v1.QueryBatchesByIssuerResponse
-	(*QueryBatchesByClassRequest)(nil),         // 22: regen.ecocredit.v1.QueryBatchesByClassRequest
-	(*QueryBatchesByProjectRequest)(nil),       // 23: regen.ecocredit.v1.QueryBatchesByProjectRequest
-	(*QueryBatchesByProjectResponse)(nil),      // 24: regen.ecocredit.v1.QueryBatchesByProjectResponse
-	(*QueryBatchesByClassResponse)(nil),        // 25: regen.ecocredit.v1.QueryBatchesByClassResponse
-	(*QueryBatchRequest)(nil),                  // 26: regen.ecocredit.v1.QueryBatchRequest
-	(*QueryBatchResponse)(nil),                 // 27: regen.ecocredit.v1.QueryBatchResponse
-	(*QueryBalanceRequest)(nil),                // 28: regen.ecocredit.v1.QueryBalanceRequest
-	(*QueryBalanceResponse)(nil),               // 29: regen.ecocredit.v1.QueryBalanceResponse
-	(*QueryBalancesRequest)(nil),               // 30: regen.ecocredit.v1.QueryBalancesRequest
-	(*QueryBalancesResponse)(nil),              // 31: regen.ecocredit.v1.QueryBalancesResponse
-	(*QuerySupplyRequest)(nil),                 // 32: regen.ecocredit.v1.QuerySupplyRequest
-	(*QuerySupplyResponse)(nil),                // 33: regen.ecocredit.v1.QuerySupplyResponse
-	(*QueryCreditTypesRequest)(nil),            // 34: regen.ecocredit.v1.QueryCreditTypesRequest
-	(*QueryCreditTypesResponse)(nil),           // 35: regen.ecocredit.v1.QueryCreditTypesResponse
-	(*QueryParamsRequest)(nil),                 // 36: regen.ecocredit.v1.QueryParamsRequest
-	(*QueryParamsResponse)(nil),                // 37: regen.ecocredit.v1.QueryParamsResponse
-	(*QueryCreditTypeRequest)(nil),             // 38: regen.ecocredit.v1.QueryCreditTypeRequest
-	(*QueryCreditTypeResponse)(nil),            // 39: regen.ecocredit.v1.QueryCreditTypeResponse
-	(*ClassInfo)(nil),                          // 40: regen.ecocredit.v1.ClassInfo
-	(*ProjectInfo)(nil),                        // 41: regen.ecocredit.v1.ProjectInfo
-	(*BatchInfo)(nil),                          // 42: regen.ecocredit.v1.BatchInfo
-	(*BatchBalanceInfo)(nil),                   // 43: regen.ecocredit.v1.BatchBalanceInfo
-	(*v1beta1.PageRequest)(nil),                // 44: cosmos.base.query.v1beta1.PageRequest
-	(*v1beta1.PageResponse)(nil),               // 45: cosmos.base.query.v1beta1.PageResponse
-	(*CreditType)(nil),                         // 46: regen.ecocredit.v1.CreditType
-	(*Params)(nil),                             // 47: regen.ecocredit.v1.Params
-	(*timestamppb.Timestamp)(nil),              // 48: google.protobuf.Timestamp
+	(*QueryClassesRequest)(nil),                      // 0: regen.ecocredit.v1.QueryClassesRequest
+	(*QueryClassesResponse)(nil),                     // 1: regen.ecocredit.v1.QueryClassesResponse
+	(*QueryClassesByAdminRequest)(nil),               // 2: regen.ecocredit.v1.QueryClassesByAdminRequest
+	(*QueryClassesByAdminResponse)(nil),              // 3: regen.ecocredit.v1.QueryClassesByAdminResponse
+	(*QueryClassRequest)(nil),                        // 4: regen.ecocredit.v1.QueryClassRequest
+	(*QueryClassResponse)(nil),                       // 5: regen.ecocredit.v1.QueryClassResponse
+	(*QueryClassIssuersRequest)(nil),                 // 6: regen.ecocredit.v1.QueryClassIssuersRequest
+	(*QueryClassIssuersResponse)(nil),                // 7: regen.ecocredit.v1.QueryClassIssuersResponse
+	(*QueryProjectsRequest)(nil),                     // 8: regen.ecocredit.v1.QueryProjectsRequest
+	(*QueryProjectsResponse)(nil),                    // 9: regen.ecocredit.v1.QueryProjectsResponse
+	(*QueryProjectsByClassRequest)(nil),              // 10: regen.ecocredit.v1.QueryProjectsByClassRequest
+	(*QueryProjectsByClassResponse)(nil),             // 11: regen.ecocredit.v1.QueryProjectsByClassResponse
+	(*QueryProjectsByReferenceIdRequest)(nil),        // 12: regen.ecocredit.v1.QueryProjectsByReferenceIdRequest
+	(*QueryProjectsByReferenceIdResponse)(nil),       // 13: regen.ecocredit.v1.QueryProjectsByReferenceIdResponse
+	(*QueryProjectsByAdminRequest)(nil),              // 14: regen.ecocredit.v1.QueryProjectsByAdminRequest
+	(*QueryProjectsByAdminResponse)(nil),             // 15: regen.ecocredit.v1.QueryProjectsByAdminResponse
+	(*QueryProjectRequest)(nil),                      // 16: regen.ecocredit.v1.QueryProjectRequest
+	(*QueryProjectResponse)(nil),                     // 17: regen.ecocredit.v1.QueryProjectResponse
+	(*QueryBatchesRequest)(nil),                      // 18: regen.ecocredit.v1.QueryBatchesRequest
+	(*QueryBatchesResponse)(nil),                     // 19: regen.ecocredit.v1.QueryBatchesResponse
+	(*QueryBatchesByIssuerRequest)(nil),              // 20: regen.ecocredit.v1.QueryBatchesByIssuerRequest
+	(*QueryBatchesByIssuerResponse)(nil),             // 21: regen.ecocredit.v1.QueryBatchesByIssuerResponse
+	(*QueryBatchesByClassRequest)(nil),               // 22: regen.ecocredit.v1.QueryBatchesByClassRequest
+	(*QueryBatchesByProjectRequest)(nil),             // 23: regen.ecocredit.v1.QueryBatchesByProjectRequest
+	(*QueryBatchesByProjectResponse)(nil),            // 24: regen.ecocredit.v1.QueryBatchesByProjectResponse
+	(*QueryBatchesByClassResponse)(nil),              // 25: regen.ecocredit.v1.QueryBatchesByClassResponse
+	(*QueryBatchRequest)(nil),                        // 26: regen.ecocredit.v1.QueryBatchRequest
+	(*QueryBatchResponse)(nil),                       // 27: regen.ecocredit.v1.QueryBatchResponse
+	(*QueryBalanceRequest)(nil),                      // 28: regen.ecocredit.v1.QueryBalanceRequest
+	(*QueryBalanceResponse)(nil),                     // 29: regen.ecocredit.v1.QueryBalanceResponse
+	(*QueryBalancesRequest)(nil),                     // 30: regen.ecocredit.v1.QueryBalancesRequest
+	(*QueryBalancesResponse)(nil),                    // 31: regen.ecocredit.v1.QueryBalancesResponse
+	(*QueryBalancesByBatchRequest)(nil),              // 32: regen.ecocredit.v1.QueryBalancesByBatchRequest
+	(*QueryBalancesByBatchResponse)(nil),             // 33: regen.ecocredit.v1.QueryBalancesByBatchResponse
+	(*QueryAllBalancesRequest)(nil),                  // 34: regen.ecocredit.v1.QueryAllBalancesRequest
+	(*QueryAllBalancesResponse)(nil),                 // 35: regen.ecocredit.v1.QueryAllBalancesResponse
+	(*QuerySupplyRequest)(nil),                       // 36: regen.ecocredit.v1.QuerySupplyRequest
+	(*QuerySupplyResponse)(nil),                      // 37: regen.ecocredit.v1.QuerySupplyResponse
+	(*QueryCreditTypesRequest)(nil),                  // 38: regen.ecocredit.v1.QueryCreditTypesRequest
+	(*QueryCreditTypesResponse)(nil),                 // 39: regen.ecocredit.v1.QueryCreditTypesResponse
+	(*QueryParamsRequest)(nil),                       // 40: regen.ecocredit.v1.QueryParamsRequest
+	(*AllowedDenomInfo)(nil),                         // 41: regen.ecocredit.v1.AllowedDenomInfo
+	(*QueryParamsResponse)(nil),                      // 42: regen.ecocredit.v1.QueryParamsResponse
+	(*QueryCreditTypeRequest)(nil),                   // 43: regen.ecocredit.v1.QueryCreditTypeRequest
+	(*QueryCreditTypeResponse)(nil),                  // 44: regen.ecocredit.v1.QueryCreditTypeResponse
+	(*ClassInfo)(nil),                                // 45: regen.ecocredit.v1.ClassInfo
+	(*ProjectInfo)(nil),                              // 46: regen.ecocredit.v1.ProjectInfo
+	(*BatchInfo)(nil),                                // 47: regen.ecocredit.v1.BatchInfo
+	(*BatchBalanceInfo)(nil),                         // 48: regen.ecocredit.v1.BatchBalanceInfo
+	(*QueryAllowedClassCreatorsRequest)(nil),         // 49: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest
+	(*QueryAllowedClassCreatorsResponse)(nil),        // 50: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse
+	(*QueryCreditClassFeesRequest)(nil),              // 51: regen.ecocredit.v1.QueryCreditClassFeesRequest
+	(*QueryCreditClassFeesResponse)(nil),             // 52: regen.ecocredit.v1.QueryCreditClassFeesResponse
+	(*QueryCreditClassAllowlistEnabledRequest)(nil),  // 53: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest
+	(*QueryCreditClassAllowlistEnabledResponse)(nil), // 54: regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse
+	(*v1beta1.PageRequest)(nil),                      // 55: cosmos.base.query.v1beta1.PageRequest
+	(*v1beta1.PageResponse)(nil),                     // 56: cosmos.base.query.v1beta1.PageResponse
+	(*CreditType)(nil),                               // 57: regen.ecocredit.v1.CreditType
+	(*Params)(nil),                                   // 58: regen.ecocredit.v1.Params
+	(*timestamppb.Timestamp)(nil),                    // 59: google.protobuf.Timestamp
+	(*v1beta11.Coin)(nil),                            // 60: cosmos.base.v1beta1.Coin
 }
 var file_regen_ecocredit_v1_query_proto_depIdxs = []int32{
-	44, // 0: regen.ecocredit.v1.QueryClassesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	40, // 1: regen.ecocredit.v1.QueryClassesResponse.classes:type_name -> regen.ecocredit.v1.ClassInfo
-	45, // 2: regen.ecocredit.v1.QueryClassesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	44, // 3: regen.ecocredit.v1.QueryClassesByAdminRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	40, // 4: regen.ecocredit.v1.QueryClassesByAdminResponse.classes:type_name -> regen.ecocredit.v1.ClassInfo
-	45, // 5: regen.ecocredit.v1.QueryClassesByAdminResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	40, // 6: regen.ecocredit.v1.QueryClassResponse.class:type_name -> regen.ecocredit.v1.ClassInfo
-	44, // 7: regen.ecocredit.v1.QueryClassIssuersRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	45, // 8: regen.ecocredit.v1.QueryClassIssuersResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	44, // 9: regen.ecocredit.v1.QueryProjectsRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	41, // 10: regen.ecocredit.v1.QueryProjectsResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
-	45, // 11: regen.ecocredit.v1.QueryProjectsResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	44, // 12: regen.ecocredit.v1.QueryProjectsByClassRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	41, // 13: regen.ecocredit.v1.QueryProjectsByClassResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
-	45, // 14: regen.ecocredit.v1.QueryProjectsByClassResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	44, // 15: regen.ecocredit.v1.QueryProjectsByReferenceIdRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	41, // 16: regen.ecocredit.v1.QueryProjectsByReferenceIdResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
-	45, // 17: regen.ecocredit.v1.QueryProjectsByReferenceIdResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	44, // 18: regen.ecocredit.v1.QueryProjectsByAdminRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	41, // 19: regen.ecocredit.v1.QueryProjectsByAdminResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
-	45, // 20: regen.ecocredit.v1.QueryProjectsByAdminResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	41, // 21: regen.ecocredit.v1.QueryProjectResponse.project:type_name -> regen.ecocredit.v1.ProjectInfo
-	44, // 22: regen.ecocredit.v1.QueryBatchesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	42, // 23: regen.ecocredit.v1.QueryBatchesResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
-	45, // 24: regen.ecocredit.v1.QueryBatchesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	44, // 25: regen.ecocredit.v1.QueryBatchesByIssuerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	42, // 26: regen.ecocredit.v1.QueryBatchesByIssuerResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
-	45, // 27: regen.ecocredit.v1.QueryBatchesByIssuerResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	44, // 28: regen.ecocredit.v1.QueryBatchesByClassRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	44, // 29: regen.ecocredit.v1.QueryBatchesByProjectRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	42, // 30: regen.ecocredit.v1.QueryBatchesByProjectResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
-	45, // 31: regen.ecocredit.v1.QueryBatchesByProjectResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	42, // 32: regen.ecocredit.v1.QueryBatchesByClassResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
-	45, // 33: regen.ecocredit.v1.QueryBatchesByClassResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	42, // 34: regen.ecocredit.v1.QueryBatchResponse.batch:type_name -> regen.ecocredit.v1.BatchInfo
-	43, // 35: regen.ecocredit.v1.QueryBalanceResponse.balance:type_name -> regen.ecocredit.v1.BatchBalanceInfo
-	44, // 36: regen.ecocredit.v1.QueryBalancesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	43, // 37: regen.ecocredit.v1.QueryBalancesResponse.balances:type_name -> regen.ecocredit.v1.BatchBalanceInfo
-	45, // 38: regen.ecocredit.v1.QueryBalancesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	46, // 39: regen.ecocredit.v1.QueryCreditTypesResponse.credit_types:type_name -> regen.ecocredit.v1.CreditType
-	47, // 40: regen.ecocredit.v1.QueryParamsResponse.params:type_name -> regen.ecocredit.v1.Params
-	46, // 41: regen.ecocredit.v1.QueryCreditTypeResponse.credit_type:type_name -> regen.ecocredit.v1.CreditType
-	48, // 42: regen.ecocredit.v1.BatchInfo.start_date:type_name -> google.protobuf.Timestamp
-	48, // 43: regen.ecocredit.v1.BatchInfo.end_date:type_name -> google.protobuf.Timestamp
-	48, // 44: regen.ecocredit.v1.BatchInfo.issuance_date:type_name -> google.protobuf.Timestamp
-	0,  // 45: regen.ecocredit.v1.Query.Classes:input_type -> regen.ecocredit.v1.QueryClassesRequest
-	2,  // 46: regen.ecocredit.v1.Query.ClassesByAdmin:input_type -> regen.ecocredit.v1.QueryClassesByAdminRequest
-	4,  // 47: regen.ecocredit.v1.Query.Class:input_type -> regen.ecocredit.v1.QueryClassRequest
-	6,  // 48: regen.ecocredit.v1.Query.ClassIssuers:input_type -> regen.ecocredit.v1.QueryClassIssuersRequest
-	8,  // 49: regen.ecocredit.v1.Query.Projects:input_type -> regen.ecocredit.v1.QueryProjectsRequest
-	10, // 50: regen.ecocredit.v1.Query.ProjectsByClass:input_type -> regen.ecocredit.v1.QueryProjectsByClassRequest
-	12, // 51: regen.ecocredit.v1.Query.ProjectsByReferenceId:input_type -> regen.ecocredit.v1.QueryProjectsByReferenceIdRequest
-	14, // 52: regen.ecocredit.v1.Query.ProjectsByAdmin:input_type -> regen.ecocredit.v1.QueryProjectsByAdminRequest
-	16, // 53: regen.ecocredit.v1.Query.Project:input_type -> regen.ecocredit.v1.QueryProjectRequest
-	18, // 54: regen.ecocredit.v1.Query.Batches:input_type -> regen.ecocredit.v1.QueryBatchesRequest
-	20, // 55: regen.ecocredit.v1.Query.BatchesByIssuer:input_type -> regen.ecocredit.v1.QueryBatchesByIssuerRequest
-	22, // 56: regen.ecocredit.v1.Query.BatchesByClass:input_type -> regen.ecocredit.v1.QueryBatchesByClassRequest
-	23, // 57: regen.ecocredit.v1.Query.BatchesByProject:input_type -> regen.ecocredit.v1.QueryBatchesByProjectRequest
-	26, // 58: regen.ecocredit.v1.Query.Batch:input_type -> regen.ecocredit.v1.QueryBatchRequest
-	28, // 59: regen.ecocredit.v1.Query.Balance:input_type -> regen.ecocredit.v1.QueryBalanceRequest
-	30, // 60: regen.ecocredit.v1.Query.Balances:input_type -> regen.ecocredit.v1.QueryBalancesRequest
-	32, // 61: regen.ecocredit.v1.Query.Supply:input_type -> regen.ecocredit.v1.QuerySupplyRequest
-	34, // 62: regen.ecocredit.v1.Query.CreditTypes:input_type -> regen.ecocredit.v1.QueryCreditTypesRequest
-	36, // 63: regen.ecocredit.v1.Query.Params:input_type -> regen.ecocredit.v1.QueryParamsRequest
-	38, // 64: regen.ecocredit.v1.Query.CreditType:input_type -> regen.ecocredit.v1.QueryCreditTypeRequest
-	1,  // 65: regen.ecocredit.v1.Query.Classes:output_type -> regen.ecocredit.v1.QueryClassesResponse
-	3,  // 66: regen.ecocredit.v1.Query.ClassesByAdmin:output_type -> regen.ecocredit.v1.QueryClassesByAdminResponse
-	5,  // 67: regen.ecocredit.v1.Query.Class:output_type -> regen.ecocredit.v1.QueryClassResponse
-	7,  // 68: regen.ecocredit.v1.Query.ClassIssuers:output_type -> regen.ecocredit.v1.QueryClassIssuersResponse
-	9,  // 69: regen.ecocredit.v1.Query.Projects:output_type -> regen.ecocredit.v1.QueryProjectsResponse
-	11, // 70: regen.ecocredit.v1.Query.ProjectsByClass:output_type -> regen.ecocredit.v1.QueryProjectsByClassResponse
-	13, // 71: regen.ecocredit.v1.Query.ProjectsByReferenceId:output_type -> regen.ecocredit.v1.QueryProjectsByReferenceIdResponse
-	15, // 72: regen.ecocredit.v1.Query.ProjectsByAdmin:output_type -> regen.ecocredit.v1.QueryProjectsByAdminResponse
-	17, // 73: regen.ecocredit.v1.Query.Project:output_type -> regen.ecocredit.v1.QueryProjectResponse
-	19, // 74: regen.ecocredit.v1.Query.Batches:output_type -> regen.ecocredit.v1.QueryBatchesResponse
-	21, // 75: regen.ecocredit.v1.Query.BatchesByIssuer:output_type -> regen.ecocredit.v1.QueryBatchesByIssuerResponse
-	25, // 76: regen.ecocredit.v1.Query.BatchesByClass:output_type -> regen.ecocredit.v1.QueryBatchesByClassResponse
-	24, // 77: regen.ecocredit.v1.Query.BatchesByProject:output_type -> regen.ecocredit.v1.QueryBatchesByProjectResponse
-	27, // 78: regen.ecocredit.v1.Query.Batch:output_type -> regen.ecocredit.v1.QueryBatchResponse
-	29, // 79: regen.ecocredit.v1.Query.Balance:output_type -> regen.ecocredit.v1.QueryBalanceResponse
-	31, // 80: regen.ecocredit.v1.Query.Balances:output_type -> regen.ecocredit.v1.QueryBalancesResponse
-	33, // 81: regen.ecocredit.v1.Query.Supply:output_type -> regen.ecocredit.v1.QuerySupplyResponse
-	35, // 82: regen.ecocredit.v1.Query.CreditTypes:output_type -> regen.ecocredit.v1.QueryCreditTypesResponse
-	37, // 83: regen.ecocredit.v1.Query.Params:output_type -> regen.ecocredit.v1.QueryParamsResponse
-	39, // 84: regen.ecocredit.v1.Query.CreditType:output_type -> regen.ecocredit.v1.QueryCreditTypeResponse
-	65, // [65:85] is the sub-list for method output_type
-	45, // [45:65] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	55, // 0: regen.ecocredit.v1.QueryClassesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	45, // 1: regen.ecocredit.v1.QueryClassesResponse.classes:type_name -> regen.ecocredit.v1.ClassInfo
+	56, // 2: regen.ecocredit.v1.QueryClassesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 3: regen.ecocredit.v1.QueryClassesByAdminRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	45, // 4: regen.ecocredit.v1.QueryClassesByAdminResponse.classes:type_name -> regen.ecocredit.v1.ClassInfo
+	56, // 5: regen.ecocredit.v1.QueryClassesByAdminResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	45, // 6: regen.ecocredit.v1.QueryClassResponse.class:type_name -> regen.ecocredit.v1.ClassInfo
+	55, // 7: regen.ecocredit.v1.QueryClassIssuersRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	56, // 8: regen.ecocredit.v1.QueryClassIssuersResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 9: regen.ecocredit.v1.QueryProjectsRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	46, // 10: regen.ecocredit.v1.QueryProjectsResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
+	56, // 11: regen.ecocredit.v1.QueryProjectsResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 12: regen.ecocredit.v1.QueryProjectsByClassRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	46, // 13: regen.ecocredit.v1.QueryProjectsByClassResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
+	56, // 14: regen.ecocredit.v1.QueryProjectsByClassResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 15: regen.ecocredit.v1.QueryProjectsByReferenceIdRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	46, // 16: regen.ecocredit.v1.QueryProjectsByReferenceIdResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
+	56, // 17: regen.ecocredit.v1.QueryProjectsByReferenceIdResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 18: regen.ecocredit.v1.QueryProjectsByAdminRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	46, // 19: regen.ecocredit.v1.QueryProjectsByAdminResponse.projects:type_name -> regen.ecocredit.v1.ProjectInfo
+	56, // 20: regen.ecocredit.v1.QueryProjectsByAdminResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	46, // 21: regen.ecocredit.v1.QueryProjectResponse.project:type_name -> regen.ecocredit.v1.ProjectInfo
+	55, // 22: regen.ecocredit.v1.QueryBatchesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	47, // 23: regen.ecocredit.v1.QueryBatchesResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
+	56, // 24: regen.ecocredit.v1.QueryBatchesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 25: regen.ecocredit.v1.QueryBatchesByIssuerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	47, // 26: regen.ecocredit.v1.QueryBatchesByIssuerResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
+	56, // 27: regen.ecocredit.v1.QueryBatchesByIssuerResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 28: regen.ecocredit.v1.QueryBatchesByClassRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	55, // 29: regen.ecocredit.v1.QueryBatchesByProjectRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	47, // 30: regen.ecocredit.v1.QueryBatchesByProjectResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
+	56, // 31: regen.ecocredit.v1.QueryBatchesByProjectResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	47, // 32: regen.ecocredit.v1.QueryBatchesByClassResponse.batches:type_name -> regen.ecocredit.v1.BatchInfo
+	56, // 33: regen.ecocredit.v1.QueryBatchesByClassResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	47, // 34: regen.ecocredit.v1.QueryBatchResponse.batch:type_name -> regen.ecocredit.v1.BatchInfo
+	48, // 35: regen.ecocredit.v1.QueryBalanceResponse.balance:type_name -> regen.ecocredit.v1.BatchBalanceInfo
+	55, // 36: regen.ecocredit.v1.QueryBalancesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	48, // 37: regen.ecocredit.v1.QueryBalancesResponse.balances:type_name -> regen.ecocredit.v1.BatchBalanceInfo
+	56, // 38: regen.ecocredit.v1.QueryBalancesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 39: regen.ecocredit.v1.QueryBalancesByBatchRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	48, // 40: regen.ecocredit.v1.QueryBalancesByBatchResponse.balances:type_name -> regen.ecocredit.v1.BatchBalanceInfo
+	56, // 41: regen.ecocredit.v1.QueryBalancesByBatchResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 42: regen.ecocredit.v1.QueryAllBalancesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	48, // 43: regen.ecocredit.v1.QueryAllBalancesResponse.balances:type_name -> regen.ecocredit.v1.BatchBalanceInfo
+	56, // 44: regen.ecocredit.v1.QueryAllBalancesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	57, // 45: regen.ecocredit.v1.QueryCreditTypesResponse.credit_types:type_name -> regen.ecocredit.v1.CreditType
+	58, // 46: regen.ecocredit.v1.QueryParamsResponse.params:type_name -> regen.ecocredit.v1.Params
+	41, // 47: regen.ecocredit.v1.QueryParamsResponse.allowed_denoms:type_name -> regen.ecocredit.v1.AllowedDenomInfo
+	57, // 48: regen.ecocredit.v1.QueryCreditTypeResponse.credit_type:type_name -> regen.ecocredit.v1.CreditType
+	59, // 49: regen.ecocredit.v1.BatchInfo.start_date:type_name -> google.protobuf.Timestamp
+	59, // 50: regen.ecocredit.v1.BatchInfo.end_date:type_name -> google.protobuf.Timestamp
+	59, // 51: regen.ecocredit.v1.BatchInfo.issuance_date:type_name -> google.protobuf.Timestamp
+	55, // 52: regen.ecocredit.v1.QueryAllowedClassCreatorsRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	56, // 53: regen.ecocredit.v1.QueryAllowedClassCreatorsResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	60, // 54: regen.ecocredit.v1.QueryCreditClassFeesResponse.fees:type_name -> cosmos.base.v1beta1.Coin
+	0,  // 55: regen.ecocredit.v1.Query.Classes:input_type -> regen.ecocredit.v1.QueryClassesRequest
+	2,  // 56: regen.ecocredit.v1.Query.ClassesByAdmin:input_type -> regen.ecocredit.v1.QueryClassesByAdminRequest
+	4,  // 57: regen.ecocredit.v1.Query.Class:input_type -> regen.ecocredit.v1.QueryClassRequest
+	6,  // 58: regen.ecocredit.v1.Query.ClassIssuers:input_type -> regen.ecocredit.v1.QueryClassIssuersRequest
+	8,  // 59: regen.ecocredit.v1.Query.Projects:input_type -> regen.ecocredit.v1.QueryProjectsRequest
+	10, // 60: regen.ecocredit.v1.Query.ProjectsByClass:input_type -> regen.ecocredit.v1.QueryProjectsByClassRequest
+	12, // 61: regen.ecocredit.v1.Query.ProjectsByReferenceId:input_type -> regen.ecocredit.v1.QueryProjectsByReferenceIdRequest
+	14, // 62: regen.ecocredit.v1.Query.ProjectsByAdmin:input_type -> regen.ecocredit.v1.QueryProjectsByAdminRequest
+	16, // 63: regen.ecocredit.v1.Query.Project:input_type -> regen.ecocredit.v1.QueryProjectRequest
+	18, // 64: regen.ecocredit.v1.Query.Batches:input_type -> regen.ecocredit.v1.QueryBatchesRequest
+	20, // 65: regen.ecocredit.v1.Query.BatchesByIssuer:input_type -> regen.ecocredit.v1.QueryBatchesByIssuerRequest
+	22, // 66: regen.ecocredit.v1.Query.BatchesByClass:input_type -> regen.ecocredit.v1.QueryBatchesByClassRequest
+	23, // 67: regen.ecocredit.v1.Query.BatchesByProject:input_type -> regen.ecocredit.v1.QueryBatchesByProjectRequest
+	26, // 68: regen.ecocredit.v1.Query.Batch:input_type -> regen.ecocredit.v1.QueryBatchRequest
+	28, // 69: regen.ecocredit.v1.Query.Balance:input_type -> regen.ecocredit.v1.QueryBalanceRequest
+	30, // 70: regen.ecocredit.v1.Query.Balances:input_type -> regen.ecocredit.v1.QueryBalancesRequest
+	32, // 71: regen.ecocredit.v1.Query.BalancesByBatch:input_type -> regen.ecocredit.v1.QueryBalancesByBatchRequest
+	34, // 72: regen.ecocredit.v1.Query.AllBalances:input_type -> regen.ecocredit.v1.QueryAllBalancesRequest
+	36, // 73: regen.ecocredit.v1.Query.Supply:input_type -> regen.ecocredit.v1.QuerySupplyRequest
+	38, // 74: regen.ecocredit.v1.Query.CreditTypes:input_type -> regen.ecocredit.v1.QueryCreditTypesRequest
+	40, // 75: regen.ecocredit.v1.Query.Params:input_type -> regen.ecocredit.v1.QueryParamsRequest
+	43, // 76: regen.ecocredit.v1.Query.CreditType:input_type -> regen.ecocredit.v1.QueryCreditTypeRequest
+	49, // 77: regen.ecocredit.v1.Query.AllowedClassCreators:input_type -> regen.ecocredit.v1.QueryAllowedClassCreatorsRequest
+	51, // 78: regen.ecocredit.v1.Query.CreditClassFees:input_type -> regen.ecocredit.v1.QueryCreditClassFeesRequest
+	53, // 79: regen.ecocredit.v1.Query.CreditClassAllowlistEnabled:input_type -> regen.ecocredit.v1.QueryCreditClassAllowlistEnabledRequest
+	1,  // 80: regen.ecocredit.v1.Query.Classes:output_type -> regen.ecocredit.v1.QueryClassesResponse
+	3,  // 81: regen.ecocredit.v1.Query.ClassesByAdmin:output_type -> regen.ecocredit.v1.QueryClassesByAdminResponse
+	5,  // 82: regen.ecocredit.v1.Query.Class:output_type -> regen.ecocredit.v1.QueryClassResponse
+	7,  // 83: regen.ecocredit.v1.Query.ClassIssuers:output_type -> regen.ecocredit.v1.QueryClassIssuersResponse
+	9,  // 84: regen.ecocredit.v1.Query.Projects:output_type -> regen.ecocredit.v1.QueryProjectsResponse
+	11, // 85: regen.ecocredit.v1.Query.ProjectsByClass:output_type -> regen.ecocredit.v1.QueryProjectsByClassResponse
+	13, // 86: regen.ecocredit.v1.Query.ProjectsByReferenceId:output_type -> regen.ecocredit.v1.QueryProjectsByReferenceIdResponse
+	15, // 87: regen.ecocredit.v1.Query.ProjectsByAdmin:output_type -> regen.ecocredit.v1.QueryProjectsByAdminResponse
+	17, // 88: regen.ecocredit.v1.Query.Project:output_type -> regen.ecocredit.v1.QueryProjectResponse
+	19, // 89: regen.ecocredit.v1.Query.Batches:output_type -> regen.ecocredit.v1.QueryBatchesResponse
+	21, // 90: regen.ecocredit.v1.Query.BatchesByIssuer:output_type -> regen.ecocredit.v1.QueryBatchesByIssuerResponse
+	25, // 91: regen.ecocredit.v1.Query.BatchesByClass:output_type -> regen.ecocredit.v1.QueryBatchesByClassResponse
+	24, // 92: regen.ecocredit.v1.Query.BatchesByProject:output_type -> regen.ecocredit.v1.QueryBatchesByProjectResponse
+	27, // 93: regen.ecocredit.v1.Query.Batch:output_type -> regen.ecocredit.v1.QueryBatchResponse
+	29, // 94: regen.ecocredit.v1.Query.Balance:output_type -> regen.ecocredit.v1.QueryBalanceResponse
+	31, // 95: regen.ecocredit.v1.Query.Balances:output_type -> regen.ecocredit.v1.QueryBalancesResponse
+	33, // 96: regen.ecocredit.v1.Query.BalancesByBatch:output_type -> regen.ecocredit.v1.QueryBalancesByBatchResponse
+	35, // 97: regen.ecocredit.v1.Query.AllBalances:output_type -> regen.ecocredit.v1.QueryAllBalancesResponse
+	37, // 98: regen.ecocredit.v1.Query.Supply:output_type -> regen.ecocredit.v1.QuerySupplyResponse
+	39, // 99: regen.ecocredit.v1.Query.CreditTypes:output_type -> regen.ecocredit.v1.QueryCreditTypesResponse
+	42, // 100: regen.ecocredit.v1.Query.Params:output_type -> regen.ecocredit.v1.QueryParamsResponse
+	44, // 101: regen.ecocredit.v1.Query.CreditType:output_type -> regen.ecocredit.v1.QueryCreditTypeResponse
+	50, // 102: regen.ecocredit.v1.Query.AllowedClassCreators:output_type -> regen.ecocredit.v1.QueryAllowedClassCreatorsResponse
+	52, // 103: regen.ecocredit.v1.Query.CreditClassFees:output_type -> regen.ecocredit.v1.QueryCreditClassFeesResponse
+	54, // 104: regen.ecocredit.v1.Query.CreditClassAllowlistEnabled:output_type -> regen.ecocredit.v1.QueryCreditClassAllowlistEnabledResponse
+	80, // [80:105] is the sub-list for method output_type
+	55, // [55:80] is the sub-list for method input_type
+	55, // [55:55] is the sub-list for extension type_name
+	55, // [55:55] is the sub-list for extension extendee
+	0,  // [0:55] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_v1_query_proto_init() }
@@ -25741,7 +31766,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QuerySupplyRequest); i {
+			switch v := v.(*QueryBalancesByBatchRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25753,7 +31778,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QuerySupplyResponse); i {
+			switch v := v.(*QueryBalancesByBatchResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25765,7 +31790,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryCreditTypesRequest); i {
+			switch v := v.(*QueryAllBalancesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25777,7 +31802,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryCreditTypesResponse); i {
+			switch v := v.(*QueryAllBalancesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25789,7 +31814,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryParamsRequest); i {
+			switch v := v.(*QuerySupplyRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25801,7 +31826,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryParamsResponse); i {
+			switch v := v.(*QuerySupplyResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25813,7 +31838,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryCreditTypeRequest); i {
+			switch v := v.(*QueryCreditTypesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25825,7 +31850,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryCreditTypeResponse); i {
+			switch v := v.(*QueryCreditTypesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25837,7 +31862,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ClassInfo); i {
+			switch v := v.(*QueryParamsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25849,7 +31874,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ProjectInfo); i {
+			switch v := v.(*AllowedDenomInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25861,7 +31886,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BatchInfo); i {
+			switch v := v.(*QueryParamsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25873,7 +31898,139 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_query_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryCreditTypeRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryCreditTypeResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ClassInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProjectInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*BatchInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*BatchBalanceInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryAllowedClassCreatorsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[50].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryAllowedClassCreatorsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[51].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryCreditClassFeesRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryCreditClassFeesResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[53].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryCreditClassAllowlistEnabledRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_query_proto_msgTypes[54].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryCreditClassAllowlistEnabledResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -25891,7 +32048,7 @@ func file_regen_ecocredit_v1_query_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_v1_query_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   44,
+			NumMessages:   55,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

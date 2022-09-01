@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
@@ -16,13 +17,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	dbm "github.com/tendermint/tm-db"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 // genCreditClassFee randomized CreditClassFee
@@ -350,7 +350,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	if err != nil {
 		return err
 	}
-	denom, err := core.FormatBatchDenom("C01-001", batchSeq, &startDate, &endDate)
+	denom, err := base.FormatBatchDenom("C01-001", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -374,7 +374,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	if err != nil {
 		return err
 	}
-	denom, err = core.FormatBatchDenom("C02-001", batchSeq, &startDate, &endDate)
+	denom, err = base.FormatBatchDenom("C02-001", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}

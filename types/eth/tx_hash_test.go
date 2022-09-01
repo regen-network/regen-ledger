@@ -23,11 +23,11 @@ func TestTxHash(t *testing.T) {
 }
 
 func testValidTxHash(t *rapid.T) {
-	txHash := genValidTxHash.Draw(t, "txHash").(string)
+	txHash := genValidTxHash.Draw(t, "txHash")
 	require.True(t, IsValidTxHash(txHash))
 }
 
 func testInvalidTxHash(t *rapid.T) {
-	txHash := genInvalidTxHash.Draw(t, "txHash").(string)
+	txHash := genInvalidTxHash.Draw(t, "txHash")
 	require.False(t, IsValidTxHash(txHash))
 }

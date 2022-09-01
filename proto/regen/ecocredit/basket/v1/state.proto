@@ -8,7 +8,7 @@ import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // Basket represents a basket in state.
 message Basket {
