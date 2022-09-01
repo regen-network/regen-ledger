@@ -25,7 +25,6 @@ import (
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 )
 
 // Simulation operation weights constants
@@ -46,14 +45,16 @@ const (
 
 // ecocredit message types
 var (
-	TypeMsgCreate = types.MsgCreate{}.Route()
-	TypeMsgPut    = types.MsgPut{}.Route()
-	TypeMsgTake   = types.MsgTake{}.Route()
+	TypeMsgCreate           = types.MsgCreate{}.Route()
+	TypeMsgPut              = types.MsgPut{}.Route()
+	TypeMsgTake             = types.MsgTake{}.Route()
+	TypeMsgUpdateBasketFees = types.MsgUpdateBasketFees{}.Route()
 )
 
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	govk ecocredit.GovKeeper,
 	qryClient basetypes.QueryServer, basketQryClient types.QueryServer,
 	authority sdk.AccAddress) simulation.WeightedOperations {
 
@@ -103,14 +104,14 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateBasketFees,
-			SimulateMsgUpdateBasketFees(ak, bk, qryClient, basketQryClient, authority),
+			SimulateMsgUpdateBasketFees(ak, bk, qryClient, basketQryClient, govk, authority),
 		),
 	}
 }
 
 // SimulateMsgCreate generates a Basket/MsgUpdateBasketFees with random values.
-func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient core.QueryServer,
-	basketQryClient basket.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient basetypes.QueryServer,
+	basketQryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -123,10 +124,19 @@ func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			return op, nil, err
 		}
 
-		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
-		msg := basket.MsgUpdateBasketFees{
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "unable to generate deposit"), nil, err
+		}
+
+		fees := utils.RandomFees(r)
+		msg := types.MsgUpdateBasketFees{
 			Authority:  authority.String(),
-			BasketFees: sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, r.Int63())),
+			BasketFees: fees,
 		}
 
 		any, err := codectypes.NewAnyWithValue(&msg)
@@ -135,7 +145,7 @@ func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 		}
 
 		proposalMsg := govtypes.MsgSubmitProposal{
-			InitialDeposit: initialDeposit,
+			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
 			Messages:       []*codectypes.Any{any},

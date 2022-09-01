@@ -55,7 +55,7 @@ func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, mktQryClient types.QueryServer,
-	authority sdk.AccAddress) simulation.WeightedOperations {
+	govk ecocredit.GovKeeper, authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
 		weightMsgBuyDirect          int
@@ -121,11 +121,11 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAddAllowedDenom,
-			SimulateMsgAddAllowedDenom(ak, bk, mktQryClient, authority),
+			SimulateMsgAddAllowedDenom(ak, bk, mktQryClient, govk, authority),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRemoveAllowedDenom,
-			SimulateMsgRemoveAllowedDenom(ak, bk, mktQryClient, authority),
+			SimulateMsgRemoveAllowedDenom(ak, bk, mktQryClient, govk, authority),
 		),
 	}
 }
@@ -434,7 +434,7 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 }
 
 func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	qryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -457,7 +457,15 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, fmt.Sprintf("denom %s already exists", bankDenom)), nil, nil
 		}
 
-		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, authority)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, "unable to generate deposit"), nil, err
+		}
+
 		msg := types.MsgAddAllowedDenom{
 			Authority:    authority.String(),
 			BankDenom:    bankDenom,
@@ -471,7 +479,7 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		}
 
 		proposalMsg := govtypes.MsgSubmitProposal{
-			InitialDeposit: initialDeposit,
+			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
 			Messages:       []*codectypes.Any{any},
@@ -507,8 +515,7 @@ func isDenomExists(allowedDenom []*types.AllowedDenom, bankDenom string) bool {
 }
 
 func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	mktClient types.QueryServer,
-	authority sdk.AccAddress) simtypes.Operation {
+	mktClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -525,12 +532,20 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgAddAllowedDenom)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgRemoveAllowedDenom)
 		if spendable == nil {
 			return op, nil, err
 		}
 
-		initialDeposit := simtypes.RandSubsetCoins(r, spendable)
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, authority)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveAllowedDenom, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveAllowedDenom, "unable to generate deposit"), nil, err
+		}
+
 		msg := types.MsgRemoveAllowedDenom{
 			Authority: authority.String(),
 			Denom:     response.AllowedDenoms[r.Intn(len(response.AllowedDenoms))].BankDenom,
@@ -542,7 +557,7 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		}
 
 		proposalMsg := govtypes.MsgSubmitProposal{
-			InitialDeposit: initialDeposit,
+			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
 			Messages:       []*codectypes.Any{any},
