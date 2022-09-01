@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 
 - [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Move application entry point to root directory
-- [#1357](https://github.com/regen-network/regen-ledger/pull/1350) Migrate from custom module manager to sdk module manager
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Migrate from custom module manager to sdk module manager
 
 #### Removed
 
@@ -61,15 +61,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### API Breaking Changes
 
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewModule` method in `ecocredit/module` requires an `authority` address.
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewKeeper` method in `ecocredit/core` requires an `authority` address.
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `AddCreditType` proposal handler has been removed.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `AllowedDenom` proposal handler has been removed.
-
+- [#1357](https://github.com/regen-network/regen-ledger/pull/#1357) The `NewModule` method in `ecocredit/module` requires a store `key`.
 
 #### Added
 
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1342) Add `AddAllowedDenom` msg-based gov proposal
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddAllowedDenom` msg-based gov proposal
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddCreditType` msg-based gov proposal
 - [#1346](https://github.com/regen-network/regen-ledger/pull/1346) Add `RemoveAllowedDenom` msg-based gov proposal
 - [#1349](https://github.com/regen-network/regen-ledger/pull/1349) Add `UpdateBasketFees` msg-based gov proposal
@@ -93,7 +94,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassFees` params query
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
 - [#1450](https://github.com/regen-network/regen-ledger/pull/1450) Add `QueryBalancesByBatch` query
-
 
 #### Changed
 
@@ -129,6 +129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/client` core commands to `ecocredit/base/client`
 - [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/server/core` to `ecocredit/base/keeper`
 - [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/simulation` core operations to `ecocredit/base/simulation`
+- [#1452](https://github.com/regen-network/regen-ledger/pull/1452) Migrated `BeginBlocker` to `ecocredit/module`
 
 ### Fixed
 
@@ -146,7 +147,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module in favor of Cosmos SDK group module
 
-## [v4.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.1) - TBD
+## [v4.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.1) - 2022-08-30
 
 ### x/ecocredit
 

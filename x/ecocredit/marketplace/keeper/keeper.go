@@ -9,6 +9,11 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
+var (
+	_ types.MsgServer   = Keeper{}
+	_ types.QueryServer = Keeper{}
+)
+
 type Keeper struct {
 	stateStore   marketapi.StateStore
 	coreStore    ecoApi.StateStore
@@ -27,6 +32,3 @@ func NewKeeper(ss marketapi.StateStore, cs ecoApi.StateStore, bk ecocredit.BankK
 		authority:    authority,
 	}
 }
-
-var _ types.MsgServer = Keeper{}
-var _ types.QueryServer = Keeper{}
