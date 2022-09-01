@@ -961,7 +961,10 @@ func (m *BatchContract) GetContract() string {
 	return ""
 }
 
-// AllowedClassCreator is an allowed credit class creator.
+// AllowedClassCreator is an allowed credit class creator. This table is
+// controlled via governance.
+//
+// Since Revision 1
 type AllowedClassCreator struct {
 	// address is the address that is allowed to create credit classes
 	Address []byte `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
@@ -1010,7 +1013,9 @@ func (m *AllowedClassCreator) GetAddress() []byte {
 // AllowListEnabled determines if the credit class creator allowlist is enabled.
 // When set to true, only the addresses in the AllowedClassCreator table can
 // create credit classes. When set to false, any address is free to create
-// credit classes.
+// credit classes. This table is controlled via governance.
+//
+// Since Revision 1
 type AllowListEnabled struct {
 	// enabled is whether or not the allow list is enabled.
 	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
@@ -1056,8 +1061,10 @@ func (m *AllowListEnabled) GetEnabled() bool {
 	return false
 }
 
-// ClassFees is a list of coins that may be used as the fee
-// for credit class creation.
+// ClassFees is a list of coins that may be used as the fee for credit class
+// creation. This table is controlled via governance.
+//
+// Since Revision 1
 type ClassFees struct {
 	// fees is the fee required to create a credit class.
 	Fees []*types1.Coin `protobuf:"bytes,1,rep,name=fees,proto3" json:"fees,omitempty"`

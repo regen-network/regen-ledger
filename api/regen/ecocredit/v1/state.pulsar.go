@@ -9299,7 +9299,10 @@ func (x *BatchContract) GetContract() string {
 	return ""
 }
 
-// AllowedClassCreator is an allowed credit class creator.
+// AllowedClassCreator is an allowed credit class creator. This table is
+// controlled via governance.
+//
+// Since Revision 1
 type AllowedClassCreator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9339,7 +9342,9 @@ func (x *AllowedClassCreator) GetAddress() []byte {
 // AllowListEnabled determines if the credit class creator allowlist is enabled.
 // When set to true, only the addresses in the AllowedClassCreator table can
 // create credit classes. When set to false, any address is free to create
-// credit classes.
+// credit classes. This table is controlled via governance.
+//
+// Since Revision 1
 type AllowListEnabled struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9376,8 +9381,10 @@ func (x *AllowListEnabled) GetEnabled() bool {
 	return false
 }
 
-// ClassFees is a list of coins that may be used as the fee
-// for credit class creation.
+// ClassFees is a list of coins that may be used as the fee for credit class
+// creation. This table is controlled via governance.
+//
+// Since Revision 1
 type ClassFees struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

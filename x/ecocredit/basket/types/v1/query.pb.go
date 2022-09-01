@@ -654,6 +654,7 @@ func (m *BasketBalanceInfo) GetBalance() string {
 }
 
 // QueryBasketFeesRequest is the Query/BasketFees request type.
+//
 // Since Revision 1
 type QueryBasketFeesRequest struct {
 }
@@ -692,6 +693,7 @@ func (m *QueryBasketFeesRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryBasketFeesRequest proto.InternalMessageInfo
 
 // QueryBasketFeesResponse is the Query/BasketFees response type.
+//
 // Since Revision 1
 type QueryBasketFeesResponse struct {
 	// fees is the BasketFees message type
@@ -843,7 +845,8 @@ type QueryClient interface {
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(ctx context.Context, in *QueryBasketBalanceRequest, opts ...grpc.CallOption) (*QueryBasketBalanceResponse, error)
 	// BasketFees returns list of fees that can be used for creating basket.
-	// Since Revision 1
+	//
+	// Since Revision 2
 	BasketFees(ctx context.Context, in *QueryBasketFeesRequest, opts ...grpc.CallOption) (*QueryBasketFeesResponse, error)
 }
 
@@ -911,7 +914,8 @@ type QueryServer interface {
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(context.Context, *QueryBasketBalanceRequest) (*QueryBasketBalanceResponse, error)
 	// BasketFees returns list of fees that can be used for creating basket.
-	// Since Revision 1
+	//
+	// Since Revision 2
 	BasketFees(context.Context, *QueryBasketFeesRequest) (*QueryBasketFeesResponse, error)
 }
 

@@ -103,23 +103,30 @@ type MsgClient interface {
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	//
 	// Since Revision 1
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 	// AddClassCreator is a governance method that allows the addition of new
 	// address to the class creation allowlist.
+	//
 	// Since Revision 1
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes
 	// address from the creation allowlist.
+	//
 	// Since Revision 1
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
 	// ToggleCreditClassAllowlist is a governance method that toggles the network
 	// allowlist to on or off. when on, the class creator allowlist is used to
 	// enforce which addresses may create classes. when off, any address may
-	// create classes. Since Revision 1
+	// create classes.
+	//
+	// Since Revision 1
 	ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggleCreditClassAllowlist, opts ...grpc.CallOption) (*MsgToggleCreditClassAllowlistResponse, error)
 	// UpdateClassFees is a governance method that allows for the addition and
-	// removal of fees to be used for the class creation fee. Since Revision 1
+	// removal of fees to be used for the class creation fee.
+	//
+	// Since Revision 1
 	UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error)
 }
 
@@ -396,23 +403,30 @@ type MsgServer interface {
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	//
 	// Since Revision 1
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	// AddClassCreator is a governance method that allows the addition of new
 	// address to the class creation allowlist.
+	//
 	// Since Revision 1
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes
 	// address from the creation allowlist.
+	//
 	// Since Revision 1
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
 	// ToggleCreditClassAllowlist is a governance method that toggles the network
 	// allowlist to on or off. when on, the class creator allowlist is used to
 	// enforce which addresses may create classes. when off, any address may
-	// create classes. Since Revision 1
+	// create classes.
+	//
+	// Since Revision 1
 	ToggleCreditClassAllowlist(context.Context, *MsgToggleCreditClassAllowlist) (*MsgToggleCreditClassAllowlistResponse, error)
 	// UpdateClassFees is a governance method that allows for the addition and
-	// removal of fees to be used for the class creation fee. Since Revision 1
+	// removal of fees to be used for the class creation fee.
+	//
+	// Since Revision 1
 	UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

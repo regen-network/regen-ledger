@@ -485,7 +485,8 @@ func (m *MsgTakeResponse) GetCredits() []*BasketCredit {
 }
 
 // MsgUpdateBasketFees is the Msg/UpdateBasketFees request type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgUpdateBasketFees struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -542,7 +543,8 @@ func (m *MsgUpdateBasketFees) GetBasketFees() github_com_cosmos_cosmos_sdk_types
 }
 
 // MsgUpdateBasketFeesResponse is the Msg/UpdateBasketFees response type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgUpdateBasketFeesResponse struct {
 }
 
@@ -673,7 +675,7 @@ type MsgClient interface {
 	// UpdateBasketFees is a governance method that allows for updating of fees to
 	// be used for the basket creation fee.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBasketFees(ctx context.Context, in *MsgUpdateBasketFees, opts ...grpc.CallOption) (*MsgUpdateBasketFeesResponse, error)
 }
 
@@ -733,7 +735,7 @@ type MsgServer interface {
 	// UpdateBasketFees is a governance method that allows for updating of fees to
 	// be used for the basket creation fee.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBasketFees(context.Context, *MsgUpdateBasketFees) (*MsgUpdateBasketFeesResponse, error)
 }
 
