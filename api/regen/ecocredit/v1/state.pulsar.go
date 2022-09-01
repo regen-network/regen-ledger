@@ -9834,10 +9834,9 @@ func (x *ClassFees) GetFees() []*v1beta1.Coin {
 	return nil
 }
 
-// AllowedBridgeChains is a list of chain names that are approved to bridge
-// ecocredits to.
-// NOTE: chain_names MUST be converted to uppercase before writing to and
-// reading from this table in order to keep entries consistent.
+// AllowedBridgeChains is a list of chains that are allowed to be used in
+// bridging operations. NOTE: chain_names MUST be converted to uppercase before
+// writing to and reading from this table in order to keep entries consistent.
 //
 // Since Revision 1
 type AllowedBridgeChains struct {
