@@ -893,14 +893,14 @@ func (s *IntegrationTestSuite) TestQueryCreditClassAllowlistEnableCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	cmd := client.QueryCreditClassAllowlistEnabledCmd()
+	cmd := client.QueryClassCreatorAllowlistCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 
 	s.Require().NoError(err, out.String())
 
-	var res types.QueryCreditClassAllowlistEnabledResponse
+	var res types.QueryClassCreatorAllowlistResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	s.Require().False(res.AllowlistEnabled)
+	s.Require().False(res.Enabled)
 }
 
 func (s *IntegrationTestSuite) TestQueryCreditClassFeesCmd() {

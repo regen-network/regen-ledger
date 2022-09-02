@@ -58,7 +58,7 @@ func (s *createClassSuite) AllowlistEnabled(a string) {
 	allowlistEnabled, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	err = s.stateStore.AllowListEnabledTable().Save(s.ctx, &api.AllowListEnabled{
+	err = s.stateStore.ClassCreatorAllowlistTable().Save(s.ctx, &api.ClassCreatorAllowlist{
 		Enabled: allowlistEnabled,
 	})
 	require.NoError(s.t, err)

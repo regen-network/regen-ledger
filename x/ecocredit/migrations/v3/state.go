@@ -29,7 +29,7 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 	}
 
 	// migrate credit class allow list
-	if err := baseStore.AllowListEnabledTable().Save(sdkCtx, &baseapi.AllowListEnabled{
+	if err := baseStore.ClassCreatorAllowlistTable().Save(sdkCtx, &baseapi.ClassCreatorAllowlist{
 		Enabled: params.AllowlistEnabled,
 	}); err != nil {
 		return err

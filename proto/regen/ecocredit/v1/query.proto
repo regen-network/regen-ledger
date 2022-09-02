@@ -226,6 +226,16 @@ service Query {
     };
   }
 
+  // ClassCreatorAllowlist queries the credit class creator allowlist
+  // enabled setting.
+  //
+  // Since Revision 1
+  rpc ClassCreatorAllowlist(QueryClassCreatorAllowlistRequest)
+      returns (QueryClassCreatorAllowlistResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/class-creator-allowlist";
+  }
+
   // AllowedClassCreators queries allowed credit class creators list.
   //
   // Since Revision 1
@@ -240,16 +250,6 @@ service Query {
   rpc CreditClassFees(QueryCreditClassFeesRequest)
       returns (QueryCreditClassFeesResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
-  }
-
-  // CreditClassAllowlistEnabled queries the credit class creator allowlist
-  // flag.
-  //
-  // Since Revision 1
-  rpc CreditClassAllowlistEnabled(QueryCreditClassAllowlistEnabledRequest)
-      returns (QueryCreditClassAllowlistEnabledResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/credit-class-allowlist-enabled";
   }
 }
 
@@ -768,6 +768,23 @@ message BatchBalanceInfo {
   string escrowed_amount = 5;
 }
 
+// QueryClassCreatorAllowlistRequest is the Query/ClassCreatorAllowlist request
+// type.
+//
+// Since Revision 1
+message QueryClassCreatorAllowlistRequest {}
+
+// QueryClassCreatorAllowlistResponse is the Query/ClassCreatorAllowlist
+// response type.
+//
+// Since Revision 1
+message QueryClassCreatorAllowlistResponse {
+
+  // enabled determines whether or not the allowlist for creating credit classes
+  // is enabled.
+  bool enabled = 1;
+}
+
 // QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
 // type.
 //
@@ -806,21 +823,4 @@ message QueryCreditClassFeesResponse {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-}
-
-// QueryCreditClassAllowlistEnabledRequest is the
-// Query/CreditClassAllowlistEnabled request type.
-//
-// Since Revision 1
-message QueryCreditClassAllowlistEnabledRequest {}
-
-// QueryCreditClassAllowlistEnabledResponse is the
-// Query/CreditClassAllowlistEnabled response type.
-//
-// Since Revision 1
-message QueryCreditClassAllowlistEnabledResponse {
-
-  // allowlist_enabled determines whether or not the allowlist for creating
-  // credit classes is enabled.
-  bool allowlist_enabled = 1;
 }
