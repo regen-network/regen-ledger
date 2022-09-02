@@ -85,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `ProjectSequence` state validation checks
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `AddClassCreator` msg-based gov proposal
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `RemoveClassCreator` msg-based gov proposal
-- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `ToggleCreditClassAllowlist` msg-based gov proposal
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `SetClassCreatorAllowlist` msg-based gov proposal
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `UpdateClassFees` msg-based gov proposal
 - [#1391](https://github.com/regen-network/regen-ledger/pull/1391) Add `BasketFees` params query
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`

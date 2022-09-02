@@ -9,16 +9,16 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
-func (k Keeper) ToggleCreditClassAllowlist(ctx context.Context, req *types.MsgToggleCreditClassAllowlist) (*types.MsgToggleCreditClassAllowlistResponse, error) {
+func (k Keeper) SetClassCreatorAllowlist(ctx context.Context, req *types.MsgSetClassCreatorAllowlist) (*types.MsgSetClassCreatorAllowlistResponse, error) {
 	if k.authority.String() != req.Authority {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	if err := k.stateStore.AllowListEnabledTable().Save(ctx, &api.AllowListEnabled{
+	if err := k.stateStore.ClassCreatorAllowlistTable().Save(ctx, &api.ClassCreatorAllowlist{
 		Enabled: req.Enabled,
 	}); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgToggleCreditClassAllowlistResponse{}, nil
+	return &types.MsgSetClassCreatorAllowlistResponse{}, nil
 }

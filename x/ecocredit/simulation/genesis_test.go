@@ -69,7 +69,7 @@ func TestRandomizedGenState(t *testing.T) {
 	err = ormdb.ImportJSON(ormCtx, jsonSource)
 	require.NoError(t, err)
 
-	allowListEnabled, err := baseStore.AllowListEnabledTable().Get(ormCtx)
+	allowListEnabled, err := baseStore.ClassCreatorAllowlistTable().Get(ormCtx)
 	require.NoError(t, err)
 
 	require.True(t, allowListEnabled.Enabled)

@@ -244,7 +244,7 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class allow list
-	err = baseStore.AllowListEnabledTable().Save(ctx, &baseapi.AllowListEnabled{
+	err = baseStore.ClassCreatorAllowlistTable().Save(ctx, &baseapi.ClassCreatorAllowlist{
 		Enabled: false,
 	})
 	require.NoError(err)
