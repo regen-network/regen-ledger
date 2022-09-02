@@ -52,7 +52,7 @@ service Query {
     };
   }
 
-  // BasketFee returns the basket creation fee. If set to nil, a basket creation
+  // BasketFee returns the basket creation fee. If not set, a basket creation
   // fee is not required.
   //
   // Since Revision 2
@@ -209,7 +209,7 @@ message QueryBasketFeeRequest {}
 // Since Revision 2
 message QueryBasketFeeResponse {
 
-  // fee is the basket creation fee. If set to nil, a basket creation fee is
-  // not required.
+  // fee is the basket creation fee. If not set, a basket creation fee is not
+  // required.
   cosmos.base.v1beta1.Coin fee = 1;
 }

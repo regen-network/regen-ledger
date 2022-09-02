@@ -29,7 +29,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 		return nil, err
 	}
 
-	// only check and charge required fee if basket fee is not set
+	// only check and charge fee if required fee is not set
 	if basketFee.Fee != nil {
 
 		requiredFee, ok := regentypes.ProtoCoinToCoin(basketFee.Fee)
