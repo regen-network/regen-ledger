@@ -82,7 +82,7 @@ func (s *createClassSuite) RequiredClassFee(a string) {
 	classFee, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	classFeeProto := regentypes.CoinToProtoCoin(&classFee)
+	classFeeProto := regentypes.CoinToProtoCoin(classFee)
 
 	err = s.stateStore.ClassFeeTable().Save(s.ctx, &api.ClassFee{
 		Fee: classFeeProto,

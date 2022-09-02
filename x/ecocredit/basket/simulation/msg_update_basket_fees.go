@@ -47,10 +47,14 @@ func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "unable to generate deposit"), nil, err
 		}
 
-		fees := utils.RandomFees(r)
+		fee := utils.RandomFee(r)
+		if fee.Amount.IsZero() {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "invalid proposal message"), nil, err
+		}
+
 		msg := types.MsgUpdateBasketFees{
 			Authority:  authority.String(),
-			BasketFees: fees,
+			BasketFees: sdk.Coins{fee}, // TODO: #1465
 		}
 
 		any, err := codectypes.NewAnyWithValue(&msg)

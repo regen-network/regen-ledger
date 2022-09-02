@@ -36,7 +36,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddClassCreator{}, "regen/MsgAddClassCreator", nil)
 	cdc.RegisterConcrete(&MsgRemoveClassCreator{}, "regen/MsgRemoveClassCreator", nil)
 	cdc.RegisterConcrete(&MsgSetClassCreatorAllowlist{}, "regen/MsgSetClassCreatorAllowlist", nil)
-	cdc.RegisterConcrete(&MsgUpdateClassFees{}, "regen/MsgUpdateClassFees", nil)
+	cdc.RegisterConcrete(&MsgUpdateClassFee{}, "regen/MsgUpdateClassFee", nil)
 }
 
 var (

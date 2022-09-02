@@ -9,6 +9,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -219,7 +220,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	classFee := genCreditClassFee(r)
-	classFeeProto := regentypes.CoinToProtoCoin(&classFee)
+	classFeeProto := regentypes.CoinToProtoCoin(classFee)
 
 	if err := ss.ClassFeeTable().Save(ctx, &api.ClassFee{
 		Fee: classFeeProto,

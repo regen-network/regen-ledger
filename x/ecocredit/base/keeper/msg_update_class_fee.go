@@ -18,7 +18,7 @@ func (k Keeper) UpdateClassFee(ctx context.Context, req *types.MsgUpdateClassFee
 
 	var classFee *sdkv1beta1.Coin
 	if req.Fee != nil {
-		classFee = regentypes.CoinToProtoCoin(req.Fee)
+		classFee = regentypes.CoinToProtoCoin(*req.Fee)
 	}
 
 	if err := k.stateStore.ClassFeeTable().Save(ctx, &api.ClassFee{
