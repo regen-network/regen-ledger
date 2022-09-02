@@ -9,17 +9,20 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/basket/simulation"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	marketsims "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/simulation"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
@@ -28,20 +31,25 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgCreateClass           = "op_weight_msg_create_class"            //nolint:gosec
-	OpWeightMsgCreateBatch           = "op_weight_msg_create_batch"            //nolint:gosec
-	OpWeightMsgSend                  = "op_weight_msg_send"                    //nolint:gosec
-	OpWeightMsgRetire                = "op_weight_msg_retire"                  //nolint:gosec
-	OpWeightMsgCancel                = "op_weight_msg_cancel"                  //nolint:gosec
-	OpWeightMsgUpdateClassAdmin      = "op_weight_msg_update_class_admin"      //nolint:gosec
-	OpWeightMsgUpdateClassMetadata   = "op_weight_msg_update_class_metadata"   //nolint:gosec
-	OpWeightMsgUpdateClassIssuers    = "op_weight_msg_update_class_issuers"    //nolint:gosec
-	OpWeightMsgCreateProject         = "op_weight_msg_create_project"          //nolint:gosec
-	OpWeightMsgUpdateProjectAdmin    = "op_weight_msg_update_project_admin"    //nolint:gosec
-	OpWeightMsgUpdateProjectMetadata = "op_weight_msg_update_project_metadata" //nolint:gosec
-	OpWeightMsgMintBatchCredits      = "op_weight_msg_mint_batch_credits"      //nolint:gosec
-	OpWeightMsgSealBatch             = "op_weight_msg_seal_batch"              //nolint:gosec
-	OpWeightMsgBridge                = "op_weight_msg_bridge"                  //nolint:gosec
+	OpWeightMsgCreateClass              = "op_weight_msg_create_class"                //nolint:gosec
+	OpWeightMsgCreateBatch              = "op_weight_msg_create_batch"                //nolint:gosec
+	OpWeightMsgSend                     = "op_weight_msg_send"                        //nolint:gosec
+	OpWeightMsgRetire                   = "op_weight_msg_retire"                      //nolint:gosec
+	OpWeightMsgCancel                   = "op_weight_msg_cancel"                      //nolint:gosec
+	OpWeightMsgUpdateClassAdmin         = "op_weight_msg_update_class_admin"          //nolint:gosec
+	OpWeightMsgUpdateClassMetadata      = "op_weight_msg_update_class_metadata"       //nolint:gosec
+	OpWeightMsgUpdateClassIssuers       = "op_weight_msg_update_class_issuers"        //nolint:gosec
+	OpWeightMsgCreateProject            = "op_weight_msg_create_project"              //nolint:gosec
+	OpWeightMsgUpdateProjectAdmin       = "op_weight_msg_update_project_admin"        //nolint:gosec
+	OpWeightMsgUpdateProjectMetadata    = "op_weight_msg_update_project_metadata"     //nolint:gosec
+	OpWeightMsgMintBatchCredits         = "op_weight_msg_mint_batch_credits"          //nolint:gosec
+	OpWeightMsgSealBatch                = "op_weight_msg_seal_batch"                  //nolint:gosec
+	OpWeightMsgBridge                   = "op_weight_msg_bridge"                      //nolint:gosec
+	OpWeightMsgAddCreditType            = "op_weight_msg_add_credit_type"             //nolint:gosec
+	OpWeightMsgAddClassCreator          = "op_weight_msg_add_class_creator"           //nolint:gosec
+	OpWeightMsgRemoveClassCreator       = "op_weight_msg_remove_class_creator"        //nolint:gosec
+	OpWeightMsgSetClassCreatorAllowlist = "op_weight_msg_set_class_creator_allowlist" //nolint:gosec
+	OpWeightMsgUpdateClassFees          = "op_weight_msg_update_class_fees"           //nolint:gosec
 )
 
 // ecocredit operations weights
@@ -62,44 +70,55 @@ const (
 
 // ecocredit message types
 var (
-	TypeMsgCreateClass           = sdk.MsgTypeURL(&types.MsgCreateClass{})
-	TypeMsgCreateProject         = sdk.MsgTypeURL(&types.MsgCreateProject{})
-	TypeMsgCreateBatch           = sdk.MsgTypeURL(&types.MsgCreateBatch{})
-	TypeMsgSend                  = sdk.MsgTypeURL(&types.MsgSend{})
-	TypeMsgRetire                = sdk.MsgTypeURL(&types.MsgRetire{})
-	TypeMsgCancel                = sdk.MsgTypeURL(&types.MsgCancel{})
-	TypeMsgUpdateClassAdmin      = sdk.MsgTypeURL(&types.MsgUpdateClassAdmin{})
-	TypeMsgUpdateClassIssuers    = sdk.MsgTypeURL(&types.MsgUpdateClassIssuers{})
-	TypeMsgUpdateClassMetadata   = sdk.MsgTypeURL(&types.MsgUpdateClassMetadata{})
-	TypeMsgUpdateProjectMetadata = sdk.MsgTypeURL(&types.MsgUpdateProjectMetadata{})
-	TypeMsgUpdateProjectAdmin    = sdk.MsgTypeURL(&types.MsgUpdateProjectAdmin{})
-	TypeMsgBridge                = sdk.MsgTypeURL(&types.MsgBridge{})
-	TypeMsgMintBatchCredits      = sdk.MsgTypeURL(&types.MsgMintBatchCredits{})
-	TypeMsgSealBatch             = sdk.MsgTypeURL(&types.MsgSealBatch{})
+	TypeMsgCreateClass              = sdk.MsgTypeURL(&types.MsgCreateClass{})
+	TypeMsgCreateProject            = sdk.MsgTypeURL(&types.MsgCreateProject{})
+	TypeMsgCreateBatch              = sdk.MsgTypeURL(&types.MsgCreateBatch{})
+	TypeMsgSend                     = sdk.MsgTypeURL(&types.MsgSend{})
+	TypeMsgRetire                   = sdk.MsgTypeURL(&types.MsgRetire{})
+	TypeMsgCancel                   = sdk.MsgTypeURL(&types.MsgCancel{})
+	TypeMsgUpdateClassAdmin         = sdk.MsgTypeURL(&types.MsgUpdateClassAdmin{})
+	TypeMsgUpdateClassIssuers       = sdk.MsgTypeURL(&types.MsgUpdateClassIssuers{})
+	TypeMsgUpdateClassMetadata      = sdk.MsgTypeURL(&types.MsgUpdateClassMetadata{})
+	TypeMsgUpdateProjectMetadata    = sdk.MsgTypeURL(&types.MsgUpdateProjectMetadata{})
+	TypeMsgUpdateProjectAdmin       = sdk.MsgTypeURL(&types.MsgUpdateProjectAdmin{})
+	TypeMsgBridge                   = sdk.MsgTypeURL(&types.MsgBridge{})
+	TypeMsgMintBatchCredits         = sdk.MsgTypeURL(&types.MsgMintBatchCredits{})
+	TypeMsgSealBatch                = sdk.MsgTypeURL(&types.MsgSealBatch{})
+	TypeMsgAddCreditType            = sdk.MsgTypeURL(&types.MsgAddCreditType{})
+	TypeMsgAddClassCreator          = sdk.MsgTypeURL(&types.MsgAddClassCreator{})
+	TypeMsgRemoveClassCreator       = sdk.MsgTypeURL(&types.MsgRemoveClassCreator{})
+	TypeMsgSetClassCreatorAllowlist = sdk.MsgTypeURL(&types.MsgSetClassCreatorAllowlist{})
+	TypeMsgUpdateClassFees          = sdk.MsgTypeURL(&types.MsgUpdateClassFees{})
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	govk ecocredit.GovKeeper,
 	qryClient types.QueryServer, basketQryClient baskettypes.QueryServer,
-	mktQryClient markettypes.QueryServer) simulation.WeightedOperations {
+	mktQryClient markettypes.QueryServer, authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
-		weightMsgCreateClass           int
-		weightMsgCreateBatch           int
-		weightMsgSend                  int
-		weightMsgRetire                int
-		weightMsgCancel                int
-		weightMsgUpdateClassAdmin      int
-		weightMsgUpdateClassIssuers    int
-		weightMsgUpdateClassMetadata   int
-		weightMsgCreateProject         int
-		weightMsgUpdateProjectMetadata int
-		weightMsgUpdateProjectAdmin    int
-		weightMsgSealBatch             int
-		weightMsgMintBatchCredits      int
-		weightMsgBridge                int
+		weightMsgCreateClass              int
+		weightMsgCreateBatch              int
+		weightMsgSend                     int
+		weightMsgRetire                   int
+		weightMsgCancel                   int
+		weightMsgUpdateClassAdmin         int
+		weightMsgUpdateClassIssuers       int
+		weightMsgUpdateClassMetadata      int
+		weightMsgCreateProject            int
+		weightMsgUpdateProjectMetadata    int
+		weightMsgUpdateProjectAdmin       int
+		weightMsgSealBatch                int
+		weightMsgMintBatchCredits         int
+		weightMsgBridge                   int
+		weightMsgAddCreditType            int
+		weightMsgAddClassCreator          int
+		weightMsgRemoveClassCreator       int
+		weightMsgSetClassCreatorAllowlist int
+		weightMsgUpdateClassFees          int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
@@ -186,6 +205,36 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgAddCreditType, &weightMsgAddCreditType, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddCreditType = WeightBridge
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgAddClassCreator, &weightMsgAddClassCreator, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddClassCreator = WeightBridge
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgRemoveClassCreator, &weightMsgRemoveClassCreator, nil,
+		func(_ *rand.Rand) {
+			weightMsgRemoveClassCreator = WeightBridge
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgSetClassCreatorAllowlist, &weightMsgSetClassCreatorAllowlist, nil,
+		func(_ *rand.Rand) {
+			weightMsgSetClassCreatorAllowlist = WeightBridge
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassFees, &weightMsgUpdateClassFees, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateClassFees = WeightBridge
+		},
+	)
+
 	ops := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
@@ -244,12 +293,34 @@ func WeightedOperations(
 			weightMsgBridge,
 			SimulateMsgBridge(ak, bk, qryClient),
 		),
+		simulation.NewWeightedOperation(
+			weightMsgAddCreditType,
+			SimulateMsgAddCreditType(ak, bk, govk, qryClient, authority),
+		),
+
+		simulation.NewWeightedOperation(
+			weightMsgAddClassCreator,
+			SimulateMsgAddClassCreator(ak, bk, govk, qryClient, authority),
+		),
+
+		simulation.NewWeightedOperation(
+			weightMsgRemoveClassCreator,
+			SimulateMsgRemoveClassCreator(ak, bk, govk, qryClient, authority),
+		),
+
+		simulation.NewWeightedOperation(
+			weightMsgSetClassCreatorAllowlist,
+			SimulateMsgSetClassCreatorAllowlist(ak, bk, govk, qryClient, authority),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateClassFees,
+			SimulateMsgUpdateClassFees(ak, bk, govk, qryClient, authority),
+		),
 	}
 
-	// TODO: #1363
-	// basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
-	// ops = append(ops, basketOps...)
-	marketplaceOps := marketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient)
+	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, govk, qryClient, basketQryClient, authority)
+	ops = append(ops, basketOps...)
+	marketplaceOps := marketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, mktQryClient, govk, authority)
 
 	return append(ops, marketplaceOps...)
 }
@@ -1216,6 +1287,348 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
+}
+
+// SimulateMsgAddCreditType generates a MsgAddCreditType with random values.
+func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
+	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgAddCreditType)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddCreditType, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddCreditType, "unable to generate deposit"), nil, err
+		}
+
+		abbrev := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 1, 3))
+		abbrev = strings.ToUpper(abbrev)
+		name := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 1, 10))
+
+		_, err = qryClient.CreditType(sdkCtx, &types.QueryCreditTypeRequest{
+			Abbreviation: abbrev,
+		})
+		if err != nil {
+			if !ormerrors.NotFound.Is(err) {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddCreditType, err.Error()), nil, err
+			}
+		}
+
+		proposalMsg := types.MsgAddCreditType{
+			Authority: authority.String(),
+			CreditType: &types.CreditType{
+				Abbreviation: abbrev,
+				Name:         name,
+				Unit:         "kg",
+				Precision:    6,
+			},
+		}
+
+		any, err := codectypes.NewAnyWithValue(&proposalMsg)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddCreditType, err.Error()), nil, err
+		}
+
+		msg := &govtypes.MsgSubmitProposal{
+			Messages:       []*codectypes.Any{any},
+			InitialDeposit: deposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+// SimulateMsgAddClassCreator generates a MsgAddClassCreator with random values.
+func SimulateMsgAddClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
+	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgAddClassCreator)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddClassCreator, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddClassCreator, "unable to generate deposit"), nil, err
+		}
+
+		creatorsResult, err := qryClient.AllowedClassCreators(sdkCtx, &types.QueryAllowedClassCreatorsRequest{})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddClassCreator, err.Error()), nil, err
+		}
+
+		if stringInSlice(proposerAddr, creatorsResult.ClassCreators) {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddClassCreator, "class creator already exists"), nil, nil
+		}
+
+		proposalMsg := types.MsgAddClassCreator{
+			Authority: authority.String(),
+			Creator:   proposerAddr,
+		}
+
+		any, err := codectypes.NewAnyWithValue(&proposalMsg)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddClassCreator, err.Error()), nil, err
+		}
+
+		msg := &govtypes.MsgSubmitProposal{
+			Messages:       []*codectypes.Any{any},
+			InitialDeposit: deposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+// SimulateMsgRemoveClassCreator generates a MsgRemoveClassCreator with random values.
+func SimulateMsgRemoveClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
+	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgRemoveClassCreator)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveClassCreator, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveClassCreator, "unable to generate deposit"), nil, err
+		}
+
+		creatorsResult, err := qryClient.AllowedClassCreators(sdkCtx, &types.QueryAllowedClassCreatorsRequest{})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveClassCreator, err.Error()), nil, err
+		}
+
+		if !stringInSlice(proposerAddr, creatorsResult.ClassCreators) {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveClassCreator, "unknown class creator"), nil, nil
+		}
+
+		proposalMsg := types.MsgRemoveClassCreator{
+			Authority: authority.String(),
+			Creator:   proposerAddr,
+		}
+
+		any, err := codectypes.NewAnyWithValue(&proposalMsg)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveClassCreator, err.Error()), nil, err
+		}
+
+		msg := &govtypes.MsgSubmitProposal{
+			Messages:       []*codectypes.Any{any},
+			InitialDeposit: deposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+// SimulateMsgSetClassCreatorAllowlist generates a MsgSetClassCreatorAllowlist with random values.
+func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
+	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgSetClassCreatorAllowlist)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, "unable to generate deposit"), nil, err
+		}
+
+		proposalMsg := types.MsgSetClassCreatorAllowlist{
+			Authority: authority.String(),
+			Enabled:   r.Float32() < 0.3, // 30% chance of allowlist being enabled,
+		}
+
+		any, err := codectypes.NewAnyWithValue(&proposalMsg)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, err.Error()), nil, err
+		}
+
+		msg := &govtypes.MsgSubmitProposal{
+			Messages:       []*codectypes.Any{any},
+			InitialDeposit: deposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+// SimulateMsgUpdateClassFees generates a MsgToggleClassAllowlist with random values.
+func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
+	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		proposer, _ := simtypes.RandomAcc(r, accs)
+		proposerAddr := proposer.Address.String()
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateClassFees)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		params := govk.GetDepositParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		switch {
+		case skip:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "skip deposit"), nil, nil
+		case err != nil:
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "unable to generate deposit"), nil, err
+		}
+
+		fees := utils.RandomFees(r)
+		proposalMsg := types.MsgUpdateClassFees{
+			Authority: authority.String(),
+			Fees:      fees,
+		}
+
+		any, err := codectypes.NewAnyWithValue(&proposalMsg)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, err.Error()), nil, err
+		}
+
+		msg := &govtypes.MsgSubmitProposal{
+			Messages:       []*codectypes.Any{any},
+			InitialDeposit: deposit,
+			Proposer:       proposerAddr,
+			Metadata:       simtypes.RandStringOfLength(r, 10),
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
+	}
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+
+	return false
 }
 
 func getClassIssuers(ctx sdk.Context, qryClient types.QueryServer, className string, msgType string) ([]string, simtypes.OperationMsg, error) {

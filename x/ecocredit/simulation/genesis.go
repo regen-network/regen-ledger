@@ -3,6 +3,7 @@ package simulation
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	dbm "github.com/tendermint/tm-db"
@@ -17,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -79,7 +81,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	if err := genGenesisState(ormCtx, simState, ss, ms); err != nil {
+	basketStore, err := basketapi.NewStateStore(ormdb)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := genGenesisState(ormCtx, simState, ss, basketStore, ms); err != nil {
 		panic(err)
 	}
 
@@ -188,7 +195,8 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 	return seq.NextSequence, nil
 }
 
-func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore, ms marketplaceapi.StateStore) error {
+func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore,
+	basketStore basketapi.StateStore, ms marketplaceapi.StateStore) error {
 	accs := simState.Accounts
 	r := simState.Rand
 
@@ -246,7 +254,16 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	// generate basket params
-	// TODO: #1363
+	if err := basketStore.BasketFeesTable().Save(ctx, &basketapi.BasketFees{
+		Fees: []*basev1beta1.Coin{
+			{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 100000)),
+			},
+		},
+	}); err != nil {
+		return err
+	}
 
 	// generate marketplace params
 	if err := ms.AllowedDenomTable().Insert(ctx, &marketplaceapi.AllowedDenom{

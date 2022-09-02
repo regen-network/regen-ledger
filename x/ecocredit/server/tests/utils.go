@@ -61,5 +61,5 @@ func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 	)
 
 	_, _, addr := testdata.KeyTestPubAddr()
-	return ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace)
+	return ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace, nil)
 }

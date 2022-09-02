@@ -80,7 +80,7 @@ func setup(t *testing.T) (fixture.Factory, paramstypes.Subspace, bankkeeper.Base
 	)
 
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	ecocreditModule := module.NewModule(ecoKey, authority, accountKeeper, bankKeeper, ecocreditSubspace)
+	ecocreditModule := module.NewModule(ecoKey, authority, accountKeeper, bankKeeper, ecocreditSubspace, nil)
 	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 
 	return ff, ecocreditSubspace, bankKeeper, accountKeeper

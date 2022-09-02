@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -35,6 +36,12 @@ type BankKeeper interface {
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+}
+
+// GovKeeper defines the expected interface needed to query governance params
+type GovKeeper interface {
+	// GetDepositParams queries governance module deposit params
+	GetDepositParams(ctx sdk.Context) govv1.DepositParams
 }
 
 type ParamKeeper interface {
