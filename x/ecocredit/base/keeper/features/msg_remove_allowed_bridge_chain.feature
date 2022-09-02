@@ -38,6 +38,6 @@ Feature: Msg/RemoveAllowedBridgeChain
       Given the chain name "polygon"
       When  alice attempts to remove chain name "polygon"
       Then expect no error
-      And expect chain name "POLYGON" to not exist
+      And expect chain name "polygon" to not exist
 
   # no failing scenario, ORM delete does not error when the entry does not exist

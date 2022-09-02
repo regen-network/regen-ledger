@@ -36,7 +36,7 @@ Feature: Msg/AddAllowedBridgeChain
     Scenario: there is no chain name in state
       When  alice attempts to add chain name "polygon"
       Then expect no error
-      And expect chain name "POLYGON" to exist
+      And expect chain name "polygon" to exist
 
     Scenario: chain name already exists in state
       Given allowed chain name "polygon"

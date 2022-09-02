@@ -55,7 +55,7 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	allowedChain := "POLYGON"
+	allowedChain := "polygon"
 	assert.NilError(t, s.stateStore.AllowedBridgeChainTable().Insert(s.ctx, &api.AllowedBridgeChain{ChainName: allowedChain}))
 
 	result, err := s.k.Params(s.ctx, &types.QueryParamsRequest{})

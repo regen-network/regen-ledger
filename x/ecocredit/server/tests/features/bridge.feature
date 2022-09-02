@@ -30,7 +30,7 @@ Feature: Bridge Integration
       ],
       "regen.ecocredit.v1.AllowedBridgeChain": [
         {
-          "chain_name": "POLYGON"
+          "chain_name": "polygon"
         }
       ]
     }

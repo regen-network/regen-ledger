@@ -16,7 +16,7 @@ func (k Keeper) AddAllowedBridgeChain(ctx context.Context, req *types.MsgAddAllo
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	chainName := strings.ToUpper(req.ChainName)
+	chainName := strings.ToLower(req.ChainName)
 
 	err := k.stateStore.AllowedBridgeChainTable().Insert(ctx, &api.AllowedBridgeChain{ChainName: chainName})
 	if err != nil {

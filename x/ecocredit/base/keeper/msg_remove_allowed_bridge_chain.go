@@ -16,7 +16,7 @@ func (k Keeper) RemoveAllowedBridgeChain(ctx context.Context, req *types.MsgRemo
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	chainName := strings.ToUpper(req.ChainName)
+	chainName := strings.ToLower(req.ChainName)
 
 	err := k.stateStore.AllowedBridgeChainTable().Delete(ctx, &api.AllowedBridgeChain{ChainName: chainName})
 	if err != nil {

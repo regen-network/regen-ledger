@@ -30,8 +30,8 @@ func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 		return err
 	}
 
-	// add POLYGON to the allowed bridge chain table, as this was a hard coded requirement previously.
-	err := baseStore.AllowedBridgeChainTable().Insert(ctx, &ecocreditv1.AllowedBridgeChain{ChainName: "POLYGON"})
+	// add polygon to the allowed bridge chain table, as this was a hard coded requirement previously.
+	err := baseStore.AllowedBridgeChainTable().Insert(ctx, &ecocreditv1.AllowedBridgeChain{ChainName: "polygon"})
 	if err != nil {
 		return err
 	}
