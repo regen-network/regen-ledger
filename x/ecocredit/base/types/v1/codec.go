@@ -33,6 +33,10 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&CreditTypeProposal{}, "regen/CreditTypeProposal", nil)
 	cdc.RegisterConcrete(&MsgBridgeReceive{}, "regen/MsgBridgeReceive", nil)
 	cdc.RegisterConcrete(&MsgAddCreditType{}, "regen/MsgAddCreditType", nil)
+	cdc.RegisterConcrete(&MsgAddClassCreator{}, "regen/MsgAddClassCreator", nil)
+	cdc.RegisterConcrete(&MsgRemoveClassCreator{}, "regen/MsgRemoveClassCreator", nil)
+	cdc.RegisterConcrete(&MsgSetClassCreatorAllowlist{}, "regen/MsgSetClassCreatorAllowlist", nil)
+	cdc.RegisterConcrete(&MsgUpdateClassFees{}, "regen/MsgUpdateClassFees", nil)
 }
 
 var (
