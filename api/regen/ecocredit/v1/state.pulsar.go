@@ -9842,7 +9842,7 @@ func (x *ClassFees) GetFees() []*v1beta1.Coin {
 }
 
 // AllowedBridgeChain is a list of chains that are allowed to be used in
-// bridging operations. NOTE: chain_names MUST be converted to uppercase before
+// bridging operations. NOTE: chain_names MUST be converted to lowercase before
 // writing to and reading from this table in order to keep entries consistent.
 // This table is controlled via governance.
 //
