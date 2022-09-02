@@ -24,7 +24,7 @@ func (s *setClassCreatorAllowlistSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *setClassCreatorAllowlistSuite) AliceAttemptsToSetClassAllowlistWithProperties(a gocuke.DocString) {
+func (s *setClassCreatorAllowlistSuite) AliceAttemptsToSetClassCreatorAllowlistWithProperties(a gocuke.DocString) {
 	var msg *types.MsgSetClassCreatorAllowlist
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
