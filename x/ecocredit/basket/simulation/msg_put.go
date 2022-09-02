@@ -21,7 +21,7 @@ import (
 
 const WeightPut = 100
 
-const OpWeightMsgPut = "op_weight_msg_put_into_basket" //nolint:gosec
+const OpWeightMsgPut = "op_weight_msg_put_into_basket"
 
 var TypeMsgPut = types.MsgPut{}.Route()
 

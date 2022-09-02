@@ -16,7 +16,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
-const OpWeightMsgTake = "op_weight_take_from_basket" //nolint:gosec
+const OpWeightMsgTake = "op_weight_take_from_basket"
 
 const WeightTake = 100
 

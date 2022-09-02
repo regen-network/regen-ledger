@@ -26,7 +26,7 @@ const WeightCreate = 100
 
 var TypeMsgCreate = types.MsgCreate{}.Route()
 
-const OpWeightMsgCreate = "op_weight_msg_create_basket" //nolint:gosec
+const OpWeightMsgCreate = "op_weight_msg_create_basket"
 
 // SimulateMsgCreate generates a Basket/MsgCreate with random values.
 func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
