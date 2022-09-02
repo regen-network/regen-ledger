@@ -53,11 +53,12 @@ service Query {
     };
   }
 
-  // BasketFees returns list of fees that can be used for creating basket.
+  // BasketFee returns the basket creation fee. If set to nil, a basket creation
+  // fee is not required.
   //
   // Since Revision 2
-  rpc BasketFees(QueryBasketFeesRequest) returns (QueryBasketFeesResponse) {
-    option (google.api.http).get = "/regen/ecocredit/basket/v1/basket-fees";
+  rpc BasketFee(QueryBasketFeeRequest) returns (QueryBasketFeeResponse) {
+    option (google.api.http).get = "/regen/ecocredit/basket/v1/basket-fee";
   }
 }
 
@@ -199,19 +200,17 @@ message BasketBalanceInfo {
   string balance = 2;
 }
 
-// QueryBasketFeesRequest is the Query/BasketFees request type.
+// QueryBasketFeeRequest is the Query/BasketFee request type.
 //
 // Since Revision 2
-message QueryBasketFeesRequest {}
+message QueryBasketFeeRequest {}
 
-// QueryBasketFeesResponse is the Query/BasketFees response type.
+// QueryBasketFeeResponse is the Query/BasketFee response type.
 //
 // Since Revision 2
-message QueryBasketFeesResponse {
+message QueryBasketFeeResponse {
 
-  // fees is the BasketFees message type
-  repeated cosmos.base.v1beta1.Coin fees = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
+  // fee is the basket creation fee. If set to nil, a basket creation fee is
+  // not required.
+  cosmos.base.v1beta1.Coin fee = 1;
 }

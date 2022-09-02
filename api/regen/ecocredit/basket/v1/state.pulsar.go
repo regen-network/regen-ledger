@@ -1937,77 +1937,26 @@ func (x *fastReflection_BasketBalance) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var _ protoreflect.List = (*_BasketFees_1_list)(nil)
-
-type _BasketFees_1_list struct {
-	list *[]*v1beta1.Coin
-}
-
-func (x *_BasketFees_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_BasketFees_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_BasketFees_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_BasketFees_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_BasketFees_1_list) AppendMutable() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_BasketFees_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_BasketFees_1_list) NewElement() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_BasketFees_1_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_BasketFees      protoreflect.MessageDescriptor
-	fd_BasketFees_fees protoreflect.FieldDescriptor
+	md_BasketFee     protoreflect.MessageDescriptor
+	fd_BasketFee_fee protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_basket_v1_state_proto_init()
-	md_BasketFees = File_regen_ecocredit_basket_v1_state_proto.Messages().ByName("BasketFees")
-	fd_BasketFees_fees = md_BasketFees.Fields().ByName("fees")
+	md_BasketFee = File_regen_ecocredit_basket_v1_state_proto.Messages().ByName("BasketFee")
+	fd_BasketFee_fee = md_BasketFee.Fields().ByName("fee")
 }
 
-var _ protoreflect.Message = (*fastReflection_BasketFees)(nil)
+var _ protoreflect.Message = (*fastReflection_BasketFee)(nil)
 
-type fastReflection_BasketFees BasketFees
+type fastReflection_BasketFee BasketFee
 
-func (x *BasketFees) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_BasketFees)(x)
+func (x *BasketFee) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_BasketFee)(x)
 }
 
-func (x *BasketFees) slowProtoReflect() protoreflect.Message {
+func (x *BasketFee) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_basket_v1_state_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2019,43 +1968,43 @@ func (x *BasketFees) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_BasketFees_messageType fastReflection_BasketFees_messageType
-var _ protoreflect.MessageType = fastReflection_BasketFees_messageType{}
+var _fastReflection_BasketFee_messageType fastReflection_BasketFee_messageType
+var _ protoreflect.MessageType = fastReflection_BasketFee_messageType{}
 
-type fastReflection_BasketFees_messageType struct{}
+type fastReflection_BasketFee_messageType struct{}
 
-func (x fastReflection_BasketFees_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_BasketFees)(nil)
+func (x fastReflection_BasketFee_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_BasketFee)(nil)
 }
-func (x fastReflection_BasketFees_messageType) New() protoreflect.Message {
-	return new(fastReflection_BasketFees)
+func (x fastReflection_BasketFee_messageType) New() protoreflect.Message {
+	return new(fastReflection_BasketFee)
 }
-func (x fastReflection_BasketFees_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_BasketFees
+func (x fastReflection_BasketFee_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_BasketFee
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_BasketFees) Descriptor() protoreflect.MessageDescriptor {
-	return md_BasketFees
+func (x *fastReflection_BasketFee) Descriptor() protoreflect.MessageDescriptor {
+	return md_BasketFee
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_BasketFees) Type() protoreflect.MessageType {
-	return _fastReflection_BasketFees_messageType
+func (x *fastReflection_BasketFee) Type() protoreflect.MessageType {
+	return _fastReflection_BasketFee_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_BasketFees) New() protoreflect.Message {
-	return new(fastReflection_BasketFees)
+func (x *fastReflection_BasketFee) New() protoreflect.Message {
+	return new(fastReflection_BasketFee)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_BasketFees) Interface() protoreflect.ProtoMessage {
-	return (*BasketFees)(x)
+func (x *fastReflection_BasketFee) Interface() protoreflect.ProtoMessage {
+	return (*BasketFee)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2063,10 +2012,10 @@ func (x *fastReflection_BasketFees) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_BasketFees) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Fees) != 0 {
-		value := protoreflect.ValueOfList(&_BasketFees_1_list{list: &x.Fees})
-		if !f(fd_BasketFees_fees, value) {
+func (x *fastReflection_BasketFee) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Fee != nil {
+		value := protoreflect.ValueOfMessage(x.Fee.ProtoReflect())
+		if !f(fd_BasketFee_fee, value) {
 			return
 		}
 	}
@@ -2083,15 +2032,15 @@ func (x *fastReflection_BasketFees) Range(f func(protoreflect.FieldDescriptor, p
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_BasketFees) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_BasketFee) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.BasketFees.fees":
-		return len(x.Fees) != 0
+	case "regen.ecocredit.basket.v1.BasketFee.fee":
+		return x.Fee != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2101,15 +2050,15 @@ func (x *fastReflection_BasketFees) Has(fd protoreflect.FieldDescriptor) bool {
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BasketFees) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_BasketFee) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.BasketFees.fees":
-		x.Fees = nil
+	case "regen.ecocredit.basket.v1.BasketFee.fee":
+		x.Fee = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2119,19 +2068,16 @@ func (x *fastReflection_BasketFees) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_BasketFees) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_BasketFee) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.basket.v1.BasketFees.fees":
-		if len(x.Fees) == 0 {
-			return protoreflect.ValueOfList(&_BasketFees_1_list{})
-		}
-		listValue := &_BasketFees_1_list{list: &x.Fees}
-		return protoreflect.ValueOfList(listValue)
+	case "regen.ecocredit.basket.v1.BasketFee.fee":
+		value := x.Fee
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFees does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFee does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2145,17 +2091,15 @@ func (x *fastReflection_BasketFees) Get(descriptor protoreflect.FieldDescriptor)
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BasketFees) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_BasketFee) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.BasketFees.fees":
-		lv := value.List()
-		clv := lv.(*_BasketFees_1_list)
-		x.Fees = *clv.list
+	case "regen.ecocredit.basket.v1.BasketFee.fee":
+		x.Fee = value.Message().Interface().(*v1beta1.Coin)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2169,45 +2113,44 @@ func (x *fastReflection_BasketFees) Set(fd protoreflect.FieldDescriptor, value p
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BasketFees) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_BasketFee) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.BasketFees.fees":
-		if x.Fees == nil {
-			x.Fees = []*v1beta1.Coin{}
+	case "regen.ecocredit.basket.v1.BasketFee.fee":
+		if x.Fee == nil {
+			x.Fee = new(v1beta1.Coin)
 		}
-		value := &_BasketFees_1_list{list: &x.Fees}
-		return protoreflect.ValueOfList(value)
+		return protoreflect.ValueOfMessage(x.Fee.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFee does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_BasketFees) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_BasketFee) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.BasketFees.fees":
-		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_BasketFees_1_list{list: &list})
+	case "regen.ecocredit.basket.v1.BasketFee.fee":
+		m := new(v1beta1.Coin)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.BasketFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.BasketFee does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_BasketFees) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_BasketFee) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.basket.v1.BasketFees", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.basket.v1.BasketFee", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2215,7 +2158,7 @@ func (x *fastReflection_BasketFees) WhichOneof(d protoreflect.OneofDescriptor) p
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_BasketFees) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_BasketFee) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2226,7 +2169,7 @@ func (x *fastReflection_BasketFees) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_BasketFees) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_BasketFee) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2238,7 +2181,7 @@ func (x *fastReflection_BasketFees) SetUnknown(fields protoreflect.RawFields) {
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_BasketFees) IsValid() bool {
+func (x *fastReflection_BasketFee) IsValid() bool {
 	return x != nil
 }
 
@@ -2248,9 +2191,9 @@ func (x *fastReflection_BasketFees) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_BasketFee) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*BasketFees)
+		x := input.Message.Interface().(*BasketFee)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2262,11 +2205,9 @@ func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if len(x.Fees) > 0 {
-			for _, e := range x.Fees {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
+		if x.Fee != nil {
+			l = options.Size(x.Fee)
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -2278,7 +2219,7 @@ func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*BasketFees)
+		x := input.Message.Interface().(*BasketFee)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2297,21 +2238,19 @@ func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Fees) > 0 {
-			for iNdEx := len(x.Fees) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Fees[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
+		if x.Fee != nil {
+			encoded, err := options.Marshal(x.Fee)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
 			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -2324,7 +2263,7 @@ func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*BasketFees)
+		x := input.Message.Interface().(*BasketFee)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2356,15 +2295,15 @@ func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: BasketFees: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: BasketFee: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: BasketFees: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: BasketFee: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Fees", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Fee", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -2391,8 +2330,10 @@ func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Fees = append(x.Fees, &v1beta1.Coin{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Fees[len(x.Fees)-1]); err != nil {
+				if x.Fee == nil {
+					x.Fee = &v1beta1.Coin{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Fee); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -2684,23 +2625,22 @@ func (x *BasketBalance) GetBatchStartDate() *timestamppb.Timestamp {
 	return nil
 }
 
-// BasketFees are valid coin denoms and amounts that may be used as the fee
-// for basket creation.
+// BasketFee is the basket creation fee. If not set, a basket creation fee is
+// not required. This table is controlled via governance.
 //
 // Since Revision 2
-type BasketFees struct {
+type BasketFee struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// fees is a list of basket creation fees accepted when creating a
-	// basket. Any fee listed is accepted and charged to the basket creator when
-	// creating a basket.
-	Fees []*v1beta1.Coin `protobuf:"bytes,1,rep,name=fees,proto3" json:"fees,omitempty"`
+	// fee is the basket creation fee. If not set, a basket creation fee is not
+	// required.
+	Fee *v1beta1.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
-func (x *BasketFees) Reset() {
-	*x = BasketFees{}
+func (x *BasketFee) Reset() {
+	*x = BasketFee{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_basket_v1_state_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2708,20 +2648,20 @@ func (x *BasketFees) Reset() {
 	}
 }
 
-func (x *BasketFees) String() string {
+func (x *BasketFee) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BasketFees) ProtoMessage() {}
+func (*BasketFee) ProtoMessage() {}
 
-// Deprecated: Use BasketFees.ProtoReflect.Descriptor instead.
-func (*BasketFees) Descriptor() ([]byte, []int) {
+// Deprecated: Use BasketFee.ProtoReflect.Descriptor instead.
+func (*BasketFee) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_basket_v1_state_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *BasketFees) GetFees() []*v1beta1.Coin {
+func (x *BasketFee) GetFee() *v1beta1.Coin {
 	if x != nil {
-		return x.Fees
+		return x.Fee
 	}
 	return nil
 }
@@ -2785,28 +2725,28 @@ var file_regen_ecocredit_basket_v1_state_proto_rawDesc = []byte{
 	0x03, 0x3b, 0x0a, 0x17, 0x0a, 0x15, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x2c,
 	0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1e, 0x0a, 0x1a, 0x62,
 	0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x2c, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x73,
-	0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x10, 0x01, 0x18, 0x03, 0x22, 0x45, 0x0a,
-	0x0a, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x46, 0x65, 0x65, 0x73, 0x12, 0x2d, 0x0a, 0x04, 0x66,
-	0x65, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
-	0x43, 0x6f, 0x69, 0x6e, 0x52, 0x04, 0x66, 0x65, 0x65, 0x73, 0x3a, 0x08, 0xfa, 0x9e, 0xd3, 0x8e,
-	0x03, 0x02, 0x08, 0x04, 0x42, 0x80, 0x02, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f,
-	0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74,
-	0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x42, 0xaa, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65,
-	0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31,
-	0xe2, 0x02, 0x25, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1c, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x42, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x10, 0x01, 0x18, 0x03, 0x22, 0x42, 0x0a,
+	0x09, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x46, 0x65, 0x65, 0x12, 0x2b, 0x0a, 0x03, 0x66, 0x65,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f,
+	0x69, 0x6e, 0x52, 0x03, 0x66, 0x65, 0x65, 0x3a, 0x08, 0xfa, 0x9e, 0xd3, 0x8e, 0x03, 0x02, 0x08,
+	0x04, 0x42, 0x80, 0x02, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74,
+	0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x4c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x62, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x76, 0x31, 0xa2,
+	0x02, 0x03, 0x52, 0x45, 0x42, 0xaa, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x56,
+	0x31, 0xca, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x25,
+	0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c,
+	0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1c, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2826,7 +2766,7 @@ var file_regen_ecocredit_basket_v1_state_proto_goTypes = []interface{}{
 	(*Basket)(nil),                // 0: regen.ecocredit.basket.v1.Basket
 	(*BasketClass)(nil),           // 1: regen.ecocredit.basket.v1.BasketClass
 	(*BasketBalance)(nil),         // 2: regen.ecocredit.basket.v1.BasketBalance
-	(*BasketFees)(nil),            // 3: regen.ecocredit.basket.v1.BasketFees
+	(*BasketFee)(nil),             // 3: regen.ecocredit.basket.v1.BasketFee
 	(*DateCriteria)(nil),          // 4: regen.ecocredit.basket.v1.DateCriteria
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 	(*v1beta1.Coin)(nil),          // 6: cosmos.base.v1beta1.Coin
@@ -2834,7 +2774,7 @@ var file_regen_ecocredit_basket_v1_state_proto_goTypes = []interface{}{
 var file_regen_ecocredit_basket_v1_state_proto_depIdxs = []int32{
 	4, // 0: regen.ecocredit.basket.v1.Basket.date_criteria:type_name -> regen.ecocredit.basket.v1.DateCriteria
 	5, // 1: regen.ecocredit.basket.v1.BasketBalance.batch_start_date:type_name -> google.protobuf.Timestamp
-	6, // 2: regen.ecocredit.basket.v1.BasketFees.fees:type_name -> cosmos.base.v1beta1.Coin
+	6, // 2: regen.ecocredit.basket.v1.BasketFee.fee:type_name -> cosmos.base.v1beta1.Coin
 	3, // [3:3] is the sub-list for method output_type
 	3, // [3:3] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
@@ -2886,7 +2826,7 @@ func file_regen_ecocredit_basket_v1_state_proto_init() {
 			}
 		}
 		file_regen_ecocredit_basket_v1_state_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BasketFees); i {
+			switch v := v.(*BasketFee); i {
 			case 0:
 				return &v.state
 			case 1:

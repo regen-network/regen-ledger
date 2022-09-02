@@ -42,14 +42,12 @@ func DefaultCreditClassFees() basetypes.ClassFees {
 	}
 }
 
-// DefaultBasketFees returns a default basket creation fees.
-func DefaultBasketFees() baskettypes.BasketFees {
-	return baskettypes.BasketFees{
-		Fees: []*sdk.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultBasketFee,
-			},
+// DefaultBasketFee returns a default basket creation fees.
+func DefaultBasketFee() baskettypes.BasketFee {
+	return baskettypes.BasketFee{
+		Fee: &sdk.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultBasketFee,
 		},
 	}
 }

@@ -537,17 +537,17 @@ func MergeCreditClassFeesIntoTarget(
 	return w.Close()
 }
 
-// MergeBasketFeesIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeBasketFeesIntoTarget(
+// MergeBasketFeeIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeBasketFeeIntoTarget(
 	cdc codec.JSONCodec,
-	basketFees baskettypes.BasketFees,
+	basketFee baskettypes.BasketFee,
 	target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&basketFees)))
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&basketFee)))
 	if err != nil {
 		return err
 	}
 
-	bz, err := cdc.MarshalJSON(&basketFees)
+	bz, err := cdc.MarshalJSON(&basketFee)
 	if err != nil {
 		return err
 	}

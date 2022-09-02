@@ -30,7 +30,7 @@ type createSuite struct {
 	creditTypePrecision uint32
 	res                 *types.MsgCreateResponse
 	err                 error
-	basketFee           sdk.Coins
+	basketFee           sdk.Coin
 }
 
 func TestCreate(t *testing.T) {
@@ -45,13 +45,13 @@ func (s *createSuite) Before(t gocuke.TestingT) {
 	s.creditTypePrecision = 6
 }
 
-func (s *createSuite) AllowedBasketFee(a string) {
-	basketFee, err := sdk.ParseCoinsNormalized(a)
+func (s *createSuite) RequiredBasketFee(a string) {
+	basketFee, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	_, err = s.k.UpdateBasketFees(s.ctx, &types.MsgUpdateBasketFees{
-		Authority:  "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-		BasketFees: basketFee,
+	_, err = s.k.UpdateBasketFee(s.ctx, &types.MsgUpdateBasketFee{
+		Authority: "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+		Fee:       &basketFee,
 	})
 	require.NoError(s.t, err)
 
@@ -248,13 +248,8 @@ func (s *createSuite) createExpectCalls() {
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 
-	if len(s.basketFee) == 1 {
-		expectedFee = s.basketFee[0]
-		expectedFees = sdk.Coins{expectedFee}
-	}
-
-	if len(s.basketFee) == 2 {
-		expectedFee = s.basketFee[1]
+	if !s.basketFee.IsNil() {
+		expectedFee = s.basketFee
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
@@ -266,7 +261,7 @@ func (s *createSuite) createExpectCalls() {
 	s.bankKeeper.EXPECT().
 		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, expectedFees).
 		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
-			if s.basketFee != nil {
+			if !s.basketFee.IsNil() {
 				// simulate token balance update unavailable with mocks
 				s.aliceBalance = s.aliceBalance.Sub(expectedFee)
 			}

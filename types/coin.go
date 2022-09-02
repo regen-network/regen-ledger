@@ -20,6 +20,17 @@ func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {
 	return result
 }
 
+// ProtoCoinToCoin constructs a new gogoproto coin from protobuf coin.
+// It will panic if the amount is negative or if the denomination is invalid.
+func ProtoCoinToCoin(coin *basev1beta1.Coin) (sdk.Coin, bool) {
+	amount, ok := sdk.NewIntFromString(coin.Amount)
+	if !ok {
+		return sdk.Coin{}, ok
+	}
+
+	return sdk.NewCoin(coin.Denom, amount), true
+}
+
 // ProtoCoinsToCoins constructs a new gogoproto coin set from protobuf coin set.
 // It will panic if the amount is negative or if the denomination is invalid.
 func ProtoCoinsToCoins(coins []*basev1beta1.Coin) (sdk.Coins, bool) {

@@ -56,8 +56,8 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 
 	// migrate basket params
 	basketFees := regentypes.CoinsToProtoCoins(params.BasketFee)
-	if err := basketStore.BasketFeesTable().Save(sdkCtx, &basketapi.BasketFees{
-		Fees: basketFees,
+	if err := basketStore.BasketFeeTable().Save(sdkCtx, &basketapi.BasketFee{
+		Fee: basketFees[0], // we assume there is one fee at the time of the upgrade
 	}); err != nil {
 		return err
 	}

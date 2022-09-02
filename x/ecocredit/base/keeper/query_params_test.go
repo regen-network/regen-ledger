@@ -38,12 +38,10 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	err = s.k.basketStore.BasketFeesTable().Save(s.ctx, &baskettypes.BasketFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: "1000",
-			},
+	err = s.k.basketStore.BasketFeeTable().Save(s.ctx, &baskettypes.BasketFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: "1000",
 		},
 	})
 	assert.NilError(t, err)

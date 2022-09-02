@@ -3,8 +3,8 @@ package v3_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
-	"gotest.tools/v3/assert"
 
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -36,7 +36,7 @@ func TestMigrations(t *testing.T) {
 	cms := store.NewCommitMultiStore(db)
 	cms.MountStoreWithDB(ecocreditKey, storetypes.StoreTypeIAVL, db)
 	cms.MountStoreWithDB(tecocreditKey, storetypes.StoreTypeTransient, db)
-	assert.NilError(t, cms.LoadLatestVersion())
+	require.NoError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 
@@ -57,50 +57,48 @@ func TestMigrations(t *testing.T) {
 	paramStore.GetParamSet(sdkCtx, &params)
 
 	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
-	assert.NilError(t, err)
+	require.NoError(t, err)
 	baseStore, err := baseapi.NewStateStore(ormdb)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
 	basketStore, err := basketapi.NewStateStore(ormdb)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	assert.NilError(t, v3.MigrateState(sdkCtx, baseStore, basketStore, paramStore))
+	require.NoError(t, v3.MigrateState(sdkCtx, baseStore, basketStore, paramStore))
 
 	// verify basket params migrated to orm table
-	basketFees, err := basketStore.BasketFeesTable().Get(sdkCtx)
-	assert.NilError(t, err)
+	basketFee, err := basketStore.BasketFeeTable().Get(sdkCtx)
+	require.NoError(t, err)
 
-	assert.Equal(t, len(basketFees.Fees), 2)
-	assert.Equal(t, basketFees.Fees[0].Denom, sdk.DefaultBondDenom)
-	assert.Equal(t, basketFees.Fees[0].Amount, "10")
-	assert.Equal(t, basketFees.Fees[1].Denom, "uregen")
-	assert.Equal(t, basketFees.Fees[1].Amount, "2000000")
+	require.NotEmpty(t, basketFee.Fee)
+	require.Equal(t, basketFee.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(t, basketFee.Fee.Amount, "10")
 
 	// verify core state migrated to orm table
 	classFees, err := baseStore.ClassFeesTable().Get(sdkCtx)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	assert.Equal(t, len(classFees.Fees), 2)
-	assert.Equal(t, classFees.Fees[0].Denom, sdk.DefaultBondDenom)
-	assert.Equal(t, classFees.Fees[0].Amount, "10")
-	assert.Equal(t, classFees.Fees[1].Denom, "uregen")
-	assert.Equal(t, classFees.Fees[1].Amount, "2000000")
+	require.Equal(t, len(classFees.Fees), 2)
+	require.Equal(t, classFees.Fees[0].Denom, sdk.DefaultBondDenom)
+	require.Equal(t, classFees.Fees[0].Amount, "10")
+	require.Equal(t, classFees.Fees[1].Denom, "uregen")
+	require.Equal(t, classFees.Fees[1].Amount, "2000000")
 
-	allowedListEnabled, err := baseStore.ClassCreatorAllowlistTable().Get(sdkCtx)
-	assert.NilError(t, err)
-	assert.Equal(t, allowedListEnabled.Enabled, true)
+	allowlist, err := baseStore.ClassCreatorAllowlistTable().Get(sdkCtx)
+	require.NoError(t, err)
+	require.Equal(t, allowlist.Enabled, true)
 
 	itr, err := baseStore.AllowedClassCreatorTable().List(sdkCtx, baseapi.AllowedClassCreatorPrimaryKey{})
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
 	var expected []string
 	for itr.Next() {
 		val, err := itr.Value()
-		assert.NilError(t, err)
+		require.NoError(t, err)
 
 		expected = append(expected, sdk.AccAddress(val.Address).String())
 	}
 	itr.Close()
 
-	assert.DeepEqual(t, params.AllowedClassCreators, expected)
+	require.Equal(t, params.AllowedClassCreators, expected)
 }
