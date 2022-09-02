@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
@@ -24,7 +24,7 @@ func TestGetBasketBalances(t *testing.T) {
 	batchDenom2, classID2 := "C02-001-0000000-0000000-002", "C02"
 	userStartingBalance, amtToDeposit := math.NewDecFromInt64(10), math.NewDecFromInt64(3)
 
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: "C",
 	})
 	assert.NilError(t, err)
@@ -88,7 +88,7 @@ func TestGetBasketBalances(t *testing.T) {
 }
 
 func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *timestamppb.Timestamp) {
-	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
+	assert.NilError(t, s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: pid,
 		Denom:      denom,
 		StartDate:  startDate,
@@ -97,7 +97,7 @@ func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *
 }
 
 func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
-	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+	assert.NilError(t, s.baseStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       batchKey,
 		Address:        user,
 		TradableAmount: amount,
@@ -107,7 +107,7 @@ func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKe
 }
 
 func insertClass(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
-	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
+	assert.NilError(t, s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
 		Id:               name,
 		Admin:            s.addrs[0],
 		Metadata:         "",

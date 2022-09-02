@@ -18,7 +18,7 @@ func (k Keeper) SellOrder(ctx context.Context, req *types.QuerySellOrderRequest)
 
 	seller := sdk.AccAddress(order.Seller)
 
-	batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)
+	batch, err := k.baseStore.BatchTable().Get(ctx, order.BatchKey)
 	if err != nil {
 		return nil, err
 	}

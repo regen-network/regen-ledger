@@ -10,7 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
@@ -52,7 +52,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOr
 func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, order *api.SellOrder, update *types.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	var creditType *ecoApi.CreditType
+	var creditType *baseapi.CreditType
 
 	order.DisableAutoRetire = update.DisableAutoRetire
 
@@ -156,12 +156,12 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 }
 
 // getCreditTypeFromBatchKey gets the credit type given a batch key.
-func (k Keeper) getCreditTypeFromBatchKey(ctx context.Context, key uint64) (*ecoApi.CreditType, error) {
-	batch, err := k.coreStore.BatchTable().Get(ctx, key)
+func (k Keeper) getCreditTypeFromBatchKey(ctx context.Context, key uint64) (*baseapi.CreditType, error) {
+	batch, err := k.baseStore.BatchTable().Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
-	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.baseStore, batch.Denom)
 	if err != nil {
 		return nil, err
 	}

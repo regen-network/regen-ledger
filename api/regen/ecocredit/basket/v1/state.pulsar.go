@@ -2437,8 +2437,6 @@ func (x *fastReflection_BasketFees) ProtoMethods() *protoiface.Methods {
 // 	protoc        (unknown)
 // source: regen/ecocredit/basket/v1/state.proto
 
-// Revision 1
-
 const (
 	// Verify that this generated code is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
@@ -2688,6 +2686,8 @@ func (x *BasketBalance) GetBatchStartDate() *timestamppb.Timestamp {
 
 // BasketFees are valid coin denoms and amounts that may be used as the fee
 // for basket creation.
+//
+// Since Revision 2
 type BasketFees struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

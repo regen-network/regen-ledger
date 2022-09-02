@@ -5087,7 +5087,8 @@ func (x *MsgTakeResponse) GetCredits() []*BasketCredit {
 }
 
 // MsgUpdateBasketFees is the Msg/UpdateBasketFees request type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgUpdateBasketFees struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5135,7 +5136,8 @@ func (x *MsgUpdateBasketFees) GetBasketFees() []*v1beta1.Coin {
 }
 
 // MsgUpdateBasketFeesResponse is the Msg/UpdateBasketFees response type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgUpdateBasketFeesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

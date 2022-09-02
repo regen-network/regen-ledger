@@ -31,7 +31,8 @@ type QueryClient interface {
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(ctx context.Context, in *QueryBasketBalanceRequest, opts ...grpc.CallOption) (*QueryBasketBalanceResponse, error)
 	// BasketFees returns list of fees that can be used for creating basket.
-	// Since Revision 1
+	//
+	// Since Revision 2
 	BasketFees(ctx context.Context, in *QueryBasketFeesRequest, opts ...grpc.CallOption) (*QueryBasketFeesResponse, error)
 }
 
@@ -101,7 +102,8 @@ type QueryServer interface {
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(context.Context, *QueryBasketBalanceRequest) (*QueryBasketBalanceResponse, error)
 	// BasketFees returns list of fees that can be used for creating basket.
-	// Since Revision 1
+	//
+	// Since Revision 2
 	BasketFees(context.Context, *QueryBasketFeesRequest) (*QueryBasketFeesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

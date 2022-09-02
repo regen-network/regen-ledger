@@ -45,6 +45,9 @@ func TestAppAfterImport(t *testing.T) {
 	)
 	require.Equal(t, regen.AppName, app.Name())
 
+	// TODO: remove after https://github.com/cosmos/ibc-go/issues/2151 is resolved
+	removeICAFromSimulation(app)
+
 	// run randomized simulation
 	stopEarly, simParams, simErr := simulateFromSeed(t, app, config)
 

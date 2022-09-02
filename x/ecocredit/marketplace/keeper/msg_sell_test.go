@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
@@ -68,14 +68,14 @@ func (s *sellSuite) ABlockTimeWithTimestamp(a string) {
 }
 
 func (s *sellSuite) ACreditType() {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *sellSuite) ACreditTypeWithAbbreviation(a string) {
-	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err := s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: a,
 	})
 	require.NoError(s.t, err)
@@ -85,7 +85,7 @@ func (s *sellSuite) ACreditTypeWithPrecision(a string) {
 	precision, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+	err = s.baseStore.CreditTypeTable().Insert(s.ctx, &baseapi.CreditType{
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    uint32(precision),
 	})
@@ -110,18 +110,18 @@ func (s *sellSuite) ACreditBatchWithBatchDenom(a string) {
 	classID := base.GetClassIDFromBatchDenom(a)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
 		ClassKey: classKey,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchTable().Insert(s.ctx, &coreapi.Batch{
+	err = s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: projectKey,
 		Denom:      a,
 	})
@@ -340,20 +340,20 @@ func (s *sellSuite) ExpectTheError(a string) {
 }
 
 func (s *sellSuite) ExpectAliceTradableCreditBalance(a string) {
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, balance.TradableAmount, a)
 }
 
 func (s *sellSuite) ExpectAliceEscrowedCreditBalance(a string) {
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	balance, err := s.baseStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, balance.EscrowedAmount, a)
@@ -421,24 +421,24 @@ func (s *sellSuite) ExpectEventWithProperties(a gocuke.DocString) {
 }
 
 func (s *sellSuite) aliceTradableBatchBalance() {
-	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
 		ClassKey: classKey,
 	})
 	require.NoError(s.t, err)
 
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 		ProjectKey: projectKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)
 
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
+	err = s.baseStore.BatchBalanceTable().Insert(s.ctx, &baseapi.BatchBalance{
 		BatchKey:       batchKey,
 		Address:        s.alice,
 		TradableAmount: s.aliceTradableAmount,

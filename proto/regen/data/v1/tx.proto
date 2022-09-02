@@ -10,6 +10,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Msg is the regen.data.v1 Msg service
 service Msg {
+
   // Anchor "anchors" a piece of data to the blockchain based on its secure
   // hash, effectively providing a tamper resistant timestamp.
   //
@@ -67,6 +68,7 @@ message MsgAnchor {
 
 // MsgAnchor is the Msg/Anchor response type.
 message MsgAnchorResponse {
+
   // iri is the IRI of the data that was anchored.
   string iri = 1;
 
@@ -92,6 +94,7 @@ message MsgAttest {
 
 // MsgAttestResponse is the Msg/Attest response type.
 message MsgAttestResponse {
+
   // iris are the IRIs of the data that was attested to. If the attestor attests
   // to the same piece of data, the previous attestation will not be updated and
   // the IRI will not be included in this list.
@@ -121,6 +124,7 @@ message MsgDefineResolver {
 
 // MsgDefineResolverResponse is the Msg/DefineResolver response type.
 message MsgDefineResolverResponse {
+
   // resolver_id is the integer ID of the resolver to be used in
   // MsgRegisterResolver.
   uint64 resolver_id = 1;

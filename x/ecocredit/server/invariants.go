@@ -21,7 +21,7 @@ func (s serverImpl) batchSupplyInvariant() sdk.Invariant {
 			return err.Error(), true
 		}
 
-		msg, broken := basekeeper.BatchSupplyInvariant(goCtx, s.CoreKeeper, basketBalances)
+		msg, broken := basekeeper.BatchSupplyInvariant(goCtx, s.BaseKeeper, basketBalances)
 		return sdk.FormatInvariant(ecocredit.ModuleName, "batch-supply", msg), broken
 	}
 }

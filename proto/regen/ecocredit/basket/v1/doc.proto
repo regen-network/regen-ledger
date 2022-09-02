@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+// regen.ecocredit.basket.v1 describes the API for the basket submodule.
+//
+// The following outlines revisions and tagged versions of the compiled code in
+// relation to tagged releases in regen-network/regen-ledger:
+//
+// - Revision 0: v3.0.0 (api/v0.8.0, x/ecocredit/v1.1.0)
+// - Revision 1: v4.0.0 (api/v1.0.0, x/ecocredit/v2.0.0)
+// - Revision 2: (in progress)
+//
+package regen.ecocredit.basket.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";

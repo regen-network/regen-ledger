@@ -178,7 +178,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateBatch issuance iteration")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCreateBatch issuance iteration")
 	}
 
 	if err = k.stateStore.BatchSupplyTable().Insert(ctx, &api.BatchSupply{

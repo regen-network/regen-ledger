@@ -26,7 +26,7 @@ func (k Keeper) BasketBalance(ctx context.Context, request *types.QueryBasketBal
 		return nil, errors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
 	}
 
-	found, err := k.coreStore.BatchTable().HasByDenom(ctx, request.BatchDenom)
+	found, err := k.baseStore.BatchTable().HasByDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to get credit batch %s", request.BatchDenom)
 	}

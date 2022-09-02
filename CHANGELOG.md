@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to app configuration
+- [#1441](https://github.com/regen-network/regen-ledger/pull/1441) Add interchain accounts module
 
 #### Changed
 
@@ -129,6 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/client` core commands to `ecocredit/base/client`
 - [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/server/core` to `ecocredit/base/keeper`
 - [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/simulation` core operations to `ecocredit/base/simulation`
+- [#1447](https://github.com/regen-network/regen-ledger/pull/1447) Rename `CoreKeeper` to `BaseKeeper`
 - [#1452](https://github.com/regen-network/regen-ledger/pull/1452) Migrated `BeginBlocker` to `ecocredit/module`
 
 ### Fixed
@@ -139,7 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Remove `AddCreditType` proposal handler
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Remove `AllowedDenom` proposal handler
-- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Removed `paramsKeeper` parameter from `core/Keeper`.
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Removed `paramsKeeper` parameter from `core/Keeper`
+- [#1447](https://github.com/regen-network/regen-ledger/pull/1447) Remove `.core` from legacy amino codec names
 
 ### x/group
 

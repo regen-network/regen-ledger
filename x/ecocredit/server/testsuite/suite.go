@@ -246,7 +246,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	})
 	require.NoError(err)
 
-	// make sure the core server is properly tracking the user balance
+	// make sure the base server is properly tracking the user balance
 	newUserTotal, err := userTotalCreditBalance.Sub(creditAmtDeposited)
 	require.NoError(err)
 	require.Equal(newUserTotal.String(), userCreditBalance.Balance.TradableAmount)

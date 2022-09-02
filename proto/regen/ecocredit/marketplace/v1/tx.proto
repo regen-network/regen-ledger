@@ -27,10 +27,12 @@ service Msg {
 
   // AddAllowedDenom is a governance method that allows the addition of
   // new allowed denom.
+  //
   // Since Revision 1
   rpc AddAllowedDenom(MsgAddAllowedDenom) returns (MsgAddAllowedDenomResponse);
 
   // RemoveAllowedDenom is a governance method that removes allowed denom.
+  //
   // Since Revision 1
   rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
       returns (MsgRemoveAllowedDenomResponse);
@@ -95,7 +97,7 @@ message MsgUpdateSellOrders {
   // Update is an update to an existing sell order.
   message Update {
 
-    //  sell_order_id is the ID of an existing sell order.
+    // sell_order_id is the ID of an existing sell order.
     uint64 sell_order_id = 1;
 
     // new_quantity is the updated quantity of credits available to sell, if it
@@ -145,6 +147,7 @@ message MsgBuyDirect {
 
   // Order contains the information needed to purchase an ecocredit.
   message Order {
+
     // sell_order_id is the sell order ID against which the buyer is trying
     // to buy.
     uint64 sell_order_id = 2;
@@ -172,6 +175,7 @@ message MsgBuyDirect {
 message MsgBuyDirectResponse {}
 
 // MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+//
 // Since Revision 1
 message MsgAddAllowedDenom {
   option (cosmos.msg.v1.signer) = "authority";
@@ -193,12 +197,15 @@ message MsgAddAllowedDenom {
 }
 
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+//
 // Since Revision 1
 message MsgAddAllowedDenomResponse {}
 
 // MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+//
 // Since Revision 1
 message MsgRemoveAllowedDenom {
+
   // authority is the address of the governance account.
   string authority = 1;
 
@@ -207,5 +214,6 @@ message MsgRemoveAllowedDenom {
 }
 
 // MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+//
 // Since Revision 1
 message MsgRemoveAllowedDenomResponse {}
