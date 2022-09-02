@@ -8,6 +8,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,9 +50,10 @@ func (s *createSuite) RequiredBasketFee(a string) {
 	basketFee, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	_, err = s.k.UpdateBasketFee(s.ctx, &types.MsgUpdateBasketFee{
-		Authority: "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
-		Fee:       &basketFee,
+	basketFeeProto := regentypes.CoinToProtoCoin(&basketFee)
+
+	err = s.stateStore.BasketFeeTable().Save(s.ctx, &api.BasketFee{
+		Fee: basketFeeProto,
 	})
 	require.NoError(s.t, err)
 

@@ -22,8 +22,9 @@ service Msg {
   // credits first.
   rpc Take(MsgTake) returns (MsgTakeResponse);
 
-  // UpdateBasketFee is a governance method that allows for updating of fees to
-  // be used for the basket creation fee.
+  // UpdateBasketFee is a governance method that allows for updating the basket
+  // creation fee. If not set, the basket creation fee will be removed and no
+  // fee will be required to create a basket.
   //
   // Since Revision 2
   rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
@@ -171,8 +172,8 @@ message MsgUpdateBasketFee {
   // authority is the address of the governance account.
   string authority = 1;
 
-  // basket_fee is the basket creation fee. If not set, the basket creation fee
-  // will be removed and no fee will be required to create a basket.
+  // fee is the basket creation fee. If not set, the basket creation fee will be
+  // removed and no fee will be required to create a basket.
   cosmos.base.v1beta1.Coin fee = 2;
 }
 

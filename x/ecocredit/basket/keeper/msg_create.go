@@ -56,7 +56,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 			)
 		}
 
-		// check if provided fee is greater than or equal to any coin in require fee
+		// check if fee is greater than or equal to required fee
 		if !msgFee.IsGTE(requiredFee) {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 				"fee must be %s, got %s", requiredFee, msgFee,

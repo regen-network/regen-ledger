@@ -29,8 +29,9 @@ type MsgClient interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
-	// UpdateBasketFee is a governance method that allows for updating of fees to
-	// be used for the basket creation fee.
+	// UpdateBasketFee is a governance method that allows for updating the basket
+	// creation fee. If not set, the basket creation fee will be removed and no
+	// fee will be required to create a basket.
 	//
 	// Since Revision 2
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
@@ -91,8 +92,9 @@ type MsgServer interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
-	// UpdateBasketFee is a governance method that allows for updating of fees to
-	// be used for the basket creation fee.
+	// UpdateBasketFee is a governance method that allows for updating the basket
+	// creation fee. If not set, the basket creation fee will be removed and no
+	// fee will be required to create a basket.
 	//
 	// Since Revision 2
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)

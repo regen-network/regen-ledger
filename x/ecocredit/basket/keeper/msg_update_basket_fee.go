@@ -5,6 +5,7 @@ import (
 
 	sdkv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	regentypes "github.com/regen-network/regen-ledger/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
@@ -19,10 +20,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *types.MsgUpdateBasketF
 	var basketFee *sdkv1beta1.Coin
 
 	if req.Fee != nil {
-		basketFee = &sdkv1beta1.Coin{
-			Denom:  req.Fee.Denom,
-			Amount: req.Fee.Amount.String(),
-		}
+		basketFee = regentypes.CoinToProtoCoin(req.Fee)
 	}
 
 	if err := k.stateStore.BasketFeeTable().Save(ctx, &api.BasketFee{

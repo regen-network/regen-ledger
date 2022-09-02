@@ -243,6 +243,7 @@ func (s *IntegrationTestSuite) TestQueryBasketFee() {
 
 	var res types.QueryBasketFeeResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
 	require.NotEmpty(res.Fee)
 	require.Equal(res.Fee.Denom, sdk.DefaultBondDenom)
 	require.Equal(res.Fee.Amount, basetypes.DefaultBasketFee)

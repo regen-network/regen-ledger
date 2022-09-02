@@ -5037,8 +5037,8 @@ type MsgUpdateBasketFee struct {
 
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// basket_fee is the basket creation fee. If not set, the basket creation fee
-	// will be removed and no fee will be required to create a basket.
+	// fee is the basket creation fee. If not set, the basket creation fee will be
+	// removed and no fee will be required to create a basket.
 	Fee *v1beta1.Coin `protobuf:"bytes,2,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 

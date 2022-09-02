@@ -5,6 +5,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// CoinToProtoCoin constructs a new protobuf coin from gogoproto coin.
+// It returns an error, if coins are not sorted, have negitive amount, invalid or duplicate denomination.
+func CoinToProtoCoin(coin *sdk.Coin) *basev1beta1.Coin {
+	return &basev1beta1.Coin{
+		Denom:  coin.Denom,
+		Amount: coin.Amount.String(),
+	}
+}
+
 // CoinsToProtoCoins constructs a new protobuf coin set from gogoproto coin set.
 // It returns an error, if coins are not sorted, have negitive amount, invalid or duplicate denomination.
 func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {

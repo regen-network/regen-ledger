@@ -56,7 +56,7 @@ Feature: Msg/MsgUpdateBasketFee
       }
       """
 
-    Scenario: the basket fee is updated (remove fee)
+    Scenario: the basket fee is removed
       When alice attempts to update basket fee with properties
       """
       {

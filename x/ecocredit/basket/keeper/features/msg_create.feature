@@ -2,7 +2,7 @@ Feature: Msg/Create
 
   A basket can be created:
   - when the basket name is unique
-  - when a required basket fee is not set and no fee is provided
+  - when the required basket fee is not set and no fee is provided
   - when the basket fee denom matches the required basket fee denom
   - when the basket fee amount is greater than or equal to the required basket fee amount
   - when the admin balance is greater than or equal to the required basket fee amount
