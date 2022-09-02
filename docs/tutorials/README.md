@@ -5,7 +5,7 @@ Tutorials for interacting and building with Regen Ledger.
 ## User Tutorials
 
 - [IBC Transfers](./ibc-transfers.md)
-- [Denom Allowlist Proposals](./denom-allolist-proposal.md)
+- [Currency Allowlist Proposals](./denom-allowlist-proposal.md)
 
 ## Developer Tutorials
 
