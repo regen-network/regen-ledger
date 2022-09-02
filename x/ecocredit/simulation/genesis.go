@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	regentypes "github.com/regen-network/regen-ledger/types"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -24,8 +24,8 @@ import (
 )
 
 // genCreditClassFee randomized CreditClassFee
-func genCreditClassFee(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10)))))
+func genCreditClassFee(r *rand.Rand) sdk.Coin {
+	return sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10))))
 }
 
 // genAllowedClassCreators generate random set of creators
@@ -210,19 +210,11 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		}
 	}
 
-	classFees := genCreditClassFee(r)
+	classFee := genCreditClassFee(r)
+	classFeeProto := regentypes.CoinToProtoCoin(&classFee)
 
-	fees := []*basev1beta1.Coin{}
-	for i := 0; i < classFees.Len(); i++ {
-		denom := classFees.GetDenomByIndex(i)
-		amount := classFees.AmountOf(denom)
-		fees = append(fees, &basev1beta1.Coin{
-			Denom:  denom,
-			Amount: amount.String(),
-		})
-	}
-	if err := ss.ClassFeesTable().Save(ctx, &api.ClassFees{
-		Fees: fees,
+	if err := ss.ClassFeeTable().Save(ctx, &api.ClassFee{
+		Fee: classFeeProto,
 	}); err != nil {
 		return err
 	}

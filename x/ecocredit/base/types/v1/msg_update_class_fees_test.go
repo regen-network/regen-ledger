@@ -8,34 +8,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type msgUpdateClassFees struct {
+type msgUpdateClassFee struct {
 	t   gocuke.TestingT
-	msg *MsgUpdateClassFees
+	msg *MsgUpdateClassFee
 	err error
 }
 
-func TestMsgUpdateClassFees(t *testing.T) {
-	gocuke.NewRunner(t, &msgUpdateClassFees{}).Path("./features/msg_update_class_fees.feature").Run()
+func TestMsgUpdateClassFee(t *testing.T) {
+	gocuke.NewRunner(t, &msgUpdateClassFee{}).Path("./features/msg_update_class_fee.feature").Run()
 }
 
-func (s *msgUpdateClassFees) Before(t gocuke.TestingT) {
+func (s *msgUpdateClassFee) Before(t gocuke.TestingT) {
 	s.t = t
 }
 
-func (s *msgUpdateClassFees) TheMessage(a gocuke.DocString) {
-	s.msg = &MsgUpdateClassFees{}
+func (s *msgUpdateClassFee) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgUpdateClassFee{}
 	err := jsonpb.UnmarshalString(a.Content, s.msg)
 	require.NoError(s.t, err)
 }
 
-func (s *msgUpdateClassFees) TheMessageIsValidated() {
+func (s *msgUpdateClassFee) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
-func (s *msgUpdateClassFees) ExpectTheError(a string) {
+func (s *msgUpdateClassFee) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *msgUpdateClassFees) ExpectNoError() {
+func (s *msgUpdateClassFee) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }

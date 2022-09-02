@@ -22,8 +22,8 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 
 	// migrate credit class fees
 	classFees := regentypes.CoinsToProtoCoins(params.CreditClassFee)
-	if err := baseStore.ClassFeesTable().Save(sdkCtx, &baseapi.ClassFees{
-		Fees: classFees,
+	if err := baseStore.ClassFeeTable().Save(sdkCtx, &baseapi.ClassFee{
+		Fee: classFees[0], // we assume there is one fee at the time of the upgrade
 	}); err != nil {
 		return err
 	}

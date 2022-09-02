@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	"gotest.tools/v3/assert"
+	"github.com/stretchr/testify/require"
 
 	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 
@@ -12,48 +12,26 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
-func TestQuery_CreditClassFees(t *testing.T) {
+func TestQuery_ClassFee(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	result, err := s.k.CreditClassFees(s.ctx, &types.QueryCreditClassFeesRequest{})
-	assert.NilError(t, err)
-	assert.Equal(t, result.Fees.Len(), 0)
+	result, err := s.k.ClassFee(s.ctx, &types.QueryClassFeeRequest{})
+	require.NoError(t, err)
+	require.Empty(t, result.Fee)
 
-	// initialize credit class fees
-	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  "uatom",
-				Amount: "20000000",
-			},
+	// initialize credit class fee
+	err = s.stateStore.ClassFeeTable().Save(s.ctx, &api.ClassFee{
+		Fee: &sdkbase.Coin{
+			Denom:  "uregen",
+			Amount: "20000000",
 		},
 	})
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	result, err = s.k.CreditClassFees(s.ctx, &types.QueryCreditClassFeesRequest{})
-	assert.NilError(t, err)
-	assert.Equal(t, result.Fees.Len(), 1)
-	assert.Equal(t, result.Fees.AmountOf("uatom").Equal(math.NewInt(2e7)), true)
-
-	// initialize credit class fees
-	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  "uatom",
-				Amount: "20000000",
-			},
-			{
-				Denom:  "uregen",
-				Amount: "10000000",
-			},
-		},
-	})
-	assert.NilError(t, err)
-	result, err = s.k.CreditClassFees(s.ctx, &types.QueryCreditClassFeesRequest{})
-	assert.NilError(t, err)
-
-	assert.Equal(t, result.Fees.Len(), 2)
-	assert.Equal(t, result.Fees.AmountOf("uregen").Equal(math.NewInt(1e7)), true)
-
+	result, err = s.k.ClassFee(s.ctx, &types.QueryClassFeeRequest{})
+	require.NoError(t, err)
+	require.NotEmpty(t, result.Fee)
+	require.Equal(t, "uregen", result.Fee.Denom)
+	require.Equal(t, math.NewInt(2e7), result.Fee.Amount)
 }
