@@ -567,7 +567,7 @@ func (s *IntegrationTestSuite) TestClassCreatorAllowlist() {
 	var res types.QueryClassCreatorAllowlistResponse
 	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
-	require.Equal(true, res.Enabled)
+	require.Equal(false, res.Enabled)
 }
 
 func (s *IntegrationTestSuite) TestAllBalances() {
