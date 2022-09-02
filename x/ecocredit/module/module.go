@@ -54,6 +54,7 @@ type Module struct {
 	Keeper        server.Keeper
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
+	govKeeper     ecocredit.GovKeeper
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
 	legacySubspace paramtypes.Subspace
@@ -66,6 +67,7 @@ func NewModule(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	legacySubspace paramtypes.Subspace,
+	govKeeper ecocredit.GovKeeper,
 ) *Module {
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
@@ -79,6 +81,7 @@ func NewModule(
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
 		authority:      authority,
+		govKeeper:      govKeeper,
 	}
 }
 
@@ -307,8 +310,10 @@ func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 		simState.Cdc,
 		m.accountKeeper,
 		m.bankKeeper,
+		m.govKeeper,
 		baseServer,
 		basketServer,
 		marketServer,
+		m.authority,
 	)
 }
