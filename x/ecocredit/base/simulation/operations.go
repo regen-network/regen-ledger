@@ -31,25 +31,25 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgCreateClass           = "op_weight_msg_create_class"            //nolint:gosec
-	OpWeightMsgCreateBatch           = "op_weight_msg_create_batch"            //nolint:gosec
-	OpWeightMsgSend                  = "op_weight_msg_send"                    //nolint:gosec
-	OpWeightMsgRetire                = "op_weight_msg_retire"                  //nolint:gosec
-	OpWeightMsgCancel                = "op_weight_msg_cancel"                  //nolint:gosec
-	OpWeightMsgUpdateClassAdmin      = "op_weight_msg_update_class_admin"      //nolint:gosec
-	OpWeightMsgUpdateClassMetadata   = "op_weight_msg_update_class_metadata"   //nolint:gosec
-	OpWeightMsgUpdateClassIssuers    = "op_weight_msg_update_class_issuers"    //nolint:gosec
-	OpWeightMsgCreateProject         = "op_weight_msg_create_project"          //nolint:gosec
-	OpWeightMsgUpdateProjectAdmin    = "op_weight_msg_update_project_admin"    //nolint:gosec
-	OpWeightMsgUpdateProjectMetadata = "op_weight_msg_update_project_metadata" //nolint:gosec
-	OpWeightMsgMintBatchCredits      = "op_weight_msg_mint_batch_credits"      //nolint:gosec
-	OpWeightMsgSealBatch             = "op_weight_msg_seal_batch"              //nolint:gosec
-	OpWeightMsgBridge                = "op_weight_msg_bridge"                  //nolint:gosec
-	OpWeightMsgAddCreditType         = "op_weight_msg_add_credit_type"         //nolint:gosec
-	OpWeightMsgAddClassCreator       = "op_weight_msg_add_class_creator"       //nolint:gosec
-	OpWeightMsgRemoveClassCreator    = "op_weight_msg_remove_class_creator"    //nolint:gosec
-	OpWeightMsgToggleClassAllowlist  = "op_weight_msg_toggle_class_allowlist"  //nolint:gosec
-	OpWeightMsgUpdateClassFees       = "op_weight_msg_update_class_fees"       //nolint:gosec
+	OpWeightMsgCreateClass              = "op_weight_msg_create_class"                //nolint:gosec
+	OpWeightMsgCreateBatch              = "op_weight_msg_create_batch"                //nolint:gosec
+	OpWeightMsgSend                     = "op_weight_msg_send"                        //nolint:gosec
+	OpWeightMsgRetire                   = "op_weight_msg_retire"                      //nolint:gosec
+	OpWeightMsgCancel                   = "op_weight_msg_cancel"                      //nolint:gosec
+	OpWeightMsgUpdateClassAdmin         = "op_weight_msg_update_class_admin"          //nolint:gosec
+	OpWeightMsgUpdateClassMetadata      = "op_weight_msg_update_class_metadata"       //nolint:gosec
+	OpWeightMsgUpdateClassIssuers       = "op_weight_msg_update_class_issuers"        //nolint:gosec
+	OpWeightMsgCreateProject            = "op_weight_msg_create_project"              //nolint:gosec
+	OpWeightMsgUpdateProjectAdmin       = "op_weight_msg_update_project_admin"        //nolint:gosec
+	OpWeightMsgUpdateProjectMetadata    = "op_weight_msg_update_project_metadata"     //nolint:gosec
+	OpWeightMsgMintBatchCredits         = "op_weight_msg_mint_batch_credits"          //nolint:gosec
+	OpWeightMsgSealBatch                = "op_weight_msg_seal_batch"                  //nolint:gosec
+	OpWeightMsgBridge                   = "op_weight_msg_bridge"                      //nolint:gosec
+	OpWeightMsgAddCreditType            = "op_weight_msg_add_credit_type"             //nolint:gosec
+	OpWeightMsgAddClassCreator          = "op_weight_msg_add_class_creator"           //nolint:gosec
+	OpWeightMsgRemoveClassCreator       = "op_weight_msg_remove_class_creator"        //nolint:gosec
+	OpWeightMsgSetClassCreatorAllowlist = "op_weight_msg_set_class_creator_allowlist" //nolint:gosec
+	OpWeightMsgUpdateClassFees          = "op_weight_msg_update_class_fees"           //nolint:gosec
 )
 
 // ecocredit operations weights
@@ -70,25 +70,25 @@ const (
 
 // ecocredit message types
 var (
-	TypeMsgCreateClass           = sdk.MsgTypeURL(&types.MsgCreateClass{})
-	TypeMsgCreateProject         = sdk.MsgTypeURL(&types.MsgCreateProject{})
-	TypeMsgCreateBatch           = sdk.MsgTypeURL(&types.MsgCreateBatch{})
-	TypeMsgSend                  = sdk.MsgTypeURL(&types.MsgSend{})
-	TypeMsgRetire                = sdk.MsgTypeURL(&types.MsgRetire{})
-	TypeMsgCancel                = sdk.MsgTypeURL(&types.MsgCancel{})
-	TypeMsgUpdateClassAdmin      = sdk.MsgTypeURL(&types.MsgUpdateClassAdmin{})
-	TypeMsgUpdateClassIssuers    = sdk.MsgTypeURL(&types.MsgUpdateClassIssuers{})
-	TypeMsgUpdateClassMetadata   = sdk.MsgTypeURL(&types.MsgUpdateClassMetadata{})
-	TypeMsgUpdateProjectMetadata = sdk.MsgTypeURL(&types.MsgUpdateProjectMetadata{})
-	TypeMsgUpdateProjectAdmin    = sdk.MsgTypeURL(&types.MsgUpdateProjectAdmin{})
-	TypeMsgBridge                = sdk.MsgTypeURL(&types.MsgBridge{})
-	TypeMsgMintBatchCredits      = sdk.MsgTypeURL(&types.MsgMintBatchCredits{})
-	TypeMsgSealBatch             = sdk.MsgTypeURL(&types.MsgSealBatch{})
-	TypeMsgAddCreditType         = sdk.MsgTypeURL(&types.MsgAddCreditType{})
-	TypeMsgAddClassCreator       = sdk.MsgTypeURL(&types.MsgAddClassCreator{})
-	TypeMsgRemoveClassCreator    = sdk.MsgTypeURL(&types.MsgRemoveClassCreator{})
-	TypeMsgToggleClassAllowlist  = sdk.MsgTypeURL(&types.MsgToggleCreditClassAllowlist{})
-	TypeMsgUpdateClassFees       = sdk.MsgTypeURL(&types.MsgUpdateClassFees{})
+	TypeMsgCreateClass              = sdk.MsgTypeURL(&types.MsgCreateClass{})
+	TypeMsgCreateProject            = sdk.MsgTypeURL(&types.MsgCreateProject{})
+	TypeMsgCreateBatch              = sdk.MsgTypeURL(&types.MsgCreateBatch{})
+	TypeMsgSend                     = sdk.MsgTypeURL(&types.MsgSend{})
+	TypeMsgRetire                   = sdk.MsgTypeURL(&types.MsgRetire{})
+	TypeMsgCancel                   = sdk.MsgTypeURL(&types.MsgCancel{})
+	TypeMsgUpdateClassAdmin         = sdk.MsgTypeURL(&types.MsgUpdateClassAdmin{})
+	TypeMsgUpdateClassIssuers       = sdk.MsgTypeURL(&types.MsgUpdateClassIssuers{})
+	TypeMsgUpdateClassMetadata      = sdk.MsgTypeURL(&types.MsgUpdateClassMetadata{})
+	TypeMsgUpdateProjectMetadata    = sdk.MsgTypeURL(&types.MsgUpdateProjectMetadata{})
+	TypeMsgUpdateProjectAdmin       = sdk.MsgTypeURL(&types.MsgUpdateProjectAdmin{})
+	TypeMsgBridge                   = sdk.MsgTypeURL(&types.MsgBridge{})
+	TypeMsgMintBatchCredits         = sdk.MsgTypeURL(&types.MsgMintBatchCredits{})
+	TypeMsgSealBatch                = sdk.MsgTypeURL(&types.MsgSealBatch{})
+	TypeMsgAddCreditType            = sdk.MsgTypeURL(&types.MsgAddCreditType{})
+	TypeMsgAddClassCreator          = sdk.MsgTypeURL(&types.MsgAddClassCreator{})
+	TypeMsgRemoveClassCreator       = sdk.MsgTypeURL(&types.MsgRemoveClassCreator{})
+	TypeMsgSetClassCreatorAllowlist = sdk.MsgTypeURL(&types.MsgSetClassCreatorAllowlist{})
+	TypeMsgUpdateClassFees          = sdk.MsgTypeURL(&types.MsgUpdateClassFees{})
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -100,25 +100,25 @@ func WeightedOperations(
 	mktQryClient markettypes.QueryServer, authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
-		weightMsgCreateClass           int
-		weightMsgCreateBatch           int
-		weightMsgSend                  int
-		weightMsgRetire                int
-		weightMsgCancel                int
-		weightMsgUpdateClassAdmin      int
-		weightMsgUpdateClassIssuers    int
-		weightMsgUpdateClassMetadata   int
-		weightMsgCreateProject         int
-		weightMsgUpdateProjectMetadata int
-		weightMsgUpdateProjectAdmin    int
-		weightMsgSealBatch             int
-		weightMsgMintBatchCredits      int
-		weightMsgBridge                int
-		weightMsgAddCreditType         int
-		weightMsgAddClassCreator       int
-		weightMsgRemoveClassCreator    int
-		weightMsgToggleClassAllowlist  int
-		weightMsgUpdateClassFees       int
+		weightMsgCreateClass              int
+		weightMsgCreateBatch              int
+		weightMsgSend                     int
+		weightMsgRetire                   int
+		weightMsgCancel                   int
+		weightMsgUpdateClassAdmin         int
+		weightMsgUpdateClassIssuers       int
+		weightMsgUpdateClassMetadata      int
+		weightMsgCreateProject            int
+		weightMsgUpdateProjectMetadata    int
+		weightMsgUpdateProjectAdmin       int
+		weightMsgSealBatch                int
+		weightMsgMintBatchCredits         int
+		weightMsgBridge                   int
+		weightMsgAddCreditType            int
+		weightMsgAddClassCreator          int
+		weightMsgRemoveClassCreator       int
+		weightMsgSetClassCreatorAllowlist int
+		weightMsgUpdateClassFees          int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
@@ -223,9 +223,9 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgToggleClassAllowlist, &weightMsgToggleClassAllowlist, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgSetClassCreatorAllowlist, &weightMsgSetClassCreatorAllowlist, nil,
 		func(_ *rand.Rand) {
-			weightMsgToggleClassAllowlist = WeightBridge
+			weightMsgSetClassCreatorAllowlist = WeightBridge
 		},
 	)
 
@@ -309,8 +309,8 @@ func WeightedOperations(
 		),
 
 		simulation.NewWeightedOperation(
-			weightMsgToggleClassAllowlist,
-			SimulateMsgToggleClassAllowlist(ak, bk, govk, qryClient, authority),
+			weightMsgSetClassCreatorAllowlist,
+			SimulateMsgSetClassCreatorAllowlist(ak, bk, govk, qryClient, authority),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassFees,
@@ -1502,8 +1502,8 @@ func SimulateMsgRemoveClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 	}
 }
 
-// SimulateMsgToggleClassAllowlist generates a MsgToggleClassAllowlist with random values.
-func SimulateMsgToggleClassAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
+// SimulateMsgSetClassCreatorAllowlist generates a MsgSetClassCreatorAllowlist with random values.
+func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
 	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -1511,7 +1511,7 @@ func SimulateMsgToggleClassAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.Ba
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgToggleClassAllowlist)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgSetClassCreatorAllowlist)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -1520,19 +1520,19 @@ func SimulateMsgToggleClassAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.Ba
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
 		switch {
 		case skip:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgToggleClassAllowlist, "skip deposit"), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, "skip deposit"), nil, nil
 		case err != nil:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgToggleClassAllowlist, "unable to generate deposit"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, "unable to generate deposit"), nil, err
 		}
 
-		proposalMsg := types.MsgToggleCreditClassAllowlist{
+		proposalMsg := types.MsgSetClassCreatorAllowlist{
 			Authority: authority.String(),
 			Enabled:   r.Float32() < 0.3, // 30% chance of allowlist being enabled,
 		}
 
 		any, err := codectypes.NewAnyWithValue(&proposalMsg)
 		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgToggleClassAllowlist, err.Error()), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, err.Error()), nil, err
 		}
 
 		msg := &govtypes.MsgSubmitProposal{
@@ -1570,7 +1570,7 @@ func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgToggleClassAllowlist)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateClassFees)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -1579,9 +1579,9 @@ func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
 		switch {
 		case skip:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgToggleClassAllowlist, "skip deposit"), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "skip deposit"), nil, nil
 		case err != nil:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgToggleClassAllowlist, "unable to generate deposit"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "unable to generate deposit"), nil, err
 		}
 
 		fees := utils.RandomFees(r)
@@ -1592,7 +1592,7 @@ func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 
 		any, err := codectypes.NewAnyWithValue(&proposalMsg)
 		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgToggleClassAllowlist, err.Error()), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, err.Error()), nil, err
 		}
 
 		msg := &govtypes.MsgSubmitProposal{
