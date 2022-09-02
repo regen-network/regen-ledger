@@ -50,7 +50,7 @@ func (s *createSuite) RequiredBasketFee(a string) {
 	basketFee, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	basketFeeProto := regentypes.CoinToProtoCoin(&basketFee)
+	basketFeeProto := regentypes.CoinToProtoCoin(basketFee)
 
 	err = s.stateStore.BasketFeeTable().Save(s.ctx, &api.BasketFee{
 		Fee: basketFeeProto,

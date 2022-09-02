@@ -6,7 +6,7 @@ import (
 )
 
 // CoinToProtoCoin constructs a new protobuf coin from gogoproto coin.
-func CoinToProtoCoin(coin *sdk.Coin) *basev1beta1.Coin {
+func CoinToProtoCoin(coin sdk.Coin) *basev1beta1.Coin {
 	return &basev1beta1.Coin{
 		Denom:  coin.Denom,
 		Amount: coin.Amount.String(),
@@ -17,7 +17,7 @@ func CoinToProtoCoin(coin *sdk.Coin) *basev1beta1.Coin {
 func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {
 	result := make([]*basev1beta1.Coin, 0, coins.Len())
 	for _, coin := range coins {
-		result = append(result, CoinToProtoCoin(&coin))
+		result = append(result, CoinToProtoCoin(coin))
 	}
 
 	return result

@@ -20,7 +20,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *types.MsgUpdateBasketF
 	var basketFee *sdkv1beta1.Coin
 
 	if req.Fee != nil {
-		basketFee = regentypes.CoinToProtoCoin(req.Fee)
+		basketFee = regentypes.CoinToProtoCoin(*req.Fee)
 	}
 
 	if err := k.stateStore.BasketFeeTable().Save(ctx, &api.BasketFee{
