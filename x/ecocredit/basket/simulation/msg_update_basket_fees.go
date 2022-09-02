@@ -17,14 +17,14 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
-const OpWeightMsgUpdateBasketFees = "op_weight_msg_update_basket_fees" //nolint:gosec
+const OpWeightMsgUpdateBasketFee = "op_weight_msg_update_basket_fee" //nolint:gosec
 
-var TypeMsgUpdateBasketFees = types.MsgUpdateBasketFees{}.Route()
+var TypeMsgUpdateBasketFee = types.MsgUpdateBasketFee{}.Route()
 
 const WeightUpdateBasketFees = 100
 
-// SimulateMsgCreate generates a Basket/MsgUpdateBasketFees with random values.
-func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient basetypes.QueryServer,
+// SimulateMsgUpdateBasketFee generates a Basket/MsgUpdateBasketFee with random values.
+func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient basetypes.QueryServer,
 	basketQryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -33,7 +33,7 @@ func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateBasketFees)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateBasketFee)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -42,20 +42,24 @@ func SimulateMsgUpdateBasketFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
 		switch {
 		case skip:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "skip deposit"), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, "skip deposit"), nil, nil
 		case err != nil:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, "unable to generate deposit"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, "unable to generate deposit"), nil, err
 		}
 
-		fees := utils.RandomFees(r)
-		msg := types.MsgUpdateBasketFees{
-			Authority:  authority.String(),
-			BasketFees: fees,
+		fee := utils.RandomFee(r)
+		if fee.Amount.IsZero() {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, "invalid proposal message"), nil, err
+		}
+
+		msg := types.MsgUpdateBasketFee{
+			Authority: authority.String(),
+			Fee:       &fee,
 		}
 
 		any, err := codectypes.NewAnyWithValue(&msg)
 		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFees, err.Error()), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, err.Error()), nil, err
 		}
 
 		proposalMsg := govtypes.MsgSubmitProposal{
