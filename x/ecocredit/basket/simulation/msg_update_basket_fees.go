@@ -17,7 +17,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
-const OpWeightMsgUpdateBasketFees = "op_weight_update_basket_fees" //nolint:gosec
+const OpWeightMsgUpdateBasketFees = "op_weight_msg_update_basket_fees" //nolint:gosec
 
 var TypeMsgUpdateBasketFees = types.MsgUpdateBasketFees{}.Route()
 
