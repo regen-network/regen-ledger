@@ -1770,6 +1770,36 @@ func NewBatchContractTable(db ormtable.Schema) (BatchContractTable, error) {
 	return batchContractTable{table}, nil
 }
 
+// singleton store
+type ClassCreatorAllowlistTable interface {
+	Get(ctx context.Context) (*ClassCreatorAllowlist, error)
+	Save(ctx context.Context, classCreatorAllowlist *ClassCreatorAllowlist) error
+}
+
+type classCreatorAllowlistTable struct {
+	table ormtable.Table
+}
+
+var _ ClassCreatorAllowlistTable = classCreatorAllowlistTable{}
+
+func (x classCreatorAllowlistTable) Get(ctx context.Context) (*ClassCreatorAllowlist, error) {
+	classCreatorAllowlist := &ClassCreatorAllowlist{}
+	_, err := x.table.Get(ctx, classCreatorAllowlist)
+	return classCreatorAllowlist, err
+}
+
+func (x classCreatorAllowlistTable) Save(ctx context.Context, classCreatorAllowlist *ClassCreatorAllowlist) error {
+	return x.table.Save(ctx, classCreatorAllowlist)
+}
+
+func NewClassCreatorAllowlistTable(db ormtable.Schema) (ClassCreatorAllowlistTable, error) {
+	table := db.GetTable(&ClassCreatorAllowlist{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&ClassCreatorAllowlist{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return &classCreatorAllowlistTable{table}, nil
+}
+
 type AllowedClassCreatorTable interface {
 	Insert(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
 	Update(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
@@ -1882,36 +1912,6 @@ func NewAllowedClassCreatorTable(db ormtable.Schema) (AllowedClassCreatorTable, 
 		return nil, ormerrors.TableNotFound.Wrap(string((&AllowedClassCreator{}).ProtoReflect().Descriptor().FullName()))
 	}
 	return allowedClassCreatorTable{table}, nil
-}
-
-// singleton store
-type AllowListEnabledTable interface {
-	Get(ctx context.Context) (*AllowListEnabled, error)
-	Save(ctx context.Context, allowListEnabled *AllowListEnabled) error
-}
-
-type allowListEnabledTable struct {
-	table ormtable.Table
-}
-
-var _ AllowListEnabledTable = allowListEnabledTable{}
-
-func (x allowListEnabledTable) Get(ctx context.Context) (*AllowListEnabled, error) {
-	allowListEnabled := &AllowListEnabled{}
-	_, err := x.table.Get(ctx, allowListEnabled)
-	return allowListEnabled, err
-}
-
-func (x allowListEnabledTable) Save(ctx context.Context, allowListEnabled *AllowListEnabled) error {
-	return x.table.Save(ctx, allowListEnabled)
-}
-
-func NewAllowListEnabledTable(db ormtable.Schema) (AllowListEnabledTable, error) {
-	table := db.GetTable(&AllowListEnabled{})
-	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&AllowListEnabled{}).ProtoReflect().Descriptor().FullName()))
-	}
-	return &allowListEnabledTable{table}, nil
 }
 
 // singleton store
@@ -2071,8 +2071,8 @@ type StateStore interface {
 	BatchSupplyTable() BatchSupplyTable
 	OriginTxIndexTable() OriginTxIndexTable
 	BatchContractTable() BatchContractTable
+	ClassCreatorAllowlistTable() ClassCreatorAllowlistTable
 	AllowedClassCreatorTable() AllowedClassCreatorTable
-	AllowListEnabledTable() AllowListEnabledTable
 	ClassFeesTable() ClassFeesTable
 	AllowedBridgeChainTable() AllowedBridgeChainTable
 
@@ -2080,22 +2080,22 @@ type StateStore interface {
 }
 
 type stateStore struct {
-	creditType          CreditTypeTable
-	class               ClassTable
-	classIssuer         ClassIssuerTable
-	project             ProjectTable
-	batch               BatchTable
-	classSequence       ClassSequenceTable
-	projectSequence     ProjectSequenceTable
-	batchSequence       BatchSequenceTable
-	batchBalance        BatchBalanceTable
-	batchSupply         BatchSupplyTable
-	originTxIndex       OriginTxIndexTable
-	batchContract       BatchContractTable
-	allowedClassCreator AllowedClassCreatorTable
-	allowListEnabled    AllowListEnabledTable
-	classFees           ClassFeesTable
-	allowedBridgeChain  AllowedBridgeChainTable
+	creditType            CreditTypeTable
+	class                 ClassTable
+	classIssuer           ClassIssuerTable
+	project               ProjectTable
+	batch                 BatchTable
+	classSequence         ClassSequenceTable
+	projectSequence       ProjectSequenceTable
+	batchSequence         BatchSequenceTable
+	batchBalance          BatchBalanceTable
+	batchSupply           BatchSupplyTable
+	originTxIndex         OriginTxIndexTable
+	batchContract         BatchContractTable
+	classCreatorAllowlist ClassCreatorAllowlistTable
+	allowedClassCreator   AllowedClassCreatorTable
+	classFees             ClassFeesTable
+	allowedBridgeChain    AllowedBridgeChainTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -2146,12 +2146,12 @@ func (x stateStore) BatchContractTable() BatchContractTable {
 	return x.batchContract
 }
 
-func (x stateStore) AllowedClassCreatorTable() AllowedClassCreatorTable {
-	return x.allowedClassCreator
+func (x stateStore) ClassCreatorAllowlistTable() ClassCreatorAllowlistTable {
+	return x.classCreatorAllowlist
 }
 
-func (x stateStore) AllowListEnabledTable() AllowListEnabledTable {
-	return x.allowListEnabled
+func (x stateStore) AllowedClassCreatorTable() AllowedClassCreatorTable {
+	return x.allowedClassCreator
 }
 
 func (x stateStore) ClassFeesTable() ClassFeesTable {
@@ -2227,12 +2227,12 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	allowedClassCreatorTable, err := NewAllowedClassCreatorTable(db)
+	classCreatorAllowlistTable, err := NewClassCreatorAllowlistTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	allowListEnabledTable, err := NewAllowListEnabledTable(db)
+	allowedClassCreatorTable, err := NewAllowedClassCreatorTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -2260,8 +2260,8 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		batchSupplyTable,
 		originTxIndexTable,
 		batchContractTable,
+		classCreatorAllowlistTable,
 		allowedClassCreatorTable,
-		allowListEnabledTable,
 		classFeesTable,
 		allowedBridgeChainTable,
 	}, nil

@@ -156,7 +156,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 }
 
 func (k Keeper) assertCanCreateClass(ctx context.Context, adminAddress sdk.AccAddress) error {
-	allowListEnabled, err := k.stateStore.AllowListEnabledTable().Get(ctx)
+	allowListEnabled, err := k.stateStore.ClassCreatorAllowlistTable().Get(ctx)
 	if err != nil {
 		return err
 	}

@@ -535,20 +535,20 @@ func QueryCreditClassFeesCmd() *cobra.Command {
 	})
 }
 
-// QueryCreditClassAllowlistEnabledCmd returns a query command that retrives the
-// class allow-list enable/disable flag.
-func QueryCreditClassAllowlistEnabledCmd() *cobra.Command {
+// QueryClassCreatorAllowlistCmd returns a query command that retrieves the
+// class allowlist enabled setting.
+func QueryClassCreatorAllowlistCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:     "credit-class-allowlist-enabled",
-		Short:   "Retrieve the credit class allow-list setting",
-		Long:    "Retrieve the credit class allow-list setting",
-		Example: "regen q ecocredit credit-class-allowlist-enabled",
+		Use:     "class-creator-allowlist",
+		Short:   "Retrieve the class creator allowlist enabled setting",
+		Long:    "Retrieve the class creator allowlist enabled setting",
+		Example: "regen q ecocredit class-creator-allowlist",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := c.CreditClassAllowlistEnabled(cmd.Context(), &types.QueryCreditClassAllowlistEnabledRequest{})
+			res, err := c.ClassCreatorAllowlist(cmd.Context(), &types.QueryClassCreatorAllowlistRequest{})
 			return printQueryResponse(ctx, res, err)
 		},
 	})

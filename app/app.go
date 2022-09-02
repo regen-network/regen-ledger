@@ -390,19 +390,20 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.GroupKeeper = groupkeeper.NewKeeper(keys[group.StoreKey], appCodec, app.MsgServiceRouter(), app.AccountKeeper, groupConfig)
 
 	// register custom modules here
-	ecocreditMod := ecocreditmodule.NewModule(
-		app.keys[ecocredit.ModuleName],
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.GetSubspace(ecocredit.DefaultParamspace),
-	)
 	dataMod := datamodule.NewModule(app.keys[data.ModuleName], app.AccountKeeper, app.BankKeeper)
 
 	govConfig := govtypes.DefaultConfig()
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter, app.MsgServiceRouter(), govConfig,
+	)
+	ecocreditMod := ecocreditmodule.NewModule(
+		app.keys[ecocredit.ModuleName],
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.GetSubspace(ecocredit.DefaultParamspace),
+		app.GovKeeper,
 	)
 
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))

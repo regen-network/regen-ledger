@@ -23,7 +23,7 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	err = s.stateStore.AllowListEnabledTable().Save(s.ctx, &api.AllowListEnabled{
+	err = s.stateStore.ClassCreatorAllowlistTable().Save(s.ctx, &api.ClassCreatorAllowlist{
 		Enabled: true,
 	})
 	assert.NilError(t, err)
