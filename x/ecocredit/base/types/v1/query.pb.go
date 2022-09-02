@@ -2983,8 +2983,8 @@ var xxx_messageInfo_QueryClassFeeRequest proto.InternalMessageInfo
 //
 // Since Revision 1
 type QueryClassFeeResponse struct {
-	// fee is the credit class creation fee. If set to nil, a credit class
-	// creation fee is not required.
+	// fee is the credit class creation fee. If not set, a credit class creation
+	// fee is not required.
 	Fee *types1.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
@@ -3323,8 +3323,8 @@ type QueryClient interface {
 	//
 	// Since Revision 1
 	AllowedClassCreators(ctx context.Context, in *QueryAllowedClassCreatorsRequest, opts ...grpc.CallOption) (*QueryAllowedClassCreatorsResponse, error)
-	// ClassFee returns the credit class creation fee. If set to nil, a credit
-	// class creation fee is not required.
+	// ClassFee returns the credit class creation fee. If not set, a credit class
+	// creation fee is not required.
 	//
 	// Since Revision 1
 	ClassFee(ctx context.Context, in *QueryClassFeeRequest, opts ...grpc.CallOption) (*QueryClassFeeResponse, error)
@@ -3632,8 +3632,8 @@ type QueryServer interface {
 	//
 	// Since Revision 1
 	AllowedClassCreators(context.Context, *QueryAllowedClassCreatorsRequest) (*QueryAllowedClassCreatorsResponse, error)
-	// ClassFee returns the credit class creation fee. If set to nil, a credit
-	// class creation fee is not required.
+	// ClassFee returns the credit class creation fee. If not set, a credit class
+	// creation fee is not required.
 	//
 	// Since Revision 1
 	ClassFee(context.Context, *QueryClassFeeRequest) (*QueryClassFeeResponse, error)

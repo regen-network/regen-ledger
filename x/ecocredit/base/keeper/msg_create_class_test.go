@@ -6,12 +6,12 @@ import (
 	"testing"
 
 	"github.com/regen-network/gocuke"
-	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"

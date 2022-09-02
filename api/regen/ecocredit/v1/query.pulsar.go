@@ -30333,8 +30333,8 @@ type QueryClassFeeResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// fee is the credit class creation fee. If set to nil, a credit class
-	// creation fee is not required.
+	// fee is the credit class creation fee. If not set, a credit class creation
+	// fee is not required.
 	Fee *v1beta11.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 

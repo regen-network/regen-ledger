@@ -34,7 +34,7 @@ Feature: Msg/MsgUpdateClassFee
 
   Rule: The class fee is updated
 
-  Scenario: the class fee is updated
+    Scenario: the class fee is updated
       When alice attempts to update class fee with properties
       """
       {

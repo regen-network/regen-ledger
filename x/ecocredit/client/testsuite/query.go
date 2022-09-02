@@ -915,6 +915,7 @@ func (s *IntegrationTestSuite) TestQueryClassFeeCmd() {
 
 	var res types.QueryClassFeeResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
 	s.Require().NotEmpty(res.Fee)
 	s.Require().Equal(res.Fee.Denom, sdk.DefaultBondDenom)
 	s.Require().Equal(res.Fee.Amount, types.DefaultClassFee)

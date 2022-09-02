@@ -198,8 +198,8 @@ func (m Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	creditClassFee := genesis.DefaultClassFee()
-	err = genesis.MergeClassFeeIntoTarget(cdc, creditClassFee, jsonTarget)
+	classFee := genesis.DefaultClassFee()
+	err = genesis.MergeClassFeeIntoTarget(cdc, classFee, jsonTarget)
 	if err != nil {
 		panic(err)
 	}

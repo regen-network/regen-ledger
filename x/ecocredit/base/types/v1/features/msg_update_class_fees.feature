@@ -14,7 +14,7 @@ Feature: MsgUpdateClassFee
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message without removing the fee
+  Scenario: a valid message removing the fee
     Given the message
     """
     {

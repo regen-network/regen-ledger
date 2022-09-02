@@ -244,8 +244,8 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-class-creators";
   }
 
-  // ClassFee returns the credit class creation fee. If set to nil, a credit
-  // class creation fee is not required.
+  // ClassFee returns the credit class creation fee. If not set, a credit class
+  // creation fee is not required.
   //
   // Since Revision 1
   rpc ClassFee(QueryClassFeeRequest) returns (QueryClassFeeResponse) {
@@ -818,7 +818,7 @@ message QueryClassFeeRequest {}
 // Since Revision 1
 message QueryClassFeeResponse {
 
-  // fee is the credit class creation fee. If set to nil, a credit class
-  // creation fee is not required.
+  // fee is the credit class creation fee. If not set, a credit class creation
+  // fee is not required.
   cosmos.base.v1beta1.Coin fee = 1;
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"math/rand"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -19,6 +18,7 @@ import (
 
 	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
