@@ -86,7 +86,7 @@ func TestMigrations(t *testing.T) {
 	assert.Equal(t, classFees.Fees[1].Denom, "uregen")
 	assert.Equal(t, classFees.Fees[1].Amount, "2000000")
 
-	allowedListEnabled, err := baseStore.AllowListEnabledTable().Get(sdkCtx)
+	allowedListEnabled, err := baseStore.ClassCreatorAllowlistTable().Get(sdkCtx)
 	assert.NilError(t, err)
 	assert.Equal(t, allowedListEnabled.Enabled, true)
 

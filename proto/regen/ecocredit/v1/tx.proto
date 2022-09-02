@@ -120,6 +120,15 @@ service Msg {
   // Since Revision 1
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
+  // SetClassCreatorAllowlist is a governance method that updates the class
+  // creator allowlist enabled setting. When enabled, only addresses listed in
+  // the allowlist can create credit classes. When disabled, any address can
+  // create credit classes.
+  //
+  // Since Revision 1
+  rpc SetClassCreatorAllowlist(MsgSetClassCreatorAllowlist)
+      returns (MsgSetClassCreatorAllowlistResponse);
+
   // AddClassCreator is a governance method that allows the addition of new
   // address to the class creation allowlist.
   //
@@ -132,15 +141,6 @@ service Msg {
   // Since Revision 1
   rpc RemoveClassCreator(MsgRemoveClassCreator)
       returns (MsgRemoveClassCreatorResponse);
-
-  // ToggleCreditClassAllowlist is a governance method that toggles the network
-  // allowlist to on or off. when on, the class creator allowlist is used to
-  // enforce which addresses may create classes. when off, any address may
-  // create classes.
-  //
-  // Since Revision 1
-  rpc ToggleCreditClassAllowlist(MsgToggleCreditClassAllowlist)
-      returns (MsgToggleCreditClassAllowlistResponse);
 
   // UpdateClassFees is a governance method that allows for the addition and
   // removal of fees to be used for the class creation fee.
@@ -620,6 +620,26 @@ message MsgAddClassCreator {
   string creator = 2;
 }
 
+// MsgSetClassCreatorAllowlist is the Msg/SetClassCreatorAllowlist request
+// type.
+//
+// Since Revision 1
+message MsgSetClassCreatorAllowlist {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // enabled defines the boolean value to set the allowlist on or off.
+  bool enabled = 2;
+}
+
+// MsgSetClassCreatorAllowlistResponse is the Msg/SetClassCreatorAllowlist
+// response type.
+//
+// Since Revision 1
+message MsgSetClassCreatorAllowlistResponse {}
+
 // MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
 //
 // Since Revision 1
@@ -642,26 +662,6 @@ message MsgRemoveClassCreator {
 //
 // Since Revision 1
 message MsgRemoveClassCreatorResponse {}
-
-// MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
-// type.
-//
-// Since Revision 1
-message MsgToggleCreditClassAllowlist {
-  option (cosmos.msg.v1.signer) = "authority";
-
-  // authority is the address of the governance account.
-  string authority = 1;
-
-  // enabled defines the boolean value to set the allowlist on or off.
-  bool enabled = 2;
-}
-
-// MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist
-// response type.
-//
-// Since Revision 1
-message MsgToggleCreditClassAllowlistResponse {}
 
 // MsgUpdateClassFees is the Msg/UpdateClassFees request type.
 //

@@ -17,7 +17,7 @@ import (
 // Use individual param query instead.
 func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 
-	allowlistEnabled, err := k.stateStore.AllowListEnabledTable().Get(ctx)
+	allowlistEnabled, err := k.stateStore.ClassCreatorAllowlistTable().Get(ctx)
 	if err != nil {
 		return nil, err
 	}

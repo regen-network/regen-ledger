@@ -553,8 +553,21 @@ func (s *IntegrationTestSuite) TestCreditType() {
 	var res types.QueryCreditTypeResponse
 	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
-	require.Equal(res.CreditType.Abbreviation, "C")
-	require.Equal(res.CreditType.Precision, uint32(6))
+	require.Equal("C", res.CreditType.Abbreviation)
+	require.Equal(uint32(6), res.CreditType.Precision)
+}
+
+func (s *IntegrationTestSuite) TestClassCreatorAllowlist() {
+	require := s.Require()
+
+	url := fmt.Sprintf("%s/%s/class-creator-allowlist", s.val.APIAddress, baseRoute)
+	resp, err := rest.GetRequest(url)
+	require.NoError(err)
+
+	var res types.QueryClassCreatorAllowlistResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.Equal(false, res.Enabled)
 }
 
 func (s *IntegrationTestSuite) TestAllBalances() {

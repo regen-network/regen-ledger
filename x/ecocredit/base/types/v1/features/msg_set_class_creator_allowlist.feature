@@ -1,4 +1,4 @@
-Feature: MsgToggleCreditClassAllowlist
+Feature: MsgSetClassCreatorAllowlist
 
   Scenario: a valid message
     Given the message

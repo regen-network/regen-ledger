@@ -52,7 +52,7 @@ func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []sdk.AccAdd
 	return creators
 }
 
-func genAllowListEnabled(r *rand.Rand) bool {
+func genClassCreatorAllowlist(r *rand.Rand) bool {
 	return r.Int63n(101) <= 90
 }
 
@@ -195,8 +195,8 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
 	// generate base params
-	if err := ss.AllowListEnabledTable().Save(ctx, &api.AllowListEnabled{
-		Enabled: genAllowListEnabled(r),
+	if err := ss.ClassCreatorAllowlistTable().Save(ctx, &api.ClassCreatorAllowlist{
+		Enabled: genClassCreatorAllowlist(r),
 	}); err != nil {
 		return err
 	}
