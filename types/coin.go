@@ -6,7 +6,14 @@ import (
 )
 
 // CoinToProtoCoin constructs a new protobuf coin from gogoproto coin.
+// This function does not validate the coin.
 func CoinToProtoCoin(coin sdk.Coin) *basev1beta1.Coin {
+	if coin.Amount.IsNil() {
+		return &basev1beta1.Coin{
+			Denom:  coin.Denom,
+			Amount: "",
+		}
+	}
 	return &basev1beta1.Coin{
 		Denom:  coin.Denom,
 		Amount: coin.Amount.String(),
@@ -14,6 +21,7 @@ func CoinToProtoCoin(coin sdk.Coin) *basev1beta1.Coin {
 }
 
 // CoinsToProtoCoins constructs a new protobuf coin set from gogoproto coin set.
+// This function does not validate the coin.
 func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {
 	result := make([]*basev1beta1.Coin, 0, coins.Len())
 	for _, coin := range coins {
@@ -24,7 +32,7 @@ func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {
 }
 
 // ProtoCoinToCoin constructs a new gogoproto coin from protobuf coin.
-// It will panic if the amount is negative or if the denomination is invalid.
+// This function will panic if the amount is negative or if the denomination is invalid.
 func ProtoCoinToCoin(coin *basev1beta1.Coin) (sdk.Coin, bool) {
 	amount, ok := sdk.NewIntFromString(coin.Amount)
 	if !ok {
@@ -35,7 +43,7 @@ func ProtoCoinToCoin(coin *basev1beta1.Coin) (sdk.Coin, bool) {
 }
 
 // ProtoCoinsToCoins constructs a new gogoproto coin set from protobuf coin set.
-// It will panic if the amount is negative or if the denomination is invalid.
+// This function will panic if the amount is negative or if the denomination is invalid.
 func ProtoCoinsToCoins(coins []*basev1beta1.Coin) (sdk.Coins, bool) {
 	result := make([]sdk.Coin, 0, len(coins))
 	for _, coin := range coins {

@@ -35,7 +35,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 		return nil, err
 	}
 
-	// only check and charge required fee if class fee is not set
+	// only check and charge fee if required fee is set
 	if classFee.Fee != nil {
 
 		requiredFee, ok := regentypes.ProtoCoinToCoin(classFee.Fee)
