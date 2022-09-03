@@ -1584,10 +1584,14 @@ func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "unable to generate deposit"), nil, err
 		}
 
-		fees := utils.RandomFees(r)
+		fee := utils.RandomFee(r)
+		if fee.Amount.IsZero() {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "invalid proposal message"), nil, err
+		}
+
 		proposalMsg := types.MsgUpdateClassFees{
 			Authority: authority.String(),
-			Fees:      fees,
+			Fees:      sdk.Coins{fee}, // TODO: #1466
 		}
 
 		any, err := codectypes.NewAnyWithValue(&proposalMsg)

@@ -254,12 +254,10 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	// generate basket params
-	if err := basketStore.BasketFeesTable().Save(ctx, &basketapi.BasketFees{
-		Fees: []*basev1beta1.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 100000)),
-			},
+	if err := basketStore.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
+		Fee: &basev1beta1.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 100000)),
 		},
 	}); err != nil {
 		return err

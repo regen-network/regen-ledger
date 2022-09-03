@@ -152,12 +152,10 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	bs, err := basketApi.NewStateStore(modDB)
 	s.Require().NoError(err)
 
-	err = bs.BasketFeesTable().Save(ormCtx, &basketApi.BasketFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  s.basketFee.Denom,
-				Amount: s.basketFee.Amount.String(),
-			},
+	err = bs.BasketFeeTable().Save(ormCtx, &basketApi.BasketFee{
+		Fee: &sdkbase.Coin{
+			Denom:  s.basketFee.Denom,
+			Amount: s.basketFee.Amount.String(),
 		},
 	})
 	s.Require().NoError(err)
@@ -209,8 +207,8 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Len(qRes.Baskets, 1)
 	require.Equal(qRes.Baskets[0].BasketDenom, basketDenom)
 
-	// assert the fee was paid - the fee mechanism was mocked, but we still call the same underlying SendFromAccountToModule
-	// function so the result is the same
+	// assert the fee was paid - the fee mechanism was mocked, but we still call the same
+	// underlying SendFromAccountToModule function so the result is the same
 	balanceAfter := s.getUserBalance(user, s.basketFee.Denom)
 	require.Equal(balanceAfter.Add(s.basketFee), balanceBefore)
 

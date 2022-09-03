@@ -200,12 +200,10 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	ctx := ormtable.WrapContextDefault(backend)
 
 	// add basket fees
-	err = basketStore.BasketFeesTable().Save(ctx, &basketapi.BasketFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultBasketFee.String(),
-			},
+	err = basketStore.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultBasketFee.String(),
 		},
 	})
 	require.NoError(err)

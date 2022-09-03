@@ -19,14 +19,9 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	fee, err := k.stateStore.BasketFeesTable().Get(ctx)
+	basketFee, err := k.stateStore.BasketFeeTable().Get(ctx)
 	if err != nil {
 		return nil, err
-	}
-
-	allowedFees, ok := regentypes.ProtoCoinsToCoins(fee.Fees)
-	if !ok {
-		return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")
 	}
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
@@ -34,66 +29,57 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 		return nil, err
 	}
 
-	allowedFees = allowedFees.Sort()
-	if err := allowedFees.Validate(); err != nil {
-		return nil, err
-	}
+	// only check and charge fee if required fee is set
+	if basketFee.Fee != nil {
 
-	// only check and charge fee if allowed fees is not empty
-	if len(allowedFees) > 0 {
+		requiredFee, ok := regentypes.ProtoCoinToCoin(basketFee.Fee)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")
+		}
 
 		// check if fee is empty
 		if msg.Fee == nil {
-			if len(allowedFees) > 1 {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee cannot be empty: must be one of %s", allowedFees,
-				)
-			}
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-				"fee cannot be empty: must be %s", allowedFees,
+				"fee cannot be empty: must be %s", requiredFee,
 			)
 		}
 
 		// In the next version of the basket package, the fee provided will be
 		// updated to a single Coin rather than a list of Coins. In the meantime,
 		// the message will fail basic validation if more than one Coin is provided.
-		fee := msg.Fee[0]
+		msgFee := msg.Fee[0]
 
-		// check if provided fee is greater than or equal to any coin in allowedFees
-		if !msg.Fee.IsAnyGTE(allowedFees) {
-			if len(allowedFees) > 1 {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee must be one of %s, got %s", allowedFees, fee,
-				)
-			}
+		// check if fee is the correct denom
+		if msgFee.Denom != requiredFee.Denom {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-				"fee must be %s, got %s", allowedFees, fee,
+				"fee must be %s, got %s", requiredFee, msgFee,
 			)
 		}
 
-		// only check and charge the minimum fee amount
-		minimumFee := sdk.Coin{
-			Denom:  fee.Denom,
-			Amount: allowedFees.AmountOf(fee.Denom),
+		// check if fee is greater than or equal to required fee
+		if !msgFee.IsGTE(requiredFee) {
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee must be %s, got %s", requiredFee, msgFee,
+			)
 		}
 
-		// check curator balance against minimum fee
-		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, minimumFee.Denom)
-		if curatorBalance.IsNil() || curatorBalance.IsLT(minimumFee) {
+		// check curator balance against required fee
+		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, requiredFee.Denom)
+		if curatorBalance.IsNil() || curatorBalance.IsLT(requiredFee) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
-				"insufficient balance %s for bank denom %s", curatorBalance.Amount, minimumFee.Denom,
+				"insufficient balance %s for bank denom %s", curatorBalance.Amount, requiredFee.Denom,
 			)
 		}
 
-		// convert minimum fee to multiple coins for processing
-		minimumFees := sdk.Coins{minimumFee}
+		// convert required fee to multiple coins for processing
+		requiredFees := sdk.Coins{requiredFee}
 
-		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, minimumFees)
+		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, requiredFees)
 		if err != nil {
 			return nil, err
 		}
 
-		err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, minimumFees)
+		err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, requiredFees)
 		if err != nil {
 			return nil, err
 		}
@@ -102,7 +88,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 	creditType, err := k.baseStore.CreditTypeTable().Get(ctx, msg.CreditTypeAbbrev)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf(
-			"could not get credit type with abbreviation %s: %s", msg.CreditTypeAbbrev, err.Error(),
+			"could not get credit type with abbreviation %s: %s", msg.CreditTypeAbbrev, err,
 		)
 	}
 

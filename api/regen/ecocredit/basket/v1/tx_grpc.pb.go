@@ -29,11 +29,12 @@ type MsgClient interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
-	// UpdateBasketFees is a governance method that allows for updating of fees to
-	// be used for the basket creation fee.
+	// UpdateBasketFee is a governance method that allows for updating the basket
+	// creation fee. If not set, the basket creation fee will be removed and no
+	// fee will be required to create a basket.
 	//
 	// Since Revision 2
-	UpdateBasketFees(ctx context.Context, in *MsgUpdateBasketFees, opts ...grpc.CallOption) (*MsgUpdateBasketFeesResponse, error)
+	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
 type msgClient struct {
@@ -71,9 +72,9 @@ func (c *msgClient) Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOpti
 	return out, nil
 }
 
-func (c *msgClient) UpdateBasketFees(ctx context.Context, in *MsgUpdateBasketFees, opts ...grpc.CallOption) (*MsgUpdateBasketFeesResponse, error) {
-	out := new(MsgUpdateBasketFeesResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/UpdateBasketFees", in, out, opts...)
+func (c *msgClient) UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error) {
+	out := new(MsgUpdateBasketFeeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/UpdateBasketFee", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,11 +92,12 @@ type MsgServer interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
-	// UpdateBasketFees is a governance method that allows for updating of fees to
-	// be used for the basket creation fee.
+	// UpdateBasketFee is a governance method that allows for updating the basket
+	// creation fee. If not set, the basket creation fee will be removed and no
+	// fee will be required to create a basket.
 	//
 	// Since Revision 2
-	UpdateBasketFees(context.Context, *MsgUpdateBasketFees) (*MsgUpdateBasketFeesResponse, error)
+	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -112,8 +114,8 @@ func (UnimplementedMsgServer) Put(context.Context, *MsgPut) (*MsgPutResponse, er
 func (UnimplementedMsgServer) Take(context.Context, *MsgTake) (*MsgTakeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Take not implemented")
 }
-func (UnimplementedMsgServer) UpdateBasketFees(context.Context, *MsgUpdateBasketFees) (*MsgUpdateBasketFeesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasketFees not implemented")
+func (UnimplementedMsgServer) UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasketFee not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -182,20 +184,20 @@ func _Msg_Take_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateBasketFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateBasketFees)
+func _Msg_UpdateBasketFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBasketFee)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateBasketFees(ctx, in)
+		return srv.(MsgServer).UpdateBasketFee(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1.Msg/UpdateBasketFees",
+		FullMethod: "/regen.ecocredit.basket.v1.Msg/UpdateBasketFee",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateBasketFees(ctx, req.(*MsgUpdateBasketFees))
+		return srv.(MsgServer).UpdateBasketFee(ctx, req.(*MsgUpdateBasketFee))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -220,8 +222,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_Take_Handler,
 		},
 		{
-			MethodName: "UpdateBasketFees",
-			Handler:    _Msg_UpdateBasketFees_Handler,
+			MethodName: "UpdateBasketFee",
+			Handler:    _Msg_UpdateBasketFee_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -49,12 +49,12 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 		return nil, sdkerrors.ErrInvalidCoins.Wrap("class fees")
 	}
 
-	basketFees, err := k.basketStore.BasketFeesTable().Get(ctx)
+	basketFee, err := k.basketStore.BasketFeeTable().Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	basketFees1, ok := regentypes.ProtoCoinsToCoins(basketFees.Fees)
+	basketFeeCoin, ok := regentypes.ProtoCoinToCoin(basketFee.Fee)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidCoins.Wrap("basket fees")
 	}
@@ -99,7 +99,7 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 			AllowedClassCreators: creators,
 			AllowlistEnabled:     allowlistEnabled.Enabled,
 			CreditClassFee:       classFees1,
-			BasketFee:            basketFees1,
+			BasketFee:            sdk.Coins{basketFeeCoin},
 		},
 		AllowedDenoms:       allowedDenoms,
 		AllowedBridgeChains: allowedBridgeChains,

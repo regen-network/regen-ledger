@@ -13,34 +13,28 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
-func TestQueryBasketFees(t *testing.T) {
+func TestQueryBasketFee(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
 	// check empty basket fees
-	res, err := s.k.BasketFees(s.ctx, &types.QueryBasketFeesRequest{})
+	res, err := s.k.BasketFee(s.ctx, &types.QueryBasketFeeRequest{})
 	require.NoError(s.t, err)
-	require.Equal(s.t, res.Fees, sdk.NewCoins())
+	require.Equal(s.t, res.Fee, &sdk.Coin{})
 
-	// add some basket fees
-	require.NoError(t, s.stateStore.BasketFeesTable().Save(s.ctx, &api.BasketFees{
-		Fees: []*basev1beta1.Coin{
-			{
-				Amount: "10",
-				Denom:  "uatom",
-			},
-			{
-				Amount: "100",
-				Denom:  "uregen",
-			},
+	// add a basket fee
+	require.NoError(t, s.stateStore.BasketFeeTable().Save(s.ctx, &api.BasketFee{
+		Fee: &basev1beta1.Coin{
+			Amount: "100",
+			Denom:  "uregen",
 		},
 	}))
 
-	// query basket fees
-	res, err = s.k.BasketFees(s.ctx, &types.QueryBasketFeesRequest{})
+	// query basket fee
+	res, err = s.k.BasketFee(s.ctx, &types.QueryBasketFeeRequest{})
 	require.NoError(s.t, err)
-	require.Equal(s.t, res.Fees.Len(), 2)
 
-	require.Equal(s.t, res.Fees.AmountOf("uregen"), math.NewInt(100))
-	require.Equal(s.t, res.Fees.AmountOf("uatom"), math.NewInt(10))
+	require.NotEmpty(s.t, res.Fee)
+	require.Equal(s.t, "uregen", res.Fee.Denom)
+	require.Equal(s.t, math.NewInt(100), res.Fee.Amount)
 }

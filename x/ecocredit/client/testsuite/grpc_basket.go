@@ -191,14 +191,14 @@ func (s *IntegrationTestSuite) TestQueryBasketParams() {
 	require := s.Require()
 
 	bz, err := rest.GetRequest(fmt.Sprintf(
-		"%s/%s/basket-fees",
+		"%s/%s/basket-fee",
 		s.val.APIAddress,
 		basketRoute,
 	))
 	require.NoError(err)
 	require.NotContains(string(bz), "code")
 
-	var res baskettypes.QueryBasketFeesResponse
+	var res baskettypes.QueryBasketFeeResponse
 	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
-	require.NotEmpty(res.Fees)
+	require.NotEmpty(res.Fee)
 }

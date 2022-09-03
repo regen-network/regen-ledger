@@ -2,10 +2,10 @@ Feature: Msg/Create
 
   A basket can be created:
   - when the basket name is unique
-  - when an allowed basket fee is not set and no fee is provided
-  - when the basket fee denom matches an allowed basket fee denom
-  - when the basket fee amount is greater than or equal to an allowed basket fee amount
-  - when the admin balance is greater than or equal to an allowed basket fee amount
+  - when the required basket fee is not set and no fee is provided
+  - when the basket fee denom matches the required basket fee denom
+  - when the basket fee amount is greater than or equal to the required basket fee amount
+  - when the admin balance is greater than or equal to the required basket fee amount
   - when the basket includes a credit type that exists
   - when the basket criteria includes credit classes that exist
   - when the basket criteria includes credit classes that match the credit type
@@ -27,66 +27,51 @@ Feature: Msg/Create
       When alice attempts to create a basket with name "NCT"
       Then expect the error "basket with name NCT already exists: unique key violation"
 
-  Rule: The basket fee is not required if an allowed basket fee is not set
+  Rule: The basket fee is not required if the required basket fee is not set
 
     Background:
       Given a credit type
 
-    Scenario: basket fee provided and allowed basket fee not set
+    Scenario: basket fee provided and required basket fee not set
       Given alice has a token balance "20regen"
       When alice attempts to create a basket with fee "20regen"
       Then expect no error
 
-    Scenario: basket fee not provided and allowed basket fee not set
+    Scenario: basket fee not provided and required basket fee not set
       When alice attempts to create a basket with no fee
       Then expect no error
 
-    # no failing scenario - basket fee is not required if allowed basket fee is not set
+    # no failing scenario - basket fee is not required if required basket fee is not set
 
-  Rule: The basket fee must match an allowed basket fee denom
+  Rule: The basket fee must match the required basket fee denom
 
     Background:
       Given a credit type
       And alice has a token balance "20regen"
 
-    Scenario: basket fee matches allowed basket fee denom (single fee)
-      Given allowed basket fee "20regen"
+    Scenario: basket fee matches required basket fee denom
+      Given required basket fee "20regen"
       When alice attempts to create a basket with fee "20regen"
       Then expect no error
 
-    Scenario: basket fee matches allowed basket fee denom (multiple fees)
-      Given allowed basket fee "20regen,20atom"
-      When alice attempts to create a basket with fee "20regen"
-      Then expect no error
-
-    Scenario: basket fee does not match allowed basket fee denom (single fee)
-      Given allowed basket fee "20regen"
+    Scenario: basket fee does not match required basket fee denom
+      Given required basket fee "20regen"
       When alice attempts to create a basket with fee "20atom"
       Then expect the error "fee must be 20regen, got 20atom: insufficient fee"
 
-    Scenario: basket fee does not match allowed basket fee denom (multiple fees)
-      Given allowed basket fee "20regen,20atom"
-      When alice attempts to create a basket with fee "20stake"
-      Then expect the error "fee must be one of 20atom,20regen, got 20stake: insufficient fee"
-
-    Scenario: basket fee not provided and allowed basket fee set (single fee)
-      Given allowed basket fee "20regen"
+    Scenario: basket fee not provided and required basket fee set
+      Given required basket fee "20regen"
       When alice attempts to create a basket with no fee
       Then expect the error "fee cannot be empty: must be 20regen: insufficient fee"
 
-    Scenario: basket fee not provided and allowed basket fee set (multiple fees)
-      Given allowed basket fee "20regen,20atom"
-      When alice attempts to create a basket with no fee
-      Then expect the error "fee cannot be empty: must be one of 20atom,20regen: insufficient fee"
-
-  Rule: The basket fee must be greater than or equal to an allowed basket fee
+  Rule: The basket fee must be greater than or equal to the required basket fee
 
     Background:
       Given a credit type
       And alice has a token balance "20regen"
 
-    Scenario Outline: basket fee is greater than or equal to allowed basket fee amount (single fee)
-      Given allowed basket fee "20regen"
+    Scenario Outline: basket fee is greater than or equal to required basket fee amount
+      Given required basket fee "20regen"
       When alice attempts to create a basket with fee "<basket-fee>"
       Then expect no error
 
@@ -95,33 +80,18 @@ Feature: Msg/Create
         | greater than | 30regen    |
         | equal to     | 20regen    |
 
-    Scenario Outline: basket fee is greater than or equal to allowed basket fee amount (multiple fees)
-      Given allowed basket fee "20regen,20atom"
-      When alice attempts to create a basket with fee "<basket-fee>"
-      Then expect no error
-
-      Examples:
-        | description  | basket-fee |
-        | greater than | 30regen    |
-        | equal to     | 20regen    |
-
-    Scenario: basket fee is less than allowed basket fee amount (single fee)
-      Given allowed basket fee "20regen"
+    Scenario: basket fee is less than required basket fee amount
+      Given required basket fee "20regen"
       When alice attempts to create a basket with fee "10regen"
       Then expect the error "fee must be 20regen, got 10regen: insufficient fee"
 
-    Scenario: basket fee is less than allowed basket fee amount (multiple fees)
-      Given allowed basket fee "20regen,20atom"
-      When alice attempts to create a basket with fee "10regen"
-      Then expect the error "fee must be one of 20atom,20regen, got 10regen: insufficient fee"
-
-  Rule: The admin must have a balance greater than or equal to an allowed basket fee amount
+  Rule: The admin must have a balance greater than or equal to basket fee amount
 
     Background:
       Given a credit type
-      And allowed basket fee "20regen"
+      And required basket fee "20regen"
 
-    Scenario Outline: admin balance is greater than or equal to allowed basket fee amount
+    Scenario Outline: admin balance is greater than or equal to required basket fee amount
       Given alice has a token balance "<token-balance>"
       When alice attempts to create a basket with fee "20regen"
       Then expect no error
@@ -131,7 +101,7 @@ Feature: Msg/Create
         | greater than | 30regen       |
         | equal to     | 20regen       |
 
-    Scenario: admin balance is less than allowed basket fee amount
+    Scenario: admin balance is less than required basket fee amount
       Given alice has a token balance "10regen"
       When alice attempts to create a basket with fee "20regen"
       Then expect the error "insufficient balance 10 for bank denom regen: insufficient funds"
@@ -182,7 +152,7 @@ Feature: Msg/Create
 
     Background:
       Given a credit type
-      And allowed basket fee "20regen"
+      And required basket fee "20regen"
       And alice has a token balance "40regen"
 
     Scenario Outline: user token balance is updated

@@ -231,18 +231,20 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBasketFees() {
+func (s *IntegrationTestSuite) TestQueryBasketFee() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	cmd := client.QueryBasketFeesCmd()
+	cmd := client.QueryBasketFeeCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 	require.NoError(err)
 
-	var res types.QueryBasketFeesResponse
+	var res types.QueryBasketFeeResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	require.NotEmpty(res.Fees)
-	require.Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), basetypes.DefaultBasketFee)
+
+	require.NotEmpty(res.Fee)
+	require.Equal(res.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(res.Fee.Amount, basetypes.DefaultBasketFee)
 }
