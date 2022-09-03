@@ -320,6 +320,30 @@ func validateMsg(m proto.Message) error {
 			return err
 		}
 		return msg.Validate()
+	case *baseapi.ClassCreatorAllowlist:
+		msg := &basetypes.ClassCreatorAllowlist{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *baseapi.AllowedClassCreator:
+		msg := &basetypes.AllowedClassCreator{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *baseapi.ClassFee:
+		msg := &basetypes.ClassFee{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *baseapi.AllowedBridgeChain:
+		msg := &basetypes.AllowedBridgeChain{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
 
 	// basket submodule
 	case *basketapi.Basket:
@@ -336,6 +360,12 @@ func validateMsg(m proto.Message) error {
 		return msg.Validate()
 	case *basketapi.BasketBalance:
 		msg := &baskettypes.BasketBalance{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
+	case *basketapi.BasketFee:
+		msg := &baskettypes.BasketFee{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}

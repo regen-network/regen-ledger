@@ -120,3 +120,12 @@ message BasketFees {
   // creating a basket.
   repeated cosmos.base.v1beta1.Coin fees = 1;
 }
+
+// TODO: #1465
+message BasketFee {
+  option (cosmos.orm.v1alpha1.singleton) = {
+    id : 99
+  };
+  // fee
+  cosmos.base.v1beta1.Coin fee = 1;
+}

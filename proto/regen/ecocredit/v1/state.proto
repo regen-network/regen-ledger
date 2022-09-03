@@ -380,3 +380,12 @@ message AllowedBridgeChain {
   // chain_name is the name of the chain allowed to bridge ecocredits to.
   string chain_name = 1;
 }
+
+// TODO: #1466
+message ClassFee {
+  option (cosmos.orm.v1alpha1.singleton) = {
+    id : 99
+  };
+  // fee
+  cosmos.base.v1beta1.Coin fee = 1;
+}

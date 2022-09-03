@@ -1,0 +1,9 @@
+{
+  "messages": [
+    {
+      "@type": "/regen.ecocredit.v1.MsgRemoveAllowedBridgeChain",
+      "authority": "regen10d07y265gmmuvt4z0w9aw880jnsr700j9qceqh",
+      "chain_name": "chora"
+    }
+  ]
+}

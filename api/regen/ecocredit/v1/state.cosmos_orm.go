@@ -2058,6 +2058,36 @@ func NewAllowedBridgeChainTable(db ormtable.Schema) (AllowedBridgeChainTable, er
 	return allowedBridgeChainTable{table}, nil
 }
 
+// singleton store
+type ClassFeeTable interface {
+	Get(ctx context.Context) (*ClassFee, error)
+	Save(ctx context.Context, classFee *ClassFee) error
+}
+
+type classFeeTable struct {
+	table ormtable.Table
+}
+
+var _ ClassFeeTable = classFeeTable{}
+
+func (x classFeeTable) Get(ctx context.Context) (*ClassFee, error) {
+	classFee := &ClassFee{}
+	_, err := x.table.Get(ctx, classFee)
+	return classFee, err
+}
+
+func (x classFeeTable) Save(ctx context.Context, classFee *ClassFee) error {
+	return x.table.Save(ctx, classFee)
+}
+
+func NewClassFeeTable(db ormtable.Schema) (ClassFeeTable, error) {
+	table := db.GetTable(&ClassFee{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&ClassFee{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return &classFeeTable{table}, nil
+}
+
 type StateStore interface {
 	CreditTypeTable() CreditTypeTable
 	ClassTable() ClassTable
@@ -2075,6 +2105,7 @@ type StateStore interface {
 	AllowedClassCreatorTable() AllowedClassCreatorTable
 	ClassFeesTable() ClassFeesTable
 	AllowedBridgeChainTable() AllowedBridgeChainTable
+	ClassFeeTable() ClassFeeTable
 
 	doNotImplement()
 }
@@ -2096,6 +2127,7 @@ type stateStore struct {
 	allowedClassCreator   AllowedClassCreatorTable
 	classFees             ClassFeesTable
 	allowedBridgeChain    AllowedBridgeChainTable
+	classFee              ClassFeeTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -2160,6 +2192,10 @@ func (x stateStore) ClassFeesTable() ClassFeesTable {
 
 func (x stateStore) AllowedBridgeChainTable() AllowedBridgeChainTable {
 	return x.allowedBridgeChain
+}
+
+func (x stateStore) ClassFeeTable() ClassFeeTable {
+	return x.classFee
 }
 
 func (stateStore) doNotImplement() {}
@@ -2247,6 +2283,11 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	classFeeTable, err := NewClassFeeTable(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return stateStore{
 		creditTypeTable,
 		classTable,
@@ -2264,5 +2305,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		allowedClassCreatorTable,
 		classFeesTable,
 		allowedBridgeChainTable,
+		classFeeTable,
 	}, nil
 }
