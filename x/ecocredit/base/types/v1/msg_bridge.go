@@ -38,10 +38,6 @@ func (m *MsgBridge) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("target cannot be empty")
 	}
 
-	if m.Target != base.BridgePolygon {
-		return sdkerrors.ErrInvalidRequest.Wrapf("target must be %s", base.BridgePolygon)
-	}
-
 	if m.Recipient == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("recipient cannot be empty")
 	}

@@ -364,3 +364,19 @@ message ClassFees {
   // fees is the fee required to create a credit class.
   repeated cosmos.base.v1beta1.Coin fees = 1;
 }
+
+// AllowedBridgeChain is a list of chains that are allowed to be used in
+// bridging operations. NOTE: chain_names MUST be converted to lowercase before
+// writing to and reading from this table in order to keep entries consistent.
+// This table is controlled via governance.
+//
+// Since Revision 1
+message AllowedBridgeChain {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 16,
+    primary_key : {fields : "chain_name"}
+  };
+
+  // chain_name is the name of the chain allowed to bridge ecocredits to.
+  string chain_name = 1;
+}

@@ -7080,7 +7080,7 @@ func (x *MsgSend_SendCredits) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSend_SendCredits) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[40]
+	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16473,7 +16473,7 @@ func (x *MsgBridgeReceive_Batch) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgBridgeReceive_Batch) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[41]
+	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17175,7 +17175,7 @@ func (x *MsgBridgeReceive_Project) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgBridgeReceive_Project) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[42]
+	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21607,6 +21607,1686 @@ func (x *fastReflection_MsgUpdateClassFeesResponse) ProtoMethods() *protoiface.M
 	}
 }
 
+var (
+	md_MsgAddAllowedBridgeChain            protoreflect.MessageDescriptor
+	fd_MsgAddAllowedBridgeChain_authority  protoreflect.FieldDescriptor
+	fd_MsgAddAllowedBridgeChain_chain_name protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_tx_proto_init()
+	md_MsgAddAllowedBridgeChain = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgAddAllowedBridgeChain")
+	fd_MsgAddAllowedBridgeChain_authority = md_MsgAddAllowedBridgeChain.Fields().ByName("authority")
+	fd_MsgAddAllowedBridgeChain_chain_name = md_MsgAddAllowedBridgeChain.Fields().ByName("chain_name")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgAddAllowedBridgeChain)(nil)
+
+type fastReflection_MsgAddAllowedBridgeChain MsgAddAllowedBridgeChain
+
+func (x *MsgAddAllowedBridgeChain) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgAddAllowedBridgeChain)(x)
+}
+
+func (x *MsgAddAllowedBridgeChain) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[40]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgAddAllowedBridgeChain_messageType fastReflection_MsgAddAllowedBridgeChain_messageType
+var _ protoreflect.MessageType = fastReflection_MsgAddAllowedBridgeChain_messageType{}
+
+type fastReflection_MsgAddAllowedBridgeChain_messageType struct{}
+
+func (x fastReflection_MsgAddAllowedBridgeChain_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgAddAllowedBridgeChain)(nil)
+}
+func (x fastReflection_MsgAddAllowedBridgeChain_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgAddAllowedBridgeChain)
+}
+func (x fastReflection_MsgAddAllowedBridgeChain_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddAllowedBridgeChain
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddAllowedBridgeChain
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Type() protoreflect.MessageType {
+	return _fastReflection_MsgAddAllowedBridgeChain_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgAddAllowedBridgeChain) New() protoreflect.Message {
+	return new(fastReflection_MsgAddAllowedBridgeChain)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Interface() protoreflect.ProtoMessage {
+	return (*MsgAddAllowedBridgeChain)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Authority != "" {
+		value := protoreflect.ValueOfString(x.Authority)
+		if !f(fd_MsgAddAllowedBridgeChain_authority, value) {
+			return
+		}
+	}
+	if x.ChainName != "" {
+		value := protoreflect.ValueOfString(x.ChainName)
+		if !f(fd_MsgAddAllowedBridgeChain_chain_name, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.authority":
+		return x.Authority != ""
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.chain_name":
+		return x.ChainName != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.authority":
+		x.Authority = ""
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.chain_name":
+		x.ChainName = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.authority":
+		value := x.Authority
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.chain_name":
+		value := x.ChainName
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChain does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.authority":
+		x.Authority = value.Interface().(string)
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.chain_name":
+		x.ChainName = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChain) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.authority":
+		panic(fmt.Errorf("field authority of message regen.ecocredit.v1.MsgAddAllowedBridgeChain is not mutable"))
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.chain_name":
+		panic(fmt.Errorf("field chain_name of message regen.ecocredit.v1.MsgAddAllowedBridgeChain is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgAddAllowedBridgeChain) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.authority":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.MsgAddAllowedBridgeChain.chain_name":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgAddAllowedBridgeChain) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgAddAllowedBridgeChain", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgAddAllowedBridgeChain) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChain) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgAddAllowedBridgeChain) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgAddAllowedBridgeChain) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgAddAllowedBridgeChain)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Authority)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ChainName)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgAddAllowedBridgeChain)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.ChainName) > 0 {
+			i -= len(x.ChainName)
+			copy(dAtA[i:], x.ChainName)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ChainName)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Authority) > 0 {
+			i -= len(x.Authority)
+			copy(dAtA[i:], x.Authority)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Authority)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgAddAllowedBridgeChain)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddAllowedBridgeChain: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddAllowedBridgeChain: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Authority = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ChainName = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgAddAllowedBridgeChainResponse protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_tx_proto_init()
+	md_MsgAddAllowedBridgeChainResponse = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgAddAllowedBridgeChainResponse")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgAddAllowedBridgeChainResponse)(nil)
+
+type fastReflection_MsgAddAllowedBridgeChainResponse MsgAddAllowedBridgeChainResponse
+
+func (x *MsgAddAllowedBridgeChainResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgAddAllowedBridgeChainResponse)(x)
+}
+
+func (x *MsgAddAllowedBridgeChainResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[41]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgAddAllowedBridgeChainResponse_messageType fastReflection_MsgAddAllowedBridgeChainResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgAddAllowedBridgeChainResponse_messageType{}
+
+type fastReflection_MsgAddAllowedBridgeChainResponse_messageType struct{}
+
+func (x fastReflection_MsgAddAllowedBridgeChainResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgAddAllowedBridgeChainResponse)(nil)
+}
+func (x fastReflection_MsgAddAllowedBridgeChainResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgAddAllowedBridgeChainResponse)
+}
+func (x fastReflection_MsgAddAllowedBridgeChainResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddAllowedBridgeChainResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAddAllowedBridgeChainResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgAddAllowedBridgeChainResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgAddAllowedBridgeChainResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgAddAllowedBridgeChainResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgAddAllowedBridgeChainResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgAddAllowedBridgeChainResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgAddAllowedBridgeChainResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgAddAllowedBridgeChainResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddAllowedBridgeChainResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAddAllowedBridgeChainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgRemoveAllowedBridgeChain            protoreflect.MessageDescriptor
+	fd_MsgRemoveAllowedBridgeChain_authority  protoreflect.FieldDescriptor
+	fd_MsgRemoveAllowedBridgeChain_chain_name protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_tx_proto_init()
+	md_MsgRemoveAllowedBridgeChain = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgRemoveAllowedBridgeChain")
+	fd_MsgRemoveAllowedBridgeChain_authority = md_MsgRemoveAllowedBridgeChain.Fields().ByName("authority")
+	fd_MsgRemoveAllowedBridgeChain_chain_name = md_MsgRemoveAllowedBridgeChain.Fields().ByName("chain_name")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgRemoveAllowedBridgeChain)(nil)
+
+type fastReflection_MsgRemoveAllowedBridgeChain MsgRemoveAllowedBridgeChain
+
+func (x *MsgRemoveAllowedBridgeChain) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgRemoveAllowedBridgeChain)(x)
+}
+
+func (x *MsgRemoveAllowedBridgeChain) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[42]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgRemoveAllowedBridgeChain_messageType fastReflection_MsgRemoveAllowedBridgeChain_messageType
+var _ protoreflect.MessageType = fastReflection_MsgRemoveAllowedBridgeChain_messageType{}
+
+type fastReflection_MsgRemoveAllowedBridgeChain_messageType struct{}
+
+func (x fastReflection_MsgRemoveAllowedBridgeChain_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgRemoveAllowedBridgeChain)(nil)
+}
+func (x fastReflection_MsgRemoveAllowedBridgeChain_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveAllowedBridgeChain)
+}
+func (x fastReflection_MsgRemoveAllowedBridgeChain_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveAllowedBridgeChain
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveAllowedBridgeChain
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Type() protoreflect.MessageType {
+	return _fastReflection_MsgRemoveAllowedBridgeChain_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveAllowedBridgeChain)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Interface() protoreflect.ProtoMessage {
+	return (*MsgRemoveAllowedBridgeChain)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Authority != "" {
+		value := protoreflect.ValueOfString(x.Authority)
+		if !f(fd_MsgRemoveAllowedBridgeChain_authority, value) {
+			return
+		}
+	}
+	if x.ChainName != "" {
+		value := protoreflect.ValueOfString(x.ChainName)
+		if !f(fd_MsgRemoveAllowedBridgeChain_chain_name, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.authority":
+		return x.Authority != ""
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.chain_name":
+		return x.ChainName != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.authority":
+		x.Authority = ""
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.chain_name":
+		x.ChainName = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.authority":
+		value := x.Authority
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.chain_name":
+		value := x.ChainName
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.authority":
+		x.Authority = value.Interface().(string)
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.chain_name":
+		x.ChainName = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.authority":
+		panic(fmt.Errorf("field authority of message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain is not mutable"))
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.chain_name":
+		panic(fmt.Errorf("field chain_name of message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.authority":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain.chain_name":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChain"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChain does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgRemoveAllowedBridgeChain", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgRemoveAllowedBridgeChain) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgRemoveAllowedBridgeChain)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Authority)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.ChainName)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgRemoveAllowedBridgeChain)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.ChainName) > 0 {
+			i -= len(x.ChainName)
+			copy(dAtA[i:], x.ChainName)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ChainName)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Authority) > 0 {
+			i -= len(x.Authority)
+			copy(dAtA[i:], x.Authority)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Authority)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgRemoveAllowedBridgeChain)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveAllowedBridgeChain: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveAllowedBridgeChain: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Authority = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ChainName = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgRemoveAllowedBridgeChainResponse protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_tx_proto_init()
+	md_MsgRemoveAllowedBridgeChainResponse = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgRemoveAllowedBridgeChainResponse")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgRemoveAllowedBridgeChainResponse)(nil)
+
+type fastReflection_MsgRemoveAllowedBridgeChainResponse MsgRemoveAllowedBridgeChainResponse
+
+func (x *MsgRemoveAllowedBridgeChainResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgRemoveAllowedBridgeChainResponse)(x)
+}
+
+func (x *MsgRemoveAllowedBridgeChainResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[43]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType{}
+
+type fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType struct{}
+
+func (x fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgRemoveAllowedBridgeChainResponse)(nil)
+}
+func (x fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveAllowedBridgeChainResponse)
+}
+func (x fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveAllowedBridgeChainResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRemoveAllowedBridgeChainResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgRemoveAllowedBridgeChainResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgRemoveAllowedBridgeChainResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgRemoveAllowedBridgeChainResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgRemoveAllowedBridgeChainResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgRemoveAllowedBridgeChainResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgRemoveAllowedBridgeChainResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgRemoveAllowedBridgeChainResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveAllowedBridgeChainResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRemoveAllowedBridgeChainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -23465,6 +25145,164 @@ func (*MsgUpdateClassFeesResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{39}
 }
 
+// MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
+//
+// Since Revision 1
+type MsgAddAllowedBridgeChain struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// authority is the address of the governance account.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// chain_name is the name of the chain to allow bridging of ecocredits to
+	// (i.e. polygon, ethereum, celo).
+	ChainName string `protobuf:"bytes,2,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
+}
+
+func (x *MsgAddAllowedBridgeChain) Reset() {
+	*x = MsgAddAllowedBridgeChain{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[40]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgAddAllowedBridgeChain) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgAddAllowedBridgeChain) ProtoMessage() {}
+
+// Deprecated: Use MsgAddAllowedBridgeChain.ProtoReflect.Descriptor instead.
+func (*MsgAddAllowedBridgeChain) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *MsgAddAllowedBridgeChain) GetAuthority() string {
+	if x != nil {
+		return x.Authority
+	}
+	return ""
+}
+
+func (x *MsgAddAllowedBridgeChain) GetChainName() string {
+	if x != nil {
+		return x.ChainName
+	}
+	return ""
+}
+
+// MsgAddAllowedBridgeChainResponse is the Msg/AddAllowedBridgeChain response
+// type.
+//
+// Since Revision 1
+type MsgAddAllowedBridgeChainResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MsgAddAllowedBridgeChainResponse) Reset() {
+	*x = MsgAddAllowedBridgeChainResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[41]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgAddAllowedBridgeChainResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgAddAllowedBridgeChainResponse) ProtoMessage() {}
+
+// Deprecated: Use MsgAddAllowedBridgeChainResponse.ProtoReflect.Descriptor instead.
+func (*MsgAddAllowedBridgeChainResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{41}
+}
+
+// MsgRemoveAllowedBridgeChain is the Msg/RemoveAllowedBridgeChain request type.
+//
+// Since Revision 1
+type MsgRemoveAllowedBridgeChain struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// authority is the address of the governance account.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// chain_name is the name of the chain to remove from the list of allowed
+	// chains to bridge ecocredits to (i.e. polygon, ethereum, celo).
+	ChainName string `protobuf:"bytes,2,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
+}
+
+func (x *MsgRemoveAllowedBridgeChain) Reset() {
+	*x = MsgRemoveAllowedBridgeChain{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[42]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgRemoveAllowedBridgeChain) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgRemoveAllowedBridgeChain) ProtoMessage() {}
+
+// Deprecated: Use MsgRemoveAllowedBridgeChain.ProtoReflect.Descriptor instead.
+func (*MsgRemoveAllowedBridgeChain) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *MsgRemoveAllowedBridgeChain) GetAuthority() string {
+	if x != nil {
+		return x.Authority
+	}
+	return ""
+}
+
+func (x *MsgRemoveAllowedBridgeChain) GetChainName() string {
+	if x != nil {
+		return x.ChainName
+	}
+	return ""
+}
+
+// MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
+// response type.
+//
+// Since Revision 1
+type MsgRemoveAllowedBridgeChainResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MsgRemoveAllowedBridgeChainResponse) Reset() {
+	*x = MsgRemoveAllowedBridgeChainResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[43]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgRemoveAllowedBridgeChainResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgRemoveAllowedBridgeChainResponse) ProtoMessage() {}
+
+// Deprecated: Use MsgRemoveAllowedBridgeChainResponse.ProtoReflect.Descriptor instead.
+func (*MsgRemoveAllowedBridgeChainResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{43}
+}
+
 // SendCredits specifies the amount of tradable and retired credits of a
 // credit batch that will be sent to the recipient and the jurisdiction in
 // which the credits will be retired upon receipt.
@@ -23496,7 +25334,7 @@ type MsgSend_SendCredits struct {
 func (x *MsgSend_SendCredits) Reset() {
 	*x = MsgSend_SendCredits{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[40]
+		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -23566,7 +25404,7 @@ type MsgBridgeReceive_Batch struct {
 func (x *MsgBridgeReceive_Batch) Reset() {
 	*x = MsgBridgeReceive_Batch{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[41]
+		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -23637,7 +25475,7 @@ type MsgBridgeReceive_Project struct {
 func (x *MsgBridgeReceive_Project) Reset() {
 	*x = MsgBridgeReceive_Project{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[42]
+		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -23966,7 +25804,25 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x73, 0x52, 0x04, 0x66, 0x65, 0x65, 0x73, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75,
 	0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x1c, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x55, 0x70,
 	0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x8e, 0x10, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5d, 0x0a,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x67, 0x0a, 0x18, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x41,
+	0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69,
+	0x6e, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12,
+	0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x3a, 0x0e,
+	0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x22,
+	0x0a, 0x20, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x42,
+	0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x6a, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41,
+	0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69,
+	0x6e, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12,
+	0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x3a, 0x0e,
+	0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x25,
+	0x0a, 0x23, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77,
+	0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x92, 0x12, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5d, 0x0a,
 	0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x22, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
 	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
@@ -24095,21 +25951,37 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
 	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55,
 	0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xd5, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e,
-	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64,
-	0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56,
-	0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a,
-	0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x15, 0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c,
+	0x6f, 0x77, 0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12,
+	0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c, 0x6f, 0x77,
+	0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x1a, 0x34, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64,
+	0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x18, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41, 0x6c,
+	0x6c, 0x6f, 0x77, 0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e,
+	0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41,
+	0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69,
+	0x6e, 0x1a, 0x37, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61,
+	0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xd5, 0x01, 0x0a, 0x16, 0x63,
+	0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58,
+	0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c,
+	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a,
+	0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -24124,7 +25996,7 @@ func file_regen_ecocredit_v1_tx_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_v1_tx_proto_rawDescData
 }
 
-var file_regen_ecocredit_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
+var file_regen_ecocredit_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
 var file_regen_ecocredit_v1_tx_proto_goTypes = []interface{}{
 	(*MsgAddCreditType)(nil),                    // 0: regen.ecocredit.v1.MsgAddCreditType
 	(*MsgAddCreditTypeResponse)(nil),            // 1: regen.ecocredit.v1.MsgAddCreditTypeResponse
@@ -24166,35 +26038,39 @@ var file_regen_ecocredit_v1_tx_proto_goTypes = []interface{}{
 	(*MsgRemoveClassCreatorResponse)(nil),       // 37: regen.ecocredit.v1.MsgRemoveClassCreatorResponse
 	(*MsgUpdateClassFees)(nil),                  // 38: regen.ecocredit.v1.MsgUpdateClassFees
 	(*MsgUpdateClassFeesResponse)(nil),          // 39: regen.ecocredit.v1.MsgUpdateClassFeesResponse
-	(*MsgSend_SendCredits)(nil),                 // 40: regen.ecocredit.v1.MsgSend.SendCredits
-	(*MsgBridgeReceive_Batch)(nil),              // 41: regen.ecocredit.v1.MsgBridgeReceive.Batch
-	(*MsgBridgeReceive_Project)(nil),            // 42: regen.ecocredit.v1.MsgBridgeReceive.Project
-	(*CreditType)(nil),                          // 43: regen.ecocredit.v1.CreditType
-	(*v1beta1.Coin)(nil),                        // 44: cosmos.base.v1beta1.Coin
-	(*BatchIssuance)(nil),                       // 45: regen.ecocredit.v1.BatchIssuance
-	(*timestamppb.Timestamp)(nil),               // 46: google.protobuf.Timestamp
-	(*OriginTx)(nil),                            // 47: regen.ecocredit.v1.OriginTx
-	(*Credits)(nil),                             // 48: regen.ecocredit.v1.Credits
+	(*MsgAddAllowedBridgeChain)(nil),            // 40: regen.ecocredit.v1.MsgAddAllowedBridgeChain
+	(*MsgAddAllowedBridgeChainResponse)(nil),    // 41: regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse
+	(*MsgRemoveAllowedBridgeChain)(nil),         // 42: regen.ecocredit.v1.MsgRemoveAllowedBridgeChain
+	(*MsgRemoveAllowedBridgeChainResponse)(nil), // 43: regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse
+	(*MsgSend_SendCredits)(nil),                 // 44: regen.ecocredit.v1.MsgSend.SendCredits
+	(*MsgBridgeReceive_Batch)(nil),              // 45: regen.ecocredit.v1.MsgBridgeReceive.Batch
+	(*MsgBridgeReceive_Project)(nil),            // 46: regen.ecocredit.v1.MsgBridgeReceive.Project
+	(*CreditType)(nil),                          // 47: regen.ecocredit.v1.CreditType
+	(*v1beta1.Coin)(nil),                        // 48: cosmos.base.v1beta1.Coin
+	(*BatchIssuance)(nil),                       // 49: regen.ecocredit.v1.BatchIssuance
+	(*timestamppb.Timestamp)(nil),               // 50: google.protobuf.Timestamp
+	(*OriginTx)(nil),                            // 51: regen.ecocredit.v1.OriginTx
+	(*Credits)(nil),                             // 52: regen.ecocredit.v1.Credits
 }
 var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
-	43, // 0: regen.ecocredit.v1.MsgAddCreditType.credit_type:type_name -> regen.ecocredit.v1.CreditType
-	44, // 1: regen.ecocredit.v1.MsgCreateClass.fee:type_name -> cosmos.base.v1beta1.Coin
-	45, // 2: regen.ecocredit.v1.MsgCreateBatch.issuance:type_name -> regen.ecocredit.v1.BatchIssuance
-	46, // 3: regen.ecocredit.v1.MsgCreateBatch.start_date:type_name -> google.protobuf.Timestamp
-	46, // 4: regen.ecocredit.v1.MsgCreateBatch.end_date:type_name -> google.protobuf.Timestamp
-	47, // 5: regen.ecocredit.v1.MsgCreateBatch.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
-	45, // 6: regen.ecocredit.v1.MsgMintBatchCredits.issuance:type_name -> regen.ecocredit.v1.BatchIssuance
-	47, // 7: regen.ecocredit.v1.MsgMintBatchCredits.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
-	40, // 8: regen.ecocredit.v1.MsgSend.credits:type_name -> regen.ecocredit.v1.MsgSend.SendCredits
-	48, // 9: regen.ecocredit.v1.MsgRetire.credits:type_name -> regen.ecocredit.v1.Credits
-	48, // 10: regen.ecocredit.v1.MsgCancel.credits:type_name -> regen.ecocredit.v1.Credits
-	48, // 11: regen.ecocredit.v1.MsgBridge.credits:type_name -> regen.ecocredit.v1.Credits
-	42, // 12: regen.ecocredit.v1.MsgBridgeReceive.project:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Project
-	41, // 13: regen.ecocredit.v1.MsgBridgeReceive.batch:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Batch
-	47, // 14: regen.ecocredit.v1.MsgBridgeReceive.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
-	44, // 15: regen.ecocredit.v1.MsgUpdateClassFees.fees:type_name -> cosmos.base.v1beta1.Coin
-	46, // 16: regen.ecocredit.v1.MsgBridgeReceive.Batch.start_date:type_name -> google.protobuf.Timestamp
-	46, // 17: regen.ecocredit.v1.MsgBridgeReceive.Batch.end_date:type_name -> google.protobuf.Timestamp
+	47, // 0: regen.ecocredit.v1.MsgAddCreditType.credit_type:type_name -> regen.ecocredit.v1.CreditType
+	48, // 1: regen.ecocredit.v1.MsgCreateClass.fee:type_name -> cosmos.base.v1beta1.Coin
+	49, // 2: regen.ecocredit.v1.MsgCreateBatch.issuance:type_name -> regen.ecocredit.v1.BatchIssuance
+	50, // 3: regen.ecocredit.v1.MsgCreateBatch.start_date:type_name -> google.protobuf.Timestamp
+	50, // 4: regen.ecocredit.v1.MsgCreateBatch.end_date:type_name -> google.protobuf.Timestamp
+	51, // 5: regen.ecocredit.v1.MsgCreateBatch.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
+	49, // 6: regen.ecocredit.v1.MsgMintBatchCredits.issuance:type_name -> regen.ecocredit.v1.BatchIssuance
+	51, // 7: regen.ecocredit.v1.MsgMintBatchCredits.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
+	44, // 8: regen.ecocredit.v1.MsgSend.credits:type_name -> regen.ecocredit.v1.MsgSend.SendCredits
+	52, // 9: regen.ecocredit.v1.MsgRetire.credits:type_name -> regen.ecocredit.v1.Credits
+	52, // 10: regen.ecocredit.v1.MsgCancel.credits:type_name -> regen.ecocredit.v1.Credits
+	52, // 11: regen.ecocredit.v1.MsgBridge.credits:type_name -> regen.ecocredit.v1.Credits
+	46, // 12: regen.ecocredit.v1.MsgBridgeReceive.project:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Project
+	45, // 13: regen.ecocredit.v1.MsgBridgeReceive.batch:type_name -> regen.ecocredit.v1.MsgBridgeReceive.Batch
+	51, // 14: regen.ecocredit.v1.MsgBridgeReceive.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
+	48, // 15: regen.ecocredit.v1.MsgUpdateClassFees.fees:type_name -> cosmos.base.v1beta1.Coin
+	50, // 16: regen.ecocredit.v1.MsgBridgeReceive.Batch.start_date:type_name -> google.protobuf.Timestamp
+	50, // 17: regen.ecocredit.v1.MsgBridgeReceive.Batch.end_date:type_name -> google.protobuf.Timestamp
 	2,  // 18: regen.ecocredit.v1.Msg.CreateClass:input_type -> regen.ecocredit.v1.MsgCreateClass
 	4,  // 19: regen.ecocredit.v1.Msg.CreateProject:input_type -> regen.ecocredit.v1.MsgCreateProject
 	6,  // 20: regen.ecocredit.v1.Msg.CreateBatch:input_type -> regen.ecocredit.v1.MsgCreateBatch
@@ -24215,28 +26091,32 @@ var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
 	32, // 35: regen.ecocredit.v1.Msg.AddClassCreator:input_type -> regen.ecocredit.v1.MsgAddClassCreator
 	36, // 36: regen.ecocredit.v1.Msg.RemoveClassCreator:input_type -> regen.ecocredit.v1.MsgRemoveClassCreator
 	38, // 37: regen.ecocredit.v1.Msg.UpdateClassFees:input_type -> regen.ecocredit.v1.MsgUpdateClassFees
-	3,  // 38: regen.ecocredit.v1.Msg.CreateClass:output_type -> regen.ecocredit.v1.MsgCreateClassResponse
-	5,  // 39: regen.ecocredit.v1.Msg.CreateProject:output_type -> regen.ecocredit.v1.MsgCreateProjectResponse
-	7,  // 40: regen.ecocredit.v1.Msg.CreateBatch:output_type -> regen.ecocredit.v1.MsgCreateBatchResponse
-	9,  // 41: regen.ecocredit.v1.Msg.MintBatchCredits:output_type -> regen.ecocredit.v1.MsgMintBatchCreditsResponse
-	11, // 42: regen.ecocredit.v1.Msg.SealBatch:output_type -> regen.ecocredit.v1.MsgSealBatchResponse
-	13, // 43: regen.ecocredit.v1.Msg.Send:output_type -> regen.ecocredit.v1.MsgSendResponse
-	15, // 44: regen.ecocredit.v1.Msg.Retire:output_type -> regen.ecocredit.v1.MsgRetireResponse
-	17, // 45: regen.ecocredit.v1.Msg.Cancel:output_type -> regen.ecocredit.v1.MsgCancelResponse
-	19, // 46: regen.ecocredit.v1.Msg.UpdateClassAdmin:output_type -> regen.ecocredit.v1.MsgUpdateClassAdminResponse
-	21, // 47: regen.ecocredit.v1.Msg.UpdateClassIssuers:output_type -> regen.ecocredit.v1.MsgUpdateClassIssuersResponse
-	23, // 48: regen.ecocredit.v1.Msg.UpdateClassMetadata:output_type -> regen.ecocredit.v1.MsgUpdateClassMetadataResponse
-	25, // 49: regen.ecocredit.v1.Msg.UpdateProjectAdmin:output_type -> regen.ecocredit.v1.MsgUpdateProjectAdminResponse
-	27, // 50: regen.ecocredit.v1.Msg.UpdateProjectMetadata:output_type -> regen.ecocredit.v1.MsgUpdateProjectMetadataResponse
-	29, // 51: regen.ecocredit.v1.Msg.Bridge:output_type -> regen.ecocredit.v1.MsgBridgeResponse
-	31, // 52: regen.ecocredit.v1.Msg.BridgeReceive:output_type -> regen.ecocredit.v1.MsgBridgeReceiveResponse
-	1,  // 53: regen.ecocredit.v1.Msg.AddCreditType:output_type -> regen.ecocredit.v1.MsgAddCreditTypeResponse
-	34, // 54: regen.ecocredit.v1.Msg.SetClassCreatorAllowlist:output_type -> regen.ecocredit.v1.MsgSetClassCreatorAllowlistResponse
-	35, // 55: regen.ecocredit.v1.Msg.AddClassCreator:output_type -> regen.ecocredit.v1.MsgAddClassCreatorResponse
-	37, // 56: regen.ecocredit.v1.Msg.RemoveClassCreator:output_type -> regen.ecocredit.v1.MsgRemoveClassCreatorResponse
-	39, // 57: regen.ecocredit.v1.Msg.UpdateClassFees:output_type -> regen.ecocredit.v1.MsgUpdateClassFeesResponse
-	38, // [38:58] is the sub-list for method output_type
-	18, // [18:38] is the sub-list for method input_type
+	40, // 38: regen.ecocredit.v1.Msg.AddAllowedBridgeChain:input_type -> regen.ecocredit.v1.MsgAddAllowedBridgeChain
+	42, // 39: regen.ecocredit.v1.Msg.RemoveAllowedBridgeChain:input_type -> regen.ecocredit.v1.MsgRemoveAllowedBridgeChain
+	3,  // 40: regen.ecocredit.v1.Msg.CreateClass:output_type -> regen.ecocredit.v1.MsgCreateClassResponse
+	5,  // 41: regen.ecocredit.v1.Msg.CreateProject:output_type -> regen.ecocredit.v1.MsgCreateProjectResponse
+	7,  // 42: regen.ecocredit.v1.Msg.CreateBatch:output_type -> regen.ecocredit.v1.MsgCreateBatchResponse
+	9,  // 43: regen.ecocredit.v1.Msg.MintBatchCredits:output_type -> regen.ecocredit.v1.MsgMintBatchCreditsResponse
+	11, // 44: regen.ecocredit.v1.Msg.SealBatch:output_type -> regen.ecocredit.v1.MsgSealBatchResponse
+	13, // 45: regen.ecocredit.v1.Msg.Send:output_type -> regen.ecocredit.v1.MsgSendResponse
+	15, // 46: regen.ecocredit.v1.Msg.Retire:output_type -> regen.ecocredit.v1.MsgRetireResponse
+	17, // 47: regen.ecocredit.v1.Msg.Cancel:output_type -> regen.ecocredit.v1.MsgCancelResponse
+	19, // 48: regen.ecocredit.v1.Msg.UpdateClassAdmin:output_type -> regen.ecocredit.v1.MsgUpdateClassAdminResponse
+	21, // 49: regen.ecocredit.v1.Msg.UpdateClassIssuers:output_type -> regen.ecocredit.v1.MsgUpdateClassIssuersResponse
+	23, // 50: regen.ecocredit.v1.Msg.UpdateClassMetadata:output_type -> regen.ecocredit.v1.MsgUpdateClassMetadataResponse
+	25, // 51: regen.ecocredit.v1.Msg.UpdateProjectAdmin:output_type -> regen.ecocredit.v1.MsgUpdateProjectAdminResponse
+	27, // 52: regen.ecocredit.v1.Msg.UpdateProjectMetadata:output_type -> regen.ecocredit.v1.MsgUpdateProjectMetadataResponse
+	29, // 53: regen.ecocredit.v1.Msg.Bridge:output_type -> regen.ecocredit.v1.MsgBridgeResponse
+	31, // 54: regen.ecocredit.v1.Msg.BridgeReceive:output_type -> regen.ecocredit.v1.MsgBridgeReceiveResponse
+	1,  // 55: regen.ecocredit.v1.Msg.AddCreditType:output_type -> regen.ecocredit.v1.MsgAddCreditTypeResponse
+	34, // 56: regen.ecocredit.v1.Msg.SetClassCreatorAllowlist:output_type -> regen.ecocredit.v1.MsgSetClassCreatorAllowlistResponse
+	35, // 57: regen.ecocredit.v1.Msg.AddClassCreator:output_type -> regen.ecocredit.v1.MsgAddClassCreatorResponse
+	37, // 58: regen.ecocredit.v1.Msg.RemoveClassCreator:output_type -> regen.ecocredit.v1.MsgRemoveClassCreatorResponse
+	39, // 59: regen.ecocredit.v1.Msg.UpdateClassFees:output_type -> regen.ecocredit.v1.MsgUpdateClassFeesResponse
+	41, // 60: regen.ecocredit.v1.Msg.AddAllowedBridgeChain:output_type -> regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse
+	43, // 61: regen.ecocredit.v1.Msg.RemoveAllowedBridgeChain:output_type -> regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse
+	40, // [40:62] is the sub-list for method output_type
+	18, // [18:40] is the sub-list for method input_type
 	18, // [18:18] is the sub-list for extension type_name
 	18, // [18:18] is the sub-list for extension extendee
 	0,  // [0:18] is the sub-list for field type_name
@@ -24731,7 +26611,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSend_SendCredits); i {
+			switch v := v.(*MsgAddAllowedBridgeChain); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -24743,7 +26623,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgBridgeReceive_Batch); i {
+			switch v := v.(*MsgAddAllowedBridgeChainResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -24755,6 +26635,54 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgRemoveAllowedBridgeChain); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_tx_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgRemoveAllowedBridgeChainResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_tx_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgSend_SendCredits); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_tx_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgBridgeReceive_Batch); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_tx_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgBridgeReceive_Project); i {
 			case 0:
 				return &v.state
@@ -24773,7 +26701,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_v1_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   43,
+			NumMessages:   47,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
