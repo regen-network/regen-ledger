@@ -4,7 +4,6 @@ package regen.ecocredit.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
@@ -244,12 +243,12 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-class-creators";
   }
 
-  // CreditClassFees queries the class creation fee.
+  // ClassFee returns the credit class creation fee. If not set, a credit class
+  // creation fee is not required.
   //
   // Since Revision 1
-  rpc CreditClassFees(QueryCreditClassFeesRequest)
-      returns (QueryCreditClassFeesResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
+  rpc ClassFee(QueryClassFeeRequest) returns (QueryClassFeeResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/class-fee";
   }
 
   // AllowedBridgeChains queries the list of chains allowed to be used in bridge
@@ -823,21 +822,19 @@ message QueryAllowedClassCreatorsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
+// QueryClassFeeRequest is the Query/ClassFee request type.
 //
 // Since Revision 1
-message QueryCreditClassFeesRequest {}
+message QueryClassFeeRequest {}
 
-// QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
+// QueryClassFeeResponse is the Query/ClassFee response type.
 //
 // Since Revision 1
-message QueryCreditClassFeesResponse {
+message QueryClassFeeResponse {
 
-  // fees is the ClassFees message type
-  repeated cosmos.base.v1beta1.Coin fees = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
+  // fee is the credit class creation fee. If not set, a credit class creation
+  // fee is not required.
+  cosmos.base.v1beta1.Coin fee = 1;
 }
 
 // QueryAllowedBridgeChainsRequest is the Query/AllowedBridgeChains request

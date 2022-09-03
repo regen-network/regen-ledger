@@ -1915,33 +1915,33 @@ func NewAllowedClassCreatorTable(db ormtable.Schema) (AllowedClassCreatorTable, 
 }
 
 // singleton store
-type ClassFeesTable interface {
-	Get(ctx context.Context) (*ClassFees, error)
-	Save(ctx context.Context, classFees *ClassFees) error
+type ClassFeeTable interface {
+	Get(ctx context.Context) (*ClassFee, error)
+	Save(ctx context.Context, classFee *ClassFee) error
 }
 
-type classFeesTable struct {
+type classFeeTable struct {
 	table ormtable.Table
 }
 
-var _ ClassFeesTable = classFeesTable{}
+var _ ClassFeeTable = classFeeTable{}
 
-func (x classFeesTable) Get(ctx context.Context) (*ClassFees, error) {
-	classFees := &ClassFees{}
-	_, err := x.table.Get(ctx, classFees)
-	return classFees, err
+func (x classFeeTable) Get(ctx context.Context) (*ClassFee, error) {
+	classFee := &ClassFee{}
+	_, err := x.table.Get(ctx, classFee)
+	return classFee, err
 }
 
-func (x classFeesTable) Save(ctx context.Context, classFees *ClassFees) error {
-	return x.table.Save(ctx, classFees)
+func (x classFeeTable) Save(ctx context.Context, classFee *ClassFee) error {
+	return x.table.Save(ctx, classFee)
 }
 
-func NewClassFeesTable(db ormtable.Schema) (ClassFeesTable, error) {
-	table := db.GetTable(&ClassFees{})
+func NewClassFeeTable(db ormtable.Schema) (ClassFeeTable, error) {
+	table := db.GetTable(&ClassFee{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ClassFees{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&ClassFee{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return &classFeesTable{table}, nil
+	return &classFeeTable{table}, nil
 }
 
 type AllowedBridgeChainTable interface {
@@ -2073,7 +2073,7 @@ type StateStore interface {
 	BatchContractTable() BatchContractTable
 	ClassCreatorAllowlistTable() ClassCreatorAllowlistTable
 	AllowedClassCreatorTable() AllowedClassCreatorTable
-	ClassFeesTable() ClassFeesTable
+	ClassFeeTable() ClassFeeTable
 	AllowedBridgeChainTable() AllowedBridgeChainTable
 
 	doNotImplement()
@@ -2094,7 +2094,7 @@ type stateStore struct {
 	batchContract         BatchContractTable
 	classCreatorAllowlist ClassCreatorAllowlistTable
 	allowedClassCreator   AllowedClassCreatorTable
-	classFees             ClassFeesTable
+	classFee              ClassFeeTable
 	allowedBridgeChain    AllowedBridgeChainTable
 }
 
@@ -2154,8 +2154,8 @@ func (x stateStore) AllowedClassCreatorTable() AllowedClassCreatorTable {
 	return x.allowedClassCreator
 }
 
-func (x stateStore) ClassFeesTable() ClassFeesTable {
-	return x.classFees
+func (x stateStore) ClassFeeTable() ClassFeeTable {
+	return x.classFee
 }
 
 func (x stateStore) AllowedBridgeChainTable() AllowedBridgeChainTable {
@@ -2237,7 +2237,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	classFeesTable, err := NewClassFeesTable(db)
+	classFeeTable, err := NewClassFeeTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -2262,7 +2262,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		batchContractTable,
 		classCreatorAllowlistTable,
 		allowedClassCreatorTable,
-		classFeesTable,
+		classFeeTable,
 		allowedBridgeChainTable,
 	}, nil
 }

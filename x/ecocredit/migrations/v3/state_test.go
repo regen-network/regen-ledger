@@ -75,14 +75,12 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, basketFee.Fee.Amount, "10")
 
 	// verify core state migrated to orm table
-	classFees, err := baseStore.ClassFeesTable().Get(sdkCtx)
+	classFee, err := baseStore.ClassFeeTable().Get(sdkCtx)
 	require.NoError(t, err)
 
-	require.Equal(t, len(classFees.Fees), 2)
-	require.Equal(t, classFees.Fees[0].Denom, sdk.DefaultBondDenom)
-	require.Equal(t, classFees.Fees[0].Amount, "10")
-	require.Equal(t, classFees.Fees[1].Denom, "uregen")
-	require.Equal(t, classFees.Fees[1].Amount, "2000000")
+	require.NotEmpty(t, classFee.Fee)
+	require.Equal(t, classFee.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(t, classFee.Fee.Amount, "10")
 
 	allowlist, err := baseStore.ClassCreatorAllowlistTable().Get(sdkCtx)
 	require.NoError(t, err)

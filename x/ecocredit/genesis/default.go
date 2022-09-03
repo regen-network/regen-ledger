@@ -11,7 +11,7 @@ import (
 // DefaultParams returns a default set of parameters.
 func DefaultParams() basetypes.Params {
 	return basetypes.NewParams(
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultCreditClassFee)),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultClassFee)),
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultBasketFee)),
 		[]string{},
 		false,
@@ -30,14 +30,12 @@ func DefaultCreditTypes() []basetypes.CreditType {
 	}
 }
 
-// DefaultCreditClassFees returns a default credit class fees.
-func DefaultCreditClassFees() basetypes.ClassFees {
-	return basetypes.ClassFees{
-		Fees: []*sdk.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultCreditClassFee,
-			},
+// DefaultClassFee returns a default credit class fees.
+func DefaultClassFee() basetypes.ClassFee {
+	return basetypes.ClassFee{
+		Fee: &sdk.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultClassFee,
 		},
 	}
 }

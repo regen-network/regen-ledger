@@ -517,19 +517,19 @@ func QueryCreditTypeCmd() *cobra.Command {
 	})
 }
 
-// QueryCreditClassFeesCmd returns a query command that retrives the credit class fees.
-func QueryCreditClassFeesCmd() *cobra.Command {
+// QueryClassFeeCmd returns a query command that retrieves the credit class fees.
+func QueryClassFeeCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:     "credit-class-fees",
-		Short:   "Retrieve the credit class fees",
-		Long:    "Retrieve the credit class fess",
-		Example: "regen q ecocredit credit-class-fees",
+		Use:     "class-fee",
+		Short:   "Retrieve the credit class creation fee",
+		Long:    "Retrieve the credit class creation fee",
+		Example: "regen q ecocredit class-fee",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := c.CreditClassFees(cmd.Context(), &types.QueryCreditClassFeesRequest{})
+			res, err := c.ClassFee(cmd.Context(), &types.QueryClassFeeRequest{})
 			return printQueryResponse(ctx, res, err)
 		},
 	})

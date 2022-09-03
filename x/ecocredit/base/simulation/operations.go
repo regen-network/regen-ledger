@@ -49,7 +49,7 @@ const (
 	OpWeightMsgAddClassCreator          = "op_weight_msg_add_class_creator"           //nolint:gosec
 	OpWeightMsgRemoveClassCreator       = "op_weight_msg_remove_class_creator"        //nolint:gosec
 	OpWeightMsgSetClassCreatorAllowlist = "op_weight_msg_set_class_creator_allowlist" //nolint:gosec
-	OpWeightMsgUpdateClassFees          = "op_weight_msg_update_class_fees"           //nolint:gosec
+	OpWeightMsgUpdateClassFee           = "op_weight_msg_update_class_fee"            //nolint:gosec
 )
 
 // ecocredit operations weights
@@ -88,7 +88,7 @@ var (
 	TypeMsgAddClassCreator          = sdk.MsgTypeURL(&types.MsgAddClassCreator{})
 	TypeMsgRemoveClassCreator       = sdk.MsgTypeURL(&types.MsgRemoveClassCreator{})
 	TypeMsgSetClassCreatorAllowlist = sdk.MsgTypeURL(&types.MsgSetClassCreatorAllowlist{})
-	TypeMsgUpdateClassFees          = sdk.MsgTypeURL(&types.MsgUpdateClassFees{})
+	TypeMsgUpdateClassFee           = sdk.MsgTypeURL(&types.MsgUpdateClassFee{})
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -118,7 +118,7 @@ func WeightedOperations(
 		weightMsgAddClassCreator          int
 		weightMsgRemoveClassCreator       int
 		weightMsgSetClassCreatorAllowlist int
-		weightMsgUpdateClassFees          int
+		weightMsgUpdateClassFee           int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
@@ -229,9 +229,9 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassFees, &weightMsgUpdateClassFees, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassFee, &weightMsgUpdateClassFee, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateClassFees = WeightBridge
+			weightMsgUpdateClassFee = WeightBridge
 		},
 	)
 
@@ -313,8 +313,8 @@ func WeightedOperations(
 			SimulateMsgSetClassCreatorAllowlist(ak, bk, govk, qryClient, authority),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgUpdateClassFees,
-			SimulateMsgUpdateClassFees(ak, bk, govk, qryClient, authority),
+			weightMsgUpdateClassFee,
+			SimulateMsgUpdateClassFee(ak, bk, govk, qryClient, authority),
 		),
 	}
 
@@ -1561,8 +1561,8 @@ func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredi
 	}
 }
 
-// SimulateMsgUpdateClassFees generates a MsgToggleClassAllowlist with random values.
-func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
+// SimulateMsgUpdateClassFee generates a MsgToggleClassAllowlist with random values.
+func SimulateMsgUpdateClassFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
 	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -1570,7 +1570,7 @@ func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateClassFees)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, proposerAddr, TypeMsgUpdateClassFee)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -1579,24 +1579,24 @@ func SimulateMsgUpdateClassFees(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
 		switch {
 		case skip:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "skip deposit"), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFee, "skip deposit"), nil, nil
 		case err != nil:
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "unable to generate deposit"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFee, "unable to generate deposit"), nil, err
 		}
 
 		fee := utils.RandomFee(r)
 		if fee.Amount.IsZero() {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, "invalid proposal message"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFee, "invalid proposal message"), nil, err
 		}
 
-		proposalMsg := types.MsgUpdateClassFees{
+		proposalMsg := types.MsgUpdateClassFee{
 			Authority: authority.String(),
-			Fees:      sdk.Coins{fee}, // TODO: #1466
+			Fee:       &fee,
 		}
 
 		any, err := codectypes.NewAnyWithValue(&proposalMsg)
 		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFees, err.Error()), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassFee, err.Error()), nil, err
 		}
 
 		msg := &govtypes.MsgSubmitProposal{

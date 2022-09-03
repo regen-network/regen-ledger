@@ -90,6 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `ToggleCreditClassAllowlist` msg-based gov proposal
   - [#1463](https://github.com/regen-network/regen-ledger/pull/1463) Renamed to `SetClassCreatorAllowlist`
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `UpdateClassFees` msg-based gov proposal
+  - [#1466](https://github.com/regen-network/regen-ledger/pull/1466) Renamed to `UpdateClassFee`
 - [#1391](https://github.com/regen-network/regen-ledger/pull/1391) Add `BasketFees` params query
   - [#1465](https://github.com/regen-network/regen-ledger/pull/1465) Renamed to `BasketFee`
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`
@@ -99,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [#1463](https://github.com/regen-network/regen-ledger/pull/1463) Renamed to `ClassCreatorAllowlist`
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `AllowedClassCreators` params query
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassFees` params query
+  - [#1466](https://github.com/regen-network/regen-ledger/pull/1466) Renamed to `ClassFee`
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
 - [#1450](https://github.com/regen-network/regen-ledger/pull/1450) Add `QueryBalancesByBatch` query
 - [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Add `AllowedBridgeChain` table and `QueryAllowedBridgeChains` query

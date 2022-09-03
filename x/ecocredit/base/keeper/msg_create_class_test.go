@@ -8,10 +8,10 @@ import (
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
@@ -23,7 +23,7 @@ type createClassSuite struct {
 	aliceBalance         sdk.Coin
 	creditTypeAbbrev     string
 	allowedClassCreators []string
-	creditClassFee       []*sdkbase.Coin
+	classFee             sdk.Coin
 	classID              string
 	res                  *types.MsgCreateClassResponse
 	err                  error
@@ -78,21 +78,18 @@ func (s *createClassSuite) AliceIsAnApprovedCreditClassCreator() {
 	}
 }
 
-func (s *createClassSuite) AllowedCreditClassFee(a string) {
-	creditClassFee, err := sdk.ParseCoinsNormalized(a)
+func (s *createClassSuite) RequiredClassFee(a string) {
+	classFee, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	for _, fee := range creditClassFee {
-		s.creditClassFee = append(s.creditClassFee, &sdkbase.Coin{
-			Denom:  fee.Denom,
-			Amount: fee.Amount.String(),
-		})
-	}
+	classFeeProto := regentypes.CoinToProtoCoin(classFee)
 
-	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
-		Fees: s.creditClassFee,
+	err = s.stateStore.ClassFeeTable().Save(s.ctx, &api.ClassFee{
+		Fee: classFeeProto,
 	})
 	require.NoError(s.t, err)
+
+	s.classFee = classFee
 }
 
 func (s *createClassSuite) AliceHasATokenBalance(a string) {
@@ -253,25 +250,8 @@ func (s *createClassSuite) createClassExpectCalls() {
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 
-	if len(s.creditClassFee) == 1 {
-		amount, ok := sdk.NewIntFromString(s.creditClassFee[0].Amount)
-		require.True(s.t, ok)
-
-		expectedFee = sdk.Coin{
-			Denom:  s.creditClassFee[0].Denom,
-			Amount: amount,
-		}
-		expectedFees = sdk.Coins{expectedFee}
-	}
-
-	if len(s.creditClassFee) == 2 {
-		amount, ok := sdk.NewIntFromString(s.creditClassFee[1].Amount)
-		require.True(s.t, ok)
-
-		expectedFee = sdk.Coin{
-			Denom:  s.creditClassFee[1].Denom,
-			Amount: amount,
-		}
+	if !s.classFee.IsNil() {
+		expectedFee = s.classFee
 		expectedFees = sdk.Coins{expectedFee}
 	}
 
@@ -283,7 +263,7 @@ func (s *createClassSuite) createClassExpectCalls() {
 	s.bankKeeper.EXPECT().
 		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, ecocredit.ModuleName, expectedFees).
 		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
-			if s.creditClassFee != nil {
+			if !s.classFee.IsNil() {
 				// simulate token balance update unavailable with mocks
 				s.aliceBalance = s.aliceBalance.Sub(expectedFee)
 			}

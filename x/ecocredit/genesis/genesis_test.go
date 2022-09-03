@@ -642,7 +642,7 @@ func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, s
 	return jsn
 }
 
-func TestMergeClassFeesIntoTarget(t *testing.T) {
+func TestMergeClassFeeIntoTarget(t *testing.T) {
 	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
@@ -651,8 +651,8 @@ func TestMergeClassFeesIntoTarget(t *testing.T) {
 	err = db.DefaultJSON(jsonTarget)
 	require.NoError(t, err)
 
-	classFees := DefaultCreditClassFees()
-	err = MergeCreditClassFeesIntoTarget(cdc, classFees, jsonTarget)
+	classFee := DefaultClassFee()
+	err = MergeClassFeeIntoTarget(cdc, classFee, jsonTarget)
 	require.NoError(t, err)
 
 	raw, err := jsonTarget.JSON()
@@ -661,16 +661,16 @@ func TestMergeClassFeesIntoTarget(t *testing.T) {
 	jsonSource, err := ormjson.NewRawMessageSource(raw)
 	require.NoError(t, err)
 
-	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&classFees)))
+	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&classFee)))
 	require.NoError(t, err)
 
-	var expected baseapi.ClassFees
+	var expected baseapi.ClassFee
 	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &expected)
 	require.NoError(t, err)
 
-	require.Equal(t, len(classFees.Fees), 1)
-	require.Equal(t, classFees.Fees[0].Amount.String(), expected.Fees[0].Amount)
-	require.Equal(t, classFees.Fees[0].Denom, expected.Fees[0].Denom)
+	require.NotEmpty(t, classFee.Fee)
+	require.Equal(t, expected.Fee.Amount, classFee.Fee.Amount.String())
+	require.Equal(t, expected.Fee.Denom, classFee.Fee.Denom)
 }
 
 func TestMergeBasketFeeIntoTarget(t *testing.T) {

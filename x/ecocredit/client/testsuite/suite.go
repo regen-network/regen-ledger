@@ -231,12 +231,10 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class fees
-	err = baseStore.ClassFeesTable().Save(ctx, &baseapi.ClassFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultCreditClassFee.String(),
-			},
+	err = baseStore.ClassFeeTable().Save(ctx, &baseapi.ClassFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultClassFee.String(),
 		},
 	})
 	require.NoError(err)

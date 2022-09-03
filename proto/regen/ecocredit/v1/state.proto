@@ -352,17 +352,18 @@ message AllowedClassCreator {
   bytes address = 1;
 }
 
-// ClassFees is a list of coins that may be used as the fee for credit class
-// creation. This table is controlled via governance.
+// ClassFee is the credit class creation fee. If not set, a credit class
+// creation fee is not required. This table is controlled via governance.
 //
 // Since Revision 1
-message ClassFees {
+message ClassFee {
   option (cosmos.orm.v1alpha1.singleton) = {
     id : 15
   };
 
-  // fees is the fee required to create a credit class.
-  repeated cosmos.base.v1beta1.Coin fees = 1;
+  // fee is the credit class creation fee. If not set, a credit class creation
+  // fee is not required.
+  cosmos.base.v1beta1.Coin fee = 1;
 }
 
 // AllowedBridgeChain is a list of chains that are allowed to be used in

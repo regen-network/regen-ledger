@@ -903,20 +903,22 @@ func (s *IntegrationTestSuite) TestQueryCreditClassAllowlistEnableCmd() {
 	s.Require().False(res.Enabled)
 }
 
-func (s *IntegrationTestSuite) TestQueryCreditClassFeesCmd() {
+func (s *IntegrationTestSuite) TestQueryClassFeeCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	cmd := client.QueryCreditClassFeesCmd()
+	cmd := client.QueryClassFeeCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 
 	s.Require().NoError(err, out.String())
 
-	var res types.QueryCreditClassFeesResponse
+	var res types.QueryClassFeeResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	s.Require().Equal(res.Fees.Len(), 1)
-	s.Require().Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), types.DefaultCreditClassFee)
+
+	s.Require().NotEmpty(res.Fee)
+	s.Require().Equal(res.Fee.Denom, sdk.DefaultBondDenom)
+	s.Require().Equal(res.Fee.Amount, types.DefaultClassFee)
 }
 
 func (s *IntegrationTestSuite) TestQueryAllBalancesCmd() {

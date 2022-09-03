@@ -68,7 +68,7 @@ type basketServer struct {
 }
 
 var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultCreditClassFee}
+	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
 )
 
 func NewIntegrationTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
@@ -139,12 +139,10 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	s.Require().NoError(err)
 
 	// set default credit class fee
-	err = ss.ClassFeesTable().Save(ormCtx, &baseapi.ClassFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultCreditClassFee.String(),
-			},
+	err = ss.ClassFeeTable().Save(ormCtx, &baseapi.ClassFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultClassFee.String(),
 		},
 	})
 	s.Require().NoError(err)
@@ -399,7 +397,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*basetypes.DefaultCreditClassFee.Int64())))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*basetypes.DefaultClassFee.Int64())))
 	adminBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 
 	createClsRes, err = s.msgClient.CreateClass(s.ctx, &basetypes.MsgCreateClass{

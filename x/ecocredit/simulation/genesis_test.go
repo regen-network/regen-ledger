@@ -80,12 +80,11 @@ func TestRandomizedGenState(t *testing.T) {
 	_, err = baseStore.AllowedClassCreatorTable().Get(ormCtx, creator)
 	require.NoError(t, err)
 
-	classFees, err := baseStore.ClassFeesTable().Get(ormCtx)
+	classFee, err := baseStore.ClassFeeTable().Get(ormCtx)
 	require.NoError(t, err)
-	require.Len(t, classFees.Fees, 1)
 
-	require.Equal(t, classFees.Fees[0].Denom, sdk.DefaultBondDenom)
-	require.Equal(t, classFees.Fees[0].Amount, "8")
+	require.Equal(t, classFee.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(t, classFee.Fee.Amount, "8")
 
 	allowedDenom, err := marketStore.AllowedDenomTable().Get(ormCtx, sdk.DefaultBondDenom)
 	require.NoError(t, err)
