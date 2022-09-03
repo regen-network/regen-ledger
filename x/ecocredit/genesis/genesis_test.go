@@ -7,6 +7,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	gogoproto "github.com/gogo/protobuf/proto"
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -492,7 +493,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid: class issuer",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ClassIssuerTable().Save(ctx, &baseapi.ClassIssuer{
+				require.NoError(t, ss.ClassIssuerTable().Insert(ctx, &baseapi.ClassIssuer{
 					ClassKey: 1,
 					Issuer:   addr1,
 				}))
@@ -504,10 +505,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: class issuer",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ClassIssuerTable().Save(ctx, &baseapi.ClassIssuer{
-					ClassKey: 0,
-					Issuer:   addr1,
-				}))
+				require.NoError(t, ss.ClassIssuerTable().Insert(ctx, &baseapi.ClassIssuer{}))
 			},
 			defaultParams,
 			true,
@@ -516,7 +514,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid: class sequence",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ClassSequenceTable().Save(ctx, &baseapi.ClassSequence{
+				require.NoError(t, ss.ClassSequenceTable().Insert(ctx, &baseapi.ClassSequence{
 					CreditTypeAbbrev: "C",
 					NextSequence:     1,
 				}))
@@ -528,19 +526,16 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: class sequence",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ClassSequenceTable().Save(ctx, &baseapi.ClassSequence{
-					CreditTypeAbbrev: "1",
-					NextSequence:     1,
-				}))
+				require.NoError(t, ss.ClassSequenceTable().Insert(ctx, &baseapi.ClassSequence{}))
 			},
 			defaultParams,
 			true,
-			"credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error",
+			"credit type abbrev: empty string is not allowed: parse error",
 		},
 		{
 			"valid: project sequence",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ProjectSequenceTable().Save(ctx, &baseapi.ProjectSequence{
+				require.NoError(t, ss.ProjectSequenceTable().Insert(ctx, &baseapi.ProjectSequence{
 					ClassKey:     1,
 					NextSequence: 1,
 				}))
@@ -552,10 +547,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: project sequence",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ProjectSequenceTable().Save(ctx, &baseapi.ProjectSequence{
-					ClassKey:     0,
-					NextSequence: 1,
-				}))
+				require.NoError(t, ss.ProjectSequenceTable().Insert(ctx, &baseapi.ProjectSequence{}))
 			},
 			defaultParams,
 			true,
@@ -564,7 +556,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid: batch sequence",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.BatchSequenceTable().Save(ctx, &baseapi.BatchSequence{
+				require.NoError(t, ss.BatchSequenceTable().Insert(ctx, &baseapi.BatchSequence{
 					ProjectKey:   1,
 					NextSequence: 1,
 				}))
@@ -576,10 +568,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: batch sequence",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.BatchSequenceTable().Save(ctx, &baseapi.BatchSequence{
-					ProjectKey:   0,
-					NextSequence: 1,
-				}))
+				require.NoError(t, ss.BatchSequenceTable().Insert(ctx, &baseapi.BatchSequence{}))
 			},
 			defaultParams,
 			true,
@@ -588,7 +577,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid: origin tx index",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.OriginTxIndexTable().Save(ctx, &baseapi.OriginTxIndex{
+				require.NoError(t, ss.OriginTxIndexTable().Insert(ctx, &baseapi.OriginTxIndex{
 					ClassKey: 1,
 					Id:       "0x0",
 					Source:   "polygon",
@@ -601,11 +590,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: origin tx index",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.OriginTxIndexTable().Save(ctx, &baseapi.OriginTxIndex{
-					ClassKey: 0,
-					Id:       "0x0",
-					Source:   "polygon",
-				}))
+				require.NoError(t, ss.OriginTxIndexTable().Insert(ctx, &baseapi.OriginTxIndex{}))
 			},
 			defaultParams,
 			true,
@@ -614,7 +599,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid: batch contract",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.BatchContractTable().Save(ctx, &baseapi.BatchContract{
+				require.NoError(t, ss.BatchContractTable().Insert(ctx, &baseapi.BatchContract{
 					BatchKey: 1,
 					ClassKey: 1,
 					Contract: "0x0000000000000000000000000000000000000000",
@@ -627,11 +612,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: batch contract",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.BatchContractTable().Save(ctx, &baseapi.BatchContract{
-					BatchKey: 0,
-					ClassKey: 1,
-					Contract: "0x0000000000000000000000000000000000000000",
-				}))
+				require.NoError(t, ss.BatchContractTable().Insert(ctx, &baseapi.BatchContract{}))
 			},
 			defaultParams,
 			true,
@@ -662,9 +643,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: allowed class creator",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
-					Address: []byte{},
-				}))
+				require.NoError(t, ss.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{}))
 			},
 			defaultParams,
 			true,
@@ -709,9 +688,7 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"invalid: allowed bridge chain",
 			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{
-					ChainName: "",
-				}))
+				require.NoError(t, ss.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{}))
 			},
 			defaultParams,
 			true,
@@ -722,6 +699,178 @@ func TestGenesisValidate(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
 			jsn := setupStateAndExportJSON(t, tc.setupState)
+			err := ValidateGenesis(jsn, tc.params)
+			if tc.expectErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.errorMsg)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateGenesisBasket(t *testing.T) {
+	t.Parallel()
+
+	defaultParams := DefaultParams()
+	addr1 := sdk.AccAddress("alice")
+	testCases := []struct {
+		id         string
+		setupState func(ctx context.Context, ss basketapi.StateStore)
+		params     basetypes.Params
+		expectErr  bool
+		errorMsg   string
+	}{
+		{
+			"valid: basket",
+			func(ctx context.Context, ss basketapi.StateStore) {
+				require.NoError(t, ss.BasketTable().Insert(ctx, &basketapi.Basket{
+					BasketDenom:      "eco.uC.NCT",
+					Name:             "NCT",
+					CreditTypeAbbrev: "C",
+					Curator:          addr1,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: basket",
+			func(ctx context.Context, ss basketapi.StateStore) {
+				require.NoError(t, ss.BasketTable().Save(ctx, &basketapi.Basket{}))
+			},
+			defaultParams,
+			true,
+			"basket denom: empty string is not allowed",
+		},
+		{
+			"valid: basket fee",
+			func(ctx context.Context, ss basketapi.StateStore) {
+				require.NoError(t, ss.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
+					Fee: &basev1beta1.Coin{
+						Denom:  "uregen",
+						Amount: "20000000",
+					},
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: basket fee",
+			func(ctx context.Context, ss basketapi.StateStore) {
+				require.NoError(t, ss.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
+					Fee: &basev1beta1.Coin{},
+				}))
+			},
+			defaultParams,
+			true,
+			"fee: denom cannot be empty: parse error",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.id, func(t *testing.T) {
+			jsn := setupBasketStateAndExportJSON(t, tc.setupState)
+			err := ValidateGenesis(jsn, tc.params)
+			if tc.expectErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.errorMsg)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateGenesisMarketplace(t *testing.T) {
+	t.Parallel()
+
+	defaultParams := DefaultParams()
+	addr1 := sdk.AccAddress("alice")
+	testCases := []struct {
+		id         string
+		setupState func(ctx context.Context, ss marketapi.StateStore)
+		params     basetypes.Params
+		expectErr  bool
+		errorMsg   string
+	}{
+		{
+			"valid: sell order",
+			func(ctx context.Context, ss marketapi.StateStore) {
+				require.NoError(t, ss.SellOrderTable().Insert(ctx, &marketapi.SellOrder{
+					Seller:    addr1,
+					BatchKey:  1,
+					Quantity:  "100",
+					MarketId:  1,
+					AskAmount: "100",
+					Maker:     true,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: sell order",
+			func(ctx context.Context, ss marketapi.StateStore) {
+				require.NoError(t, ss.SellOrderTable().Insert(ctx, &marketapi.SellOrder{}))
+			},
+			defaultParams,
+			true,
+			"seller: empty address string is not allowed: parse error",
+		},
+		{
+			"valid: market",
+			func(ctx context.Context, ss marketapi.StateStore) {
+				require.NoError(t, ss.MarketTable().Insert(ctx, &marketapi.Market{
+					CreditTypeAbbrev: "C",
+					BankDenom:        "uregen",
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: market",
+			func(ctx context.Context, ss marketapi.StateStore) {
+				require.NoError(t, ss.MarketTable().Insert(ctx, &marketapi.Market{}))
+			},
+			defaultParams,
+			true,
+			"credit type abbrev: empty string is not allowed: parse error",
+		},
+		{
+			"valid: allowed denom",
+			func(ctx context.Context, ss marketapi.StateStore) {
+				require.NoError(t, ss.AllowedDenomTable().Insert(ctx, &marketapi.AllowedDenom{
+					BankDenom:    "uregen",
+					DisplayDenom: "regen",
+					Exponent:     6,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: allowed denom",
+			func(ctx context.Context, ss marketapi.StateStore) {
+				require.NoError(t, ss.AllowedDenomTable().Insert(ctx, &marketapi.AllowedDenom{}))
+			},
+			defaultParams,
+			true,
+			"bank denom cannot be empty: parse error",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.id, func(t *testing.T) {
+			jsn := setupMarketStateAndExportJSON(t, tc.setupState)
 			err := ValidateGenesis(jsn, tc.params)
 			if tc.expectErr {
 				require.Error(t, err)
@@ -862,6 +1011,36 @@ func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, s
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 	ss, err := baseapi.NewStateStore(modDB)
+	require.NoError(t, err)
+	setupFunc(ormCtx, ss)
+	target := ormjson.NewRawMessageTarget()
+	require.NoError(t, modDB.ExportJSON(ormCtx, target))
+	jsn, err := target.JSON()
+	require.NoError(t, err)
+	return jsn
+}
+
+// setupBasketStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
+func setupBasketStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss basketapi.StateStore)) json.RawMessage {
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+	ss, err := basketapi.NewStateStore(modDB)
+	require.NoError(t, err)
+	setupFunc(ormCtx, ss)
+	target := ormjson.NewRawMessageTarget()
+	require.NoError(t, modDB.ExportJSON(ormCtx, target))
+	jsn, err := target.JSON()
+	require.NoError(t, err)
+	return jsn
+}
+
+// setupMarketStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
+func setupMarketStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss marketapi.StateStore)) json.RawMessage {
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+	ss, err := marketapi.NewStateStore(modDB)
 	require.NoError(t, err)
 	setupFunc(ormCtx, ss)
 	target := ormjson.NewRawMessageTarget()
