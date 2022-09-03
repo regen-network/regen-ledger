@@ -7,7 +7,6 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	gogoproto "github.com/gogo/protobuf/proto"
-	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -22,6 +21,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
