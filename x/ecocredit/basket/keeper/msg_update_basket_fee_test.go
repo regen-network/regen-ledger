@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"encoding/json"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -25,17 +25,17 @@ func (s *updateBasketFeeSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *updateBasketFeeSuite) AliceAttemptsToUpdateBasketFeeWithProperties(a gocuke.DocString) {
-	var msg *types.MsgUpdateBasketFee
+	var msg types.MsgUpdateBasketFee
 
-	err := json.Unmarshal([]byte(a.Content), &msg)
+	err := jsonpb.UnmarshalString(a.Content, &msg)
 	require.NoError(s.t, err)
 
-	_, s.err = s.k.UpdateBasketFee(s.ctx, msg)
+	_, s.err = s.k.UpdateBasketFee(s.ctx, &msg)
 }
 
 func (s *updateBasketFeeSuite) ExpectBasketFeeWithProperties(a gocuke.DocString) {
-	var expected *api.BasketFee
-	err := json.Unmarshal([]byte(a.Content), &expected)
+	var expected api.BasketFee
+	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
 	actual, err := s.stateStore.BasketFeeTable().Get(s.ctx)

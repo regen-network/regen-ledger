@@ -16,17 +16,17 @@ func (k Keeper) BasketFee(ctx context.Context, req *types.QueryBasketFeeRequest)
 		return nil, err
 	}
 
-	var result sdk.Coin
+	var fee sdk.Coin
 
 	if basketFee.Fee != nil {
 		var ok bool
-		result, ok = regentypes.ProtoCoinToCoin(basketFee.Fee)
+		fee, ok = regentypes.ProtoCoinToCoin(basketFee.Fee)
 		if !ok {
 			return nil, sdkerrors.ErrInvalidType.Wrapf("failed to parse basket fee")
 		}
 	}
 
 	return &types.QueryBasketFeeResponse{
-		Fee: &result,
+		Fee: &fee,
 	}, nil
 }
