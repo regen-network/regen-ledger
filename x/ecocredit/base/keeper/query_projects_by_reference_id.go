@@ -15,8 +15,7 @@ import (
 )
 
 // ProjectsByReferenceId queries projects by reference id.
-//nolint:revive,stylecheck
-func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProjectsByReferenceIdRequest) (*types.QueryProjectsByReferenceIdResponse, error) {
+func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProjectsByReferenceIdRequest) (*types.QueryProjectsByReferenceIdResponse, error) { //nolint:revive,stylecheck
 	if req.ReferenceId == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "reference-id is empty")
 	}

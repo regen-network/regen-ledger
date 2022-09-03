@@ -113,9 +113,9 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 }
 
 // canBasketAcceptCredit checks that a credit adheres to the specifications of a basket. Specifically, it checks:
-//  - batch's start time is within the basket's specified time window or min start date
-//  - class is in the basket's allowed class store
-//  - type matches the baskets specified credit type.
+// - batch's start time is within the basket's specified time window or min start date
+// - class is in the basket's allowed class store
+// - type matches the baskets specified credit type.
 func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batch *baseapi.Batch) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
