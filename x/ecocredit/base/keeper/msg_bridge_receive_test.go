@@ -9,8 +9,9 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	"github.com/stretchr/testify/require"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -171,6 +172,14 @@ func (s *bridgeReceiveSuite) TheBatchContract(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BatchContractTable().Insert(s.ctx, &batchContract)
+	require.NoError(s.t, err)
+}
+
+func (s *bridgeReceiveSuite) AllowedBridgeChain(a string) {
+	_, err := s.k.AddAllowedBridgeChain(s.ctx, &types.MsgAddAllowedBridgeChain{
+		Authority: s.authority.String(),
+		ChainName: a,
+	})
 	require.NoError(s.t, err)
 }
 
@@ -354,6 +363,28 @@ func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsToBobWithTradableAmount
 	})
 
 	require.NoError(s.t, s.err)
+}
+
+func (s *bridgeReceiveSuite) AliceAttemptsToBridgeCreditsWithOrigintxSource(a string) {
+	originTx := s.originTx
+	originTx.Source = a
+	s.res, s.err = s.k.BridgeReceive(s.ctx, &types.MsgBridgeReceive{
+		Issuer:  s.alice.String(),
+		ClassId: s.classID,
+		Project: &types.MsgBridgeReceive_Project{
+			ReferenceId:  s.referenceID,
+			Jurisdiction: s.jurisdiction,
+			Metadata:     s.metadata,
+		},
+		Batch: &types.MsgBridgeReceive_Batch{
+			Recipient: s.bob.String(),
+			Amount:    s.tradableAmount,
+			StartDate: s.startDate,
+			EndDate:   s.endDate,
+			Metadata:  s.metadata,
+		},
+		OriginTx: originTx,
+	})
 }
 
 func (s *bridgeReceiveSuite) ExpectNoError() {

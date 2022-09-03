@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,7 +14,16 @@ import (
 
 // Bridge cancel credits, removing them from the supply and balance of the holder
 func (k Keeper) Bridge(ctx context.Context, req *types.MsgBridge) (*types.MsgBridgeResponse, error) {
-	_, err := k.Cancel(ctx, &types.MsgCancel{
+
+	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.Target))
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not an authorized bridge target", req.Target)
+	}
+
+	_, err = k.Cancel(ctx, &types.MsgCancel{
 		Owner:   req.Owner,
 		Credits: req.Credits,
 		Reason:  fmt.Sprintf("bridge-%s", req.Target),

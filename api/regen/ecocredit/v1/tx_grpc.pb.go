@@ -128,6 +128,16 @@ type MsgClient interface {
 	//
 	// Since Revision 1
 	UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error)
+	// AddAllowedBridgeChain is a governance method that allows for the
+	// addition of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error)
+	// RemoveAllowedBridgeChain is a governance method that allows for the
+	// removal of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
 type msgClient struct {
@@ -318,6 +328,24 @@ func (c *msgClient) UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees,
 	return out, nil
 }
 
+func (c *msgClient) AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error) {
+	out := new(MsgAddAllowedBridgeChainResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error) {
+	out := new(MsgRemoveAllowedBridgeChainResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -428,6 +456,16 @@ type MsgServer interface {
 	//
 	// Since Revision 1
 	UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error)
+	// AddAllowedBridgeChain is a governance method that allows for the
+	// addition of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error)
+	// RemoveAllowedBridgeChain is a governance method that allows for the
+	// removal of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -494,6 +532,12 @@ func (UnimplementedMsgServer) RemoveClassCreator(context.Context, *MsgRemoveClas
 }
 func (UnimplementedMsgServer) UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassFees not implemented")
+}
+func (UnimplementedMsgServer) AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddAllowedBridgeChain not implemented")
+}
+func (UnimplementedMsgServer) RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveAllowedBridgeChain not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -868,6 +912,42 @@ func _Msg_UpdateClassFees_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_AddAllowedBridgeChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddAllowedBridgeChain)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AddAllowedBridgeChain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AddAllowedBridgeChain(ctx, req.(*MsgAddAllowedBridgeChain))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveAllowedBridgeChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveAllowedBridgeChain)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveAllowedBridgeChain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveAllowedBridgeChain(ctx, req.(*MsgRemoveAllowedBridgeChain))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -954,6 +1034,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateClassFees",
 			Handler:    _Msg_UpdateClassFees_Handler,
+		},
+		{
+			MethodName: "AddAllowedBridgeChain",
+			Handler:    _Msg_AddAllowedBridgeChain_Handler,
+		},
+		{
+			MethodName: "RemoveAllowedBridgeChain",
+			Handler:    _Msg_RemoveAllowedBridgeChain_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

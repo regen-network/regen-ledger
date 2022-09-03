@@ -147,6 +147,20 @@ service Msg {
   //
   // Since Revision 1
   rpc UpdateClassFees(MsgUpdateClassFees) returns (MsgUpdateClassFeesResponse);
+
+  // AddAllowedBridgeChain is a governance method that allows for the
+  // addition of a chain to bridge ecocredits to.
+  //
+  // Since Revision 1
+  rpc AddAllowedBridgeChain(MsgAddAllowedBridgeChain)
+      returns (MsgAddAllowedBridgeChainResponse);
+
+  // RemoveAllowedBridgeChain is a governance method that allows for the
+  // removal of a chain to bridge ecocredits to.
+  //
+  // Since Revision 1
+  rpc RemoveAllowedBridgeChain(MsgRemoveAllowedBridgeChain)
+      returns (MsgRemoveAllowedBridgeChainResponse);
 }
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
@@ -684,3 +698,43 @@ message MsgUpdateClassFees {
 //
 // Since Revision 1
 message MsgUpdateClassFeesResponse {}
+
+// MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
+//
+// Since Revision 1
+message MsgAddAllowedBridgeChain {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // chain_name is the name of the chain to allow bridging of ecocredits to
+  // (i.e. polygon, ethereum, celo).
+  string chain_name = 2;
+}
+
+// MsgAddAllowedBridgeChainResponse is the Msg/AddAllowedBridgeChain response
+// type.
+//
+// Since Revision 1
+message MsgAddAllowedBridgeChainResponse {}
+
+// MsgRemoveAllowedBridgeChain is the Msg/RemoveAllowedBridgeChain request type.
+//
+// Since Revision 1
+message MsgRemoveAllowedBridgeChain {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // chain_name is the name of the chain to remove from the list of allowed
+  // chains to bridge ecocredits to (i.e. polygon, ethereum, celo).
+  string chain_name = 2;
+}
+
+// MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
+// response type.
+//
+// Since Revision 1
+message MsgRemoveAllowedBridgeChainResponse {}

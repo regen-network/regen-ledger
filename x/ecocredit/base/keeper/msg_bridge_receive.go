@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,6 +14,15 @@ import (
 
 // BridgeReceive bridges credits received from another chain.
 func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) (*types.MsgBridgeReceiveResponse, error) {
+
+	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.OriginTx.Source))
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not an authorized bridge source", req.OriginTx.Source)
+	}
+
 	// check class id and get class information (specifically class key)
 	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {

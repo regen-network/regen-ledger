@@ -79,6 +79,21 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 		})
 	}
 
+	var allowedBridgeChains []string
+	it, err := k.stateStore.AllowedBridgeChainTable().List(ctx, api.AllowedBridgeChainPrimaryKey{})
+	if err != nil {
+		return nil, err
+	}
+	defer it.Close()
+
+	for it.Next() {
+		entry, err := it.Value()
+		if err != nil {
+			return nil, err
+		}
+		allowedBridgeChains = append(allowedBridgeChains, entry.ChainName)
+	}
+
 	return &types.QueryParamsResponse{
 		Params: &types.Params{
 			AllowedClassCreators: creators,
@@ -86,6 +101,7 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 			CreditClassFee:       classFees1,
 			BasketFee:            basketFees1,
 		},
-		AllowedDenoms: allowedDenoms,
+		AllowedDenoms:       allowedDenoms,
+		AllowedBridgeChains: allowedBridgeChains,
 	}, nil
 }

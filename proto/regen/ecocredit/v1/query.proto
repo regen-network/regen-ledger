@@ -251,6 +251,15 @@ service Query {
       returns (QueryCreditClassFeesResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
   }
+
+  // AllowedBridgeChains queries the list of chains allowed to be used in bridge
+  // operations.
+  //
+  // Since Revision 1
+  rpc AllowedBridgeChains(QueryAllowedBridgeChainsRequest)
+      returns (QueryAllowedBridgeChainsResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/allowed-bridge-chains";
+  }
 }
 
 // QueryClassesRequest is the Query/Classes request type.
@@ -655,6 +664,12 @@ message QueryParamsResponse {
   //
   // Since Revision 1
   repeated AllowedDenomInfo allowed_denoms = 2;
+
+  // AllowedBridgeChains is a list of chain names that are allowed to be used in
+  // bridge operations.
+  //
+  // Since Revision 1
+  repeated string allowed_bridge_chains = 3;
 }
 
 // QueryCreditTypeRequest is the Query/CreditType request type
@@ -823,4 +838,21 @@ message QueryCreditClassFeesResponse {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+}
+
+// QueryAllowedBridgeChainsRequest is the Query/AllowedBridgeChains request
+// type.
+//
+// Since Revision 1
+message QueryAllowedBridgeChainsRequest {}
+
+// QueryAllowedBridgeChainsResponse is the Query/AllowedBridgeChains response
+// type.
+//
+// Since Revision 1
+message QueryAllowedBridgeChainsResponse {
+
+  // allowed_bridge_chains is a list of chains that are allowed to be used in
+  // bridge operations.
+  repeated string allowed_bridge_chains = 1;
 }

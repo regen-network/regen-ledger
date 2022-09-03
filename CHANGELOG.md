@@ -67,7 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `AddCreditType` proposal handler has been removed.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `AllowedDenom` proposal handler has been removed.
-- [#1357](https://github.com/regen-network/regen-ledger/pull/#1357) The `NewModule` method in `ecocredit/module` requires a store `key`.
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) The `NewModule` method in `ecocredit/module` requires a store `key`.
+- [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Bridge operations must now specify a target/source that exists in the `AllowedBridgeChain` table.
 
 #### Added
 
@@ -86,18 +87,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `AddClassCreator` msg-based gov proposal
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `RemoveClassCreator` msg-based gov proposal
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `ToggleCreditClassAllowlist` msg-based gov proposal
-  - [#1463](https://github.com/regen-network/regen-ledger/pull/1354) Renamed to `SetClassCreatorAllowlist`
+- [#1463](https://github.com/regen-network/regen-ledger/pull/1354) Renamed to `SetClassCreatorAllowlist`
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `UpdateClassFees` msg-based gov proposal
 - [#1391](https://github.com/regen-network/regen-ledger/pull/1391) Add `BasketFees` params query
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`
 - [#1416](https://github.com/regen-network/regen-ledger/pull/1416) Add `QueryAllBalances` query
 - [#1417](https://github.com/regen-network/regen-ledger/pull/1417) Add ecocredit params state migration
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
-  - [#1463](https://github.com/regen-network/regen-ledger/pull/1354) Renamed to `ClassCreatorAllowlist`
+- [#1463](https://github.com/regen-network/regen-ledger/pull/1354) Renamed to `ClassCreatorAllowlist`
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `AllowedClassCreators` params query
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassFees` params query
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
 - [#1450](https://github.com/regen-network/regen-ledger/pull/1450) Add `QueryBalancesByBatch` query
+- [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Add `AllowedBridgeChain` table and `QueryAllowedBridgeChains` query
 
 #### Changed
 
