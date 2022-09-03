@@ -67,14 +67,12 @@ func TestMigrations(t *testing.T) {
 	require.NoError(t, v3.MigrateState(sdkCtx, baseStore, basketStore, paramStore))
 
 	// verify basket params migrated to orm table
-	basketFees, err := basketStore.BasketFeesTable().Get(sdkCtx)
+	basketFee, err := basketStore.BasketFeeTable().Get(sdkCtx)
 	require.NoError(t, err)
 
-	require.Equal(t, len(basketFees.Fees), 2)
-	require.Equal(t, basketFees.Fees[0].Denom, sdk.DefaultBondDenom)
-	require.Equal(t, basketFees.Fees[0].Amount, "10")
-	require.Equal(t, basketFees.Fees[1].Denom, "uregen")
-	require.Equal(t, basketFees.Fees[1].Amount, "2000000")
+	require.NotEmpty(t, basketFee.Fee)
+	require.Equal(t, basketFee.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(t, basketFee.Fee.Amount, "10")
 
 	// verify core state migrated to orm table
 	classFee, err := baseStore.ClassFeeTable().Get(sdkCtx)
@@ -84,9 +82,9 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, classFee.Fee.Denom, sdk.DefaultBondDenom)
 	require.Equal(t, classFee.Fee.Amount, "10")
 
-	allowedListEnabled, err := baseStore.ClassCreatorAllowlistTable().Get(sdkCtx)
+	allowlist, err := baseStore.ClassCreatorAllowlistTable().Get(sdkCtx)
 	require.NoError(t, err)
-	require.Equal(t, allowedListEnabled.Enabled, true)
+	require.Equal(t, allowlist.Enabled, true)
 
 	itr, err := baseStore.AllowedClassCreatorTable().List(sdkCtx, baseapi.AllowedClassCreatorPrimaryKey{})
 	require.NoError(t, err)

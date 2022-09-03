@@ -8,7 +8,6 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
-
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -674,7 +673,7 @@ func TestMergeClassFeeIntoTarget(t *testing.T) {
 	require.Equal(t, expected.Fee.Denom, classFee.Fee.Denom)
 }
 
-func TestMergeBasketFeesIntoTarget(t *testing.T) {
+func TestMergeBasketFeeIntoTarget(t *testing.T) {
 	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
@@ -683,8 +682,8 @@ func TestMergeBasketFeesIntoTarget(t *testing.T) {
 	err = db.DefaultJSON(jsonTarget)
 	require.NoError(t, err)
 
-	basketFees := DefaultBasketFees()
-	err = MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
+	basketFee := DefaultBasketFee()
+	err = MergeBasketFeeIntoTarget(cdc, basketFee, jsonTarget)
 	require.NoError(t, err)
 
 	raw, err := jsonTarget.JSON()
@@ -693,14 +692,14 @@ func TestMergeBasketFeesIntoTarget(t *testing.T) {
 	jsonSource, err := ormjson.NewRawMessageSource(raw)
 	require.NoError(t, err)
 
-	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&basketFees)))
+	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&basketFee)))
 	require.NoError(t, err)
 
-	var expected basketapi.BasketFees
+	var expected basketapi.BasketFee
 	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &expected)
 	require.NoError(t, err)
 
-	require.Equal(t, len(basketFees.Fees), 1)
-	require.Equal(t, basketFees.Fees[0].Amount.String(), expected.Fees[0].Amount)
-	require.Equal(t, basketFees.Fees[0].Denom, expected.Fees[0].Denom)
+	require.NotEmpty(t, basketFee.Fee)
+	require.Equal(t, basketFee.Fee.Amount.String(), expected.Fee.Amount)
+	require.Equal(t, basketFee.Fee.Denom, expected.Fee.Denom)
 }

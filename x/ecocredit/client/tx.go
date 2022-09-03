@@ -6,7 +6,7 @@ import (
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 
 	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/base/client"
-	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
 	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 )
 
@@ -41,9 +41,9 @@ func TxCmd(name string) *cobra.Command {
 		baseclient.TxUpdateClassAdminCmd(),
 		baseclient.TxUpdateProjectAdminCmd(),
 		baseclient.TxUpdateProjectMetadataCmd(),
-		basketcli.TxCreateBasketCmd(),
-		basketcli.TxPutInBasketCmd(),
-		basketcli.TxTakeFromBasketCmd(),
+		basketclient.TxCreateBasketCmd(),
+		basketclient.TxPutInBasketCmd(),
+		basketclient.TxTakeFromBasketCmd(),
 		marketclient.TxSellCmd(),
 		marketclient.TxUpdateSellOrdersCmd(),
 		marketclient.TxBuyDirectCmd(),

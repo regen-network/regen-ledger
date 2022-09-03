@@ -105,18 +105,16 @@ message BasketBalance {
   google.protobuf.Timestamp batch_start_date = 4;
 }
 
-// BasketFees are valid coin denoms and amounts that may be used as the fee
-// for basket creation.
+// BasketFee is the basket creation fee. If not set, a basket creation fee is
+// not required. This table is controlled via governance.
 //
 // Since Revision 2
-message BasketFees {
-  // This table is controlled via governance.
+message BasketFee {
   option (cosmos.orm.v1alpha1.singleton) = {
     id : 4
   };
 
-  // fees is a list of basket creation fees accepted when creating a
-  // basket. Any fee listed is accepted and charged to the basket creator when
-  // creating a basket.
-  repeated cosmos.base.v1beta1.Coin fees = 1;
+  // fee is the basket creation fee. If not set, a basket creation fee is not
+  // required.
+  cosmos.base.v1beta1.Coin fee = 1;
 }

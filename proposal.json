@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "@type": "/regen.ecocredit.basket.v1.MsgUpdateBasketFee",
+      "authority": "regen10d07y265gmmuvt4z0w9aw880jnsr700j9qceqh",
+      "fee": {
+          "denom": "stake",
+          "amount": "1234567"
+      }
+    }
+  ]
+}

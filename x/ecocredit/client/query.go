@@ -48,7 +48,7 @@ func QueryCmd(name string) *cobra.Command {
 		basketclient.QueryBasketsCmd(),
 		basketclient.QueryBasketBalanceCmd(),
 		basketclient.QueryBasketBalancesCmd(),
-		basketclient.QueryBasketFeesCmd(),
+		basketclient.QueryBasketFeeCmd(),
 		marketclient.QuerySellOrderCmd(),
 		marketclient.QuerySellOrdersCmd(),
 		marketclient.QuerySellOrdersBySellerCmd(),

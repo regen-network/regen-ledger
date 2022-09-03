@@ -207,8 +207,8 @@ func (m Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	basketFees := genesis.DefaultBasketFees()
-	err = genesis.MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
+	basketFee := genesis.DefaultBasketFee()
+	err = genesis.MergeBasketFeeIntoTarget(cdc, basketFee, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
