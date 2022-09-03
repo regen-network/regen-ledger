@@ -13,11 +13,10 @@ func CoinToProtoCoin(coin sdk.Coin) *basev1beta1.Coin {
 			Denom:  coin.Denom,
 			Amount: "",
 		}
-	} else {
-		return &basev1beta1.Coin{
-			Denom:  coin.Denom,
-			Amount: coin.Amount.String(),
-		}
+	}
+	return &basev1beta1.Coin{
+		Denom:  coin.Denom,
+		Amount: coin.Amount.String(),
 	}
 }
 
