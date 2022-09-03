@@ -68,6 +68,14 @@ func (s *bridgeSuite) ACreditBatchExistsWithABatchContractEntry() {
 	require.NoError(s.t, err)
 }
 
+func (s *bridgeSuite) TheTargetIsAnAllowedChain() {
+	_, err := s.k.AddAllowedBridgeChain(s.ctx, &types.MsgAddAllowedBridgeChain{
+		Authority: s.authority.String(),
+		ChainName: s.target,
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *bridgeSuite) ACreditBatchExistsWithoutABatchContractEntry() {
 	s.creditBatchSetup()
 }
@@ -135,6 +143,15 @@ func (s *bridgeSuite) AliceAttemptsToBridgeCreditAmountFromTheCreditBatch(a stri
 				Amount:     a,
 			},
 		},
+	})
+}
+
+func (s *bridgeSuite) AliceAttemptsToBridgeCreditsFromTheCreditBatchWithTarget(a string) {
+	s.res, s.err = s.k.Bridge(s.ctx, &types.MsgBridge{
+		Owner:     s.alice.String(),
+		Target:    a,
+		Recipient: s.recipient,
+		Credits:   s.credits,
 	})
 }
 
@@ -245,6 +262,14 @@ func (s *bridgeSuite) BatchHasBatchContractEntryWithContractAddress(a string) {
 		BatchKey: s.batchKey,
 		ClassKey: s.classKey,
 		Contract: s.contract,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *bridgeSuite) TheTargetIsAnAllowedBridgeChain(a string) {
+	_, err := s.k.AddAllowedBridgeChain(s.ctx, &types.MsgAddAllowedBridgeChain{
+		Authority: s.authority.String(),
+		ChainName: a,
 	})
 	require.NoError(s.t, err)
 }

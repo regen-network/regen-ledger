@@ -412,7 +412,7 @@ Feature: MsgBridgeReceive
     Then expect the error "origin tx id must be a valid ethereum transaction hash: invalid request"
 
   # Note: non-polygon origin tx source is specific to Msg/BridgeReceive
-  Scenario: an error is returned if origin tx source is not polygon
+  Scenario: an error is returned if origin tx source is empty
     Given the message
     """
     {
@@ -431,13 +431,12 @@ Feature: MsgBridgeReceive
         "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
       },
       "origin_tx": {
-        "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
-        "source": "foo"
+        "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e"
       }
     }
     """
     When the message is validated
-    Then expect the error "origin tx source must be polygon: invalid request"
+    Then expect the error "origin tx source cannot be empty: invalid request"
 
   # Note: non-empty origin tx contract is specific to Msg/BridgeReceive
   Scenario: an error is returned if origin tx contract is empty

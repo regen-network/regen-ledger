@@ -27,6 +27,11 @@ Feature: Bridge Integration
           "precision": 6,
           "unit": "metric ton CO2 equivalent"
         }
+      ],
+      "regen.ecocredit.v1.AllowedBridgeChain": [
+        {
+          "chain_name": "polygon"
+        }
       ]
     }
     """

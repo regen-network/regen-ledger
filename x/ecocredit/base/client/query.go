@@ -619,3 +619,24 @@ func QueryAllBalances() *cobra.Command {
 
 	return qflags(cmd)
 }
+
+// QueryAllowedBridgeChains returns a query command that retrieves a list of chain that are allowed to be used
+// in bridge operations.
+func QueryAllowedBridgeChains() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "allowed-bridge-chains",
+		Short:   "Retrieve the list of allowed bridge chains",
+		Long:    "Retrieve the list of chains that are allowed to be used in bridge operations",
+		Example: "regen q ecocredit allowed-bridge-chains",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.AllowedBridgeChains(cmd.Context(), &types.QueryAllowedBridgeChainsRequest{})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "allowed-bridge-chains")
+	return qflags(cmd)
+}

@@ -43,6 +43,7 @@ func QueryCmd(name string) *cobra.Command {
 		baseclient.QueryAllowedClassCreatorsCmd(),
 		baseclient.QueryClassFeeCmd(),
 		baseclient.QueryAllBalances(),
+		baseclient.QueryAllowedBridgeChains(),
 		basketclient.QueryBasketCmd(),
 		basketclient.QueryBasketsCmd(),
 		basketclient.QueryBasketBalanceCmd(),

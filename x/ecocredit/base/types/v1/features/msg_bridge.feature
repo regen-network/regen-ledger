@@ -68,17 +68,6 @@ Feature: MsgBridge
     When the message is validated
     Then expect the error "target cannot be empty: invalid request"
 
-  Scenario: an error is returned if target is not polygon
-    Given the message
-    """
-    {
-      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "target": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "target must be polygon: invalid request"
-
   Scenario: an error is returned if recipient is empty
     Given the message
     """
