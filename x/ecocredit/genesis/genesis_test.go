@@ -13,6 +13,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -489,6 +490,86 @@ func TestGenesisValidate(t *testing.T) {
 			defaultParams,
 			false,
 			"",
+		},
+		{
+			"valid: class creator allowlist",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassCreatorAllowlistTable().Save(ctx, &baseapi.ClassCreatorAllowlist{
+					Enabled: true,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"valid: allowed class creator",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
+					Address: addr1,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: allowed class creator",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{
+					Address: []byte{},
+				}))
+			},
+			defaultParams,
+			true,
+			"address: empty address string is not allowed: parse error",
+		},
+		{
+			"valid: class fee",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassFeeTable().Save(ctx, &baseapi.ClassFee{
+					Fee: &basev1beta1.Coin{
+						Denom:  "uregen",
+						Amount: "20000000",
+					},
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: class fee",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassFeeTable().Save(ctx, &baseapi.ClassFee{
+					Fee: &basev1beta1.Coin{},
+				}))
+			},
+			defaultParams,
+			true,
+			"fee: denom cannot be empty: parse error",
+		},
+		{
+			"valid: allowed bridge chain",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{
+					ChainName: "polygon",
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: allowed bridge chain",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{
+					ChainName: "",
+				}))
+			},
+			defaultParams,
+			true,
+			"name cannot be empty: parse error",
 		},
 	}
 
