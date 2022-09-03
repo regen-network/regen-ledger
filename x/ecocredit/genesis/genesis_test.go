@@ -8,10 +8,8 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
-
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
 
 	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -725,64 +723,64 @@ func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, s
 	return jsn
 }
 
-func TestMergeClassFeesIntoTarget(t *testing.T) {
+func TestMergeClassFeeIntoTarget(t *testing.T) {
 	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
 	jsonTarget := ormjson.NewRawMessageTarget()
 	err = db.DefaultJSON(jsonTarget)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	classFees := DefaultCreditClassFees()
-	err = MergeCreditClassFeesIntoTarget(cdc, classFees, jsonTarget)
-	assert.NilError(t, err)
+	classFee := DefaultClassFee()
+	err = MergeClassFeeIntoTarget(cdc, classFee, jsonTarget)
+	require.NoError(t, err)
 
 	raw, err := jsonTarget.JSON()
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
 	jsonSource, err := ormjson.NewRawMessageSource(raw)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&classFees)))
-	assert.NilError(t, err)
+	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&classFee)))
+	require.NoError(t, err)
 
-	var expected baseapi.ClassFees
+	var expected baseapi.ClassFee
 	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &expected)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	assert.Equal(t, len(classFees.Fees), 1)
-	assert.Equal(t, classFees.Fees[0].Amount.String(), expected.Fees[0].Amount)
-	assert.Equal(t, classFees.Fees[0].Denom, expected.Fees[0].Denom)
+	require.NotEmpty(t, classFee.Fee)
+	require.Equal(t, expected.Fee.Amount, classFee.Fee.Amount.String())
+	require.Equal(t, expected.Fee.Denom, classFee.Fee.Denom)
 }
 
-func TestMergeBasketFeesIntoTarget(t *testing.T) {
+func TestMergeBasketFeeIntoTarget(t *testing.T) {
 	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
 	jsonTarget := ormjson.NewRawMessageTarget()
 	err = db.DefaultJSON(jsonTarget)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	basketFees := DefaultBasketFees()
-	err = MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
-	assert.NilError(t, err)
+	basketFee := DefaultBasketFee()
+	err = MergeBasketFeeIntoTarget(cdc, basketFee, jsonTarget)
+	require.NoError(t, err)
 
 	raw, err := jsonTarget.JSON()
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
 	jsonSource, err := ormjson.NewRawMessageSource(raw)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&basketFees)))
-	assert.NilError(t, err)
+	r, err := jsonSource.OpenReader(protoreflect.FullName(gogoproto.MessageName(&basketFee)))
+	require.NoError(t, err)
 
-	var expected basketapi.BasketFees
+	var expected basketapi.BasketFee
 	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &expected)
-	assert.NilError(t, err)
+	require.NoError(t, err)
 
-	assert.Equal(t, len(basketFees.Fees), 1)
-	assert.Equal(t, basketFees.Fees[0].Amount.String(), expected.Fees[0].Amount)
-	assert.Equal(t, basketFees.Fees[0].Denom, expected.Fees[0].Denom)
+	require.NotEmpty(t, basketFee.Fee)
+	require.Equal(t, basketFee.Fee.Amount.String(), expected.Fee.Amount)
+	require.Equal(t, basketFee.Fee.Denom, expected.Fee.Denom)
 }

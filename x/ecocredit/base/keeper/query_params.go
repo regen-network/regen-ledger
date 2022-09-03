@@ -39,22 +39,22 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 
 	}
 
-	classFees, err := k.stateStore.ClassFeesTable().Get(ctx)
+	classFee, err := k.stateStore.ClassFeeTable().Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	classFees1, ok := regentypes.ProtoCoinsToCoins(classFees.Fees)
+	classFeeCoin, ok := regentypes.ProtoCoinToCoin(classFee.Fee)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidCoins.Wrap("class fees")
 	}
 
-	basketFees, err := k.basketStore.BasketFeesTable().Get(ctx)
+	basketFee, err := k.basketStore.BasketFeeTable().Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	basketFees1, ok := regentypes.ProtoCoinsToCoins(basketFees.Fees)
+	basketFeeCoin, ok := regentypes.ProtoCoinToCoin(basketFee.Fee)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidCoins.Wrap("basket fees")
 	}
@@ -98,8 +98,8 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 		Params: &types.Params{
 			AllowedClassCreators: creators,
 			AllowlistEnabled:     allowlistEnabled.Enabled,
-			CreditClassFee:       classFees1,
-			BasketFee:            basketFees1,
+			CreditClassFee:       sdk.Coins{classFeeCoin},
+			BasketFee:            sdk.Coins{basketFeeCoin},
 		},
 		AllowedDenoms:       allowedDenoms,
 		AllowedBridgeChains: allowedBridgeChains,

@@ -150,14 +150,14 @@ regen q ecocredit basket-balances eco.uC.NCT --limit 10 --offset 10
 	return cmd
 }
 
-// QueryBasketFeesCmd returns a query command that retrieves the basket fees.
-func QueryBasketFeesCmd() *cobra.Command {
+// QueryBasketFeeCmd returns a query command that retrieves the basket fees.
+func QueryBasketFeeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "basket-fees",
-		Short: "Retrieves the basket fees",
-		Long:  "Retrieves the basket fees",
+		Use:   "basket-fee",
+		Short: "Retrieves the basket fee",
+		Long:  "Retrieves the basket fee",
 		Example: `
-regen q ecocredit basket-fees
+regen q ecocredit basket-fee
 		`,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -167,7 +167,7 @@ regen q ecocredit basket-fees
 			}
 
 			client := types.NewQueryClient(ctx)
-			res, err := client.BasketFees(cmd.Context(), &types.QueryBasketFeesRequest{})
+			res, err := client.BasketFee(cmd.Context(), &types.QueryBasketFeeRequest{})
 			if err != nil {
 				return err
 			}

@@ -30,66 +30,53 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 		return nil, err
 	}
 
-	var fees *api.ClassFees
-	fees, err = k.stateStore.ClassFeesTable().Get(goCtx)
+	classFee, err := k.stateStore.ClassFeeTable().Get(goCtx)
 	if err != nil {
-		if !ormerrors.NotFound.Is(err) {
-			return nil, err
+		return nil, err
+	}
+
+	// only check and charge fee if required fee is set
+	if classFee.Fee != nil {
+
+		requiredFee, ok := regentypes.ProtoCoinToCoin(classFee.Fee)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrap("class fee")
 		}
-		fees = &api.ClassFees{}
-	}
-
-	allowedFees, ok := regentypes.ProtoCoinsToCoins(fees.Fees)
-	if !ok {
-		return nil, sdkerrors.ErrInvalidType.Wrap("credit class fee")
-	}
-
-	// only check and charge fee if allowed fees is not empty
-	if allowedFees.Len() > 0 {
 
 		// check if fee is empty
 		if req.Fee == nil {
-			if len(allowedFees) > 1 {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee cannot be empty: must be one of %s", allowedFees,
-				)
-			}
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-				"fee cannot be empty: must be %s", allowedFees,
+				"fee cannot be empty: must be %s", requiredFee,
 			)
 		}
 
-		// convert fee to multiple coins for verification
-		coins := sdk.Coins{*req.Fee}
-
-		// check if fee is greater than or equal to any coin in allowedFees
-		if !coins.IsAnyGTE(allowedFees) {
-			if len(allowedFees) > 1 {
-				return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-					"fee must be one of %s, got %s", allowedFees, req.Fee,
-				)
-			}
+		// check if fee is the correct denom
+		if req.Fee.Denom != requiredFee.Denom {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
-				"fee must be %s, got %s", allowedFees, req.Fee,
+				"fee must be %s, got %s", requiredFee, req.Fee,
 			)
 		}
 
-		// only check and charge the minimum fee amount
-		minimumFee := sdk.Coin{
-			Denom:  req.Fee.Denom,
-			Amount: allowedFees.AmountOf(req.Fee.Denom),
+		// check if fee is greater than or equal to required fee
+		if !req.Fee.IsGTE(requiredFee) {
+			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
+				"fee must be %s, got %s", requiredFee, req.Fee,
+			)
 		}
 
-		// check admin balance against minimum fee
-		adminBalance := k.bankKeeper.GetBalance(sdkCtx, adminAddress, minimumFee.Denom)
-		if adminBalance.IsNil() || adminBalance.IsLT(minimumFee) {
+		// check admin balance against required fee
+		adminBalance := k.bankKeeper.GetBalance(sdkCtx, adminAddress, requiredFee.Denom)
+		if adminBalance.IsNil() || adminBalance.IsLT(requiredFee) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
-				"insufficient balance %s for bank denom %s", adminBalance.Amount, minimumFee.Denom,
+				"insufficient balance %s for bank denom %s", adminBalance.Amount, requiredFee.Denom,
 			)
 		}
+
+		// convert required fee to multiple coins for processing
+		requiredFees := sdk.Coins{requiredFee}
 
 		// send coins from account to module and then burn the coins
-		err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{minimumFee})
+		err = k.chargeCreditClassFee(sdkCtx, adminAddress, requiredFees)
 		if err != nil {
 			return nil, err
 		}
@@ -97,7 +84,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 
 	creditType, err := k.stateStore.CreditTypeTable().Get(goCtx, req.CreditTypeAbbrev)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type with abbreviation %s: %s", req.CreditTypeAbbrev, err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type with abbreviation %s: %s", req.CreditTypeAbbrev, err)
 	}
 
 	// default the sequence to 1 for the `not found` case.

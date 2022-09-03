@@ -30,10 +30,11 @@ type QueryClient interface {
 	BasketBalances(ctx context.Context, in *QueryBasketBalancesRequest, opts ...grpc.CallOption) (*QueryBasketBalancesResponse, error)
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(ctx context.Context, in *QueryBasketBalanceRequest, opts ...grpc.CallOption) (*QueryBasketBalanceResponse, error)
-	// BasketFees returns list of fees that can be used for creating basket.
+	// BasketFee returns the basket creation fee. If not set, a basket creation
+	// fee is not required.
 	//
 	// Since Revision 2
-	BasketFees(ctx context.Context, in *QueryBasketFeesRequest, opts ...grpc.CallOption) (*QueryBasketFeesResponse, error)
+	BasketFee(ctx context.Context, in *QueryBasketFeeRequest, opts ...grpc.CallOption) (*QueryBasketFeeResponse, error)
 }
 
 type queryClient struct {
@@ -80,9 +81,9 @@ func (c *queryClient) BasketBalance(ctx context.Context, in *QueryBasketBalanceR
 	return out, nil
 }
 
-func (c *queryClient) BasketFees(ctx context.Context, in *QueryBasketFeesRequest, opts ...grpc.CallOption) (*QueryBasketFeesResponse, error) {
-	out := new(QueryBasketFeesResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Query/BasketFees", in, out, opts...)
+func (c *queryClient) BasketFee(ctx context.Context, in *QueryBasketFeeRequest, opts ...grpc.CallOption) (*QueryBasketFeeResponse, error) {
+	out := new(QueryBasketFeeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Query/BasketFee", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,10 +102,11 @@ type QueryServer interface {
 	BasketBalances(context.Context, *QueryBasketBalancesRequest) (*QueryBasketBalancesResponse, error)
 	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(context.Context, *QueryBasketBalanceRequest) (*QueryBasketBalanceResponse, error)
-	// BasketFees returns list of fees that can be used for creating basket.
+	// BasketFee returns the basket creation fee. If not set, a basket creation
+	// fee is not required.
 	//
 	// Since Revision 2
-	BasketFees(context.Context, *QueryBasketFeesRequest) (*QueryBasketFeesResponse, error)
+	BasketFee(context.Context, *QueryBasketFeeRequest) (*QueryBasketFeeResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -124,8 +126,8 @@ func (UnimplementedQueryServer) BasketBalances(context.Context, *QueryBasketBala
 func (UnimplementedQueryServer) BasketBalance(context.Context, *QueryBasketBalanceRequest) (*QueryBasketBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BasketBalance not implemented")
 }
-func (UnimplementedQueryServer) BasketFees(context.Context, *QueryBasketFeesRequest) (*QueryBasketFeesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BasketFees not implemented")
+func (UnimplementedQueryServer) BasketFee(context.Context, *QueryBasketFeeRequest) (*QueryBasketFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BasketFee not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -212,20 +214,20 @@ func _Query_BasketBalance_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_BasketFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBasketFeesRequest)
+func _Query_BasketFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBasketFeeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).BasketFees(ctx, in)
+		return srv.(QueryServer).BasketFee(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1.Query/BasketFees",
+		FullMethod: "/regen.ecocredit.basket.v1.Query/BasketFee",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BasketFees(ctx, req.(*QueryBasketFeesRequest))
+		return srv.(QueryServer).BasketFee(ctx, req.(*QueryBasketFeeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -254,8 +256,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_BasketBalance_Handler,
 		},
 		{
-			MethodName: "BasketFees",
-			Handler:    _Query_BasketFees_Handler,
+			MethodName: "BasketFee",
+			Handler:    _Query_BasketFee_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

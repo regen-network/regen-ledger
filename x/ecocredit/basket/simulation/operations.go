@@ -45,7 +45,7 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateBasketFees, &weightMsgUpdateBasketFees, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateBasketFee, &weightMsgUpdateBasketFees, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateBasketFees = WeightUpdateBasketFees
 		},
@@ -66,7 +66,7 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateBasketFees,
-			SimulateMsgUpdateBasketFees(ak, bk, qryClient, basketQryClient, govk, authority),
+			SimulateMsgUpdateBasketFee(ak, bk, qryClient, basketQryClient, govk, authority),
 		),
 	}
 }

@@ -1,47 +1,24 @@
-Feature: MsgUpdateBasketFees
+Feature: MsgUpdateBasketFee
 
   Scenario: a valid message
     Given the message
     """
     {
       "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fees": [
-        {
-            "denom":"uregen",
-            "amount":"1000"
-        }
-      ]
+      "fee": {
+        "denom": "uregen",
+        "amount": "1000"
+      }
     }
     """
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message removing basket fees
+  Scenario: a valid message removing basket fee
     Given the message
     """
     {
-      "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fees": []
-    }
-    """
-    When the message is validated
-    Then expect no error
-
-  Scenario: a valid message with multiple basket fees
-    Given the message
-    """
-    {
-      "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fees": [
-        {
-            "denom":"uatom",
-            "amount":"1000"
-        },
-        {
-            "denom":"uregen",
-            "amount":"1000"
-        }
-      ]
+      "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
     }
     """
     When the message is validated
@@ -70,13 +47,11 @@ Feature: MsgUpdateBasketFees
     """
     {
       "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_fees": [
-        {
-            "denom":"A+B",
-            "amount":"1000"
-        }
-      ]
+      "fee": {
+        "denom": "1",
+        "amount": "1000"
+      }
     }
     """
     When the message is validated
-    Then expect the error "invalid denom: A+B"
+    Then expect the error "invalid denom: 1: invalid request"

@@ -142,11 +142,12 @@ service Msg {
   rpc RemoveClassCreator(MsgRemoveClassCreator)
       returns (MsgRemoveClassCreatorResponse);
 
-  // UpdateClassFees is a governance method that allows for the addition and
-  // removal of fees to be used for the class creation fee.
+  // UpdateClassFee is a governance method that allows for updating the credit
+  // class creation fee. If not set, the credit class creation fee will be
+  // removed and no fee will be required to create a credit class.
   //
   // Since Revision 1
-  rpc UpdateClassFees(MsgUpdateClassFees) returns (MsgUpdateClassFeesResponse);
+  rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
 
   // AddAllowedBridgeChain is a governance method that allows for the
   // addition of a chain to bridge ecocredits to.
@@ -677,27 +678,24 @@ message MsgRemoveClassCreator {
 // Since Revision 1
 message MsgRemoveClassCreatorResponse {}
 
-// MsgUpdateClassFees is the Msg/UpdateClassFees request type.
+// MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 //
 // Since Revision 1
-message MsgUpdateClassFees {
+message MsgUpdateClassFee {
   option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
 
-  // fees defines a list of coins fees that can be used in the credit class
-  // creation fee.
-  repeated cosmos.base.v1beta1.Coin fees = 2 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
+  // fee is the credit class creation fee. If not set, the credit class creation
+  // fee will be removed and no fee will be required to create a credit class.
+  cosmos.base.v1beta1.Coin fee = 2;
 }
 
-// MsgUpdateClassFeesResponse is the Msg/UpdateClassFees response type.
+// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 //
 // Since Revision 1
-message MsgUpdateClassFeesResponse {}
+message MsgUpdateClassFeeResponse {}
 
 // MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
 //

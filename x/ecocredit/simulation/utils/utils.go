@@ -122,14 +122,13 @@ func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
 	return spendable, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-// RandomFees generate random credit class/basket creation fees
-func RandomFees(r *rand.Rand) sdk.Coins {
-	coins := sdk.NewCoins(
-		sdk.NewCoin(sdk.DefaultBondDenom, simtypes.RandomAmount(r, sdk.NewInt(10000))),
-		sdk.NewCoin(simtypes.RandStringOfLength(r, 4), simtypes.RandomAmount(r, sdk.NewInt(10000))),
-	)
-
-	return coins.Sort()
+// RandomFee generate random credit class/basket creation fee
+func RandomFee(r *rand.Rand) sdk.Coin {
+	// 30% chance of fee using random denom
+	if r.Int63n(101) <= 30 {
+		return sdk.NewCoin(simtypes.RandStringOfLength(r, 4), simtypes.RandomAmount(r, sdk.NewInt(10000)))
+	}
+	return sdk.NewCoin(sdk.DefaultBondDenom, simtypes.RandomAmount(r, sdk.NewInt(10000)))
 }
 
 // RandomDeposit returns minimum deposit if account have enough balance

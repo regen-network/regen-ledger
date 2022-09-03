@@ -9,7 +9,7 @@ import (
 
 var (
 	// This is a value of 20 REGEN
-	DefaultCreditClassFee   = math.NewInt(2e7)
+	DefaultClassFee         = math.NewInt(2e7)
 	DefaultBasketFee        = math.NewInt(2e7)
 	KeyCreditClassFee       = []byte("CreditClassFee")
 	KeyAllowedClassCreators = []byte("AllowedClassCreators")

@@ -68,7 +68,7 @@ type basketServer struct {
 }
 
 var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultCreditClassFee}
+	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
 )
 
 func NewIntegrationTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
@@ -139,12 +139,10 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	s.Require().NoError(err)
 
 	// set default credit class fee
-	err = ss.ClassFeesTable().Save(ormCtx, &baseapi.ClassFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultCreditClassFee.String(),
-			},
+	err = ss.ClassFeeTable().Save(ormCtx, &baseapi.ClassFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultClassFee.String(),
 		},
 	})
 	s.Require().NoError(err)
@@ -152,12 +150,10 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	bs, err := basketApi.NewStateStore(modDB)
 	s.Require().NoError(err)
 
-	err = bs.BasketFeesTable().Save(ormCtx, &basketApi.BasketFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  s.basketFee.Denom,
-				Amount: s.basketFee.Amount.String(),
-			},
+	err = bs.BasketFeeTable().Save(ormCtx, &basketApi.BasketFee{
+		Fee: &sdkbase.Coin{
+			Denom:  s.basketFee.Denom,
+			Amount: s.basketFee.Amount.String(),
 		},
 	})
 	s.Require().NoError(err)
@@ -209,8 +205,8 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Len(qRes.Baskets, 1)
 	require.Equal(qRes.Baskets[0].BasketDenom, basketDenom)
 
-	// assert the fee was paid - the fee mechanism was mocked, but we still call the same underlying SendFromAccountToModule
-	// function so the result is the same
+	// assert the fee was paid - the fee mechanism was mocked, but we still call the same
+	// underlying SendFromAccountToModule function so the result is the same
 	balanceAfter := s.getUserBalance(user, s.basketFee.Denom)
 	require.Equal(balanceAfter.Add(s.basketFee), balanceBefore)
 
@@ -401,7 +397,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*basetypes.DefaultCreditClassFee.Int64())))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*basetypes.DefaultClassFee.Int64())))
 	adminBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 
 	createClsRes, err = s.msgClient.CreateClass(s.ctx, &basetypes.MsgCreateClass{

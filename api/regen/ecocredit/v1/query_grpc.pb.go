@@ -89,10 +89,11 @@ type QueryClient interface {
 	//
 	// Since Revision 1
 	AllowedClassCreators(ctx context.Context, in *QueryAllowedClassCreatorsRequest, opts ...grpc.CallOption) (*QueryAllowedClassCreatorsResponse, error)
-	// CreditClassFees queries the class creation fee.
+	// ClassFee returns the credit class creation fee. If not set, a credit class
+	// creation fee is not required.
 	//
 	// Since Revision 1
-	CreditClassFees(ctx context.Context, in *QueryCreditClassFeesRequest, opts ...grpc.CallOption) (*QueryCreditClassFeesResponse, error)
+	ClassFee(ctx context.Context, in *QueryClassFeeRequest, opts ...grpc.CallOption) (*QueryClassFeeResponse, error)
 	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
 	// operations.
 	//
@@ -325,9 +326,9 @@ func (c *queryClient) AllowedClassCreators(ctx context.Context, in *QueryAllowed
 	return out, nil
 }
 
-func (c *queryClient) CreditClassFees(ctx context.Context, in *QueryCreditClassFeesRequest, opts ...grpc.CallOption) (*QueryCreditClassFeesResponse, error) {
-	out := new(QueryCreditClassFeesResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/CreditClassFees", in, out, opts...)
+func (c *queryClient) ClassFee(ctx context.Context, in *QueryClassFeeRequest, opts ...grpc.CallOption) (*QueryClassFeeResponse, error) {
+	out := new(QueryClassFeeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassFee", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -414,10 +415,11 @@ type QueryServer interface {
 	//
 	// Since Revision 1
 	AllowedClassCreators(context.Context, *QueryAllowedClassCreatorsRequest) (*QueryAllowedClassCreatorsResponse, error)
-	// CreditClassFees queries the class creation fee.
+	// ClassFee returns the credit class creation fee. If not set, a credit class
+	// creation fee is not required.
 	//
 	// Since Revision 1
-	CreditClassFees(context.Context, *QueryCreditClassFeesRequest) (*QueryCreditClassFeesResponse, error)
+	ClassFee(context.Context, *QueryClassFeeRequest) (*QueryClassFeeResponse, error)
 	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
 	// operations.
 	//
@@ -502,8 +504,8 @@ func (UnimplementedQueryServer) ClassCreatorAllowlist(context.Context, *QueryCla
 func (UnimplementedQueryServer) AllowedClassCreators(context.Context, *QueryAllowedClassCreatorsRequest) (*QueryAllowedClassCreatorsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowedClassCreators not implemented")
 }
-func (UnimplementedQueryServer) CreditClassFees(context.Context, *QueryCreditClassFeesRequest) (*QueryCreditClassFeesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreditClassFees not implemented")
+func (UnimplementedQueryServer) ClassFee(context.Context, *QueryClassFeeRequest) (*QueryClassFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassFee not implemented")
 }
 func (UnimplementedQueryServer) AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowedBridgeChains not implemented")
@@ -953,20 +955,20 @@ func _Query_AllowedClassCreators_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CreditClassFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCreditClassFeesRequest)
+func _Query_ClassFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassFeeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CreditClassFees(ctx, in)
+		return srv.(QueryServer).ClassFee(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Query/CreditClassFees",
+		FullMethod: "/regen.ecocredit.v1.Query/ClassFee",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CreditClassFees(ctx, req.(*QueryCreditClassFeesRequest))
+		return srv.(QueryServer).ClassFee(ctx, req.(*QueryClassFeeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1093,8 +1095,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_AllowedClassCreators_Handler,
 		},
 		{
-			MethodName: "CreditClassFees",
-			Handler:    _Query_CreditClassFees_Handler,
+			MethodName: "ClassFee",
+			Handler:    _Query_ClassFee_Handler,
 		},
 		{
 			MethodName: "AllowedBridgeChains",
