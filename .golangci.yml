@@ -40,3 +40,5 @@ issues:
 linters-settings:
   dogsled:
     max-blank-identifiers: 3
+  gofmt:
+    simplify: false
