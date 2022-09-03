@@ -490,6 +490,154 @@ func TestGenesisValidate(t *testing.T) {
 			"",
 		},
 		{
+			"valid: class issuer",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassIssuerTable().Save(ctx, &baseapi.ClassIssuer{
+					ClassKey: 1,
+					Issuer:   addr1,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: class issuer",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassIssuerTable().Save(ctx, &baseapi.ClassIssuer{
+					ClassKey: 0,
+					Issuer:   addr1,
+				}))
+			},
+			defaultParams,
+			true,
+			"class key cannot be zero: parse error",
+		},
+		{
+			"valid: class sequence",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassSequenceTable().Save(ctx, &baseapi.ClassSequence{
+					CreditTypeAbbrev: "C",
+					NextSequence:     1,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: class sequence",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ClassSequenceTable().Save(ctx, &baseapi.ClassSequence{
+					CreditTypeAbbrev: "1",
+					NextSequence:     1,
+				}))
+			},
+			defaultParams,
+			true,
+			"credit type abbrev: must be 1-3 uppercase alphabetic characters: parse error",
+		},
+		{
+			"valid: project sequence",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ProjectSequenceTable().Save(ctx, &baseapi.ProjectSequence{
+					ClassKey:     1,
+					NextSequence: 1,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: project sequence",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.ProjectSequenceTable().Save(ctx, &baseapi.ProjectSequence{
+					ClassKey:     0,
+					NextSequence: 1,
+				}))
+			},
+			defaultParams,
+			true,
+			"class key cannot be zero: parse error",
+		},
+		{
+			"valid: batch sequence",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.BatchSequenceTable().Save(ctx, &baseapi.BatchSequence{
+					ProjectKey:   1,
+					NextSequence: 1,
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: batch sequence",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.BatchSequenceTable().Save(ctx, &baseapi.BatchSequence{
+					ProjectKey:   0,
+					NextSequence: 1,
+				}))
+			},
+			defaultParams,
+			true,
+			"project key cannot be zero: parse error",
+		},
+		{
+			"valid: origin tx index",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.OriginTxIndexTable().Save(ctx, &baseapi.OriginTxIndex{
+					ClassKey: 1,
+					Id:       "0x0",
+					Source:   "polygon",
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: origin tx index",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.OriginTxIndexTable().Save(ctx, &baseapi.OriginTxIndex{
+					ClassKey: 0,
+					Id:       "0x0",
+					Source:   "polygon",
+				}))
+			},
+			defaultParams,
+			true,
+			"class key cannot be zero: parse error",
+		},
+		{
+			"valid: batch contract",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.BatchContractTable().Save(ctx, &baseapi.BatchContract{
+					BatchKey: 1,
+					ClassKey: 1,
+					Contract: "0x0000000000000000000000000000000000000000",
+				}))
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"invalid: batch contract",
+			func(ctx context.Context, ss baseapi.StateStore) {
+				require.NoError(t, ss.BatchContractTable().Save(ctx, &baseapi.BatchContract{
+					BatchKey: 0,
+					ClassKey: 1,
+					Contract: "0x0000000000000000000000000000000000000000",
+				}))
+			},
+			defaultParams,
+			true,
+			"batch key cannot be zero: parse error",
+		},
+		{
 			"valid: class creator allowlist",
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.ClassCreatorAllowlistTable().Save(ctx, &baseapi.ClassCreatorAllowlist{
