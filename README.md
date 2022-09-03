@@ -85,6 +85,14 @@ Contributions are more than welcome and greatly appreciated. All the information
 - [Make](https://www.gnu.org/software/make/) `>=4`
 - [Go](https://golang.org/) `>=1.18`
 
+### Git Hooks
+
+Configure git hooks:
+
+```
+git config core.hooksPath contrib/githooks
+```
+
 ### Running Tests
 
 Run all unit and integrations tests:
