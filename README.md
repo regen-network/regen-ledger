@@ -85,12 +85,40 @@ Contributions are more than welcome and greatly appreciated. All the information
 - [Make](https://www.gnu.org/software/make/) `>=4`
 - [Go](https://golang.org/) `>=1.18`
 
+### Go Tools
+
+Install go tools:
+
+```
+make tools
+```
+
 ### Git Hooks
 
 Configure git hooks:
 
 ```
 git config core.hooksPath scripts/githooks
+```
+
+### Lint and Format
+
+Run linter in all go modules:
+
+```
+make lint
+```
+
+Run linter and attempt to fix errors in all go modules:
+
+```
+make lint-fix
+```
+
+Run formatting in all go modules:
+
+```
+make format
 ```
 
 ### Running Tests
