@@ -4,7 +4,6 @@ commitTitle="$(cat $1 | head -n1)"
 
 # ignore merge
 if echo "$commitTitle" | grep -qE "^Merge branch \'"; then
-	echo "Commit hook: ignoring merge"
 	exit 0
 fi
 
