@@ -295,7 +295,7 @@ DOCKER := $(shell which docker)
 LOCALNET_DIR = $(CURDIR)/.testnets
 
 localnet-build-env:
-	$(MAKE) -C images regen-env
+	$(MAKE) -C contrib/images regen-env
 
 localnet-build-nodes:
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data regen-ledger/regen-env \
@@ -303,7 +303,7 @@ localnet-build-nodes:
 	docker-compose up -d
 
 # localnet-start will run a 4-node testnet locally. The nodes are
-# based off the docker image in: ./images/regen-env
+# based off the docker images in: ./contrib/images/regen-env
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 localnet-stop:
