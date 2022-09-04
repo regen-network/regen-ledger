@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CMDS='gofmt goimports misspell'
+CMDS='gofmt misspell goimports'
 STAGED_GO_FILES=$(git diff --cached --name-only -- '*.go')
 LOCAL_IMPORTS='github.com/tendermint/tendermint,github.com/cosmos/cosmos-sdk,github.com/cosmos/ibc-go,github.com/regen-network/regen-ledger'
 
