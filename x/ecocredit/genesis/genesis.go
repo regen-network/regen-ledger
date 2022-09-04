@@ -514,17 +514,17 @@ func MergeAllowedDenomsIntoTarget(messages []markettypes.AllowedDenom, target or
 	return w.Close()
 }
 
-// MergeCreditClassFeesIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeCreditClassFeesIntoTarget(
+// MergeClassFeeIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeClassFeeIntoTarget(
 	cdc codec.JSONCodec,
-	creditClassFees basetypes.ClassFees,
+	classFee basetypes.ClassFee,
 	target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&creditClassFees)))
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&classFee)))
 	if err != nil {
 		return err
 	}
 
-	bz, err := cdc.MarshalJSON(&creditClassFees)
+	bz, err := cdc.MarshalJSON(&classFee)
 	if err != nil {
 		return err
 	}
@@ -537,17 +537,17 @@ func MergeCreditClassFeesIntoTarget(
 	return w.Close()
 }
 
-// MergeBasketFeesIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeBasketFeesIntoTarget(
+// MergeBasketFeeIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeBasketFeeIntoTarget(
 	cdc codec.JSONCodec,
-	basketFees baskettypes.BasketFees,
+	basketFee baskettypes.BasketFee,
 	target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&basketFees)))
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&basketFee)))
 	if err != nil {
 		return err
 	}
 
-	bz, err := cdc.MarshalJSON(&basketFees)
+	bz, err := cdc.MarshalJSON(&basketFee)
 	if err != nil {
 		return err
 	}

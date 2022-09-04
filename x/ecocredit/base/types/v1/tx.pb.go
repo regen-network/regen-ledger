@@ -6,7 +6,6 @@ package v1
 import (
 	context "context"
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/gogo/protobuf/gogoproto"
@@ -2107,6 +2106,7 @@ func (m *MsgBridgeReceiveResponse) GetProjectId() string {
 }
 
 // MsgAddClassCreator is the Msg/AddClassCreator request type.
+//
 // Since Revision 1
 type MsgAddClassCreator struct {
 	// authority is the address of the governance account.
@@ -2162,7 +2162,106 @@ func (m *MsgAddClassCreator) GetCreator() string {
 	return ""
 }
 
+// MsgSetClassCreatorAllowlist is the Msg/SetClassCreatorAllowlist request
+// type.
+//
+// Since Revision 1
+type MsgSetClassCreatorAllowlist struct {
+	// authority is the address of the governance account.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// enabled defines the boolean value to set the allowlist on or off.
+	Enabled bool `protobuf:"varint,2,opt,name=enabled,proto3" json:"enabled,omitempty"`
+}
+
+func (m *MsgSetClassCreatorAllowlist) Reset()         { *m = MsgSetClassCreatorAllowlist{} }
+func (m *MsgSetClassCreatorAllowlist) String() string { return proto.CompactTextString(m) }
+func (*MsgSetClassCreatorAllowlist) ProtoMessage()    {}
+func (*MsgSetClassCreatorAllowlist) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{33}
+}
+func (m *MsgSetClassCreatorAllowlist) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSetClassCreatorAllowlist) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSetClassCreatorAllowlist.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSetClassCreatorAllowlist) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSetClassCreatorAllowlist.Merge(m, src)
+}
+func (m *MsgSetClassCreatorAllowlist) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSetClassCreatorAllowlist) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSetClassCreatorAllowlist.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSetClassCreatorAllowlist proto.InternalMessageInfo
+
+func (m *MsgSetClassCreatorAllowlist) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgSetClassCreatorAllowlist) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
+// MsgSetClassCreatorAllowlistResponse is the Msg/SetClassCreatorAllowlist
+// response type.
+//
+// Since Revision 1
+type MsgSetClassCreatorAllowlistResponse struct {
+}
+
+func (m *MsgSetClassCreatorAllowlistResponse) Reset()         { *m = MsgSetClassCreatorAllowlistResponse{} }
+func (m *MsgSetClassCreatorAllowlistResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSetClassCreatorAllowlistResponse) ProtoMessage()    {}
+func (*MsgSetClassCreatorAllowlistResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{34}
+}
+func (m *MsgSetClassCreatorAllowlistResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSetClassCreatorAllowlistResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSetClassCreatorAllowlistResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSetClassCreatorAllowlistResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSetClassCreatorAllowlistResponse.Merge(m, src)
+}
+func (m *MsgSetClassCreatorAllowlistResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSetClassCreatorAllowlistResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSetClassCreatorAllowlistResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSetClassCreatorAllowlistResponse proto.InternalMessageInfo
+
 // MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
+//
 // Since Revision 1
 type MsgAddClassCreatorResponse struct {
 }
@@ -2171,7 +2270,7 @@ func (m *MsgAddClassCreatorResponse) Reset()         { *m = MsgAddClassCreatorRe
 func (m *MsgAddClassCreatorResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgAddClassCreatorResponse) ProtoMessage()    {}
 func (*MsgAddClassCreatorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{33}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{35}
 }
 func (m *MsgAddClassCreatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2201,6 +2300,7 @@ func (m *MsgAddClassCreatorResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgAddClassCreatorResponse proto.InternalMessageInfo
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
+//
 // Since Revision 1
 type MsgRemoveClassCreator struct {
 	// authority is the address of the governance account.
@@ -2213,7 +2313,7 @@ func (m *MsgRemoveClassCreator) Reset()         { *m = MsgRemoveClassCreator{} }
 func (m *MsgRemoveClassCreator) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveClassCreator) ProtoMessage()    {}
 func (*MsgRemoveClassCreator) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{34}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{36}
 }
 func (m *MsgRemoveClassCreator) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2257,6 +2357,7 @@ func (m *MsgRemoveClassCreator) GetCreator() string {
 }
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
+//
 // Since Revision 1
 type MsgRemoveClassCreatorResponse struct {
 }
@@ -2265,7 +2366,7 @@ func (m *MsgRemoveClassCreatorResponse) Reset()         { *m = MsgRemoveClassCre
 func (m *MsgRemoveClassCreatorResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveClassCreatorResponse) ProtoMessage()    {}
 func (*MsgRemoveClassCreatorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{35}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{37}
 }
 func (m *MsgRemoveClassCreatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2294,122 +2395,29 @@ func (m *MsgRemoveClassCreatorResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRemoveClassCreatorResponse proto.InternalMessageInfo
 
-// MsgToggleCreditClassAllowlist is the Msg/ToggleCreditClassAllowlist request
-// type. Since Revision 1
-type MsgToggleCreditClassAllowlist struct {
-	// authority is the address of the governance account.
-	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// enabled defines the boolean value to set the allowlist on or off.
-	Enabled bool `protobuf:"varint,2,opt,name=enabled,proto3" json:"enabled,omitempty"`
-}
-
-func (m *MsgToggleCreditClassAllowlist) Reset()         { *m = MsgToggleCreditClassAllowlist{} }
-func (m *MsgToggleCreditClassAllowlist) String() string { return proto.CompactTextString(m) }
-func (*MsgToggleCreditClassAllowlist) ProtoMessage()    {}
-func (*MsgToggleCreditClassAllowlist) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{36}
-}
-func (m *MsgToggleCreditClassAllowlist) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgToggleCreditClassAllowlist) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgToggleCreditClassAllowlist.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgToggleCreditClassAllowlist) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgToggleCreditClassAllowlist.Merge(m, src)
-}
-func (m *MsgToggleCreditClassAllowlist) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgToggleCreditClassAllowlist) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgToggleCreditClassAllowlist.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgToggleCreditClassAllowlist proto.InternalMessageInfo
-
-func (m *MsgToggleCreditClassAllowlist) GetAuthority() string {
-	if m != nil {
-		return m.Authority
-	}
-	return ""
-}
-
-func (m *MsgToggleCreditClassAllowlist) GetEnabled() bool {
-	if m != nil {
-		return m.Enabled
-	}
-	return false
-}
-
-// MsgToggleCreditClassAllowlistResponse is the Msg/ToggleCreditClassAllowlist
-// response type. Since Revision 1
-type MsgToggleCreditClassAllowlistResponse struct {
-}
-
-func (m *MsgToggleCreditClassAllowlistResponse) Reset()         { *m = MsgToggleCreditClassAllowlistResponse{} }
-func (m *MsgToggleCreditClassAllowlistResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgToggleCreditClassAllowlistResponse) ProtoMessage()    {}
-func (*MsgToggleCreditClassAllowlistResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{37}
-}
-func (m *MsgToggleCreditClassAllowlistResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgToggleCreditClassAllowlistResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgToggleCreditClassAllowlistResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgToggleCreditClassAllowlistResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgToggleCreditClassAllowlistResponse.Merge(m, src)
-}
-func (m *MsgToggleCreditClassAllowlistResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgToggleCreditClassAllowlistResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgToggleCreditClassAllowlistResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgToggleCreditClassAllowlistResponse proto.InternalMessageInfo
-
-// MsgUpdateClassFees is the Msg/UpdateClassFees request type.
+// MsgUpdateClassFee is the Msg/UpdateClassFee request type.
+//
 // Since Revision 1
-type MsgUpdateClassFees struct {
+type MsgUpdateClassFee struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// fees defines a list of coins fees that can be used in the credit class
-	// creation fee.
-	Fees github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=fees,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"fees"`
+	// fee is the credit class creation fee. If not set, the credit class creation
+	// fee will be removed and no fee will be required to create a credit class.
+	Fee *types.Coin `protobuf:"bytes,2,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
-func (m *MsgUpdateClassFees) Reset()         { *m = MsgUpdateClassFees{} }
-func (m *MsgUpdateClassFees) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateClassFees) ProtoMessage()    {}
-func (*MsgUpdateClassFees) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateClassFee) Reset()         { *m = MsgUpdateClassFee{} }
+func (m *MsgUpdateClassFee) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateClassFee) ProtoMessage()    {}
+func (*MsgUpdateClassFee) Descriptor() ([]byte, []int) {
 	return fileDescriptor_2b8ae49f50a3ddbd, []int{38}
 }
-func (m *MsgUpdateClassFees) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateClassFee) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateClassFees) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateClassFee) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateClassFees.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateClassFee.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -2419,49 +2427,50 @@ func (m *MsgUpdateClassFees) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateClassFees) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateClassFees.Merge(m, src)
+func (m *MsgUpdateClassFee) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateClassFee.Merge(m, src)
 }
-func (m *MsgUpdateClassFees) XXX_Size() int {
+func (m *MsgUpdateClassFee) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateClassFees) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateClassFees.DiscardUnknown(m)
+func (m *MsgUpdateClassFee) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateClassFee.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateClassFees proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateClassFee proto.InternalMessageInfo
 
-func (m *MsgUpdateClassFees) GetAuthority() string {
+func (m *MsgUpdateClassFee) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgUpdateClassFees) GetFees() github_com_cosmos_cosmos_sdk_types.Coins {
+func (m *MsgUpdateClassFee) GetFee() *types.Coin {
 	if m != nil {
-		return m.Fees
+		return m.Fee
 	}
 	return nil
 }
 
-// MsgUpdateClassFeesResponse is the Msg/UpdateClassFees response type.
+// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
+//
 // Since Revision 1
-type MsgUpdateClassFeesResponse struct {
+type MsgUpdateClassFeeResponse struct {
 }
 
-func (m *MsgUpdateClassFeesResponse) Reset()         { *m = MsgUpdateClassFeesResponse{} }
-func (m *MsgUpdateClassFeesResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateClassFeesResponse) ProtoMessage()    {}
-func (*MsgUpdateClassFeesResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateClassFeeResponse) Reset()         { *m = MsgUpdateClassFeeResponse{} }
+func (m *MsgUpdateClassFeeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateClassFeeResponse) ProtoMessage()    {}
+func (*MsgUpdateClassFeeResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_2b8ae49f50a3ddbd, []int{39}
 }
-func (m *MsgUpdateClassFeesResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateClassFeeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateClassFeesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateClassFeeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateClassFeesResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateClassFeeResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -2471,17 +2480,213 @@ func (m *MsgUpdateClassFeesResponse) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateClassFeesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateClassFeesResponse.Merge(m, src)
+func (m *MsgUpdateClassFeeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateClassFeeResponse.Merge(m, src)
 }
-func (m *MsgUpdateClassFeesResponse) XXX_Size() int {
+func (m *MsgUpdateClassFeeResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateClassFeesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateClassFeesResponse.DiscardUnknown(m)
+func (m *MsgUpdateClassFeeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateClassFeeResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateClassFeesResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateClassFeeResponse proto.InternalMessageInfo
+
+// MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
+//
+// Since Revision 1
+type MsgAddAllowedBridgeChain struct {
+	// authority is the address of the governance account.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// chain_name is the name of the chain to allow bridging of ecocredits to
+	// (i.e. polygon, ethereum, celo).
+	ChainName string `protobuf:"bytes,2,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
+}
+
+func (m *MsgAddAllowedBridgeChain) Reset()         { *m = MsgAddAllowedBridgeChain{} }
+func (m *MsgAddAllowedBridgeChain) String() string { return proto.CompactTextString(m) }
+func (*MsgAddAllowedBridgeChain) ProtoMessage()    {}
+func (*MsgAddAllowedBridgeChain) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{40}
+}
+func (m *MsgAddAllowedBridgeChain) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddAllowedBridgeChain) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddAllowedBridgeChain.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddAllowedBridgeChain) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddAllowedBridgeChain.Merge(m, src)
+}
+func (m *MsgAddAllowedBridgeChain) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddAllowedBridgeChain) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddAllowedBridgeChain.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddAllowedBridgeChain proto.InternalMessageInfo
+
+func (m *MsgAddAllowedBridgeChain) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgAddAllowedBridgeChain) GetChainName() string {
+	if m != nil {
+		return m.ChainName
+	}
+	return ""
+}
+
+// MsgAddAllowedBridgeChainResponse is the Msg/AddAllowedBridgeChain response
+// type.
+//
+// Since Revision 1
+type MsgAddAllowedBridgeChainResponse struct {
+}
+
+func (m *MsgAddAllowedBridgeChainResponse) Reset()         { *m = MsgAddAllowedBridgeChainResponse{} }
+func (m *MsgAddAllowedBridgeChainResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddAllowedBridgeChainResponse) ProtoMessage()    {}
+func (*MsgAddAllowedBridgeChainResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{41}
+}
+func (m *MsgAddAllowedBridgeChainResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddAllowedBridgeChainResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddAllowedBridgeChainResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddAllowedBridgeChainResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddAllowedBridgeChainResponse.Merge(m, src)
+}
+func (m *MsgAddAllowedBridgeChainResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddAllowedBridgeChainResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddAllowedBridgeChainResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddAllowedBridgeChainResponse proto.InternalMessageInfo
+
+// MsgRemoveAllowedBridgeChain is the Msg/RemoveAllowedBridgeChain request type.
+//
+// Since Revision 1
+type MsgRemoveAllowedBridgeChain struct {
+	// authority is the address of the governance account.
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// chain_name is the name of the chain to remove from the list of allowed
+	// chains to bridge ecocredits to (i.e. polygon, ethereum, celo).
+	ChainName string `protobuf:"bytes,2,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
+}
+
+func (m *MsgRemoveAllowedBridgeChain) Reset()         { *m = MsgRemoveAllowedBridgeChain{} }
+func (m *MsgRemoveAllowedBridgeChain) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveAllowedBridgeChain) ProtoMessage()    {}
+func (*MsgRemoveAllowedBridgeChain) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{42}
+}
+func (m *MsgRemoveAllowedBridgeChain) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveAllowedBridgeChain) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveAllowedBridgeChain.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveAllowedBridgeChain) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveAllowedBridgeChain.Merge(m, src)
+}
+func (m *MsgRemoveAllowedBridgeChain) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveAllowedBridgeChain) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveAllowedBridgeChain.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveAllowedBridgeChain proto.InternalMessageInfo
+
+func (m *MsgRemoveAllowedBridgeChain) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgRemoveAllowedBridgeChain) GetChainName() string {
+	if m != nil {
+		return m.ChainName
+	}
+	return ""
+}
+
+// MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
+// response type.
+//
+// Since Revision 1
+type MsgRemoveAllowedBridgeChainResponse struct {
+}
+
+func (m *MsgRemoveAllowedBridgeChainResponse) Reset()         { *m = MsgRemoveAllowedBridgeChainResponse{} }
+func (m *MsgRemoveAllowedBridgeChainResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveAllowedBridgeChainResponse) ProtoMessage()    {}
+func (*MsgRemoveAllowedBridgeChainResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{43}
+}
+func (m *MsgRemoveAllowedBridgeChainResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveAllowedBridgeChainResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveAllowedBridgeChainResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveAllowedBridgeChainResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveAllowedBridgeChainResponse.Merge(m, src)
+}
+func (m *MsgRemoveAllowedBridgeChainResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveAllowedBridgeChainResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveAllowedBridgeChainResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveAllowedBridgeChainResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*MsgAddCreditType)(nil), "regen.ecocredit.v1.MsgAddCreditType")
@@ -2520,130 +2725,138 @@ func init() {
 	proto.RegisterType((*MsgBridgeReceive_Project)(nil), "regen.ecocredit.v1.MsgBridgeReceive.Project")
 	proto.RegisterType((*MsgBridgeReceiveResponse)(nil), "regen.ecocredit.v1.MsgBridgeReceiveResponse")
 	proto.RegisterType((*MsgAddClassCreator)(nil), "regen.ecocredit.v1.MsgAddClassCreator")
+	proto.RegisterType((*MsgSetClassCreatorAllowlist)(nil), "regen.ecocredit.v1.MsgSetClassCreatorAllowlist")
+	proto.RegisterType((*MsgSetClassCreatorAllowlistResponse)(nil), "regen.ecocredit.v1.MsgSetClassCreatorAllowlistResponse")
 	proto.RegisterType((*MsgAddClassCreatorResponse)(nil), "regen.ecocredit.v1.MsgAddClassCreatorResponse")
 	proto.RegisterType((*MsgRemoveClassCreator)(nil), "regen.ecocredit.v1.MsgRemoveClassCreator")
 	proto.RegisterType((*MsgRemoveClassCreatorResponse)(nil), "regen.ecocredit.v1.MsgRemoveClassCreatorResponse")
-	proto.RegisterType((*MsgToggleCreditClassAllowlist)(nil), "regen.ecocredit.v1.MsgToggleCreditClassAllowlist")
-	proto.RegisterType((*MsgToggleCreditClassAllowlistResponse)(nil), "regen.ecocredit.v1.MsgToggleCreditClassAllowlistResponse")
-	proto.RegisterType((*MsgUpdateClassFees)(nil), "regen.ecocredit.v1.MsgUpdateClassFees")
-	proto.RegisterType((*MsgUpdateClassFeesResponse)(nil), "regen.ecocredit.v1.MsgUpdateClassFeesResponse")
+	proto.RegisterType((*MsgUpdateClassFee)(nil), "regen.ecocredit.v1.MsgUpdateClassFee")
+	proto.RegisterType((*MsgUpdateClassFeeResponse)(nil), "regen.ecocredit.v1.MsgUpdateClassFeeResponse")
+	proto.RegisterType((*MsgAddAllowedBridgeChain)(nil), "regen.ecocredit.v1.MsgAddAllowedBridgeChain")
+	proto.RegisterType((*MsgAddAllowedBridgeChainResponse)(nil), "regen.ecocredit.v1.MsgAddAllowedBridgeChainResponse")
+	proto.RegisterType((*MsgRemoveAllowedBridgeChain)(nil), "regen.ecocredit.v1.MsgRemoveAllowedBridgeChain")
+	proto.RegisterType((*MsgRemoveAllowedBridgeChainResponse)(nil), "regen.ecocredit.v1.MsgRemoveAllowedBridgeChainResponse")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/tx.proto", fileDescriptor_2b8ae49f50a3ddbd) }
 
 var fileDescriptor_2b8ae49f50a3ddbd = []byte{
-	// 1775 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x59, 0xcd, 0x6f, 0xdb, 0x46,
-	0x16, 0x37, 0x25, 0xd9, 0x92, 0x9e, 0x1c, 0xc7, 0x61, 0x12, 0x47, 0xa1, 0x63, 0x59, 0xd1, 0xe6,
-	0xc3, 0xf1, 0x3a, 0xd4, 0xda, 0xd9, 0xc5, 0xc2, 0x59, 0x2c, 0xb2, 0xb6, 0x83, 0x60, 0xbd, 0x80,
-	0xb6, 0x85, 0xea, 0xa2, 0x68, 0xd0, 0x42, 0xa0, 0xc8, 0x31, 0xc3, 0x44, 0x22, 0x05, 0xce, 0xc8,
-	0x76, 0xd0, 0xa2, 0x40, 0x7b, 0x2a, 0x7a, 0xca, 0xa1, 0xa7, 0xa2, 0xb7, 0xde, 0x7a, 0x2a, 0x7a,
-	0xe9, 0x1f, 0xd0, 0x4b, 0x7a, 0xcb, 0xa5, 0x68, 0x4f, 0x4d, 0x91, 0x1c, 0xfa, 0x4f, 0xf4, 0x50,
-	0x70, 0x66, 0x38, 0x22, 0x29, 0x7e, 0x48, 0x4d, 0x7b, 0x49, 0x34, 0x33, 0xbf, 0x79, 0x9f, 0x33,
-	0xef, 0xfd, 0x86, 0x86, 0x65, 0x17, 0x99, 0xc8, 0x6e, 0x22, 0xdd, 0xd1, 0x5d, 0x64, 0x58, 0xa4,
-	0x79, 0xb4, 0xd9, 0x24, 0x27, 0xea, 0xc0, 0x75, 0x88, 0x23, 0xcb, 0x74, 0x51, 0x15, 0x8b, 0xea,
-	0xd1, 0xa6, 0x52, 0xd3, 0x1d, 0xdc, 0x77, 0x70, 0xb3, 0xab, 0x61, 0xd4, 0x3c, 0xda, 0xec, 0x22,
-	0xa2, 0x6d, 0x36, 0x75, 0xc7, 0xb2, 0xd9, 0x1e, 0xe5, 0x02, 0x5f, 0xef, 0x63, 0xd3, 0x93, 0xd5,
-	0xc7, 0x26, 0x5f, 0x38, 0x67, 0x3a, 0xa6, 0x43, 0x7f, 0x36, 0xbd, 0x5f, 0x7c, 0x76, 0xd5, 0x74,
-	0x1c, 0xb3, 0x87, 0x9a, 0x74, 0xd4, 0x1d, 0x1e, 0x36, 0x89, 0xd5, 0x47, 0x98, 0x68, 0xfd, 0x01,
-	0x07, 0xd4, 0x62, 0x0c, 0xc4, 0x44, 0x23, 0x28, 0x65, 0x9d, 0x3c, 0x1e, 0x20, 0xcc, 0xd6, 0x1b,
-	0x1f, 0x4a, 0xb0, 0xd8, 0xc2, 0xe6, 0x8e, 0x61, 0xec, 0xd1, 0xf5, 0x83, 0xc7, 0x03, 0x24, 0x5f,
-	0x82, 0xb2, 0x36, 0x24, 0x0f, 0x1c, 0xd7, 0x22, 0x8f, 0xab, 0x52, 0x5d, 0x5a, 0x2b, 0xb7, 0x47,
-	0x13, 0xf2, 0x1d, 0xa8, 0x30, 0x59, 0x1d, 0x4f, 0x50, 0x35, 0x57, 0x97, 0xd6, 0x2a, 0x5b, 0x35,
-	0x75, 0x3c, 0x18, 0xea, 0x48, 0x64, 0x1b, 0x74, 0xf1, 0xfb, 0xf6, 0xc2, 0x47, 0xbf, 0x7c, 0xb5,
-	0x3e, 0x12, 0xd8, 0x50, 0xa0, 0x1a, 0x35, 0xa1, 0x8d, 0xf0, 0xc0, 0xb1, 0x31, 0x6a, 0x7c, 0x2b,
-	0xc1, 0x42, 0x0b, 0x9b, 0x7b, 0x2e, 0xd2, 0x08, 0xda, 0xeb, 0x69, 0x18, 0xcb, 0xe7, 0x60, 0x56,
-	0x33, 0xfa, 0x96, 0xcd, 0x2d, 0x63, 0x03, 0xb9, 0x0a, 0x45, 0x0b, 0xe3, 0x21, 0x72, 0x71, 0x35,
-	0x57, 0xcf, 0xaf, 0x95, 0xdb, 0xfe, 0x50, 0x56, 0xa0, 0xd4, 0x47, 0x44, 0x33, 0x34, 0xa2, 0x55,
-	0xf3, 0x74, 0x8b, 0x18, 0xcb, 0x1b, 0x20, 0x07, 0x7c, 0xe9, 0x68, 0xdd, 0xae, 0x8b, 0x8e, 0xaa,
-	0x05, 0x8a, 0x5a, 0x1c, 0x99, 0xbc, 0x43, 0xe7, 0xe5, 0xbf, 0x42, 0xfe, 0x10, 0xa1, 0xea, 0x2c,
-	0xf5, 0xf8, 0xa2, 0xca, 0x52, 0xa9, 0x7a, 0xa9, 0x56, 0x79, 0xaa, 0xd5, 0x3d, 0xc7, 0xb2, 0xdb,
-	0x1e, 0xea, 0x36, 0x78, 0x5e, 0x32, 0xe3, 0x1a, 0xb7, 0x60, 0x29, 0xec, 0x84, 0xef, 0x9f, 0x7c,
-	0x11, 0x4a, 0xba, 0x37, 0xd1, 0xb1, 0x0c, 0xee, 0x4f, 0x91, 0x8e, 0xf7, 0x8d, 0xc6, 0xd7, 0x2c,
-	0x35, 0x6c, 0xd7, 0xeb, 0xae, 0xf3, 0x10, 0xe9, 0x24, 0xc1, 0xf9, 0xa0, 0x94, 0x5c, 0x48, 0x4a,
-	0xaa, 0xf7, 0x0d, 0x98, 0x7f, 0x38, 0x74, 0x2d, 0x6c, 0x58, 0x3a, 0xb1, 0x1c, 0x9b, 0xfb, 0x1d,
-	0x9a, 0x93, 0x2f, 0xc3, 0xbc, 0x8b, 0x0e, 0x91, 0x8b, 0x6c, 0x1d, 0x79, 0xe2, 0x67, 0x29, 0xa6,
-	0x22, 0xe6, 0xf6, 0x8d, 0x90, 0xa7, 0xdb, 0x34, 0x97, 0x21, 0x9b, 0x85, 0xaf, 0x2b, 0x00, 0x03,
-	0x36, 0x35, 0xf2, 0xb6, 0xcc, 0x67, 0xf6, 0x8d, 0xc6, 0xaf, 0xb9, 0x40, 0xaa, 0x77, 0x35, 0xa2,
-	0x3f, 0x90, 0x97, 0x60, 0x8e, 0x65, 0x91, 0xa3, 0xf9, 0x28, 0x22, 0x29, 0x17, 0x91, 0x24, 0xff,
-	0x1b, 0x4a, 0x1e, 0x50, 0xb3, 0x75, 0x54, 0xcd, 0xd7, 0xf3, 0x6b, 0x95, 0xad, 0xcb, 0x71, 0xc7,
-	0x93, 0xea, 0xd8, 0xe7, 0xc0, 0xb6, 0xd8, 0x12, 0x0a, 0x59, 0x21, 0x12, 0xb2, 0x3b, 0x00, 0x98,
-	0x68, 0x2e, 0xe9, 0x18, 0x1a, 0xf1, 0x4f, 0x82, 0xa2, 0xb2, 0x5b, 0xaa, 0xfa, 0xb7, 0x54, 0x3d,
-	0xf0, 0x6f, 0xe9, 0x6e, 0xe1, 0xc9, 0xf3, 0x55, 0xa9, 0x5d, 0xa6, 0x7b, 0xee, 0x6a, 0x04, 0xc9,
-	0xff, 0x82, 0x12, 0xb2, 0x0d, 0xb6, 0x7d, 0x6e, 0xc2, 0xed, 0x45, 0x64, 0x1b, 0x74, 0xb3, 0x0c,
-	0x05, 0x67, 0x80, 0xec, 0x6a, 0xb1, 0x2e, 0xad, 0x95, 0xda, 0xf4, 0xb7, 0xbc, 0x0d, 0x65, 0xc7,
-	0xb5, 0x4c, 0xcb, 0xee, 0x90, 0x93, 0x6a, 0x89, 0x4a, 0xbc, 0x14, 0xe7, 0xed, 0x6b, 0x14, 0x74,
-	0x70, 0xd2, 0x2e, 0x39, 0xfc, 0xd7, 0xed, 0x8a, 0x97, 0x38, 0x1e, 0xd3, 0xc6, 0x76, 0xe0, 0x8c,
-	0xd2, 0xc8, 0x88, 0xbc, 0xad, 0x42, 0xa5, 0xeb, 0x4d, 0x74, 0x0c, 0x64, 0x3b, 0x7d, 0x9e, 0x0a,
-	0xa0, 0x53, 0x77, 0xbd, 0x99, 0xc6, 0xf7, 0x12, 0x9c, 0x6d, 0x61, 0xb3, 0x65, 0xd9, 0x84, 0xee,
-	0x64, 0xf7, 0x18, 0x27, 0xa6, 0x2f, 0x22, 0x30, 0x17, 0x15, 0xf8, 0xaa, 0x09, 0x0c, 0x85, 0xa4,
-	0xf0, 0xfb, 0x43, 0xb2, 0x02, 0xcb, 0x31, 0x6e, 0x89, 0xda, 0x74, 0x00, 0xf3, 0x2d, 0x6c, 0xbe,
-	0x81, 0xb4, 0x5e, 0xfa, 0x69, 0xcd, 0x72, 0x37, 0xac, 0x74, 0x09, 0xce, 0x05, 0xa5, 0x0a, 0x6d,
-	0xdf, 0xe5, 0xa0, 0x48, 0x17, 0x6c, 0xc3, 0xd3, 0x84, 0x91, 0x6d, 0x8c, 0x34, 0xb1, 0x91, 0x57,
-	0xb8, 0x5d, 0xa4, 0x5b, 0x03, 0x0b, 0xd9, 0xc4, 0xbf, 0x16, 0x62, 0x42, 0xde, 0x81, 0x22, 0xf3,
-	0x1d, 0xf3, 0xa0, 0x5e, 0x8f, 0x0b, 0x0a, 0xd7, 0xa1, 0x7a, 0xff, 0xf8, 0x1e, 0xfb, 0xfb, 0x94,
-	0x6f, 0x24, 0xa8, 0x04, 0x16, 0x32, 0x8f, 0x86, 0x7c, 0x1d, 0x4e, 0x13, 0x57, 0x33, 0xb4, 0x6e,
-	0x0f, 0x75, 0xb4, 0xbe, 0x33, 0x14, 0x76, 0x2d, 0xf8, 0xd3, 0x3b, 0x74, 0x56, 0xbe, 0x0a, 0x0b,
-	0x2e, 0x22, 0x96, 0x8b, 0x0c, 0x1f, 0xc7, 0xaa, 0xd5, 0x29, 0x3e, 0xcb, 0x61, 0xff, 0x84, 0x0b,
-	0x6c, 0xa2, 0x8f, 0x6c, 0xd2, 0x89, 0xa9, 0x5e, 0x4b, 0xa3, 0xe5, 0xff, 0x05, 0x56, 0x79, 0x8c,
-	0x59, 0x9c, 0x1a, 0x67, 0xe0, 0x34, 0x77, 0x53, 0x84, 0xf7, 0x63, 0x09, 0xca, 0x2d, 0x6c, 0xb6,
-	0xe9, 0x6e, 0xaf, 0xcc, 0x3a, 0xc7, 0xb6, 0x88, 0x2f, 0x1b, 0xc8, 0xff, 0x18, 0x05, 0x30, 0x47,
-	0x03, 0xb8, 0x9c, 0xdc, 0xf5, 0x46, 0x41, 0x1b, 0x2b, 0xb3, 0xf9, 0xf1, 0x32, 0xcb, 0x6b, 0x28,
-	0x55, 0xd3, 0x38, 0x0b, 0x67, 0x84, 0x25, 0xc2, 0xbe, 0xf7, 0xa9, 0x79, 0x7b, 0xde, 0xf9, 0xee,
-	0xfd, 0xb1, 0xe6, 0x2d, 0xc1, 0x9c, 0x8b, 0x34, 0x2c, 0x0c, 0xe3, 0xa3, 0x18, 0x93, 0x98, 0x76,
-	0x61, 0x92, 0x43, 0x6f, 0xfd, 0x9b, 0x03, 0xc3, 0xef, 0x6a, 0x3b, 0xb4, 0x19, 0x4d, 0xdd, 0xa2,
-	0x96, 0xa1, 0x6c, 0xa3, 0xe3, 0x0e, 0xdb, 0xc4, 0x7b, 0x94, 0x8d, 0x8e, 0xa9, 0xb4, 0x50, 0x73,
-	0x61, 0xf7, 0x31, 0xaa, 0x50, 0xd8, 0xf3, 0xb9, 0x04, 0xe7, 0xc3, 0xeb, 0xfb, 0x9c, 0x02, 0x4c,
-	0x6d, 0xd2, 0x2a, 0x54, 0x34, 0xc3, 0xe8, 0xf8, 0x8c, 0x22, 0x4f, 0x19, 0x05, 0x68, 0x86, 0xe1,
-	0x4b, 0xa4, 0xc7, 0xb5, 0xef, 0x1c, 0x21, 0x81, 0x29, 0x50, 0xcc, 0x29, 0x36, 0xcb, 0x61, 0x21,
-	0xeb, 0x57, 0x61, 0x25, 0xd6, 0x3a, 0x61, 0xff, 0x09, 0xad, 0xc0, 0x01, 0x40, 0xcb, 0xef, 0x3a,
-	0x53, 0xdb, 0x7f, 0x19, 0xe6, 0xbd, 0x90, 0x46, 0x3a, 0x7f, 0xc5, 0x46, 0xc7, 0xbe, 0xcc, 0x90,
-	0x69, 0x75, 0xa8, 0xc5, 0x6b, 0x16, 0xb6, 0x0d, 0x03, 0xa1, 0xe5, 0x7d, 0x3d, 0x2d, 0xdb, 0x19,
-	0x0d, 0x7a, 0xe2, 0x8c, 0x07, 0x63, 0x16, 0x54, 0x2b, 0xec, 0xfa, 0x80, 0xf2, 0x8d, 0x10, 0x20,
-	0x23, 0x6a, 0x19, 0xa6, 0x4d, 0x19, 0xb9, 0x06, 0xd4, 0x93, 0xf4, 0x0b, 0x1b, 0x3f, 0x63, 0xa5,
-	0x65, 0xd7, 0xb5, 0x0c, 0x33, 0xa9, 0xb4, 0x2c, 0xc1, 0x1c, 0xd1, 0x5c, 0x13, 0xf9, 0xe5, 0x91,
-	0x8f, 0xc2, 0x15, 0x3d, 0x1f, 0xad, 0xe8, 0x81, 0x1b, 0x5f, 0x98, 0xfc, 0xc6, 0xc7, 0xdc, 0x6c,
-	0x66, 0x9b, 0xb0, 0xf8, 0x79, 0x81, 0x52, 0x4f, 0x7f, 0x56, 0x47, 0xd6, 0x11, 0x4a, 0x6c, 0x6f,
-	0x29, 0xc7, 0xf0, 0x1e, 0x14, 0x79, 0x64, 0xa9, 0xed, 0x95, 0xad, 0x8d, 0x84, 0x8e, 0x13, 0xd2,
-	0xa4, 0xfa, 0xc4, 0xd1, 0xdf, 0x2c, 0xff, 0x07, 0x66, 0x69, 0x4f, 0xe1, 0xcd, 0x7c, 0x7d, 0x22,
-	0x29, 0xac, 0x7d, 0xb2, 0x8d, 0x61, 0x4a, 0x30, 0x3b, 0x0d, 0x25, 0x50, 0x7e, 0x90, 0x60, 0x96,
-	0x35, 0xf8, 0x50, 0x32, 0xa4, 0x68, 0x32, 0x96, 0x60, 0x2e, 0xd4, 0xe1, 0xf8, 0x28, 0x42, 0x19,
-	0xf3, 0xaf, 0x46, 0x19, 0x0b, 0xd3, 0x52, 0xc6, 0x20, 0x99, 0x9d, 0x0d, 0x93, 0x59, 0xa5, 0x07,
-	0x45, 0xff, 0x5d, 0x11, 0xa5, 0xf9, 0xd2, 0x18, 0xcd, 0x1f, 0x6b, 0x63, 0xb9, 0x98, 0xd7, 0x42,
-	0xca, 0x6b, 0x23, 0xcc, 0x72, 0xee, 0xd3, 0x7b, 0x1b, 0x4a, 0xd8, 0xc4, 0x7c, 0x33, 0xe3, 0x0a,
-	0x37, 0xde, 0x01, 0x99, 0xbf, 0x27, 0xbd, 0x63, 0x48, 0x19, 0xad, 0xe3, 0x66, 0x3c, 0x6a, 0xab,
-	0xf4, 0x26, 0x79, 0x40, 0x71, 0x86, 0xd9, 0x70, 0xec, 0xb5, 0x7a, 0x09, 0x94, 0x71, 0xe9, 0xe2,
-	0xe6, 0x74, 0x68, 0x9d, 0x6c, 0xd3, 0x26, 0xf0, 0xa7, 0xa8, 0x67, 0x15, 0x71, 0x5c, 0x81, 0xb0,
-	0xc0, 0xa4, 0x80, 0x03, 0xc7, 0x34, 0x7b, 0x88, 0xdd, 0x7c, 0xd6, 0x2a, 0x7b, 0x3d, 0xe7, 0xb8,
-	0x67, 0x61, 0x92, 0x6d, 0x09, 0xb2, 0x3d, 0x5e, 0xc6, 0x02, 0x5b, 0x6a, 0xfb, 0xc3, 0x31, 0x4b,
-	0xae, 0xc3, 0xd5, 0x54, 0x45, 0xc2, 0xa2, 0x2f, 0x24, 0x9a, 0x90, 0x40, 0x7b, 0xb9, 0x87, 0x10,
-	0xce, 0xb0, 0xa3, 0x03, 0x85, 0x43, 0x84, 0x7c, 0x26, 0x93, 0xfc, 0xd8, 0xde, 0xfd, 0xdb, 0xd3,
-	0x9f, 0x56, 0x67, 0xbe, 0x7c, 0xbe, 0xba, 0x66, 0x5a, 0xe4, 0xc1, 0xb0, 0xab, 0xea, 0x4e, 0xbf,
-	0xc9, 0x3f, 0xb2, 0xb0, 0xff, 0x6e, 0x62, 0xe3, 0x11, 0xff, 0xe6, 0xe1, 0x6d, 0xc0, 0x6d, 0x2a,
-	0x38, 0x21, 0xaf, 0x11, 0x23, 0x7d, 0x1f, 0xb6, 0x3e, 0x5d, 0x84, 0x7c, 0x0b, 0x9b, 0xf2, 0xbb,
-	0x50, 0x09, 0x7e, 0x8b, 0x68, 0x24, 0x54, 0xa2, 0x00, 0x46, 0x59, 0xcf, 0xc6, 0x88, 0xa3, 0xaf,
-	0xc3, 0xa9, 0xf0, 0x7b, 0xff, 0x4a, 0xea, 0x66, 0x8e, 0x52, 0x36, 0x26, 0x41, 0x09, 0x25, 0xc2,
-	0x07, 0x56, 0xd5, 0xd2, 0x7d, 0xa0, 0x98, 0x0c, 0x1f, 0xc2, 0xcf, 0xc5, 0x1e, 0x2c, 0x8e, 0xbd,
-	0x04, 0x93, 0x5e, 0x1a, 0x51, 0xa0, 0xd2, 0x9c, 0x10, 0x28, 0xb4, 0xbd, 0x05, 0xe5, 0xd1, 0x0b,
-	0xac, 0x9e, 0xf8, 0xa0, 0xe1, 0x08, 0x65, 0x2d, 0x0b, 0x21, 0x04, 0xff, 0x17, 0x0a, 0xf4, 0xad,
-	0xb5, 0x9c, 0xf2, 0x48, 0x52, 0xfe, 0x92, 0xb2, 0x28, 0x24, 0xfd, 0x1f, 0xe6, 0xf8, 0xb3, 0x62,
-	0x25, 0x01, 0xce, 0x96, 0x95, 0xab, 0xa9, 0xcb, 0x41, 0x79, 0xfc, 0x1d, 0x90, 0x24, 0x8f, 0x2d,
-	0x27, 0xca, 0x0b, 0xf3, 0x78, 0x2f, 0x61, 0x63, 0x24, 0x3e, 0x29, 0x61, 0x51, 0x60, 0x62, 0xc2,
-	0x92, 0x58, 0xba, 0xec, 0x82, 0x1c, 0xc3, 0xd0, 0x6f, 0x64, 0x8b, 0xe1, 0x50, 0x65, 0x73, 0x62,
-	0xa8, 0xd0, 0x39, 0x84, 0xb3, 0x71, 0xb4, 0x7a, 0x3d, 0x5b, 0x92, 0x8f, 0x55, 0xb6, 0x26, 0xc7,
-	0x8e, 0xbb, 0x1a, 0x62, 0xcc, 0xe9, 0xae, 0x06, 0xa1, 0x19, 0xae, 0xc6, 0x11, 0x62, 0xf9, 0x3d,
-	0x38, 0x1f, 0xcf, 0x86, 0x37, 0x26, 0x91, 0x25, 0xdc, 0xfd, 0xfb, 0x34, 0xe8, 0xe0, 0xc9, 0xe4,
-	0x2c, 0x77, 0x25, 0x95, 0xa2, 0x25, 0x9e, 0xcc, 0x30, 0x0f, 0xf5, 0xca, 0x61, 0x98, 0x83, 0x5e,
-	0x99, 0x84, 0xf9, 0x29, 0x13, 0xb1, 0xcc, 0xa0, 0x92, 0xf0, 0xe7, 0xef, 0x24, 0x25, 0x21, 0x54,
-	0xa2, 0x92, 0xd8, 0xef, 0xd8, 0xb2, 0x05, 0xa7, 0xa3, 0x84, 0xe4, 0x5a, 0x8a, 0x80, 0x00, 0x4e,
-	0x51, 0x27, 0xc3, 0x05, 0x4f, 0x5d, 0x0c, 0xff, 0xb8, 0x91, 0x58, 0x5b, 0xa2, 0xd0, 0xc4, 0x53,
-	0x97, 0x4c, 0x3a, 0xe4, 0x4f, 0x24, 0x50, 0x52, 0x28, 0x47, 0x92, 0xc4, 0xe4, 0x2d, 0xca, 0xf6,
-	0xd4, 0x5b, 0x82, 0xb1, 0x8e, 0x72, 0x8d, 0x6b, 0xd9, 0xb7, 0xd7, 0xc3, 0x25, 0xc6, 0x3a, 0x81,
-	0x16, 0xec, 0xbe, 0xfd, 0xf4, 0x45, 0x4d, 0x7a, 0xf6, 0xa2, 0x26, 0xfd, 0xfc, 0xa2, 0x26, 0x3d,
-	0x79, 0x59, 0x9b, 0x79, 0xf6, 0xb2, 0x36, 0xf3, 0xe3, 0xcb, 0xda, 0xcc, 0xfd, 0x3b, 0x01, 0x3a,
-	0x42, 0x65, 0xde, 0xb4, 0x11, 0x39, 0x76, 0xdc, 0x47, 0x7c, 0xd4, 0x43, 0x86, 0x89, 0xdc, 0xe6,
-	0x49, 0xe0, 0x4f, 0x33, 0xf4, 0x6f, 0x46, 0x94, 0xa8, 0x34, 0x8f, 0x36, 0xbb, 0x73, 0x94, 0xdb,
-	0xdf, 0xfa, 0x2d, 0x00, 0x00, 0xff, 0xff, 0xc5, 0x3c, 0xd1, 0xc2, 0x83, 0x1a, 0x00, 0x00,
+	// 1825 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x59, 0x4f, 0x6f, 0x1b, 0x45,
+	0x1b, 0xef, 0xda, 0x4e, 0x6c, 0x3f, 0x4e, 0xd3, 0x76, 0xda, 0xa6, 0xee, 0xa6, 0x71, 0x5c, 0xb7,
+	0x79, 0x9b, 0xe6, 0x4d, 0xd7, 0x4a, 0xfa, 0xbe, 0xaa, 0x5a, 0x84, 0x4a, 0x92, 0xaa, 0x22, 0x48,
+	0x2e, 0xc8, 0x0d, 0x42, 0x54, 0x20, 0x6b, 0xbd, 0x3b, 0xd9, 0x6c, 0xb1, 0x77, 0xad, 0xdd, 0x71,
+	0x92, 0x0a, 0x84, 0x04, 0xe2, 0xc0, 0x8d, 0x9e, 0x11, 0x1f, 0x02, 0x71, 0xe1, 0x03, 0x70, 0x81,
+	0x5b, 0x2f, 0x08, 0x6e, 0x45, 0xed, 0x81, 0x2f, 0xc1, 0x01, 0xed, 0xcc, 0xec, 0x78, 0x77, 0xbd,
+	0x7f, 0x6c, 0x4a, 0x2f, 0x91, 0x67, 0xe6, 0x37, 0xcf, 0xf3, 0x7b, 0x9e, 0x99, 0x79, 0xfe, 0x6c,
+	0x60, 0xd1, 0xc1, 0x06, 0xb6, 0x9a, 0x58, 0xb3, 0x35, 0x07, 0xeb, 0x26, 0x69, 0x1e, 0x6e, 0x34,
+	0xc9, 0xb1, 0x32, 0x70, 0x6c, 0x62, 0x23, 0x44, 0x17, 0x15, 0xb1, 0xa8, 0x1c, 0x6e, 0xc8, 0x35,
+	0xcd, 0x76, 0xfb, 0xb6, 0xdb, 0xec, 0xaa, 0x2e, 0x6e, 0x1e, 0x6e, 0x74, 0x31, 0x51, 0x37, 0x9a,
+	0x9a, 0x6d, 0x5a, 0x6c, 0x8f, 0x7c, 0x81, 0xaf, 0xf7, 0x5d, 0xc3, 0x93, 0xd5, 0x77, 0x0d, 0xbe,
+	0x70, 0xce, 0xb0, 0x0d, 0x9b, 0xfe, 0x6c, 0x7a, 0xbf, 0xf8, 0xec, 0xb2, 0x61, 0xdb, 0x46, 0x0f,
+	0x37, 0xe9, 0xa8, 0x3b, 0xdc, 0x6f, 0x12, 0xb3, 0x8f, 0x5d, 0xa2, 0xf6, 0x07, 0x1c, 0x50, 0x8b,
+	0x21, 0xe8, 0x12, 0x95, 0xe0, 0x94, 0x75, 0xf2, 0x64, 0x80, 0x5d, 0xb6, 0xde, 0xf8, 0x42, 0x82,
+	0xd3, 0x2d, 0xd7, 0xd8, 0xd2, 0xf5, 0x1d, 0xba, 0xbe, 0xf7, 0x64, 0x80, 0xd1, 0x25, 0x28, 0xab,
+	0x43, 0x72, 0x60, 0x3b, 0x26, 0x79, 0x52, 0x95, 0xea, 0xd2, 0x6a, 0xb9, 0x3d, 0x9a, 0x40, 0x77,
+	0xa1, 0xc2, 0x64, 0x75, 0x3c, 0x41, 0xd5, 0x5c, 0x5d, 0x5a, 0xad, 0x6c, 0xd6, 0x94, 0x71, 0x67,
+	0x28, 0x23, 0x91, 0x6d, 0xd0, 0xc4, 0xef, 0x3b, 0xf3, 0x5f, 0xfe, 0xf9, 0xfd, 0xda, 0x48, 0x60,
+	0x43, 0x86, 0x6a, 0x94, 0x42, 0x1b, 0xbb, 0x03, 0xdb, 0x72, 0x71, 0xe3, 0x27, 0x09, 0xe6, 0x5b,
+	0xae, 0xb1, 0xe3, 0x60, 0x95, 0xe0, 0x9d, 0x9e, 0xea, 0xba, 0xe8, 0x1c, 0xcc, 0xa8, 0x7a, 0xdf,
+	0xb4, 0x38, 0x33, 0x36, 0x40, 0x55, 0x28, 0x9a, 0xae, 0x3b, 0xc4, 0x8e, 0x5b, 0xcd, 0xd5, 0xf3,
+	0xab, 0xe5, 0xb6, 0x3f, 0x44, 0x32, 0x94, 0xfa, 0x98, 0xa8, 0xba, 0x4a, 0xd4, 0x6a, 0x9e, 0x6e,
+	0x11, 0x63, 0xb4, 0x0e, 0x28, 0x60, 0x4b, 0x47, 0xed, 0x76, 0x1d, 0x7c, 0x58, 0x2d, 0x50, 0xd4,
+	0xe9, 0x11, 0xe5, 0x2d, 0x3a, 0x8f, 0xfe, 0x0b, 0xf9, 0x7d, 0x8c, 0xab, 0x33, 0xd4, 0xe2, 0x8b,
+	0x0a, 0x3b, 0x4a, 0xc5, 0x3b, 0x6a, 0x85, 0x1f, 0xb5, 0xb2, 0x63, 0x9b, 0x56, 0xdb, 0x43, 0xdd,
+	0x01, 0xcf, 0x4a, 0x46, 0xae, 0x71, 0x13, 0x16, 0xc2, 0x46, 0xf8, 0xf6, 0xa1, 0x8b, 0x50, 0xd2,
+	0xbc, 0x89, 0x8e, 0xa9, 0x73, 0x7b, 0x8a, 0x74, 0xbc, 0xab, 0x37, 0x7e, 0x60, 0x47, 0xc3, 0x76,
+	0xbd, 0xe7, 0xd8, 0x8f, 0xb1, 0x46, 0x12, 0x8c, 0x0f, 0x4a, 0xc9, 0x85, 0xa4, 0xa4, 0x5a, 0xdf,
+	0x80, 0xb9, 0xc7, 0x43, 0xc7, 0x74, 0x75, 0x53, 0x23, 0xa6, 0x6d, 0x71, 0xbb, 0x43, 0x73, 0xe8,
+	0x32, 0xcc, 0x39, 0x78, 0x1f, 0x3b, 0xd8, 0xd2, 0xb0, 0x27, 0x7e, 0x86, 0x62, 0x2a, 0x62, 0x6e,
+	0x57, 0x0f, 0x59, 0x7a, 0x9b, 0x9e, 0x65, 0x88, 0xb3, 0xb0, 0x75, 0x09, 0x60, 0xc0, 0xa6, 0x46,
+	0xd6, 0x96, 0xf9, 0xcc, 0xae, 0xde, 0xf8, 0x2b, 0x17, 0x38, 0xea, 0x6d, 0x95, 0x68, 0x07, 0x68,
+	0x01, 0x66, 0xd9, 0x29, 0x72, 0x34, 0x1f, 0x45, 0x24, 0xe5, 0x22, 0x92, 0xd0, 0x9b, 0x50, 0xf2,
+	0x80, 0xaa, 0xa5, 0xe1, 0x6a, 0xbe, 0x9e, 0x5f, 0xad, 0x6c, 0x5e, 0x8e, 0xbb, 0x9e, 0x54, 0xc7,
+	0x2e, 0x07, 0xb6, 0xc5, 0x96, 0x90, 0xcb, 0x0a, 0x11, 0x97, 0xdd, 0x05, 0x70, 0x89, 0xea, 0x90,
+	0x8e, 0xae, 0x12, 0xff, 0x26, 0xc8, 0x0a, 0x7b, 0xa5, 0x8a, 0xff, 0x4a, 0x95, 0x3d, 0xff, 0x95,
+	0x6e, 0x17, 0x9e, 0x3e, 0x5f, 0x96, 0xda, 0x65, 0xba, 0xe7, 0x9e, 0x4a, 0x30, 0x7a, 0x03, 0x4a,
+	0xd8, 0xd2, 0xd9, 0xf6, 0xd9, 0x09, 0xb7, 0x17, 0xb1, 0xa5, 0xd3, 0xcd, 0x08, 0x0a, 0xf6, 0x00,
+	0x5b, 0xd5, 0x62, 0x5d, 0x5a, 0x2d, 0xb5, 0xe9, 0x6f, 0x74, 0x1b, 0xca, 0xb6, 0x63, 0x1a, 0xa6,
+	0xd5, 0x21, 0xc7, 0xd5, 0x12, 0x95, 0x78, 0x29, 0xce, 0xda, 0x77, 0x29, 0x68, 0xef, 0xb8, 0x5d,
+	0xb2, 0xf9, 0xaf, 0x3b, 0x15, 0xef, 0xe0, 0xb8, 0x4f, 0x1b, 0xb7, 0x03, 0x77, 0x94, 0x7a, 0x46,
+	0x9c, 0xdb, 0x32, 0x54, 0xba, 0xde, 0x44, 0x47, 0xc7, 0x96, 0xdd, 0xe7, 0x47, 0x01, 0x74, 0xea,
+	0x9e, 0x37, 0xd3, 0xf8, 0x55, 0x82, 0xb3, 0x2d, 0xd7, 0x68, 0x99, 0x16, 0xa1, 0x3b, 0xd9, 0x3b,
+	0x76, 0x13, 0x8f, 0x2f, 0x22, 0x30, 0x17, 0x15, 0xf8, 0xaa, 0x07, 0x18, 0x72, 0x49, 0xe1, 0x9f,
+	0xbb, 0x64, 0x09, 0x16, 0x63, 0xcc, 0x12, 0xb1, 0x69, 0x0f, 0xe6, 0x5a, 0xae, 0xf1, 0x10, 0xab,
+	0xbd, 0xf4, 0xdb, 0x9a, 0x65, 0x6e, 0x58, 0xe9, 0x02, 0x9c, 0x0b, 0x4a, 0x15, 0xda, 0x7e, 0xc9,
+	0x41, 0x91, 0x2e, 0x58, 0xba, 0xa7, 0xc9, 0xc5, 0x96, 0x3e, 0xd2, 0xc4, 0x46, 0x5e, 0xe0, 0x76,
+	0xb0, 0x66, 0x0e, 0x4c, 0x6c, 0x11, 0xff, 0x59, 0x88, 0x09, 0xb4, 0x05, 0x45, 0x66, 0xbb, 0xcb,
+	0x9d, 0x7a, 0x2d, 0xce, 0x29, 0x5c, 0x87, 0xe2, 0xfd, 0xf1, 0x2d, 0xf6, 0xf7, 0xc9, 0x3f, 0x4a,
+	0x50, 0x09, 0x2c, 0x64, 0x5e, 0x0d, 0x74, 0x0d, 0x4e, 0x11, 0x47, 0xd5, 0xd5, 0x6e, 0x0f, 0x77,
+	0xd4, 0xbe, 0x3d, 0x14, 0xbc, 0xe6, 0xfd, 0xe9, 0x2d, 0x3a, 0x8b, 0x56, 0x60, 0xde, 0xc1, 0xc4,
+	0x74, 0xb0, 0xee, 0xe3, 0x58, 0xb4, 0x3a, 0xc9, 0x67, 0x39, 0xec, 0x16, 0x5c, 0x60, 0x13, 0x7d,
+	0x6c, 0x91, 0x4e, 0x4c, 0xf4, 0x5a, 0x18, 0x2d, 0xbf, 0x13, 0x58, 0xe5, 0x3e, 0x66, 0x7e, 0x6a,
+	0x9c, 0x81, 0x53, 0xdc, 0x4c, 0xe1, 0xde, 0xaf, 0x25, 0x28, 0xb7, 0x5c, 0xa3, 0x4d, 0x77, 0x7b,
+	0x61, 0xd6, 0x3e, 0xb2, 0x84, 0x7f, 0xd9, 0x00, 0xfd, 0x7f, 0xe4, 0xc0, 0x1c, 0x75, 0xe0, 0x62,
+	0x72, 0xd6, 0x1b, 0x39, 0x6d, 0x2c, 0xcc, 0xe6, 0xc7, 0xc3, 0x2c, 0x8f, 0xa1, 0x54, 0x4d, 0xe3,
+	0x2c, 0x9c, 0x11, 0x4c, 0x04, 0xbf, 0xcf, 0x28, 0xbd, 0x1d, 0xef, 0x7e, 0xf7, 0xfe, 0x5d, 0x7a,
+	0x0b, 0x30, 0xeb, 0x60, 0xd5, 0x15, 0xc4, 0xf8, 0x28, 0x86, 0x12, 0xd3, 0x2e, 0x28, 0xd9, 0xf4,
+	0xd5, 0xbf, 0x3f, 0xd0, 0xfd, 0xac, 0xb6, 0x45, 0x93, 0xd1, 0xd4, 0x29, 0x6a, 0x11, 0xca, 0x16,
+	0x3e, 0xea, 0xb0, 0x4d, 0x3c, 0x47, 0x59, 0xf8, 0x88, 0x4a, 0x0b, 0x25, 0x17, 0xf6, 0x1e, 0xa3,
+	0x0a, 0x05, 0x9f, 0xef, 0x24, 0x38, 0x1f, 0x5e, 0xdf, 0xe5, 0x25, 0xc0, 0xd4, 0x94, 0x96, 0xa1,
+	0xa2, 0xea, 0x7a, 0xc7, 0xaf, 0x28, 0xf2, 0xb4, 0xa2, 0x00, 0x55, 0xd7, 0x7d, 0x89, 0xf4, 0xba,
+	0xf6, 0xed, 0x43, 0x2c, 0x30, 0x05, 0x8a, 0x39, 0xc9, 0x66, 0x39, 0x2c, 0xc4, 0x7e, 0x19, 0x96,
+	0x62, 0xd9, 0x09, 0xfe, 0xc7, 0x34, 0x02, 0x07, 0x00, 0x2d, 0x3f, 0xeb, 0x4c, 0xcd, 0xff, 0x32,
+	0xcc, 0x79, 0x2e, 0x8d, 0x64, 0xfe, 0x8a, 0x85, 0x8f, 0x7c, 0x99, 0x21, 0x6a, 0x75, 0xa8, 0xc5,
+	0x6b, 0x16, 0xdc, 0x86, 0x01, 0xd7, 0xf2, 0xbc, 0x9e, 0x76, 0xda, 0x19, 0x09, 0x7a, 0xe2, 0x13,
+	0x0f, 0xfa, 0x2c, 0xa8, 0x56, 0xf0, 0xfa, 0x9c, 0xd6, 0x1b, 0x21, 0x40, 0x86, 0xd7, 0x32, 0xa8,
+	0x4d, 0xe9, 0xb9, 0x06, 0xd4, 0x93, 0xf4, 0x0b, 0x8e, 0xdf, 0xb2, 0xd0, 0xb2, 0xed, 0x98, 0xba,
+	0x91, 0x14, 0x5a, 0x16, 0x60, 0x96, 0xa8, 0x8e, 0x81, 0xfd, 0xf0, 0xc8, 0x47, 0xe1, 0x88, 0x9e,
+	0x8f, 0x46, 0xf4, 0xc0, 0x8b, 0x2f, 0x4c, 0xfe, 0xe2, 0x63, 0x5e, 0x36, 0xe3, 0x26, 0x18, 0x3f,
+	0x2f, 0xd0, 0xd2, 0xd3, 0x9f, 0xd5, 0xb0, 0x79, 0x88, 0x13, 0xd3, 0x5b, 0xca, 0x35, 0xbc, 0x0f,
+	0x45, 0xee, 0x59, 0xca, 0xbd, 0xb2, 0xb9, 0x9e, 0x90, 0x71, 0x42, 0x9a, 0x14, 0xbf, 0x70, 0xf4,
+	0x37, 0xa3, 0xb7, 0x60, 0x86, 0xe6, 0x14, 0x9e, 0xcc, 0xd7, 0x26, 0x92, 0xc2, 0xd2, 0x27, 0xdb,
+	0x18, 0x2e, 0x09, 0x66, 0xa6, 0x29, 0x09, 0xe4, 0xdf, 0x24, 0x98, 0x61, 0x09, 0x3e, 0x74, 0x18,
+	0x52, 0xf4, 0x30, 0x16, 0x60, 0x36, 0x94, 0xe1, 0xf8, 0x28, 0x52, 0x32, 0xe6, 0x5f, 0xad, 0x64,
+	0x2c, 0x4c, 0x5b, 0x32, 0x06, 0x8b, 0xd9, 0x99, 0x70, 0x31, 0x2b, 0xf7, 0xa0, 0xe8, 0xf7, 0x15,
+	0xd1, 0x32, 0x5f, 0x1a, 0x2b, 0xf3, 0xc7, 0xd2, 0x58, 0x2e, 0xa6, 0x5b, 0x48, 0xe9, 0x36, 0xc2,
+	0x55, 0xce, 0x23, 0xfa, 0x6e, 0x43, 0x07, 0x36, 0x71, 0xbd, 0x99, 0xf1, 0x84, 0x1b, 0x1f, 0x01,
+	0xe2, 0xfd, 0xa4, 0x77, 0x0d, 0x69, 0x45, 0x6b, 0x3b, 0x19, 0x4d, 0x6d, 0x95, 0xbe, 0x24, 0x0f,
+	0x28, 0xee, 0x30, 0x1b, 0x8e, 0x75, 0xab, 0x98, 0x26, 0xa1, 0x87, 0x98, 0x04, 0xa5, 0x6f, 0xf5,
+	0x7a, 0xf6, 0x51, 0xcf, 0x74, 0x49, 0xb6, 0x1a, 0x6c, 0x79, 0x55, 0x0f, 0xa3, 0x5d, 0x6a, 0xfb,
+	0xc3, 0x31, 0x35, 0x2b, 0x70, 0x25, 0x45, 0x8d, 0x78, 0xa9, 0x97, 0x40, 0x1e, 0xb7, 0x55, 0xac,
+	0x76, 0x68, 0xd4, 0x6e, 0xd3, 0x94, 0xf4, 0x5a, 0x9c, 0xc1, 0xe2, 0xf3, 0xb8, 0x02, 0xc1, 0xc0,
+	0xa2, 0xe1, 0x25, 0x90, 0x59, 0xee, 0xe3, 0xac, 0xef, 0x0b, 0xbc, 0xcb, 0xce, 0x4d, 0xd4, 0x65,
+	0x47, 0x09, 0x2d, 0xc2, 0xc5, 0x31, 0x7d, 0x82, 0x8c, 0xe1, 0x7f, 0x68, 0xa0, 0x7e, 0xc4, 0x3a,
+	0xbb, 0x7e, 0x3b, 0x07, 0xaa, 0x69, 0x65, 0x70, 0x5a, 0x02, 0xd0, 0x3c, 0x58, 0xc7, 0x52, 0xfb,
+	0xd8, 0xbf, 0x71, 0x74, 0xe6, 0x81, 0xda, 0x1f, 0x67, 0xc1, 0xb2, 0x42, 0xac, 0x22, 0x41, 0xe6,
+	0x31, 0xbd, 0x47, 0xcc, 0x75, 0xaf, 0x9b, 0x0f, 0xbb, 0x4c, 0x49, 0xba, 0x7c, 0x4a, 0x9b, 0xdf,
+	0x20, 0xc8, 0xb7, 0x5c, 0x03, 0x7d, 0x0c, 0x95, 0xe0, 0x07, 0x97, 0x46, 0x42, 0xb8, 0x0d, 0x60,
+	0xe4, 0xb5, 0x6c, 0x8c, 0x78, 0xdf, 0x1a, 0x9c, 0x0c, 0x7f, 0xd4, 0xb8, 0x9a, 0xba, 0x99, 0xa3,
+	0xe4, 0xf5, 0x49, 0x50, 0x42, 0x89, 0xb0, 0x81, 0x85, 0xee, 0x74, 0x1b, 0x28, 0x26, 0xc3, 0x86,
+	0x70, 0x4f, 0xdc, 0x83, 0xd3, 0x63, 0xed, 0x6e, 0x52, 0x3b, 0x15, 0x05, 0xca, 0xcd, 0x09, 0x81,
+	0x42, 0xdb, 0x07, 0x50, 0x1e, 0xb5, 0x99, 0xf5, 0xc4, 0xae, 0x8d, 0x23, 0xe4, 0xd5, 0x2c, 0x84,
+	0x10, 0xfc, 0x36, 0x14, 0x68, 0x43, 0xb9, 0x98, 0xd2, 0x09, 0xca, 0x57, 0x52, 0x16, 0x85, 0xa4,
+	0x07, 0x30, 0xcb, 0x7b, 0xa7, 0xa5, 0x04, 0x38, 0x5b, 0x96, 0x57, 0x52, 0x97, 0x83, 0xf2, 0x78,
+	0xb3, 0x93, 0x24, 0x8f, 0x2d, 0x27, 0xca, 0x0b, 0x37, 0x2b, 0xde, 0x81, 0x8d, 0x75, 0x2a, 0x49,
+	0x07, 0x16, 0x05, 0x26, 0x1e, 0x58, 0x52, 0x2b, 0x82, 0x1c, 0x40, 0x31, 0x6d, 0xc8, 0xf5, 0x6c,
+	0x31, 0x1c, 0x2a, 0x6f, 0x4c, 0x0c, 0x15, 0x3a, 0x87, 0x70, 0x36, 0xae, 0x77, 0x58, 0xcb, 0x96,
+	0xe4, 0x63, 0xe5, 0xcd, 0xc9, 0xb1, 0xe3, 0xa6, 0x86, 0xda, 0x82, 0x74, 0x53, 0x83, 0xd0, 0x0c,
+	0x53, 0xe3, 0xaa, 0x7e, 0xf4, 0x29, 0x9c, 0x8f, 0x2f, 0xf9, 0xd7, 0x27, 0x91, 0x25, 0xcc, 0xfd,
+	0xdf, 0x34, 0xe8, 0xe0, 0xcd, 0xe4, 0xa5, 0xfc, 0x52, 0x6a, 0x1d, 0x9a, 0x78, 0x33, 0xc3, 0xc5,
+	0xb6, 0x17, 0x0e, 0xc3, 0x85, 0xf6, 0xd5, 0x49, 0xca, 0x5b, 0x79, 0xa2, 0x52, 0x3a, 0xa8, 0x24,
+	0xfc, 0x8d, 0x3f, 0x49, 0x49, 0x08, 0x95, 0xa8, 0x24, 0xf6, 0x63, 0x3d, 0xfa, 0x4a, 0x82, 0x6a,
+	0x62, 0x61, 0xd4, 0x4c, 0x8c, 0x22, 0xf1, 0x1b, 0xe4, 0x5b, 0x53, 0x6e, 0x10, 0x34, 0x4c, 0x38,
+	0x15, 0x2d, 0xfe, 0xfe, 0x93, 0x62, 0x47, 0x00, 0x27, 0x2b, 0x93, 0xe1, 0x82, 0x97, 0x3f, 0xa6,
+	0xba, 0xba, 0x9e, 0x18, 0xe2, 0xa2, 0xd0, 0xc4, 0xcb, 0x9f, 0x5c, 0x52, 0xa1, 0x7d, 0x98, 0x8f,
+	0xd4, 0x53, 0x2b, 0xd9, 0xcf, 0xf6, 0x3e, 0xc6, 0xf2, 0x8d, 0x89, 0x60, 0xc1, 0x47, 0x16, 0x5f,
+	0x2a, 0xa5, 0x5c, 0x8a, 0x71, 0x74, 0xe2, 0x23, 0x4b, 0xad, 0x8e, 0xe8, 0x55, 0x4a, 0xac, 0x8d,
+	0x9a, 0xa9, 0x4e, 0x8b, 0xe1, 0x70, 0x6b, 0xca, 0x0d, 0x3e, 0x8d, 0xed, 0x0f, 0x7f, 0x7e, 0x51,
+	0x93, 0x9e, 0xbd, 0xa8, 0x49, 0x7f, 0xbc, 0xa8, 0x49, 0x4f, 0x5f, 0xd6, 0x4e, 0x3c, 0x7b, 0x59,
+	0x3b, 0xf1, 0xfb, 0xcb, 0xda, 0x89, 0x47, 0x77, 0x0d, 0x93, 0x1c, 0x0c, 0xbb, 0x8a, 0x66, 0xf7,
+	0x9b, 0x54, 0xf8, 0x0d, 0x0b, 0x93, 0x23, 0xdb, 0xf9, 0x84, 0x8f, 0x7a, 0x58, 0x37, 0xb0, 0xd3,
+	0x3c, 0x0e, 0xfc, 0xeb, 0x8d, 0xfe, 0x4f, 0x90, 0xfe, 0xf3, 0xad, 0x79, 0xb8, 0xd1, 0x9d, 0xa5,
+	0xbd, 0xdb, 0xcd, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x71, 0x68, 0x0f, 0xb4, 0x63, 0x1c, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2739,24 +2952,42 @@ type MsgClient interface {
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	//
 	// Since Revision 1
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
+	// SetClassCreatorAllowlist is a governance method that updates the class
+	// creator allowlist enabled setting. When enabled, only addresses listed in
+	// the allowlist can create credit classes. When disabled, any address can
+	// create credit classes.
+	//
+	// Since Revision 1
+	SetClassCreatorAllowlist(ctx context.Context, in *MsgSetClassCreatorAllowlist, opts ...grpc.CallOption) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of new
 	// address to the class creation allowlist.
+	//
 	// Since Revision 1
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes
 	// address from the creation allowlist.
+	//
 	// Since Revision 1
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
-	// ToggleCreditClassAllowlist is a governance method that toggles the network
-	// allowlist to on or off. when on, the class creator allowlist is used to
-	// enforce which addresses may create classes. when off, any address may
-	// create classes. Since Revision 1
-	ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggleCreditClassAllowlist, opts ...grpc.CallOption) (*MsgToggleCreditClassAllowlistResponse, error)
-	// UpdateClassFees is a governance method that allows for the addition and
-	// removal of fees to be used for the class creation fee. Since Revision 1
-	UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error)
+	// UpdateClassFee is a governance method that allows for updating the credit
+	// class creation fee. If not set, the credit class creation fee will be
+	// removed and no fee will be required to create a credit class.
+	//
+	// Since Revision 1
+	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
+	// AddAllowedBridgeChain is a governance method that allows for the
+	// addition of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error)
+	// RemoveAllowedBridgeChain is a governance method that allows for the
+	// removal of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
 type msgClient struct {
@@ -2911,6 +3142,15 @@ func (c *msgClient) AddCreditType(ctx context.Context, in *MsgAddCreditType, opt
 	return out, nil
 }
 
+func (c *msgClient) SetClassCreatorAllowlist(ctx context.Context, in *MsgSetClassCreatorAllowlist, opts ...grpc.CallOption) (*MsgSetClassCreatorAllowlistResponse, error) {
+	out := new(MsgSetClassCreatorAllowlistResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/SetClassCreatorAllowlist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error) {
 	out := new(MsgAddClassCreatorResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/AddClassCreator", in, out, opts...)
@@ -2929,18 +3169,27 @@ func (c *msgClient) RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCr
 	return out, nil
 }
 
-func (c *msgClient) ToggleCreditClassAllowlist(ctx context.Context, in *MsgToggleCreditClassAllowlist, opts ...grpc.CallOption) (*MsgToggleCreditClassAllowlistResponse, error) {
-	out := new(MsgToggleCreditClassAllowlistResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/ToggleCreditClassAllowlist", in, out, opts...)
+func (c *msgClient) UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error) {
+	out := new(MsgUpdateClassFeeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateClassFee", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateClassFees(ctx context.Context, in *MsgUpdateClassFees, opts ...grpc.CallOption) (*MsgUpdateClassFeesResponse, error) {
-	out := new(MsgUpdateClassFeesResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateClassFees", in, out, opts...)
+func (c *msgClient) AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error) {
+	out := new(MsgAddAllowedBridgeChainResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error) {
+	out := new(MsgRemoveAllowedBridgeChainResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3030,24 +3279,42 @@ type MsgServer interface {
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
+	//
 	// Since Revision 1
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
+	// SetClassCreatorAllowlist is a governance method that updates the class
+	// creator allowlist enabled setting. When enabled, only addresses listed in
+	// the allowlist can create credit classes. When disabled, any address can
+	// create credit classes.
+	//
+	// Since Revision 1
+	SetClassCreatorAllowlist(context.Context, *MsgSetClassCreatorAllowlist) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of new
 	// address to the class creation allowlist.
+	//
 	// Since Revision 1
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes
 	// address from the creation allowlist.
+	//
 	// Since Revision 1
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
-	// ToggleCreditClassAllowlist is a governance method that toggles the network
-	// allowlist to on or off. when on, the class creator allowlist is used to
-	// enforce which addresses may create classes. when off, any address may
-	// create classes. Since Revision 1
-	ToggleCreditClassAllowlist(context.Context, *MsgToggleCreditClassAllowlist) (*MsgToggleCreditClassAllowlistResponse, error)
-	// UpdateClassFees is a governance method that allows for the addition and
-	// removal of fees to be used for the class creation fee. Since Revision 1
-	UpdateClassFees(context.Context, *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error)
+	// UpdateClassFee is a governance method that allows for updating the credit
+	// class creation fee. If not set, the credit class creation fee will be
+	// removed and no fee will be required to create a credit class.
+	//
+	// Since Revision 1
+	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
+	// AddAllowedBridgeChain is a governance method that allows for the
+	// addition of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error)
+	// RemoveAllowedBridgeChain is a governance method that allows for the
+	// removal of a chain to bridge ecocredits to.
+	//
+	// Since Revision 1
+	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -3102,17 +3369,23 @@ func (*UnimplementedMsgServer) BridgeReceive(ctx context.Context, req *MsgBridge
 func (*UnimplementedMsgServer) AddCreditType(ctx context.Context, req *MsgAddCreditType) (*MsgAddCreditTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCreditType not implemented")
 }
+func (*UnimplementedMsgServer) SetClassCreatorAllowlist(ctx context.Context, req *MsgSetClassCreatorAllowlist) (*MsgSetClassCreatorAllowlistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetClassCreatorAllowlist not implemented")
+}
 func (*UnimplementedMsgServer) AddClassCreator(ctx context.Context, req *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddClassCreator not implemented")
 }
 func (*UnimplementedMsgServer) RemoveClassCreator(ctx context.Context, req *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveClassCreator not implemented")
 }
-func (*UnimplementedMsgServer) ToggleCreditClassAllowlist(ctx context.Context, req *MsgToggleCreditClassAllowlist) (*MsgToggleCreditClassAllowlistResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ToggleCreditClassAllowlist not implemented")
+func (*UnimplementedMsgServer) UpdateClassFee(ctx context.Context, req *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassFee not implemented")
 }
-func (*UnimplementedMsgServer) UpdateClassFees(ctx context.Context, req *MsgUpdateClassFees) (*MsgUpdateClassFeesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassFees not implemented")
+func (*UnimplementedMsgServer) AddAllowedBridgeChain(ctx context.Context, req *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddAllowedBridgeChain not implemented")
+}
+func (*UnimplementedMsgServer) RemoveAllowedBridgeChain(ctx context.Context, req *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveAllowedBridgeChain not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -3407,6 +3680,24 @@ func _Msg_AddCreditType_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_SetClassCreatorAllowlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSetClassCreatorAllowlist)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SetClassCreatorAllowlist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/SetClassCreatorAllowlist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SetClassCreatorAllowlist(ctx, req.(*MsgSetClassCreatorAllowlist))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_AddClassCreator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgAddClassCreator)
 	if err := dec(in); err != nil {
@@ -3443,38 +3734,56 @@ func _Msg_RemoveClassCreator_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_ToggleCreditClassAllowlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgToggleCreditClassAllowlist)
+func _Msg_UpdateClassFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateClassFee)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).ToggleCreditClassAllowlist(ctx, in)
+		return srv.(MsgServer).UpdateClassFee(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Msg/ToggleCreditClassAllowlist",
+		FullMethod: "/regen.ecocredit.v1.Msg/UpdateClassFee",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ToggleCreditClassAllowlist(ctx, req.(*MsgToggleCreditClassAllowlist))
+		return srv.(MsgServer).UpdateClassFee(ctx, req.(*MsgUpdateClassFee))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateClassFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateClassFees)
+func _Msg_AddAllowedBridgeChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddAllowedBridgeChain)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateClassFees(ctx, in)
+		return srv.(MsgServer).AddAllowedBridgeChain(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Msg/UpdateClassFees",
+		FullMethod: "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateClassFees(ctx, req.(*MsgUpdateClassFees))
+		return srv.(MsgServer).AddAllowedBridgeChain(ctx, req.(*MsgAddAllowedBridgeChain))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveAllowedBridgeChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveAllowedBridgeChain)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveAllowedBridgeChain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveAllowedBridgeChain(ctx, req.(*MsgRemoveAllowedBridgeChain))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3548,6 +3857,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_AddCreditType_Handler,
 		},
 		{
+			MethodName: "SetClassCreatorAllowlist",
+			Handler:    _Msg_SetClassCreatorAllowlist_Handler,
+		},
+		{
 			MethodName: "AddClassCreator",
 			Handler:    _Msg_AddClassCreator_Handler,
 		},
@@ -3556,12 +3869,16 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_RemoveClassCreator_Handler,
 		},
 		{
-			MethodName: "ToggleCreditClassAllowlist",
-			Handler:    _Msg_ToggleCreditClassAllowlist_Handler,
+			MethodName: "UpdateClassFee",
+			Handler:    _Msg_UpdateClassFee_Handler,
 		},
 		{
-			MethodName: "UpdateClassFees",
-			Handler:    _Msg_UpdateClassFees_Handler,
+			MethodName: "AddAllowedBridgeChain",
+			Handler:    _Msg_AddAllowedBridgeChain_Handler,
+		},
+		{
+			MethodName: "RemoveAllowedBridgeChain",
+			Handler:    _Msg_RemoveAllowedBridgeChain_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -5047,6 +5364,69 @@ func (m *MsgAddClassCreator) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgSetClassCreatorAllowlist) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSetClassCreatorAllowlist) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSetClassCreatorAllowlist) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Enabled {
+		i--
+		if m.Enabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSetClassCreatorAllowlistResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSetClassCreatorAllowlistResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSetClassCreatorAllowlistResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func (m *MsgAddClassCreatorResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -5130,7 +5510,7 @@ func (m *MsgRemoveClassCreatorResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgToggleCreditClassAllowlist) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateClassFee) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -5140,92 +5520,27 @@ func (m *MsgToggleCreditClassAllowlist) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgToggleCreditClassAllowlist) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateClassFee) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgToggleCreditClassAllowlist) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateClassFee) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Enabled {
-		i--
-		if m.Enabled {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Authority) > 0 {
-		i -= len(m.Authority)
-		copy(dAtA[i:], m.Authority)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgToggleCreditClassAllowlistResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgToggleCreditClassAllowlistResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgToggleCreditClassAllowlistResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgUpdateClassFees) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateClassFees) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateClassFees) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Fees) > 0 {
-		for iNdEx := len(m.Fees) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Fees[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintTx(dAtA, i, uint64(size))
+	if m.Fee != nil {
+		{
+			size, err := m.Fee.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
 			}
-			i--
-			dAtA[i] = 0x12
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0x12
 	}
 	if len(m.Authority) > 0 {
 		i -= len(m.Authority)
@@ -5237,7 +5552,7 @@ func (m *MsgUpdateClassFees) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateClassFeesResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateClassFeeResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -5247,12 +5562,132 @@ func (m *MsgUpdateClassFeesResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateClassFeesResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateClassFeeResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateClassFeesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateClassFeeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAddAllowedBridgeChain) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddAllowedBridgeChain) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddAllowedBridgeChain) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ChainName) > 0 {
+		i -= len(m.ChainName)
+		copy(dAtA[i:], m.ChainName)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ChainName)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAddAllowedBridgeChainResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddAllowedBridgeChainResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddAllowedBridgeChainResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveAllowedBridgeChain) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveAllowedBridgeChain) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveAllowedBridgeChain) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ChainName) > 0 {
+		i -= len(m.ChainName)
+		copy(dAtA[i:], m.ChainName)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ChainName)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveAllowedBridgeChainResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveAllowedBridgeChainResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveAllowedBridgeChainResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -5928,6 +6363,31 @@ func (m *MsgAddClassCreator) Size() (n int) {
 	return n
 }
 
+func (m *MsgSetClassCreatorAllowlist) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Enabled {
+		n += 2
+	}
+	return n
+}
+
+func (m *MsgSetClassCreatorAllowlistResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *MsgAddClassCreatorResponse) Size() (n int) {
 	if m == nil {
 		return 0
@@ -5963,7 +6423,7 @@ func (m *MsgRemoveClassCreatorResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgToggleCreditClassAllowlist) Size() (n int) {
+func (m *MsgUpdateClassFee) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5973,13 +6433,14 @@ func (m *MsgToggleCreditClassAllowlist) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Enabled {
-		n += 2
+	if m.Fee != nil {
+		l = m.Fee.Size()
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgToggleCreditClassAllowlistResponse) Size() (n int) {
+func (m *MsgUpdateClassFeeResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5988,7 +6449,7 @@ func (m *MsgToggleCreditClassAllowlistResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateClassFees) Size() (n int) {
+func (m *MsgAddAllowedBridgeChain) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5998,16 +6459,40 @@ func (m *MsgUpdateClassFees) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if len(m.Fees) > 0 {
-		for _, e := range m.Fees {
-			l = e.Size()
-			n += 1 + l + sovTx(uint64(l))
-		}
+	l = len(m.ChainName)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgUpdateClassFeesResponse) Size() (n int) {
+func (m *MsgAddAllowedBridgeChainResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgRemoveAllowedBridgeChain) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ChainName)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgRemoveAllowedBridgeChainResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -10394,6 +10879,158 @@ func (m *MsgAddClassCreator) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *MsgSetClassCreatorAllowlist) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSetClassCreatorAllowlist: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSetClassCreatorAllowlist: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Enabled = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSetClassCreatorAllowlistResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSetClassCreatorAllowlistResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSetClassCreatorAllowlistResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *MsgAddClassCreatorResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -10608,7 +11245,7 @@ func (m *MsgRemoveClassCreatorResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgToggleCreditClassAllowlist) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateClassFee) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -10631,162 +11268,10 @@ func (m *MsgToggleCreditClassAllowlist) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgToggleCreditClassAllowlist: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateClassFee: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgToggleCreditClassAllowlist: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Authority = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Enabled = bool(v != 0)
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgToggleCreditClassAllowlistResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgToggleCreditClassAllowlistResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgToggleCreditClassAllowlistResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgUpdateClassFees) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateClassFees: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateClassFees: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateClassFee: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -10823,7 +11308,7 @@ func (m *MsgUpdateClassFees) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Fees", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Fee", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -10850,8 +11335,10 @@ func (m *MsgUpdateClassFees) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Fees = append(m.Fees, types.Coin{})
-			if err := m.Fees[len(m.Fees)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.Fee == nil {
+				m.Fee = &types.Coin{}
+			}
+			if err := m.Fee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -10876,7 +11363,7 @@ func (m *MsgUpdateClassFees) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateClassFeesResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateClassFeeResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -10899,10 +11386,338 @@ func (m *MsgUpdateClassFeesResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateClassFeesResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateClassFeeResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateClassFeesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateClassFeeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddAllowedBridgeChain) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddAllowedBridgeChain: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddAllowedBridgeChain: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddAllowedBridgeChainResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddAllowedBridgeChainResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddAllowedBridgeChainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveAllowedBridgeChain) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveAllowedBridgeChain: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveAllowedBridgeChain: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveAllowedBridgeChainResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveAllowedBridgeChainResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveAllowedBridgeChainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

@@ -11,50 +11,50 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
-type updateClassFeesSuite struct {
+type updateClassFeeSuite struct {
 	*baseSuite
 	err error
 }
 
-func TestUpdateClassFees(t *testing.T) {
-	gocuke.NewRunner(t, &updateClassFeesSuite{}).Path("./features/msg_update_class_fee.feature").Run()
+func TestUpdateClassFee(t *testing.T) {
+	gocuke.NewRunner(t, &updateClassFeeSuite{}).Path("./features/msg_update_class_fee.feature").Run()
 }
 
-func (s *updateClassFeesSuite) Before(t gocuke.TestingT) {
+func (s *updateClassFeeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 }
 
-func (s *updateClassFeesSuite) AliceAttemptsToUpdateClassFeesWithProperties(a gocuke.DocString) {
-	var msg *types.MsgUpdateClassFees
+func (s *updateClassFeeSuite) AliceAttemptsToUpdateClassFeeWithProperties(a gocuke.DocString) {
+	var msg *types.MsgUpdateClassFee
 
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
 
-	_, s.err = s.k.UpdateClassFees(s.ctx, msg)
+	_, s.err = s.k.UpdateClassFee(s.ctx, msg)
 }
 
-func (s *updateClassFeesSuite) ExpectClassFeesWithProperties(a gocuke.DocString) {
-	var expected *api.ClassFees
+func (s *updateClassFeeSuite) ExpectClassFeeWithProperties(a gocuke.DocString) {
+	var expected *api.ClassFee
 	err := json.Unmarshal([]byte(a.Content), &expected)
 	require.NoError(s.t, err)
 
-	actual, err := s.stateStore.ClassFeesTable().Get(s.ctx)
+	actual, err := s.stateStore.ClassFeeTable().Get(s.ctx)
 	require.NoError(s.t, err)
 
-	for i, fee := range expected.Fees {
-		require.Equal(s.t, fee.Amount, actual.Fees[i].Amount)
-		require.Equal(s.t, fee.Denom, actual.Fees[i].Denom)
+	if expected.Fee.Denom != "" {
+		require.Equal(s.t, expected.Fee.Amount, actual.Fee.Amount)
+		require.Equal(s.t, expected.Fee.Denom, actual.Fee.Denom)
 	}
 }
 
-func (s *updateClassFeesSuite) ExpectNoError() {
+func (s *updateClassFeeSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *updateClassFeesSuite) ExpectTheError(a string) {
+func (s *updateClassFeeSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *updateClassFeesSuite) ExpectErrorContains(a string) {
+func (s *updateClassFeeSuite) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }

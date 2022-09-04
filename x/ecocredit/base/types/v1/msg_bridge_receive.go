@@ -112,8 +112,8 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 
 	// specific to MsgBridgeReceive
-	if m.OriginTx.Source != base.BridgePolygon {
-		return sdkerrors.ErrInvalidRequest.Wrap("origin tx source must be polygon")
+	if m.OriginTx.Source == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("origin tx source cannot be empty")
 	}
 
 	// specific to MsgBridgeReceive

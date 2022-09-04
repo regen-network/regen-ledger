@@ -54,6 +54,7 @@ type Module struct {
 	Keeper        server.Keeper
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
+	govKeeper     ecocredit.GovKeeper
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
 	legacySubspace paramtypes.Subspace
@@ -66,6 +67,7 @@ func NewModule(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	legacySubspace paramtypes.Subspace,
+	govKeeper ecocredit.GovKeeper,
 ) *Module {
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
@@ -79,6 +81,7 @@ func NewModule(
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
 		authority:      authority,
+		govKeeper:      govKeeper,
 	}
 }
 
@@ -198,14 +201,14 @@ func (m Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	creditClassFees := genesis.DefaultCreditClassFees()
-	err = genesis.MergeCreditClassFeesIntoTarget(cdc, creditClassFees, jsonTarget)
+	classFee := genesis.DefaultClassFee()
+	err = genesis.MergeClassFeeIntoTarget(cdc, classFee, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
 
-	basketFees := genesis.DefaultBasketFees()
-	err = genesis.MergeBasketFeesIntoTarget(cdc, basketFees, jsonTarget)
+	basketFee := genesis.DefaultBasketFee()
+	err = genesis.MergeBasketFeeIntoTarget(cdc, basketFee, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
@@ -307,8 +310,10 @@ func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 		simState.Cdc,
 		m.accountKeeper,
 		m.bankKeeper,
+		m.govKeeper,
 		baseServer,
 		basketServer,
 		marketServer,
+		m.authority,
 	)
 }

@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-// Revision 1
 package regen.ecocredit.basket.v1;
 
 import "google/protobuf/duration.proto";
@@ -23,6 +22,7 @@ message BasketCredit {
 // DateCriteria represents the information for credit acceptance in a basket.
 // At most, only one of the values should be set.
 message DateCriteria {
+
   // min_start_date (optional) is the earliest start date for batches of credits
   // allowed into the basket. At most only one of `start_date_window`,
   // `min_start_date`, and `years_in_the_past` can be set for a basket.

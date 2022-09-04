@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -119,4 +120,47 @@ func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
 
 	spendable := bk.SpendableCoins(ctx, accAddr)
 	return spendable, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+}
+
+// RandomFee generate random credit class/basket creation fee
+func RandomFee(r *rand.Rand) sdk.Coin {
+	// 30% chance of fee using random denom
+	if r.Int63n(101) <= 30 {
+		return sdk.NewCoin(simtypes.RandStringOfLength(r, 4), simtypes.RandomAmount(r, sdk.NewInt(10000)))
+	}
+	return sdk.NewCoin(sdk.DefaultBondDenom, simtypes.RandomAmount(r, sdk.NewInt(10000)))
+}
+
+// RandomDeposit returns minimum deposit if account have enough balance
+// else returns deposit amount between (1, balance)
+func RandomDeposit(r *rand.Rand, ctx sdk.Context,
+	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, depositParams govtypes.DepositParams, addr sdk.AccAddress,
+) (deposit sdk.Coins, skip bool, err error) {
+	account := ak.GetAccount(ctx, addr)
+	spendable := bk.SpendableCoins(ctx, account.GetAddress())
+
+	if spendable.Empty() {
+		return nil, true, nil // skip
+	}
+
+	minDeposit := depositParams.MinDeposit
+	denomIndex := r.Intn(len(minDeposit))
+	denom := minDeposit[denomIndex].Denom
+
+	depositCoins := spendable.AmountOf(denom)
+	if depositCoins.IsZero() {
+		return nil, true, nil
+	}
+
+	amount := depositCoins
+	if amount.GT(minDeposit[denomIndex].Amount) {
+		amount = minDeposit[denomIndex].Amount
+	} else {
+		amount, err = simtypes.RandPositiveInt(r, depositCoins)
+		if err != nil {
+			return nil, false, err
+		}
+	}
+
+	return sdk.Coins{sdk.NewCoin(denom, amount)}, false, nil
 }

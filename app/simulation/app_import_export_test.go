@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"runtime/debug"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -60,6 +62,9 @@ func TestAppImportExport(t *testing.T) {
 	)
 	require.Equal(t, regen.AppName, app.Name())
 
+	// TODO: remove after https://github.com/cosmos/ibc-go/issues/2151 is resolved
+	removeICAFromSimulation(app)
+
 	// run randomized simulation
 	_, simParams, simErr := simulateFromSeed(t, app, config)
 
@@ -104,6 +109,17 @@ func TestAppImportExport(t *testing.T) {
 	var genesisState regen.GenesisState
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(t, err)
+
+	defer func() {
+		if r := recover(); r != nil {
+			err := fmt.Sprintf("%v", r)
+			if !strings.Contains(err, "validator set is empty after InitGenesis") {
+				panic(r)
+			}
+			logger.Info("Skipping simulation as all validators have been unbonded")
+			logger.Info("err", err, "stacktrace", string(debug.Stack()))
+		}
+	}()
 
 	ctxA := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
 	ctxB := newApp.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})

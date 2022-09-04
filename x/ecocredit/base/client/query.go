@@ -517,38 +517,38 @@ func QueryCreditTypeCmd() *cobra.Command {
 	})
 }
 
-// QueryCreditClassFeesCmd returns a query command that retrives the credit class fees.
-func QueryCreditClassFeesCmd() *cobra.Command {
+// QueryClassFeeCmd returns a query command that retrieves the credit class fees.
+func QueryClassFeeCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:     "credit-class-fees",
-		Short:   "Retrieve the credit class fees",
-		Long:    "Retrieve the credit class fess",
-		Example: "regen q ecocredit credit-class-fees",
+		Use:     "class-fee",
+		Short:   "Retrieve the credit class creation fee",
+		Long:    "Retrieve the credit class creation fee",
+		Example: "regen q ecocredit class-fee",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := c.CreditClassFees(cmd.Context(), &types.QueryCreditClassFeesRequest{})
+			res, err := c.ClassFee(cmd.Context(), &types.QueryClassFeeRequest{})
 			return printQueryResponse(ctx, res, err)
 		},
 	})
 }
 
-// QueryCreditClassAllowlistEnabledCmd returns a query command that retrives the
-// class allow-list enable/disable flag.
-func QueryCreditClassAllowlistEnabledCmd() *cobra.Command {
+// QueryClassCreatorAllowlistCmd returns a query command that retrieves the
+// class allowlist enabled setting.
+func QueryClassCreatorAllowlistCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:     "credit-class-allowlist-enabled",
-		Short:   "Retrieve the credit class allow-list setting",
-		Long:    "Retrieve the credit class allow-list setting",
-		Example: "regen q ecocredit credit-class-allowlist-enabled",
+		Use:     "class-creator-allowlist",
+		Short:   "Retrieve the class creator allowlist enabled setting",
+		Long:    "Retrieve the class creator allowlist enabled setting",
+		Example: "regen q ecocredit class-creator-allowlist",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := c.CreditClassAllowlistEnabled(cmd.Context(), &types.QueryCreditClassAllowlistEnabledRequest{})
+			res, err := c.ClassCreatorAllowlist(cmd.Context(), &types.QueryClassCreatorAllowlistRequest{})
 			return printQueryResponse(ctx, res, err)
 		},
 	})
@@ -617,5 +617,26 @@ func QueryAllBalances() *cobra.Command {
 
 	flags.AddPaginationFlagsToCmd(cmd, "all-balances")
 
+	return qflags(cmd)
+}
+
+// QueryAllowedBridgeChains returns a query command that retrieves a list of chain that are allowed to be used
+// in bridge operations.
+func QueryAllowedBridgeChains() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "allowed-bridge-chains",
+		Short:   "Retrieve the list of allowed bridge chains",
+		Long:    "Retrieve the list of chains that are allowed to be used in bridge operations",
+		Example: "regen q ecocredit allowed-bridge-chains",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.AllowedBridgeChains(cmd.Context(), &types.QueryAllowedBridgeChainsRequest{})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "allowed-bridge-chains")
 	return qflags(cmd)
 }

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// regen.ecocredit.v1alpha1 describes the API for the ecocredit module.
+//
+// The following outlines revisions and tagged versions of the compiled code in
+// relation to tagged releases in regen-network/regen-ledger:
+//
+// - Revision 0: v2.0.0 (x/ecocredit/v1.0.0)
+//
+package regen.ecocredit.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1alpha1";

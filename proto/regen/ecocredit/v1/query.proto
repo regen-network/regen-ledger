@@ -4,7 +4,6 @@ package regen.ecocredit.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
@@ -208,6 +207,7 @@ service Query {
   }
 
   // Params queries the ecocredit module parameters.
+  //
   // Deprecated (Since Revision 1): This rpc will be removed in the next
   // version.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
@@ -225,6 +225,16 @@ service Query {
     };
   }
 
+  // ClassCreatorAllowlist queries the credit class creator allowlist
+  // enabled setting.
+  //
+  // Since Revision 1
+  rpc ClassCreatorAllowlist(QueryClassCreatorAllowlistRequest)
+      returns (QueryClassCreatorAllowlistResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/class-creator-allowlist";
+  }
+
   // AllowedClassCreators queries allowed credit class creators list.
   //
   // Since Revision 1
@@ -233,22 +243,21 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-class-creators";
   }
 
-  // CreditClassFees queries the class creation fee.
+  // ClassFee returns the credit class creation fee. If not set, a credit class
+  // creation fee is not required.
   //
   // Since Revision 1
-  rpc CreditClassFees(QueryCreditClassFeesRequest)
-      returns (QueryCreditClassFeesResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1/credit-class-fees";
+  rpc ClassFee(QueryClassFeeRequest) returns (QueryClassFeeResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/class-fee";
   }
 
-  // CreditClassAllowlistEnabled queries the credit class creator allowlist
-  // flag.
+  // AllowedBridgeChains queries the list of chains allowed to be used in bridge
+  // operations.
   //
   // Since Revision 1
-  rpc CreditClassAllowlistEnabled(QueryCreditClassAllowlistEnabledRequest)
-      returns (QueryCreditClassAllowlistEnabledResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/credit-class-allowlist-enabled";
+  rpc AllowedBridgeChains(QueryAllowedBridgeChainsRequest)
+      returns (QueryAllowedBridgeChainsResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/allowed-bridge-chains";
   }
 }
 
@@ -654,6 +663,12 @@ message QueryParamsResponse {
   //
   // Since Revision 1
   repeated AllowedDenomInfo allowed_denoms = 2;
+
+  // AllowedBridgeChains is a list of chain names that are allowed to be used in
+  // bridge operations.
+  //
+  // Since Revision 1
+  repeated string allowed_bridge_chains = 3;
 }
 
 // QueryCreditTypeRequest is the Query/CreditType request type
@@ -767,11 +782,29 @@ message BatchBalanceInfo {
   string escrowed_amount = 5;
 }
 
+// QueryClassCreatorAllowlistRequest is the Query/ClassCreatorAllowlist request
+// type.
+//
+// Since Revision 1
+message QueryClassCreatorAllowlistRequest {}
+
+// QueryClassCreatorAllowlistResponse is the Query/ClassCreatorAllowlist
+// response type.
+//
+// Since Revision 1
+message QueryClassCreatorAllowlistResponse {
+
+  // enabled determines whether or not the allowlist for creating credit classes
+  // is enabled.
+  bool enabled = 1;
+}
+
 // QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
 // type.
 //
 // Since Revision 1
 message QueryAllowedClassCreatorsRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
@@ -781,6 +814,7 @@ message QueryAllowedClassCreatorsRequest {
 //
 // Since Revision 1
 message QueryAllowedClassCreatorsResponse {
+
   // class_creators is the list of allowed credit class creators.
   repeated string class_creators = 1;
 
@@ -788,34 +822,34 @@ message QueryAllowedClassCreatorsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryCreditClassFeesRequest is the Query/CreditClassFees request type.
+// QueryClassFeeRequest is the Query/ClassFee request type.
 //
 // Since Revision 1
-message QueryCreditClassFeesRequest {}
+message QueryClassFeeRequest {}
 
-// QueryCreditClassFeesResponse is the Query/CreditClassFees response type.
+// QueryClassFeeResponse is the Query/ClassFee response type.
 //
 // Since Revision 1
-message QueryCreditClassFeesResponse {
-  // fees is the ClassFees message type
-  repeated cosmos.base.v1beta1.Coin fees = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
+message QueryClassFeeResponse {
+
+  // fee is the credit class creation fee. If not set, a credit class creation
+  // fee is not required.
+  cosmos.base.v1beta1.Coin fee = 1;
 }
 
-// QueryCreditClassAllowlistEnabledRequest is the
-// Query/CreditClassAllowlistEnabled request type.
+// QueryAllowedBridgeChainsRequest is the Query/AllowedBridgeChains request
+// type.
 //
 // Since Revision 1
-message QueryCreditClassAllowlistEnabledRequest {}
+message QueryAllowedBridgeChainsRequest {}
 
-// QueryCreditClassAllowlistEnabledResponse is the
-// Query/CreditClassAllowlistEnabled response type.
+// QueryAllowedBridgeChainsResponse is the Query/AllowedBridgeChains response
+// type.
 //
 // Since Revision 1
-message QueryCreditClassAllowlistEnabledResponse {
-  // allowlist_enabled determines whether or not the allowlist for creating
-  // credit classes is enabled.
-  bool allowlist_enabled = 1;
+message QueryAllowedBridgeChainsResponse {
+
+  // allowed_bridge_chains is a list of chains that are allowed to be used in
+  // bridge operations.
+  repeated string allowed_bridge_chains = 1;
 }

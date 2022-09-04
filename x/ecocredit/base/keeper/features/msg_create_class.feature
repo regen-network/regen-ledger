@@ -3,11 +3,11 @@ Feature: Msg/CreateClass
   A credit class can be created:
   - when the credit type exists
   - when the allowlist is enabled and the admin is an approved credit class creator
-  - when an allowed credit class fee is not set and no fee is provided
-  - when the credit class fee denom matches an allowed credit class fee denom
-  - when the credit class fee amount is greater than or equal to an allowed credit class fee amount
+  - when the required class fee is not set and no fee is provided
+  - when the credit class fee denom matches the required class fee denom
+  - when the credit class fee amount is greater than or equal to the required class fee amount
   - when the admin balance is greater than or equal to an allowed basket fee amount
-  - the admin balance is updated and only the minimum fee is taken
+  - the admin balance is updated and only the required fee is taken
   - the class sequence is updated
   - the class issuers are added
   - the class properties are added
@@ -52,21 +52,21 @@ Feature: Msg/CreateClass
       When alice attempts to create a credit class
       Then expect error contains "is not allowed to create credit classes: unauthorized"
 
-  Rule: The credit class fee is not required if an allowed credit class fee is not set
+  Rule: The credit class fee is not required if the required class fee is not set
 
     Background:
       Given a credit type
 
-    Scenario: credit class fee provided and allowed credit class fee not set
+    Scenario: credit class fee provided and required class fee not set
       Given alice has a token balance "20regen"
       When alice attempts to create a credit class with fee "20regen"
       Then expect no error
 
-    Scenario: credit class fee not provided and allowed credit class fee not set
+    Scenario: credit class fee not provided and required class fee not set
       When alice attempts to create a credit class
       Then expect no error
 
-    # no failing scenario - credit class fee is not required if minimum credit class fee is not set
+    # no failing scenario - credit class fee is not required if required class fee is not set
 
   Rule: The credit class fee must match a credit class fee denom
 
@@ -74,35 +74,20 @@ Feature: Msg/CreateClass
       Given a credit type
       And alice has a token balance "20regen"
 
-    Scenario: credit class fee matches allowed credit class fee denom (single fee)
-      Given allowed credit class fee "20regen"
+    Scenario: credit class fee matches required class fee denom
+      Given required class fee "20regen"
       When alice attempts to create a credit class with fee "20regen"
       Then expect no error
 
-    Scenario: credit class fee matches allowed credit class fee denom (multiple fees)
-      Given allowed credit class fee "20regen,20atom"
-      When alice attempts to create a credit class with fee "20regen"
-      Then expect no error
-
-    Scenario: credit class fee does not match allowed credit class fee denom (single fee)
-      Given allowed credit class fee "20regen"
+    Scenario: credit class fee does not match required class fee denom
+      Given required class fee "20regen"
       When alice attempts to create a credit class with fee "20atom"
       Then expect the error "fee must be 20regen, got 20atom: insufficient fee"
 
-    Scenario: credit class fee does not match allowed credit class fee denom (multiple fees)
-      Given allowed credit class fee "20regen,20atom"
-      When alice attempts to create a credit class with fee "20stake"
-      Then expect the error "fee must be one of 20atom,20regen, got 20stake: insufficient fee"
-
-    Scenario: credit class fee not provided and allowed credit class fee set (single fee)
-      Given allowed credit class fee "20regen"
+    Scenario: credit class fee not provided and required class fee set
+      Given required class fee "20regen"
       When alice attempts to create a credit class
       Then expect the error "fee cannot be empty: must be 20regen: insufficient fee"
-
-    Scenario: credit class fee not provided and allowed credit class fee set (multiple fees)
-      Given allowed credit class fee "20regen,20atom"
-      When alice attempts to create a credit class
-      Then expect the error "fee cannot be empty: must be one of 20atom,20regen: insufficient fee"
 
   Rule: The credit class fee must be greater than or equal to a credit class fee
 
@@ -110,41 +95,26 @@ Feature: Msg/CreateClass
       Given a credit type
       And alice has a token balance "20regen"
 
-    Scenario Outline: credit class fee is greater than or equal to minimum credit class fee (single fee)
-      Given allowed credit class fee "20regen"
-      When alice attempts to create a credit class with fee "<credit-class-fee>"
+    Scenario Outline: credit class fee is greater than or equal to required class fee
+      Given required class fee "20regen"
+      When alice attempts to create a credit class with fee "<class-fee>"
       Then expect no error
 
       Examples:
-        | description  | credit-class-fee |
+        | description  | class-fee |
         | greater than | 30regen          |
         | equal to     | 20regen          |
 
-    Scenario Outline: credit class fee is greater than or equal to minimum credit class fee (multiple fees)
-      Given allowed credit class fee "20regen,20atom"
-      When alice attempts to create a credit class with fee "<credit-class-fee>"
-      Then expect no error
-
-      Examples:
-        | description  | credit-class-fee |
-        | greater than | 30regen          |
-        | equal to     | 20regen          |
-
-    Scenario: credit class fee is less than minimum credit class fee (single fee)
-      Given allowed credit class fee "20regen"
+    Scenario: credit class fee is less than required class fee
+      Given required class fee "20regen"
       When alice attempts to create a credit class with fee "10regen"
       Then expect the error "fee must be 20regen, got 10regen: insufficient fee"
-
-    Scenario: credit class fee is less than minimum credit class fee (multiple fees)
-      Given allowed credit class fee "20regen,20atom"
-      When alice attempts to create a credit class with fee "10regen"
-      Then expect the error "fee must be one of 20atom,20regen, got 10regen: insufficient fee"
 
   Rule: The user must have a balance greater than or equal to the credit class fee amount
 
     Background:
       Given a credit type
-      And allowed credit class fee "20regen"
+      And required class fee "20regen"
 
     Scenario Outline: admin balance is greater than or equal to credit class fee amount
       Given alice has a token balance "<token-balance>"

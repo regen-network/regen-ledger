@@ -23,27 +23,23 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	err = s.stateStore.AllowListEnabledTable().Save(s.ctx, &api.AllowListEnabled{
+	err = s.stateStore.ClassCreatorAllowlistTable().Save(s.ctx, &api.ClassCreatorAllowlist{
 		Enabled: true,
 	})
 	assert.NilError(t, err)
 
-	err = s.stateStore.ClassFeesTable().Save(s.ctx, &api.ClassFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: "100",
-			},
+	err = s.stateStore.ClassFeeTable().Save(s.ctx, &api.ClassFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: "100",
 		},
 	})
 	assert.NilError(t, err)
 
-	err = s.k.basketStore.BasketFeesTable().Save(s.ctx, &baskettypes.BasketFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: "1000",
-			},
+	err = s.k.basketStore.BasketFeeTable().Save(s.ctx, &baskettypes.BasketFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: "1000",
 		},
 	})
 	assert.NilError(t, err)
@@ -55,6 +51,9 @@ func TestQuery_Params(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
+	allowedChain := "polygon"
+	assert.NilError(t, s.stateStore.AllowedBridgeChainTable().Insert(s.ctx, &api.AllowedBridgeChain{ChainName: allowedChain}))
+
 	result, err := s.k.Params(s.ctx, &types.QueryParamsRequest{})
 	assert.NilError(t, err)
 
@@ -64,4 +63,7 @@ func TestQuery_Params(t *testing.T) {
 	assert.Equal(t, result.Params.BasketFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))).String())
 	assert.Equal(t, len(result.AllowedDenoms), 1)
 	assert.Equal(t, result.AllowedDenoms[0].BankDenom, "uregen")
+
+	assert.Equal(t, len(result.AllowedBridgeChains), 1)
+	assert.Equal(t, result.AllowedBridgeChains[0], allowedChain)
 }

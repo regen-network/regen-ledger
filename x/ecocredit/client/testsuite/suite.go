@@ -200,12 +200,10 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	ctx := ormtable.WrapContextDefault(backend)
 
 	// add basket fees
-	err = basketStore.BasketFeesTable().Save(ctx, &basketapi.BasketFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultBasketFee.String(),
-			},
+	err = basketStore.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultBasketFee.String(),
 		},
 	})
 	require.NoError(err)
@@ -233,18 +231,16 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class fees
-	err = baseStore.ClassFeesTable().Save(ctx, &baseapi.ClassFees{
-		Fees: []*sdkbase.Coin{
-			{
-				Denom:  sdk.DefaultBondDenom,
-				Amount: basetypes.DefaultCreditClassFee.String(),
-			},
+	err = baseStore.ClassFeeTable().Save(ctx, &baseapi.ClassFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultClassFee.String(),
 		},
 	})
 	require.NoError(err)
 
 	// set credit class allow list
-	err = baseStore.AllowListEnabledTable().Save(ctx, &baseapi.AllowListEnabled{
+	err = baseStore.ClassCreatorAllowlistTable().Save(ctx, &baseapi.ClassCreatorAllowlist{
 		Enabled: false,
 	})
 	require.NoError(err)

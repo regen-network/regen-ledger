@@ -18,6 +18,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
 
     Scenario: credit class exists
       When alice attempts to bridge credits with class id "C01"
@@ -32,6 +33,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
 
     Scenario: the issuer is not an allowed credit class issuer
       When alice attempts to bridge credits with class id "C01"
@@ -46,6 +48,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
       And a project with id "C01-001"
       And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
       And the batch contract
@@ -70,6 +73,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
       And a project with id "C01-001" and reference id "VCS-001"
 
     Scenario: a project from the same class with a different reference id
@@ -90,6 +94,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
       And a project with id "C01-001"
       And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
 
@@ -114,6 +119,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
 
     Scenario: the project properties are added
       When alice attempts to bridge credits with project properties
@@ -141,6 +147,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
 
     Scenario: the batch properties are added
       When alice attempts to bridge credits with batch properties
@@ -168,6 +175,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
 
     Scenario: balance updated from issuance with single item
       When alice attempts to bridge credits to bob with tradable amount "10"
@@ -187,6 +195,7 @@ Feature: Msg/BridgeReceive
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
 
     Scenario: supply updated from issuance
       When alice attempts to bridge credits to bob with tradable amount "10"
@@ -200,3 +209,18 @@ Feature: Msg/BridgeReceive
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: The OriginTx source must be in the AllowedBridgeChain table
+
+    Background:
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
+
+    Scenario: the OriginTx source is in the AllowedBridgeChain table
+      When alice attempts to bridge credits with OriginTx Source "polygon"
+      Then expect no error
+
+    Scenario: the OriginTx source is not in the AllowedBridgeChain table
+      When alice attempts to bridge credits with OriginTx Source "solana"
+      Then expect the error "solana is not an authorized bridge source: unauthorized"
