@@ -104,6 +104,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
 - [#1450](https://github.com/regen-network/regen-ledger/pull/1450) Add `QueryBalancesByBatch` query
 - [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Add `AllowedBridgeChain` table and `QueryAllowedBridgeChains` query
+- [#1467](https://github.com/regen-network/regen-ledger/pull/1467) Add `AllowedBridgeChain` state validation checks
+- [#1467](https://github.com/regen-network/regen-ledger/pull/1467) Add `AllowedClassCreator` state validation checks
+- [#1467](https://github.com/regen-network/regen-ledger/pull/1467) Add `ClassCreatorAllowlist` state validation checks
+- [#1467](https://github.com/regen-network/regen-ledger/pull/1467) Add `ClassFee` state validation checks
+- [#1467](https://github.com/regen-network/regen-ledger/pull/1467) Add `BasketFee` state validation checks
 
 #### Changed
 
