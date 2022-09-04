@@ -121,6 +121,24 @@ Run formatting in all go modules:
 make format
 ```
 
+Run linter for all proto files:
+
+```
+make proto-lint
+```
+
+Run linter and attempt to fix errors for all proto files:
+
+```
+make proto-lint-fix
+```
+
+Run formatting for all proto files:
+
+```
+make proto-format
+```
+
 ### Running Tests
 
 Run all unit and integrations tests:
