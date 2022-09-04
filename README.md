@@ -90,7 +90,7 @@ Contributions are more than welcome and greatly appreciated. All the information
 Configure git hooks:
 
 ```
-git config core.hooksPath .githooks
+git config core.hooksPath scripts/githooks
 ```
 
 ### Running Tests
