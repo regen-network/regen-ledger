@@ -1770,6 +1770,36 @@ func NewBatchContractTable(db ormtable.Schema) (BatchContractTable, error) {
 	return batchContractTable{table}, nil
 }
 
+// singleton store
+type ClassCreatorAllowlistTable interface {
+	Get(ctx context.Context) (*ClassCreatorAllowlist, error)
+	Save(ctx context.Context, classCreatorAllowlist *ClassCreatorAllowlist) error
+}
+
+type classCreatorAllowlistTable struct {
+	table ormtable.Table
+}
+
+var _ ClassCreatorAllowlistTable = classCreatorAllowlistTable{}
+
+func (x classCreatorAllowlistTable) Get(ctx context.Context) (*ClassCreatorAllowlist, error) {
+	classCreatorAllowlist := &ClassCreatorAllowlist{}
+	_, err := x.table.Get(ctx, classCreatorAllowlist)
+	return classCreatorAllowlist, err
+}
+
+func (x classCreatorAllowlistTable) Save(ctx context.Context, classCreatorAllowlist *ClassCreatorAllowlist) error {
+	return x.table.Save(ctx, classCreatorAllowlist)
+}
+
+func NewClassCreatorAllowlistTable(db ormtable.Schema) (ClassCreatorAllowlistTable, error) {
+	table := db.GetTable(&ClassCreatorAllowlist{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&ClassCreatorAllowlist{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return &classCreatorAllowlistTable{table}, nil
+}
+
 type AllowedClassCreatorTable interface {
 	Insert(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
 	Update(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
@@ -1885,63 +1915,147 @@ func NewAllowedClassCreatorTable(db ormtable.Schema) (AllowedClassCreatorTable, 
 }
 
 // singleton store
-type AllowListEnabledTable interface {
-	Get(ctx context.Context) (*AllowListEnabled, error)
-	Save(ctx context.Context, allowListEnabled *AllowListEnabled) error
+type ClassFeeTable interface {
+	Get(ctx context.Context) (*ClassFee, error)
+	Save(ctx context.Context, classFee *ClassFee) error
 }
 
-type allowListEnabledTable struct {
+type classFeeTable struct {
 	table ormtable.Table
 }
 
-var _ AllowListEnabledTable = allowListEnabledTable{}
+var _ ClassFeeTable = classFeeTable{}
 
-func (x allowListEnabledTable) Get(ctx context.Context) (*AllowListEnabled, error) {
-	allowListEnabled := &AllowListEnabled{}
-	_, err := x.table.Get(ctx, allowListEnabled)
-	return allowListEnabled, err
+func (x classFeeTable) Get(ctx context.Context) (*ClassFee, error) {
+	classFee := &ClassFee{}
+	_, err := x.table.Get(ctx, classFee)
+	return classFee, err
 }
 
-func (x allowListEnabledTable) Save(ctx context.Context, allowListEnabled *AllowListEnabled) error {
-	return x.table.Save(ctx, allowListEnabled)
+func (x classFeeTable) Save(ctx context.Context, classFee *ClassFee) error {
+	return x.table.Save(ctx, classFee)
 }
 
-func NewAllowListEnabledTable(db ormtable.Schema) (AllowListEnabledTable, error) {
-	table := db.GetTable(&AllowListEnabled{})
+func NewClassFeeTable(db ormtable.Schema) (ClassFeeTable, error) {
+	table := db.GetTable(&ClassFee{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&AllowListEnabled{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&ClassFee{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return &allowListEnabledTable{table}, nil
+	return &classFeeTable{table}, nil
 }
 
-// singleton store
-type ClassFeesTable interface {
-	Get(ctx context.Context) (*ClassFees, error)
-	Save(ctx context.Context, classFees *ClassFees) error
+type AllowedBridgeChainTable interface {
+	Insert(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error
+	Update(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error
+	Save(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error
+	Delete(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error
+	Has(ctx context.Context, chain_name string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	Get(ctx context.Context, chain_name string) (*AllowedBridgeChain, error)
+	List(ctx context.Context, prefixKey AllowedBridgeChainIndexKey, opts ...ormlist.Option) (AllowedBridgeChainIterator, error)
+	ListRange(ctx context.Context, from, to AllowedBridgeChainIndexKey, opts ...ormlist.Option) (AllowedBridgeChainIterator, error)
+	DeleteBy(ctx context.Context, prefixKey AllowedBridgeChainIndexKey) error
+	DeleteRange(ctx context.Context, from, to AllowedBridgeChainIndexKey) error
+
+	doNotImplement()
 }
 
-type classFeesTable struct {
+type AllowedBridgeChainIterator struct {
+	ormtable.Iterator
+}
+
+func (i AllowedBridgeChainIterator) Value() (*AllowedBridgeChain, error) {
+	var allowedBridgeChain AllowedBridgeChain
+	err := i.UnmarshalMessage(&allowedBridgeChain)
+	return &allowedBridgeChain, err
+}
+
+type AllowedBridgeChainIndexKey interface {
+	id() uint32
+	values() []interface{}
+	allowedBridgeChainIndexKey()
+}
+
+// primary key starting index..
+type AllowedBridgeChainPrimaryKey = AllowedBridgeChainChainNameIndexKey
+
+type AllowedBridgeChainChainNameIndexKey struct {
+	vs []interface{}
+}
+
+func (x AllowedBridgeChainChainNameIndexKey) id() uint32                  { return 0 }
+func (x AllowedBridgeChainChainNameIndexKey) values() []interface{}       { return x.vs }
+func (x AllowedBridgeChainChainNameIndexKey) allowedBridgeChainIndexKey() {}
+
+func (this AllowedBridgeChainChainNameIndexKey) WithChainName(chain_name string) AllowedBridgeChainChainNameIndexKey {
+	this.vs = []interface{}{chain_name}
+	return this
+}
+
+type allowedBridgeChainTable struct {
 	table ormtable.Table
 }
 
-var _ ClassFeesTable = classFeesTable{}
-
-func (x classFeesTable) Get(ctx context.Context) (*ClassFees, error) {
-	classFees := &ClassFees{}
-	_, err := x.table.Get(ctx, classFees)
-	return classFees, err
+func (this allowedBridgeChainTable) Insert(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error {
+	return this.table.Insert(ctx, allowedBridgeChain)
 }
 
-func (x classFeesTable) Save(ctx context.Context, classFees *ClassFees) error {
-	return x.table.Save(ctx, classFees)
+func (this allowedBridgeChainTable) Update(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error {
+	return this.table.Update(ctx, allowedBridgeChain)
 }
 
-func NewClassFeesTable(db ormtable.Schema) (ClassFeesTable, error) {
-	table := db.GetTable(&ClassFees{})
-	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ClassFees{}).ProtoReflect().Descriptor().FullName()))
+func (this allowedBridgeChainTable) Save(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error {
+	return this.table.Save(ctx, allowedBridgeChain)
+}
+
+func (this allowedBridgeChainTable) Delete(ctx context.Context, allowedBridgeChain *AllowedBridgeChain) error {
+	return this.table.Delete(ctx, allowedBridgeChain)
+}
+
+func (this allowedBridgeChainTable) Has(ctx context.Context, chain_name string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, chain_name)
+}
+
+func (this allowedBridgeChainTable) Get(ctx context.Context, chain_name string) (*AllowedBridgeChain, error) {
+	var allowedBridgeChain AllowedBridgeChain
+	found, err := this.table.PrimaryKey().Get(ctx, &allowedBridgeChain, chain_name)
+	if err != nil {
+		return nil, err
 	}
-	return &classFeesTable{table}, nil
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &allowedBridgeChain, nil
+}
+
+func (this allowedBridgeChainTable) List(ctx context.Context, prefixKey AllowedBridgeChainIndexKey, opts ...ormlist.Option) (AllowedBridgeChainIterator, error) {
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
+	return AllowedBridgeChainIterator{it}, err
+}
+
+func (this allowedBridgeChainTable) ListRange(ctx context.Context, from, to AllowedBridgeChainIndexKey, opts ...ormlist.Option) (AllowedBridgeChainIterator, error) {
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
+	return AllowedBridgeChainIterator{it}, err
+}
+
+func (this allowedBridgeChainTable) DeleteBy(ctx context.Context, prefixKey AllowedBridgeChainIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this allowedBridgeChainTable) DeleteRange(ctx context.Context, from, to AllowedBridgeChainIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
+}
+
+func (this allowedBridgeChainTable) doNotImplement() {}
+
+var _ AllowedBridgeChainTable = allowedBridgeChainTable{}
+
+func NewAllowedBridgeChainTable(db ormtable.Schema) (AllowedBridgeChainTable, error) {
+	table := db.GetTable(&AllowedBridgeChain{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&AllowedBridgeChain{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return allowedBridgeChainTable{table}, nil
 }
 
 type StateStore interface {
@@ -1957,29 +2071,31 @@ type StateStore interface {
 	BatchSupplyTable() BatchSupplyTable
 	OriginTxIndexTable() OriginTxIndexTable
 	BatchContractTable() BatchContractTable
+	ClassCreatorAllowlistTable() ClassCreatorAllowlistTable
 	AllowedClassCreatorTable() AllowedClassCreatorTable
-	AllowListEnabledTable() AllowListEnabledTable
-	ClassFeesTable() ClassFeesTable
+	ClassFeeTable() ClassFeeTable
+	AllowedBridgeChainTable() AllowedBridgeChainTable
 
 	doNotImplement()
 }
 
 type stateStore struct {
-	creditType          CreditTypeTable
-	class               ClassTable
-	classIssuer         ClassIssuerTable
-	project             ProjectTable
-	batch               BatchTable
-	classSequence       ClassSequenceTable
-	projectSequence     ProjectSequenceTable
-	batchSequence       BatchSequenceTable
-	batchBalance        BatchBalanceTable
-	batchSupply         BatchSupplyTable
-	originTxIndex       OriginTxIndexTable
-	batchContract       BatchContractTable
-	allowedClassCreator AllowedClassCreatorTable
-	allowListEnabled    AllowListEnabledTable
-	classFees           ClassFeesTable
+	creditType            CreditTypeTable
+	class                 ClassTable
+	classIssuer           ClassIssuerTable
+	project               ProjectTable
+	batch                 BatchTable
+	classSequence         ClassSequenceTable
+	projectSequence       ProjectSequenceTable
+	batchSequence         BatchSequenceTable
+	batchBalance          BatchBalanceTable
+	batchSupply           BatchSupplyTable
+	originTxIndex         OriginTxIndexTable
+	batchContract         BatchContractTable
+	classCreatorAllowlist ClassCreatorAllowlistTable
+	allowedClassCreator   AllowedClassCreatorTable
+	classFee              ClassFeeTable
+	allowedBridgeChain    AllowedBridgeChainTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -2030,16 +2146,20 @@ func (x stateStore) BatchContractTable() BatchContractTable {
 	return x.batchContract
 }
 
+func (x stateStore) ClassCreatorAllowlistTable() ClassCreatorAllowlistTable {
+	return x.classCreatorAllowlist
+}
+
 func (x stateStore) AllowedClassCreatorTable() AllowedClassCreatorTable {
 	return x.allowedClassCreator
 }
 
-func (x stateStore) AllowListEnabledTable() AllowListEnabledTable {
-	return x.allowListEnabled
+func (x stateStore) ClassFeeTable() ClassFeeTable {
+	return x.classFee
 }
 
-func (x stateStore) ClassFeesTable() ClassFeesTable {
-	return x.classFees
+func (x stateStore) AllowedBridgeChainTable() AllowedBridgeChainTable {
+	return x.allowedBridgeChain
 }
 
 func (stateStore) doNotImplement() {}
@@ -2107,17 +2227,22 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	classCreatorAllowlistTable, err := NewClassCreatorAllowlistTable(db)
+	if err != nil {
+		return nil, err
+	}
+
 	allowedClassCreatorTable, err := NewAllowedClassCreatorTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	allowListEnabledTable, err := NewAllowListEnabledTable(db)
+	classFeeTable, err := NewClassFeeTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	classFeesTable, err := NewClassFeesTable(db)
+	allowedBridgeChainTable, err := NewAllowedBridgeChainTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -2135,8 +2260,9 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		batchSupplyTable,
 		originTxIndexTable,
 		batchContractTable,
+		classCreatorAllowlistTable,
 		allowedClassCreatorTable,
-		allowListEnabledTable,
-		classFeesTable,
+		classFeeTable,
+		allowedBridgeChainTable,
 	}, nil
 }

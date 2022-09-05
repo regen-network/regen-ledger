@@ -57,7 +57,7 @@ func TestRandomizedGenState(t *testing.T) {
 	require.NoError(t, err)
 
 	ormCtx := ormtable.WrapContextDefault(backend)
-	coreStore, err := api.NewStateStore(ormdb)
+	baseStore, err := api.NewStateStore(ormdb)
 	require.NoError(t, err)
 
 	marketStore, err := marketapi.NewStateStore(ormdb)
@@ -69,7 +69,7 @@ func TestRandomizedGenState(t *testing.T) {
 	err = ormdb.ImportJSON(ormCtx, jsonSource)
 	require.NoError(t, err)
 
-	allowListEnabled, err := coreStore.AllowListEnabledTable().Get(ormCtx)
+	allowListEnabled, err := baseStore.ClassCreatorAllowlistTable().Get(ormCtx)
 	require.NoError(t, err)
 
 	require.True(t, allowListEnabled.Enabled)
@@ -77,15 +77,14 @@ func TestRandomizedGenState(t *testing.T) {
 	creator, err := sdk.AccAddressFromBech32("regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4")
 	require.NoError(t, err)
 
-	_, err = coreStore.AllowedClassCreatorTable().Get(ormCtx, creator)
+	_, err = baseStore.AllowedClassCreatorTable().Get(ormCtx, creator)
 	require.NoError(t, err)
 
-	classFees, err := coreStore.ClassFeesTable().Get(ormCtx)
+	classFee, err := baseStore.ClassFeeTable().Get(ormCtx)
 	require.NoError(t, err)
-	require.Len(t, classFees.Fees, 1)
 
-	require.Equal(t, classFees.Fees[0].Denom, sdk.DefaultBondDenom)
-	require.Equal(t, classFees.Fees[0].Amount, "8")
+	require.Equal(t, classFee.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(t, classFee.Fee.Amount, "8")
 
 	allowedDenom, err := marketStore.AllowedDenomTable().Get(ormCtx, sdk.DefaultBondDenom)
 	require.NoError(t, err)

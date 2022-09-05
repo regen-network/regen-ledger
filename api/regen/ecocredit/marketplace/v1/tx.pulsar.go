@@ -7912,6 +7912,7 @@ func (*MsgBuyDirectResponse) Descriptor() ([]byte, []int) {
 }
 
 // MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+//
 // Since Revision 1
 type MsgAddAllowedDenom struct {
 	state         protoimpl.MessageState
@@ -7980,6 +7981,7 @@ func (x *MsgAddAllowedDenom) GetExponent() uint32 {
 }
 
 // MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+//
 // Since Revision 1
 type MsgAddAllowedDenomResponse struct {
 	state         protoimpl.MessageState
@@ -8008,6 +8010,7 @@ func (*MsgAddAllowedDenomResponse) Descriptor() ([]byte, []int) {
 }
 
 // MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+//
 // Since Revision 1
 type MsgRemoveAllowedDenom struct {
 	state         protoimpl.MessageState
@@ -8055,6 +8058,7 @@ func (x *MsgRemoveAllowedDenom) GetDenom() string {
 }
 
 // MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+//
 // Since Revision 1
 type MsgRemoveAllowedDenomResponse struct {
 	state         protoimpl.MessageState
@@ -8170,10 +8174,9 @@ type MsgUpdateSellOrders_Update struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	//  sell_order_id is the ID of an existing sell order.
+	// sell_order_id is the ID of an existing sell order.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
-	// new_quantity is the updated quantity of credits available to sell, if it
-	// is set to zero then the order is cancelled.
+	// new_quantity is the updated quantity of credits available to sell.
 	NewQuantity string `protobuf:"bytes,2,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
 	// new_ask_price is the new ask price for this sell order
 	NewAskPrice *v1beta1.Coin `protobuf:"bytes,3,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`

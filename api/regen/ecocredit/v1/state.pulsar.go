@@ -7133,6 +7133,416 @@ func (x *fastReflection_BatchContract) ProtoMethods() *protoiface.Methods {
 }
 
 var (
+	md_ClassCreatorAllowlist         protoreflect.MessageDescriptor
+	fd_ClassCreatorAllowlist_enabled protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_state_proto_init()
+	md_ClassCreatorAllowlist = File_regen_ecocredit_v1_state_proto.Messages().ByName("ClassCreatorAllowlist")
+	fd_ClassCreatorAllowlist_enabled = md_ClassCreatorAllowlist.Fields().ByName("enabled")
+}
+
+var _ protoreflect.Message = (*fastReflection_ClassCreatorAllowlist)(nil)
+
+type fastReflection_ClassCreatorAllowlist ClassCreatorAllowlist
+
+func (x *ClassCreatorAllowlist) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ClassCreatorAllowlist)(x)
+}
+
+func (x *ClassCreatorAllowlist) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ClassCreatorAllowlist_messageType fastReflection_ClassCreatorAllowlist_messageType
+var _ protoreflect.MessageType = fastReflection_ClassCreatorAllowlist_messageType{}
+
+type fastReflection_ClassCreatorAllowlist_messageType struct{}
+
+func (x fastReflection_ClassCreatorAllowlist_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ClassCreatorAllowlist)(nil)
+}
+func (x fastReflection_ClassCreatorAllowlist_messageType) New() protoreflect.Message {
+	return new(fastReflection_ClassCreatorAllowlist)
+}
+func (x fastReflection_ClassCreatorAllowlist_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ClassCreatorAllowlist
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ClassCreatorAllowlist) Descriptor() protoreflect.MessageDescriptor {
+	return md_ClassCreatorAllowlist
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ClassCreatorAllowlist) Type() protoreflect.MessageType {
+	return _fastReflection_ClassCreatorAllowlist_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ClassCreatorAllowlist) New() protoreflect.Message {
+	return new(fastReflection_ClassCreatorAllowlist)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ClassCreatorAllowlist) Interface() protoreflect.ProtoMessage {
+	return (*ClassCreatorAllowlist)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ClassCreatorAllowlist) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Enabled != false {
+		value := protoreflect.ValueOfBool(x.Enabled)
+		if !f(fd_ClassCreatorAllowlist_enabled, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ClassCreatorAllowlist) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassCreatorAllowlist.enabled":
+		return x.Enabled != false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassCreatorAllowlist"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassCreatorAllowlist does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassCreatorAllowlist) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassCreatorAllowlist.enabled":
+		x.Enabled = false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassCreatorAllowlist"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassCreatorAllowlist does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ClassCreatorAllowlist) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.ClassCreatorAllowlist.enabled":
+		value := x.Enabled
+		return protoreflect.ValueOfBool(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassCreatorAllowlist"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassCreatorAllowlist does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassCreatorAllowlist) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassCreatorAllowlist.enabled":
+		x.Enabled = value.Bool()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassCreatorAllowlist"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassCreatorAllowlist does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassCreatorAllowlist) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassCreatorAllowlist.enabled":
+		panic(fmt.Errorf("field enabled of message regen.ecocredit.v1.ClassCreatorAllowlist is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassCreatorAllowlist"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassCreatorAllowlist does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ClassCreatorAllowlist) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassCreatorAllowlist.enabled":
+		return protoreflect.ValueOfBool(false)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassCreatorAllowlist"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassCreatorAllowlist does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ClassCreatorAllowlist) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.ClassCreatorAllowlist", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ClassCreatorAllowlist) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassCreatorAllowlist) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ClassCreatorAllowlist) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ClassCreatorAllowlist) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ClassCreatorAllowlist)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Enabled {
+			n += 2
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ClassCreatorAllowlist)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Enabled {
+			i--
+			if x.Enabled {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ClassCreatorAllowlist)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassCreatorAllowlist: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassCreatorAllowlist: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.Enabled = bool(v != 0)
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_AllowedClassCreator         protoreflect.MessageDescriptor
 	fd_AllowedClassCreator_address protoreflect.FieldDescriptor
 )
@@ -7152,7 +7562,7 @@ func (x *AllowedClassCreator) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AllowedClassCreator) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[12]
+	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7555,26 +7965,26 @@ func (x *fastReflection_AllowedClassCreator) ProtoMethods() *protoiface.Methods 
 }
 
 var (
-	md_AllowListEnabled         protoreflect.MessageDescriptor
-	fd_AllowListEnabled_enabled protoreflect.FieldDescriptor
+	md_ClassFee     protoreflect.MessageDescriptor
+	fd_ClassFee_fee protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_state_proto_init()
-	md_AllowListEnabled = File_regen_ecocredit_v1_state_proto.Messages().ByName("AllowListEnabled")
-	fd_AllowListEnabled_enabled = md_AllowListEnabled.Fields().ByName("enabled")
+	md_ClassFee = File_regen_ecocredit_v1_state_proto.Messages().ByName("ClassFee")
+	fd_ClassFee_fee = md_ClassFee.Fields().ByName("fee")
 }
 
-var _ protoreflect.Message = (*fastReflection_AllowListEnabled)(nil)
+var _ protoreflect.Message = (*fastReflection_ClassFee)(nil)
 
-type fastReflection_AllowListEnabled AllowListEnabled
+type fastReflection_ClassFee ClassFee
 
-func (x *AllowListEnabled) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_AllowListEnabled)(x)
+func (x *ClassFee) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ClassFee)(x)
 }
 
-func (x *AllowListEnabled) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[13]
+func (x *ClassFee) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7585,43 +7995,43 @@ func (x *AllowListEnabled) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_AllowListEnabled_messageType fastReflection_AllowListEnabled_messageType
-var _ protoreflect.MessageType = fastReflection_AllowListEnabled_messageType{}
+var _fastReflection_ClassFee_messageType fastReflection_ClassFee_messageType
+var _ protoreflect.MessageType = fastReflection_ClassFee_messageType{}
 
-type fastReflection_AllowListEnabled_messageType struct{}
+type fastReflection_ClassFee_messageType struct{}
 
-func (x fastReflection_AllowListEnabled_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_AllowListEnabled)(nil)
+func (x fastReflection_ClassFee_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ClassFee)(nil)
 }
-func (x fastReflection_AllowListEnabled_messageType) New() protoreflect.Message {
-	return new(fastReflection_AllowListEnabled)
+func (x fastReflection_ClassFee_messageType) New() protoreflect.Message {
+	return new(fastReflection_ClassFee)
 }
-func (x fastReflection_AllowListEnabled_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_AllowListEnabled
+func (x fastReflection_ClassFee_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ClassFee
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_AllowListEnabled) Descriptor() protoreflect.MessageDescriptor {
-	return md_AllowListEnabled
+func (x *fastReflection_ClassFee) Descriptor() protoreflect.MessageDescriptor {
+	return md_ClassFee
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_AllowListEnabled) Type() protoreflect.MessageType {
-	return _fastReflection_AllowListEnabled_messageType
+func (x *fastReflection_ClassFee) Type() protoreflect.MessageType {
+	return _fastReflection_ClassFee_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_AllowListEnabled) New() protoreflect.Message {
-	return new(fastReflection_AllowListEnabled)
+func (x *fastReflection_ClassFee) New() protoreflect.Message {
+	return new(fastReflection_ClassFee)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_AllowListEnabled) Interface() protoreflect.ProtoMessage {
-	return (*AllowListEnabled)(x)
+func (x *fastReflection_ClassFee) Interface() protoreflect.ProtoMessage {
+	return (*ClassFee)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -7629,10 +8039,10 @@ func (x *fastReflection_AllowListEnabled) Interface() protoreflect.ProtoMessage 
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_AllowListEnabled) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Enabled != false {
-		value := protoreflect.ValueOfBool(x.Enabled)
-		if !f(fd_AllowListEnabled_enabled, value) {
+func (x *fastReflection_ClassFee) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Fee != nil {
+		value := protoreflect.ValueOfMessage(x.Fee.ProtoReflect())
+		if !f(fd_ClassFee_fee, value) {
 			return
 		}
 	}
@@ -7649,15 +8059,15 @@ func (x *fastReflection_AllowListEnabled) Range(f func(protoreflect.FieldDescrip
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_AllowListEnabled) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_ClassFee) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.AllowListEnabled.enabled":
-		return x.Enabled != false
+	case "regen.ecocredit.v1.ClassFee.fee":
+		return x.Fee != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowListEnabled"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.AllowListEnabled does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7667,15 +8077,15 @@ func (x *fastReflection_AllowListEnabled) Has(fd protoreflect.FieldDescriptor) b
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowListEnabled) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_ClassFee) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.AllowListEnabled.enabled":
-		x.Enabled = false
+	case "regen.ecocredit.v1.ClassFee.fee":
+		x.Fee = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowListEnabled"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.AllowListEnabled does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7685,16 +8095,16 @@ func (x *fastReflection_AllowListEnabled) Clear(fd protoreflect.FieldDescriptor)
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_AllowListEnabled) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_ClassFee) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.AllowListEnabled.enabled":
-		value := x.Enabled
-		return protoreflect.ValueOfBool(value)
+	case "regen.ecocredit.v1.ClassFee.fee":
+		value := x.Fee
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowListEnabled"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.AllowListEnabled does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFee does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -7708,15 +8118,15 @@ func (x *fastReflection_AllowListEnabled) Get(descriptor protoreflect.FieldDescr
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowListEnabled) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_ClassFee) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.AllowListEnabled.enabled":
-		x.Enabled = value.Bool()
+	case "regen.ecocredit.v1.ClassFee.fee":
+		x.Fee = value.Message().Interface().(*v1beta1.Coin)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowListEnabled"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.AllowListEnabled does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7730,40 +8140,44 @@ func (x *fastReflection_AllowListEnabled) Set(fd protoreflect.FieldDescriptor, v
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowListEnabled) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_ClassFee) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.AllowListEnabled.enabled":
-		panic(fmt.Errorf("field enabled of message regen.ecocredit.v1.AllowListEnabled is not mutable"))
+	case "regen.ecocredit.v1.ClassFee.fee":
+		if x.Fee == nil {
+			x.Fee = new(v1beta1.Coin)
+		}
+		return protoreflect.ValueOfMessage(x.Fee.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowListEnabled"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.AllowListEnabled does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_AllowListEnabled) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_ClassFee) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.AllowListEnabled.enabled":
-		return protoreflect.ValueOfBool(false)
+	case "regen.ecocredit.v1.ClassFee.fee":
+		m := new(v1beta1.Coin)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowListEnabled"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.AllowListEnabled does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_AllowListEnabled) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_ClassFee) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.AllowListEnabled", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.ClassFee", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -7771,7 +8185,7 @@ func (x *fastReflection_AllowListEnabled) WhichOneof(d protoreflect.OneofDescrip
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_AllowListEnabled) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_ClassFee) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -7782,7 +8196,7 @@ func (x *fastReflection_AllowListEnabled) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowListEnabled) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_ClassFee) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -7794,7 +8208,7 @@ func (x *fastReflection_AllowListEnabled) SetUnknown(fields protoreflect.RawFiel
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_AllowListEnabled) IsValid() bool {
+func (x *fastReflection_ClassFee) IsValid() bool {
 	return x != nil
 }
 
@@ -7804,9 +8218,9 @@ func (x *fastReflection_AllowListEnabled) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_ClassFee) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*AllowListEnabled)
+		x := input.Message.Interface().(*ClassFee)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -7818,8 +8232,9 @@ func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if x.Enabled {
-			n += 2
+		if x.Fee != nil {
+			l = options.Size(x.Fee)
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -7831,7 +8246,7 @@ func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*AllowListEnabled)
+		x := input.Message.Interface().(*ClassFee)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -7850,15 +8265,19 @@ func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Enabled {
-			i--
-			if x.Enabled {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
+		if x.Fee != nil {
+			encoded, err := options.Marshal(x.Fee)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
 			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
-			dAtA[i] = 0x8
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -7871,7 +8290,7 @@ func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*AllowListEnabled)
+		x := input.Message.Interface().(*ClassFee)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -7903,17 +8322,17 @@ func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowListEnabled: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassFee: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowListEnabled: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassFee: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Fee", wireType)
 				}
-				var v int
+				var msglen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -7923,12 +8342,28 @@ func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					v |= int(b&0x7F) << shift
+					msglen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				x.Enabled = bool(v != 0)
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Fee == nil {
+					x.Fee = &v1beta1.Coin{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Fee); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -7964,78 +8399,27 @@ func (x *fastReflection_AllowListEnabled) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var _ protoreflect.List = (*_ClassFees_1_list)(nil)
-
-type _ClassFees_1_list struct {
-	list *[]*v1beta1.Coin
-}
-
-func (x *_ClassFees_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_ClassFees_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_ClassFees_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_ClassFees_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_ClassFees_1_list) AppendMutable() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_ClassFees_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_ClassFees_1_list) NewElement() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_ClassFees_1_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_ClassFees      protoreflect.MessageDescriptor
-	fd_ClassFees_fees protoreflect.FieldDescriptor
+	md_AllowedBridgeChain            protoreflect.MessageDescriptor
+	fd_AllowedBridgeChain_chain_name protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_state_proto_init()
-	md_ClassFees = File_regen_ecocredit_v1_state_proto.Messages().ByName("ClassFees")
-	fd_ClassFees_fees = md_ClassFees.Fields().ByName("fees")
+	md_AllowedBridgeChain = File_regen_ecocredit_v1_state_proto.Messages().ByName("AllowedBridgeChain")
+	fd_AllowedBridgeChain_chain_name = md_AllowedBridgeChain.Fields().ByName("chain_name")
 }
 
-var _ protoreflect.Message = (*fastReflection_ClassFees)(nil)
+var _ protoreflect.Message = (*fastReflection_AllowedBridgeChain)(nil)
 
-type fastReflection_ClassFees ClassFees
+type fastReflection_AllowedBridgeChain AllowedBridgeChain
 
-func (x *ClassFees) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_ClassFees)(x)
+func (x *AllowedBridgeChain) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AllowedBridgeChain)(x)
 }
 
-func (x *ClassFees) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[14]
+func (x *AllowedBridgeChain) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8046,43 +8430,43 @@ func (x *ClassFees) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_ClassFees_messageType fastReflection_ClassFees_messageType
-var _ protoreflect.MessageType = fastReflection_ClassFees_messageType{}
+var _fastReflection_AllowedBridgeChain_messageType fastReflection_AllowedBridgeChain_messageType
+var _ protoreflect.MessageType = fastReflection_AllowedBridgeChain_messageType{}
 
-type fastReflection_ClassFees_messageType struct{}
+type fastReflection_AllowedBridgeChain_messageType struct{}
 
-func (x fastReflection_ClassFees_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_ClassFees)(nil)
+func (x fastReflection_AllowedBridgeChain_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AllowedBridgeChain)(nil)
 }
-func (x fastReflection_ClassFees_messageType) New() protoreflect.Message {
-	return new(fastReflection_ClassFees)
+func (x fastReflection_AllowedBridgeChain_messageType) New() protoreflect.Message {
+	return new(fastReflection_AllowedBridgeChain)
 }
-func (x fastReflection_ClassFees_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_ClassFees
+func (x fastReflection_AllowedBridgeChain_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AllowedBridgeChain
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_ClassFees) Descriptor() protoreflect.MessageDescriptor {
-	return md_ClassFees
+func (x *fastReflection_AllowedBridgeChain) Descriptor() protoreflect.MessageDescriptor {
+	return md_AllowedBridgeChain
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_ClassFees) Type() protoreflect.MessageType {
-	return _fastReflection_ClassFees_messageType
+func (x *fastReflection_AllowedBridgeChain) Type() protoreflect.MessageType {
+	return _fastReflection_AllowedBridgeChain_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_ClassFees) New() protoreflect.Message {
-	return new(fastReflection_ClassFees)
+func (x *fastReflection_AllowedBridgeChain) New() protoreflect.Message {
+	return new(fastReflection_AllowedBridgeChain)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_ClassFees) Interface() protoreflect.ProtoMessage {
-	return (*ClassFees)(x)
+func (x *fastReflection_AllowedBridgeChain) Interface() protoreflect.ProtoMessage {
+	return (*AllowedBridgeChain)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -8090,10 +8474,10 @@ func (x *fastReflection_ClassFees) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_ClassFees) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Fees) != 0 {
-		value := protoreflect.ValueOfList(&_ClassFees_1_list{list: &x.Fees})
-		if !f(fd_ClassFees_fees, value) {
+func (x *fastReflection_AllowedBridgeChain) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.ChainName != "" {
+		value := protoreflect.ValueOfString(x.ChainName)
+		if !f(fd_AllowedBridgeChain_chain_name, value) {
 			return
 		}
 	}
@@ -8110,15 +8494,15 @@ func (x *fastReflection_ClassFees) Range(f func(protoreflect.FieldDescriptor, pr
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_ClassFees) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_AllowedBridgeChain) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ClassFees.fees":
-		return len(x.Fees) != 0
+	case "regen.ecocredit.v1.AllowedBridgeChain.chain_name":
+		return x.ChainName != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedBridgeChain"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedBridgeChain does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8128,15 +8512,15 @@ func (x *fastReflection_ClassFees) Has(fd protoreflect.FieldDescriptor) bool {
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ClassFees) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_AllowedBridgeChain) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ClassFees.fees":
-		x.Fees = nil
+	case "regen.ecocredit.v1.AllowedBridgeChain.chain_name":
+		x.ChainName = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedBridgeChain"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedBridgeChain does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8146,19 +8530,16 @@ func (x *fastReflection_ClassFees) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_ClassFees) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AllowedBridgeChain) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.ClassFees.fees":
-		if len(x.Fees) == 0 {
-			return protoreflect.ValueOfList(&_ClassFees_1_list{})
-		}
-		listValue := &_ClassFees_1_list{list: &x.Fees}
-		return protoreflect.ValueOfList(listValue)
+	case "regen.ecocredit.v1.AllowedBridgeChain.chain_name":
+		value := x.ChainName
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedBridgeChain"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFees does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedBridgeChain does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -8172,17 +8553,15 @@ func (x *fastReflection_ClassFees) Get(descriptor protoreflect.FieldDescriptor) 
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ClassFees) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_AllowedBridgeChain) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ClassFees.fees":
-		lv := value.List()
-		clv := lv.(*_ClassFees_1_list)
-		x.Fees = *clv.list
+	case "regen.ecocredit.v1.AllowedBridgeChain.chain_name":
+		x.ChainName = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedBridgeChain"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedBridgeChain does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8196,45 +8575,40 @@ func (x *fastReflection_ClassFees) Set(fd protoreflect.FieldDescriptor, value pr
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ClassFees) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AllowedBridgeChain) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ClassFees.fees":
-		if x.Fees == nil {
-			x.Fees = []*v1beta1.Coin{}
-		}
-		value := &_ClassFees_1_list{list: &x.Fees}
-		return protoreflect.ValueOfList(value)
+	case "regen.ecocredit.v1.AllowedBridgeChain.chain_name":
+		panic(fmt.Errorf("field chain_name of message regen.ecocredit.v1.AllowedBridgeChain is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedBridgeChain"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedBridgeChain does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_ClassFees) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AllowedBridgeChain) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ClassFees.fees":
-		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_ClassFees_1_list{list: &list})
+	case "regen.ecocredit.v1.AllowedBridgeChain.chain_name":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.AllowedBridgeChain"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ClassFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.AllowedBridgeChain does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_ClassFees) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_AllowedBridgeChain) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.ClassFees", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.AllowedBridgeChain", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -8242,7 +8616,7 @@ func (x *fastReflection_ClassFees) WhichOneof(d protoreflect.OneofDescriptor) pr
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_ClassFees) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_AllowedBridgeChain) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -8253,7 +8627,7 @@ func (x *fastReflection_ClassFees) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ClassFees) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_AllowedBridgeChain) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -8265,7 +8639,7 @@ func (x *fastReflection_ClassFees) SetUnknown(fields protoreflect.RawFields) {
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_ClassFees) IsValid() bool {
+func (x *fastReflection_AllowedBridgeChain) IsValid() bool {
 	return x != nil
 }
 
@@ -8275,9 +8649,9 @@ func (x *fastReflection_ClassFees) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_ClassFees) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_AllowedBridgeChain) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*ClassFees)
+		x := input.Message.Interface().(*AllowedBridgeChain)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8289,11 +8663,9 @@ func (x *fastReflection_ClassFees) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if len(x.Fees) > 0 {
-			for _, e := range x.Fees {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
+		l = len(x.ChainName)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -8305,7 +8677,7 @@ func (x *fastReflection_ClassFees) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*ClassFees)
+		x := input.Message.Interface().(*AllowedBridgeChain)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8324,21 +8696,12 @@ func (x *fastReflection_ClassFees) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Fees) > 0 {
-			for iNdEx := len(x.Fees) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Fees[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
+		if len(x.ChainName) > 0 {
+			i -= len(x.ChainName)
+			copy(dAtA[i:], x.ChainName)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ChainName)))
+			i--
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -8351,7 +8714,7 @@ func (x *fastReflection_ClassFees) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*ClassFees)
+		x := input.Message.Interface().(*AllowedBridgeChain)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8383,17 +8746,17 @@ func (x *fastReflection_ClassFees) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassFees: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowedBridgeChain: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassFees: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowedBridgeChain: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Fees", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ChainName", wireType)
 				}
-				var msglen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -8403,25 +8766,23 @@ func (x *fastReflection_ClassFees) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					msglen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if msglen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + msglen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Fees = append(x.Fees, &v1beta1.Coin{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Fees[len(x.Fees)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
+				x.ChainName = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -9299,7 +9660,52 @@ func (x *BatchContract) GetContract() string {
 	return ""
 }
 
-// AllowedClassCreator is an allowed credit class creator.
+// ClassCreatorAllowlist determines if the credit class creator allowlist is
+// enabled. When set to true, only the addresses in the AllowedClassCreator
+// table may create credit classes. When set to false, any address may create
+// credit classes. This table is controlled via governance.
+//
+// Since Revision 1
+type ClassCreatorAllowlist struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// enabled is whether or not the allow list is enabled.
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+}
+
+func (x *ClassCreatorAllowlist) Reset() {
+	*x = ClassCreatorAllowlist{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ClassCreatorAllowlist) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClassCreatorAllowlist) ProtoMessage() {}
+
+// Deprecated: Use ClassCreatorAllowlist.ProtoReflect.Descriptor instead.
+func (*ClassCreatorAllowlist) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ClassCreatorAllowlist) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+// AllowedClassCreator is an allowed credit class creator. This table is
+// controlled via governance.
+//
+// Since Revision 1
 type AllowedClassCreator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9312,7 +9718,7 @@ type AllowedClassCreator struct {
 func (x *AllowedClassCreator) Reset() {
 	*x = AllowedClassCreator{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[12]
+		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -9326,7 +9732,7 @@ func (*AllowedClassCreator) ProtoMessage() {}
 
 // Deprecated: Use AllowedClassCreator.ProtoReflect.Descriptor instead.
 func (*AllowedClassCreator) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{12}
+	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *AllowedClassCreator) GetAddress() []byte {
@@ -9336,59 +9742,22 @@ func (x *AllowedClassCreator) GetAddress() []byte {
 	return nil
 }
 
-// AllowListEnabled determines if the credit class creator allowlist is enabled.
-// When set to true, only the addresses in the AllowedClassCreator table can
-// create credit classes. When set to false, any address is free to create
-// credit classes.
-type AllowListEnabled struct {
+// ClassFee is the credit class creation fee. If not set, a credit class
+// creation fee is not required. This table is controlled via governance.
+//
+// Since Revision 1
+type ClassFee struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// enabled is whether or not the allow list is enabled.
-	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// fee is the credit class creation fee. If not set, a credit class creation
+	// fee is not required.
+	Fee *v1beta1.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
-func (x *AllowListEnabled) Reset() {
-	*x = AllowListEnabled{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[13]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *AllowListEnabled) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*AllowListEnabled) ProtoMessage() {}
-
-// Deprecated: Use AllowListEnabled.ProtoReflect.Descriptor instead.
-func (*AllowListEnabled) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *AllowListEnabled) GetEnabled() bool {
-	if x != nil {
-		return x.Enabled
-	}
-	return false
-}
-
-// ClassFees is a list of coins that may be used as the fee
-// for credit class creation.
-type ClassFees struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// fees is the fee required to create a credit class.
-	Fees []*v1beta1.Coin `protobuf:"bytes,1,rep,name=fees,proto3" json:"fees,omitempty"`
-}
-
-func (x *ClassFees) Reset() {
-	*x = ClassFees{}
+func (x *ClassFee) Reset() {
+	*x = ClassFee{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -9396,22 +9765,64 @@ func (x *ClassFees) Reset() {
 	}
 }
 
-func (x *ClassFees) String() string {
+func (x *ClassFee) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ClassFees) ProtoMessage() {}
+func (*ClassFee) ProtoMessage() {}
 
-// Deprecated: Use ClassFees.ProtoReflect.Descriptor instead.
-func (*ClassFees) Descriptor() ([]byte, []int) {
+// Deprecated: Use ClassFee.ProtoReflect.Descriptor instead.
+func (*ClassFee) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *ClassFees) GetFees() []*v1beta1.Coin {
+func (x *ClassFee) GetFee() *v1beta1.Coin {
 	if x != nil {
-		return x.Fees
+		return x.Fee
 	}
 	return nil
+}
+
+// AllowedBridgeChain is a list of chains that are allowed to be used in
+// bridging operations. NOTE: chain_names MUST be converted to lowercase before
+// writing to and reading from this table in order to keep entries consistent.
+// This table is controlled via governance.
+//
+// Since Revision 1
+type AllowedBridgeChain struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// chain_name is the name of the chain allowed to bridge ecocredits to.
+	ChainName string `protobuf:"bytes,1,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`
+}
+
+func (x *AllowedBridgeChain) Reset() {
+	*x = AllowedBridgeChain{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AllowedBridgeChain) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AllowedBridgeChain) ProtoMessage() {}
+
+// Deprecated: Use AllowedBridgeChain.ProtoReflect.Descriptor instead.
+func (*AllowedBridgeChain) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *AllowedBridgeChain) GetChainName() string {
+	if x != nil {
+		return x.ChainName
+	}
+	return ""
 }
 
 var File_regen_ecocredit_v1_state_proto protoreflect.FileDescriptor
@@ -9566,33 +9977,38 @@ var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
 	0x3a, 0x2f, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x29, 0x0a, 0x0b, 0x0a, 0x09, 0x62, 0x61, 0x74, 0x63,
 	0x68, 0x5f, 0x6b, 0x65, 0x79, 0x12, 0x18, 0x0a, 0x12, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b,
 	0x65, 0x79, 0x2c, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x10, 0x01, 0x18, 0x01, 0x18,
-	0x0c, 0x22, 0x44, 0x0a, 0x13, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x3a, 0x13, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x0d, 0x0a, 0x09, 0x0a, 0x07, 0x61, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x0d, 0x22, 0x36, 0x0a, 0x10, 0x41, 0x6c, 0x6c, 0x6f, 0x77,
-	0x4c, 0x69, 0x73, 0x74, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x65,
-	0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x65, 0x6e,
-	0x61, 0x62, 0x6c, 0x65, 0x64, 0x3a, 0x08, 0xfa, 0x9e, 0xd3, 0x8e, 0x03, 0x02, 0x08, 0x0e, 0x22,
-	0x44, 0x0a, 0x09, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x73, 0x12, 0x2d, 0x0a, 0x04,
-	0x66, 0x65, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x52, 0x04, 0x66, 0x65, 0x65, 0x73, 0x3a, 0x08, 0xfa, 0x9e, 0xd3,
-	0x8e, 0x03, 0x02, 0x08, 0x0f, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
-	0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
-	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02,
-	0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x0c, 0x22, 0x3b, 0x0a, 0x15, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x6c, 0x69, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e,
+	0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61,
+	0x62, 0x6c, 0x65, 0x64, 0x3a, 0x08, 0xfa, 0x9e, 0xd3, 0x8e, 0x03, 0x02, 0x08, 0x0d, 0x22, 0x44,
+	0x0a, 0x13, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x3a,
+	0x13, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x0d, 0x0a, 0x09, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x18, 0x0e, 0x22, 0x41, 0x0a, 0x08, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65,
+	0x12, 0x2b, 0x0a, 0x03, 0x66, 0x65, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x52, 0x03, 0x66, 0x65, 0x65, 0x3a, 0x08, 0xfa,
+	0x9e, 0xd3, 0x8e, 0x03, 0x02, 0x08, 0x0f, 0x22, 0x4b, 0x0a, 0x12, 0x41, 0x6c, 0x6c, 0x6f, 0x77,
+	0x65, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x1d, 0x0a,
+	0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x09, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x3a, 0x16, 0xf2, 0x9e,
+	0xd3, 0x8e, 0x03, 0x10, 0x0a, 0x0c, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x10, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42,
+	0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d,
+	0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65,
+	0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12,
+	0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
+	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -9607,7 +10023,7 @@ func file_regen_ecocredit_v1_state_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_v1_state_proto_rawDescData
 }
 
-var file_regen_ecocredit_v1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_regen_ecocredit_v1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_regen_ecocredit_v1_state_proto_goTypes = []interface{}{
 	(*CreditType)(nil),            // 0: regen.ecocredit.v1.CreditType
 	(*Class)(nil),                 // 1: regen.ecocredit.v1.Class
@@ -9621,17 +10037,18 @@ var file_regen_ecocredit_v1_state_proto_goTypes = []interface{}{
 	(*BatchSupply)(nil),           // 9: regen.ecocredit.v1.BatchSupply
 	(*OriginTxIndex)(nil),         // 10: regen.ecocredit.v1.OriginTxIndex
 	(*BatchContract)(nil),         // 11: regen.ecocredit.v1.BatchContract
-	(*AllowedClassCreator)(nil),   // 12: regen.ecocredit.v1.AllowedClassCreator
-	(*AllowListEnabled)(nil),      // 13: regen.ecocredit.v1.AllowListEnabled
-	(*ClassFees)(nil),             // 14: regen.ecocredit.v1.ClassFees
-	(*timestamppb.Timestamp)(nil), // 15: google.protobuf.Timestamp
-	(*v1beta1.Coin)(nil),          // 16: cosmos.base.v1beta1.Coin
+	(*ClassCreatorAllowlist)(nil), // 12: regen.ecocredit.v1.ClassCreatorAllowlist
+	(*AllowedClassCreator)(nil),   // 13: regen.ecocredit.v1.AllowedClassCreator
+	(*ClassFee)(nil),              // 14: regen.ecocredit.v1.ClassFee
+	(*AllowedBridgeChain)(nil),    // 15: regen.ecocredit.v1.AllowedBridgeChain
+	(*timestamppb.Timestamp)(nil), // 16: google.protobuf.Timestamp
+	(*v1beta1.Coin)(nil),          // 17: cosmos.base.v1beta1.Coin
 }
 var file_regen_ecocredit_v1_state_proto_depIdxs = []int32{
-	15, // 0: regen.ecocredit.v1.Batch.start_date:type_name -> google.protobuf.Timestamp
-	15, // 1: regen.ecocredit.v1.Batch.end_date:type_name -> google.protobuf.Timestamp
-	15, // 2: regen.ecocredit.v1.Batch.issuance_date:type_name -> google.protobuf.Timestamp
-	16, // 3: regen.ecocredit.v1.ClassFees.fees:type_name -> cosmos.base.v1beta1.Coin
+	16, // 0: regen.ecocredit.v1.Batch.start_date:type_name -> google.protobuf.Timestamp
+	16, // 1: regen.ecocredit.v1.Batch.end_date:type_name -> google.protobuf.Timestamp
+	16, // 2: regen.ecocredit.v1.Batch.issuance_date:type_name -> google.protobuf.Timestamp
+	17, // 3: regen.ecocredit.v1.ClassFee.fee:type_name -> cosmos.base.v1beta1.Coin
 	4,  // [4:4] is the sub-list for method output_type
 	4,  // [4:4] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
@@ -9790,7 +10207,7 @@ func file_regen_ecocredit_v1_state_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_state_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AllowedClassCreator); i {
+			switch v := v.(*ClassCreatorAllowlist); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9802,7 +10219,7 @@ func file_regen_ecocredit_v1_state_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_state_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AllowListEnabled); i {
+			switch v := v.(*AllowedClassCreator); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9814,7 +10231,19 @@ func file_regen_ecocredit_v1_state_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_state_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ClassFees); i {
+			switch v := v.(*ClassFee); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_state_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AllowedBridgeChain); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9832,7 +10261,7 @@ func file_regen_ecocredit_v1_state_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_v1_state_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

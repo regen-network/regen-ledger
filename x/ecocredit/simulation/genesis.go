@@ -3,8 +3,10 @@ package simulation
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 
+	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
@@ -15,17 +17,18 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	dbm "github.com/tendermint/tm-db"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 // genCreditClassFee randomized CreditClassFee
-func genCreditClassFee(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10)))))
+func genCreditClassFee(r *rand.Rand) sdk.Coin {
+	return sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10))))
 }
 
 // genAllowedClassCreators generate random set of creators
@@ -52,7 +55,7 @@ func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []sdk.AccAdd
 	return creators
 }
 
-func genAllowListEnabled(r *rand.Rand) bool {
+func genClassCreatorAllowlist(r *rand.Rand) bool {
 	return r.Int63n(101) <= 90
 }
 
@@ -79,7 +82,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	if err := genGenesisState(ormCtx, simState, ss, ms); err != nil {
+	basketStore, err := basketapi.NewStateStore(ormdb)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := genGenesisState(ormCtx, simState, ss, basketStore, ms); err != nil {
 		panic(err)
 	}
 
@@ -188,15 +196,16 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 	return seq.NextSequence, nil
 }
 
-func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore, ms marketplaceapi.StateStore) error {
+func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore,
+	basketStore basketapi.StateStore, ms marketplaceapi.StateStore) error {
 	accs := simState.Accounts
 	r := simState.Rand
 
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
-	// generate core params
-	if err := ss.AllowListEnabledTable().Save(ctx, &api.AllowListEnabled{
-		Enabled: genAllowListEnabled(r),
+	// generate base params
+	if err := ss.ClassCreatorAllowlistTable().Save(ctx, &api.ClassCreatorAllowlist{
+		Enabled: genClassCreatorAllowlist(r),
 	}); err != nil {
 		return err
 	}
@@ -210,19 +219,11 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		}
 	}
 
-	classFees := genCreditClassFee(r)
+	classFee := genCreditClassFee(r)
+	classFeeProto := regentypes.CoinToProtoCoin(classFee)
 
-	fees := []*basev1beta1.Coin{}
-	for i := 0; i < classFees.Len(); i++ {
-		denom := classFees.GetDenomByIndex(i)
-		amount := classFees.AmountOf(denom)
-		fees = append(fees, &basev1beta1.Coin{
-			Denom:  denom,
-			Amount: amount.String(),
-		})
-	}
-	if err := ss.ClassFeesTable().Save(ctx, &api.ClassFees{
-		Fees: fees,
+	if err := ss.ClassFeeTable().Save(ctx, &api.ClassFee{
+		Fee: classFeeProto,
 	}); err != nil {
 		return err
 	}
@@ -246,7 +247,14 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	// generate basket params
-	// TODO: #1363
+	if err := basketStore.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
+		Fee: &basev1beta1.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 100000)),
+		},
+	}); err != nil {
+		return err
+	}
 
 	// generate marketplace params
 	if err := ms.AllowedDenomTable().Insert(ctx, &marketplaceapi.AllowedDenom{
@@ -333,7 +341,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	if err != nil {
 		return err
 	}
-	denom, err := core.FormatBatchDenom("C01-001", batchSeq, &startDate, &endDate)
+	denom, err := base.FormatBatchDenom("C01-001", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -357,7 +365,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	if err != nil {
 		return err
 	}
-	denom, err = core.FormatBatchDenom("C02-001", batchSeq, &startDate, &endDate)
+	denom, err = base.FormatBatchDenom("C02-001", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -418,6 +426,12 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		BatchKey:       bKey2,
 		TradableAmount: "200",
 		RetiredAmount:  "10",
+	}); err != nil {
+		return err
+	}
+
+	if err := ss.AllowedBridgeChainTable().Insert(ctx, &api.AllowedBridgeChain{
+		ChainName: "polygon",
 	}); err != nil {
 		return err
 	}

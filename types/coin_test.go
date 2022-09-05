@@ -11,7 +11,69 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 )
 
-func TestConvertCoinsToProtoCoins(t *testing.T) {
+func TestCoinToProtoCoin(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    sdk.Coin
+		expected *basev1beta1.Coin
+	}{
+		{
+			"empty coin",
+			sdk.Coin{},
+			&basev1beta1.Coin{
+				Denom:  "",
+				Amount: "",
+			},
+		},
+		{
+			"only denom",
+			sdk.Coin{
+				Denom: "uregen",
+			},
+			&basev1beta1.Coin{
+				Denom:  "uregen",
+				Amount: "",
+			},
+		},
+		{
+			"only amount",
+			sdk.Coin{
+				Amount: sdk.NewInt(10000),
+			},
+			&basev1beta1.Coin{
+				Denom:  "",
+				Amount: "10000",
+			},
+		},
+		{
+			"negative amount",
+			sdk.Coin{
+				Amount: sdk.NewInt(-10000),
+			},
+			&basev1beta1.Coin{
+				Denom:  "",
+				Amount: "-10000",
+			},
+		},
+		{
+			"valid coin",
+			sdk.NewCoin("uregen", sdk.NewInt(10000)),
+			&basev1beta1.Coin{
+				Denom:  "uregen",
+				Amount: "10000",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := types.CoinToProtoCoin(tc.input)
+			assert.Equal(t, result, tc.expected)
+		})
+	}
+}
+
+func TestCoinsToProtoCoins(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    sdk.Coins
@@ -56,12 +118,62 @@ func TestConvertCoinsToProtoCoins(t *testing.T) {
 	}
 }
 
-func TestConvertProtoCoinsToCoins(t *testing.T) {
+func TestProtoCoinToCoin(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    *basev1beta1.Coin
+		expected sdk.Coin
+		ok       bool
+		panic    bool
+	}{
+		{
+			"empty coin",
+			&basev1beta1.Coin{},
+			sdk.Coin{},
+			false,
+			false,
+		},
+		{
+			"single coin",
+			&basev1beta1.Coin{
+				Denom:  "uregen",
+				Amount: "10000",
+			},
+			sdk.NewCoin("uregen", sdk.NewInt(10000)),
+			true,
+			false,
+		},
+		{
+			"should panic: negative amount",
+			&basev1beta1.Coin{
+				Denom:  "uregen",
+				Amount: "-20000000",
+			},
+			sdk.Coin{},
+			true,
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.panic {
+				assert.Panics(t, func() { types.ProtoCoinToCoin(tc.input) })
+			} else {
+				result, ok := types.ProtoCoinToCoin(tc.input)
+				assert.Equal(t, tc.ok, ok)
+				assert.Equal(t, result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestProtoCoinsToCoins(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    []*basev1beta1.Coin
 		expected sdk.Coins
-		isPanics bool
+		panic    bool
 	}{
 		{
 			"empty coins",
@@ -96,7 +208,7 @@ func TestConvertProtoCoinsToCoins(t *testing.T) {
 			false,
 		},
 		{
-			"should panic: negitive amount",
+			"should panic: negative amount",
 			[]*basev1beta1.Coin{
 				{
 					Denom:  "uatom",
@@ -114,7 +226,7 @@ func TestConvertProtoCoinsToCoins(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if tc.isPanics {
+			if tc.panic {
 				assert.Panics(t, func() { types.ProtoCoinsToCoins(tc.input) })
 			} else {
 				result, ok := types.ProtoCoinsToCoins(tc.input)

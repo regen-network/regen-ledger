@@ -10,15 +10,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 type GenesisTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.Factory
-	fixture        testutil.Fixture
+	fixtureFactory fixture.Factory
+	fixture        fixture.Fixture
 
 	genesisCtx  sdk.Context
 	msgClient   data.MsgClient
@@ -29,7 +29,7 @@ type GenesisTestSuite struct {
 	hash2       *data.ContentHash
 }
 
-func NewGenesisTestSuite(fixtureFactory testutil.Factory) *GenesisTestSuite {
+func NewGenesisTestSuite(fixtureFactory fixture.Factory) *GenesisTestSuite {
 	return &GenesisTestSuite{fixtureFactory: fixtureFactory}
 }
 

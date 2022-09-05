@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	client "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestQueryBasketCmd() {
@@ -53,7 +53,7 @@ func (s *IntegrationTestSuite) TestQueryBasketCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketResponse
+				var res types.QueryBasketResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Basket) // deprecated
 				require.NotEmpty(res.BasketInfo)
@@ -103,7 +103,7 @@ func (s *IntegrationTestSuite) TestQueryBasketsCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketsResponse
+				var res types.QueryBasketsResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Baskets) // deprecated
 				require.NotEmpty(res.BasketsInfo)
@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalanceCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketBalanceResponse
+				var res types.QueryBasketBalanceResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Balance)
 			}
@@ -215,7 +215,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 			} else {
 				require.NoError(err)
 
-				var res basket.QueryBasketBalancesResponse
+				var res types.QueryBasketBalancesResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.Balances) // deprecated
 				require.NotEmpty(res.BalancesInfo)
@@ -231,18 +231,20 @@ func (s *IntegrationTestSuite) TestQueryBasketBalancesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBasketFees() {
+func (s *IntegrationTestSuite) TestQueryBasketFee() {
 	require := s.Require()
 
 	clientCtx := s.val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	cmd := client.QueryBasketFeesCmd()
+	cmd := client.QueryBasketFeeCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 	require.NoError(err)
 
-	var res basket.QueryBasketFeesResponse
+	var res types.QueryBasketFeeResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	require.NotEmpty(res.Fees)
-	require.Equal(res.Fees.AmountOf(sdk.DefaultBondDenom), math.NewInt(10))
+
+	require.NotEmpty(res.Fee)
+	require.Equal(res.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(res.Fee.Amount, basetypes.DefaultBasketFee)
 }

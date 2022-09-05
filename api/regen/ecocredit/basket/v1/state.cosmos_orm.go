@@ -458,40 +458,40 @@ func NewBasketBalanceTable(db ormtable.Schema) (BasketBalanceTable, error) {
 }
 
 // singleton store
-type BasketFeesTable interface {
-	Get(ctx context.Context) (*BasketFees, error)
-	Save(ctx context.Context, basketFees *BasketFees) error
+type BasketFeeTable interface {
+	Get(ctx context.Context) (*BasketFee, error)
+	Save(ctx context.Context, basketFee *BasketFee) error
 }
 
-type basketFeesTable struct {
+type basketFeeTable struct {
 	table ormtable.Table
 }
 
-var _ BasketFeesTable = basketFeesTable{}
+var _ BasketFeeTable = basketFeeTable{}
 
-func (x basketFeesTable) Get(ctx context.Context) (*BasketFees, error) {
-	basketFees := &BasketFees{}
-	_, err := x.table.Get(ctx, basketFees)
-	return basketFees, err
+func (x basketFeeTable) Get(ctx context.Context) (*BasketFee, error) {
+	basketFee := &BasketFee{}
+	_, err := x.table.Get(ctx, basketFee)
+	return basketFee, err
 }
 
-func (x basketFeesTable) Save(ctx context.Context, basketFees *BasketFees) error {
-	return x.table.Save(ctx, basketFees)
+func (x basketFeeTable) Save(ctx context.Context, basketFee *BasketFee) error {
+	return x.table.Save(ctx, basketFee)
 }
 
-func NewBasketFeesTable(db ormtable.Schema) (BasketFeesTable, error) {
-	table := db.GetTable(&BasketFees{})
+func NewBasketFeeTable(db ormtable.Schema) (BasketFeeTable, error) {
+	table := db.GetTable(&BasketFee{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&BasketFees{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&BasketFee{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return &basketFeesTable{table}, nil
+	return &basketFeeTable{table}, nil
 }
 
 type StateStore interface {
 	BasketTable() BasketTable
 	BasketClassTable() BasketClassTable
 	BasketBalanceTable() BasketBalanceTable
-	BasketFeesTable() BasketFeesTable
+	BasketFeeTable() BasketFeeTable
 
 	doNotImplement()
 }
@@ -500,7 +500,7 @@ type stateStore struct {
 	basket        BasketTable
 	basketClass   BasketClassTable
 	basketBalance BasketBalanceTable
-	basketFees    BasketFeesTable
+	basketFee     BasketFeeTable
 }
 
 func (x stateStore) BasketTable() BasketTable {
@@ -515,8 +515,8 @@ func (x stateStore) BasketBalanceTable() BasketBalanceTable {
 	return x.basketBalance
 }
 
-func (x stateStore) BasketFeesTable() BasketFeesTable {
-	return x.basketFees
+func (x stateStore) BasketFeeTable() BasketFeeTable {
+	return x.basketFee
 }
 
 func (stateStore) doNotImplement() {}
@@ -539,7 +539,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	basketFeesTable, err := NewBasketFeesTable(db)
+	basketFeeTable, err := NewBasketFeeTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -548,6 +548,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		basketTable,
 		basketClassTable,
 		basketBalanceTable,
-		basketFeesTable,
+		basketFeeTable,
 	}, nil
 }

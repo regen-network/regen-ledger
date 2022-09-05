@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	client "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
@@ -51,7 +51,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 			} else {
 				require.NoError(err)
 
-				var res marketplace.QuerySellOrderResponse
+				var res types.QuerySellOrderResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.SellOrder)
 			}
@@ -100,7 +100,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 			} else {
 				require.NoError(err)
 
-				var res marketplace.QuerySellOrdersResponse
+				var res types.QuerySellOrdersResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.SellOrders)
 
@@ -162,7 +162,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySellerCmd() {
 			} else {
 				require.NoError(err)
 
-				var res marketplace.QuerySellOrdersBySellerResponse
+				var res types.QuerySellOrdersBySellerResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.SellOrders)
 
@@ -224,7 +224,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchCmd() {
 			} else {
 				require.NoError(err)
 
-				var res marketplace.QuerySellOrdersByBatchResponse
+				var res types.QuerySellOrdersByBatchResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.SellOrders)
 
@@ -279,7 +279,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenomsCmd() {
 			} else {
 				require.NoError(err)
 
-				var res marketplace.QueryAllowedDenomsResponse
+				var res types.QueryAllowedDenomsResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.NotEmpty(res.AllowedDenoms)
 
