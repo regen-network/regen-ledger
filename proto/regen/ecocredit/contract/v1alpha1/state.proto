@@ -26,15 +26,17 @@ message Contract {
   ContractStatus status = 3;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract such as estimated total supply, forward
-  // contract supply, and estimated price per credit type unit.
+  // information about the contract including the initial amount of funds to
+  // collect, the initial volume percentage offered, estimated total supply,
+  // forward contract supply, and estimated price per credit type unit.
   google.protobuf.Timestamp metadata = 4;
 
-  // volume_percentage is the percent of all credits issued that will be
-  // available to purchase in shares.
+  // volume_percentage is the remaining percent of all credits issued that
+  // are be available to claim.
   string volume_percentage = 5;
 
-  // funds_to_collect is the denom and amount the project is collecting.
+  // funds_to_collect is the denom and remaining amount of funds the project
+  // is collecting.
   cosmos.base.v1beta1.Coin funds_to_collect = 6;
 
   // start_date is the delivery start date.

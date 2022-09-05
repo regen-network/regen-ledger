@@ -149,6 +149,22 @@ message MsgFundProject {
   // funds is the token denom and amount the funder is providing in return for
   // the specified volume percentage.
   cosmos.base.v1beta1.Coin funds = 4;
+
+  // direct_issuance determines whether the credits will be automatically issued
+  // to the funder (i.e. the funder account will be assigned as the recipient of
+  // the issuance policy) or whether the funder will receive claim tokens (i.e.
+  // the contract submodule will be assigned as the recipient of the issuance
+  // policy and the credits can be claimed at a later point in time).
+  bool direct_issuance = 5;
+
+  // auto_retire determines whether the credits will be automatically retied
+  // upon issuance (i.e. the issuance policy will be set to auto-retire). This
+  // option only applies if direct issuance is enabled.
+  bool auto_retire = 6;
+
+  // retirement_jurisdiction is the jurisdiction of the funder. A jurisdiction
+  // is only required if auto-retire is enabled.
+  string retirement_jurisdiction = 7;
 }
 
 // MsgFundProjectResponse is the Msg/FundProject response type.
