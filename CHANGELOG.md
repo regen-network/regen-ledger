@@ -150,6 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - [#1411](https://github.com/regen-network/regen-ledger/pull/1411/) `EventCreateBatch`, `EventMintBatchCredits`, and and `EventSend` now show "0" instead of "" for 0 value decimals.
+- [#1473](https://github.com/regen-network/regen-ledger/pull/1473/) fix `UpdateSellOrders` doc
 
 #### Removed
 
