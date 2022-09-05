@@ -74,8 +74,9 @@ message MsgCreate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract such as estimated total supply, forward
-  // contract supply, and estimated price per credit type unit.
+  // information about the contract including the initial amount of funds to
+  // collect, the initial volume percentage offered, estimated total supply,
+  // forward contract supply, and estimated price per credit type unit.
   string metadata = 3;
 
   // funds_to_collect is the denom and amount the project is collecting.
@@ -112,8 +113,9 @@ message MsgUpdate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract such as estimated total supply, forward
-  // contract supply, and estimated price per credit type unit.
+  // information about the contract including the initial amount of funds to
+  // collect, the initial volume percentage offered, estimated total supply,
+  // forward contract supply, and estimated price per credit type unit.
   string metadata = 3;
 
   // funds_to_collect is the denom and amount the project is collecting.
