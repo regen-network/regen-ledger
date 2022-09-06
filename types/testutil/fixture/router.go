@@ -7,13 +7,14 @@ import (
 
 	"cosmossdk.io/errors"
 
+	"github.com/gogo/protobuf/proto"
+	"google.golang.org/grpc/encoding"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/gogo/protobuf/proto"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
-	"google.golang.org/grpc/encoding"
 )
 
 type router struct {

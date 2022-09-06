@@ -3,8 +3,9 @@ package ormutil
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"gotest.tools/v3/assert"
+
+	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 func TestGogoPageReqToPulsarPageReq(t *testing.T) {

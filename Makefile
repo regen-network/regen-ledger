@@ -211,12 +211,11 @@ lint-fix: format
 	@find . -name 'go.mod' -type f -execdir golangci-lint run --fix --out-format=tab --issues-exit-code=0 \;
 
 format_filter = -name '*.go' -type f \
-	-not -path '*.git*' \
 	-not -name '*.pb.go' \
 	-not -name '*.gw.go' \
 	-not -name '*.pulsar.go' \
 	-not -name '*.cosmos_orm.go' \
-	-not -name 'statik.go'
+	-not -name '*statik.go'
 
 format_local = \
 	github.com/tendermint/tendermint \
@@ -225,8 +224,10 @@ format_local = \
 	github.com/regen-network/regen-ledger
 
 format:
-	@echo "Formatting imports in all go modules..."
+	@echo "Formatting all go modules..."
+	@find . $(format_filter) | xargs gofmt -s -w
 	@find . $(format_filter) | xargs goimports -w -local $(subst $(whitespace),$(comma),$(format_local))
+	@find . $(format_filter) | xargs misspell -w
 
 .PHONY: lint lint-fix format
 
@@ -236,6 +237,7 @@ format:
 
 tools: go-version
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/client9/misspell/cmd/misspell@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/yoheimuta/protolint/cmd/protolint@latest
 
