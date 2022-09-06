@@ -8176,8 +8176,7 @@ type MsgUpdateSellOrders_Update struct {
 
 	// sell_order_id is the ID of an existing sell order.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
-	// new_quantity is the updated quantity of credits available to sell, if it
-	// is set to zero then the order is cancelled.
+	// new_quantity is the updated quantity of credits available to sell.
 	NewQuantity string `protobuf:"bytes,2,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
 	// new_ask_price is the new ask price for this sell order
 	NewAskPrice *v1beta1.Coin `protobuf:"bytes,3,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`

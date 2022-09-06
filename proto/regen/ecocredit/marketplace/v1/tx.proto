@@ -100,8 +100,7 @@ message MsgUpdateSellOrders {
     // sell_order_id is the ID of an existing sell order.
     uint64 sell_order_id = 1;
 
-    // new_quantity is the updated quantity of credits available to sell, if it
-    // is set to zero then the order is cancelled.
+    // new_quantity is the updated quantity of credits available to sell.
     string new_quantity = 2;
 
     // new_ask_price is the new ask price for this sell order
