@@ -17,9 +17,9 @@ import (
 
 const OpWeightMsgCreateBatch = "op_weight_msg_create_batch" //nolint:gosec
 
-const WeightCreateBatch = 50
-
 var TypeMsgCreateBatch = sdk.MsgTypeURL(&types.MsgCreateBatch{})
+
+const WeightCreateBatch = 50
 
 // SimulateMsgCreateBatch generates a MsgCreateBatch with random values.
 func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,

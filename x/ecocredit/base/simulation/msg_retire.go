@@ -17,9 +17,9 @@ import (
 
 const OpWeightMsgRetire = "op_weight_msg_retire" //nolint:gosec
 
-const WeightRetire = 80
-
 var TypeMsgRetire = sdk.MsgTypeURL(&types.MsgRetire{})
+
+const WeightRetire = 80
 
 // SimulateMsgRetire generates a MsgRetire with random values.
 func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,

@@ -16,9 +16,9 @@ import (
 
 const OpWeightMsgCreateClass = "op_weight_msg_create_class" //nolint:gosec
 
-const WeightCreateClass = 10
-
 var TypeMsgCreateClass = sdk.MsgTypeURL(&types.MsgCreateClass{})
+
+const WeightCreateClass = 10
 
 // SimulateMsgCreateClass generates a MsgCreateClass with random values.
 func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,

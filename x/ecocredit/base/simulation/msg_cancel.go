@@ -17,9 +17,9 @@ import (
 
 const OpWeightMsgCancel = "op_weight_msg_cancel" //nolint:gosec
 
-const WeightCancel = 30
-
 var TypeMsgCancel = sdk.MsgTypeURL(&types.MsgCancel{})
+
+const WeightCancel = 30
 
 // SimulateMsgCancel generates a MsgCancel with random values.
 func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,

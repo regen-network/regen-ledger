@@ -18,9 +18,9 @@ import (
 
 const OpWeightMsgSend = "op_weight_msg_send" //nolint:gosec
 
-const WeightSend = 100
-
 var TypeMsgSend = sdk.MsgTypeURL(&types.MsgSend{})
+
+const WeightSend = 100
 
 // SimulateMsgSend generates a MsgSend with random values.
 func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,

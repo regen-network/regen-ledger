@@ -14,47 +14,35 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
-const OpWeightMsgCreateProject = "op_weight_msg_create_project" //nolint:gosec
+const OpWeightMsgUpdateClassMetadata = "op_weight_msg_update_class_metadata" //nolint:gosec
 
-var TypeMsgCreateProject = sdk.MsgTypeURL(&types.MsgCreateProject{})
+var TypeMsgUpdateClassMetadata = sdk.MsgTypeURL(&types.MsgUpdateClassMetadata{})
 
-const WeightCreateProject = 20
+const WeightUpdateClassMetadata = 33
 
-// SimulateMsgCreateProject generates a MsgCreateProject with random values.
-func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+// SimulateMsgUpdateClassMetadata generates a MsgUpdateClassMetadata with random metadata
+func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient types.QueryServer) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgCreateProject)
+		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgUpdateClassMetadata)
 		if class == nil {
 			return op, nil, err
 		}
 
-		issuers, op, err := getClassIssuers(sdkCtx, qryClient, class.Id, TypeMsgCreateProject)
-		if len(issuers) == 0 {
+		admin := sdk.AccAddress(class.Admin)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, admin.String(), TypeMsgUpdateClassMetadata)
+		if spendable == nil {
 			return op, nil, err
 		}
 
-		admin := issuers[r.Intn(len(issuers))]
-		adminAddr, err := sdk.AccAddressFromBech32(admin)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateProject, err.Error()), nil, err
+		msg := &types.MsgUpdateClassMetadata{
+			Admin:       admin.String(),
+			ClassId:     class.Id,
+			NewMetadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256)),
 		}
 
-		adminAcc, found := simtypes.FindAccount(accs, adminAddr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateProject, "not a simulation account"), nil, nil
-		}
-
-		spendable := bk.SpendableCoins(sdkCtx, adminAddr)
-
-		msg := &types.MsgCreateProject{
-			Admin:        admin,
-			ClassId:      class.Id,
-			Metadata:     simtypes.RandStringOfLength(r, 100),
-			Jurisdiction: "AB-CDE FG1 345",
-		}
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
@@ -63,7 +51,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      adminAcc,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
