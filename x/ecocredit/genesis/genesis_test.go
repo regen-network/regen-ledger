@@ -122,8 +122,7 @@ func TestValidateGenesis(t *testing.T) {
 	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
-	params := basetypes.Params{AllowlistEnabled: true}
-	err = ValidateGenesis(genesisJSON, params)
+	err = ValidateGenesis(genesisJSON)
 	require.NoError(t, err)
 }
 

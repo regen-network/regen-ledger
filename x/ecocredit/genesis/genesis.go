@@ -36,11 +36,7 @@ import (
 // - the retired amount of each credit batch complies with the credit type precision
 // - the calculated total amount of each credit batch matches the total supply
 // An error is returned if any of these validation checks fail.
-func ValidateGenesis(data json.RawMessage, params basetypes.Params) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func ValidateGenesis(data json.RawMessage) error {
 	db := dbm.NewMemDB()
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
