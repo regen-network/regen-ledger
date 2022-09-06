@@ -50,7 +50,7 @@ type IntegrationTestSuite struct {
 	addr2 sdk.AccAddress
 
 	// test values
-	creditClassFee     sdk.Coins
+	creditClassFee     *sdk.Coin
 	basketFee          sdk.Coins
 	creditTypeAbbrev   string
 	allowedDenoms      []string
@@ -92,7 +92,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Issuers:          []string{s.addr1.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	// set test reference id
@@ -260,15 +260,9 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	err = mdb.ExportJSON(ctx, target)
 	require.NoError(err)
 
-	params := genesis.DefaultParams()
-
 	// set credit class and basket fees
-	s.creditClassFee = params.CreditClassFee
-	s.basketFee = params.BasketFee
-
-	// merge the params into the json target
-	err = genesis.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
-	require.NoError(err)
+	s.creditClassFee = genesis.DefaultClassFee().Fee
+	s.basketFee = sdk.NewCoins(*genesis.DefaultBasketFee().Fee)
 
 	// get raw json from target
 	json, err := target.JSON()
@@ -336,8 +330,8 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basety
 		strings.Join(msg.Issuers, ","),
 		msg.CreditTypeAbbrev,
 		msg.Metadata,
-		msg.Fee.String(),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
+		fmt.Sprintf("--%s=%s", baseclient.FlagClassFee, msg.Fee.String()),
 	}
 	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
