@@ -92,6 +92,18 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 		},
+		{
+			name: "fee cannot be empty",
+			args: []string{
+				admin,
+				s.creditTypeAbbrev,
+				"metadata",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+			},
+			expErr:    true,
+			expErrMsg: "fee denom cannot be empty: invalid request",
+		},
 	}
 
 	for _, tc := range testCases {

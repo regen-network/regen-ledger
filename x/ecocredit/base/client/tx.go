@@ -29,7 +29,7 @@ const (
 // TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-class [issuers] [credit-type-abbrev] [metadata] [fee] [flags]",
+		Use:   "create-class [issuers] [credit-type-abbrev] [metadata] [flags]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(`Creates a new credit class with transaction author (--from) as admin.
 
