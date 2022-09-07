@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -43,7 +42,6 @@ func (s *msgSend) ExpectNoError() {
 
 func TestMsgSendAmino(t *testing.T) {
 	msg := &MsgSend{}
-	fmt.Println(string(msg.GetSignBytes()))
 	require.Equal(
 		t,
 		`{"type":"regen/MsgSend","value":{}}`, // And not only `{}` as on master
