@@ -49,9 +49,9 @@ Parameters:
 Flags:
 
 - class-fee: the fee that the class creator will pay to create the credit class. It must be >= the
-    required credit_class_fee param. We include the fee explicitly here so that the
-    class creator explicitly acknowledges paying this fee and is not surprised to learn that they
-    paid a big fee and didn't know beforehand.
+required credit_class_fee param. If the credit_class_fee param is empty, no fee is required. 
+We include the fee explicitly here so that the class creator explicitly acknowledges paying 
+this fee and is not surprised to learn that the they paid a big fee and didn't know beforehand.
 
 `,
 			types.KeyAllowedClassCreators,
