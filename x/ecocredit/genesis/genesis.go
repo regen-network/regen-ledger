@@ -478,26 +478,6 @@ func validateSupply(batchIDToSupplyCal, batchIDToSupply map[uint64]math.Dec) err
 	return nil
 }
 
-// MergeParamsIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(message)))
-	if err != nil {
-		return err
-	}
-
-	bz, err := cdc.MarshalJSON(message)
-	if err != nil {
-		return err
-	}
-
-	_, err = w.Write(bz)
-	if err != nil {
-		return err
-	}
-
-	return w.Close()
-}
-
 // MergeCreditTypesIntoTarget merges params message into the ormjson.WriteTarget.
 func MergeCreditTypesIntoTarget(messages []basetypes.CreditType, target ormjson.WriteTarget) error {
 	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&messages[0])))

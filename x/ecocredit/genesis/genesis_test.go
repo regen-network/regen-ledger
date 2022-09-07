@@ -25,7 +25,6 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 func TestValidateGenesis(t *testing.T) {
@@ -126,18 +125,27 @@ func TestValidateGenesis(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func setupBaseDefaultParams(ctx context.Context, baseStore baseapi.StateStore) error {
+	classFee := DefaultClassFee()
+	return baseStore.ClassFeeTable().Save(ctx, &baseapi.ClassFee{
+		Fee: &basev1beta1.Coin{
+			Denom:  classFee.Fee.Denom,
+			Amount: classFee.Fee.Amount.String(),
+		},
+	})
+}
+
 func TestGenesisValidate(t *testing.T) {
 	t.Parallel()
 
-	defaultParams := DefaultParams()
 	addr1 := sdk.AccAddress("foobar")
 	addr2 := sdk.AccAddress("fooBarBaz")
 	testCases := []struct {
-		id         string
-		setupState func(ctx context.Context, ss baseapi.StateStore)
-		params     basetypes.Params
-		expectErr  bool
-		errorMsg   string
+		id          string
+		setupState  func(ctx context.Context, ss baseapi.StateStore)
+		setupParams func(ctx context.Context, ss baseapi.StateStore) error
+		expectErr   bool
+		errorMsg    string
 	}{
 		{
 			"valid: no credit batches",
@@ -154,7 +162,9 @@ func TestGenesisValidate(t *testing.T) {
 					CreditTypeAbbrev: "C",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -173,7 +183,9 @@ func TestGenesisValidate(t *testing.T) {
 					CreditTypeAbbrev: "C",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"must be 1-3 uppercase alphabetic characters: parse error",
 		},
@@ -192,24 +204,11 @@ func TestGenesisValidate(t *testing.T) {
 					Precision:    7,
 				}))
 			},
-			func() basetypes.Params {
-				return defaultParams
-			}(),
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"precision is currently locked to 6",
-		},
-		{
-			"invalid: bad addresses in allowlist",
-			func(ctx context.Context, ss baseapi.StateStore) {
-			},
-			func() basetypes.Params {
-				p := DefaultParams()
-				p.AllowlistEnabled = true
-				p.AllowedClassCreators = []string{"-=!?#09)("}
-				return p
-			}(),
-			true,
-			"invalid creator address: decoding bech32 failed",
 		},
 		{
 			"invalid: type id does not match param id",
@@ -220,7 +219,9 @@ func TestGenesisValidate(t *testing.T) {
 					CreditTypeAbbrev: "F",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"credit type not exist",
 		},
@@ -262,7 +263,9 @@ func TestGenesisValidate(t *testing.T) {
 					TradableAmount: "400.456",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"no balances were found",
 		},
@@ -313,7 +316,9 @@ func TestGenesisValidate(t *testing.T) {
 					CancelledAmount: "",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"supply is incorrect for 1 credit batch, expected 10, got 200: invalid coins",
 		},
@@ -367,7 +372,9 @@ func TestGenesisValidate(t *testing.T) {
 					RetiredAmount:  "200.246",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -485,7 +492,9 @@ func TestGenesisValidate(t *testing.T) {
 					CancelledAmount: "",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -497,7 +506,9 @@ func TestGenesisValidate(t *testing.T) {
 					Issuer:   addr1,
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -506,7 +517,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.ClassIssuerTable().Insert(ctx, &baseapi.ClassIssuer{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"class key cannot be zero: parse error",
 		},
@@ -518,7 +531,9 @@ func TestGenesisValidate(t *testing.T) {
 					NextSequence:     1,
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -527,7 +542,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.ClassSequenceTable().Insert(ctx, &baseapi.ClassSequence{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"credit type abbrev: empty string is not allowed: parse error",
 		},
@@ -539,7 +556,9 @@ func TestGenesisValidate(t *testing.T) {
 					NextSequence: 1,
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -548,7 +567,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.ProjectSequenceTable().Insert(ctx, &baseapi.ProjectSequence{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"class key cannot be zero: parse error",
 		},
@@ -560,7 +581,9 @@ func TestGenesisValidate(t *testing.T) {
 					NextSequence: 1,
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -569,7 +592,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.BatchSequenceTable().Insert(ctx, &baseapi.BatchSequence{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"project key cannot be zero: parse error",
 		},
@@ -582,7 +607,9 @@ func TestGenesisValidate(t *testing.T) {
 					Source:   "polygon",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -591,7 +618,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.OriginTxIndexTable().Insert(ctx, &baseapi.OriginTxIndex{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"class key cannot be zero: parse error",
 		},
@@ -604,7 +633,9 @@ func TestGenesisValidate(t *testing.T) {
 					Contract: "0x0000000000000000000000000000000000000000",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -613,7 +644,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.BatchContractTable().Insert(ctx, &baseapi.BatchContract{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"batch key cannot be zero: parse error",
 		},
@@ -624,7 +657,9 @@ func TestGenesisValidate(t *testing.T) {
 					Enabled: true,
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -635,7 +670,9 @@ func TestGenesisValidate(t *testing.T) {
 					Address: addr1,
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -644,7 +681,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.AllowedClassCreatorTable().Insert(ctx, &baseapi.AllowedClassCreator{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"address: empty address string is not allowed: parse error",
 		},
@@ -658,7 +697,9 @@ func TestGenesisValidate(t *testing.T) {
 					},
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -669,7 +710,9 @@ func TestGenesisValidate(t *testing.T) {
 					Fee: &basev1beta1.Coin{},
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"fee: denom cannot be empty: parse error",
 		},
@@ -680,7 +723,9 @@ func TestGenesisValidate(t *testing.T) {
 					ChainName: "polygon",
 				}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			false,
 			"",
 		},
@@ -689,7 +734,9 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{}))
 			},
-			defaultParams,
+			func(ctx context.Context, ss baseapi.StateStore) error {
+				return setupBaseDefaultParams(ctx, ss)
+			},
 			true,
 			"name cannot be empty: parse error",
 		},
@@ -697,8 +744,8 @@ func TestGenesisValidate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
-			jsn := setupStateAndExportJSON(t, tc.setupState)
-			err := ValidateGenesis(jsn, tc.params)
+			jsn := setupStateAndExportJSON(t, tc.setupParams, tc.setupState)
+			err := ValidateGenesis(jsn)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -712,12 +759,10 @@ func TestGenesisValidate(t *testing.T) {
 func TestValidateGenesisBasket(t *testing.T) {
 	t.Parallel()
 
-	defaultParams := DefaultParams()
 	addr1 := sdk.AccAddress("alice")
 	testCases := []struct {
 		id         string
 		setupState func(ctx context.Context, ss basketapi.StateStore)
-		params     basetypes.Params
 		expectErr  bool
 		errorMsg   string
 	}{
@@ -731,7 +776,6 @@ func TestValidateGenesisBasket(t *testing.T) {
 					Curator:          addr1,
 				}))
 			},
-			defaultParams,
 			false,
 			"",
 		},
@@ -740,7 +784,6 @@ func TestValidateGenesisBasket(t *testing.T) {
 			func(ctx context.Context, ss basketapi.StateStore) {
 				require.NoError(t, ss.BasketTable().Save(ctx, &basketapi.Basket{}))
 			},
-			defaultParams,
 			true,
 			"basket denom: empty string is not allowed",
 		},
@@ -754,7 +797,6 @@ func TestValidateGenesisBasket(t *testing.T) {
 					},
 				}))
 			},
-			defaultParams,
 			false,
 			"",
 		},
@@ -765,7 +807,6 @@ func TestValidateGenesisBasket(t *testing.T) {
 					Fee: &basev1beta1.Coin{},
 				}))
 			},
-			defaultParams,
 			true,
 			"fee: denom cannot be empty: parse error",
 		},
@@ -774,7 +815,7 @@ func TestValidateGenesisBasket(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
 			jsn := setupBasketStateAndExportJSON(t, tc.setupState)
-			err := ValidateGenesis(jsn, tc.params)
+			err := ValidateGenesis(jsn)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -788,12 +829,10 @@ func TestValidateGenesisBasket(t *testing.T) {
 func TestValidateGenesisMarketplace(t *testing.T) {
 	t.Parallel()
 
-	defaultParams := DefaultParams()
 	addr1 := sdk.AccAddress("alice")
 	testCases := []struct {
 		id         string
 		setupState func(ctx context.Context, ss marketapi.StateStore)
-		params     basetypes.Params
 		expectErr  bool
 		errorMsg   string
 	}{
@@ -809,7 +848,6 @@ func TestValidateGenesisMarketplace(t *testing.T) {
 					Maker:     true,
 				}))
 			},
-			defaultParams,
 			false,
 			"",
 		},
@@ -818,7 +856,6 @@ func TestValidateGenesisMarketplace(t *testing.T) {
 			func(ctx context.Context, ss marketapi.StateStore) {
 				require.NoError(t, ss.SellOrderTable().Insert(ctx, &marketapi.SellOrder{}))
 			},
-			defaultParams,
 			true,
 			"seller: empty address string is not allowed: parse error",
 		},
@@ -830,7 +867,6 @@ func TestValidateGenesisMarketplace(t *testing.T) {
 					BankDenom:        "uregen",
 				}))
 			},
-			defaultParams,
 			false,
 			"",
 		},
@@ -839,7 +875,6 @@ func TestValidateGenesisMarketplace(t *testing.T) {
 			func(ctx context.Context, ss marketapi.StateStore) {
 				require.NoError(t, ss.MarketTable().Insert(ctx, &marketapi.Market{}))
 			},
-			defaultParams,
 			true,
 			"credit type abbrev: empty string is not allowed: parse error",
 		},
@@ -852,7 +887,6 @@ func TestValidateGenesisMarketplace(t *testing.T) {
 					Exponent:     6,
 				}))
 			},
-			defaultParams,
 			false,
 			"",
 		},
@@ -861,7 +895,6 @@ func TestValidateGenesisMarketplace(t *testing.T) {
 			func(ctx context.Context, ss marketapi.StateStore) {
 				require.NoError(t, ss.AllowedDenomTable().Insert(ctx, &marketapi.AllowedDenom{}))
 			},
-			defaultParams,
 			true,
 			"bank denom cannot be empty: parse error",
 		},
@@ -870,7 +903,7 @@ func TestValidateGenesisMarketplace(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
 			jsn := setupMarketStateAndExportJSON(t, tc.setupState)
-			err := ValidateGenesis(jsn, tc.params)
+			err := ValidateGenesis(jsn)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -999,18 +1032,23 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	genesisJSON, err := target.JSON()
 	require.NoError(t, err)
 
-	params := basetypes.Params{AllowlistEnabled: true}
-	err = ValidateGenesis(genesisJSON, params)
+	err = ValidateGenesis(genesisJSON)
 	require.NoError(t, err)
 }
 
 // setupStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
-func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss baseapi.StateStore)) json.RawMessage {
+func setupStateAndExportJSON(t *testing.T,
+	initParamsFunc func(ctx context.Context, ss baseapi.StateStore) error,
+	setupFunc func(ctx context.Context, ss baseapi.StateStore)) json.RawMessage {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 	ss, err := baseapi.NewStateStore(modDB)
 	require.NoError(t, err)
+
+	err = initParamsFunc(ormCtx, ss)
+	require.NoError(t, err)
+
 	setupFunc(ormCtx, ss)
 	target := ormjson.NewRawMessageTarget()
 	require.NoError(t, modDB.ExportJSON(ormCtx, target))

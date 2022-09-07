@@ -14,21 +14,10 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 )
 
 func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require := s.Require()
-	ctx := s.genesisCtx
-
-	// Set the param set to empty values to properly test init
-	var ecocreditParams basetypes.Params
-	s.paramSpace.SetParamSet(ctx, &ecocreditParams)
-
-	defaultParams := genesis.DefaultParams()
-	paramsJSON, err := s.fixture.Codec().MarshalJSON(&defaultParams)
-	require.NoError(err)
 
 	classIssuers := []baseapi.ClassIssuer{
 		{ClassKey: 1, Issuer: sdk.AccAddress("addr1")},
@@ -94,7 +83,6 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	wrapper[string(proto.MessageName(&baseapi.ClassSequence{}))] = classSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.BatchSequence{}))] = batchSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.ProjectSequence{}))] = projectSeqJSON
-	wrapper[string(proto.MessageName(&baseapi.Params{}))] = paramsJSON
 
 	bz, err := json.Marshal(wrapper)
 	require.NoError(err)

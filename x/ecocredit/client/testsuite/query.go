@@ -25,7 +25,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	})
 
 	classID2 := s.createClass(clientCtx, &types.MsgCreateClass{
@@ -33,7 +33,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	})
 
 	classIDs := [2]string{classID, classID2}
@@ -105,7 +105,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "hi",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	}
 
 	classID := s.createClass(clientCtx, class)
@@ -581,8 +581,11 @@ func (s *IntegrationTestSuite) TestQueryParamsCmd() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
 	require.NoError(err)
 
-	require.Equal(genesis.DefaultParams().BasketFee, params.Params.BasketFee)
-	require.Equal(genesis.DefaultParams().CreditClassFee, params.Params.CreditClassFee)
+	require.Equal(genesis.DefaultBasketFee().Fee.Amount, params.Params.BasketFee[0].Amount)
+	require.Equal(genesis.DefaultBasketFee().Fee.Denom, params.Params.BasketFee[0].Denom)
+
+	require.Equal(genesis.DefaultClassFee().Fee.Amount, params.Params.CreditClassFee[0].Amount)
+	require.Equal(genesis.DefaultClassFee().Fee.Denom, params.Params.CreditClassFee[0].Denom)
 	require.False(params.Params.AllowlistEnabled)
 	require.Equal([]string{sdk.AccAddress("issuer1").String(), sdk.AccAddress("issuer2").String()}, params.Params.AllowedClassCreators)
 }
@@ -761,7 +764,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	})
 
 	testCases := []struct {
