@@ -12,6 +12,7 @@ import (
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/bank/types"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	types2 "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -237,6 +238,43 @@ func (m *MockBankKeeper) SpendableCoins(ctx types.Context, addr types.AccAddress
 func (mr *MockBankKeeperMockRecorder) SpendableCoins(ctx, addr interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SpendableCoins", reflect.TypeOf((*MockBankKeeper)(nil).SpendableCoins), ctx, addr)
+}
+
+// MockGovKeeper is a mock of GovKeeper interface.
+type MockGovKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockGovKeeperMockRecorder
+}
+
+// MockGovKeeperMockRecorder is the mock recorder for MockGovKeeper.
+type MockGovKeeperMockRecorder struct {
+	mock *MockGovKeeper
+}
+
+// NewMockGovKeeper creates a new mock instance.
+func NewMockGovKeeper(ctrl *gomock.Controller) *MockGovKeeper {
+	mock := &MockGovKeeper{ctrl: ctrl}
+	mock.recorder = &MockGovKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockGovKeeper) EXPECT() *MockGovKeeperMockRecorder {
+	return m.recorder
+}
+
+// GetDepositParams mocks base method.
+func (m *MockGovKeeper) GetDepositParams(ctx types.Context) v1.DepositParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDepositParams", ctx)
+	ret0, _ := ret[0].(v1.DepositParams)
+	return ret0
+}
+
+// GetDepositParams indicates an expected call of GetDepositParams.
+func (mr *MockGovKeeperMockRecorder) GetDepositParams(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDepositParams", reflect.TypeOf((*MockGovKeeper)(nil).GetDepositParams), ctx)
 }
 
 // MockParamKeeper is a mock of ParamKeeper interface.

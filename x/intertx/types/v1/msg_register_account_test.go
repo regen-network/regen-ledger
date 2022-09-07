@@ -10,37 +10,37 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type suite struct {
+type registerAccountSuite struct {
 	t   gocuke.TestingT
 	msg *MsgRegisterAccount
 	err error
 }
 
 func TestMsgRegisterAccount(t *testing.T) {
-	gocuke.NewRunner(t, &suite{}).Path("./features/msg_register_account.feature").Run()
+	gocuke.NewRunner(t, &registerAccountSuite{}).Path("./features/msg_register_account.feature").Run()
 }
 
-func (s *suite) Before(t gocuke.TestingT) {
+func (s *registerAccountSuite) Before(t gocuke.TestingT) {
 	cfg := sdk.GetConfig()
 	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 	s.t = t
 }
 
-func (s *suite) TheMessage(a gocuke.DocString) {
+func (s *registerAccountSuite) TheMessage(a gocuke.DocString) {
 	var msg MsgRegisterAccount
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	assert.NilError(s.t, err)
 	s.msg = &msg
 }
 
-func (s *suite) TheMessageIsValidated() {
+func (s *registerAccountSuite) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
-func (s *suite) ExpectNoError() {
+func (s *registerAccountSuite) ExpectNoError() {
 	assert.NilError(s.t, s.err)
 }
 
-func (s *suite) ExpectTheError(a string) {
+func (s *registerAccountSuite) ExpectTheError(a string) {
 	assert.ErrorContains(s.t, s.err, a)
 }

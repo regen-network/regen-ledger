@@ -6,24 +6,22 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/keeper"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/regen-network/regen-ledger/x/intertx"
 )
 
 type Keeper struct {
-	cdc codec.Codec
+	cdc codec.BinaryCodec
 
 	storeKey storetypes.StoreKey
 
-	scopedKeeper        capabilitykeeper.ScopedKeeper
-	icaControllerKeeper icacontrollerkeeper.Keeper
+	scopedKeeper        CapabilityKeeper
+	icaControllerKeeper ICAControllerKeeper
 }
 
-func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, iaKeeper icacontrollerkeeper.Keeper, scopedKeeper capabilitykeeper.ScopedKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey, iaKeeper ICAControllerKeeper, scopedKeeper CapabilityKeeper) Keeper {
 	return Keeper{
 		cdc:      cdc,
 		storeKey: storeKey,

@@ -21,7 +21,7 @@ func (m MsgSubmitTx) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("connection_id cannot be empty")
 	}
 	if m.Msg == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("msg is required")
+		return sdkerrors.ErrInvalidRequest.Wrap("msg cannot be empty")
 	}
 	return nil
 }

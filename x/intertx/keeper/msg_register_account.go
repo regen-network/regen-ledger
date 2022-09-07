@@ -9,12 +9,9 @@ import (
 )
 
 // RegisterAccount implements the Msg/RegisterAccount interface
-func (k Keeper) RegisterAccount(goCtx context.Context, msg *types.MsgRegisterAccount) (*types.MsgRegisterAccountResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	if err := k.icaControllerKeeper.RegisterInterchainAccount(ctx, msg.ConnectionId, msg.Owner, msg.Version); err != nil {
+func (k Keeper) RegisterAccount(ctx context.Context, msg *types.MsgRegisterAccount) (*types.MsgRegisterAccountResponse, error) {
+	if err := k.icaControllerKeeper.RegisterInterchainAccount(sdk.UnwrapSDKContext(ctx), msg.ConnectionId, msg.Owner, msg.Version); err != nil {
 		return nil, err
 	}
-
 	return &types.MsgRegisterAccountResponse{}, nil
 }
