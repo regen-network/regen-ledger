@@ -15,7 +15,7 @@ type msgAddAllowedBridgeChain struct {
 }
 
 func TestMsgAddAllowedBridgeChain(t *testing.T) {
-	gocuke.NewRunner(t, &msgAddAllowedBridgeChain{}).Path("./features/msg_add_allowed_bridge_chain.feature.feature").Run()
+	gocuke.NewRunner(t, &msgAddAllowedBridgeChain{}).Path("./features/msg_add_allowed_bridge_chain.feature").Run()
 }
 
 func (s *msgAddAllowedBridgeChain) Before(t gocuke.TestingT) {
