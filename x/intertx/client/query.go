@@ -1,0 +1,56 @@
+package client
+
+import (
+	"github.com/spf13/cobra"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+
+	intertxv1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
+
+	"github.com/regen-network/regen-ledger/x/intertx"
+)
+
+// GetQueryCmd creates and returns the intertx query command
+func GetQueryCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:                        intertx.ModuleName,
+		Short:                      "Querying commands for the intertx module",
+		DisableFlagParsing:         true,
+		SuggestionsMinimumDistance: 2,
+		RunE:                       client.ValidateCmd,
+	}
+
+	cmd.AddCommand(getInterchainAccountCmd())
+
+	return cmd
+}
+
+func getInterchainAccountCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "ica [connection-id] [owner-account]",
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := intertxv1.NewQueryClient(clientCtx)
+			req := intertxv1.QueryInterchainAccountRequest{
+				Owner:        args[0],
+				ConnectionId: args[1],
+			}
+			res, err := queryClient.InterchainAccount(cmd.Context(), &req)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}

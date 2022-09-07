@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package regen.intertx.v1;
+
+import "cosmos/msg/v1/msg.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/intertx/types/v1";
+
+// Msg defines the intertx Msg service.
+service Msg {
+  // Register defines a rpc handler for MsgRegisterAccount
+  rpc RegisterAccount(MsgRegisterAccount) returns (MsgRegisterAccountResponse);
+  // SubmitTx defines a rpc handler for MsgSubmitTx
+  rpc SubmitTx(MsgSubmitTx) returns (MsgSubmitTxResponse);
+}
+
+
+// MsgRegisterAccount defines the payload for Msg/RegisterAccount
+message MsgRegisterAccount {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  string owner                      = 1;
+  string connection_id              = 2;
+  string version                    = 3;
+}
+
+// MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
+message MsgRegisterAccountResponse {}
+
+// MsgSubmitTx defines the payload for Msg/SubmitTx
+message MsgSubmitTx {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  string owner                       = 1;
+  string connection_id = 2;
+  google.protobuf.Any msg            = 3;
+}
+
+// MsgSubmitTxResponse defines the response for Msg/SubmitTx
+message MsgSubmitTxResponse {}
