@@ -193,7 +193,7 @@ func testInvalidNewDecFromString(t *rapid.T) {
 }
 
 // Property: invalid_number_string(s) || IsNegative(s)
-//             => NewNonNegativeDecFromString(s) == err
+// => NewNonNegativeDecFromString(s) == err
 func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 	s := rapid.OneOf(
 		rapid.StringMatching("[[:alpha:]]+"),
@@ -206,7 +206,7 @@ func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 }
 
 // Property: invalid_number_string(s) || IsNegative(s) || NumDecimals(s) > n
-//             => NewNonNegativeFixedDecFromString(s, n) == err
+// => NewNonNegativeFixedDecFromString(s, n) == err
 func testInvalidNewNonNegativeFixedDecFromString(t *rapid.T) {
 	n := rapid.Uint32Range(0, 999).Draw(t, "n")
 	s := rapid.OneOf(
@@ -221,7 +221,7 @@ func testInvalidNewNonNegativeFixedDecFromString(t *rapid.T) {
 }
 
 // Property: invalid_number_string(s) || IsNegative(s) || IsZero(s)
-//             => NewPositiveDecFromString(s) == err
+// => NewPositiveDecFromString(s) == err
 func testInvalidNewPositiveDecFromString(t *rapid.T) {
 	s := rapid.OneOf(
 		rapid.StringMatching("[[:alpha:]]+"),
@@ -232,7 +232,7 @@ func testInvalidNewPositiveDecFromString(t *rapid.T) {
 }
 
 // Property: invalid_number_string(s) || IsNegative(s) || IsZero(s) || NumDecimals(s) > n
-//             => NewPositiveFixedDecFromString(s) == err
+// => NewPositiveFixedDecFromString(s) == err
 func testInvalidNewPositiveFixedDecFromString(t *rapid.T) {
 	n := rapid.Uint32Range(0, 999).Draw(t, "n")
 	s := rapid.OneOf(
