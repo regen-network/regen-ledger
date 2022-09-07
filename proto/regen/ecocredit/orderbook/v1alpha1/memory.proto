@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.ecocredit.orderbook.v1;
+package regen.ecocredit.orderbook.v1alpha1;
 
 import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
