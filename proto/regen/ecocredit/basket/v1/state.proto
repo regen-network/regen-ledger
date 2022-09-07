@@ -3,7 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
-import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
@@ -11,7 +11,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/ty
 
 // Basket represents a basket in state.
 message Basket {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 1,
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1, fields : "basket_denom", unique : true}
@@ -70,7 +70,7 @@ message Basket {
 
 // BasketClass describes a credit class that can be deposited in a basket.
 message BasketClass {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 2,
     primary_key : {fields : "basket_id,class_id"}
   };
@@ -85,7 +85,7 @@ message BasketClass {
 
 // BasketBalance stores the amount of credits from a batch in a basket
 message BasketBalance {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 3,
     primary_key : {fields : "basket_id,batch_denom"}
     index : {id : 1, fields : "basket_id,batch_start_date"}
@@ -110,7 +110,7 @@ message BasketBalance {
 //
 // Since Revision 2
 message BasketFee {
-  option (cosmos.orm.v1alpha1.singleton) = {
+  option (cosmos.orm.v1.singleton) = {
     id : 4
   };
 
