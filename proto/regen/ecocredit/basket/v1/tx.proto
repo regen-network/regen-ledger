@@ -193,12 +193,16 @@ message MsgUpdateBasketFeeResponse {}
 message MsgUpdateCurator {
   option (cosmos.msg.v1.signer) = "curator";
 
+  // name is the unique name of the basket.
+  string name = 1;
+
   // curator is the address of the basket curator.
-  string curator = 1;
+  string curator = 2;
 
   // new_curator is the address of the account that will become the
   // new curator of the basket.
-  string new_curator = 2;
+  string new_curator = 3;
+
 }
 
 // MsgUpdateCuratorResponse is the Msg/UpdateCurator response type.
