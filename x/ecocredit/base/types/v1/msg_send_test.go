@@ -44,7 +44,7 @@ func TestMsgSendAmino(t *testing.T) {
 	msg := &MsgSend{}
 	require.Equal(
 		t,
-		`{"type":"regen/MsgSend","value":{}}`, // And not only `{}` as on master
+		`{"type":"regen/MsgSend","value":{}}`, // Make sure we have the `type` and `value` fields
 		string(msg.GetSignBytes()),
 	)
 }
