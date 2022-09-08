@@ -1,4 +1,4 @@
-package intertx
+package module
 
 import (
 	"github.com/gogo/protobuf/proto"

@@ -6,9 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	intertxv1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
-
 	"github.com/regen-network/regen-ledger/x/intertx"
+	intertxv1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )
 
 // GetQueryCmd creates and returns the intertx query command

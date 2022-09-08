@@ -16,7 +16,7 @@ func (k Keeper) InterchainAccount(goCtx context.Context, req *types.QueryInterch
 
 	portID, err := icatypes.NewControllerPortID(req.Owner)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("could not find account", err.Error())
+		return nil, err
 	}
 
 	addr, found := k.icaControllerKeeper.GetInterchainAccountAddress(ctx, req.ConnectionId, portID)

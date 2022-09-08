@@ -6,6 +6,7 @@ import (
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v5/modules/core/24-host"
@@ -32,7 +33,12 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.
 		return nil, channeltypes.ErrChannelCapabilityNotFound.Wrap("module does not own channel capability")
 	}
 
-	data, err := icatypes.SerializeCosmosTx(k.cdc, []sdk.Msg{getMsgFromAny(msg.Msg)})
+	m, ok := msg.Msg.GetCachedValue().(sdk.Msg)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidType.Wrapf("%T is not a valid sdk.Msg", msg.Msg.GetCachedValue())
+	}
+
+	data, err := icatypes.SerializeCosmosTx(k.cdc, []sdk.Msg{m})
 	if err != nil {
 		return nil, err
 	}
