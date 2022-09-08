@@ -1,26 +1,25 @@
 package v1
 
 import (
-	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgUpdateProjectAdmin{}
 
-func (m MsgUpdateProjectAdmin) Route() string { return types.MsgTypeURL(&m) }
+func (m MsgUpdateProjectAdmin) Route() string { return sdk.MsgTypeURL(&m) }
 
-func (m MsgUpdateProjectAdmin) Type() string { return types.MsgTypeURL(&m) }
+func (m MsgUpdateProjectAdmin) Type() string { return sdk.MsgTypeURL(&m) }
 
 func (m MsgUpdateProjectAdmin) GetSignBytes() []byte {
-	return types.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgUpdateProjectAdmin) ValidateBasic() error {
-	if _, err := types.AccAddressFromBech32(m.Admin); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
@@ -28,7 +27,7 @@ func (m MsgUpdateProjectAdmin) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("project id: %s", err)
 	}
 
-	if _, err := types.AccAddressFromBech32(m.NewAdmin); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrapf("new admin: %s", err)
 	}
 
@@ -39,7 +38,7 @@ func (m MsgUpdateProjectAdmin) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpdateProjectAdmin) GetSigners() []types.AccAddress {
-	addr, _ := types.AccAddressFromBech32(m.Admin)
-	return []types.AccAddress{addr}
+func (m MsgUpdateProjectAdmin) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
+	return []sdk.AccAddress{addr}
 }
