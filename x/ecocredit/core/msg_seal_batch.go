@@ -5,7 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
 )
 
 var _ legacytx.LegacyMsg = &MsgSealBatch{}
@@ -18,7 +17,7 @@ func (m MsgSealBatch) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.
 func (m MsgSealBatch) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a sanity check on the provided data.
