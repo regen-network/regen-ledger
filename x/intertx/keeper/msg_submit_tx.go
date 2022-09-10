@@ -33,6 +33,7 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.
 		return nil, channeltypes.ErrChannelCapabilityNotFound.Wrap("module does not own channel capability")
 	}
 
+	// ensure the nested tx is a valid sdk.Msg
 	m, ok := msg.Msg.GetCachedValue().(sdk.Msg)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidType.Wrapf("%T is not a valid sdk.Msg", msg.Msg.GetCachedValue())
