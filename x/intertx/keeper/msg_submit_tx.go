@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
@@ -57,8 +56,4 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.
 	}
 
 	return &types.MsgSubmitTxResponse{}, nil
-}
-
-func getMsgFromAny(a *codectypes.Any) sdk.Msg {
-	return a.GetCachedValue().(sdk.Msg)
 }
