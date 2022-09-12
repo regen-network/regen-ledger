@@ -39,3 +39,12 @@ func (s *msgSend) ExpectTheError(a string) {
 func (s *msgSend) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
+
+func TestMsgSendAmino(t *testing.T) {
+	msg := &MsgSend{}
+	require.Equal(
+		t,
+		`{"type":"regen/MsgSend","value":{}}`, // Make sure we have the `type` and `value` fields
+		string(msg.GetSignBytes()),
+	)
+}
