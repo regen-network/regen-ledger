@@ -282,7 +282,7 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 
 func TxUpdateBasketCuratorCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-basket-curator [basket-name] [new-curator]",
+		Use:   "update-basket-curator [basket-denom] [new-curator]",
 		Short: "Updates the basket curator",
 		Long: strings.TrimSpace(`Updates the basket curator.
 
@@ -290,7 +290,7 @@ The '--from' flag must equal the current basket curator.
 
 Parameters:
 
-- basket-name:  name of the basket to update.
+- basket-denom:  denom of the basket to update.
 - new-curator:  account address of the new curator.
 
 `),
@@ -305,7 +305,7 @@ Parameters:
 			msg := types.MsgUpdateCurator{
 				Curator:    clientCtx.FromAddress.String(),
 				NewCurator: args[1],
-				Name:       args[0],
+				Denom:      args[0],
 			}
 
 			if err := msg.ValidateBasic(); err != nil {

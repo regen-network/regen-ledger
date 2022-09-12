@@ -6,7 +6,7 @@ Feature: MsgUpdateCurator
 	{
 		"curator": "regen1ua97smk5yv26wpqmftgdg0sx0q0d38vky7998g",
 		"new_curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-		"name": "basket1"
+		"denom": "eco.uC.NCT"
 	}
 	"""
 	When the message is validated
@@ -63,7 +63,7 @@ Feature: MsgUpdateCurator
 	When the message is validated
 	Then expect the error "curator and new curator cannot be the same: invalid address"
 	
-  Scenario: an error is returned if basket name is empty 
+  Scenario: an error is returned if basket denom is empty 
 	Given the message
 	"""
 	{
@@ -74,15 +74,15 @@ Feature: MsgUpdateCurator
 	When the message is validated
 	Then expect the error "empty string is not allowed: parse error"
 
-  Scenario: an error is returned if basket name is invalid 
+  Scenario: an error is returned if basket denom is invalid 
 	Given the message
 	"""
 	{
 		"curator": "regen1ua97smk5yv26wpqmftgdg0sx0q0d38vky7998g",
 		"new_curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-		"name":"basket1+"
+		"denom":"basket1+"
 	}
 	"""
 	When the message is validated
-	Then expect the error "must start with an alphabetic character, and be between 3 and 8 alphanumeric characters long: parse error"
+	Then expect the error "expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error"
 

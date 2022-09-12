@@ -193,8 +193,8 @@ message MsgUpdateBasketFeeResponse {}
 message MsgUpdateCurator {
   option (cosmos.msg.v1.signer) = "curator";
 
-  // name is the unique name of the basket.
-  string name = 1;
+  // denom is the unique identifier of the basket.
+  string denom = 1;
 
   // curator is the address of the basket curator.
   string curator = 2;

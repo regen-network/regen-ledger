@@ -68,6 +68,6 @@ message EventTake {
 
 // EventUpdateCurator is an event emitted when basket curator is updated.
 message EventUpdateCurator {
-  // name is the unique name of the basket. 
-  string name = 1;
+  // denom is the basket denom. 
+  string denom = 1;
 }

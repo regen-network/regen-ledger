@@ -36,7 +36,7 @@ func (m MsgUpdateCurator) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap("curator and new curator cannot be the same")
 	}
 
-	if err := basket.ValidateBasketName(m.Name); err != nil {
+	if err := basket.ValidateBasketDenom(m.Denom); err != nil {
 		return err
 	}
 

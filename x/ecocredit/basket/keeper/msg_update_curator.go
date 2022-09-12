@@ -12,10 +12,10 @@ import (
 
 // UpdateCurator is an RPC to handle basket.UpdateCurator
 func (k Keeper) UpdateCurator(ctx context.Context, req *types.MsgUpdateCurator) (*types.MsgUpdateCuratorResponse, error) {
-	basket, err := k.stateStore.BasketTable().GetByName(ctx, req.Name)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, req.Denom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			return nil, sdkerrors.ErrNotFound.Wrapf("basket %s not found", req.Name)
+			return nil, sdkerrors.ErrNotFound.Wrapf("basket with denom %s", req.Denom)
 		}
 		return nil, err
 	}
@@ -36,7 +36,14 @@ func (k Keeper) UpdateCurator(ctx context.Context, req *types.MsgUpdateCurator) 
 
 	basket.Curator = newCurator
 	if err := k.stateStore.BasketTable().Update(ctx, basket); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to update basket %s", req.Name)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to update basket %s", req.Denom)
+	}
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventUpdateCurator{
+		Denom: basket.BasketDenom,
+	}); err != nil {
+		return nil, err
 	}
 
 	return &types.MsgUpdateCuratorResponse{}, nil
