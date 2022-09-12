@@ -1,4 +1,4 @@
-//nolint:revive,stylecheck
+//nolint:stylecheck
 package keeper
 
 import (
