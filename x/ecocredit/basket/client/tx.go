@@ -294,7 +294,7 @@ Parameters:
 - new-curator:  account address of the new curator.
 
 `),
-		Example: `regen tx ecocredit update-basket-curator basket1 regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw --from curator`,
+		Example: `regen tx ecocredit update-basket-curator eco.uC.NCT regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw --from curator`,
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

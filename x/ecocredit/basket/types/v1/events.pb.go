@@ -246,7 +246,9 @@ func (m *EventTake) GetAmount() string {
 	return ""
 }
 
-// EventUpdateCurator is an event emitted when basket curator is updated.
+// EventUpdateCurator is an event emitted when the basket curator is updated.
+//
+// Since Revision 2
 type EventUpdateCurator struct {
 	// denom is the basket denom.
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`

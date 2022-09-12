@@ -1,4 +1,4 @@
-Feature: Msg/UpdateBasketCurator
+Feature: Msg/UpdateCurator
 
   The curator of a basket can be updated:
   - when the basket exists

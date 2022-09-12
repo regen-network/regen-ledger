@@ -2508,7 +2508,9 @@ func (x *EventTake) GetAmount() string {
 	return ""
 }
 
-// EventUpdateCurator is an event emitted when basket curator is updated.
+// EventUpdateCurator is an event emitted when the basket curator is updated.
+//
+// Since Revision 2
 type EventUpdateCurator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
