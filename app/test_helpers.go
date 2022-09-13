@@ -54,6 +54,18 @@ type SetupOptions struct {
 	AppOpts            types.AppOptions
 }
 
+func DefaultOptions() SetupOptions {
+	return SetupOptions{
+		Logger:             log.NewNopLogger(),
+		DB:                 dbm.NewMemDB(),
+		InvCheckPeriod:     5,
+		HomePath:           DefaultNodeHome,
+		SkipUpgradeHeights: map[int64]bool{},
+		EncConfig:          MakeEncodingConfig(),
+		AppOpts:            EmptyAppOptions{},
+	}
+}
+
 // NewAppWithCustomOptions initializes a new RegenApp with custom options.
 func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions) *RegenApp {
 	t.Helper()
