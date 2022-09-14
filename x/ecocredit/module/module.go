@@ -25,9 +25,11 @@ import (
 	basesims "github.com/regen-network/regen-ledger/x/ecocredit/base/simulation"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	basetypesv1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1alpha1"
+	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/basket/simulation"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
+	marketsims "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/simulation"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
@@ -287,7 +289,7 @@ func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations implements AppModuleSimulation/WeightedOperations.
 func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	baseServer, basketServer, marketServer := m.Keeper.QueryServers()
-	return basesims.WeightedOperations(
+	baseOps := basesims.WeightedOperations(
 		simState.AppParams,
 		simState.Cdc,
 		m.accountKeeper,
@@ -298,4 +300,27 @@ func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 		marketServer,
 		m.authority,
 	)
+
+	basketOps := basketsims.WeightedOperations(
+		simState.AppParams,
+		simState.Cdc,
+		m.accountKeeper,
+		m.bankKeeper,
+		m.govKeeper,
+		baseServer,
+		basketServer,
+		m.authority,
+	)
+
+	marketplaceOps := marketsims.WeightedOperations(simState.AppParams,
+		simState.Cdc,
+		m.accountKeeper,
+		m.bankKeeper,
+		baseServer,
+		marketServer,
+		m.govKeeper,
+		m.authority,
+	)
+
+	return append(append(baseOps, basketOps...), marketplaceOps...)
 }
