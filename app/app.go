@@ -602,10 +602,17 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 // EndBlocker application updates every end block
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
+
+	if ctx.BlockHeight() > 1500 {
+		// we don't have Endblocker in regen modules.
+		return resp
+	}
+
 	events, vals := app.smm.EndBlock(ctx, req)
 	if len(resp.ValidatorUpdates) > 0 && len(vals) > 0 {
 		panic("validator EndBlock updates already set by the SDK Module Manager")
 	}
+
 	resp.ValidatorUpdates = vals
 	resp.Events = append(resp.Events, events...)
 	return resp
