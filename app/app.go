@@ -603,8 +603,8 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
 
-	if ctx.BlockHeight() > 1500 {
-		// we don't have Endblocker in regen modules.
+	if ctx.BlockHeight() > 1500 { // TODO: update height
+		// we don't have EndBlocker in regen modules.
 		return resp
 	}
 
