@@ -604,7 +604,8 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 	resp := app.mm.EndBlock(ctx, req)
 
 	if ctx.BlockHeight() > 1500 { // TODO: update height
-		// we don't have EndBlocker in regen modules.
+		// we don't have EndBlocker in regen modules, so after the patch height return validatorset
+		// from the SDK module manager.
 		return resp
 	}
 
