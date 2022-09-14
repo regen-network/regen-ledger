@@ -13,6 +13,12 @@ updates:
     open-pull-requests-limit: 5
 
   - package-ecosystem: "gomod"
+    directory: "/api"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "gomod"
     directory: "/types"
     schedule:
       interval: daily

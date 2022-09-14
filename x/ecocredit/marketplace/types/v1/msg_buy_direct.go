@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
@@ -84,7 +83,7 @@ func (m MsgBuyDirect) GetSigners() []sdk.AccAddress {
 }
 
 func (m MsgBuyDirect) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgBuyDirect) Route() string { return sdk.MsgTypeURL(&m) }
