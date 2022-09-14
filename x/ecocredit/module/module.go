@@ -3,14 +3,10 @@ package module
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"math/rand"
 
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	"google.golang.org/protobuf/reflect/protoreflect"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -246,21 +242,7 @@ func (m Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig,
 		return err
 	}
 
-	var params basetypes.Params
-	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&params)))
-	if err != nil {
-		return err
-	}
-
-	if r == nil {
-		return nil
-	}
-
-	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &params); err != nil {
-		return fmt.Errorf("failed to unmarshal %s params state: %w", ecocredit.ModuleName, err)
-	}
-
-	return genesis.ValidateGenesis(bz, params)
+	return genesis.ValidateGenesis(bz)
 }
 
 // GetTxCmd implements AppModule/GetTxCmd.

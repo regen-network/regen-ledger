@@ -27,18 +27,18 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff, _, bankKeeper, accountKeeper := setup(t)
+	ff, bankKeeper, accountKeeper := setup(t)
 	s := testsuite.NewIntegrationTestSuite(ff, bankKeeper, accountKeeper)
 	suite.Run(t, s)
 }
 
 func TestGenesis(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, _ := setup(t)
-	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
+	ff, bankKeeper, _ := setup(t)
+	s := testsuite.NewGenesisTestSuite(ff, bankKeeper)
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (fixture.Factory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
+func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
 	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
@@ -83,5 +83,5 @@ func setup(t *testing.T) (fixture.Factory, paramstypes.Subspace, bankkeeper.Base
 	ecocreditModule := module.NewModule(ecoKey, authority, accountKeeper, bankKeeper, ecocreditSubspace, nil)
 	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 
-	return ff, ecocreditSubspace, bankKeeper, accountKeeper
+	return ff, bankKeeper, accountKeeper
 }
