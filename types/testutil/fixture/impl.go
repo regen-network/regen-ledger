@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
-	dbm "github.com/tendermint/tm-db"
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"

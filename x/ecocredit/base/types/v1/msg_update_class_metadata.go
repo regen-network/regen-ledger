@@ -16,7 +16,7 @@ func (m MsgUpdateClassMetadata) Route() string { return sdk.MsgTypeURL(&m) }
 func (m MsgUpdateClassMetadata) Type() string { return sdk.MsgTypeURL(&m) }
 
 func (m MsgUpdateClassMetadata) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgUpdateClassMetadata) ValidateBasic() error {

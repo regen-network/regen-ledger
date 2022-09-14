@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	_ types.MsgServer = &Keeper{}
+	_ types.MsgServer   = &Keeper{}
 	_ types.QueryServer = &Keeper{}
 )
 

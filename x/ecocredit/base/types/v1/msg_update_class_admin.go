@@ -5,7 +5,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
@@ -16,7 +15,7 @@ func (m MsgUpdateClassAdmin) Route() string { return sdk.MsgTypeURL(&m) }
 func (m MsgUpdateClassAdmin) Type() string { return sdk.MsgTypeURL(&m) }
 
 func (m MsgUpdateClassAdmin) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgUpdateClassAdmin) ValidateBasic() error {

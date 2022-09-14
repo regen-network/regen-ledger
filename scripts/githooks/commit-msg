@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+commitTitle="$(cat $1 | head -n1)"
+
+# ignore merge
+if echo "$commitTitle" | grep -qE "^Merge branch \'"; then
+	exit 0
+fi
+
+# check semantic commits
+if ! echo "$commitTitle" | grep -qE '^(?:feat|fix|docs|style|refactor|perf|test|chore)\(?(?:\w+|\s|\-|_)?\)?:\s\w+'; then
+	echo "Your commit was successful but the commit message did not follow semantic commits."
+	echo "Semantic commits are not required but the first commit of a new branch should be semantic."
+	echo "See https://www.conventionalcommits.org/en/v1.0.0/ for more information about semantic commits."
+fi
