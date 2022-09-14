@@ -24,7 +24,7 @@ func TestValidateGenesis(t *testing.T) {
 	// genesis state with few orm tables data
 	require.NoError(t, m.ValidateGenesis(cdc, nil, []byte(`
 	{
-		"regen.ecocredit.v1.CreditType":[
+		"regen.ecocredit.v1.CreditType": [
 			{
 				"name":"carbon",
 				"abbreviation":"C",
@@ -32,7 +32,7 @@ func TestValidateGenesis(t *testing.T) {
 				"unit":"kg"
 			}
 		],
-		"regen.ecocredit.v1.Class":[
+		"regen.ecocredit.v1.Class": [
 			2,
 			{
 				"key":1,
@@ -41,16 +41,16 @@ func TestValidateGenesis(t *testing.T) {
 				"credit_type_abbrev":"C"
 			}
 		],
-	  "regen.ecocredit.basket.v1.Basket":[
-		2,
-		{
-			"id":1,
-	    	"basket_denom":"eco.uC.hello",
-			"name":"abcd",
-			"credit_type_abbrev":"C",
-			"curator":"regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s"
-	  	}
-	],
-	"regen.ecocredit.basket.v1.BasketBalance": []
+		"regen.ecocredit.basket.v1.Basket": [
+			2,
+			{
+				"id":1,
+				"basket_denom":"eco.uC.hello",
+				"name":"abcd",
+				"credit_type_abbrev":"C",
+				"curator":"regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s"
+			}
+		],
+		"regen.ecocredit.basket.v1.BasketBalance": []
 	}`)))
 }
