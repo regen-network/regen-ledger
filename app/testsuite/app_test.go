@@ -1,4 +1,4 @@
-package app
+package testsuite
 
 import (
 	"os"
@@ -9,37 +9,32 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/regen-network/regen-ledger/v4/app/testutil"
+	"github.com/regen-network/regen-ledger/v4/app"
 )
 
 func TestSimAppExportAndBlockedAddrs(t *testing.T) {
-	encCfg := MakeEncodingConfig()
+	encCfg := app.MakeEncodingConfig()
 	db := dbm.NewMemDB()
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
-	app := testutil.NewAppWithCustomOptions(t, false, testutil.SetupOptions{
+	regenApp := NewAppWithCustomOptions(t, false, SetupOptions{
 		Logger:             logger,
 		DB:                 db,
 		InvCheckPeriod:     0,
 		EncConfig:          encCfg,
-		HomePath:           DefaultNodeHome,
+		HomePath:           app.DefaultNodeHome,
 		SkipUpgradeHeights: map[int64]bool{},
-		AppOpts:            testutil.EmptyAppOptions{},
+		AppOpts:            EmptyAppOptions{},
 	})
 
-	for acc := range maccPerms {
-		require.Equal(t, true, app.BankKeeper.BlockedAddr(app.AccountKeeper.GetModuleAddress(acc)),
+	for acc := range app.GetMaccPerms() {
+		require.Equal(t, true, regenApp.BankKeeper.BlockedAddr(regenApp.AccountKeeper.GetModuleAddress(acc)),
 			"ensure that all module account addresses are properly blocked in bank keeper")
 	}
 
-	app.Commit()
+	regenApp.Commit()
 
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, testutil.EmptyAppOptions{})
+	app2 := app.NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, app.DefaultNodeHome, 0, encCfg, EmptyAppOptions{})
 	_, err := app2.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
-}
-
-func TestGetMaccPerms(t *testing.T) {
-	dup := GetMaccPerms()
-	require.Equal(t, maccPerms, dup, "duplicated module account permissions differed from actual module account permissions")
 }

@@ -1,4 +1,4 @@
-package testutil
+package testsuite
 
 import (
 	"time"
@@ -12,7 +12,7 @@ import (
 	"github.com/regen-network/regen-ledger/v4/app"
 )
 
-type AppTestSuite struct {
+type UpgradeTestSuite struct {
 	suite.Suite
 
 	App         *app.RegenApp
@@ -22,7 +22,7 @@ type AppTestSuite struct {
 }
 
 // Setup sets up basic environment for suite (App, Ctx, and test accounts)
-func (s *AppTestSuite) Setup() {
+func (s *UpgradeTestSuite) Setup() {
 	s.App = NewAppWithCustomOptions(s.T(), false, DefaultOptions())
 	s.Ctx = s.App.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "regen-1", Time: time.Now().UTC()})
 	s.QueryHelper = &baseapp.QueryServiceTestHelper{

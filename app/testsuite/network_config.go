@@ -18,7 +18,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/v4/app"
-	"github.com/regen-network/regen-ledger/v4/app/testutil"
 )
 
 func NewRegenAppConstructor(encCfg app.EncodingConfig) network.AppConstructor {
@@ -26,7 +25,7 @@ func NewRegenAppConstructor(encCfg app.EncodingConfig) network.AppConstructor {
 		return app.NewRegenApp(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 			encCfg,
-			testutil.EmptyAppOptions{},
+			EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 		)
