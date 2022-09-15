@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -37,7 +39,8 @@ func (suite *UpgradeTestSuite) TestV5Upgrade() {
 	// force the app to have params so migration does not fail
 	ss, ok := suite.App.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
 	assert.True(suite.T(), ok)
-	ss.SetParamSet(suite.Ctx, &ecocreditv1.Params{})
+	fees := sdk.NewCoins(sdk.NewInt64Coin("uregen", 10))
+	ss.SetParamSet(suite.Ctx, &ecocreditv1.Params{CreditClassFee: fees, BasketFee: fees})
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(dummyUpgradeHeight)
 	suite.Require().NotPanics(func() {
