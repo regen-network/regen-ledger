@@ -65,3 +65,12 @@ message EventTake {
   // removed in the next version.
   string amount = 4 [ deprecated = true ];
 }
+
+// EventUpdateCurator is an event emitted when the basket curator is updated.
+//
+// Since Revision 2
+message EventUpdateCurator {
+
+  // denom is the basket denom. 
+  string denom = 1;
+}

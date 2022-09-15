@@ -295,3 +295,83 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestTxUpdateBasketCuratorCmd() {
+	require := s.Require()
+
+	curator := s.addr1.String()
+	newCurator := s.addr2.String()
+	cmd := client.TxCreateBasketCmd()
+	args := append([]string{
+		"NCT2",
+		fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+		fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+		fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
+	}, s.commonTxFlags()...)
+	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+	require.NoError(err)
+	require.NotNil(out)
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar", "foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 3",
+		},
+		{
+			name:      "missing required flags",
+			args:      []string{"eco.uC.NCT2", curator},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s)",
+		},
+		{
+			name: "valid",
+			args: []string{
+				"eco.uC.NCT2",
+				newCurator,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
+			},
+		},
+		{
+			name: "valid with amino-json",
+			args: []string{
+				"eco.uC.NCT2",
+				curator,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, newCurator),
+				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		args := tc.args
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateBasketCuratorCmd()
+			args = append(args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}
