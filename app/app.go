@@ -603,7 +603,30 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
 
-	if ctx.BlockHeight() > 1500 { // TODO: update height
+	const PATCH_HEIGHT = 600
+	if ctx.BlockHeight() == PATCH_HEIGHT {
+		var updated []abci.ValidatorUpdate
+		validators := app.StakingKeeper.GetAllValidators(ctx)
+		for _, validator := range validators {
+			tmProtoPk, err := validator.TmConsPublicKey()
+			if err != nil {
+				panic(err)
+			}
+
+			updated = append(updated, abci.ValidatorUpdate{
+				PubKey: tmProtoPk,
+				Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+			})
+		}
+
+		return abci.ResponseEndBlock{
+			ValidatorUpdates:      updated,
+			ConsensusParamUpdates: resp.ConsensusParamUpdates,
+			Events:                resp.Events,
+		}
+	}
+
+	if ctx.BlockHeight() > PATCH_HEIGHT { // TODO: update height
 		// we don't have EndBlocker in regen modules, so after the patch height return validatorset
 		// from the SDK module manager.
 		return resp
