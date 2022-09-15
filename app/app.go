@@ -625,8 +625,8 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 							PubKey: tmProtoPk,
 							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
 						})
+						break
 					}
-					continue
 				}
 			} else {
 				tmProtoPk, err := validator.TmConsPublicKey()
