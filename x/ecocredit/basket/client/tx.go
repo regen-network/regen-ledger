@@ -279,3 +279,42 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 
 	return txFlags(cmd)
 }
+
+func TxUpdateBasketCuratorCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-basket-curator [basket-denom] [new-curator]",
+		Short: "Updates the basket curator",
+		Long: strings.TrimSpace(`Updates the basket curator.
+
+The '--from' flag must equal the current basket curator.
+
+Parameters:
+
+- basket-denom:  denom of the basket to update.
+- new-curator:  account address of the new curator.
+
+`),
+		Example: `regen tx ecocredit update-basket-curator eco.uC.NCT regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw --from curator`,
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgUpdateCurator{
+				Curator:    clientCtx.FromAddress.String(),
+				NewCurator: args[1],
+				Denom:      args[0],
+			}
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
