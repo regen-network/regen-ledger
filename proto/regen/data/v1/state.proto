@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package regen.data.v1;
 
-import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // DataID stores a compact data ID and its full IRI.
 message DataID {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 1
     primary_key : {fields : "id"}
     index : {id : 1, fields : "iri", unique : true}
@@ -24,7 +24,7 @@ message DataID {
 
 // DataAnchor stores the anchor timestamp for a data object.
 message DataAnchor {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 2
     primary_key : {fields : "id"}
   };
@@ -39,7 +39,7 @@ message DataAnchor {
 
 // DataAttestor is a join table for associating data IDs and attestors.
 message DataAttestor {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 3
     primary_key : {fields : "id,attestor"}
     index : {id : 1, fields : "attestor"}
@@ -57,7 +57,7 @@ message DataAttestor {
 
 // Resolver describes a data resolver.
 message Resolver {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 4
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1, fields : "url"}
@@ -78,7 +78,7 @@ message Resolver {
 // DataResolver is a join table between data objects and resolvers and indicates
 // that a resolver claims to be able to resolve this data object.
 message DataResolver {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 5
     primary_key : {fields : "id,resolver_id"}
   };

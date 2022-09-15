@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
+- [#1479](https://github.com/regen-network/regen-ledger/pull/1479) Update ORM tables from v1alpha1 to v1
 
 ### app
 
@@ -69,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `AllowedDenom` proposal handler has been removed.
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) The `NewModule` method in `ecocredit/module` requires a store `key`.
 - [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Bridge operations must now specify a target/source that exists in the `AllowedBridgeChain` table.
+- [#1476](https://github.com/regen-network/regen-ledger/pull/1476) `DefaultParams` function has been removed.
+- [#1476](https://github.com/regen-network/regen-ledger/pull/1476) Remove `params` argument from `ValidateGenesis`.
 
 #### Added
 
