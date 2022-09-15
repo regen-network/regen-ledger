@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -591,9 +592,25 @@ func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
 // Name returns the name of the App
 func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
+const PATCH_HEIGHT = 145
+
+var voteInfos []abci.VoteInfo
+
 // BeginBlocker application updates every begin block
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	resp := app.mm.BeginBlock(ctx, req)
+
+	if ctx.BlockHeight() < PATCH_HEIGHT {
+		if voteInfos == nil {
+			voteInfos = req.LastCommitInfo.Votes
+			fmt.Println("Initialized votes")
+			fmt.Println("===================================================================")
+		} else {
+			fmt.Println(voteInfos)
+			fmt.Println("====================console votes===============================================")
+		}
+	}
+
 	events := app.smm.BeginBlock(ctx, req)
 	resp.Events = append(resp.Events, events...)
 	return resp
@@ -603,20 +620,14 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
 
-	const PATCH_HEIGHT = 600
-	lastUpdatedVals := []string{
-		"regenvaloper1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwur2txre",
-		"regenvaloper132hlyt0uwnl6sy9esrerdf0gtmhex6eptlh7k3",
-		"regenvaloper108fuazrugwhvf9sxknn2r5nyv24vaeta95dp0f",
-		"regenvaloper1j0wl83ulvwancndjg5jp3r5l2m8jq0faaq6uk7",
-	}
 	if ctx.BlockHeight() == PATCH_HEIGHT {
 		var updated []abci.ValidatorUpdate
 		validators := app.StakingKeeper.GetAllValidators(ctx)
 		for _, validator := range validators {
 			if validator.Jailed {
-				for _, v := range lastUpdatedVals {
-					if v == validator.OperatorAddress {
+				for _, vote := range voteInfos {
+					validator1 := app.StakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
+					if validator1.GetOperator().String() == validator.OperatorAddress {
 						tmProtoPk, err := validator.TmConsPublicKey()
 						if err != nil {
 							panic(err)
