@@ -604,19 +604,41 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 	resp := app.mm.EndBlock(ctx, req)
 
 	const PATCH_HEIGHT = 600
+	lastUpdatedVals := []string{
+		"regenvaloper1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwur2txre",
+		"regenvaloper132hlyt0uwnl6sy9esrerdf0gtmhex6eptlh7k3",
+		"regenvaloper108fuazrugwhvf9sxknn2r5nyv24vaeta95dp0f",
+		"regenvaloper1j0wl83ulvwancndjg5jp3r5l2m8jq0faaq6uk7",
+	}
 	if ctx.BlockHeight() == PATCH_HEIGHT {
 		var updated []abci.ValidatorUpdate
 		validators := app.StakingKeeper.GetAllValidators(ctx)
 		for _, validator := range validators {
-			tmProtoPk, err := validator.TmConsPublicKey()
-			if err != nil {
-				panic(err)
-			}
+			if validator.Jailed {
+				for _, v := range lastUpdatedVals {
+					if v == validator.OperatorAddress {
+						tmProtoPk, err := validator.TmConsPublicKey()
+						if err != nil {
+							panic(err)
+						}
+						updated = append(updated, abci.ValidatorUpdate{
+							PubKey: tmProtoPk,
+							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+						})
+					}
+					continue
+				}
+			} else {
+				tmProtoPk, err := validator.TmConsPublicKey()
+				if err != nil {
+					panic(err)
+				}
 
-			updated = append(updated, abci.ValidatorUpdate{
-				PubKey: tmProtoPk,
-				Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
-			})
+				updated = append(updated, abci.ValidatorUpdate{
+					PubKey: tmProtoPk,
+					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+				})
+			}
 		}
 
 		return abci.ResponseEndBlock{
