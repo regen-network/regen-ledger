@@ -4613,16 +4613,16 @@ func (x *fastReflection_MsgUpdateBasketFeeResponse) ProtoMethods() *protoiface.M
 
 var (
 	md_MsgUpdateCurator             protoreflect.MessageDescriptor
-	fd_MsgUpdateCurator_denom       protoreflect.FieldDescriptor
 	fd_MsgUpdateCurator_curator     protoreflect.FieldDescriptor
+	fd_MsgUpdateCurator_denom       protoreflect.FieldDescriptor
 	fd_MsgUpdateCurator_new_curator protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_basket_v1_tx_proto_init()
 	md_MsgUpdateCurator = File_regen_ecocredit_basket_v1_tx_proto.Messages().ByName("MsgUpdateCurator")
-	fd_MsgUpdateCurator_denom = md_MsgUpdateCurator.Fields().ByName("denom")
 	fd_MsgUpdateCurator_curator = md_MsgUpdateCurator.Fields().ByName("curator")
+	fd_MsgUpdateCurator_denom = md_MsgUpdateCurator.Fields().ByName("denom")
 	fd_MsgUpdateCurator_new_curator = md_MsgUpdateCurator.Fields().ByName("new_curator")
 }
 
@@ -4691,15 +4691,15 @@ func (x *fastReflection_MsgUpdateCurator) Interface() protoreflect.ProtoMessage 
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MsgUpdateCurator) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Denom != "" {
-		value := protoreflect.ValueOfString(x.Denom)
-		if !f(fd_MsgUpdateCurator_denom, value) {
-			return
-		}
-	}
 	if x.Curator != "" {
 		value := protoreflect.ValueOfString(x.Curator)
 		if !f(fd_MsgUpdateCurator_curator, value) {
+			return
+		}
+	}
+	if x.Denom != "" {
+		value := protoreflect.ValueOfString(x.Denom)
+		if !f(fd_MsgUpdateCurator_denom, value) {
 			return
 		}
 	}
@@ -4724,10 +4724,10 @@ func (x *fastReflection_MsgUpdateCurator) Range(f func(protoreflect.FieldDescrip
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgUpdateCurator) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
-		return x.Denom != ""
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.curator":
 		return x.Curator != ""
+	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
+		return x.Denom != ""
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.new_curator":
 		return x.NewCurator != ""
 	default:
@@ -4746,10 +4746,10 @@ func (x *fastReflection_MsgUpdateCurator) Has(fd protoreflect.FieldDescriptor) b
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgUpdateCurator) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
-		x.Denom = ""
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.curator":
 		x.Curator = ""
+	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
+		x.Denom = ""
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.new_curator":
 		x.NewCurator = ""
 	default:
@@ -4768,11 +4768,11 @@ func (x *fastReflection_MsgUpdateCurator) Clear(fd protoreflect.FieldDescriptor)
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgUpdateCurator) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
-		value := x.Denom
-		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.curator":
 		value := x.Curator
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
+		value := x.Denom
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.new_curator":
 		value := x.NewCurator
@@ -4797,10 +4797,10 @@ func (x *fastReflection_MsgUpdateCurator) Get(descriptor protoreflect.FieldDescr
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgUpdateCurator) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
-		x.Denom = value.Interface().(string)
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.curator":
 		x.Curator = value.Interface().(string)
+	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
+		x.Denom = value.Interface().(string)
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.new_curator":
 		x.NewCurator = value.Interface().(string)
 	default:
@@ -4823,10 +4823,10 @@ func (x *fastReflection_MsgUpdateCurator) Set(fd protoreflect.FieldDescriptor, v
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgUpdateCurator) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
-		panic(fmt.Errorf("field denom of message regen.ecocredit.basket.v1.MsgUpdateCurator is not mutable"))
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.curator":
 		panic(fmt.Errorf("field curator of message regen.ecocredit.basket.v1.MsgUpdateCurator is not mutable"))
+	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
+		panic(fmt.Errorf("field denom of message regen.ecocredit.basket.v1.MsgUpdateCurator is not mutable"))
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.new_curator":
 		panic(fmt.Errorf("field new_curator of message regen.ecocredit.basket.v1.MsgUpdateCurator is not mutable"))
 	default:
@@ -4842,9 +4842,9 @@ func (x *fastReflection_MsgUpdateCurator) Mutable(fd protoreflect.FieldDescripto
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgUpdateCurator) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
-		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.curator":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.basket.v1.MsgUpdateCurator.denom":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.basket.v1.MsgUpdateCurator.new_curator":
 		return protoreflect.ValueOfString("")
@@ -4917,11 +4917,11 @@ func (x *fastReflection_MsgUpdateCurator) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.Denom)
+		l = len(x.Curator)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Curator)
+		l = len(x.Denom)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -4965,17 +4965,17 @@ func (x *fastReflection_MsgUpdateCurator) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Curator) > 0 {
-			i -= len(x.Curator)
-			copy(dAtA[i:], x.Curator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Curator)))
-			i--
-			dAtA[i] = 0x12
-		}
 		if len(x.Denom) > 0 {
 			i -= len(x.Denom)
 			copy(dAtA[i:], x.Denom)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Denom)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Curator) > 0 {
+			i -= len(x.Curator)
+			copy(dAtA[i:], x.Curator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Curator)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -5030,38 +5030,6 @@ func (x *fastReflection_MsgUpdateCurator) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Denom = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Curator", wireType)
 				}
 				var stringLen uint64
@@ -5091,6 +5059,38 @@ func (x *fastReflection_MsgUpdateCurator) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				x.Curator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Denom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -6017,10 +6017,10 @@ type MsgUpdateCurator struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// denom is the unique identifier of the basket.
-	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 	// curator is the address of the basket curator.
-	Curator string `protobuf:"bytes,2,opt,name=curator,proto3" json:"curator,omitempty"`
+	Curator string `protobuf:"bytes,1,opt,name=curator,proto3" json:"curator,omitempty"`
+	// denom is the unique identifier of the basket.
+	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
 	// new_curator is the address of the account that will become the
 	// new curator of the basket.
 	NewCurator string `protobuf:"bytes,3,opt,name=new_curator,json=newCurator,proto3" json:"new_curator,omitempty"`
@@ -6046,16 +6046,16 @@ func (*MsgUpdateCurator) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_basket_v1_tx_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *MsgUpdateCurator) GetDenom() string {
+func (x *MsgUpdateCurator) GetCurator() string {
 	if x != nil {
-		return x.Denom
+		return x.Curator
 	}
 	return ""
 }
 
-func (x *MsgUpdateCurator) GetCurator() string {
+func (x *MsgUpdateCurator) GetDenom() string {
 	if x != nil {
-		return x.Curator
+		return x.Denom
 	}
 	return ""
 }
@@ -6186,10 +6186,10 @@ var file_regen_ecocredit_basket_v1_tx_proto_rawDesc = []byte{
 	0x1c, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x42, 0x61, 0x73, 0x6b,
 	0x65, 0x74, 0x46, 0x65, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x71, 0x0a,
 	0x10, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x75, 0x72, 0x61, 0x74, 0x6f,
-	0x72, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74,
-	0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f,
-	0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x6e, 0x65, 0x77, 0x5f, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72,
+	0x72, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x64,
+	0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f,
+	0x6d, 0x12, 0x1f, 0x0a, 0x0b, 0x6e, 0x65, 0x77, 0x5f, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72,
 	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6e, 0x65, 0x77, 0x43, 0x75, 0x72, 0x61, 0x74,
 	0x6f, 0x72, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72,
 	0x22, 0x1a, 0x0a, 0x18, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x75, 0x72,

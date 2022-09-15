@@ -192,12 +192,12 @@ message MsgUpdateBasketFeeResponse {}
 // Since Revision 2
 message MsgUpdateCurator {
   option (cosmos.msg.v1.signer) = "curator";
+  
+  // curator is the address of the basket curator.
+  string curator = 1;
 
   // denom is the unique identifier of the basket.
-  string denom = 1;
-
-  // curator is the address of the basket curator.
-  string curator = 2;
+  string denom = 2;
 
   // new_curator is the address of the account that will become the
   // new curator of the basket.

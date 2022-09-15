@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -34,7 +35,7 @@ func (s *updateBasketCurator) Before(t gocuke.TestingT) {
 
 func (s *updateBasketCurator) ABasketWithPropertiesAndCuratorAlice(a gocuke.DocString) {
 	var basket types.Basket
-	err := json.Unmarshal([]byte(a.Content), &basket)
+	err := jsonpb.UnmarshalString(a.Content, &basket)
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.BasketTable().Save(s.ctx, &api.Basket{
