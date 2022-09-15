@@ -72,7 +72,7 @@ Feature: MsgUpdateCurator
     }
     """
     When the message is validated
-    Then expect the error "empty string is not allowed: parse error"
+    Then expect the error "basket denom: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if basket denom is invalid 
     Given the message
@@ -84,5 +84,4 @@ Feature: MsgUpdateCurator
     }
     """
     When the message is validated
-    Then expect the error "expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error"
-
+    Then expect the error "basket denom: expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error: invalid request"

@@ -36,7 +36,7 @@ func (m MsgUpdateCurator) ValidateBasic() error {
 	}
 
 	if err := basket.ValidateBasketDenom(m.Denom); err != nil {
-		return err
+		return sdkerrors.ErrInvalidRequest.Wrapf("basket denom: %s", err)
 	}
 
 	return nil
