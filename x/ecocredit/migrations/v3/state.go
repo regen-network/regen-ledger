@@ -13,7 +13,7 @@ import (
 // MigrateState performs in-place store migrations from ConsensusVersion 2 to 3.
 func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	var params basetypes.Params
-	subspace.GetParamSet(sdkCtx, &params)
+	subspace.GetParamSetIfExists(sdkCtx, &params)
 
 	// validate credit class fee
 	if err := params.CreditClassFee.Validate(); err != nil {
