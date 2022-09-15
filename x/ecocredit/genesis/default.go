@@ -8,16 +8,6 @@ import (
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
-// DefaultParams returns a default set of parameters.
-func DefaultParams() basetypes.Params {
-	return basetypes.NewParams(
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultClassFee)),
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultBasketFee)),
-		[]string{},
-		false,
-	)
-}
-
 // DefaultCreditTypes returns a default set of credit basetypes.
 func DefaultCreditTypes() []basetypes.CreditType {
 	return []basetypes.CreditType{

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.orderbook.v1alpha1;
 
-import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/orderbook";
@@ -10,7 +10,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/orderbook
 // BuyOrderSellOrderMatch defines the data the FIFO/price-time-priority matching
 // algorithm used to actually match buy and sell orders.
 message BuyOrderSellOrderMatch {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 1
 
     // the primary key of the table is simply the buy_order_id,sell_order_id
@@ -60,7 +60,7 @@ message BuyOrderSellOrderMatch {
 
 // BuyOrderClassSelector indexes a buy order with class selector.
 message BuyOrderClassSelector {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 2
     primary_key : {fields : "buy_order_id,class_id"}
     index : {id : 1, fields : "class_id"}
@@ -84,7 +84,7 @@ message BuyOrderClassSelector {
 
 // BuyOrderProjectSelector indexes a buy order with project selector.
 message BuyOrderProjectSelector {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 3
     primary_key : {fields : "buy_order_id,project_id"}
     index : {id : 1, fields : "project_id"}
@@ -105,7 +105,7 @@ message BuyOrderProjectSelector {
 
 // BuyOrderBatchSelector indexes a buy order with batch selector.
 message BuyOrderBatchSelector {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 4
     primary_key : {fields : "buy_order_id,batch_id"}
     index : {id : 1, fields : "batch_id"}

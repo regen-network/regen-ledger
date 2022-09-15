@@ -33,7 +33,6 @@ import (
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
@@ -260,15 +259,9 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	err = mdb.ExportJSON(ctx, target)
 	require.NoError(err)
 
-	params := genesis.DefaultParams()
-
 	// set credit class and basket fees
-	s.creditClassFee = params.CreditClassFee
-	s.basketFee = params.BasketFee
-
-	// merge the params into the json target
-	err = genesis.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
-	require.NoError(err)
+	s.creditClassFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultClassFee))
+	s.basketFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultBasketFee))
 
 	// get raw json from target
 	json, err := target.JSON()

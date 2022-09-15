@@ -28,6 +28,11 @@ service Msg {
   //
   // Since Revision 2
   rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
+
+  // UpdateCurator updates basket curator
+  //
+  // Since Revision 2
+  rpc UpdateCurator(MsgUpdateCurator) returns (MsgUpdateCuratorResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
@@ -181,3 +186,26 @@ message MsgUpdateBasketFee {
 //
 // Since Revision 2
 message MsgUpdateBasketFeeResponse {}
+
+// MsgUpdateCurator is the Msg/UpdateCurator request type.
+//
+// Since Revision 2
+message MsgUpdateCurator {
+  option (cosmos.msg.v1.signer) = "curator";
+  
+  // curator is the address of the basket curator.
+  string curator = 1;
+
+  // denom is the unique identifier of the basket.
+  string denom = 2;
+
+  // new_curator is the address of the account that will become the
+  // new curator of the basket.
+  string new_curator = 3;
+
+}
+
+// MsgUpdateCuratorResponse is the Msg/UpdateCurator response type.
+//
+// Since Revision 2
+message MsgUpdateCuratorResponse {}
