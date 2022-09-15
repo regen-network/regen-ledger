@@ -36,11 +36,7 @@ import (
 // - the retired amount of each credit batch complies with the credit type precision
 // - the calculated total amount of each credit batch matches the total supply
 // An error is returned if any of these validation checks fail.
-func ValidateGenesis(data json.RawMessage, params basetypes.Params) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func ValidateGenesis(data json.RawMessage) error {
 	db := dbm.NewMemDB()
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
@@ -480,26 +476,6 @@ func validateSupply(batchIDToSupplyCal, batchIDToSupply map[uint64]math.Dec) err
 	}
 
 	return nil
-}
-
-// MergeParamsIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(message)))
-	if err != nil {
-		return err
-	}
-
-	bz, err := cdc.MarshalJSON(message)
-	if err != nil {
-		return err
-	}
-
-	_, err = w.Write(bz)
-	if err != nil {
-		return err
-	}
-
-	return w.Close()
 }
 
 // MergeCreditTypesIntoTarget merges params message into the ormjson.WriteTarget.

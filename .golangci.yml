@@ -11,9 +11,8 @@ linters:
     - exportloopref
     - goconst
     - gocritic
-    # TODO: investigate why golangci-lint-action is producing an error when latest golangci-lint does not locally
-    # - gofmt
-    # - goimports
+    - gofmt
+    - goimports
     - gosec
     - gosimple
     - govet

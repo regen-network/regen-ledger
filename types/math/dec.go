@@ -233,12 +233,10 @@ func (x Dec) String() string {
 }
 
 // Cmp compares x and y and returns:
-//
-//   -1 if x <  y
-//    0 if x == y
-//   +1 if x >  y
-//   undefined if d or x are NaN
-//
+// -1 if x <  y
+// 0 if x == y
+// +1 if x >  y
+// undefined if d or x are NaN
 func (x Dec) Cmp(y Dec) int {
 	return x.dec.Cmp(&y.dec)
 }

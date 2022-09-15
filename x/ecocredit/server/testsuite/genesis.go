@@ -7,28 +7,17 @@ import (
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/protobuf/proto"
 
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 )
 
 func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require := s.Require()
-	ctx := s.genesisCtx
-
-	// Set the param set to empty values to properly test init
-	var ecocreditParams basetypes.Params
-	s.paramSpace.SetParamSet(ctx, &ecocreditParams)
-
-	defaultParams := genesis.DefaultParams()
-	paramsJSON, err := s.fixture.Codec().MarshalJSON(&defaultParams)
-	require.NoError(err)
 
 	classIssuers := []baseapi.ClassIssuer{
 		{ClassKey: 1, Issuer: sdk.AccAddress("addr1")},
@@ -84,6 +73,29 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	projectSeqJSON, err := json.Marshal(projectSeq)
 	require.NoError(err)
 
+	classAllowlistSettingJSON, err := json.Marshal(baseapi.ClassCreatorAllowlist{
+		Enabled: true,
+	})
+	require.NoError(err)
+
+	allowedClassCreatorsJSON, err := json.Marshal([]baseapi.AllowedClassCreator{
+		{
+			Address: sdk.AccAddress("creator1"),
+		},
+		{
+			Address: sdk.AccAddress("creator2"),
+		},
+	})
+	require.NoError(err)
+
+	classFeeJSON, err := json.Marshal(baseapi.ClassFee{
+		Fee: &basev1beta1.Coin{
+			Denom:  "stake",
+			Amount: "1000",
+		},
+	})
+	require.NoError(err)
+
 	wrapper := map[string]json.RawMessage{}
 	wrapper[string(proto.MessageName(&baseapi.Class{}))] = classJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassIssuer{}))] = classIssuersJSON
@@ -94,7 +106,9 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	wrapper[string(proto.MessageName(&baseapi.ClassSequence{}))] = classSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.BatchSequence{}))] = batchSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.ProjectSequence{}))] = projectSeqJSON
-	wrapper[string(proto.MessageName(&baseapi.Params{}))] = paramsJSON
+	wrapper[string(proto.MessageName(&baseapi.ClassCreatorAllowlist{}))] = classAllowlistSettingJSON
+	wrapper[string(proto.MessageName(&baseapi.AllowedClassCreator{}))] = allowedClassCreatorsJSON
+	wrapper[string(proto.MessageName(&baseapi.ClassFee{}))] = classFeeJSON
 
 	bz, err := json.Marshal(wrapper)
 	require.NoError(err)
@@ -128,16 +142,14 @@ type GenesisTestSuite struct {
 	fixture        fixture.Fixture
 	signers        []sdk.AccAddress
 
-	paramSpace paramstypes.Subspace
 	bankKeeper bankkeeper.Keeper
 
 	genesisCtx sdk.Context
 }
 
-func NewGenesisTestSuite(fixtureFactory fixture.Factory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *GenesisTestSuite {
+func NewGenesisTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper) *GenesisTestSuite {
 	return &GenesisTestSuite{
 		fixtureFactory: fixtureFactory,
-		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 	}
 }
