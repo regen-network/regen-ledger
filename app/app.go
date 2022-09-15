@@ -605,9 +605,6 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 			voteInfos = req.LastCommitInfo.Votes
 			fmt.Println("Initialized votes")
 			fmt.Println("===================================================================")
-		} else {
-			fmt.Println(voteInfos)
-			fmt.Println("====================console votes===============================================")
 		}
 	}
 
