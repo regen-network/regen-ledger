@@ -26,6 +26,7 @@ type baseSuite struct {
 	t      gocuke.TestingT
 	ctx    context.Context
 	sdkCtx sdk.Context
+	cdc    *codec.ProtoCodec
 	k      Keeper
 	cap    *mocks.MockCapabilityKeeper
 	ica    *mocks.MockICAControllerKeeper
@@ -48,11 +49,11 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	ir := codectypes.NewInterfaceRegistry()
-	cdc := codec.NewProtoCodec(ir)
+	s.cdc = codec.NewProtoCodec(ir)
 	ctrl := gomock.NewController(t)
 	s.cap = mocks.NewMockCapabilityKeeper(ctrl)
 	s.ica = mocks.NewMockICAControllerKeeper(ctrl)
-	s.k = NewKeeper(cdc, sk, s.ica, s.cap)
+	s.k = NewKeeper(s.cdc, sk, s.ica, s.cap)
 
 	// set up addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()

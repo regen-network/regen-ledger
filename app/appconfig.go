@@ -14,9 +14,11 @@ import (
 	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	ibcfeetypes "github.com/cosmos/ibc-go/v5/modules/apps/29-fee/types"
 
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/intertx"
 )
 
 func (app *RegenApp) registerUpgradeHandlers() {
@@ -70,6 +72,9 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			Added: []string{
 				group.ModuleName,
 				icahosttypes.StoreKey,
+				ibcfeetypes.StoreKey,
+				icacontrollertypes.StoreKey,
+				intertx.StoreKey,
 			},
 		}
 

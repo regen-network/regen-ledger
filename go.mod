@@ -22,6 +22,8 @@ require (
 	google.golang.org/genproto v0.0.0-20220725144611-272f38e5d71b // indirect
 )
 
+require github.com/regen-network/regen-ledger/x/intertx v0.0.0-00010101000000-000000000000
+
 require (
 	cloud.google.com/go v0.100.2 // indirect
 	cloud.google.com/go/compute v1.6.1 // indirect
@@ -80,7 +82,6 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.0.1 // indirect
-	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
@@ -167,6 +168,8 @@ replace github.com/regen-network/regen-ledger/types => ./types
 replace github.com/regen-network/regen-ledger/x/data => ./x/data
 
 replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
+
+replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 
 replace github.com/regen-network/regen-ledger/api => ./api
 
