@@ -234,6 +234,8 @@ type RegenApp struct {
 
 	// wasm
 	wasmCfg wasm.Config
+
+	votesInfo []abci.VoteInfo
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
@@ -593,16 +595,14 @@ func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
 const PATCH_HEIGHT = 600 // TODO: update patch height
 
-var voteInfos []abci.VoteInfo
-
 // BeginBlocker application updates every begin block
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	resp := app.mm.BeginBlock(ctx, req)
 
 	// initialize global tendermint validator set before patch height
-	if ctx.BlockHeight() < PATCH_HEIGHT {
-		if voteInfos == nil {
-			voteInfos = req.LastCommitInfo.Votes
+	if ctx.BlockHeight() <= PATCH_HEIGHT {
+		if app.votesInfo == nil {
+			app.votesInfo = req.LastCommitInfo.Votes
 		}
 	}
 
@@ -615,42 +615,43 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
 
-	// At patch height we returns full validator set except the validators which were jailed
-	// before the v4.0 upgrade.
-	if ctx.BlockHeight() == PATCH_HEIGHT {
-		var updated []abci.ValidatorUpdate
-		validators := app.StakingKeeper.GetAllValidators(ctx)
-		for _, validator := range validators {
-			if validator.Jailed {
-				for _, vote := range voteInfos {
-					validator1 := app.StakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
-					if validator1.GetOperator().String() == validator.OperatorAddress {
-						tmProtoPk, err := validator.TmConsPublicKey()
-						if err != nil {
-							panic(err)
-						}
-						updated = append(updated, abci.ValidatorUpdate{
-							PubKey: tmProtoPk,
-							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
-						})
-						break
-					}
-				}
-			} else {
-				tmProtoPk, err := validator.TmConsPublicKey()
-				if err != nil {
-					panic(err)
-				}
+	// before the patch height continue the current wrong behavior.
 
-				updated = append(updated, abci.ValidatorUpdate{
-					PubKey: tmProtoPk,
-					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
-				})
+	// at patch height
+	// for all validators in app state (app.StakingKeeper.GetAllValidators), create a ValidatorUpdate with the correct power
+	// for all remaining validators in []VoteInfo that are not in app state, set their voting power to zero
+	if ctx.BlockHeight() == PATCH_HEIGHT {
+		var updates []abci.ValidatorUpdate
+		validators := app.StakingKeeper.GetAllValidators(ctx)
+		inValidatorSet := map[string]bool{}
+
+		for _, validator := range validators {
+			tmProtoPk, err := validator.TmConsPublicKey()
+			if err != nil {
+				panic(err)
+			}
+
+			updates = append(updates, abci.ValidatorUpdate{
+				PubKey: tmProtoPk,
+				Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+			})
+			consAddr, err := validator.GetConsAddr()
+			if err != nil {
+				panic(err)
+			}
+
+			inValidatorSet[consAddr.String()] = true
+		}
+
+		for _, voteInfo := range app.votesInfo {
+			if !inValidatorSet[sdk.ConsAddress(voteInfo.Validator.Address).String()] {
+				// the big question is how to get the pubkey for a validator is no longer in state
+				updates = append(updates, abci.ValidatorUpdate{PubKey: pk, Power: 0})
 			}
 		}
 
 		return abci.ResponseEndBlock{
-			ValidatorUpdates:      updated,
+			ValidatorUpdates:      updates,
 			ConsensusParamUpdates: resp.ConsensusParamUpdates,
 			Events:                resp.Events,
 		}
