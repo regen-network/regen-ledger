@@ -15,7 +15,7 @@ type UpgradeTestSuite struct {
 	testutil.AppTestSuite
 }
 
-func TestKeeperTestSuite(t *testing.T) {
+func TestUpgrade(t *testing.T) {
 	suite.Run(t, new(UpgradeTestSuite))
 }
 
