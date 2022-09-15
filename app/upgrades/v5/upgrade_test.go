@@ -12,7 +12,7 @@ import (
 )
 
 type UpgradeTestSuite struct {
-	testutil.KeeperTestHelper
+	testutil.AppTestSuite
 }
 
 func TestKeeperTestSuite(t *testing.T) {

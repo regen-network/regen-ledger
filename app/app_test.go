@@ -8,20 +8,22 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/regen-network/regen-ledger/v4/app/testutil"
 )
 
 func TestSimAppExportAndBlockedAddrs(t *testing.T) {
 	encCfg := MakeEncodingConfig()
 	db := dbm.NewMemDB()
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
-	app := NewAppWithCustomOptions(t, false, SetupOptions{
+	app := testutil.NewAppWithCustomOptions(t, false, testutil.SetupOptions{
 		Logger:             logger,
 		DB:                 db,
 		InvCheckPeriod:     0,
 		EncConfig:          encCfg,
 		HomePath:           DefaultNodeHome,
 		SkipUpgradeHeights: map[int64]bool{},
-		AppOpts:            EmptyAppOptions{},
+		AppOpts:            testutil.EmptyAppOptions{},
 	})
 
 	for acc := range maccPerms {
@@ -32,7 +34,7 @@ func TestSimAppExportAndBlockedAddrs(t *testing.T) {
 	app.Commit()
 
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, EmptyAppOptions{})
+	app2 := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, testutil.EmptyAppOptions{})
 	_, err := app2.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }

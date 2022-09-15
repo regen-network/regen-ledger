@@ -7,13 +7,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/regen-network/regen-ledger/v4/app"
 )
 
-type KeeperTestHelper struct {
+type AppTestSuite struct {
 	suite.Suite
 
 	App         *app.RegenApp
@@ -23,8 +22,8 @@ type KeeperTestHelper struct {
 }
 
 // Setup sets up basic environment for suite (App, Ctx, and test accounts)
-func (s *KeeperTestHelper) Setup() {
-	s.App = app.NewAppWithCustomOptions(s.T(), false, app.DefaultOptions())
+func (s *AppTestSuite) Setup() {
+	s.App = NewAppWithCustomOptions(s.T(), false, DefaultOptions())
 	s.Ctx = s.App.BaseApp.NewContext(false, tmtypes.Header{Height: 1, ChainID: "regen-1", Time: time.Now().UTC()})
 	s.QueryHelper = &baseapp.QueryServiceTestHelper{
 		GRPCQueryRouter: s.App.GRPCQueryRouter(),
@@ -32,15 +31,4 @@ func (s *KeeperTestHelper) Setup() {
 	}
 
 	s.TestAccs = CreateRandomAccounts(3)
-}
-
-// CreateRandomAccounts is a function return a list of randomly generated AccAddresses
-func CreateRandomAccounts(numAccts int) []sdk.AccAddress {
-	testAddrs := make([]sdk.AccAddress, numAccts)
-	for i := 0; i < numAccts; i++ {
-		pk := ed25519.GenPrivKey().PubKey()
-		testAddrs[i] = sdk.AccAddress(pk.Address())
-	}
-
-	return testAddrs
 }
