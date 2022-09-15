@@ -293,24 +293,24 @@ swagger: proto-swagger-gen
 ###############################################################################
 
 DOCKER := $(shell which docker)
-LOCALNET_DIR = $(CURDIR)/.testnets
+LOCALNET_DIR = $(CURDIR)/.localnet
 
 localnet-build-env:
-	$(MAKE) -C contrib/images regen-env
+	$(MAKE) -C images regen-env
 
 localnet-build-nodes:
-	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data regen-ledger/regen-env \
-			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test
+	$(DOCKER) run --rm -v $(LOCALNET_DIR):/data regen-ledger/regen-env \
+			  testnet init-files --v 4 -o /data --keyring-backend=test
 	docker-compose up -d
 
 # localnet-start will run a 4-node testnet locally. The nodes are
-# based off the docker images in: ./contrib/images/regen-env
+# based off the docker image in ./images/regen-env
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 localnet-stop:
 	docker-compose down -v
 
-.PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
+.PHONY: localnet-build-env localnet-build-nodes localnet-start localnet-stop
 
 ###############################################################################
 ###                                 Clean                                   ###
