@@ -75,25 +75,25 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 
-			// Parse and normalize credit class fee
-			var fee sdk.Coin
-			feeString, err := cmd.Flags().GetString(FlagClassFee)
-			if err != nil {
-				return err
-			}
-			if feeString != "" {
-				fee, err = sdk.ParseCoinNormalized(feeString)
-				if err != nil {
-					return fmt.Errorf("failed to parse class-fee: %w", err)
-				}
-			}
-
 			msg := types.MsgCreateClass{
 				Admin:            admin.String(),
 				Issuers:          issuers,
 				Metadata:         args[2],
 				CreditTypeAbbrev: args[1],
-				Fee:              &fee,
+			}
+
+			// Parse and normalize credit class fee
+			feeString, err := cmd.Flags().GetString(FlagClassFee)
+			if err != nil {
+				return err
+			}
+			if feeString != "" {
+				fee, err := sdk.ParseCoinNormalized(feeString)
+				if err != nil {
+					return fmt.Errorf("failed to parse class-fee: %w", err)
+				}
+
+				msg.Fee = &fee
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
