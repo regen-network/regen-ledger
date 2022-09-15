@@ -70,6 +70,7 @@ message EventTake {
 //
 // Since Revision 2
 message EventUpdateCurator {
+
   // denom is the basket denom. 
   string denom = 1;
 }
