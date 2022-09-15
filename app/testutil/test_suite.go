@@ -1,4 +1,4 @@
-package apptesting
+package testutil
 
 import (
 	"time"

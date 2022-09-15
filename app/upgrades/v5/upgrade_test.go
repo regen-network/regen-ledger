@@ -8,11 +8,11 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/regen-network/regen-ledger/v4/app/apptesting"
+	"github.com/regen-network/regen-ledger/v4/app/testutil"
 )
 
 type UpgradeTestSuite struct {
-	apptesting.KeeperTestHelper
+	testutil.KeeperTestHelper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
