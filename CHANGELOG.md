@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
+- [#1479](https://github.com/regen-network/regen-ledger/pull/1479) Update ORM tables from v1alpha1 to v1
 
 ### app
 
