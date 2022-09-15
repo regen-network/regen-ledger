@@ -2,7 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -592,7 +591,7 @@ func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
 // Name returns the name of the App
 func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
-const PATCH_HEIGHT = 145
+const PATCH_HEIGHT = 600 // TODO: update patch height
 
 var voteInfos []abci.VoteInfo
 
@@ -600,11 +599,10 @@ var voteInfos []abci.VoteInfo
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	resp := app.mm.BeginBlock(ctx, req)
 
+	// initialize global tendermint validator set before patch height
 	if ctx.BlockHeight() < PATCH_HEIGHT {
 		if voteInfos == nil {
 			voteInfos = req.LastCommitInfo.Votes
-			fmt.Println("Initialized votes")
-			fmt.Println("===================================================================")
 		}
 	}
 
@@ -617,6 +615,8 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
 
+	// At patch height we returns full validator set except the validators which were jailed
+	// before the v4.0 upgrade.
 	if ctx.BlockHeight() == PATCH_HEIGHT {
 		var updated []abci.ValidatorUpdate
 		validators := app.StakingKeeper.GetAllValidators(ctx)
