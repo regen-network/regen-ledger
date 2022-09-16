@@ -639,16 +639,39 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 				panic(err)
 			}
 
-			updates = append(updates, abci.ValidatorUpdate{
-				PubKey: tmProtoPk,
-				Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
-			})
-			consAddr, err := validator.GetConsAddr()
-			if err != nil {
-				panic(err)
-			}
+			if validator.Jailed {
+				for _, voteInfo := range app.votesInfo {
+					valCons, err := validator.GetConsAddr()
+					if err != nil {
+						panic(err)
+					}
 
-			inValidatorSet[consAddr.String()] = true
+					if sdk.ConsAddress(voteInfo.Validator.Address).Equals(valCons) {
+						updates = append(updates, abci.ValidatorUpdate{
+							PubKey: tmProtoPk,
+							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+						})
+						consAddr, err := validator.GetConsAddr()
+						if err != nil {
+							panic(err)
+						}
+
+						inValidatorSet[consAddr.String()] = true
+						break
+					}
+				}
+			} else {
+				updates = append(updates, abci.ValidatorUpdate{
+					PubKey: tmProtoPk,
+					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+				})
+				consAddr, err := validator.GetConsAddr()
+				if err != nil {
+					panic(err)
+				}
+
+				inValidatorSet[consAddr.String()] = true
+			}
 		}
 
 		for _, voteInfo := range app.votesInfo {
