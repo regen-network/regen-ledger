@@ -639,24 +639,21 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 				panic(err)
 			}
 
+			valCons, err := validator.GetConsAddr()
+			if err != nil {
+				panic(err)
+			}
+
 			if validator.Jailed {
 				for _, voteInfo := range app.votesInfo {
-					valCons, err := validator.GetConsAddr()
-					if err != nil {
-						panic(err)
-					}
 
 					if sdk.ConsAddress(voteInfo.Validator.Address).Equals(valCons) {
 						updates = append(updates, abci.ValidatorUpdate{
 							PubKey: tmProtoPk,
 							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
 						})
-						consAddr, err := validator.GetConsAddr()
-						if err != nil {
-							panic(err)
-						}
 
-						inValidatorSet[consAddr.String()] = true
+						inValidatorSet[valCons.String()] = true
 						break
 					}
 				}
@@ -665,12 +662,8 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 					PubKey: tmProtoPk,
 					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
 				})
-				consAddr, err := validator.GetConsAddr()
-				if err != nil {
-					panic(err)
-				}
 
-				inValidatorSet[consAddr.String()] = true
+				inValidatorSet[valCons.String()] = true
 			}
 		}
 
@@ -707,7 +700,7 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 		}
 	}
 
-	if ctx.BlockHeight() > PATCH_HEIGHT { // TODO: update height
+	if ctx.BlockHeight() > PATCH_HEIGHT {
 		// we don't have EndBlocker in regen modules, so after the patch height return validatorset
 		// from the SDK module manager.
 		return resp
