@@ -11,7 +11,7 @@ const mainnetValidatorSet = `{
 	`
 
 const testnetValidatorSet = `{
-	"pub_keys": [{"type":"tendermint/PubKeyEd25519","value":"6p/aBaVHQwXdNq5uWnbzuD6VwT7xEac+Cuqtj4NNRUg="},{"type":"tendermint/PubKeyEd25519","value":"wjzZC6eu0gZAmCilv02elkKHPBfjiJFqzEuaP7VI+TI="},{"type":"tendermint/PubKeyEd25519","value":"zq4uIOsatCoVCl4RjKE1XtDKqZXeR2CP9zWILLh4L0Y="},{"type":"tendermint/PubKeyEd25519","value":"PkTD7ugvS5/m/O9UygeX9yJtRxDGn2hTL/Y46c6m8uc="}]
+	"pub_keys": [{"type":"tendermint/PubKeyEd25519","value":"6p/aBaVHQwXdNq5uWnbzuD6VwT7xEac+Cuqtj4NNRUg="},{"type":"tendermint/PubKeyEd25519","value":"wjzZC6eu0gZAmCilv02elkKHPBfjiJFqzEuaP7VI+TI="},{"type":"tendermint/PubKeyEd25519","value":"YcXqTgVTFF4REYQvqNqtWEIYdQu41WO2qYrUOysKheo="},{"type":"tendermint/PubKeyEd25519","value":"zq4uIOsatCoVCl4RjKE1XtDKqZXeR2CP9zWILLh4L0Y="},{"type":"tendermint/PubKeyEd25519","value":"PkTD7ugvS5/m/O9UygeX9yJtRxDGn2hTL/Y46c6m8uc="}]
 	}`
 
 type PubKeys struct {
