@@ -549,6 +549,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
+		// TODO: wire up controller https://github.com/regen-network/regen-ledger/issues/1453
+		ica.NewAppModule(nil, app.ICAHostKeeper),
 		ecocreditMod,
 		dataMod,
 	)
