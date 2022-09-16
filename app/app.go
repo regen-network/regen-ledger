@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -32,6 +33,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -615,6 +617,12 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
 
+	// TODO: update with mainnet validatorset
+	testnetPubKeys, err := GetTestnetValidatorSetPubKeys()
+	if err != nil {
+		panic(err)
+	}
+
 	// before the patch height continue the current wrong behavior.
 
 	// at patch height
@@ -646,7 +654,26 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 		for _, voteInfo := range app.votesInfo {
 			if !inValidatorSet[sdk.ConsAddress(voteInfo.Validator.Address).String()] {
 				// the big question is how to get the pubkey for a validator is no longer in state
-				updates = append(updates, abci.ValidatorUpdate{PubKey: pk, Power: 0})
+
+				for i := 0; i < len(testnetPubKeys.Pubkeys); i++ {
+					if sdk.ConsAddress(testnetPubKeys.Pubkeys[i].Address().Bytes()).String() == sdk.ConsAddress(voteInfo.Validator.Address).String() {
+						fmt.Println("============================== fully unbonded validator ===================================================")
+						fmt.Println(sdk.ConsAddress(testnetPubKeys.Pubkeys[i].Address().Bytes()).String())
+						fmt.Println("=================================================================================")
+						tmPk, err := cryptocodec.FromTmPubKeyInterface(testnetPubKeys.Pubkeys[i])
+						if err != nil {
+							panic(err)
+						}
+
+						protoPubKey, err := cryptocodec.ToTmProtoPublicKey(tmPk)
+						if err != nil {
+							panic(err)
+						}
+
+						updates = append(updates, abci.ValidatorUpdate{PubKey: protoPubKey, Power: 0})
+
+					}
+				}
 			}
 		}
 
