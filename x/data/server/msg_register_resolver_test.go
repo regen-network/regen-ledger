@@ -1,16 +1,19 @@
+//nolint:revive,stylecheck
 package server
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -113,18 +116,18 @@ func (s *registerResolverSuite) TheAnchorEntryExistsWithTimestamp(a string) {
 	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
-	dataId := s.getDataId()
+	dataID := s.getDataID()
 
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataID)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataAnchor)
 	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
 }
 
 func (s *registerResolverSuite) TheDataResolverEntryExists() {
-	dataId := s.getDataId()
+	dataID := s.getDataID()
 
-	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataId, s.id)
+	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataID, s.id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataResolver)
 }
@@ -133,14 +136,26 @@ func (s *registerResolverSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *registerResolverSuite) getDataId() []byte {
+func (s *registerResolverSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event data.EventRegisterResolver
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *registerResolverSuite) getDataID() []byte {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	dataID, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
 	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
+	require.NotNil(s.t, dataID)
 
-	return dataId.Id
+	return dataID.Id
 }

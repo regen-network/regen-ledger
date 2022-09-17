@@ -1,4 +1,8 @@
 lint:
+  rules:
+    # ignore max line length conflicting with proto-format
+    remove:
+      - MAX_LINE_LENGTH
   rules_option:
     # allow messages with empty struct and no newline
     indent:
@@ -20,3 +24,4 @@ lint:
       - proto/regen/ecocredit/basket/v1/tx.proto
       - proto/regen/ecocredit/v1/types.proto
       - proto/regen/ecocredit/v1/tx.proto
+      - proto/cosmos/msg/v1/msg.proto

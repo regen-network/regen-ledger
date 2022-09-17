@@ -3,11 +3,11 @@ syntax = "proto3";
 package regen.ecocredit.marketplace.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package =
-  "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
 // Msg is the regen.ecocredit.marketplace.v1 Msg service.
 service Msg {
@@ -24,10 +24,23 @@ service Msg {
 
   // BuyDirect purchases credits directly from the specified sell order.
   rpc BuyDirect(MsgBuyDirect) returns (MsgBuyDirectResponse);
+
+  // AddAllowedDenom is a governance method that allows the addition of
+  // new allowed denom.
+  //
+  // Since Revision 1
+  rpc AddAllowedDenom(MsgAddAllowedDenom) returns (MsgAddAllowedDenomResponse);
+
+  // RemoveAllowedDenom is a governance method that removes allowed denom.
+  //
+  // Since Revision 1
+  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
+      returns (MsgRemoveAllowedDenomResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
 message MsgSell {
+  option (cosmos.msg.v1.signer) = "seller";
 
   // seller is the address of the account that is selling credits.
   string seller = 1;
@@ -73,6 +86,7 @@ message MsgSellResponse {
 
 // MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
 message MsgUpdateSellOrders {
+  option (cosmos.msg.v1.signer) = "seller";
 
   // seller is the address of the account that is selling credits.
   string seller = 1;
@@ -83,11 +97,10 @@ message MsgUpdateSellOrders {
   // Update is an update to an existing sell order.
   message Update {
 
-    //  sell_order_id is the ID of an existing sell order.
+    // sell_order_id is the ID of an existing sell order.
     uint64 sell_order_id = 1;
 
-    // new_quantity is the updated quantity of credits available to sell, if it
-    // is set to zero then the order is cancelled.
+    // new_quantity is the updated quantity of credits available to sell.
     string new_quantity = 2;
 
     // new_ask_price is the new ask price for this sell order
@@ -108,6 +121,7 @@ message MsgUpdateSellOrdersResponse {}
 
 // MsgCancelSellOrder is the Msg/CancelSellOrder request type.
 message MsgCancelSellOrder {
+  option (cosmos.msg.v1.signer) = "seller";
 
   // seller is the address of the account that created the sell order and is
   // therefore authorized to cancel the sell order.
@@ -122,6 +136,7 @@ message MsgCancelSellOrderResponse {}
 
 // MsgBuyDirect is the Msg/BuyDirect request type.
 message MsgBuyDirect {
+  option (cosmos.msg.v1.signer) = "buyer";
 
   // buyer is the address of the account that is buying credits.
   string buyer = 1;
@@ -131,6 +146,7 @@ message MsgBuyDirect {
 
   // Order contains the information needed to purchase an ecocredit.
   message Order {
+
     // sell_order_id is the sell order ID against which the buyer is trying
     // to buy.
     uint64 sell_order_id = 2;
@@ -156,3 +172,47 @@ message MsgBuyDirect {
 
 // MsgBuyDirectResponse is the Msg/BuyDirect response type.
 message MsgBuyDirectResponse {}
+
+// MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+//
+// Since Revision 1
+message MsgAddAllowedDenom {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+  string bank_denom = 2;
+
+  // display_denom is the denom to display to the user and is informational.
+  // Because the denom is likely an IBC denom, this should be chosen by
+  // governance to represent the consensus trusted name of the denom.
+  string display_denom = 3;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 4;
+}
+
+// MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+//
+// Since Revision 1
+message MsgAddAllowedDenomResponse {}
+
+// MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+//
+// Since Revision 1
+message MsgRemoveAllowedDenom {
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the denom to remove (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
+}
+
+// MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+//
+// Since Revision 1
+message MsgRemoveAllowedDenomResponse {}

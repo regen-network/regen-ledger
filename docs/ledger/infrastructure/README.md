@@ -6,7 +6,7 @@ Regen Ledger is a proof-of-stake blockchain application built on top of [Cosmos 
 
 Much of the language and usage patterns when interacting with Regen Ledger follow directly from the usage patterns and architecture laid out in Cosmos SDK.
 
-For more information about Cosmos SDK and what it means to build an "application specific blockchain", the [Cosmos SDK Documentation](https://docs.cosmos.network/master/intro/overview.html#what-are-application-specific-blockchains) is a great place to start.
+For more information about Cosmos SDK and what it means to build an "application specific blockchain", the [Cosmos SDK Documentation](https://docs.cosmos.network/main/intro/overview.html#what-are-application-specific-blockchains) is a great place to start.
 
 ## Regen Ledger Overview
 

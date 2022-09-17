@@ -49,5 +49,5 @@ The following wallets currently support Regen Ledger:
 
 Have any questions, comments, or new ideas? The following community channels are the best place to start for technical topics related to Regen Ledger:
 
-- [Regen Network Discord](https://discord.gg/BDcBJu3)
+- [Regen Network Discord](https://discord.gg/regen-network)
 - [Regen Network Forum](https://forum.regen.network)

@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
 const basketRoute = "regen/ecocredit/basket/v1"
@@ -35,7 +35,7 @@ func (s *IntegrationTestSuite) TestQueryBasket() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketResponse
+			var res baskettypes.QueryBasketResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Basket) // deprecated
 			require.NotEmpty(res.BasketInfo)
@@ -57,9 +57,7 @@ func (s *IntegrationTestSuite) TestQueryBaskets() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/baskets?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/baskets?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				basketRoute,
 			),
@@ -73,7 +71,7 @@ func (s *IntegrationTestSuite) TestQueryBaskets() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketsResponse
+			var res baskettypes.QueryBasketsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Baskets) // deprecated
 			require.NotEmpty(res.BasketsInfo)
@@ -124,7 +122,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalance() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketBalanceResponse
+			var res baskettypes.QueryBasketBalanceResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Balance)
 		})
@@ -150,9 +148,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/basket-balances/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/basket-balances/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				basketRoute,
 				s.basketDenom,
@@ -176,7 +172,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res basket.QueryBasketBalancesResponse
+			var res baskettypes.QueryBasketBalancesResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Balances) // deprecated
 			require.NotEmpty(res.BalancesInfo)
@@ -189,4 +185,20 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBasketParams() {
+	require := s.Require()
+
+	bz, err := rest.GetRequest(fmt.Sprintf(
+		"%s/%s/basket-fee",
+		s.val.APIAddress,
+		basketRoute,
+	))
+	require.NoError(err)
+	require.NotContains(string(bz), "code")
+
+	var res baskettypes.QueryBasketFeeResponse
+	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
+	require.NotEmpty(res.Fee)
 }

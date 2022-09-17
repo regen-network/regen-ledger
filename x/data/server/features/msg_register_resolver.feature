@@ -62,3 +62,17 @@ Feature: Msg/RegisterResolver
     Scenario: the registrant is not the manager
       When bob attempts to register the data to the resolver
       Then expect the error "unauthorized resolver manager"
+
+  Rule: event is emitted
+
+    Scenario: EventRegisterResolver is emitted
+      Given alice has defined the resolver with url "https://foo.bar"
+      When alice attempts to register the data to the resolver
+      Then the data resolver entry exists
+      And expect event with properties
+      """
+      {
+        "id": 1,
+        "iri": "regen:112wkBET2rRgE8pahuaczxKbmv7ciehqsne57F9gtzf1PVhwuFTX.bin"
+      }
+      """

@@ -10,15 +10,15 @@ For more information about specific ecosystem service credits and methodologies 
 
 ## Overview
 
-The ecocredit module is divided into three separate components, including "core functionality" and two submodules, the "basket submodule" and the "marketplace submodule".
+The ecocredit module is divided into three separate components, including "base functionality" and two submodules, the "basket submodule" and the "marketplace submodule".
 
-### Core Functionality
+### Base Functionality
 
 ::: tip Now Available
-The core functionality was made available in Regen Ledger v2.0. Added support for projects was made available in Regen Ledger v4.0.
+The base functionality was made available in Regen Ledger v2.0. Added support for projects was made available in Regen Ledger v4.0.
 :::
 
-The core functionality of the ecocredit module enables the creation and management of credit types, credit classes, and projects, as well as the issuance, transferring, and retirement of ecosystem service credits (i.e. carbon credits, biodiversity credits, soil health credits, etc.).
+The base functionality of the ecocredit module enables the creation and management of credit types, credit classes, and projects, as well as the issuance, transferring, and retirement of ecosystem service credits (i.e. carbon credits, biodiversity credits, soil health credits, etc.).
 
 Credit classes are designed to support a variety of ecosystem service credits, and can be created and managed by individuals, groups, or organizations. Each credit class is associated with a credit type that represents the primary unit of measurement for the methodologies defined within the credit class (i.e. carbon, biodiversity, etc.). Credit types can only be added through on-chain governance.
 
@@ -54,8 +54,8 @@ The marketplace submodule enables the creation and management of sell orders for
 
 ## RFCs
 
-- [RFC-001: Ecosystem Service Credit Module](https://github.com/regen-network/regen-ledger/blob/master/rfcs/001-ecosystem-service-credit-module.md)
-- [RFC-002: Baskets Specification](https://github.com/regen-network/regen-ledger/blob/master/rfcs/002-baskets-specification.md)
+- [RFC-001: Ecocredit Module](https://github.com/regen-network/regen-ledger/blob/main/specs/rfcs/001-ecocredit-module)
+- [RFC-002: Basket Functionality](https://github.com/regen-network/regen-ledger/blob/main/specs/rfcs/002-basket-functionality)
 
 ## Protobuf
 

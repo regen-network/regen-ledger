@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+CMDS='gofmt goimports misspell'
+STAGED_GO_FILES=$(git diff --cached --name-only -- '*.go')
+LOCAL_IMPORTS='github.com/tendermint/tendermint,github.com/cosmos/cosmos-sdk,github.com/cosmos/ibc-go,github.com/regen-network/regen-ledger'
+
+# check go tools
+for cmd in ${CMDS}; do
+  which "${cmd}" &>/dev/null || echo "\"${cmd}\" not found, skipping pre-commit formatting" || exit 0
+done
+
+# format staged files
+if [[ $STAGED_GO_FILES != "" ]]; then
+  echo "Running pre-commit formatting on staged files..."
+
+  for file in $STAGED_GO_FILES; do
+    if [[ $file =~ \.pb\.go ]] || [[ $file =~ \.pulsar.go ]] || [[ $file =~ \.cosmos_orm.go ]] || [[ $file =~ \statik.go ]]; then
+      continue
+    fi
+
+    gofmt -w -s "$file"
+    goimports -w -local $LOCAL_IMPORTS "$file"
+    misspell -w "$file"
+    git add "$file"
+  done
+fi

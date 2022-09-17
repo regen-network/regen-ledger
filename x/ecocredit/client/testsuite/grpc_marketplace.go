@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 const marketplaceRoute = "regen/ecocredit/marketplace/v1"
@@ -20,11 +20,11 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/sell-order/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderId),
+			fmt.Sprintf("%s/%s/sell-order/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/sell-orders/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderId),
+			fmt.Sprintf("%s/%s/sell-orders/%d", s.val.APIAddress, marketplaceRoute, s.sellOrderID),
 		},
 	}
 
@@ -35,7 +35,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrderResponse
+			var res types.QuerySellOrderResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrder)
 		})
@@ -56,9 +56,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/sell-orders?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 			),
@@ -72,7 +70,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrdersResponse
+			var res types.QuerySellOrdersResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrders)
 
@@ -104,9 +102,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders-by-batch/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders/batch/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/sell-orders-by-batch/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 				s.batchDenom,
@@ -130,7 +126,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrdersByBatchResponse
+			var res types.QuerySellOrdersByBatchResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrders)
 
@@ -162,9 +158,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/sell-orders-by-seller/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/sell-orders/seller/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/sell-orders-by-seller/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 				s.addr1,
@@ -188,7 +182,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QuerySellOrdersBySellerResponse
+			var res types.QuerySellOrdersBySellerResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.SellOrders)
 
@@ -215,9 +209,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/allowed-denoms?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/allowed-denoms?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/allowed-denoms?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
 				marketplaceRoute,
 			),
@@ -231,7 +223,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res marketplace.QueryAllowedDenomsResponse
+			var res types.QueryAllowedDenomsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.AllowedDenoms)
 

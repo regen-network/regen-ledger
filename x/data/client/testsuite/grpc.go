@@ -7,10 +7,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-const dataRoute = "regen/data/v1"
+const (
+	dataRoute  = "regen/data/v1"
+	pagination = "pagination.limit=1&pagination.countTotal=true"
+)
 
 func (s *IntegrationTestSuite) TestQueryAnchorByIRI() {
 	require := s.Require()
@@ -83,10 +87,6 @@ func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
 func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 	require := s.Require()
 
-	pgn := "pagination.countTotal=true"
-	// TODO: #1113
-	// pgn := pagination.limit=1&pagination.countTotal=true
-
 	testCases := []struct {
 		name string
 		url  string
@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 				s.val.APIAddress,
 				dataRoute,
 				s.addr1,
-				pgn,
+				pagination,
 			),
 		},
 		{
@@ -136,8 +136,6 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 				require.Len(res.Attestations, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -145,8 +143,6 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 
 func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
 	require := s.Require()
-
-	pgn := "pagination.limit=1&pagination.countTotal=true"
 
 	testCases := []struct {
 		name string
@@ -168,7 +164,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
 				s.val.APIAddress,
 				dataRoute,
 				s.iri2,
-				pgn,
+				pagination,
 			),
 		},
 		{
@@ -197,8 +193,6 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
 				require.Len(res.Attestations, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -253,8 +247,6 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
 				require.Len(res.Attestations, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -294,8 +286,6 @@ func (s *IntegrationTestSuite) TestQueryResolver() {
 func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
 	require := s.Require()
 
-	pgn := "pagination.limit=1&pagination.countTotal=true"
-
 	testCases := []struct {
 		name string
 		url  string
@@ -306,7 +296,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/resolvers-by-iri/%s?%s", s.val.APIAddress, dataRoute, s.iri1, pgn),
+			fmt.Sprintf("%s/%s/resolvers-by-iri/%s?%s", s.val.APIAddress, dataRoute, s.iri1, pagination),
 		},
 		{
 			"valid alternative",
@@ -329,8 +319,6 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
 				require.Len(res.Resolvers, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -385,8 +373,6 @@ func (s *IntegrationTestSuite) TestQueryResolversByHash() {
 				require.Len(res.Resolvers, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -438,8 +424,6 @@ func (s *IntegrationTestSuite) TestQueryResolversByURL() {
 				require.Len(res.Resolvers, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}

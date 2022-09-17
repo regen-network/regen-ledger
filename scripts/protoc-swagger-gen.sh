@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-SWAGGER_DIR=./client/docs
+SWAGGER_DIR=./app/client/docs
 
 # find all proto directories
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)

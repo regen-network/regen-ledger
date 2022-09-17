@@ -11,20 +11,19 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/module"
-	"github.com/regen-network/regen-ledger/types/module/server"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 type bridgeSuite struct {
 	t               gocuke.TestingT
-	fixture         testutil.Fixture
+	fixture         fixture.Fixture
 	ctx             context.Context
 	sdkCtx          sdk.Context
 	ecocreditServer ecocreditServer
@@ -32,8 +31,8 @@ type bridgeSuite struct {
 }
 
 type ecocreditServer struct {
-	core.MsgClient
-	core.QueryClient
+	basetypes.MsgClient
+	basetypes.QueryClient
 }
 
 func TestBridgeIntegration(t *testing.T) {
@@ -43,18 +42,18 @@ func TestBridgeIntegration(t *testing.T) {
 func (s *bridgeSuite) Before(t gocuke.TestingT) {
 	s.t = t
 
-	ff := server.NewFixtureFactory(t, 2)
-	ff.SetModules([]module.Module{
+	ff := fixture.NewFixtureFactory(t, 2)
+	ff.SetModules([]sdkmodules.AppModule{
 		NewEcocreditModule(ff),
 	})
 
 	s.fixture = ff.Setup()
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
 
 	s.ecocreditServer = ecocreditServer{
-		MsgClient:   core.NewMsgClient(s.fixture.TxConn()),
-		QueryClient: core.NewQueryClient(s.fixture.QueryConn()),
+		MsgClient:   basetypes.NewMsgClient(s.fixture.TxConn()),
+		QueryClient: basetypes.NewQueryClient(s.fixture.QueryConn()),
 	}
 }
 
@@ -66,25 +65,25 @@ func (s *bridgeSuite) EcocreditState(a gocuke.DocString) {
 }
 
 func (s *bridgeSuite) BridgeServiceCallsBridgeReceiveWithMessage(a gocuke.DocString) {
-	var msg core.MsgBridgeReceive
+	var msg basetypes.MsgBridgeReceive
 	err := jsonpb.UnmarshalString(a.Content, &msg)
 	require.NoError(s.t, err)
 
 	// reset context events
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
 
 	_, s.err = s.ecocreditServer.BridgeReceive(s.ctx, &msg)
 }
 
 func (s *bridgeSuite) RecipientCallsBridgeWithMessage(a gocuke.DocString) {
-	var msg core.MsgBridge
+	var msg basetypes.MsgBridge
 	err := jsonpb.UnmarshalString(a.Content, &msg)
 	require.NoError(s.t, err)
 
 	// reset context events
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithContext(s.ctx)
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
 
 	_, s.err = s.ecocreditServer.Bridge(s.ctx, &msg)
 }
@@ -101,7 +100,7 @@ func (s *bridgeSuite) ExpectTotalCreditBatches(a string) {
 	expected, err := strconv.ParseUint(a, 10, 64)
 	require.NoError(s.t, err)
 
-	res, err := s.ecocreditServer.Batches(s.ctx, &core.QueryBatchesRequest{
+	res, err := s.ecocreditServer.Batches(s.ctx, &basetypes.QueryBatchesRequest{
 		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	require.NoError(s.t, err)
@@ -112,7 +111,7 @@ func (s *bridgeSuite) ExpectTotalProjects(a string) {
 	expected, err := strconv.ParseUint(a, 10, 64)
 	require.NoError(s.t, err)
 
-	res, err := s.ecocreditServer.Projects(s.ctx, &core.QueryProjectsRequest{
+	res, err := s.ecocreditServer.Projects(s.ctx, &basetypes.QueryProjectsRequest{
 		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	require.NoError(s.t, err)
@@ -120,11 +119,11 @@ func (s *bridgeSuite) ExpectTotalProjects(a string) {
 }
 
 func (s *bridgeSuite) ExpectProjectWithProperties(a gocuke.DocString) {
-	var expected core.Project
+	var expected basetypes.Project
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
-	req := &core.QueryProjectRequest{ProjectId: expected.Id}
+	req := &basetypes.QueryProjectRequest{ProjectId: expected.Id}
 	project, err := s.ecocreditServer.Project(s.ctx, req)
 	require.NoError(s.t, err)
 
@@ -134,11 +133,11 @@ func (s *bridgeSuite) ExpectProjectWithProperties(a gocuke.DocString) {
 }
 
 func (s *bridgeSuite) ExpectCreditBatchWithProperties(a gocuke.DocString) {
-	var expected core.Batch
+	var expected basetypes.Batch
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
-	req := &core.QueryBatchRequest{BatchDenom: expected.Denom}
+	req := &basetypes.QueryBatchRequest{BatchDenom: expected.Denom}
 	project, err := s.ecocreditServer.Batch(s.ctx, req)
 	require.NoError(s.t, err)
 
@@ -149,11 +148,11 @@ func (s *bridgeSuite) ExpectCreditBatchWithProperties(a gocuke.DocString) {
 }
 
 func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocString) {
-	expected := &ecocreditv1.BatchSupply{}
+	expected := &baseapi.BatchSupply{}
 	err := jsonpb.UnmarshalString(b.Content, expected)
 	require.NoError(s.t, err)
 
-	res, err := s.ecocreditServer.Supply(s.ctx, &core.QuerySupplyRequest{
+	res, err := s.ecocreditServer.Supply(s.ctx, &basetypes.QuerySupplyRequest{
 		BatchDenom: a,
 	})
 	require.NoError(s.t, err)
@@ -164,11 +163,11 @@ func (s *bridgeSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocStri
 }
 
 func (s *bridgeSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c gocuke.DocString) {
-	expected := &ecocreditv1.BatchBalance{}
+	expected := &baseapi.BatchBalance{}
 	err := jsonpb.UnmarshalString(c.Content, expected)
 	require.NoError(s.t, err)
 
-	res, err := s.ecocreditServer.Balance(s.ctx, &core.QueryBalanceRequest{
+	res, err := s.ecocreditServer.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    a,
 		BatchDenom: b,
 	})
@@ -180,65 +179,25 @@ func (s *bridgeSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c 
 }
 
 func (s *bridgeSuite) ExpectEventBridgeReceiveWithValues(a gocuke.DocString) {
-	var exists bool
+	var expected basetypes.EventBridgeReceive
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
 
-	for _, event := range s.sdkCtx.EventManager().Events() {
-		if event.Type == "regen.ecocredit.v1.EventBridgeReceive" {
-			exists = true
+	sdkEvent, found := testutil.GetEvent(&expected, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
 
-			var expected core.EventBridgeReceive
-			err := jsonpb.UnmarshalString(a.Content, &expected)
-			require.NoError(s.t, err)
-
-			for _, attr := range event.Attributes {
-				val, err := strconv.Unquote(string(attr.Value))
-				require.NoError(s.t, err)
-
-				switch string(attr.Key) {
-				case "project_id":
-					require.Equal(s.t, expected.ProjectId, val)
-				case "batch_denom":
-					require.Equal(s.t, expected.BatchDenom, val)
-				default:
-					require.Fail(s.t, "invalid attribute")
-				}
-			}
-		}
-	}
-
-	require.True(s.t, exists)
+	err = testutil.MatchEvent(&expected, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
-	var exists bool
+	var expected basetypes.EventBridge
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
 
-	for _, event := range s.sdkCtx.EventManager().Events() {
-		if event.Type == "regen.ecocredit.v1.EventBridge" {
-			exists = true
+	sdkEvent, found := testutil.GetEvent(&expected, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
 
-			var expected core.EventBridge
-			err := jsonpb.UnmarshalString(a.Content, &expected)
-			require.NoError(s.t, err)
-
-			for _, attr := range event.Attributes {
-				val, err := strconv.Unquote(string(attr.Value))
-				require.NoError(s.t, err)
-
-				switch string(attr.Key) {
-				case "target":
-					require.Equal(s.t, expected.Target, val)
-				case "recipient":
-					require.Equal(s.t, expected.Recipient, val)
-				case "contract":
-					require.Equal(s.t, expected.Contract, val)
-				case "amount":
-					require.Equal(s.t, expected.Amount, val)
-				default:
-					require.Fail(s.t, "invalid attribute")
-				}
-			}
-		}
-	}
-
-	require.True(s.t, exists)
+	err = testutil.MatchEvent(&expected, sdkEvent)
+	require.NoError(s.t, err)
 }

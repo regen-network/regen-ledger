@@ -27,9 +27,9 @@ func (d *decEq) Matches(x interface{}) bool {
 	if y.Cmp(d.dec) != 0 {
 		d.msg = fmt.Sprintf("%s != %s", d.dec, y)
 		return false
-	} else {
-		return true
 	}
+
+	return true
 }
 
 func (d *decEq) String() string {

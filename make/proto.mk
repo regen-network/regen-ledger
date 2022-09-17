@@ -26,9 +26,13 @@ DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuil
 
 proto-lint:
 	@$(DOCKER_BUF) lint --error-format=json
+	@protolint .
+
+proto-lint-fix:
+	@protolint -fix .
 
 proto-check-breaking:
-	@$(DOCKER_BUF) breaking --against https://github.com/regen-network/regen-ledger.git#branch=master
+	@$(DOCKER_BUF) breaking --against https://github.com/regen-network/regen-ledger.git#branch=main
 
 GOGO_PROTO_URL           = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
 GOOGLE_PROTO_URL         = https://raw.githubusercontent.com/googleapis/googleapis/master

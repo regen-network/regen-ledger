@@ -3,7 +3,7 @@
 export GO111MODULE=on
 
 BUILD_DIR ?= $(CURDIR)/build
-REGEN_DIR := $(CURDIR)/app/regen
+REGEN_CMD := $(CURDIR)/cmd/regen
 
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
@@ -18,7 +18,6 @@ endif
 SDK_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-EXPERIMENTAL ?= false
 LEDGER_ENABLED ?= true
 DB_BACKEND ?= goleveldb
 
@@ -29,10 +28,6 @@ DB_BACKEND ?= goleveldb
 # process build tags
 
 build_tags = netgo
-
-ifeq ($(EXPERIMENTAL),true)
-	build_tags += experimental
-endif
 
 ifeq ($(LEDGER_ENABLED),true)
   ifeq ($(OS),Windows_NT)
@@ -137,24 +132,17 @@ endif
 
 all: build
 
-install: go.sum go-version
-	@if $(EXPERIMENTAL); then ./scripts/experimental.sh; fi
-	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
-	@if $(EXPERIMENTAL); then ./scripts/experimental_post.sh; fi
-
 build: go.sum go-version
 	@mkdir -p $(BUILD_DIR)
-	@if $(EXPERIMENTAL); then ./scripts/experimental.sh; fi
-	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_DIR)
-	@if $(EXPERIMENTAL); then ./scripts/experimental_post.sh; fi
+	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_CMD)
 
-build-linux:
+build-linux: go.sum go-version
 	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
 
-clean:
-	rm -rf $(BUILD_DIR)
+install: go.sum go-version
+	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_CMD)
 
-.PHONY: build build-linux install clean
+.PHONY: build build-linux install
 
 ###############################################################################
 ###                               Go Version                                ###
@@ -215,25 +203,31 @@ generate:
 ###############################################################################
 
 lint:
-	golangci-lint run --out-format=tab
-	protolint .
+	@echo "Linting all go modules..."
+	@find . -name 'go.mod' -type f -execdir golangci-lint run --out-format=tab \;
 
-lint-fix:
-	golangci-lint run --fix --out-format=tab --issues-exit-code=0
-	protolint -fix .
+lint-fix: format
+	@echo "Attempting to fix lint errors in all go modules..."
+	@find . -name 'go.mod' -type f -execdir golangci-lint run --fix --out-format=tab --issues-exit-code=0 \;
 
 format_filter = -name '*.go' -type f \
-	-not -path '*.git*' \
 	-not -name '*.pb.go' \
 	-not -name '*.gw.go' \
 	-not -name '*.pulsar.go' \
 	-not -name '*.cosmos_orm.go' \
-	-not -name 'statik.go'
+	-not -name '*statik.go'
+
+format_local = \
+	github.com/tendermint/tendermint \
+	github.com/cosmos/cosmos-sdk \
+	github.com/cosmos/ibc-go \
+	github.com/regen-network/regen-ledger
 
 format:
-	@find . $(format_filter) | xargs gofmt -w -s
+	@echo "Formatting all go modules..."
+	@find . $(format_filter) | xargs gofmt -s -w
+	@find . $(format_filter) | xargs goimports -w -local $(subst $(whitespace),$(comma),$(format_local))
 	@find . $(format_filter) | xargs misspell -w
-	@find . $(format_filter) | xargs goimports -w
 
 .PHONY: lint lint-fix format
 
@@ -245,7 +239,7 @@ tools: go-version
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install github.com/client9/misspell/cmd/misspell@latest
 	go install golang.org/x/tools/cmd/goimports@latest
-	go install github.com/yoheimuta/protolint@latest
+	go install github.com/yoheimuta/protolint/cmd/protolint@latest
 
 .PHONY: tools
 
@@ -299,20 +293,31 @@ swagger: proto-swagger-gen
 ###############################################################################
 
 DOCKER := $(shell which docker)
+LOCALNET_DIR = $(CURDIR)/.localnet
 
 localnet-build-env:
-	$(MAKE) -C contrib/images regen-env
+	$(MAKE) -C images regen-env
 
 localnet-build-nodes:
-	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data regenledger/regen-env \
-			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test
+	$(DOCKER) run --rm -v $(LOCALNET_DIR):/data regen-ledger/regen-env \
+			  testnet init-files --v 4 -o /data --keyring-backend=test
 	docker-compose up -d
 
 # localnet-start will run a 4-node testnet locally. The nodes are
-# based off the docker images in: ./contrib/images/regen-env
+# based off the docker image in ./images/regen-env
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 localnet-stop:
 	docker-compose down -v
 
-.PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
+.PHONY: localnet-build-env localnet-build-nodes localnet-start localnet-stop
+
+###############################################################################
+###                                 Clean                                   ###
+###############################################################################
+
+clean: test-clean
+	rm -rf $(BUILD_DIR)
+	rm -rf $(LOCALNET_DIR)
+
+.PHONY: clean

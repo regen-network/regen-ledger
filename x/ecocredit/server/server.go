@@ -5,57 +5,57 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/module/server"
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/basket/keeper"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	marketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/keeper"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 type serverImpl struct {
-	storeKey storetypes.StoreKey
+	legacySubspace paramtypes.Subspace
+	bankKeeper     ecocredit.BankKeeper
+	accountKeeper  ecocredit.AccountKeeper
 
-	paramSpace    paramtypes.Subspace
-	bankKeeper    ecocredit.BankKeeper
-	accountKeeper ecocredit.AccountKeeper
+	BaseKeeper        basekeeper.Keeper
+	BasketKeeper      basketkeeper.Keeper
+	MarketplaceKeeper marketkeeper.Keeper
 
-	coreKeeper        core.Keeper
-	basketKeeper      basket.Keeper
-	marketplaceKeeper marketplace.Keeper
-
-	db          ormdb.ModuleDB
-	stateStore  api.StateStore
-	basketStore basketapi.StateStore
+	db               ormdb.ModuleDB
+	stateStore       baseapi.StateStore
+	basketStore      basketapi.StateStore
+	marketplaceStore marketapi.StateStore
 }
 
-func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) serverImpl {
+//nolint:revive
+func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{
-		storeKey:      storeKey,
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
+		legacySubspace: legacySubspace,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
 	}
 
 	// ensure ecocredit module account is set
-	coreAddr := s.accountKeeper.GetModuleAddress(ecocredit.ModuleName)
-	if coreAddr == nil {
+	baseAddr := s.accountKeeper.GetModuleAddress(ecocredit.ModuleName)
+	if baseAddr == nil {
 		panic(fmt.Sprintf("%s module account has not been set", ecocredit.ModuleName))
 	}
 
 	// ensure basket submodule account is set
-	basketAddr := s.accountKeeper.GetModuleAddress(baskettypes.BasketSubModuleName)
+	basketAddr := s.accountKeeper.GetModuleAddress(basket.BasketSubModuleName)
 	if basketAddr == nil {
-		panic(fmt.Sprintf("%s module account has not been set", baskettypes.BasketSubModuleName))
+		panic(fmt.Sprintf("%s module account has not been set", basket.BasketSubModuleName))
 	}
 
 	var err error
@@ -64,18 +64,19 @@ func newServer(storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err)
 	}
 
-	coreStore, basketStore, marketStore := getStateStores(s.db)
-	s.stateStore = coreStore
+	baseStore, basketStore, marketStore := getStateStores(s.db)
+	s.stateStore = baseStore
 	s.basketStore = basketStore
-	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr)
-	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, s.paramSpace, basketAddr)
-	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
+	s.marketplaceStore = marketStore
+	s.BaseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
+	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, s.legacySubspace, basketAddr, authority)
+	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, s.legacySubspace, authority)
 
 	return s
 }
 
-func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, marketApi.StateStore) {
-	coreStore, err := api.NewStateStore(db)
+func getStateStores(db ormdb.ModuleDB) (baseapi.StateStore, basketapi.StateStore, marketapi.StateStore) {
+	baseStore, err := baseapi.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
@@ -83,34 +84,17 @@ func getStateStores(db ormdb.ModuleDB) (api.StateStore, basketapi.StateStore, ma
 	if err != nil {
 		panic(err)
 	}
-	marketStore, err := marketApi.NewStateStore(db)
+	marketStore, err := marketapi.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
-	return coreStore, basketStore, marketStore
+	return baseStore, basketStore, marketStore
 }
 
-func RegisterServices(
-	configurator server.Configurator,
-	paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper,
-	bankKeeper ecocredit.BankKeeper,
-) Keeper {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper)
+func (s serverImpl) QueryServers() (basetypes.QueryServer, baskettypes.QueryServer, markettypes.QueryServer) {
+	return s.BaseKeeper, s.BasketKeeper, s.MarketplaceKeeper
+}
 
-	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
-	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)
-
-	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
-	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
-
-	marketplacetypes.RegisterMsgServer(configurator.MsgServer(), impl.marketplaceKeeper)
-	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketplaceKeeper)
-
-	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
-	configurator.RegisterMigrationHandler(impl.RunMigrations)
-
-	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
-	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
-	return impl
+func (s serverImpl) GetStateStores() (baseapi.StateStore, basketapi.StateStore, marketapi.StateStore) {
+	return s.stateStore, s.basketStore, s.marketplaceStore
 }

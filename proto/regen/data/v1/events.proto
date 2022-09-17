@@ -6,12 +6,14 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // EventAnchor is an event emitted when data is anchored on chain.
 message EventAnchor {
+
   // iri is the IRI of the data anchored on chain.
   string iri = 1;
 }
 
 // EventAttest is an event emitted when data is attested to on chain.
 message EventAttest {
+
   // iri is the IRI of the data attested to.
   string iri = 1;
 
@@ -22,6 +24,7 @@ message EventAttest {
 
 // EventDefineResolver is an event emitted when a resolved is defined on chain.
 message EventDefineResolver {
+
   // id is the ID of the defined resolver.
   uint64 id = 1;
 }
@@ -29,6 +32,7 @@ message EventDefineResolver {
 // EventRegisterResolver is an event emitted when data is registered to a
 // resolver on chain.
 message EventRegisterResolver {
+
   // id is the ID of the resolver that the data was registered to.
   uint64 id = 1;
 

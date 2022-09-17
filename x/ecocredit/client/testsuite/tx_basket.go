@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
@@ -46,9 +46,9 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid",
 			args: []string{
 				"NCT1",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
-				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
+				fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+				fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
 			},
 		},
@@ -56,9 +56,9 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid from key-name",
 			args: []string{
 				"NCT2",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
-				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
+				fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+				fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
@@ -66,9 +66,9 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			name: "valid with amino-json",
 			args: []string{
 				"NCT3",
-				fmt.Sprintf("--%s=%s", basketclient.FlagAllowedClasses, s.classId),
-				fmt.Sprintf("--%s=%s", basketclient.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
-				fmt.Sprintf("--%s=%s", basketclient.FlagBasketFee, s.basketFee),
+				fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+				fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+				fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -76,9 +76,10 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := basketclient.TxCreateBasketCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxCreateBasketCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -100,7 +101,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 	owner := s.addr1.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]*basket.BasketCredit{
+	bz, err := json.Marshal([]*types.BasketCredit{
 		{
 			BatchDenom: s.batchDenom,
 			Amount:     "10",
@@ -108,9 +109,9 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -132,7 +133,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{s.basketDenom, validJson},
+			args:      []string{s.basketDenom, validJSON},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
@@ -150,7 +151,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "invalid json format",
 			args: []string{
 				s.basketDenom,
-				invalidJson,
+				invalidJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
 			expErr:    true,
@@ -160,7 +161,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "duplicate json key",
 			args: []string{
 				s.basketDenom,
-				duplicateJson,
+				duplicateJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
 			expErr:    true,
@@ -170,7 +171,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "valid",
 			args: []string{
 				s.basketDenom,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
 		},
@@ -178,7 +179,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "valid from key-name",
 			args: []string{
 				s.basketDenom,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
@@ -186,7 +187,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			name: "valid with amino-json",
 			args: []string{
 				s.basketDenom,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -194,9 +195,10 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := basketclient.TxPutInBasketCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxPutInBasketCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -247,8 +249,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				s.basketDenom,
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
-				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
-				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
+				fmt.Sprintf("--%s=true", client.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", client.FlagRetirementJurisdiction),
 			},
 		},
 		{
@@ -257,8 +259,8 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				s.basketDenom,
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
-				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
-				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
+				fmt.Sprintf("--%s=true", client.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", client.FlagRetirementJurisdiction),
 			},
 		},
 		{
@@ -268,16 +270,97 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 				"10",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
-				fmt.Sprintf("--%s=true", basketclient.FlagRetireOnTake),
-				fmt.Sprintf("--%s=AQ", basketclient.FlagRetirementJurisdiction),
+				fmt.Sprintf("--%s=true", client.FlagRetireOnTake),
+				fmt.Sprintf("--%s=AQ", client.FlagRetirementJurisdiction),
 			},
 		},
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := basketclient.TxTakeFromBasketCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxTakeFromBasketCmd()
+			args = append(args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateBasketCuratorCmd() {
+	require := s.Require()
+
+	curator := s.addr1.String()
+	newCurator := s.addr2.String()
+	cmd := client.TxCreateBasketCmd()
+	args := append([]string{
+		"NCT2",
+		fmt.Sprintf("--%s=%s", client.FlagAllowedClasses, s.classID),
+		fmt.Sprintf("--%s=%s", client.FlagCreditTypeAbbrev, s.creditTypeAbbrev),
+		fmt.Sprintf("--%s=%s", client.FlagBasketFee, s.basketFee),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
+	}, s.commonTxFlags()...)
+	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+	require.NoError(err)
+	require.NotNil(out)
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar", "foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 3",
+		},
+		{
+			name:      "missing required flags",
+			args:      []string{"eco.uC.NCT2", curator},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s)",
+		},
+		{
+			name: "valid",
+			args: []string{
+				"eco.uC.NCT2",
+				newCurator,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, curator),
+			},
+		},
+		{
+			name: "valid with amino-json",
+			args: []string{
+				"eco.uC.NCT2",
+				curator,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, newCurator),
+				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		args := tc.args
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateBasketCuratorCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)

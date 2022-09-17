@@ -59,15 +59,46 @@ type QueryClient interface {
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
 	// Balances queries all credit balances the given account holds.
 	Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error)
+	// BalancesByBatch queries all credit balances from a given batch.
+	//
+	// Since Revision 1
+	BalancesByBatch(ctx context.Context, in *QueryBalancesByBatchRequest, opts ...grpc.CallOption) (*QueryBalancesByBatchResponse, error)
+	// AllBalances queries all credit balances.
+	//
+	// Since Revision 1
+	AllBalances(ctx context.Context, in *QueryAllBalancesRequest, opts ...grpc.CallOption) (*QueryAllBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
 	// CreditTypes returns the list of allowed types that credit classes can have.
 	// See Types/CreditType for more details.
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
+	// Deprecated: Do not use.
 	// Params queries the ecocredit module parameters.
+	//
+	// Deprecated (Since Revision 1): This rpc will be removed in the next
+	// version.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// CreditType queries credit type information by abbreviation.
 	CreditType(ctx context.Context, in *QueryCreditTypeRequest, opts ...grpc.CallOption) (*QueryCreditTypeResponse, error)
+	// ClassCreatorAllowlist queries the credit class creator allowlist
+	// enabled setting.
+	//
+	// Since Revision 1
+	ClassCreatorAllowlist(ctx context.Context, in *QueryClassCreatorAllowlistRequest, opts ...grpc.CallOption) (*QueryClassCreatorAllowlistResponse, error)
+	// AllowedClassCreators queries allowed credit class creators list.
+	//
+	// Since Revision 1
+	AllowedClassCreators(ctx context.Context, in *QueryAllowedClassCreatorsRequest, opts ...grpc.CallOption) (*QueryAllowedClassCreatorsResponse, error)
+	// ClassFee returns the credit class creation fee. If not set, a credit class
+	// creation fee is not required.
+	//
+	// Since Revision 1
+	ClassFee(ctx context.Context, in *QueryClassFeeRequest, opts ...grpc.CallOption) (*QueryClassFeeResponse, error)
+	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
+	// operations.
+	//
+	// Since Revision 1
+	AllowedBridgeChains(ctx context.Context, in *QueryAllowedBridgeChainsRequest, opts ...grpc.CallOption) (*QueryAllowedBridgeChainsResponse, error)
 }
 
 type queryClient struct {
@@ -222,6 +253,24 @@ func (c *queryClient) Balances(ctx context.Context, in *QueryBalancesRequest, op
 	return out, nil
 }
 
+func (c *queryClient) BalancesByBatch(ctx context.Context, in *QueryBalancesByBatchRequest, opts ...grpc.CallOption) (*QueryBalancesByBatchResponse, error) {
+	out := new(QueryBalancesByBatchResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BalancesByBatch", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllBalances(ctx context.Context, in *QueryAllBalancesRequest, opts ...grpc.CallOption) (*QueryAllBalancesResponse, error) {
+	out := new(QueryAllBalancesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/AllBalances", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error) {
 	out := new(QuerySupplyResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Supply", in, out, opts...)
@@ -240,6 +289,7 @@ func (c *queryClient) CreditTypes(ctx context.Context, in *QueryCreditTypesReque
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Params", in, out, opts...)
@@ -252,6 +302,42 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 func (c *queryClient) CreditType(ctx context.Context, in *QueryCreditTypeRequest, opts ...grpc.CallOption) (*QueryCreditTypeResponse, error) {
 	out := new(QueryCreditTypeResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/CreditType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ClassCreatorAllowlist(ctx context.Context, in *QueryClassCreatorAllowlistRequest, opts ...grpc.CallOption) (*QueryClassCreatorAllowlistResponse, error) {
+	out := new(QueryClassCreatorAllowlistResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassCreatorAllowlist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllowedClassCreators(ctx context.Context, in *QueryAllowedClassCreatorsRequest, opts ...grpc.CallOption) (*QueryAllowedClassCreatorsResponse, error) {
+	out := new(QueryAllowedClassCreatorsResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/AllowedClassCreators", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ClassFee(ctx context.Context, in *QueryClassFeeRequest, opts ...grpc.CallOption) (*QueryClassFeeResponse, error) {
+	out := new(QueryClassFeeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassFee", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllowedBridgeChains(ctx context.Context, in *QueryAllowedBridgeChainsRequest, opts ...grpc.CallOption) (*QueryAllowedBridgeChainsResponse, error) {
+	out := new(QueryAllowedBridgeChainsResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/AllowedBridgeChains", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -299,15 +385,46 @@ type QueryServer interface {
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
 	// Balances queries all credit balances the given account holds.
 	Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error)
+	// BalancesByBatch queries all credit balances from a given batch.
+	//
+	// Since Revision 1
+	BalancesByBatch(context.Context, *QueryBalancesByBatchRequest) (*QueryBalancesByBatchResponse, error)
+	// AllBalances queries all credit balances.
+	//
+	// Since Revision 1
+	AllBalances(context.Context, *QueryAllBalancesRequest) (*QueryAllBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
 	// CreditTypes returns the list of allowed types that credit classes can have.
 	// See Types/CreditType for more details.
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
+	// Deprecated: Do not use.
 	// Params queries the ecocredit module parameters.
+	//
+	// Deprecated (Since Revision 1): This rpc will be removed in the next
+	// version.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// CreditType queries credit type information by abbreviation.
 	CreditType(context.Context, *QueryCreditTypeRequest) (*QueryCreditTypeResponse, error)
+	// ClassCreatorAllowlist queries the credit class creator allowlist
+	// enabled setting.
+	//
+	// Since Revision 1
+	ClassCreatorAllowlist(context.Context, *QueryClassCreatorAllowlistRequest) (*QueryClassCreatorAllowlistResponse, error)
+	// AllowedClassCreators queries allowed credit class creators list.
+	//
+	// Since Revision 1
+	AllowedClassCreators(context.Context, *QueryAllowedClassCreatorsRequest) (*QueryAllowedClassCreatorsResponse, error)
+	// ClassFee returns the credit class creation fee. If not set, a credit class
+	// creation fee is not required.
+	//
+	// Since Revision 1
+	ClassFee(context.Context, *QueryClassFeeRequest) (*QueryClassFeeResponse, error)
+	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
+	// operations.
+	//
+	// Since Revision 1
+	AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -363,6 +480,12 @@ func (UnimplementedQueryServer) Balance(context.Context, *QueryBalanceRequest) (
 func (UnimplementedQueryServer) Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Balances not implemented")
 }
+func (UnimplementedQueryServer) BalancesByBatch(context.Context, *QueryBalancesByBatchRequest) (*QueryBalancesByBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BalancesByBatch not implemented")
+}
+func (UnimplementedQueryServer) AllBalances(context.Context, *QueryAllBalancesRequest) (*QueryAllBalancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllBalances not implemented")
+}
 func (UnimplementedQueryServer) Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Supply not implemented")
 }
@@ -374,6 +497,18 @@ func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*Q
 }
 func (UnimplementedQueryServer) CreditType(context.Context, *QueryCreditTypeRequest) (*QueryCreditTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreditType not implemented")
+}
+func (UnimplementedQueryServer) ClassCreatorAllowlist(context.Context, *QueryClassCreatorAllowlistRequest) (*QueryClassCreatorAllowlistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassCreatorAllowlist not implemented")
+}
+func (UnimplementedQueryServer) AllowedClassCreators(context.Context, *QueryAllowedClassCreatorsRequest) (*QueryAllowedClassCreatorsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllowedClassCreators not implemented")
+}
+func (UnimplementedQueryServer) ClassFee(context.Context, *QueryClassFeeRequest) (*QueryClassFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassFee not implemented")
+}
+func (UnimplementedQueryServer) AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllowedBridgeChains not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -676,6 +811,42 @@ func _Query_Balances_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BalancesByBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBalancesByBatchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BalancesByBatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/BalancesByBatch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BalancesByBatch(ctx, req.(*QueryBalancesByBatchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllBalances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllBalancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllBalances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/AllBalances",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllBalances(ctx, req.(*QueryAllBalancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Supply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QuerySupplyRequest)
 	if err := dec(in); err != nil {
@@ -744,6 +915,78 @@ func _Query_CreditType_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).CreditType(ctx, req.(*QueryCreditTypeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ClassCreatorAllowlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassCreatorAllowlistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ClassCreatorAllowlist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ClassCreatorAllowlist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ClassCreatorAllowlist(ctx, req.(*QueryClassCreatorAllowlistRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllowedClassCreators_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllowedClassCreatorsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllowedClassCreators(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/AllowedClassCreators",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllowedClassCreators(ctx, req.(*QueryAllowedClassCreatorsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ClassFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassFeeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ClassFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ClassFee",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ClassFee(ctx, req.(*QueryClassFeeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllowedBridgeChains_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllowedBridgeChainsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllowedBridgeChains(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/AllowedBridgeChains",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllowedBridgeChains(ctx, req.(*QueryAllowedBridgeChainsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -820,6 +1063,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Balances_Handler,
 		},
 		{
+			MethodName: "BalancesByBatch",
+			Handler:    _Query_BalancesByBatch_Handler,
+		},
+		{
+			MethodName: "AllBalances",
+			Handler:    _Query_AllBalances_Handler,
+		},
+		{
 			MethodName: "Supply",
 			Handler:    _Query_Supply_Handler,
 		},
@@ -834,6 +1085,22 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreditType",
 			Handler:    _Query_CreditType_Handler,
+		},
+		{
+			MethodName: "ClassCreatorAllowlist",
+			Handler:    _Query_ClassCreatorAllowlist_Handler,
+		},
+		{
+			MethodName: "AllowedClassCreators",
+			Handler:    _Query_AllowedClassCreators_Handler,
+		},
+		{
+			MethodName: "ClassFee",
+			Handler:    _Query_ClassFee_Handler,
+		},
+		{
+			MethodName: "AllowedBridgeChains",
+			Handler:    _Query_AllowedBridgeChains_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -2,8 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
-option go_package =
-  "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
 // EventSell is an event emitted when a sell order is created.
 message EventSell {
@@ -40,6 +39,17 @@ message EventCancelSellOrder {
 message EventAllowDenom {
 
   // denom is the bank denom (e.g. ibc/GLKHDSG423SGS) added to the list of
+  // allowed denoms for use in the marketplace.
+  string denom = 1;
+}
+
+// EventRemoveAllowedDenom is an event emitted when a denom is removed from use
+// in the marketplace.
+//
+// Since Revision 1
+message EventRemoveAllowedDenom {
+
+  // denom is the bank denom (e.g. ibc/GLKHDSG423SGS) removed from the list of
   // allowed denoms for use in the marketplace.
   string denom = 1;
 }

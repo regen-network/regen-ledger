@@ -1,4 +1,4 @@
-// Mostly copied from https://github.com/cosmos/gaia/tree/master/app
+// Mostly copied from https://github.com/cosmos/gaia/tree/main/app
 package app
 
 import (
@@ -33,16 +33,7 @@ func (app *RegenApp) ExportAppStateAndValidators(
 	}
 
 	genState := map[string]json.RawMessage{}
-	for name, v := range app.mm.ExportGenesis(ctx, app.appCodec) {
-		genState[name] = v
-	}
-
-	// Export genesis state from new modules (that use ADR 33 approach)
-	// if they are not already part of genState
-	for name, v := range app.smm.ExportGenesis(ctx) {
-		if _, ok := genState[name]; ok {
-			return servertypes.ExportedApp{}, fmt.Errorf("genesis state already exported for %s module", name)
-		}
+	for name, v := range app.ModuleManager.ExportGenesis(ctx, app.appCodec) {
 		genState[name] = v
 	}
 
@@ -66,7 +57,7 @@ func (app *RegenApp) ExportAppStateAndValidators(
 
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
-//      in favour of export at a block height
+// in favor of export at a block height
 func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
 	applyAllowedAddrs := false
 

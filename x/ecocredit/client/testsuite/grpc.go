@@ -5,10 +5,11 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+
+	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
-const coreRoute = "regen/ecocredit/v1"
+const baseRoute = "regen/ecocredit/v1"
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
 	testCases := []struct {
@@ -18,12 +19,12 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/classes", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/classes", s.val.APIAddress, baseRoute),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/classes?pagination.limit=1", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/classes?pagination.limit=1", s.val.APIAddress, baseRoute),
 			true,
 		},
 	}
@@ -35,7 +36,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryClassesResponse
+			var res types.QueryClassesResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Classes)
@@ -54,11 +55,11 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/class/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/classes/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/classes/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 	}
 
@@ -69,11 +70,11 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryClassResponse
+			var res types.QueryClassResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Class)
-			require.Equal(res.Class.Id, s.classId)
+			require.Equal(res.Class.Id, s.classID)
 		})
 	}
 }
@@ -87,11 +88,11 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/project/%s", s.val.APIAddress, baseRoute, s.projectID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/projects/%s", s.val.APIAddress, baseRoute, s.projectID),
 		},
 	}
 
@@ -102,7 +103,7 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectResponse
+			var res types.QueryProjectResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Project)
 		})
@@ -118,16 +119,14 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/projects", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/projects", s.val.APIAddress, baseRoute),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
-				coreRoute,
+				baseRoute,
 			),
 		},
 	}
@@ -139,7 +138,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectsResponse
+			var res types.QueryProjectsResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
 
@@ -147,8 +146,6 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -163,26 +160,24 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/projects-by-class/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects-by-class/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects-by-class/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
-				coreRoute,
-				s.classId,
+				baseRoute,
+				s.classID,
 			),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/projects/class/%s", s.val.APIAddress, baseRoute, s.classID),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/classes/%s/projects", s.val.APIAddress, baseRoute, s.classID),
 		},
 	}
 
@@ -193,7 +188,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectsByClassResponse
+			var res types.QueryProjectsByClassResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
 
@@ -201,14 +196,12 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
+func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 	require := s.Require()
 
 	testCases := []struct {
@@ -220,27 +213,25 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 			fmt.Sprintf(
 				"%s/%s/projects-by-reference-id/%s",
 				s.val.APIAddress,
-				coreRoute,
-				s.projectReferenceId,
+				baseRoute,
+				s.projectReferenceID,
 			),
 		},
 		{
 			"valid with pagination",
 			fmt.Sprintf(
-				"%s/%s/projects-by-reference-id/%s?pagination.countTotal=true",
-				// TODO: #1113
-				// "%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
+				"%s/%s/projects-by-reference-id/%s?pagination.limit=1&pagination.countTotal=true",
 				s.val.APIAddress,
-				coreRoute,
-				s.projectReferenceId,
+				baseRoute,
+				s.projectReferenceID,
 			),
 		},
 		{
 			"valid alternative",
 			fmt.Sprintf("%s/%s/projects/reference-id/%s",
 				s.val.APIAddress,
-				coreRoute,
-				s.projectReferenceId,
+				baseRoute,
+				s.projectReferenceID,
 			),
 		},
 	}
@@ -252,7 +243,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
-			var res core.QueryProjectsByReferenceIdResponse
+			var res types.QueryProjectsByReferenceIdResponse
 			require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(bz, &res))
 			require.NotEmpty(res.Projects)
 
@@ -260,8 +251,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceId() {
 				require.Len(res.Projects, 1)
 				require.NotEmpty(res.Pagination)
 				require.NotEmpty(res.Pagination.Total)
-			} else {
-				require.Empty(res.Pagination)
 			}
 		})
 	}
@@ -275,12 +264,12 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/batches", s.val.APIAddress, baseRoute),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches?pagination.limit=2", s.val.APIAddress, coreRoute),
+			fmt.Sprintf("%s/%s/batches?pagination.limit=2", s.val.APIAddress, baseRoute),
 			true,
 		},
 	}
@@ -292,7 +281,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesResponse
+			var res types.QueryBatchesResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -312,17 +301,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s/%s/batches-by-issuer/%s", s.val.APIAddress, baseRoute, s.addr1),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-issuer/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s/%s/batches-by-issuer/%s?pagination.limit=2", s.val.APIAddress, baseRoute, s.addr1),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s/%s/batches/issuer/%s", s.val.APIAddress, baseRoute, s.addr1),
 			false,
 		},
 	}
@@ -334,7 +323,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesByIssuerResponse
+			var res types.QueryBatchesByIssuerResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -354,17 +343,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/batches-by-class/%s", s.val.APIAddress, baseRoute, s.classID),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/batches-by-class/%s?pagination.limit=2", s.val.APIAddress, baseRoute, s.classID),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s/%s/batches/class/%s", s.val.APIAddress, baseRoute, s.classID),
 			false,
 		},
 	}
@@ -376,7 +365,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesByClassResponse
+			var res types.QueryBatchesByClassResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -396,17 +385,17 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batches-by-project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/batches-by-project/%s", s.val.APIAddress, baseRoute, s.projectID),
 			false,
 		},
 		{
 			"valid with pagination",
-			fmt.Sprintf("%s/%s/batches-by-project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/batches-by-project/%s?pagination.limit=2", s.val.APIAddress, baseRoute, s.projectID),
 			true,
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s/%s/batches/project/%s", s.val.APIAddress, baseRoute, s.projectID),
 			false,
 		},
 	}
@@ -418,7 +407,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchesResponse
+			var res types.QueryBatchesResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
@@ -437,11 +426,11 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/batch/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/batch/%s", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/batches/%s", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 	}
 
@@ -452,7 +441,7 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchResponse
+			var res types.QueryBatchResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batch)
@@ -464,11 +453,11 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
 
-	url := fmt.Sprintf("%s/%s/credit-types", s.val.APIAddress, coreRoute)
+	url := fmt.Sprintf("%s/%s/credit-types", s.val.APIAddress, baseRoute)
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
-	var res core.QueryCreditTypesResponse
+	var res types.QueryCreditTypesResponse
 	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
 	require.Greater(len(res.CreditTypes), 0)
@@ -481,15 +470,15 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/balance/%s/%s", s.val.APIAddress, coreRoute, s.batchDenom, s.addr1),
+			fmt.Sprintf("%s/%s/balance/%s/%s", s.val.APIAddress, baseRoute, s.batchDenom, s.addr1),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/%s/balance/%s", s.val.APIAddress, coreRoute, s.batchDenom, s.addr1),
+			fmt.Sprintf("%s/%s/batches/%s/balance/%s", s.val.APIAddress, baseRoute, s.batchDenom, s.addr1),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/balances/%s/batch/%s", s.val.APIAddress, coreRoute, s.addr1, s.batchDenom),
+			fmt.Sprintf("%s/%s/balances/%s/batch/%s", s.val.APIAddress, baseRoute, s.addr1, s.batchDenom),
 		},
 	}
 
@@ -500,7 +489,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBalanceResponse
+			var res types.QueryBalanceResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
@@ -517,11 +506,11 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}{
 		{
 			"valid",
-			fmt.Sprintf("%s/%s/supply/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/supply/%s", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 		{
 			"valid alternative",
-			fmt.Sprintf("%s/%s/batches/%s/supply", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s/%s/batches/%s/supply", s.val.APIAddress, baseRoute, s.batchDenom),
 		},
 	}
 
@@ -532,7 +521,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QuerySupplyResponse
+			var res types.QuerySupplyResponse
 			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
@@ -542,27 +531,85 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryParams() {
-	require := s.Require()
+// TODO: #1363
+// func (s *IntegrationTestSuite) TestQueryParams() {
+// 	require := s.Require()
 
-	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, coreRoute))
-	require.NoError(err)
+// 	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, baseRoute))
+// 	require.NoError(err)
 
-	var res core.QueryParamsResponse
-	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
-	s.Require().Equal(core.DefaultParams(), *res.Params)
-}
+// 	var res types.QueryParamsResponse
+// 	require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
+// 	s.Require().Equal(types.DefaultParams(), *res.Params)
+// }
 
 func (s *IntegrationTestSuite) TestCreditType() {
 	require := s.Require()
 
-	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, coreRoute, "C")
+	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, baseRoute, "C")
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
-	var res core.QueryCreditTypeResponse
+	var res types.QueryCreditTypeResponse
 	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
-	require.Equal(res.CreditType.Abbreviation, "C")
-	require.Equal(res.CreditType.Precision, uint32(6))
+	require.Equal("C", res.CreditType.Abbreviation)
+	require.Equal(uint32(6), res.CreditType.Precision)
+}
+
+func (s *IntegrationTestSuite) TestClassCreatorAllowlist() {
+	require := s.Require()
+
+	url := fmt.Sprintf("%s/%s/class-creator-allowlist", s.val.APIAddress, baseRoute)
+	resp, err := rest.GetRequest(url)
+	require.NoError(err)
+
+	var res types.QueryClassCreatorAllowlistResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.Equal(false, res.Enabled)
+}
+
+func (s *IntegrationTestSuite) TestAllBalances() {
+	require := s.Require()
+
+	url := fmt.Sprintf("%s/%s/all-balances?pagination.countTotal=true", s.val.APIAddress, baseRoute)
+	resp, err := rest.GetRequest(url)
+	require.NoError(err)
+
+	var res types.QueryAllBalancesResponse
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.NotEmpty(res.Balances)
+	require.NotZero(res.Pagination.Total)
+
+	url = fmt.Sprintf("%s/%s/balances?pagination.countTotal=true", s.val.APIAddress, baseRoute)
+	resp, err = rest.GetRequest(url)
+	require.NoError(err)
+
+	res = types.QueryAllBalancesResponse{}
+	err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+	require.NoError(err)
+	require.NotEmpty(res.Balances)
+	require.NotZero(res.Pagination.Total)
+}
+
+func (s *IntegrationTestSuite) TestBalancesByBatch() {
+	require := s.Require()
+
+	checkQuery := func(url string) {
+		resp, err := rest.GetRequest(url)
+		require.NoError(err)
+		var res types.QueryBalancesByBatchResponse
+		err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+		require.NoError(err)
+		require.NotEmpty(res.Balances)
+		require.NotZero(res.Pagination.Total)
+	}
+
+	url := fmt.Sprintf("%s/%s/balances-by-batch/%s?pagination.countTotal=true", s.val.APIAddress, baseRoute, s.batchDenom)
+	checkQuery(url)
+
+	url = fmt.Sprintf("%s/%s/batches/%s/balances?pagination.countTotal=true", s.val.APIAddress, baseRoute, s.batchDenom)
+	checkQuery(url)
 }

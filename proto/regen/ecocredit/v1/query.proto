@@ -3,12 +3,13 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1";
 
 // Msg is the regen.ecocredit.v1 Query service.
 service Query {
@@ -166,6 +167,29 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/balances/{address}";
   }
 
+  // BalancesByBatch queries all credit balances from a given batch.
+  //
+  // Since Revision 1
+  rpc BalancesByBatch(QueryBalancesByBatchRequest)
+      returns (QueryBalancesByBatchResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/balances-by-batch/{batch_denom}"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/batches/{batch_denom}/balances"}
+      ]
+    };
+  }
+
+  // AllBalances queries all credit balances.
+  //
+  // Since Revision 1
+  rpc AllBalances(QueryAllBalancesRequest) returns (QueryAllBalancesResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/all-balances"
+      additional_bindings : [ {get : "/regen/ecocredit/v1/balances"} ]
+    };
+  }
+
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
     option (google.api.http) = {
@@ -183,7 +207,11 @@ service Query {
   }
 
   // Params queries the ecocredit module parameters.
+  //
+  // Deprecated (Since Revision 1): This rpc will be removed in the next
+  // version.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option deprecated = true;
     option (google.api.http).get = "/regen/ecocredit/v1/params";
   }
 
@@ -195,6 +223,41 @@ service Query {
         {get : "/regen/ecocredit/v1/credit-types/{abbreviation}"}
       ]
     };
+  }
+
+  // ClassCreatorAllowlist queries the credit class creator allowlist
+  // enabled setting.
+  //
+  // Since Revision 1
+  rpc ClassCreatorAllowlist(QueryClassCreatorAllowlistRequest)
+      returns (QueryClassCreatorAllowlistResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/class-creator-allowlist";
+  }
+
+  // AllowedClassCreators queries allowed credit class creators list.
+  //
+  // Since Revision 1
+  rpc AllowedClassCreators(QueryAllowedClassCreatorsRequest)
+      returns (QueryAllowedClassCreatorsResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/allowed-class-creators";
+  }
+
+  // ClassFee returns the credit class creation fee. If not set, a credit class
+  // creation fee is not required.
+  //
+  // Since Revision 1
+  rpc ClassFee(QueryClassFeeRequest) returns (QueryClassFeeResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/class-fee";
+  }
+
+  // AllowedBridgeChains queries the list of chains allowed to be used in bridge
+  // operations.
+  //
+  // Since Revision 1
+  rpc AllowedBridgeChains(QueryAllowedBridgeChainsRequest)
+      returns (QueryAllowedBridgeChainsResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/allowed-bridge-chains";
   }
 }
 
@@ -491,6 +554,53 @@ message QueryBalancesResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryBalancesByBatchRequest is the Query/BalancesByBatch request type.
+//
+// Since Revision 1
+message QueryBalancesByBatchRequest {
+
+  // batch_denom is the denom of the batch to query by.
+  string batch_denom = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBalancesByBatchResponse is the Query/BalancesByBatch response type.
+//
+// Since Revision 1
+message QueryBalancesByBatchResponse {
+
+  // balances are a list of balances from different credit batches that the
+  // account holds.
+  repeated BatchBalanceInfo balances = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryAllBalancesRequest is the Query/AllBalances request type.
+//
+// Since Revision 1
+message QueryAllBalancesRequest {
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllBalancesResponse is the Query/AllBalances response type.
+//
+// Since Revision 1
+message QueryAllBalancesResponse {
+
+  // balances are a list of balances from different credit batches that the
+  // account holds.
+  repeated BatchBalanceInfo balances = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 // QuerySupplyRequest is the Query/Supply request type.
 message QuerySupplyRequest {
 
@@ -527,11 +637,38 @@ message QueryCreditTypesResponse {
 // QueryParamsRequest is the Query/Params request type.
 message QueryParamsRequest {}
 
+// AllowedDenom represents the information for an allowed ask denom.
+message AllowedDenomInfo {
+  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+  string bank_denom = 1;
+
+  // display_denom is the denom to display to the user and is informational.
+  // Because the denom is likely an IBC denom, this should be chosen by
+  // governance to represent the consensus trusted name of the denom.
+  string display_denom = 2;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 3;
+}
+
 // QueryParamsResponse is the Query/Params response type.
 message QueryParamsResponse {
 
   // params defines the parameters of the ecocredit module.
   Params params = 1;
+
+  // allowed_denoms is a list of bank denoms allowed to be used in the ask price
+  // of sell orders.
+  //
+  // Since Revision 1
+  repeated AllowedDenomInfo allowed_denoms = 2;
+
+  // AllowedBridgeChains is a list of chain names that are allowed to be used in
+  // bridge operations.
+  //
+  // Since Revision 1
+  repeated string allowed_bridge_chains = 3;
 }
 
 // QueryCreditTypeRequest is the Query/CreditType request type
@@ -643,4 +780,76 @@ message BatchBalanceInfo {
   // sell order is created and taken out of escrow when the sell order is either
   // cancelled, updated with a reduced quantity, or processed.
   string escrowed_amount = 5;
+}
+
+// QueryClassCreatorAllowlistRequest is the Query/ClassCreatorAllowlist request
+// type.
+//
+// Since Revision 1
+message QueryClassCreatorAllowlistRequest {}
+
+// QueryClassCreatorAllowlistResponse is the Query/ClassCreatorAllowlist
+// response type.
+//
+// Since Revision 1
+message QueryClassCreatorAllowlistResponse {
+
+  // enabled determines whether or not the allowlist for creating credit classes
+  // is enabled.
+  bool enabled = 1;
+}
+
+// QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
+// type.
+//
+// Since Revision 1
+message QueryAllowedClassCreatorsRequest {
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
+// type.
+//
+// Since Revision 1
+message QueryAllowedClassCreatorsResponse {
+
+  // class_creators is the list of allowed credit class creators.
+  repeated string class_creators = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryClassFeeRequest is the Query/ClassFee request type.
+//
+// Since Revision 1
+message QueryClassFeeRequest {}
+
+// QueryClassFeeResponse is the Query/ClassFee response type.
+//
+// Since Revision 1
+message QueryClassFeeResponse {
+
+  // fee is the credit class creation fee. If not set, a credit class creation
+  // fee is not required.
+  cosmos.base.v1beta1.Coin fee = 1;
+}
+
+// QueryAllowedBridgeChainsRequest is the Query/AllowedBridgeChains request
+// type.
+//
+// Since Revision 1
+message QueryAllowedBridgeChainsRequest {}
+
+// QueryAllowedBridgeChainsResponse is the Query/AllowedBridgeChains response
+// type.
+//
+// Since Revision 1
+message QueryAllowedBridgeChainsResponse {
+
+  // allowed_bridge_chains is a list of chains that are allowed to be used in
+  // bridge operations.
+  repeated string allowed_bridge_chains = 1;
 }

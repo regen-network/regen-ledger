@@ -9,15 +9,15 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
-// GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
+// GetCreditTypeFromBatchDenom extracts the classID from a batch denom string, then retrieves it from the params.
 func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, denom string) (*api.CreditType, error) {
-	classId := core.GetClassIdFromBatchDenom(denom)
-	classInfo, err := store.ClassTable().GetById(ctx, classId)
+	classID := base.GetClassIDFromBatchDenom(denom)
+	classInfo, err := store.ClassTable().GetById(ctx, classID)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with ID %s: %s", classId, err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with ID %s: %s", classID, err.Error())
 	}
 	return store.CreditTypeTable().Get(ctx, classInfo.CreditTypeAbbrev)
 }

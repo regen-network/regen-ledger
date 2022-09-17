@@ -8,10 +8,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/base/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
@@ -30,13 +30,13 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 			name:      "missing args",
 			args:      []string{},
 			expErr:    true,
-			expErrMsg: "Error: accepts 4 arg(s), received 0",
+			expErrMsg: "Error: accepts 3 arg(s), received 0",
 		},
 		{
 			name:      "too many args",
-			args:      []string{"foo", "bar", "baz", "bar", "foo"},
+			args:      []string{"foo", "bar", "baz", "bar"},
 			expErr:    true,
-			expErrMsg: "Error: accepts 4 arg(s), received 5",
+			expErrMsg: "Error: accepts 3 arg(s), received 4",
 		},
 		{
 			name: "missing from flag",
@@ -44,7 +44,7 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
@@ -55,8 +55,8 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				"foo",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, "foo"),
 			},
 			expErr:    true,
 			expErrMsg: "invalid decimal coin expression",
@@ -67,8 +67,8 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 		},
 		{
@@ -77,8 +77,8 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 		},
 		{
@@ -87,17 +87,18 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 		},
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCreateClassCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxCreateClassCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -139,7 +140,7 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 		{
 			name: "missing from flag",
 			args: []string{
-				s.classId,
+				s.classID,
 				"US-WA",
 				"metadata",
 			},
@@ -149,7 +150,7 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 		{
 			name: "valid",
 			args: []string{
-				s.classId,
+				s.classID,
 				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
@@ -158,7 +159,7 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				s.classId,
+				s.classID,
 				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
@@ -167,7 +168,7 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				s.classId,
+				s.classID,
 				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
@@ -177,9 +178,10 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCreateProjectCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxCreateProjectCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -201,16 +203,16 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 	issuer := s.addr1.String()
 	recipient := s.addr2.String()
 
-	startDate, err := types.ParseDate("start date", "2020-01-01")
+	startDate, err := regentypes.ParseDate("start date", "2020-01-01")
 	require.NoError(err)
 
-	endDate, err := types.ParseDate("end date", "2021-01-01")
+	endDate, err := regentypes.ParseDate("end date", "2021-01-01")
 	require.NoError(err)
 
-	bz, err := s.val.ClientCtx.Codec.MarshalJSON(&core.MsgCreateBatch{
+	bz, err := s.val.ClientCtx.Codec.MarshalJSON(&types.MsgCreateBatch{
 		Issuer:    issuer,
-		ProjectId: s.projectId,
-		Issuance: []*core.BatchIssuance{
+		ProjectId: s.projectID,
+		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:              recipient,
 				TradableAmount:         "10",
@@ -230,9 +232,9 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -254,7 +256,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{validJson},
+			args:      []string{validJSON},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
@@ -270,7 +272,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 		{
 			name: "invalid json format",
 			args: []string{
-				invalidJson,
+				invalidJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, issuer),
 			},
 			expErr:    true,
@@ -279,7 +281,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 		{
 			name: "duplicate json key",
 			args: []string{
-				duplicateJson,
+				duplicateJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, issuer),
 			},
 			expErr:    true,
@@ -288,21 +290,21 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 		{
 			name: "valid",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, issuer),
 			},
 		},
 		{
 			name: "valid from key-name",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
 		{
 			name: "valid with amino-json",
 			args: []string{
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -310,9 +312,10 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCreateBatchCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxCreateBatchCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -381,14 +384,15 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 				s.batchDenom,
 				recipient,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
-				fmt.Sprintf("--%s=%s", coreclient.FlagRetirementJurisdiction, retirementJurisdiction),
+				fmt.Sprintf("--%s=%s", client.FlagRetirementJurisdiction, retirementJurisdiction),
 			},
 		},
 	}
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxSendCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxSendCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -411,7 +415,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 	recipient := s.addr2.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]core.MsgSend_SendCredits{
+	bz, err := json.Marshal([]types.MsgSend_SendCredits{
 		{
 			BatchDenom:             s.batchDenom,
 			TradableAmount:         "10",
@@ -427,9 +431,9 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), "{foo:bar}").Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), "{foo:bar}").Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -453,7 +457,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 			name: "missing from flag",
 			args: []string{
 				recipient,
-				validJson,
+				validJSON,
 			},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
@@ -472,7 +476,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 			name: "invalid json format",
 			args: []string{
 				recipient,
-				invalidJson,
+				invalidJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
 			},
 			expErr:    true,
@@ -482,7 +486,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 			name: "duplicate json key",
 			args: []string{
 				recipient,
-				duplicateJson,
+				duplicateJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
 			},
 			expErr:    true,
@@ -492,7 +496,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 			name: "valid",
 			args: []string{
 				recipient,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
 			},
 		},
@@ -500,7 +504,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 			name: "valid from key-name",
 			args: []string{
 				recipient,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
@@ -508,7 +512,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 			name: "valid with amino-json",
 			args: []string{
 				recipient,
-				validJson,
+				validJSON,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, sender),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -516,9 +520,10 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxSendBulkCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxSendBulkCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -540,7 +545,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 	owner := s.addr1.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]core.Credits{
+	bz, err := json.Marshal([]types.Credits{
 		{
 			BatchDenom: s.batchDenom,
 			Amount:     "10",
@@ -552,9 +557,9 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), "{foo:bar}").Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), "{foo:bar}").Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -576,7 +581,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{validJson, "US-WA"},
+			args:      []string{validJSON, "US-WA"},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
@@ -593,7 +598,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		{
 			name: "invalid json format",
 			args: []string{
-				invalidJson,
+				invalidJSON,
 				"US-WA",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
@@ -603,7 +608,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		{
 			name: "duplicate json key",
 			args: []string{
-				duplicateJson,
+				duplicateJSON,
 				"US-WA",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
@@ -613,7 +618,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		{
 			name: "valid",
 			args: []string{
-				validJson,
+				validJSON,
 				"US-WA",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
@@ -621,7 +626,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				validJson,
+				validJSON,
 				"US-WA",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -629,7 +634,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				validJson,
+				validJSON,
 				"US-WA",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
@@ -638,9 +643,10 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxRetireCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxRetireCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -662,7 +668,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	owner := s.addr1.String()
 
 	// using json package because array is not a proto message
-	bz, err := json.Marshal([]core.Credits{
+	bz, err := json.Marshal([]types.Credits{
 		{
 			BatchDenom: s.batchDenom,
 			Amount:     "10",
@@ -674,9 +680,9 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	})
 	require.NoError(err)
 
-	validJson := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	invalidJson := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
-	duplicateJson := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
 
 	testCases := []struct {
 		name      string
@@ -698,7 +704,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{validJson, "reason"},
+			args:      []string{validJSON, "reason"},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
@@ -715,7 +721,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		{
 			name: "invalid json format",
 			args: []string{
-				invalidJson,
+				invalidJSON,
 				"reason",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
@@ -725,7 +731,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		{
 			name: "duplicate json key",
 			args: []string{
-				duplicateJson,
+				duplicateJSON,
 				"reason",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
@@ -735,7 +741,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		{
 			name: "valid",
 			args: []string{
-				validJson,
+				validJSON,
 				"reason",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 			},
@@ -743,7 +749,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				validJson,
+				validJSON,
 				"reason",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -751,7 +757,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				validJson,
+				validJSON,
 				"reason",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
@@ -760,9 +766,10 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxCancelCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxCancelCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -785,30 +792,30 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	newAdmin := s.addr2.String()
 
 	// create new credit class to not interfere with other tests
-	classId1 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classID1 := s.createClass(s.val.ClientCtx, &types.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	// create new credit class to not interfere with other tests
-	classId2 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classID2 := s.createClass(s.val.ClientCtx, &types.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	// create new credit class to not interfere with other tests
-	classId3 := s.createClass(s.val.ClientCtx, &core.MsgCreateClass{
+	classID3 := s.createClass(s.val.ClientCtx, &types.MsgCreateClass{
 		Admin:            admin,
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	testCases := []struct {
@@ -832,7 +839,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 		{
 			name: "missing from flag",
 			args: []string{
-				s.classId,
+				s.classID,
 				newAdmin,
 			},
 			expErr:    true,
@@ -841,7 +848,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 		{
 			name: "valid",
 			args: []string{
-				classId1,
+				classID1,
 				newAdmin,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
@@ -849,7 +856,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				classId2,
+				classID2,
 				newAdmin,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -857,7 +864,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				classId3,
+				classID3,
 				newAdmin,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
@@ -866,9 +873,10 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateClassAdminCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxUpdateClassAdminCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -910,14 +918,14 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 		},
 		{
 			name:      "missing from flag",
-			args:      []string{s.classId},
+			args:      []string{s.classID},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
 		},
 		{
 			name: "missing add or remove flag",
 			args: []string{
-				s.classId,
+				s.classID,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
 			expErr:    true,
@@ -926,32 +934,32 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 		{
 			name: "valid add issuer",
 			args: []string{
-				s.classId,
-				fmt.Sprintf("--%s=%s", coreclient.FlagAddIssuers, issuer),
+				s.classID,
+				fmt.Sprintf("--%s=%s", client.FlagAddIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
 		},
 		{
 			name: "valid remove issuer",
 			args: []string{
-				s.classId,
-				fmt.Sprintf("--%s=%s", coreclient.FlagRemoveIssuers, issuer),
+				s.classID,
+				fmt.Sprintf("--%s=%s", client.FlagRemoveIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
 		},
 		{
 			name: "valid from key-name",
 			args: []string{
-				s.classId,
-				fmt.Sprintf("--%s=%s", coreclient.FlagAddIssuers, issuer),
+				s.classID,
+				fmt.Sprintf("--%s=%s", client.FlagAddIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
 		},
 		{
 			name: "valid with amino-json",
 			args: []string{
-				s.classId,
-				fmt.Sprintf("--%s=%s", coreclient.FlagRemoveIssuers, issuer),
+				s.classID,
+				fmt.Sprintf("--%s=%s", client.FlagRemoveIssuers, issuer),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 			},
@@ -959,9 +967,10 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateClassIssuersCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxUpdateClassIssuersCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -1003,7 +1012,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 		{
 			name: "missing from flag",
 			args: []string{
-				s.classId,
+				s.classID,
 				"metadata",
 			},
 			expErr:    true,
@@ -1012,7 +1021,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 		{
 			name: "valid",
 			args: []string{
-				s.classId,
+				s.classID,
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
@@ -1020,7 +1029,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				s.classId,
+				s.classID,
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -1028,7 +1037,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				s.classId,
+				s.classID,
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
@@ -1037,9 +1046,10 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateClassMetadataCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxUpdateClassMetadataCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -1062,27 +1072,27 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	newAdmin := s.addr2.String()
 
 	// create new project in order to not interfere with other tests
-	projectId1 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectID1 := s.createProject(s.val.ClientCtx, &types.MsgCreateProject{
 		Admin:        admin,
-		ClassId:      s.classId,
+		ClassId:      s.classID,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
 		ReferenceId:  "VCS-002",
 	})
 
 	// create new project in order to not interfere with other tests
-	projectId2 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectID2 := s.createProject(s.val.ClientCtx, &types.MsgCreateProject{
 		Admin:        admin,
-		ClassId:      s.classId,
+		ClassId:      s.classID,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
 		ReferenceId:  "VCS-003",
 	})
 
 	// create new project in order to not interfere with other tests
-	projectId3 := s.createProject(s.val.ClientCtx, &core.MsgCreateProject{
+	projectID3 := s.createProject(s.val.ClientCtx, &types.MsgCreateProject{
 		Admin:        admin,
-		ClassId:      s.classId,
+		ClassId:      s.classID,
 		Metadata:     "metadata",
 		Jurisdiction: "US-WA",
 		ReferenceId:  "VCS-004",
@@ -1109,7 +1119,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		{
 			name: "missing from flag",
 			args: []string{
-				s.projectId,
+				s.projectID,
 				newAdmin,
 			},
 			expErr:    true,
@@ -1118,7 +1128,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		{
 			name: "valid",
 			args: []string{
-				projectId1,
+				projectID1,
 				newAdmin,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
@@ -1126,7 +1136,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				projectId2,
+				projectID2,
 				newAdmin,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -1134,7 +1144,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				projectId3,
+				projectID3,
 				newAdmin,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
@@ -1143,9 +1153,10 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateProjectAdminCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxUpdateProjectAdminCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -1187,7 +1198,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 		{
 			name: "missing from flag",
 			args: []string{
-				s.projectId,
+				s.projectID,
 				"metadata",
 			},
 			expErr:    true,
@@ -1196,7 +1207,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 		{
 			name: "valid",
 			args: []string{
-				s.projectId,
+				s.projectID,
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 			},
@@ -1204,7 +1215,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				s.projectId,
+				s.projectID,
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
 			},
@@ -1212,7 +1223,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				s.projectId,
+				s.projectID,
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
@@ -1221,9 +1232,10 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 	}
 
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			cmd := coreclient.TxUpdateProjectMetadataCmd()
-			args := append(tc.args, s.commonTxFlags()...)
+			cmd := client.TxUpdateProjectMetadataCmd()
+			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)

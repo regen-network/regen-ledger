@@ -1,0 +1,42 @@
+#
+# Codecov Docs:
+# https://docs.codecov.com/docs
+#
+# Codecov Reports:
+# https://app.codecov.io/gh/regen-network/regen-ledger
+#
+coverage:
+  precision: 2
+  round: down
+  range: 70...100
+  status:
+    project:
+      default:
+        threshold: 1%
+      app:
+        paths:
+          - "app/"
+      types:
+        paths:
+          - "types/"
+      data:
+        paths:
+          - "x/data/"
+      ecocredit:
+        paths:
+          - "x/ecocredit/"
+    changes: false
+
+comment:
+  layout: "diff, flags, files"
+  behavior: default
+  require_changes: true
+
+ignore:
+  - "**/mocks"
+  - "**/simulation"
+  - "**/*.cosmos_orm.go"
+  - "**/*.pb.go"
+  - "**/*.pb.gw.go"
+  - "**/*.pulsar.go"
+  - "**/statik.go"

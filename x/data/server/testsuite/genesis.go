@@ -5,22 +5,22 @@ import (
 	"encoding/json"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/testutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 type GenesisTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
-	fixture        testutil.Fixture
+	fixtureFactory fixture.Factory
+	fixture        fixture.Fixture
 
-	genesisCtx  types.Context
+	genesisCtx  sdk.Context
 	msgClient   data.MsgClient
 	queryClient data.QueryClient
 	addr1       sdk.AccAddress
@@ -29,7 +29,7 @@ type GenesisTestSuite struct {
 	hash2       *data.ContentHash
 }
 
-func NewGenesisTestSuite(fixtureFactory testutil.FixtureFactory) *GenesisTestSuite {
+func NewGenesisTestSuite(fixtureFactory fixture.Factory) *GenesisTestSuite {
 	return &GenesisTestSuite{fixtureFactory: fixtureFactory}
 }
 
@@ -39,8 +39,8 @@ func (s *GenesisTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
 
 	blockTime := time.Now().UTC()
-	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(blockTime)
-	s.genesisCtx = types.Context{Context: sdkCtx}
+	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(blockTime)
+	s.genesisCtx = sdkCtx
 
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
@@ -88,10 +88,10 @@ func (s *GenesisTestSuite) TestInitGenesis() {
 	wrapper = map[string]json.RawMessage{}
 	wrapper[data.ModuleName] = bz
 
-	_, err = s.fixture.InitGenesis(s.genesisCtx.Context, wrapper)
+	_, err = s.fixture.InitGenesis(s.genesisCtx, wrapper)
 	require.NoError(err)
 
-	exported, err := s.fixture.ExportGenesis(s.genesisCtx.Context)
+	exported, err := s.fixture.ExportGenesis(s.genesisCtx)
 	require.NoError(err)
 	require.NotNil(exported)
 

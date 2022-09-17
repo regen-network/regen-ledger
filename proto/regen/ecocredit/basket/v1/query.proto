@@ -3,11 +3,12 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "google/api/annotations.proto";
 import "regen/ecocredit/basket/v1/state.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // Msg is the regen.ecocredit.basket.v1 Query service.
 service Query {
@@ -49,6 +50,14 @@ service Query {
               "{batch_denom}"
       } ]
     };
+  }
+
+  // BasketFee returns the basket creation fee. If not set, a basket creation
+  // fee is not required.
+  //
+  // Since Revision 2
+  rpc BasketFee(QueryBasketFeeRequest) returns (QueryBasketFeeResponse) {
+    option (google.api.http).get = "/regen/ecocredit/basket/v1/basket-fee";
   }
 }
 
@@ -188,4 +197,19 @@ message BasketBalanceInfo {
 
   // balance is the amount of ecocredits held in the basket
   string balance = 2;
+}
+
+// QueryBasketFeeRequest is the Query/BasketFee request type.
+//
+// Since Revision 2
+message QueryBasketFeeRequest {}
+
+// QueryBasketFeeResponse is the Query/BasketFee response type.
+//
+// Since Revision 2
+message QueryBasketFeeResponse {
+
+  // fee is the basket creation fee. If not set, a basket creation fee is not
+  // required.
+  cosmos.base.v1beta1.Coin fee = 1;
 }

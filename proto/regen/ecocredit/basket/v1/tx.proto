@@ -3,10 +3,11 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // Msg is the regen.ecocredit.basket.v1 Msg service.
 service Msg {
@@ -20,10 +21,24 @@ service Msg {
   // Take takes credits from a basket starting from the oldest
   // credits first.
   rpc Take(MsgTake) returns (MsgTakeResponse);
+
+  // UpdateBasketFee is a governance method that allows for updating the basket
+  // creation fee. If not set, the basket creation fee will be removed and no
+  // fee will be required to create a basket.
+  //
+  // Since Revision 2
+  rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
+
+  // UpdateCurator updates basket curator
+  //
+  // Since Revision 2
+  rpc UpdateCurator(MsgUpdateCurator) returns (MsgUpdateCuratorResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
 message MsgCreate {
+  option (cosmos.msg.v1.signer) = "curator";
+
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
   string curator = 1;
@@ -91,6 +106,7 @@ message MsgCreateResponse {
 
 // MsgAddToBasket is the Msg/AddToBasket request type.
 message MsgPut {
+  option (cosmos.msg.v1.signer) = "owner";
 
   // owner is the owner of credits being put into the basket.
   string owner = 1;
@@ -114,6 +130,7 @@ message MsgPutResponse {
 
 // MsgTakeFromBasket is the Msg/TakeFromBasket request type.
 message MsgTake {
+  option (cosmos.msg.v1.signer) = "owner";
 
   // owner is the owner of the basket tokens.
   string owner = 1;
@@ -150,3 +167,45 @@ message MsgTakeResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
+
+// MsgUpdateBasketFee is the Msg/UpdateBasketFee request type.
+//
+// Since Revision 2
+message MsgUpdateBasketFee {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // fee is the basket creation fee. If not set, the basket creation fee will be
+  // removed and no fee will be required to create a basket.
+  cosmos.base.v1beta1.Coin fee = 2;
+}
+
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+//
+// Since Revision 2
+message MsgUpdateBasketFeeResponse {}
+
+// MsgUpdateCurator is the Msg/UpdateCurator request type.
+//
+// Since Revision 2
+message MsgUpdateCurator {
+  option (cosmos.msg.v1.signer) = "curator";
+  
+  // curator is the address of the basket curator.
+  string curator = 1;
+
+  // denom is the unique identifier of the basket.
+  string denom = 2;
+
+  // new_curator is the address of the account that will become the
+  // new curator of the basket.
+  string new_curator = 3;
+
+}
+
+// MsgUpdateCuratorResponse is the Msg/UpdateCurator response type.
+//
+// Since Revision 2
+message MsgUpdateCuratorResponse {}

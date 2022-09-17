@@ -1,10 +1,40 @@
 package server
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
 )
 
-func (s serverImpl) RunMigrations(ctx sdk.Context, cdc codec.Codec) error {
+// Migrator is a struct for handling in-place store migrations.
+type Migrator struct {
+	keeper         Keeper
+	legacySubspace paramtypes.Subspace
+}
+
+// NewMigrator returns a new Migrator.
+func NewMigrator(keeper Keeper, legacySubspace paramtypes.Subspace) Migrator {
+	return Migrator{
+		keeper:         keeper,
+		legacySubspace: legacySubspace,
+	}
+}
+
+// Migrate2to3 migrates from version 2 to 3.
+func (m Migrator) Migrate2to3(ctx sdk.Context) error {
+
+	baseStore, basketStore, _ := m.keeper.GetStateStores()
+	if err := v3.MigrateState(ctx, baseStore, basketStore, m.legacySubspace); err != nil {
+		return err
+	}
+
+	// add polygon to the allowed bridge chain table, as this was a hard coded requirement previously.
+	err := baseStore.AllowedBridgeChainTable().Insert(ctx, &ecocreditv1.AllowedBridgeChain{ChainName: "polygon"})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -4,7 +4,7 @@ package regen.ecocredit.basket.v1;
 
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
 
 // EventCreate is an event emitted when a basket is created.
 message EventCreate {
@@ -64,4 +64,13 @@ message EventTake {
   // Deprecated (Since Revision 1): This field is still populated and will be
   // removed in the next version.
   string amount = 4 [ deprecated = true ];
+}
+
+// EventUpdateCurator is an event emitted when the basket curator is updated.
+//
+// Since Revision 2
+message EventUpdateCurator {
+
+  // denom is the basket denom. 
+  string denom = 1;
 }

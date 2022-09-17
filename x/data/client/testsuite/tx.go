@@ -190,12 +190,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &res2))
 
 	id2 := strings.Trim(res2.Logs[0].Events[1].Attributes[0].Value, "\"")
-	resolverId2, err := strconv.ParseUint(id2, 10, 64)
+	resolverID2, err := strconv.ParseUint(id2, 10, 64)
 	s.Require().NoError(err)
 
 	_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgRegisterResolverCmd(), append(
 		[]string{
-			fmt.Sprintf("%d", resolverId2),
+			fmt.Sprintf("%d", resolverID2),
 			filePath,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
 		},
@@ -206,8 +206,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 func (s *IntegrationTestSuite) TearDownSuite() {
 	s.T().Log("tearing down integration test suite")
-
-	s.network.WaitForNextBlock()
+	s.Require().NoError(s.network.WaitForNextBlock())
 	s.network.Cleanup()
 }
 
@@ -346,7 +345,7 @@ func (s *IntegrationTestSuite) TestDefineResolverCmd() {
 
 	testCases := []struct {
 		name        string
-		resolverUrl string
+		resolverURL string
 		expErr      bool
 		errMsg      string
 	}{
@@ -373,7 +372,7 @@ func (s *IntegrationTestSuite) TestDefineResolverCmd() {
 	cmd := client.MsgDefineResolverCmd()
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			args := []string{tc.resolverUrl}
+			args := []string{tc.resolverURL}
 			args = append(args, commonFlags...)
 			_, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 			if tc.expErr {
@@ -445,8 +444,9 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 
 	cmd := client.MsgRegisterResolverCmd()
 	for _, tc := range testCases {
+		args := tc.args
 		s.Run(tc.name, func() {
-			args := append(tc.args, commonFlags...)
+			args := append(args, commonFlags...)
 			res, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)

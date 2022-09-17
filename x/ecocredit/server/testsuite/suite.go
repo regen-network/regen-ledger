@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -19,65 +20,60 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory testutil.FixtureFactory
-	fixture        testutil.Fixture
+	fixtureFactory fixture.Factory
+	fixture        fixture.Fixture
 
-	codec             *codec.ProtoCodec
-	sdkCtx            sdk.Context
-	ctx               context.Context
-	msgClient         core.MsgClient
-	marketServer      marketServer
-	basketServer      basketServer
-	queryClient       core.QueryClient
-	paramsQueryClient params.QueryClient
-	signers           []sdk.AccAddress
-	basketFee         sdk.Coin
+	codec        *codec.ProtoCodec
+	sdkCtx       sdk.Context
+	ctx          context.Context
+	msgClient    basetypes.MsgClient
+	marketServer marketServer
+	basketServer basketServer
+	queryClient  basetypes.QueryClient
+	signers      []sdk.AccAddress
+	basketFee    sdk.Coin
 
-	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
 
-	genesisCtx types.Context
+	genesisCtx sdk.Context
 	blockTime  time.Time
 }
 
 type marketServer struct {
-	marketplace.QueryClient
-	marketplace.MsgClient
+	markettypes.QueryClient
+	markettypes.MsgClient
 }
 
 type basketServer struct {
-	basket.QueryClient
-	basket.MsgClient
+	baskettypes.QueryClient
+	baskettypes.MsgClient
 }
 
 var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFee}
+	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
-		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
 	}
@@ -90,27 +86,22 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	// TODO clean up once types.Context merged upstream into sdk.Context
-	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-	s.genesisCtx = types.Context{Context: sdkCtx}
+	s.genesisCtx = sdkCtx
 
+	s.basketFee = sdk.NewInt64Coin("bfee", 20)
 	_, err := s.fixture.InitGenesis(s.sdkCtx, map[string]json.RawMessage{ecocredit.ModuleName: s.ecocreditGenesis()})
 	s.Require().NoError(err)
 
-	ecocreditParams := core.DefaultParams()
-	s.basketFee = sdk.NewInt64Coin("bfee", 20)
-	ecocreditParams.BasketFee = sdk.NewCoins(s.basketFee)
-	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
-
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
-	s.basketServer = basketServer{basket.NewQueryClient(s.fixture.QueryConn()), basket.NewMsgClient(s.fixture.TxConn())}
-	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
-	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
-	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
-	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
+	s.basketServer = basketServer{baskettypes.NewQueryClient(s.fixture.QueryConn()), baskettypes.NewMsgClient(s.fixture.TxConn())}
+
+	s.marketServer = marketServer{markettypes.NewQueryClient(s.fixture.QueryConn()), markettypes.NewMsgClient(s.fixture.TxConn())}
+	s.msgClient = basetypes.NewMsgClient(s.fixture.TxConn())
+	s.queryClient = basetypes.NewQueryClient(s.fixture.QueryConn())
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
@@ -128,18 +119,18 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	s.Require().NoError(err)
 	ormCtx := ormtable.WrapContextDefault(backend)
-	ss, err := api.NewStateStore(modDB)
+	ss, err := baseapi.NewStateStore(modDB)
 	s.Require().NoError(err)
-	ms, err := marketApi.NewStateStore(modDB)
+	ms, err := marketapi.NewStateStore(modDB)
 	s.Require().NoError(err)
 
-	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
+	err = ms.AllowedDenomTable().Insert(ormCtx, &marketapi.AllowedDenom{
 		BankDenom:    sdk.DefaultBondDenom,
 		DisplayDenom: sdk.DefaultBondDenom,
 	})
 	s.Require().NoError(err)
 
-	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+	err = ss.CreditTypeTable().Insert(ormCtx, &baseapi.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "metric ton C02",
@@ -147,14 +138,29 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	})
 	s.Require().NoError(err)
 
+	// set default credit class fee
+	err = ss.ClassFeeTable().Save(ormCtx, &baseapi.ClassFee{
+		Fee: &sdkbase.Coin{
+			Denom:  sdk.DefaultBondDenom,
+			Amount: basetypes.DefaultClassFee.String(),
+		},
+	})
+	s.Require().NoError(err)
+
+	bs, err := basketApi.NewStateStore(modDB)
+	s.Require().NoError(err)
+
+	err = bs.BasketFeeTable().Save(ormCtx, &basketApi.BasketFee{
+		Fee: &sdkbase.Coin{
+			Denom:  s.basketFee.Denom,
+			Amount: s.basketFee.Amount.String(),
+		},
+	})
+	s.Require().NoError(err)
+
 	// export genesis into target
 	target := ormjson.NewRawMessageTarget()
 	err = modDB.ExportJSON(ormCtx, target)
-	s.Require().NoError(err)
-
-	// merge the params into the json target
-	coreParams := core.DefaultParams()
-	err = genesis.MergeParamsIntoTarget(s.codec, &coreParams, target)
 	s.Require().NoError(err)
 
 	// get raw json from target
@@ -173,20 +179,20 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// create a class and issue a batch
 	userTotalCreditBalance, err := math.NewDecFromString("1000000000000000")
 	require.NoError(err)
-	classId, batchDenom := s.createClassAndIssueBatch(user, user, "C", userTotalCreditBalance.String(), "2020-01-01", "2022-01-01")
+	classID, batchDenom := s.createClassAndIssueBatch(user, user, "C", userTotalCreditBalance.String(), "2020-01-01", "2022-01-01")
 
 	// fund account to create a basket
 	balanceBefore := sdk.NewInt64Coin(s.basketFee.Denom, 30000)
 	s.fundAccount(user, sdk.NewCoins(balanceBefore))
 
 	// create a basket
-	res, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
+	res, err := s.basketServer.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:           s.signers[0].String(),
 		Name:              "BASKET",
 		Exponent:          6,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		AllowedClasses:    []string{classId},
+		AllowedClasses:    []string{classID},
 		DateCriteria:      nil,
 		Fee:               sdk.NewCoins(s.basketFee),
 	})
@@ -194,22 +200,22 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	basketDenom := res.BasketDenom
 
 	// check it was created
-	qRes, err := s.basketServer.Baskets(s.ctx, &basket.QueryBasketsRequest{})
+	qRes, err := s.basketServer.Baskets(s.ctx, &baskettypes.QueryBasketsRequest{})
 	require.NoError(err)
 	require.Len(qRes.Baskets, 1)
 	require.Equal(qRes.Baskets[0].BasketDenom, basketDenom)
 
-	// assert the fee was paid - the fee mechanism was mocked, but we still call the same underlying SendFromAccountToModule
-	// function so the result is the same
+	// assert the fee was paid - the fee mechanism was mocked, but we still call the same
+	// underlying SendFromAccountToModule function so the result is the same
 	balanceAfter := s.getUserBalance(user, s.basketFee.Denom)
 	require.Equal(balanceAfter.Add(s.basketFee), balanceBefore)
 
 	// put some BAZ credits in the basket
 	creditAmtDeposited := math.NewDecFromInt64(3)
-	pRes, err := s.basketServer.Put(s.ctx, &basket.MsgPut{
+	pRes, err := s.basketServer.Put(s.ctx, &baskettypes.MsgPut{
 		Owner:       user.String(),
 		BasketDenom: basketDenom,
-		Credits:     []*basket.BasketCredit{{BatchDenom: batchDenom, Amount: creditAmtDeposited.String()}},
+		Credits:     []*baskettypes.BasketCredit{{BatchDenom: batchDenom, Amount: creditAmtDeposited.String()}},
 	})
 	require.NoError(err)
 	basketTokensReceived, err := math.NewPositiveDecFromString(pRes.AmountReceived)
@@ -222,7 +228,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Equal(i64BT, basketBal.Amount.Int64())
 
 	// make sure the basket has the credits now.
-	basketBalance, err := s.basketServer.BasketBalance(s.ctx, &basket.QueryBasketBalanceRequest{
+	basketBalance, err := s.basketServer.BasketBalance(s.ctx, &baskettypes.QueryBasketBalanceRequest{
 		BasketDenom: basketDenom,
 		BatchDenom:  batchDenom,
 	})
@@ -230,13 +236,13 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Equal(basketBalance.Balance, creditAmtDeposited.String())
 
 	// make sure user doesn't have any of that credit - should error out
-	userCreditBalance, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+	userCreditBalance, err := s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    user.String(),
 		BatchDenom: batchDenom,
 	})
 	require.NoError(err)
 
-	// make sure the core server is properly tracking the user balance
+	// make sure the base server is properly tracking the user balance
 	newUserTotal, err := userTotalCreditBalance.Sub(creditAmtDeposited)
 	require.NoError(err)
 	require.Equal(newUserTotal.String(), userCreditBalance.Balance.TradableAmount)
@@ -245,7 +251,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.NoError(s.bankKeeper.SendCoins(s.sdkCtx, user, user2, sdk.NewCoins(sdk.NewInt64Coin(basketDenom, i64BT))))
 
 	// user2 can take all the credits from the basket
-	tRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
+	tRes, err := s.basketServer.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:                  user2.String(),
 		BasketDenom:            basketDenom,
 		Amount:                 basketTokensReceived.String(),
@@ -257,7 +263,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Equal(tRes.Credits[0].Amount, creditAmtDeposited.String())
 
 	// user shouldn't be able to take any since we sent our tokens to user2
-	noRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
+	noRes, err := s.basketServer.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:                  user.String(),
 		BasketDenom:            basketDenom,
 		Amount:                 basketTokensReceived.String(),
@@ -269,7 +275,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Nil(noRes)
 
 	// there should be nothing left in the basket
-	bRes, err := s.basketServer.BasketBalance(s.ctx, &basket.QueryBasketBalanceRequest{
+	bRes, err := s.basketServer.BasketBalance(s.ctx, &baskettypes.QueryBasketBalanceRequest{
 		BasketDenom: basketDenom,
 		BatchDenom:  batchDenom,
 	})
@@ -282,13 +288,13 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
 
 	// create a retire enabled basket
-	resR, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
+	resR, err := s.basketServer.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:           s.signers[0].String(),
 		Name:              "RETIRE",
 		Exponent:          6,
 		DisableAutoRetire: false,
 		CreditTypeAbbrev:  "C",
-		AllowedClasses:    []string{classId},
+		AllowedClasses:    []string{classID},
 		DateCriteria:      nil,
 		Fee:               sdk.NewCoins(s.basketFee),
 	})
@@ -298,10 +304,10 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	creditsToDeposit := math.NewDecFromInt64(3)
 
 	// put some credits in the basket
-	pRes, err = s.basketServer.Put(s.ctx, &basket.MsgPut{
+	pRes, err = s.basketServer.Put(s.ctx, &baskettypes.MsgPut{
 		Owner:       user.String(),
 		BasketDenom: basketDenom,
-		Credits:     []*basket.BasketCredit{{Amount: creditsToDeposit.String(), BatchDenom: batchDenom}},
+		Credits:     []*baskettypes.BasketCredit{{Amount: creditsToDeposit.String(), BatchDenom: batchDenom}},
 	})
 	require.NoError(err)
 
@@ -309,7 +315,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.NoError(err)
 
 	// take them out of the basket, retiring them
-	tRes, err = s.basketServer.Take(s.ctx, &basket.MsgTake{
+	tRes, err = s.basketServer.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:                  user.String(),
 		BasketDenom:            basketDenom,
 		Amount:                 amountBasketCoins.String(),
@@ -321,7 +327,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Equal(creditsToDeposit.String(), tRes.Credits[0].Amount)
 
 	// check retired balance, should be equal to the amount we put in
-	cbRes, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+	cbRes, err := s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    user.String(),
 		BatchDenom: batchDenom,
 	})
@@ -334,7 +340,7 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	// fund the account so this doesn't fail
 	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 20000000)))
 
-	cRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
+	cRes, err := s.msgClient.CreateClass(s.ctx, &basetypes.MsgCreateClass{
 		Admin:            admin.String(),
 		Issuers:          []string{admin.String()},
 		Metadata:         "",
@@ -342,29 +348,29 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 		Fee:              &createClassFee,
 	})
 	require.NoError(err)
-	classId := cRes.ClassId
+	classID := cRes.ClassId
 	start, err := types.ParseDate("start date", startStr)
 	require.NoError(err)
 	end, err := types.ParseDate("end date", endStr)
 	require.NoError(err)
-	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
+	pRes, err := s.msgClient.CreateProject(s.ctx, &basetypes.MsgCreateProject{
 		Admin:        admin.String(),
-		ClassId:      classId,
+		ClassId:      classID,
 		Metadata:     "",
 		Jurisdiction: "US-NY",
 	})
 	require.NoError(err)
-	bRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
+	bRes, err := s.msgClient.CreateBatch(s.ctx, &basetypes.MsgCreateBatch{
 		Issuer:    admin.String(),
 		ProjectId: pRes.ProjectId,
-		Issuance:  []*core.BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
+		Issuance:  []*basetypes.BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
 		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
 	require.NoError(err)
 	batchDenom := bRes.BatchDenom
-	return classId, batchDenom
+	return classID, batchDenom
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
@@ -380,7 +386,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	addr5 := acc5.String()
 
 	// create class with insufficient funds and it should fail
-	createClsRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
+	createClsRes, err := s.msgClient.CreateClass(s.ctx, &basetypes.MsgCreateClass{
 		Admin:            admin.String(),
 		Issuers:          []string{issuer1, issuer2},
 		Metadata:         "",
@@ -391,10 +397,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*core.DefaultCreditClassFee.Int64())))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 4*basetypes.DefaultClassFee.Int64())))
 	adminBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 
-	createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
+	createClsRes, err = s.msgClient.CreateClass(s.ctx, &basetypes.MsgCreateClass{
 		Admin:            admin.String(),
 		Issuers:          []string{issuer1, issuer2},
 		Metadata:         "",
@@ -402,15 +408,15 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Fee:              &createClassFee,
 	})
 	s.Require().NoError(err)
-	classId := createClsRes.ClassId
+	classID := createClsRes.ClassId
 
 	adminBalanceAfter := s.bankKeeper.GetBalance(s.sdkCtx, admin, sdk.DefaultBondDenom)
 	expectedBalance := adminBalanceAfter.Add(createClassFee)
 	s.Require().True(adminBalanceBefore.Equal(expectedBalance), "actual balance: %v \t expected: %v", adminBalanceAfter, expectedBalance)
 
 	// create project
-	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		ClassId:      classId,
+	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &basetypes.MsgCreateProject{
+		ClassId:      classID,
 		Admin:        issuer1,
 		Metadata:     "metadata",
 		Jurisdiction: "AQ",
@@ -418,7 +424,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
 	s.Require().Equal("C02-001", createProjectRes.ProjectId)
-	projectId := createProjectRes.ProjectId
+	projectID := createProjectRes.ProjectId
 
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "100"
@@ -430,12 +436,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 	time2 := time.Now()
 
 	// Batch creation should succeed with StartDate before EndDate, and valid data
-	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
+	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &basetypes.MsgCreateBatch{
 		Issuer:    issuer1,
-		ProjectId: projectId,
+		ProjectId: projectID,
 		StartDate: &time1,
 		EndDate:   &time2,
-		Issuance: []*core.BatchIssuance{
+		Issuance: []*basetypes.BatchIssuance{
 			{
 				Recipient:              addr1,
 				TradableAmount:         t0,
@@ -463,7 +469,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NotEmpty(batchDenom)
 
 	// query balances
-	queryBalanceRes, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+	queryBalanceRes, err := s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    addr1,
 		BatchDenom: batchDenom,
 	})
@@ -472,7 +478,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(t0, queryBalanceRes.Balance.TradableAmount)
 	s.Require().Equal(r0, queryBalanceRes.Balance.RetiredAmount)
 
-	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    addr2,
 		BatchDenom: batchDenom,
 	})
@@ -481,7 +487,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(t1, queryBalanceRes.Balance.TradableAmount)
 	s.Require().Equal(r1, queryBalanceRes.Balance.RetiredAmount)
 
-	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    addr4,
 		BatchDenom: batchDenom,
 	})
@@ -491,7 +497,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(r2, queryBalanceRes.Balance.RetiredAmount)
 
 	// if we didn't issue tradable or retired balances, they'll be default to zero.
-	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    addr5,
 		BatchDenom: batchDenom,
 	})
@@ -501,7 +507,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal("0", queryBalanceRes.Balance.RetiredAmount)
 
 	// query supply
-	querySupplyRes, err := s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
+	querySupplyRes, err := s.queryClient.Supply(s.ctx, &basetypes.QuerySupplyRequest{BatchDenom: batchDenom})
 	s.Require().NoError(err)
 	s.Require().NotNil(querySupplyRes)
 	s.Require().Equal(tSupply0, querySupplyRes.TradableAmount)
@@ -585,9 +591,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	for _, tc := range cancelCases {
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Cancel(s.ctx, &core.MsgCancel{
+			_, err := s.msgClient.Cancel(s.ctx, &basetypes.MsgCancel{
 				Owner: tc.owner,
-				Credits: []*core.Credits{
+				Credits: []*basetypes.Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toCancel,
@@ -603,7 +609,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NoError(err)
 
 				// query balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 					Address:    tc.owner,
 					BatchDenom: batchDenom,
 				})
@@ -613,7 +619,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.assertDecStrEqual(tc.expRetired, queryBalanceRes.Balance.RetiredAmount)
 
 				// query supply
-				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
+				querySupplyRes, err = s.queryClient.Supply(s.ctx, &basetypes.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
 				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
@@ -621,7 +627,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.assertDecStrEqual(tc.expAmountCancelled, querySupplyRes.CancelledAmount)
 
 				// query batch
-				queryBatchRes, err := s.queryClient.Batch(s.ctx, &core.QueryBatchRequest{BatchDenom: batchDenom})
+				queryBatchRes, err := s.queryClient.Batch(s.ctx, &basetypes.QueryBatchRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBatchRes)
 			}
@@ -659,28 +665,28 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "0.0001",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire to an invalid region",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire to an invalid postal code",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't retire without a jurisdiction",
 			toRetire:      "0.0001",
 			jurisdiction:  "",
 			expectErr:     true,
-			expErrMessage: "jurisdiction cannot be empty",
+			expErrMessage: "jurisdiction: empty string is not allowed",
 		},
 		{
 			name:              "can retire a small amount of credits",
@@ -724,9 +730,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range retireCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Retire(s.ctx, &core.MsgRetire{
+			_, err := s.msgClient.Retire(s.ctx, &basetypes.MsgRetire{
 				Owner: addr1,
-				Credits: []*core.Credits{
+				Credits: []*basetypes.Credits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toRetire,
@@ -742,7 +748,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NoError(err)
 
 				// query balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 					Address:    addr1,
 					BatchDenom: batchDenom,
 				})
@@ -752,7 +758,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.assertDecStrEqual(tc.expRetired, queryBalanceRes.Balance.RetiredAmount)
 
 				// query supply
-				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
+				querySupplyRes, err = s.queryClient.Supply(s.ctx, &basetypes.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
 				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
@@ -805,7 +811,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't send to an invalid region",
@@ -813,7 +819,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:          "can't send to an invalid postal code",
@@ -821,7 +827,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "invalid jurisdiction",
+			expErrMessage: "jurisdiction: expected format",
 		},
 		{
 			name:                 "can send some",
@@ -875,10 +881,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range sendCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Send(s.ctx, &core.MsgSend{
+			_, err := s.msgClient.Send(s.ctx, &basetypes.MsgSend{
 				Sender:    addr2,
 				Recipient: addr3,
-				Credits: []*core.MsgSend_SendCredits{
+				Credits: []*basetypes.MsgSend_SendCredits{
 					{
 						BatchDenom:             batchDenom,
 						TradableAmount:         tc.sendTradable,
@@ -895,7 +901,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NoError(err)
 
 				// query sender balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 					Address:    addr2,
 					BatchDenom: batchDenom,
 				})
@@ -905,7 +911,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.assertDecStrEqual(tc.expRetiredSender, queryBalanceRes.Balance.RetiredAmount)
 
 				// query recipient balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 					Address:    addr3,
 					BatchDenom: batchDenom,
 				})
@@ -915,85 +921,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.assertDecStrEqual(tc.expRetiredRecipient, queryBalanceRes.Balance.RetiredAmount)
 
 				// query supply
-				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
+				querySupplyRes, err = s.queryClient.Supply(s.ctx, &basetypes.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
 				s.assertDecStrEqual(tc.expTradableSupply, querySupplyRes.TradableAmount)
 				s.assertDecStrEqual(tc.expRetiredSupply, querySupplyRes.RetiredAmount)
-			}
-		})
-	}
-
-	/****   TEST ALLOWLIST CREDIT CREATORS   ****/
-	allowlistCases := []struct {
-		name             string
-		creatorAcc       sdk.AccAddress
-		allowlist        []string
-		allowlistEnabled bool
-		wantErr          bool
-		errMsg           string
-	}{
-		{
-			name:             "valid allowlist and enabled",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          false,
-		},
-		{
-			name:             "valid multi addrs in allowlist",
-			allowlist:        []string{s.signers[0].String(), s.signers[1].String(), s.signers[2].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          false,
-		},
-		{
-			name:             "creator is not part of the allowlist",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[1],
-			allowlistEnabled: true,
-			wantErr:          true,
-			errMsg:           "not allowed",
-		},
-		{
-			name:             "valid allowlist but disabled - anyone can create credits",
-			allowlist:        []string{s.signers[0].String()},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: false,
-			wantErr:          false,
-		},
-		{
-			name:             "empty and enabled allowlist - nobody can create credits",
-			allowlist:        []string{},
-			creatorAcc:       s.signers[0],
-			allowlistEnabled: true,
-			wantErr:          true,
-			errMsg:           "not allowed",
-		},
-	}
-
-	for _, tc := range allowlistCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			s.paramSpace.Set(s.sdkCtx, core.KeyAllowedClassCreators, tc.allowlist)
-			s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, tc.allowlistEnabled)
-
-			// fund the creator account
-			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFee)))
-
-			createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
-				Admin:            tc.creatorAcc.String(),
-				Issuers:          []string{issuer1, issuer2},
-				CreditTypeAbbrev: "C",
-				Metadata:         "",
-				Fee:              &createClassFee,
-			})
-			if tc.wantErr {
-				s.Require().Error(err)
-				s.Require().Nil(createClsRes)
-			} else {
-				s.Require().NoError(err)
-				s.Require().NotNil(createClsRes)
 			}
 		})
 	}
@@ -1008,9 +940,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(err)
 	order2QtyDec, err := math.NewDecFromString(order2Qty)
 	s.Require().NoError(err)
-	createSellOrder, err := s.marketServer.Sell(s.ctx, &marketplace.MsgSell{
+	createSellOrder, err := s.marketServer.Sell(s.ctx, &markettypes.MsgSell{
 		Seller: sellerAcc.String(),
-		Orders: []*marketplace.MsgSell_Order{
+		Orders: []*markettypes.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
 				Quantity:          order1Qty,
@@ -1029,8 +961,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().Nil(err)
 	s.Require().Equal(expectedSellOrderIds, createSellOrder.SellOrderIds)
-	orderId1 := createSellOrder.SellOrderIds[0]
-	orderId2 := createSellOrder.SellOrderIds[1]
+	orderID1 := createSellOrder.SellOrderIds[0]
+	orderID2 := createSellOrder.SellOrderIds[1]
 
 	// now we buy these orders
 	buyerAcc := acc5
@@ -1041,18 +973,18 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	buyerAccBefore := s.getAccountInfo(buyerAcc, batchDenom, coinPrice.Denom)
 	sellerAccBefore := s.getAccountInfo(sellerAcc, batchDenom, coinPrice.Denom)
-	_, err = s.marketServer.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+	_, err = s.marketServer.BuyDirect(s.ctx, &markettypes.MsgBuyDirect{
 		Buyer: buyerAcc.String(),
-		Orders: []*marketplace.MsgBuyDirect_Order{
+		Orders: []*markettypes.MsgBuyDirect_Order{
 			{
-				SellOrderId:            orderId1,
+				SellOrderId:            orderID1,
 				Quantity:               order1Qty,
 				BidPrice:               &coinPrice,
 				DisableAutoRetire:      false,
 				RetirementJurisdiction: "US-OR",
 			},
 			{
-				SellOrderId:       orderId2,
+				SellOrderId:       orderID2,
 				Quantity:          order2Qty,
 				BidPrice:          &coinPrice,
 				DisableAutoRetire: true,
@@ -1137,12 +1069,6 @@ func (s *IntegrationTestSuite) assertDecStrEqual(d1, d2 string) {
 	s.Require().True(dec1.Equal(dec2), "%v does not equal %v", dec1, dec2)
 }
 
-func (s *IntegrationTestSuite) createClass(admin, creditTypeAbbrev, metadata string, issuers []string) string {
-	res, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin, Issuers: issuers, Metadata: metadata, CreditTypeAbbrev: creditTypeAbbrev, Fee: &createClassFee})
-	s.Require().NoError(err)
-	return res.ClassId
-}
-
 func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, bankDenom string) accountInfo {
 	coinBalance := s.getUserBalance(addr, bankDenom)
 	bal := s.getUserBatchBalance(addr, batchDenom)
@@ -1156,8 +1082,8 @@ func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, b
 	}
 }
 
-func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom string) *core.BatchBalanceInfo {
-	bal, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom string) *basetypes.BatchBalanceInfo {
+	bal, err := s.queryClient.Balance(s.ctx, &basetypes.QueryBalanceRequest{
 		Address:    addr.String(),
 		BatchDenom: denom,
 	})
@@ -1165,7 +1091,7 @@ func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom st
 	return bal.Balance
 }
 
-func (s *IntegrationTestSuite) getDecimalsFromBalance(bal *core.BatchBalanceInfo) (tradable, retired, escrowed math.Dec) {
+func (s *IntegrationTestSuite) getDecimalsFromBalance(bal *basetypes.BatchBalanceInfo) (tradable, retired, escrowed math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, bal.TradableAmount, bal.RetiredAmount, bal.EscrowedAmount)
 	s.Require().NoError(err)
 	return decs[0], decs[1], decs[2]
