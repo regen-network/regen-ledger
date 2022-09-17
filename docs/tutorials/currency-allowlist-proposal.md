@@ -26,7 +26,7 @@ Create a `proposal.json` file using the following example (note that the name an
 
 Each field in the json file is required and should be properly filled out.
 
-Make sure you give the proposal a meaningful title and description. The description should provide a rationale as to why this currency should be added to the list and can be written in either plain text or markdown (see [Proposal #15](https://wallet.keplr.app/chains/regen/proposals/15) for a example of a detailed description).
+Make sure you give the proposal a meaningful title and description. The description should provide a rationale as to why this currency should be added to the list and can be written in either plain text or markdown (see [Proposal #15](https://wallet.keplr.app/chains/regen/proposals/15) for an example of a detailed description).
 
 `denom` includes information about the currency you are proposing to add:
 
