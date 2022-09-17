@@ -653,6 +653,18 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
 						})
 
+						// We need to reset the counter & array so that the validator won't be immediately slashed for downtime after unjail.
+						signInfo, found := app.SlashingKeeper.GetValidatorSigningInfo(ctx, valCons)
+						if found {
+							signInfo.MissedBlocksCounter = 0
+							signInfo.IndexOffset = 0
+							app.SlashingKeeper.SetValidatorSigningInfo(ctx, valCons, signInfo)
+							missedBlocks := app.SlashingKeeper.GetValidatorMissedBlocks(ctx, valCons)
+							for _, mb := range missedBlocks {
+								app.SlashingKeeper.SetValidatorMissedBlockBitArray(ctx, valCons, mb.Index, false)
+							}
+						}
+
 						inValidatorSet[valCons.String()] = true
 						break
 					}
