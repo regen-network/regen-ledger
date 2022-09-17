@@ -46,7 +46,7 @@ Flags:
     false unless the credits were previously put into the basket by the address
     picking them from the basket, in which case they will remain tradable.
 - credit-type-abbrev: filters against credits from this credit type abbreviation (e.g. "BIO").
-- allowed_classes: comma separated (no spaces) list of credit classes allowed to be put in
+- allowed-classes: comma separated (no spaces) list of credit classes allowed to be put in
     the basket (e.g. "C01,C02").
 - min-start-date: the earliest start date for batches of credits allowed into the basket.
 - start-date-window: the duration of time (in seconds) measured into the past which sets a
@@ -56,7 +56,7 @@ Flags:
     curator explicitly acknowledges paying this fee and is not surprised to learn that they
     paid a big fee and didn't know beforehand.
 - description: the description to be used in the basket coin's bank denom metadata.`),
-		Example: `regen tx ecocredit create-basket NCT --credit-type-abbrev C --allowed_classes C01,C02 basket-fee 100000000uregen description "NCT basket"`,
+		Example: `regen tx ecocredit create-basket NCT --credit-type-abbrev C --allowed-classes C01,C02 --basket-fee 100000000uregen --description "NCT basket"`,
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

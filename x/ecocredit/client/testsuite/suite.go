@@ -33,6 +33,7 @@ import (
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
 	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
@@ -49,7 +50,7 @@ type IntegrationTestSuite struct {
 	addr2 sdk.AccAddress
 
 	// test values
-	creditClassFee     sdk.Coins
+	creditClassFee     *sdk.Coin
 	basketFee          sdk.Coins
 	creditTypeAbbrev   string
 	allowedDenoms      []string
@@ -91,7 +92,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Issuers:          []string{s.addr1.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	// set test reference id
@@ -260,8 +261,8 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	require.NoError(err)
 
 	// set credit class and basket fees
-	s.creditClassFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultClassFee))
-	s.basketFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, basetypes.DefaultBasketFee))
+	s.creditClassFee = genesis.DefaultClassFee().Fee
+	s.basketFee = sdk.NewCoins(*genesis.DefaultBasketFee().Fee)
 
 	// get raw json from target
 	json, err := target.JSON()
@@ -329,8 +330,8 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basety
 		strings.Join(msg.Issuers, ","),
 		msg.CreditTypeAbbrev,
 		msg.Metadata,
-		msg.Fee.String(),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
+		fmt.Sprintf("--%s=%s", baseclient.FlagClassFee, msg.Fee.String()),
 	}
 	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)

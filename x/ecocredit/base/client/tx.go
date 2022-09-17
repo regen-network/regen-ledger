@@ -23,12 +23,13 @@ const (
 	FlagRemoveIssuers          string = "remove-issuers"
 	FlagReferenceID            string = "reference-id"
 	FlagRetirementJurisdiction string = "retirement-jurisdiction"
+	FlagClassFee               string = "class-fee"
 )
 
 // TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-class [issuers] [credit-type-abbrev] [metadata] [fee] [flags]",
+		Use:   "create-class [issuers] [credit-type-abbrev] [metadata] [flags]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(`Creates a new credit class with transaction author (--from) as admin.
 
@@ -44,13 +45,21 @@ Parameters:
 - issuers:    	       comma separated (no spaces) list of issuer account addresses
 - credit-type-abbrev:  the abbreviation of a credit type
 - metadata:            arbitrary data attached to the credit class info
-- fee:                 fee to pay for the creation of the credit class`,
+
+Flags:
+
+- class-fee: the fee that the class creator will pay to create the credit class. It must be >= the
+required credit_class_fee param. If the credit_class_fee param is empty, no fee is required. 
+We explicitly include the class creation fee here so that the class creator acknowledges paying 
+the fee and is not surprised to learn that the they paid a fee without consent.
+
+`,
 			types.KeyAllowedClassCreators,
 			types.KeyCreditClassFee,
 		),
-		Example: `regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf 20000000uregen
-regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf 20000000uregen`,
-		Args: cobra.ExactArgs(4),
+		Example: `regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf --class-fee 20000000uregen
+regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf --class-fee 20000000uregen`,
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
@@ -66,23 +75,32 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 
-			// Parse and normalize credit class fee
-			fee, err := sdk.ParseCoinNormalized(args[3])
-			if err != nil {
-				return err
-			}
-
 			msg := types.MsgCreateClass{
 				Admin:            admin.String(),
 				Issuers:          issuers,
 				Metadata:         args[2],
 				CreditTypeAbbrev: args[1],
-				Fee:              &fee,
+			}
+
+			// Parse and normalize credit class fee
+			feeString, err := cmd.Flags().GetString(FlagClassFee)
+			if err != nil {
+				return err
+			}
+			if feeString != "" {
+				fee, err := sdk.ParseCoinNormalized(feeString)
+				if err != nil {
+					return fmt.Errorf("failed to parse class-fee: %w", err)
+				}
+
+				msg.Fee = &fee
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+
+	cmd.Flags().String(FlagClassFee, "", "the fee that the class creator will pay to create the credit class (e.g. \"20regen\")")
 
 	return txFlags(cmd)
 }
