@@ -260,6 +260,7 @@ module.exports = {
           collapsable: false,
           children: [
             '/tutorials/ibc-transfers',
+            '/tutorials/currency-allowlist-proposal',
           ],
         },
         {
