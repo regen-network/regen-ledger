@@ -259,7 +259,7 @@ module.exports = {
           collapsable: false,
           children: [
             '/tutorials/ibc-transfers',
-            '/tutorials/denom-allowlist-proposal.md',
+            '/tutorials/currency-allowlist-proposal',
           ],
         },
         {
