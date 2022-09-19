@@ -2,7 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -618,7 +617,9 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 	resp := app.mm.EndBlock(ctx, req)
 
 	// TODO: update with mainnet validatorset
-	testnetPubKeys, err := GetTestnetValidatorSetPubKeys()
+	// replace with
+	// validatorsPubkeys, err := GetMainnetValidatorSetPubkeys()
+	validatorsPubkeys, err := GetTestnetValidatorSetPubKeys()
 	if err != nil {
 		panic(err)
 	}
@@ -683,12 +684,9 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 			if !inValidatorSet[sdk.ConsAddress(voteInfo.Validator.Address).String()] {
 				// the big question is how to get the pubkey for a validator is no longer in state
 
-				for i := 0; i < len(testnetPubKeys.Pubkeys); i++ {
-					if sdk.ConsAddress(testnetPubKeys.Pubkeys[i].Address().Bytes()).String() == sdk.ConsAddress(voteInfo.Validator.Address).String() {
-						fmt.Println("============================== fully unbonded validator ===================================================")
-						fmt.Println(sdk.ConsAddress(testnetPubKeys.Pubkeys[i].Address().Bytes()).String())
-						fmt.Println("=================================================================================")
-						tmPk, err := cryptocodec.FromTmPubKeyInterface(testnetPubKeys.Pubkeys[i])
+				for i := 0; i < len(validatorsPubkeys.Pubkeys); i++ {
+					if sdk.ConsAddress(validatorsPubkeys.Pubkeys[i].Address().Bytes()).String() == sdk.ConsAddress(voteInfo.Validator.Address).String() {
+						tmPk, err := cryptocodec.FromTmPubKeyInterface(validatorsPubkeys.Pubkeys[i])
 						if err != nil {
 							panic(err)
 						}
@@ -699,7 +697,6 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 						}
 
 						updates = append(updates, abci.ValidatorUpdate{PubKey: protoPubKey, Power: 0})
-
 					}
 				}
 			}

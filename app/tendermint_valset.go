@@ -26,3 +26,12 @@ func GetTestnetValidatorSetPubKeys() (*PubKeys, error) {
 
 	return pks, nil
 }
+
+func GetMainnetValidatorSetPubkeys() (*PubKeys, error) {
+	pks := &PubKeys{}
+	if err := tmjson.Unmarshal([]byte(mainnetValidatorSet), pks); err != nil {
+		return nil, err
+	}
+
+	return pks, nil
+}
