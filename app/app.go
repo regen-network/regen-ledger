@@ -2,11 +2,13 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
 	"os"
 
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -103,6 +105,8 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 
+	regenupgrades "github.com/regen-network/regen-ledger/v4/app/upgrades"
+	v5 "github.com/regen-network/regen-ledger/v4/app/upgrades/v5"
 	"github.com/regen-network/regen-ledger/x/data"
 	datamodule "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -176,6 +180,8 @@ var (
 
 		return perms
 	}()
+
+	upgrades = []regenupgrades.Upgrade{v5.Upgrade}
 )
 
 func init() {
@@ -317,7 +323,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// set the governance module account as the authority for conducting upgrades
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String())
-	app.registerUpgradeHandlers()
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -530,6 +535,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.ModuleManager.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.ModuleManager.RegisterInvariants(&app.CrisisKeeper)
 
+	app.setUpgradeStoreLoaders()
+	app.setUpgradeHandlers()
+
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
@@ -566,7 +574,15 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
-	anteHandler, err := app.setCustomAnteHandler(encodingConfig.TxConfig)
+	anteHandler, err := ante.NewAnteHandler(
+		ante.HandlerOptions{
+			AccountKeeper:   app.AccountKeeper,
+			BankKeeper:      app.BankKeeper,
+			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+			FeegrantKeeper:  app.FeeGrantKeeper,
+			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+		},
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -706,6 +722,32 @@ func (app *RegenApp) RegisterTendermintService(clientCtx client.Context) {
 		app.interfaceRegistry,
 		app.Query,
 	)
+}
+
+func (app *RegenApp) setUpgradeStoreLoaders() {
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+
+	for _, u := range upgrades {
+		if upgradeInfo.Name == u.UpgradeName {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &u.StoreUpgrades))
+		}
+	}
+}
+
+func (app *RegenApp) setUpgradeHandlers() {
+	for _, u := range upgrades {
+		app.UpgradeKeeper.SetUpgradeHandler(
+			u.UpgradeName,
+			u.CreateUpgradeHandler(app.ModuleManager, app.configurator),
+		)
+	}
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server

@@ -1,4 +1,4 @@
-package app
+package testsuite
 
 import (
 	"testing"
@@ -6,6 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/tendermint/tendermint/crypto/ed25519"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -22,6 +24,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/regen-network/regen-ledger/v4/app"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
@@ -50,12 +54,24 @@ type SetupOptions struct {
 	InvCheckPeriod     uint
 	HomePath           string
 	SkipUpgradeHeights map[int64]bool
-	EncConfig          EncodingConfig
+	EncConfig          app.EncodingConfig
 	AppOpts            types.AppOptions
 }
 
+func DefaultOptions() SetupOptions {
+	return SetupOptions{
+		Logger:             log.NewNopLogger(),
+		DB:                 dbm.NewMemDB(),
+		InvCheckPeriod:     5,
+		HomePath:           app.DefaultNodeHome,
+		SkipUpgradeHeights: map[int64]bool{},
+		EncConfig:          app.MakeEncodingConfig(),
+		AppOpts:            EmptyAppOptions{},
+	}
+}
+
 // NewAppWithCustomOptions initializes a new RegenApp with custom options.
-func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions) *RegenApp {
+func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions) *app.RegenApp {
 	t.Helper()
 
 	privVal := mock.NewPV()
@@ -73,9 +89,9 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
 
-	app := NewRegenApp(options.Logger, options.DB, nil, true, options.SkipUpgradeHeights, options.HomePath, options.InvCheckPeriod, options.EncConfig, options.AppOpts)
-	genesisState := NewDefaultGenesisState(app.appCodec)
-	genesisState = genesisStateWithValSet(t, app, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
+	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.SkipUpgradeHeights, options.HomePath, options.InvCheckPeriod, options.EncConfig, options.AppOpts)
+	genesisState := app.NewDefaultGenesisState(regenApp.AppCodec())
+	genesisState = genesisStateWithValSet(t, regenApp, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
 
 	if !isCheckTx {
 		// init chain must be called to stop deliverState from being nil
@@ -83,7 +99,7 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		require.NoError(t, err)
 
 		// Initialize the chain
-		app.InitChain(
+		regenApp.InitChain(
 			abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
 				ConsensusParams: DefaultConsensusParams,
@@ -92,14 +108,14 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		)
 	}
 
-	return app
+	return regenApp
 }
 
 func genesisStateWithValSet(t *testing.T,
-	app *RegenApp, genesisState GenesisState,
+	app *app.RegenApp, genesisState app.GenesisState,
 	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
 	balances ...banktypes.Balance,
-) GenesisState {
+) app.GenesisState {
 	// set genesis accounts
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
@@ -165,4 +181,15 @@ type EmptyAppOptions struct{}
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(o string) interface{} {
 	return nil
+}
+
+// CreateRandomAccounts is a function return a list of randomly generated AccAddresses
+func CreateRandomAccounts(numAccts int) []sdk.AccAddress {
+	testAddrs := make([]sdk.AccAddress, numAccts)
+	for i := 0; i < numAccts; i++ {
+		pk := ed25519.GenPrivKey().PubKey()
+		testAddrs[i] = sdk.AccAddress(pk.Address())
+	}
+
+	return testAddrs
 }
