@@ -140,6 +140,11 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
+
+	const upgradeNamev41 = "v4.1.0"
+	app.UpgradeKeeper.SetUpgradeHandler(upgradeNamev41, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		return fromVM, nil
+	})
 }
 
 // migrateDenomMetadata adds missing denom metadata to the REGEN token

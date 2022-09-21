@@ -109,6 +109,8 @@ const (
 	appName = "regen"
 )
 
+const UPGRADE_HEIGHT = 450 // TODO: update upgrade height
+
 var _ simapp.App = &RegenApp{}
 
 var (
@@ -594,17 +596,13 @@ func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
 // Name returns the name of the App
 func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
-const PATCH_HEIGHT = 450 // TODO: update patch height
-
 // BeginBlocker application updates every begin block
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	resp := app.mm.BeginBlock(ctx, req)
 
 	// initialize global tendermint validator set before patch height
-	if ctx.BlockHeight() <= PATCH_HEIGHT {
-		if app.votesInfo == nil {
-			app.votesInfo = req.LastCommitInfo.Votes
-		}
+	if ctx.BlockHeight() == UPGRADE_HEIGHT && app.votesInfo == nil {
+		app.votesInfo = req.LastCommitInfo.Votes
 	}
 
 	events := app.smm.BeginBlock(ctx, req)
@@ -616,20 +614,22 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
 
-	// TODO: update with mainnet validatorset
-	// replace with
-	// validatorsPubkeys, err := GetMainnetValidatorSetPubkeys()
-	validatorsPubkeys, err := GetTestnetValidatorSetPubKeys()
-	if err != nil {
-		panic(err)
-	}
+	// at the upgrade height
+	// for all validators in app state (app.StakingKeeper.GetAllValidators), create a ValidatorUpdate with the correct power.
+	// for all remaining validators in []VoteInfo that are not in app state, set their voting power to zero.
+	// reset jailed validator missed blocks counter so that the validator won't be immediately slashed for downtime after unjail.
 
-	// before the patch height continue the current wrong behavior.
+	// after the upgrade height continue the correct behavior.
+	if ctx.BlockHeight() == UPGRADE_HEIGHT {
 
-	// at patch height
-	// for all validators in app state (app.StakingKeeper.GetAllValidators), create a ValidatorUpdate with the correct power
-	// for all remaining validators in []VoteInfo that are not in app state, set their voting power to zero
-	if ctx.BlockHeight() == PATCH_HEIGHT {
+		// TODO: update with mainnet validatorset
+		// replace with
+		// validatorsPubkeys, err := GetMainnetValidatorSetPubkeys()
+		validatorsPubkeys, err := GetTestnetValidatorSetPubKeys()
+		if err != nil {
+			panic(err)
+		}
+
 		var updates []abci.ValidatorUpdate
 		validators := app.StakingKeeper.GetAllValidators(ctx)
 		inValidatorSet := map[string]bool{}
@@ -682,8 +682,6 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 
 		for _, voteInfo := range app.votesInfo {
 			if !inValidatorSet[sdk.ConsAddress(voteInfo.Validator.Address).String()] {
-				// the big question is how to get the pubkey for a validator is no longer in state
-
 				for i := 0; i < len(validatorsPubkeys.Pubkeys); i++ {
 					if sdk.ConsAddress(validatorsPubkeys.Pubkeys[i].Address().Bytes()).String() == sdk.ConsAddress(voteInfo.Validator.Address).String() {
 						tmPk, err := cryptocodec.FromTmPubKeyInterface(validatorsPubkeys.Pubkeys[i])
@@ -709,19 +707,7 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 		}
 	}
 
-	if ctx.BlockHeight() > PATCH_HEIGHT {
-		// we don't have EndBlocker in regen modules, so after the patch height return validatorset
-		// from the SDK module manager.
-		return resp
-	}
-
-	events, vals := app.smm.EndBlock(ctx, req)
-	if len(resp.ValidatorUpdates) > 0 && len(vals) > 0 {
-		panic("validator EndBlock updates already set by the SDK Module Manager")
-	}
-
-	resp.ValidatorUpdates = vals
-	resp.Events = append(resp.Events, events...)
+	// we don't have EndBlocker in regen modules, so after the upgrade height return the correct validatorset.
 	return resp
 }
 
