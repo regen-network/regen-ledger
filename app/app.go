@@ -109,7 +109,7 @@ const (
 	appName = "regen"
 )
 
-const UPGRADE_HEIGHT = 450 // TODO: update upgrade height
+const UPGRADE_HEIGHT = 600 // TODO: update upgrade height
 
 var _ simapp.App = &RegenApp{}
 
