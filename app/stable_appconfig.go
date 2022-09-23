@@ -65,6 +65,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 	const upgradeName = "v4.1.0"
 
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		app.runEndBlockerUpgrade = true
 		return fromVM, nil
 	})
 

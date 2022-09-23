@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -22,6 +23,7 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
@@ -108,8 +110,6 @@ import (
 const (
 	appName = "regen"
 )
-
-const UPGRADE_HEIGHT = 600 // TODO: update upgrade height
 
 var _ simapp.App = &RegenApp{}
 
@@ -238,7 +238,8 @@ type RegenApp struct {
 	// wasm
 	wasmCfg wasm.Config
 
-	votesInfo []abci.VoteInfo
+	votesInfo            []abci.VoteInfo
+	runEndBlockerUpgrade bool
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
@@ -601,7 +602,7 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 	resp := app.mm.BeginBlock(ctx, req)
 
 	// initialize global tendermint validator set before patch height
-	if ctx.BlockHeight() == UPGRADE_HEIGHT && app.votesInfo == nil {
+	if app.votesInfo == nil {
 		app.votesInfo = req.LastCommitInfo.Votes
 	}
 
@@ -620,7 +621,8 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 	// reset jailed validator missed blocks counter so that the validator won't be immediately slashed for downtime after unjail.
 
 	// after the upgrade height continue the correct behavior.
-	if ctx.BlockHeight() == UPGRADE_HEIGHT {
+	if app.runEndBlockerUpgrade {
+		app.runEndBlockerUpgrade = false
 
 		// TODO: update with mainnet validatorset
 		// replace with
@@ -632,7 +634,13 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 
 		var updates []abci.ValidatorUpdate
 		validators := app.StakingKeeper.GetAllValidators(ctx)
-		inValidatorSet := map[string]bool{}
+		inStakingValidatorSet := map[string]bool{}
+
+		// memoize tendermint valset votes
+		validatorsVoteInfo := map[string]abci.VoteInfo{} // map of consensus address to validator vote
+		for _, voteInfo := range app.votesInfo {
+			validatorsVoteInfo[sdk.ConsAddress(voteInfo.Validator.Address).String()] = voteInfo
+		}
 
 		for _, validator := range validators {
 			tmProtoPk, err := validator.TmConsPublicKey()
@@ -646,29 +654,26 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 			}
 
 			if validator.Jailed {
-				for _, voteInfo := range app.votesInfo {
+				if _, ok := validatorsVoteInfo[valCons.String()]; ok {
+					updates = append(updates, abci.ValidatorUpdate{
+						PubKey: tmProtoPk,
+						Power:  0,
+					})
 
-					if sdk.ConsAddress(voteInfo.Validator.Address).Equals(valCons) {
-						updates = append(updates, abci.ValidatorUpdate{
-							PubKey: tmProtoPk,
-							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
-						})
-
-						// We need to reset the counter & array so that the validator won't be immediately slashed for downtime after unjail.
-						signInfo, found := app.SlashingKeeper.GetValidatorSigningInfo(ctx, valCons)
-						if found {
-							signInfo.MissedBlocksCounter = 0
-							signInfo.IndexOffset = 0
-							app.SlashingKeeper.SetValidatorSigningInfo(ctx, valCons, signInfo)
-							missedBlocks := app.SlashingKeeper.GetValidatorMissedBlocks(ctx, valCons)
-							for _, mb := range missedBlocks {
-								app.SlashingKeeper.SetValidatorMissedBlockBitArray(ctx, valCons, mb.Index, false)
-							}
+					// We need to reset the missed blockcounter & array so that the validator won't be
+					// immediately slashed for downtime after unjail.
+					signInfo, found := app.SlashingKeeper.GetValidatorSigningInfo(ctx, valCons)
+					if found {
+						signInfo.MissedBlocksCounter = 0
+						signInfo.IndexOffset = 0
+						app.SlashingKeeper.SetValidatorSigningInfo(ctx, valCons, signInfo)
+						missedBlocks := app.SlashingKeeper.GetValidatorMissedBlocks(ctx, valCons)
+						for _, mb := range missedBlocks {
+							app.SlashingKeeper.SetValidatorMissedBlockBitArray(ctx, valCons, mb.Index, false)
 						}
-
-						inValidatorSet[valCons.String()] = true
-						break
 					}
+
+					inStakingValidatorSet[valCons.String()] = true
 				}
 			} else {
 				updates = append(updates, abci.ValidatorUpdate{
@@ -676,27 +681,36 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
 				})
 
-				inValidatorSet[valCons.String()] = true
+				inStakingValidatorSet[valCons.String()] = true
 			}
 		}
 
+		// memoize tendermint valset pubkeys
+		validatorsPubkeysMap := make(map[string]crypto.PubKey, len(validatorsPubkeys.Pubkeys)) // map of consensus address to pubkey
+		for _, pubkey := range validatorsPubkeys.Pubkeys {
+			validatorsPubkeysMap[sdk.ConsAddress(pubkey.Address()).String()] = pubkey
+		}
+
 		for _, voteInfo := range app.votesInfo {
-			if !inValidatorSet[sdk.ConsAddress(voteInfo.Validator.Address).String()] {
-				for i := 0; i < len(validatorsPubkeys.Pubkeys); i++ {
-					if sdk.ConsAddress(validatorsPubkeys.Pubkeys[i].Address().Bytes()).String() == sdk.ConsAddress(voteInfo.Validator.Address).String() {
-						tmPk, err := cryptocodec.FromTmPubKeyInterface(validatorsPubkeys.Pubkeys[i])
-						if err != nil {
-							panic(err)
-						}
+			consAddr := sdk.ConsAddress(voteInfo.Validator.Address).String()
+			if !inStakingValidatorSet[consAddr] {
 
-						protoPubKey, err := cryptocodec.ToTmProtoPublicKey(tmPk)
-						if err != nil {
-							panic(err)
-						}
-
-						updates = append(updates, abci.ValidatorUpdate{PubKey: protoPubKey, Power: 0})
-					}
+				pubkey, ok := validatorsPubkeysMap[consAddr]
+				if !ok {
+					panic(fmt.Sprintf("pubkey not found for validator %s", consAddr))
 				}
+
+				tmPk, err := cryptocodec.FromTmPubKeyInterface(pubkey)
+				if err != nil {
+					panic(err)
+				}
+
+				protoPubKey, err := cryptocodec.ToTmProtoPublicKey(tmPk)
+				if err != nil {
+					panic(err)
+				}
+
+				updates = append(updates, abci.ValidatorUpdate{PubKey: protoPubKey, Power: 0})
 			}
 		}
 
