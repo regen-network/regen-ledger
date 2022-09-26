@@ -87,7 +87,7 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
-			SimulateMsgDefineResolver(ak, bk),
+			SimulateMsgDefineResolver(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
@@ -202,7 +202,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 }
 
 // SimulateMsgDefineResolver generates a MsgDefineResolver with random values.
-func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Operation {
+func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryClient data.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -214,10 +214,21 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtyp
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "fee error"), nil, err
 		}
 
-		resolverUrl := genResolverUrl(r)
+		resolverURL := genResolverUrl(r)
+		ctx := sdk.WrapSDKContext(sdkCtx)
+		result, err := qryClient.ResolversByURL(ctx, &data.QueryResolversByURLRequest{Url: resolverURL})
+		if err != nil {
+			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, err.Error()), nil, err
+		}
+		for _, resolver := range result.Resolvers {
+			if resolver.Url == resolverURL && resolver.Manager == manager.Address.String() {
+				return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "resolver with the same URL and manager already exists"), nil, nil
+			}
+		}
+
 		msg := &data.MsgDefineResolver{
 			Manager:     manager.Address.String(),
-			ResolverUrl: resolverUrl,
+			ResolverUrl: resolverURL,
 		}
 
 		account := ak.GetAccount(sdkCtx, manager.Address)
@@ -241,6 +252,7 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtyp
 			if strings.Contains(err.Error(), "resolver URL already exists") {
 				return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "resolver URL already exists"), nil, nil
 			}
+
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "unable to deliver tx"), nil, err
 		}
 
