@@ -602,9 +602,7 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 	resp := app.mm.BeginBlock(ctx, req)
 
 	// initialize global tendermint validator set before patch height
-	if app.votesInfo == nil {
 		app.votesInfo = req.LastCommitInfo.Votes
-	}
 
 	events := app.smm.BeginBlock(ctx, req)
 	resp.Events = append(resp.Events, events...)
