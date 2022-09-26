@@ -601,8 +601,8 @@ func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	resp := app.mm.BeginBlock(ctx, req)
 
-	// initialize global tendermint validator set before patch height
-		app.votesInfo = req.LastCommitInfo.Votes
+	// initialize global tendermint validator set
+	app.votesInfo = req.LastCommitInfo.Votes
 
 	events := app.smm.BeginBlock(ctx, req)
 	resp.Events = append(resp.Events, events...)
