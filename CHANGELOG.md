@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### x/ecocredit
+
+#### State Machine Breaking
+
+- [#1483](https://github.com/regen-network/regen-ledger/pull/1483) Fix amino codec registration for all ecocredit msgs
+
 ## [v4.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.1) - 2022-08-30
 
 ### x/ecocredit

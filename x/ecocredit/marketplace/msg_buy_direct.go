@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v2"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/v2/core"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -90,7 +90,7 @@ func (m MsgBuyDirect) GetSigners() []sdk.AccAddress {
 }
 
 func (m MsgBuyDirect) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgBuyDirect) Route() string { return sdk.MsgTypeURL(&m) }
