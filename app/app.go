@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
@@ -22,6 +23,7 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
@@ -32,6 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -234,6 +237,9 @@ type RegenApp struct {
 
 	// wasm
 	wasmCfg wasm.Config
+
+	votesInfo            []abci.VoteInfo
+	runEndBlockerUpgrade bool
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
@@ -594,6 +600,10 @@ func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 // BeginBlocker application updates every begin block
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	resp := app.mm.BeginBlock(ctx, req)
+
+	// initialize global tendermint validator set
+	app.votesInfo = req.LastCommitInfo.Votes
+
 	events := app.smm.BeginBlock(ctx, req)
 	resp.Events = append(resp.Events, events...)
 	return resp
@@ -602,12 +612,120 @@ func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) a
 // EndBlocker application updates every end block
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	resp := app.mm.EndBlock(ctx, req)
-	events, vals := app.smm.EndBlock(ctx, req)
-	if len(resp.ValidatorUpdates) > 0 && len(vals) > 0 {
-		panic("validator EndBlock updates already set by the SDK Module Manager")
+
+	// at the upgrade height
+	// for all validators in app state (app.StakingKeeper.GetAllValidators), create a ValidatorUpdate with the correct power.
+	// for all remaining validators in []VoteInfo that are not in app state, set their voting power to zero.
+	// reset jailed validator missed blocks counter so that the validator won't be immediately slashed for downtime after unjail.
+
+	// after the upgrade height continue the correct behavior.
+	if app.runEndBlockerUpgrade {
+		app.runEndBlockerUpgrade = false
+
+		var err error
+		validatorsPubkeys := &PubKeys{}
+		if ctx.ChainID() == "regen-1" {
+			validatorsPubkeys, err = GetMainnetValidatorSetPubkeys()
+			if err != nil {
+				panic(err)
+			}
+		} else if ctx.ChainID() == "regen-redwood-1" {
+			validatorsPubkeys, err = GetRedwoodValidatorSetPubkeys()
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		var updates []abci.ValidatorUpdate
+		validators := app.StakingKeeper.GetAllValidators(ctx)
+		inStakingValidatorSet := map[string]bool{}
+
+		// memoize tendermint valset votes
+		validatorsVoteInfo := map[string]abci.VoteInfo{} // map of consensus address to validator vote
+		for _, voteInfo := range app.votesInfo {
+			validatorsVoteInfo[sdk.ConsAddress(voteInfo.Validator.Address).String()] = voteInfo
+		}
+
+		for _, validator := range validators {
+			tmProtoPk, err := validator.TmConsPublicKey()
+			if err != nil {
+				panic(err)
+			}
+
+			valCons, err := validator.GetConsAddr()
+			if err != nil {
+				panic(err)
+			}
+
+			if validator.Jailed {
+				if _, ok := validatorsVoteInfo[valCons.String()]; ok {
+					updates = append(updates, abci.ValidatorUpdate{
+						PubKey: tmProtoPk,
+						Power:  0,
+					})
+
+					// We need to reset the missed blockcounter & array so that the validator won't be
+					// immediately slashed for downtime after unjail.
+					signInfo, found := app.SlashingKeeper.GetValidatorSigningInfo(ctx, valCons)
+					if found {
+						signInfo.MissedBlocksCounter = 0
+						signInfo.IndexOffset = 0
+						app.SlashingKeeper.SetValidatorSigningInfo(ctx, valCons, signInfo)
+						missedBlocks := app.SlashingKeeper.GetValidatorMissedBlocks(ctx, valCons)
+						for _, mb := range missedBlocks {
+							app.SlashingKeeper.SetValidatorMissedBlockBitArray(ctx, valCons, mb.Index, false)
+						}
+					}
+
+					inStakingValidatorSet[valCons.String()] = true
+				}
+			} else {
+				updates = append(updates, abci.ValidatorUpdate{
+					PubKey: tmProtoPk,
+					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+				})
+
+				inStakingValidatorSet[valCons.String()] = true
+			}
+		}
+
+		// memoize tendermint valset pubkeys
+		validatorsPubkeysMap := make(map[string]crypto.PubKey, len(validatorsPubkeys.Pubkeys)) // map of consensus address to pubkey
+		for _, pubkey := range validatorsPubkeys.Pubkeys {
+			validatorsPubkeysMap[sdk.ConsAddress(pubkey.Address()).String()] = pubkey
+		}
+
+		for _, voteInfo := range app.votesInfo {
+			consAddr := sdk.ConsAddress(voteInfo.Validator.Address).String()
+			if !inStakingValidatorSet[consAddr] {
+
+				pubkey, ok := validatorsPubkeysMap[consAddr]
+				if !ok {
+					panic(fmt.Sprintf("pubkey not found for validator %s", consAddr))
+				}
+
+				tmPk, err := cryptocodec.FromTmPubKeyInterface(pubkey)
+				if err != nil {
+					panic(err)
+				}
+
+				protoPubKey, err := cryptocodec.ToTmProtoPublicKey(tmPk)
+				if err != nil {
+					panic(err)
+				}
+
+				updates = append(updates, abci.ValidatorUpdate{PubKey: protoPubKey, Power: 0})
+			}
+		}
+
+		return abci.ResponseEndBlock{
+			ValidatorUpdates:      updates,
+			ConsensusParamUpdates: resp.ConsensusParamUpdates,
+			Events:                resp.Events,
+		}
 	}
-	resp.ValidatorUpdates = vals
-	resp.Events = append(resp.Events, events...)
+
+	// we don't have EndBlocker in regen modules, so after the upgrade height return the correct validatorset.
 	return resp
 }
 
