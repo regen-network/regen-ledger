@@ -622,12 +622,18 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 	if app.runEndBlockerUpgrade {
 		app.runEndBlockerUpgrade = false
 
-		// TODO: update with mainnet validatorset
-		// replace with
-		// validatorsPubkeys, err := GetMainnetValidatorSetPubkeys()
-		validatorsPubkeys, err := GetTestnetValidatorSetPubKeys()
-		if err != nil {
-			panic(err)
+		var err error
+		validatorsPubkeys := &PubKeys{}
+		if ctx.ChainID() == "regen-1" {
+			validatorsPubkeys, err = GetMainnetValidatorSetPubkeys()
+			if err != nil {
+				panic(err)
+			}
+		} else if ctx.ChainID() == "regen-redwood-1" {
+			validatorsPubkeys, err = GetRedwoodValidatorSetPubkeys()
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		var updates []abci.ValidatorUpdate
