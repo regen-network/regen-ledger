@@ -762,8 +762,8 @@ github.com/regen-network/regen-ledger/types v1.1.0 h1:XX8sYa67sY2WwFrXD57l6VmRyv
 github.com/regen-network/regen-ledger/types v1.1.0/go.mod h1:4NYeSyzbXnSwKzvm+SduwRh0P/GpLjlUx1lt9DdKGA4=
 github.com/regen-network/regen-ledger/x/data v1.0.0 h1:BD2TIDnYxg8pFToXreFCnYYBPh1vcIjl9dkDA+dJ2+o=
 github.com/regen-network/regen-ledger/x/data v1.0.0/go.mod h1:VeYgHuJMauiTTyG3Ds/BEsIDHk7tCcEctWZPgufHmWc=
-github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.1.0 h1:L98Zcf0pI8pf7b3MlIW/LLZIhOduOP0FqGaXiGfB+Uw=
-github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.1.0/go.mod h1:vjR5wrsQtdWsWHOJgJJHLX+EnoZvuFqrIaZztIntJGY=
+github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.2.0 h1:PbiE1YbZqEVDqYaHb0XwgiVCz2snWWUW/zHbrLqXS3c=
+github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.2.0/go.mod h1:vjR5wrsQtdWsWHOJgJJHLX+EnoZvuFqrIaZztIntJGY=
 github.com/regen-network/regen-ledger/x/group v1.0.0-beta2 h1:GIJCbR7XbVqh6q/NEppzBF+U8S7xQLGAI/PQAKOzcmg=
 github.com/regen-network/regen-ledger/x/group v1.0.0-beta2/go.mod h1:Q6Q3OGDMSLMjHWeLr7ZrE1z/B+EgNiF5HeZO8NNhKMk=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
