@@ -5,6 +5,7 @@ This document provides an overview of the upgrade process for software upgrades 
 - [Upgrade Guide v2.0](v2.0-upgrade.md)
 - [Upgrade Guide v3.0](v3.0-upgrade.md)
 - [Upgrade Guide v4.0](v4.0-upgrade.md)
+- [Upgrade Guide v4.1.2](v4.1-upgrade.md)
 
 ## Software Upgrade
 
