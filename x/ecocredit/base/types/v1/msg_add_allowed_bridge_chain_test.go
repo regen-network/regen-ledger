@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,13 +10,14 @@ import (
 )
 
 type msgAddAllowedBridgeChain struct {
-	t   gocuke.TestingT
-	msg *MsgAddAllowedBridgeChain
-	err error
+	t         gocuke.TestingT
+	msg       *MsgAddAllowedBridgeChain
+	signBytes string
+	err       error
 }
 
 func TestMsgAddAllowedBridgeChain(t *testing.T) {
-	gocuke.NewRunner(t, &msgAddAllowedBridgeChain{}).Path("./features/msg_add_allowed_bridge_chain.feature.feature").Run()
+	gocuke.NewRunner(t, &msgAddAllowedBridgeChain{}).Path("./features/msg_add_allowed_bridge_chain.feature").Run()
 }
 
 func (s *msgAddAllowedBridgeChain) Before(t gocuke.TestingT) {
@@ -38,4 +40,12 @@ func (s *msgAddAllowedBridgeChain) ExpectTheError(a string) {
 
 func (s *msgAddAllowedBridgeChain) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgAddAllowedBridgeChain) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgAddAllowedBridgeChain) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }
