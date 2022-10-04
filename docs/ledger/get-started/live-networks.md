@@ -12,7 +12,7 @@ By default, the `regen` binary will connect to a local node. In order to connect
 
 Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the latest version, see [Upgrade Overview](../../validators/migrations/upgrade.md).
+When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the latest version, see [Upgrade Overview](../../validators/upgrades/README.md).
 
 The following URL is the node address for a full node operated by RND and VitWit:
 
@@ -27,7 +27,7 @@ For more information, see [regen-network/mainnet](https://github.com/regen-netwo
 
 Redwood Testnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the latest version, see [Upgrade Overview](../../validators/migrations/upgrade.md).
+When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the latest version, see [Upgrade Overview](../../validators/upgrades/README.md).
 
 The following URLs are node addresses for full nodes operated by RND and VitWit:
 
