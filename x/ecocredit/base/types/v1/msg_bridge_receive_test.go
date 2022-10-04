@@ -12,9 +12,10 @@ import (
 )
 
 type msgBridgeReceive struct {
-	t   gocuke.TestingT
-	msg *MsgBridgeReceive
-	err error
+	t         gocuke.TestingT
+	msg       *MsgBridgeReceive
+	err       error
+	signBytes string
 }
 
 func TestMsgBridgeReceive(t *testing.T) {
@@ -63,4 +64,12 @@ func (s *msgBridgeReceive) ExpectTheError(a string) {
 
 func (s *msgBridgeReceive) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgBridgeReceive) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgBridgeReceive) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }

@@ -11,9 +11,10 @@ import (
 )
 
 type msgCreateBatch struct {
-	t   gocuke.TestingT
-	msg *MsgCreateBatch
-	err error
+	t         gocuke.TestingT
+	msg       *MsgCreateBatch
+	err       error
+	signBytes string
 }
 
 func TestMsgCreateBatch(t *testing.T) {
@@ -47,4 +48,12 @@ func (s *msgCreateBatch) ExpectTheError(a string) {
 
 func (s *msgCreateBatch) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgCreateBatch) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgCreateBatch) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }

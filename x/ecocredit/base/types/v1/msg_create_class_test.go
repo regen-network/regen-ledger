@@ -11,9 +11,10 @@ import (
 )
 
 type msgCreateClass struct {
-	t   gocuke.TestingT
-	msg *MsgCreateClass
-	err error
+	t         gocuke.TestingT
+	msg       *MsgCreateClass
+	err       error
+	signBytes string
 }
 
 func TestMsgCreateClass(t *testing.T) {
@@ -47,4 +48,12 @@ func (s *msgCreateClass) ExpectTheError(a string) {
 
 func (s *msgCreateClass) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgCreateClass) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgCreateClass) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }

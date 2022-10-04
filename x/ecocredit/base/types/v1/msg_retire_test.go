@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +10,10 @@ import (
 )
 
 type msgRetire struct {
-	t   gocuke.TestingT
-	msg *MsgRetire
-	err error
+	t         gocuke.TestingT
+	msg       *MsgRetire
+	err       error
+	signBytes string
 }
 
 func TestMsgRetire(t *testing.T) {
@@ -38,4 +40,12 @@ func (s *msgRetire) ExpectTheError(a string) {
 
 func (s *msgRetire) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgRetire) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgRetire) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }

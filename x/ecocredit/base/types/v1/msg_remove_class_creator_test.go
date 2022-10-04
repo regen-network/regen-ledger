@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +10,10 @@ import (
 )
 
 type msgRemoveClassCreator struct {
-	t   gocuke.TestingT
-	msg *MsgRemoveClassCreator
-	err error
+	t         gocuke.TestingT
+	msg       *MsgRemoveClassCreator
+	err       error
+	signBytes string
 }
 
 func TestMsgRemoveClassCreators(t *testing.T) {
@@ -38,4 +40,12 @@ func (s *msgRemoveClassCreator) ExpectTheError(a string) {
 
 func (s *msgRemoveClassCreator) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgRemoveClassCreator) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgRemoveClassCreator) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }

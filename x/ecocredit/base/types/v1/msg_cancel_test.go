@@ -11,9 +11,10 @@ import (
 )
 
 type msgCancel struct {
-	t   gocuke.TestingT
-	msg *MsgCancel
-	err error
+	t         gocuke.TestingT
+	msg       *MsgCancel
+	err       error
+	signBytes string
 }
 
 func TestMsgCancel(t *testing.T) {
@@ -47,4 +48,12 @@ func (s *msgCancel) ExpectTheError(a string) {
 
 func (s *msgCancel) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgCancel) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgCancel) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }

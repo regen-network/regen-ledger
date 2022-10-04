@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +10,10 @@ import (
 )
 
 type msgMintBatchCredits struct {
-	t   gocuke.TestingT
-	msg *MsgMintBatchCredits
-	err error
+	t         gocuke.TestingT
+	msg       *MsgMintBatchCredits
+	err       error
+	signBytes string
 }
 
 func TestMsgMintBatchCredits(t *testing.T) {
@@ -38,4 +40,12 @@ func (s *msgMintBatchCredits) ExpectTheError(a string) {
 
 func (s *msgMintBatchCredits) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgMintBatchCredits) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgMintBatchCredits) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }
