@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +10,10 @@ import (
 )
 
 type msgUpdateBasketFeeSuite struct {
-	t   gocuke.TestingT
-	msg *MsgUpdateBasketFee
-	err error
+	t         gocuke.TestingT
+	msg       *MsgUpdateBasketFee
+	err       error
+	signBytes string
 }
 
 func TestMsgUpdateBasketFeeSuite(t *testing.T) {
@@ -38,4 +40,12 @@ func (s *msgUpdateBasketFeeSuite) ExpectTheError(a string) {
 
 func (s *msgUpdateBasketFeeSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgUpdateBasketFeeSuite) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgUpdateBasketFeeSuite) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }
