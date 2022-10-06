@@ -36,7 +36,6 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 		}
 
 		creators = append(creators, sdk.AccAddress(val.Address).String())
-
 	}
 
 	classFee, err := k.stateStore.ClassFeeTable().Get(ctx)
