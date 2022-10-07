@@ -680,12 +680,25 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 					inStakingValidatorSet[valCons.String()] = true
 				}
 			} else {
-				updates = append(updates, abci.ValidatorUpdate{
-					PubKey: tmProtoPk,
-					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
-				})
+				// ignore validator with zero consensus power and not part
+				// of tendermint valset.
+				if validator.ConsensusPower(sdk.DefaultPowerReduction) == 0 {
+					if _, ok := validatorsVoteInfo[valCons.String()]; ok {
+						updates = append(updates, abci.ValidatorUpdate{
+							PubKey: tmProtoPk,
+							Power:  0,
+						})
 
-				inStakingValidatorSet[valCons.String()] = true
+						inStakingValidatorSet[valCons.String()] = true
+					}
+				} else {
+					updates = append(updates, abci.ValidatorUpdate{
+						PubKey: tmProtoPk,
+						Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+					})
+					inStakingValidatorSet[valCons.String()] = true
+				}
+
 			}
 		}
 
