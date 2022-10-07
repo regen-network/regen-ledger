@@ -646,6 +646,12 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 			validatorsVoteInfo[sdk.ConsAddress(voteInfo.Validator.Address).String()] = voteInfo
 		}
 
+		// memoize tendermint valset pubkeys
+		validatorsPubkeysMap := make(map[string]crypto.PubKey, len(validatorsPubkeys.Pubkeys)) // map of consensus address to pubkey
+		for _, pubkey := range validatorsPubkeys.Pubkeys {
+			validatorsPubkeysMap[sdk.ConsAddress(pubkey.Address()).String()] = pubkey
+		}
+
 		for _, validator := range validators {
 			tmProtoPk, err := validator.TmConsPublicKey()
 			if err != nil {
@@ -680,19 +686,24 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 					inStakingValidatorSet[valCons.String()] = true
 				}
 			} else {
-				updates = append(updates, abci.ValidatorUpdate{
-					PubKey: tmProtoPk,
-					Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
-				})
+				if validator.ConsensusPower(sdk.DefaultPowerReduction) == 0 {
+					if _, ok := validatorsPubkeysMap[valCons.String()]; ok {
+						updates = append(updates, abci.ValidatorUpdate{
+							PubKey: tmProtoPk,
+							Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+						})
 
-				inStakingValidatorSet[valCons.String()] = true
+						inStakingValidatorSet[valCons.String()] = true
+					}
+				} else {
+					updates = append(updates, abci.ValidatorUpdate{
+						PubKey: tmProtoPk,
+						Power:  validator.ConsensusPower(sdk.DefaultPowerReduction),
+					})
+					inStakingValidatorSet[valCons.String()] = true
+				}
+
 			}
-		}
-
-		// memoize tendermint valset pubkeys
-		validatorsPubkeysMap := make(map[string]crypto.PubKey, len(validatorsPubkeys.Pubkeys)) // map of consensus address to pubkey
-		for _, pubkey := range validatorsPubkeys.Pubkeys {
-			validatorsPubkeysMap[sdk.ConsAddress(pubkey.Address()).String()] = pubkey
 		}
 
 		for _, voteInfo := range app.votesInfo {
