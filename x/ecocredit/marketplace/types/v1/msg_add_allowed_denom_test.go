@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +10,10 @@ import (
 )
 
 type msgAddAllowedDenomSuite struct {
-	t   gocuke.TestingT
-	msg *MsgAddAllowedDenom
-	err error
+	t         gocuke.TestingT
+	msg       *MsgAddAllowedDenom
+	err       error
+	signBytes string
 }
 
 func TestMsgAddAllowedDenomSuite(t *testing.T) {
@@ -38,4 +40,12 @@ func (s *msgAddAllowedDenomSuite) ExpectTheError(a string) {
 
 func (s *msgAddAllowedDenomSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgAddAllowedDenomSuite) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgAddAllowedDenomSuite) ExpectTheSignBytes(expected gocuke.DocString) {
+	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
 }
