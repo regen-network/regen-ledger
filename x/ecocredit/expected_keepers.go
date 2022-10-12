@@ -5,7 +5,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 //go:generate mockgen -source=expected_keepers.go -package mocks -destination mocks/expected_keepers.go
@@ -42,14 +41,4 @@ type BankKeeper interface {
 type GovKeeper interface {
 	// GetDepositParams queries governance module deposit params
 	GetDepositParams(ctx sdk.Context) govv1.DepositParams
-}
-
-type ParamKeeper interface {
-
-	// Get fetches a parameter by key from the Subspace's KVStore and sets the provided pointer to the fetched value.
-	// If the value does not exist, this method will panic.
-	Get(ctx sdk.Context, key []byte, ptr interface{})
-
-	// GetParamSet fetches each parameter in the ParamSet.
-	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }

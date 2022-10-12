@@ -7,12 +7,11 @@ package mocks
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/bank/types"
-	types2 "github.com/cosmos/cosmos-sdk/x/params/types"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.
@@ -239,49 +238,39 @@ func (mr *MockBankKeeperMockRecorder) SpendableCoins(ctx, addr interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SpendableCoins", reflect.TypeOf((*MockBankKeeper)(nil).SpendableCoins), ctx, addr)
 }
 
-// MockParamKeeper is a mock of ParamKeeper interface.
-type MockParamKeeper struct {
+// MockGovKeeper is a mock of GovKeeper interface.
+type MockGovKeeper struct {
 	ctrl     *gomock.Controller
-	recorder *MockParamKeeperMockRecorder
+	recorder *MockGovKeeperMockRecorder
 }
 
-// MockParamKeeperMockRecorder is the mock recorder for MockParamKeeper.
-type MockParamKeeperMockRecorder struct {
-	mock *MockParamKeeper
+// MockGovKeeperMockRecorder is the mock recorder for MockGovKeeper.
+type MockGovKeeperMockRecorder struct {
+	mock *MockGovKeeper
 }
 
-// NewMockParamKeeper creates a new mock instance.
-func NewMockParamKeeper(ctrl *gomock.Controller) *MockParamKeeper {
-	mock := &MockParamKeeper{ctrl: ctrl}
-	mock.recorder = &MockParamKeeperMockRecorder{mock}
+// NewMockGovKeeper creates a new mock instance.
+func NewMockGovKeeper(ctrl *gomock.Controller) *MockGovKeeper {
+	mock := &MockGovKeeper{ctrl: ctrl}
+	mock.recorder = &MockGovKeeperMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockParamKeeper) EXPECT() *MockParamKeeperMockRecorder {
+func (m *MockGovKeeper) EXPECT() *MockGovKeeperMockRecorder {
 	return m.recorder
 }
 
-// Get mocks base method.
-func (m *MockParamKeeper) Get(ctx types.Context, key []byte, ptr interface{}) {
+// GetDepositParams mocks base method.
+func (m *MockGovKeeper) GetDepositParams(ctx types.Context) v1.DepositParams {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Get", ctx, key, ptr)
+	ret := m.ctrl.Call(m, "GetDepositParams", ctx)
+	ret0, _ := ret[0].(v1.DepositParams)
+	return ret0
 }
 
-// Get indicates an expected call of Get.
-func (mr *MockParamKeeperMockRecorder) Get(ctx, key, ptr interface{}) *gomock.Call {
+// GetDepositParams indicates an expected call of GetDepositParams.
+func (mr *MockGovKeeperMockRecorder) GetDepositParams(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockParamKeeper)(nil).Get), ctx, key, ptr)
-}
-
-// GetParamSet mocks base method.
-func (m *MockParamKeeper) GetParamSet(ctx types.Context, ps types2.ParamSet) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GetParamSet", ctx, ps)
-}
-
-// GetParamSet indicates an expected call of GetParamSet.
-func (mr *MockParamKeeperMockRecorder) GetParamSet(ctx, ps interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetParamSet", reflect.TypeOf((*MockParamKeeper)(nil).GetParamSet), ctx, ps)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDepositParams", reflect.TypeOf((*MockGovKeeper)(nil).GetDepositParams), ctx)
 }

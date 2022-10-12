@@ -36,18 +36,17 @@ const (
 )
 
 type baseSuite struct {
-	t            gocuke.TestingT
-	db           ormdb.ModuleDB
-	baseStore    baseapi.StateStore
-	marketStore  api.StateStore
-	ctx          context.Context
-	k            Keeper
-	ctrl         *gomock.Controller
-	addrs        []sdk.AccAddress
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *storetypes.KVStoreKey
-	sdkCtx       sdk.Context
+	t           gocuke.TestingT
+	db          ormdb.ModuleDB
+	baseStore   baseapi.StateStore
+	marketStore api.StateStore
+	ctx         context.Context
+	k           Keeper
+	ctrl        *gomock.Controller
+	addrs       []sdk.AccAddress
+	bankKeeper  *mocks.MockBankKeeper
+	storeKey    *storetypes.KVStoreKey
+	sdkCtx      sdk.Context
 }
 
 func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
@@ -74,11 +73,10 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	assert.NilError(s.t, err)
-	s.k = NewKeeper(s.marketStore, s.baseStore, s.bankKeeper, s.paramsKeeper, authority)
+	s.k = NewKeeper(s.marketStore, s.baseStore, s.bankKeeper, authority)
 
 	// set test accounts
 	for i := 0; i < numAddresses; i++ {
