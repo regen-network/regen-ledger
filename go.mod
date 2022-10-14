@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/CosmWasm/wasmd v0.22.0
-	github.com/cosmos/cosmos-sdk v0.45.4
+	github.com/cosmos/cosmos-sdk v0.45.9
 	github.com/cosmos/ibc-go/v2 v2.0.2
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.12.1
@@ -16,7 +16,7 @@ require (
 	github.com/rs/zerolog v1.26.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.8.0
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.7
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
@@ -138,7 +138,7 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.1.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 	pgregory.net/rapid v0.4.7 // indirect
@@ -158,3 +158,5 @@ replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 
 // Mock wasmd module removed in experimental build
 replace github.com/CosmWasm/wasmd => ./mocks/wasmd
+
+replace github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
