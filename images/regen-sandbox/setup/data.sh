@@ -2,7 +2,7 @@ source $(dirname $0)/utils.sh
 
 TX_FLAGS="--from $ADDR1 --yes --fees 5000uregen"
 
-echo "${GREEN}INFO:${ENDCOLOR} Anchoring dataset: regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+echo "INFO: Anchoring dataset: regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
 regen tx data anchor regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf $TX_FLAGS | log_response
 
 echo "INFO: Attesting dataset: regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
