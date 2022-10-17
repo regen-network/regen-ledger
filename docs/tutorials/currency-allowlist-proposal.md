@@ -26,7 +26,7 @@ Create a `proposal.json` file using the following example (note that the name an
 
 Each field in the json file is required and should be properly filled out.
 
-Make sure you give the proposal a meaningful title and description. The description should provide a rationale as to why this currency should be added to the list and can be written in either plain text or markdown (see [Proposal #15](https://wallet.keplr.app/chains/regen/proposals/15) for a example of a detailed description).
+Make sure you give the proposal a meaningful title and description. The description should provide a rationale as to why this currency should be added to the list and can be written in either plain text or markdown (see [Proposal #15](https://wallet.keplr.app/chains/regen/proposals/15) for an example of a detailed description).
 
 `denom` includes information about the currency you are proposing to add:
 
@@ -36,7 +36,7 @@ Make sure you give the proposal a meaningful title and description. The descript
 
 - `exponent` is used to relate the `bank_denom` to the `display_denom` and is informational. For example, `1000000uregen` is equal to `1regen` and therefore the exponent is `6`.
 
-Keep in mind that non-native tokens represented by an IBC denom only enables a currency from a specific source. For example, `atom` transferred from one chain is different from `atom` transferred from another chain, i.e. each of these represent `atom` but they have different IBC denoms.
+Keep in mind that non-native tokens represented by an IBC denom only enables a currency from a specific source. For example, `atom` transferred from one chain is different from `atom` transferred from another chain, i.e. each of these represents `atom` but they have different IBC denoms.
 
 ## Submit Proposal
 
