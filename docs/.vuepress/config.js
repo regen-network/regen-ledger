@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const { description } = require('../package')
+const { description } = require('../package.json')
 const webpack = require('webpack')
 
 module.exports = {
@@ -261,6 +261,7 @@ module.exports = {
           collapsable: false,
           children: [
             '/tutorials/ibc-transfers',
+            '/tutorials/currency-allowlist-proposal',
           ],
         },
         {
