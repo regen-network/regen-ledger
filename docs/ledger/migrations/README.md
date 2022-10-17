@@ -16,7 +16,7 @@ The beta release phase will be at least one week depending on the size of the re
 
 The beta release phase ends once a release candidate is tagged. The release candidate phase will be at least one week and may include more than one release candidate. New features will not be added and significant changes will not be made unless they are critical to the official release.
 
-The release candidate phase ends once an official release is tagged and a software upgrade proposal is submitted on both [Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet) and [Redwood Testnet](../../ledger/get-started/live-networks.md#redwood-testnet). The voting period is currently one week on Regen Mainnet and one day on Redwood Testnet and the block height at which the upgrade will occur is usually within 24-48 hours after the voting period ends.
+The release candidate phase ends once an official release is tagged and a software upgrade proposal is submitted on both [Regen Mainnet](../get-started/live-networks.md#regen-mainnet) and [Redwood Testnet](../get-started/live-networks.md#redwood-testnet). The voting period is currently one week on Regen Mainnet and one day on Redwood Testnet and the block height at which the upgrade will occur is usually within 24-48 hours after the voting period ends.
 
 Once the software upgrade is executed, applications consuming the Regen Ledger API will need to be deployed with the migrations in order to avoid any potential breakage.
 
