@@ -24,7 +24,7 @@ require (
 	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
-	gotest.tools/v3 v3.3.0
+	gotest.tools/v3 v3.4.0
 )
 
 require (

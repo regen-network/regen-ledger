@@ -50,7 +50,7 @@ credits within the specific batch they were issued in.
 
 #### Credit Class & Batch Hierarchy (Fig. 1)
 
-![](media/002-fig-1.jpg)
+![](assets/002-fig-1.jpg)
 
 ## Use Case
 
@@ -122,11 +122,11 @@ An ecocredit holder has the ability to retire, transfer, or hold their ecocredit
 
 #### Ecocredit Basket Depositing (Fig. 2)
 
-![](media/002-fig-2.jpg)
+![](assets/002-fig-2.jpg)
 
 #### Ecocredit Basket Redemption (Fig. 3)
 
-![](media/002-fig-3.jpg)
+![](assets/002-fig-3.jpg)
 
 ## Prior Art
 
