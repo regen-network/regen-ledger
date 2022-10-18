@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -11,9 +13,10 @@ import (
 )
 
 type msgCreateBatch struct {
-	t   gocuke.TestingT
-	msg *MsgCreateBatch
-	err error
+	t         gocuke.TestingT
+	msg       *MsgCreateBatch
+	err       error
+	signBytes string
 }
 
 func TestMsgCreateBatch(t *testing.T) {
@@ -47,4 +50,14 @@ func (s *msgCreateBatch) ExpectTheError(a string) {
 
 func (s *msgCreateBatch) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgCreateBatch) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgCreateBatch) ExpectTheSignBytes(expected gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }

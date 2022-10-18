@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +11,10 @@ import (
 )
 
 type msgBridge struct {
-	t   gocuke.TestingT
-	msg *MsgBridge
-	err error
+	t         gocuke.TestingT
+	msg       *MsgBridge
+	err       error
+	signBytes string
 }
 
 func TestMsgBridge(t *testing.T) {
@@ -38,4 +41,14 @@ func (s *msgBridge) ExpectTheError(a string) {
 
 func (s *msgBridge) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgBridge) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgBridge) ExpectTheSignBytes(expected gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }

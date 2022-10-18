@@ -128,3 +128,35 @@ Feature: MsgRetire
     """
     When the message is validated
     Then expect the error "jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "amount": "100"
+        }
+      ],
+      "jurisdiction": "US-WA"
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgRetire",
+      "value":{
+        "credits":[
+          {
+            "amount":"100",
+            "batch_denom":"C01-001-20200101-20210101-001"
+          }
+        ],
+        "jurisdiction":"US-WA",
+        "owner":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+    }
+    """
