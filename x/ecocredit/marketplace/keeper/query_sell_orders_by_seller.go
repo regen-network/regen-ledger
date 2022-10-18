@@ -30,7 +30,6 @@ func (k Keeper) SellOrdersBySeller(ctx context.Context, req *types.QuerySellOrde
 	}
 	defer it.Close()
 
-	sellerString := seller.String()
 	orders := make([]*types.SellOrderInfo, 0, 10)
 	for it.Next() {
 		order, err := it.Value()
@@ -50,7 +49,7 @@ func (k Keeper) SellOrdersBySeller(ctx context.Context, req *types.QuerySellOrde
 
 		info := types.SellOrderInfo{
 			Id:                order.Id,
-			Seller:            sellerString,
+			Seller:            req.Seller,
 			BatchDenom:        batch.Denom,
 			Quantity:          order.Quantity,
 			AskDenom:          market.BankDenom,
