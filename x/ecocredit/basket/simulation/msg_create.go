@@ -78,7 +78,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		if result != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, fmt.Sprintf("basket with name %s already exists", basketName)), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, fmt.Sprintf("basket with denom %s already exists", denom)), nil, nil
 		}
 
 		dateCriteria := randomDateCriteria(r, sdkCtx)
@@ -119,6 +119,10 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "basket specified credit type") {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
+			}
+
+			if strings.Contains(err.Error(), fmt.Sprintf("basket with name %s already exists", basketName)) {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
 			}
 
