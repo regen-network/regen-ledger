@@ -85,3 +85,25 @@ Feature: MsgUpdateCurator
     """
     When the message is validated
     Then expect the error "basket denom: expected format eco.<exponent-prefix><credit-type-abbrev>.<name>: parse error: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+        "curator": "regen1ua97smk5yv26wpqmftgdg0sx0q0d38vky7998g",
+        "new_curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "denom": "eco.uC.NCT"
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen.basket/MsgUpdateCurator",
+      "value":{
+        "curator":"regen1ua97smk5yv26wpqmftgdg0sx0q0d38vky7998g",
+        "denom":"eco.uC.NCT",
+        "new_curator":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+      }
+    }
+    """
