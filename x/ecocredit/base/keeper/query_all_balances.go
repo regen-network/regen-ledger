@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -15,9 +14,6 @@ import (
 // AllBalances queries all credit balances from state with optional pagination.
 // NOTE: If no pagination is given in the request, responses will be limited by the Cosmos SDK's default limit (100).
 func (k Keeper) AllBalances(ctx context.Context, req *types.QueryAllBalancesRequest) (*types.QueryAllBalancesResponse, error) {
-	if req.Pagination == nil {
-		req.Pagination = &query.PageRequest{Limit: query.DefaultLimit}
-	}
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
 		return nil, err

@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +11,10 @@ import (
 )
 
 type msgSend struct {
-	t   gocuke.TestingT
-	msg *MsgSend
-	err error
+	t         gocuke.TestingT
+	msg       *MsgSend
+	err       error
+	signBytes string
 }
 
 func TestMsgSend(t *testing.T) {
@@ -47,4 +50,14 @@ func TestMsgSendAmino(t *testing.T) {
 		`{"type":"regen/MsgSend","value":{}}`, // Make sure we have the `type` and `value` fields
 		string(msg.GetSignBytes()),
 	)
+}
+
+func (s *msgSend) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgSend) ExpectTheSignBytes(expected gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }

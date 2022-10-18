@@ -140,3 +140,29 @@ Feature: MsgTake
     """
     When the message is validated
     Then expect no error
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "basket_denom": "eco.uC.NCT",
+      "amount": "100",
+      "retirement_jurisdiction": "US-WA",
+      "retire_on_take": true
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen.basket/MsgTake",
+      "value":{
+        "amount":"100",
+        "basket_denom":"eco.uC.NCT",
+        "owner":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "retire_on_take":true,
+        "retirement_jurisdiction":"US-WA"
+      }
+    }
+    """
