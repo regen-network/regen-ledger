@@ -1,7 +1,8 @@
 package v1
 
 import (
-	"strings"
+	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -47,5 +48,7 @@ func (s *msgUpdateCuratorSuite) MessageSignBytesQueried() {
 }
 
 func (s *msgUpdateCuratorSuite) ExpectTheSignBytes(expected gocuke.DocString) {
-	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }
