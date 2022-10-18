@@ -49,3 +49,23 @@ Feature: MsgSealBatch
     """
     When the message is validated
     Then expect the error "batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "batch_denom": "C01-001-20200101-20210101-001"
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgSealBatch",
+      "value":{
+        "batch_denom":"C01-001-20200101-20210101-001",
+        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+    }
+    """

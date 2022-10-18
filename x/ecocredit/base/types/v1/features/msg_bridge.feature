@@ -169,3 +169,37 @@ Feature: MsgBridge
     """
     When the message is validated
     Then expect the error "credits[0]: amount: expected a positive decimal, got -100: invalid decimal string"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "target": "polygon",
+      "recipient": "0x323b5d4c32345ced77393b3530b1eed0f346429d",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "amount": "100"
+        }
+      ]
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgBridge",
+      "value":{
+        "credits":[
+          {
+            "amount":"100",
+            "batch_denom":"C01-001-20200101-20210101-001"
+          }
+        ],
+        "owner":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient":"0x323b5d4c32345ced77393b3530b1eed0f346429d",
+        "target":"polygon"
+      }
+    }
+    """

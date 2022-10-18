@@ -85,3 +85,25 @@ Feature: MsgUpdateClassAdmin
     """
     When the message is validated
     Then expect the error "admin and new admin cannot be the same: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "class_id": "C01",
+      "new_admin": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgUpdateClassAdmin",
+      "value":{
+        "admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id":"C01",
+        "new_admin":"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
+      }
+    }
+    """
