@@ -401,5 +401,16 @@ Feature: MsgCreate
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen.basket/MsgCreate","value":{"allowed_classes":["C01"],"credit_type_abbrev":"C","curator":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw","fee":[],"name":"NCT"}}
+    {
+      "type":"regen.basket/MsgCreate",
+      "value":{
+        "allowed_classes":[
+          "C01"
+        ],
+        "credit_type_abbrev":"C",
+        "curator":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "fee":[],
+        "name":"NCT"
+      }
+    }
     """

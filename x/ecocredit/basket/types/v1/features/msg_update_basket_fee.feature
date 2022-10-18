@@ -70,5 +70,14 @@ Feature: MsgUpdateBasketFee
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen.basket/MsgUpdateBasketFee","value":{"authority":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw","fee":{"amount":"1000","denom":"uregen"}}}
+    {
+      "type":"regen.basket/MsgUpdateBasketFee",
+      "value":{
+        "authority":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "fee":{
+          "amount":"1000",
+          "denom":"uregen"
+        }
+      }
+    }
     """
