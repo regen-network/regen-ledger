@@ -225,5 +225,19 @@ Feature: MsgSend
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgSend","value":{"credits":[{"batch_denom":"C01-001-20200101-20210101-001","retired_amount":"100","retirement_jurisdiction":"US-WA","tradable_amount":"100"}],"recipient":"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4","sender":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"}}
+    {
+      "type":"regen/MsgSend",
+      "value":{
+        "credits":[
+          {
+            "batch_denom":"C01-001-20200101-20210101-001",
+            "retired_amount":"100",
+            "retirement_jurisdiction":"US-WA",
+            "tradable_amount":"100"
+          }
+        ],
+        "recipient":"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+        "sender":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+    }
     """

@@ -61,5 +61,11 @@ Feature: MsgSealBatch
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgSealBatch","value":{"batch_denom":"C01-001-20200101-20210101-001","issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"}}
+    {
+      "type":"regen/MsgSealBatch",
+      "value":{
+        "batch_denom":"C01-001-20200101-20210101-001",
+        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+    }
     """

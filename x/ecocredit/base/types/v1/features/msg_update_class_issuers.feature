@@ -170,5 +170,17 @@ Feature: MsgUpdateClassIssuers
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgUpdateClassIssuers","value":{"add_issuers":["regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"],"admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","class_id":"C01","remove_issuers":["regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"]}}
+    {
+      "type":"regen/MsgUpdateClassIssuers",
+      "value":{
+        "add_issuers":[
+          "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4"
+        ],
+        "admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id":"C01",
+        "remove_issuers":[
+          "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+        ]
+      }
+    }
     """

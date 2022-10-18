@@ -124,5 +124,16 @@ Feature: MsgAddCreditType
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgAddCreditType","value":{"authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","credit_type":{"abbreviation":"C","name":"carbon","precision":6,"unit":"ton"}}}
+    {
+      "type":"regen/MsgAddCreditType",
+      "value":{
+        "authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "credit_type":{
+          "abbreviation":"C",
+          "name":"carbon",
+          "precision":6,
+          "unit":"ton"
+        }
+      }
+    }
     """

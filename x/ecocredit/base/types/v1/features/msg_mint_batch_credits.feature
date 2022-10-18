@@ -202,5 +202,23 @@ Feature: MsgMintBatchCredits
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgMintBatchCredits","value":{"batch_denom":"C01-001-20200101-20210101-001","issuance":[{"recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","retired_amount":"100","retirement_jurisdiction":"US-WA","tradable_amount":"100"}],"issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","origin_tx":{"id":"0001-000001-000100-VCS-VCU-003-VER-US-0003-01012020-31122020-1","source":"verra"}}}
+    {
+      "type":"regen/MsgMintBatchCredits",
+      "value":{
+        "batch_denom":"C01-001-20200101-20210101-001",
+        "issuance":[
+          {
+            "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "retired_amount":"100",
+            "retirement_jurisdiction":"US-WA",
+            "tradable_amount":"100"
+          }
+        ],
+        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "origin_tx":{
+          "id":"0001-000001-000100-VCS-VCU-003-VER-US-0003-01012020-31122020-1",
+          "source":"verra"
+        }
+      }
+    }
     """

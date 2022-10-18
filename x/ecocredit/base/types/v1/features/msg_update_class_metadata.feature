@@ -86,5 +86,12 @@ Feature: MsgUpdateClassMetadata
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgUpdateClassMetadata","value":{"admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","class_id":"C01","new_metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}}
+    {
+      "type":"regen/MsgUpdateClassMetadata",
+      "value":{
+        "admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id":"C01",
+        "new_metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      }
+    }
     """

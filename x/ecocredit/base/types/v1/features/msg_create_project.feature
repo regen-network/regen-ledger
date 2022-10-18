@@ -144,5 +144,14 @@ Feature: MsgCreateProject
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgCreateProject","value":{"admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","class_id":"C01","jurisdiction":"US-WA","metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf","reference_id":"VCS-001"}}
+    {
+      "type":"regen/MsgCreateProject",
+      "value":{
+        "admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "class_id":"C01",
+        "jurisdiction":"US-WA",
+        "metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "reference_id":"VCS-001"
+      }
+    }
     """

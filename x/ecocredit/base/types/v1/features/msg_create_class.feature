@@ -242,5 +242,19 @@ Feature: MsgCreateClass
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgCreateClass","value":{"admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","credit_type_abbrev":"C","fee":{"amount":"20000000","denom":"uregen"},"issuers":["regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"],"metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}}
+    {
+      "type":"regen/MsgCreateClass",
+      "value":{
+        "admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "credit_type_abbrev":"C",
+        "fee":{
+          "amount":"20000000",
+          "denom":"uregen"
+        },
+        "issuers":[
+          "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+        ],
+        "metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      }
+    }
     """

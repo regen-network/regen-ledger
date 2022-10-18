@@ -188,5 +188,18 @@ Feature: MsgBridge
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgBridge","value":{"credits":[{"amount":"100","batch_denom":"C01-001-20200101-20210101-001"}],"owner":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","recipient":"0x323b5d4c32345ced77393b3530b1eed0f346429d","target":"polygon"}}
+    {
+      "type":"regen/MsgBridge",
+      "value":{
+        "credits":[
+          {
+            "amount":"100",
+            "batch_denom":"C01-001-20200101-20210101-001"
+          }
+        ],
+        "owner":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "recipient":"0x323b5d4c32345ced77393b3530b1eed0f346429d",
+        "target":"polygon"
+      }
+    }
     """

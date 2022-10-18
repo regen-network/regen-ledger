@@ -318,5 +318,22 @@ Feature: MsgCreateBatch
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgCreateBatch","value":{"end_date":"2021-01-01T00:00:00Z","issuance":[{"recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","retired_amount":"100","retirement_jurisdiction":"US-WA","tradable_amount":"100"}],"issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf","project_id":"C01-001","start_date":"2020-01-01T00:00:00Z"}}
+    {
+      "type":"regen/MsgCreateBatch",
+      "value":{
+        "end_date":"2021-01-01T00:00:00Z",
+        "issuance":[
+          {
+            "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "retired_amount":"100",
+            "retirement_jurisdiction":"US-WA",
+            "tradable_amount":"100"
+          }
+        ],
+        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "project_id":"C01-001",
+        "start_date":"2020-01-01T00:00:00Z"
+      }
+    }
     """

@@ -70,5 +70,14 @@ Feature: MsgUpdateClassFee
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgUpdateClassFee","value":{"authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","fee":{"amount":"1000","denom":"uregen"}}}
+    {
+      "type":"regen/MsgUpdateClassFee",
+      "value":{
+        "authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "fee":{
+          "amount":"1000",
+          "denom":"uregen"
+        }
+      }
+    }
     """

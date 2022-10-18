@@ -50,5 +50,11 @@ Feature: MsgRemoveAllowedBridgeChain
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgRemoveAllowedBridgeChain","value":{"authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","chain_name":"polygon"}}
+    {
+      "type":"regen/MsgRemoveAllowedBridgeChain",
+      "value":{
+        "authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "chain_name":"polygon"
+      }
+    }
     """

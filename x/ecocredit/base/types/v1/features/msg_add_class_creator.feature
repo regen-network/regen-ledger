@@ -61,5 +61,11 @@ Feature: MsgAddClassCreator
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgAddClassCreator","value":{"authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","creator":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"}}
+    {
+      "type":"regen/MsgAddClassCreator",
+      "value":{
+        "authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "creator":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      }
+    }
     """

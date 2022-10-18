@@ -86,5 +86,12 @@ Feature: MsgUpdateProjectMetadata
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen/MsgUpdateProjectMetadata","value":{"admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6","new_metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf","project_id":"C01-001"}}
+    {
+      "type":"regen/MsgUpdateProjectMetadata",
+      "value":{
+        "admin":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "new_metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "project_id":"C01-001"
+      }
+    }
     """
