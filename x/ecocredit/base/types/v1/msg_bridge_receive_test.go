@@ -2,6 +2,8 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -71,5 +73,7 @@ func (s *msgBridgeReceive) MessageSignBytesQueried() {
 }
 
 func (s *msgBridgeReceive) ExpectTheSignBytes(expected gocuke.DocString) {
-	require.Equal(s.t, strings.TrimSpace(expected.Content), s.signBytes)
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }
