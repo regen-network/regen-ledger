@@ -15,16 +15,15 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/type
 service Msg {
 
   // CreateClass creates a new credit class under the given credit type with an
-  // approved list of issuers and optional metadata. The fee denom must be one
-  // of the denoms listed in Params.credit_class_fee and greater than or equal
-  // to the fee amount but only the minimum amount is charged. The creator of
-  // the credit class becomes the admin of the credit class upon creation.
+  // approved list of issuers and optional metadata. If the class fee parameter
+  // is set, the fee field must be populated. The creator of the credit class
+  // becomes the admin of the credit class upon creation.
   rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
 
   // CreateProject creates a new project under the given credit class with a
   // jurisdiction, optional metadata, and an optional reference ID. The creator
   // of the project must be an approved credit class issuer for the given credit
-  // class and the creator becomes the admin of the project upon creation.
+  // class. The creator becomes the admin of the project upon creation.
   rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
 
   // CreateBatch creates a new batch of credits under the given project with a
@@ -63,13 +62,13 @@ service Msg {
   // retired upon receipt.
   rpc Send(MsgSend) returns (MsgSendResponse);
 
-  // Retire retires a specified amount of tradable credits, removing the amount
+  // Retire retires a specified amount of credits, removing the amount
   // from the credit owner's tradable balance and adding it to their retired
   // balance. Retiring credits is permanent and implies the credits are being
   // consumed as a offset.
   rpc Retire(MsgRetire) returns (MsgRetireResponse);
 
-  // Cancel cancels a specified amount of tradable credits, removing the amount
+  // Cancel cancels a specified amount of credits, removing the amount
   // from the credit owner's tradable balance and removing the amount from the
   // credit batch's tradable supply. Cancelling credits is permanent and implies
   // the credits have been moved to another chain or registry.
@@ -129,13 +128,13 @@ service Msg {
   rpc SetClassCreatorAllowlist(MsgSetClassCreatorAllowlist)
       returns (MsgSetClassCreatorAllowlistResponse);
 
-  // AddClassCreator is a governance method that allows the addition of new
+  // AddClassCreator is a governance method that allows the addition of a new
   // address to the class creation allowlist.
   //
   // Since Revision 1
   rpc AddClassCreator(MsgAddClassCreator) returns (MsgAddClassCreatorResponse);
 
-  // RemoveClassCreator is a governance method that removes
+  // RemoveClassCreator is a governance method that removes an
   // address from the creation allowlist.
   //
   // Since Revision 1
@@ -143,8 +142,9 @@ service Msg {
       returns (MsgRemoveClassCreatorResponse);
 
   // UpdateClassFee is a governance method that allows for updating the credit
-  // class creation fee. If not set, the credit class creation fee will be
-  // removed and no fee will be required to create a credit class.
+  // class creation fee. If no fee is specified in the request, the credit
+  // class creation fee will be removed and no fee will be required to create
+  // a credit class.
   //
   // Since Revision 1
   rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);

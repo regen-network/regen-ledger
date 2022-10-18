@@ -2872,15 +2872,14 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	// CreateClass creates a new credit class under the given credit type with an
-	// approved list of issuers and optional metadata. The fee denom must be one
-	// of the denoms listed in Params.credit_class_fee and greater than or equal
-	// to the fee amount but only the minimum amount is charged. The creator of
-	// the credit class becomes the admin of the credit class upon creation.
+	// approved list of issuers and optional metadata. If the class fee parameter
+	// is set, the fee field must be populated. The creator of the credit class
+	// becomes the admin of the credit class upon creation.
 	CreateClass(ctx context.Context, in *MsgCreateClass, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
 	// CreateProject creates a new project under the given credit class with a
 	// jurisdiction, optional metadata, and an optional reference ID. The creator
 	// of the project must be an approved credit class issuer for the given credit
-	// class and the creator becomes the admin of the project upon creation.
+	// class. The creator becomes the admin of the project upon creation.
 	CreateProject(ctx context.Context, in *MsgCreateProject, opts ...grpc.CallOption) (*MsgCreateProjectResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
@@ -2913,12 +2912,12 @@ type MsgClient interface {
 	// account to another account. Sent credits can either remain tradable or be
 	// retired upon receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
-	// Retire retires a specified amount of tradable credits, removing the amount
+	// Retire retires a specified amount of credits, removing the amount
 	// from the credit owner's tradable balance and adding it to their retired
 	// balance. Retiring credits is permanent and implies the credits are being
 	// consumed as a offset.
 	Retire(ctx context.Context, in *MsgRetire, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// Cancel cancels a specified amount of tradable credits, removing the amount
+	// Cancel cancels a specified amount of credits, removing the amount
 	// from the credit owner's tradable balance and removing the amount from the
 	// credit batch's tradable supply. Cancelling credits is permanent and implies
 	// the credits have been moved to another chain or registry.
@@ -2962,19 +2961,20 @@ type MsgClient interface {
 	//
 	// Since Revision 1
 	SetClassCreatorAllowlist(ctx context.Context, in *MsgSetClassCreatorAllowlist, opts ...grpc.CallOption) (*MsgSetClassCreatorAllowlistResponse, error)
-	// AddClassCreator is a governance method that allows the addition of new
+	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
 	// Since Revision 1
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
-	// RemoveClassCreator is a governance method that removes
+	// RemoveClassCreator is a governance method that removes an
 	// address from the creation allowlist.
 	//
 	// Since Revision 1
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
-	// class creation fee. If not set, the credit class creation fee will be
-	// removed and no fee will be required to create a credit class.
+	// class creation fee. If no fee is specified in the request, the credit
+	// class creation fee will be removed and no fee will be required to create
+	// a credit class.
 	//
 	// Since Revision 1
 	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
@@ -3199,15 +3199,14 @@ func (c *msgClient) RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveA
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// CreateClass creates a new credit class under the given credit type with an
-	// approved list of issuers and optional metadata. The fee denom must be one
-	// of the denoms listed in Params.credit_class_fee and greater than or equal
-	// to the fee amount but only the minimum amount is charged. The creator of
-	// the credit class becomes the admin of the credit class upon creation.
+	// approved list of issuers and optional metadata. If the class fee parameter
+	// is set, the fee field must be populated. The creator of the credit class
+	// becomes the admin of the credit class upon creation.
 	CreateClass(context.Context, *MsgCreateClass) (*MsgCreateClassResponse, error)
 	// CreateProject creates a new project under the given credit class with a
 	// jurisdiction, optional metadata, and an optional reference ID. The creator
 	// of the project must be an approved credit class issuer for the given credit
-	// class and the creator becomes the admin of the project upon creation.
+	// class. The creator becomes the admin of the project upon creation.
 	CreateProject(context.Context, *MsgCreateProject) (*MsgCreateProjectResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
@@ -3240,12 +3239,12 @@ type MsgServer interface {
 	// account to another account. Sent credits can either remain tradable or be
 	// retired upon receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
-	// Retire retires a specified amount of tradable credits, removing the amount
+	// Retire retires a specified amount of credits, removing the amount
 	// from the credit owner's tradable balance and adding it to their retired
 	// balance. Retiring credits is permanent and implies the credits are being
 	// consumed as a offset.
 	Retire(context.Context, *MsgRetire) (*MsgRetireResponse, error)
-	// Cancel cancels a specified amount of tradable credits, removing the amount
+	// Cancel cancels a specified amount of credits, removing the amount
 	// from the credit owner's tradable balance and removing the amount from the
 	// credit batch's tradable supply. Cancelling credits is permanent and implies
 	// the credits have been moved to another chain or registry.
@@ -3289,19 +3288,20 @@ type MsgServer interface {
 	//
 	// Since Revision 1
 	SetClassCreatorAllowlist(context.Context, *MsgSetClassCreatorAllowlist) (*MsgSetClassCreatorAllowlistResponse, error)
-	// AddClassCreator is a governance method that allows the addition of new
+	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
 	// Since Revision 1
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
-	// RemoveClassCreator is a governance method that removes
+	// RemoveClassCreator is a governance method that removes an
 	// address from the creation allowlist.
 	//
 	// Since Revision 1
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
-	// class creation fee. If not set, the credit class creation fee will be
-	// removed and no fee will be required to create a credit class.
+	// class creation fee. If no fee is specified in the request, the credit
+	// class creation fee will be removed and no fee will be required to create
+	// a credit class.
 	//
 	// Since Revision 1
 	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
