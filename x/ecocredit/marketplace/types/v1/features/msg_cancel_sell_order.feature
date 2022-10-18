@@ -50,5 +50,11 @@ Feature: MsgCancelSellOrder
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen.marketplace/MsgCancelSellOrder","value":{"sell_order_id":"1","seller":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"}}
+    {
+      "type":"regen.marketplace/MsgCancelSellOrder",
+      "value":{
+        "sell_order_id":"1",
+        "seller":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+      }
+    }
     """

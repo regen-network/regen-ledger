@@ -273,5 +273,20 @@ Feature: MsgUpdateSellOrders
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen.marketplace/MsgUpdateSellOrders","value":{"seller":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw","updates":[{"new_ask_price":{"amount":"100","denom":"regen"},"new_quantity":"100","sell_order_id":"1"}]}}
+    {
+      "type":"regen.marketplace/MsgUpdateSellOrders",
+      "value":{
+        "seller":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "updates":[
+          {
+            "new_ask_price":{
+              "amount":"100",
+              "denom":"regen"
+            },
+          "new_quantity":"100",
+          "sell_order_id":"1"
+          }
+        ]
+      }
+    }
     """

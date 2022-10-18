@@ -76,5 +76,13 @@ Feature: MsgAddAllowedDenom
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen.marketplace/MsgAddAllowedDenom","value":{"authority":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw","bank_denom":"uregen","display_denom":"REGEN","exponent":6}}
+    {
+      "type":"regen.marketplace/MsgAddAllowedDenom",
+      "value":{
+        "authority":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "bank_denom":"uregen",
+        "display_denom":"REGEN",
+        "exponent":6
+      }
+    }
     """

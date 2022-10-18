@@ -297,5 +297,21 @@ Feature: MsgBuyDirect
     When message sign bytes queried
     Then expect the sign bytes
     """
-    {"type":"regen.marketplace/MsgBuyDirect","value":{"buyer":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw","orders":[{"bid_price":{"amount":"100","denom":"regen"},"quantity":"100","retirement_jurisdiction":"US-WA","sell_order_id":"1"}]}}
+    {
+      "type":"regen.marketplace/MsgBuyDirect",
+      "value":{
+        "buyer":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders":[
+          {
+            "bid_price": {
+              "amount":"100",
+              "denom":"regen"
+            },
+            "quantity":"100",
+            "retirement_jurisdiction":"US-WA",
+            "sell_order_id":"1"
+          }
+        ]
+      }
+    }
     """
