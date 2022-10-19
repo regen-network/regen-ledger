@@ -66,11 +66,10 @@ type MsgCreate struct {
 	// date_criteria is the date criteria for batches admitted to the basket.
 	// At most, only one of the fields in the date_criteria should be set.
 	DateCriteria *DateCriteria `protobuf:"bytes,8,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
-	// fee is the basket creation fee. A fee is not required if the list of fees
-	// in Params.basket_fee is empty. The provided fee must be one of the fees
-	// listed in Params.basket_fee. The provided amount can be greater than
-	// or equal to the listed amount but the basket creator will only be charged
-	// the listed amount (i.e. the minimum amount).
+	// fee is the basket creation fee. A fee is not required if the no fee exists
+	// in the basket fee parameter. The fee must be greater than or equal to the
+	// fee param. The curator will be charged the amount specified in the fee
+	// parameter.
 	//
 	// Note (Since Revision 1): Although this field supports a list of fees, the
 	// basket creator must provide no more than one fee (i.e. one Coin in a list
@@ -776,12 +775,13 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// Create creates a bank denom which wraps credits.
+	// Create creates a basket.
 	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
 	// Put puts credits into a basket in return for basket tokens.
 	Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error)
-	// Take takes credits from a basket starting from the oldest
-	// credits first.
+	// Take exchanges basket tokens for credits from a basket. Credits are taken
+	// deterministically, ordered by oldest batch start date to the most recent
+	// batch start date.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no
@@ -789,7 +789,7 @@ type MsgClient interface {
 	//
 	// Since Revision 2
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
-	// UpdateCurator updates basket curator
+	// UpdateCurator updates basket curator.
 	//
 	// Since Revision 2
 	UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opts ...grpc.CallOption) (*MsgUpdateCuratorResponse, error)
@@ -850,12 +850,13 @@ func (c *msgClient) UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opt
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// Create creates a bank denom which wraps credits.
+	// Create creates a basket.
 	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
 	// Put puts credits into a basket in return for basket tokens.
 	Put(context.Context, *MsgPut) (*MsgPutResponse, error)
-	// Take takes credits from a basket starting from the oldest
-	// credits first.
+	// Take exchanges basket tokens for credits from a basket. Credits are taken
+	// deterministically, ordered by oldest batch start date to the most recent
+	// batch start date.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no
@@ -863,7 +864,7 @@ type MsgServer interface {
 	//
 	// Since Revision 2
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)
-	// UpdateCurator updates basket curator
+	// UpdateCurator updates basket curator.
 	//
 	// Since Revision 2
 	UpdateCurator(context.Context, *MsgUpdateCurator) (*MsgUpdateCuratorResponse, error)

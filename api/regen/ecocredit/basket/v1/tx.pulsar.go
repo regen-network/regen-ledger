@@ -5569,11 +5569,10 @@ type MsgCreate struct {
 	// date_criteria is the date criteria for batches admitted to the basket.
 	// At most, only one of the fields in the date_criteria should be set.
 	DateCriteria *DateCriteria `protobuf:"bytes,8,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
-	// fee is the basket creation fee. A fee is not required if the list of fees
-	// in Params.basket_fee is empty. The provided fee must be one of the fees
-	// listed in Params.basket_fee. The provided amount can be greater than
-	// or equal to the listed amount but the basket creator will only be charged
-	// the listed amount (i.e. the minimum amount).
+	// fee is the basket creation fee. A fee is not required if the no fee exists
+	// in the basket fee parameter. The fee must be greater than or equal to the
+	// fee param. The curator will be charged the amount specified in the fee
+	// parameter.
 	//
 	// Note (Since Revision 1): Although this field supports a list of fees, the
 	// basket creator must provide no more than one fee (i.e. one Coin in a list

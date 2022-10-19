@@ -12,14 +12,15 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/ty
 // Msg is the regen.ecocredit.basket.v1 Msg service.
 service Msg {
 
-  // Create creates a bank denom which wraps credits.
+  // Create creates a basket.
   rpc Create(MsgCreate) returns (MsgCreateResponse);
 
   // Put puts credits into a basket in return for basket tokens.
   rpc Put(MsgPut) returns (MsgPutResponse);
 
-  // Take takes credits from a basket starting from the oldest
-  // credits first.
+  // Take exchanges basket tokens for credits from a basket. Credits are taken
+  // deterministically, ordered by oldest batch start date to the most recent
+  // batch start date.
   rpc Take(MsgTake) returns (MsgTakeResponse);
 
   // UpdateBasketFee is a governance method that allows for updating the basket
@@ -29,7 +30,7 @@ service Msg {
   // Since Revision 2
   rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
 
-  // UpdateCurator updates basket curator
+  // UpdateCurator updates basket curator.
   //
   // Since Revision 2
   rpc UpdateCurator(MsgUpdateCurator) returns (MsgUpdateCuratorResponse);
@@ -80,11 +81,10 @@ message MsgCreate {
   // At most, only one of the fields in the date_criteria should be set.
   DateCriteria date_criteria = 8;
 
-  // fee is the basket creation fee. A fee is not required if the list of fees
-  // in Params.basket_fee is empty. The provided fee must be one of the fees
-  // listed in Params.basket_fee. The provided amount can be greater than
-  // or equal to the listed amount but the basket creator will only be charged
-  // the listed amount (i.e. the minimum amount).
+  // fee is the basket creation fee. A fee is not required if the no fee exists
+  // in the basket fee parameter. The fee must be greater than or equal to the
+  // fee param. The curator will be charged the amount specified in the fee
+  // parameter.
   //
   // Note (Since Revision 1): Although this field supports a list of fees, the
   // basket creator must provide no more than one fee (i.e. one Coin in a list
@@ -192,7 +192,7 @@ message MsgUpdateBasketFeeResponse {}
 // Since Revision 2
 message MsgUpdateCurator {
   option (cosmos.msg.v1.signer) = "curator";
-  
+
   // curator is the address of the basket curator.
   string curator = 1;
 
@@ -202,7 +202,6 @@ message MsgUpdateCurator {
   // new_curator is the address of the account that will become the
   // new curator of the basket.
   string new_curator = 3;
-
 }
 
 // MsgUpdateCuratorResponse is the Msg/UpdateCurator response type.
