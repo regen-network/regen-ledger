@@ -1,6 +1,8 @@
 package data
 
 import (
+	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +11,10 @@ import (
 )
 
 type msgRegisterResolverSuite struct {
-	t   gocuke.TestingT
-	msg *MsgRegisterResolver
-	err error
+	t         gocuke.TestingT
+	msg       *MsgRegisterResolver
+	err       error
+	signBytes string
 }
 
 func TestMsgRegisterResolver(t *testing.T) {
@@ -40,4 +43,14 @@ func (s *msgRegisterResolverSuite) ExpectTheError(a string) {
 
 func (s *msgRegisterResolverSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgRegisterResolverSuite) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgRegisterResolverSuite) ExpectTheSignBytes(expected gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }
