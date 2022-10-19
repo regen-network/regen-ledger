@@ -24,8 +24,10 @@ const _ = grpc.SupportPackageIsVersion7
 type MsgClient interface {
 	// CreateClass creates a new credit class under the given credit type with an
 	// approved list of issuers and optional metadata. If the class fee parameter
-	// is set, the fee field must be populated. The creator of the credit class
-	// becomes the admin of the credit class upon creation.
+	// is set, the fee field must be populated with equal value. A greater fee can
+	// be provided, however, the creator will only be charged the amount specified
+	// in the fee parameter. The creator of the credit class becomes the admin of
+	// the credit class upon creation.
 	CreateClass(ctx context.Context, in *MsgCreateClass, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
 	// CreateProject creates a new project under the given credit class with a
 	// jurisdiction, optional metadata, and an optional reference ID. The creator
@@ -353,8 +355,10 @@ func (c *msgClient) RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveA
 type MsgServer interface {
 	// CreateClass creates a new credit class under the given credit type with an
 	// approved list of issuers and optional metadata. If the class fee parameter
-	// is set, the fee field must be populated. The creator of the credit class
-	// becomes the admin of the credit class upon creation.
+	// is set, the fee field must be populated with equal value. A greater fee can
+	// be provided, however, the creator will only be charged the amount specified
+	// in the fee parameter. The creator of the credit class becomes the admin of
+	// the credit class upon creation.
 	CreateClass(context.Context, *MsgCreateClass) (*MsgCreateClassResponse, error)
 	// CreateProject creates a new project under the given credit class with a
 	// jurisdiction, optional metadata, and an optional reference ID. The creator
