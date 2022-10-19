@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -11,9 +13,10 @@ import (
 )
 
 type msgUpdateClassMetadata struct {
-	t   gocuke.TestingT
-	msg *MsgUpdateClassMetadata
-	err error
+	t         gocuke.TestingT
+	msg       *MsgUpdateClassMetadata
+	err       error
+	signBytes string
 }
 
 func TestMsgUpdateClassMetadata(t *testing.T) {
@@ -47,4 +50,14 @@ func (s *msgUpdateClassMetadata) ExpectTheError(a string) {
 
 func (s *msgUpdateClassMetadata) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgUpdateClassMetadata) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgUpdateClassMetadata) ExpectTheSignBytes(expected gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }

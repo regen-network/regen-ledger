@@ -19,7 +19,6 @@ type Keeper struct {
 	stateStore    api.StateStore
 	baseStore     baseapi.StateStore
 	bankKeeper    ecocredit.BankKeeper
-	paramsKeeper  ecocredit.ParamKeeper
 	moduleAddress sdk.AccAddress
 	authority     sdk.AccAddress
 }
@@ -29,7 +28,6 @@ func NewKeeper(
 	ss api.StateStore,
 	cs baseapi.StateStore,
 	bk ecocredit.BankKeeper,
-	pk ecocredit.ParamKeeper,
 	ma sdk.AccAddress,
 	authority sdk.AccAddress,
 ) Keeper {
@@ -37,7 +35,6 @@ func NewKeeper(
 		stateStore:    ss,
 		baseStore:     cs,
 		bankKeeper:    bk,
-		paramsKeeper:  pk,
 		moduleAddress: ma,
 		authority:     authority,
 	}

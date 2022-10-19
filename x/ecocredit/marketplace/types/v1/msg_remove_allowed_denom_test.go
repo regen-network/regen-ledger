@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +11,10 @@ import (
 )
 
 type msgRemoveAllowedDenomSuite struct {
-	t   gocuke.TestingT
-	msg *MsgRemoveAllowedDenom
-	err error
+	t         gocuke.TestingT
+	msg       *MsgRemoveAllowedDenom
+	err       error
+	signBytes string
 }
 
 func TestMsgRemoveAllowedDenomSuite(t *testing.T) {
@@ -38,4 +41,14 @@ func (s *msgRemoveAllowedDenomSuite) ExpectTheError(a string) {
 
 func (s *msgRemoveAllowedDenomSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgRemoveAllowedDenomSuite) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgRemoveAllowedDenomSuite) ExpectTheSignBytes(expected gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }

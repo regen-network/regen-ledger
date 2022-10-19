@@ -107,3 +107,33 @@ Feature: MsgAddCreditType
     """
     When the message is validated
     Then expect the error "credit type: precision is currently locked to 6: parse error: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "credit_type": {
+        "abbreviation":"C",
+        "name":"carbon",
+        "unit":"ton",
+        "precision":6
+      }
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgAddCreditType",
+      "value":{
+        "authority":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "credit_type":{
+          "abbreviation":"C",
+          "name":"carbon",
+          "precision":6,
+          "unit":"ton"
+        }
+      }
+    }
+    """

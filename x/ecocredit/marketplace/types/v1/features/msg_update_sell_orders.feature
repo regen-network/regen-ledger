@@ -252,3 +252,41 @@ Feature: MsgUpdateSellOrders
     """
     When the message is validated
     Then expect the error "updates[0]: new ask price: amount must be a positive integer: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "updates": [
+        {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
+            "denom": "regen",
+            "amount": "100"
+          }
+        }
+      ]
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen.marketplace/MsgUpdateSellOrders",
+      "value":{
+        "seller":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "updates":[
+          {
+            "new_ask_price":{
+              "amount":"100",
+              "denom":"regen"
+            },
+          "new_quantity":"100",
+          "sell_order_id":"1"
+          }
+        ]
+      }
+    }
+    """
