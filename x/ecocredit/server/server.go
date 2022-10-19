@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
@@ -23,9 +22,8 @@ import (
 )
 
 type serverImpl struct {
-	legacySubspace paramtypes.Subspace
-	bankKeeper     ecocredit.BankKeeper
-	accountKeeper  ecocredit.AccountKeeper
+	bankKeeper    ecocredit.BankKeeper
+	accountKeeper ecocredit.AccountKeeper
 
 	BaseKeeper        basekeeper.Keeper
 	BasketKeeper      basketkeeper.Keeper
@@ -38,12 +36,11 @@ type serverImpl struct {
 }
 
 //nolint:revive
-func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
+func NewServer(storeKey storetypes.StoreKey,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{
-		legacySubspace: legacySubspace,
-		bankKeeper:     bankKeeper,
-		accountKeeper:  accountKeeper,
+		bankKeeper:    bankKeeper,
+		accountKeeper: accountKeeper,
 	}
 
 	// ensure ecocredit module account is set
@@ -69,8 +66,8 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
 	s.BaseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
-	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, s.legacySubspace, basketAddr, authority)
-	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, s.legacySubspace, authority)
+	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority)
+	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority)
 
 	return s
 }
