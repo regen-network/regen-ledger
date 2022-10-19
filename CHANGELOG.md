@@ -72,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Bridge operations must now specify a target/source that exists in the `AllowedBridgeChain` table.
 - [#1476](https://github.com/regen-network/regen-ledger/pull/1476) `DefaultParams` function has been removed.
 - [#1476](https://github.com/regen-network/regen-ledger/pull/1476) Remove `params` argument from `ValidateGenesis`.
+- [#1543](https://github.com/regen-network/regen-ledger/pull/1543) Remove `paramsKeeper` argument from `base/Keeper`, `basket/Keeper` and `marketplace/Keeper`.
 
 #### Added
 

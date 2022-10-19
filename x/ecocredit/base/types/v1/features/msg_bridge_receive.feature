@@ -496,3 +496,57 @@ Feature: MsgBridgeReceive
     Then expect the error "origin_tx.contract must be a valid ethereum address: invalid address"
 
   # Note: additional validation for origin tx covered in origin_tx_test.go
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "class_id": "C01",
+      "project": {
+        "reference_id": "VCS-001",
+        "jurisdiction": "US-WA",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      },
+      "batch": {
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "amount": "100",
+        "start_date": "2020-01-01T00:00:00Z",
+        "end_date": "2021-01-01T00:00:00Z",
+        "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+      },
+      "origin_tx": {
+        "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
+        "source": "polygon",
+        "contract": "0x0e65079a29d7793ab5ca500c2d88e60ee99ba606"
+      }
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgBridgeReceive",
+      "value":{
+        "batch":{
+          "amount":"100",
+          "end_date":"2021-01-01T00:00:00Z",
+          "metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+          "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+          "start_date":"2020-01-01T00:00:00Z"
+        },
+        "class_id":"C01",
+        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "origin_tx":{
+          "contract":"0x0e65079a29d7793ab5ca500c2d88e60ee99ba606",
+          "id":"0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
+          "source":"polygon"
+        },
+        "project":{
+          "jurisdiction":"US-WA",
+          "metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+          "reference_id":"VCS-001"
+        }
+      }
+    }
+    """

@@ -295,3 +295,45 @@ Feature: MsgCreateBatch
     Then expect the error "origin_tx.source cannot be empty: invalid request"
 
   # Note: additional validation for origin tx covered in types_origin_tx_test.go
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "project_id": "C01-001",
+      "issuance": [
+        {
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+          "tradable_amount": "100",
+          "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ],
+      "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+      "start_date": "2020-01-01T00:00:00Z",
+      "end_date": "2021-01-01T00:00:00Z"
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgCreateBatch",
+      "value":{
+        "end_date":"2021-01-01T00:00:00Z",
+        "issuance":[
+          {
+            "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "retired_amount":"100",
+            "retirement_jurisdiction":"US-WA",
+            "tradable_amount":"100"
+          }
+        ],
+        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "metadata":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+        "project_id":"C01-001",
+        "start_date":"2020-01-01T00:00:00Z"
+      }
+    }
+    """
