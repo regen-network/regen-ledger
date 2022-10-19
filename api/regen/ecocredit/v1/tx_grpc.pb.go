@@ -70,7 +70,7 @@ type MsgClient interface {
 	// balance. Retiring credits is permanent and implies the credits are being
 	// consumed as a offset.
 	Retire(ctx context.Context, in *MsgRetire, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// Cancel cancels a specified amount of credits, removing the amount
+	// Cancel cancels a specified amount of tradable credits, removing the amount
 	// from the credit owner's tradable balance and removing the amount from the
 	// credit batch's tradable supply. Cancelling credits is permanent and implies
 	// the credits have been moved to another chain or registry.
@@ -401,7 +401,7 @@ type MsgServer interface {
 	// balance. Retiring credits is permanent and implies the credits are being
 	// consumed as a offset.
 	Retire(context.Context, *MsgRetire) (*MsgRetireResponse, error)
-	// Cancel cancels a specified amount of credits, removing the amount
+	// Cancel cancels a specified amount of tradable credits, removing the amount
 	// from the credit owner's tradable balance and removing the amount from the
 	// credit batch's tradable supply. Cancelling credits is permanent and implies
 	// the credits have been moved to another chain or registry.
