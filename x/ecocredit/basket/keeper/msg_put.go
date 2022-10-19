@@ -70,12 +70,12 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 			return nil, err
 		}
 		// get the amount of basket tokens to give to the depositor
-		tokens, err := creditAmountToBasketCoins(amt, creditType.Precision, basket.BasketDenom)
+		tokens, err := creditAmountToBasketCoin(amt, creditType.Precision, basket.BasketDenom)
 		if err != nil {
 			return nil, err
 		}
 		// update the total amount received so far
-		amountReceived = amountReceived.Add(tokens[0].Amount)
+		amountReceived = amountReceived.Add(tokens.Amount)
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{
 			Sender:         ownerString,
@@ -216,21 +216,4 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 		return err
 	}
 	return nil
-}
-
-// creditAmountToBasketCoins calculates the tokens to award to the depositor
-func creditAmountToBasketCoins(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
-	var coins sdk.Coins
-	multiplier := regenmath.NewDecFinite(1, int32(exp))
-	tokenAmt, err := multiplier.MulExact(creditAmt)
-	if err != nil {
-		return coins, err
-	}
-
-	amtInt, err := tokenAmt.BigInt()
-	if err != nil {
-		return coins, err
-	}
-
-	return sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(amtInt))}, nil
 }
