@@ -11,16 +11,33 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/ty
 
 // Msg is the regen.ecocredit.basket.v1 Msg service.
 service Msg {
-
-  // Create creates a basket.
+  // Create creates a basket that mints basket tokens in exchange for credits,
+  // and vice versa. The basket token denom is derived from the basket name,
+  // credit type abbreviation, and credit type precision (i.e. basket name
+  // "foo", credit type exponent 6, and credit type abbreviation "C" generates
+  // the denom eco.uC.foo). Baskets can limit credit acceptance criteria based
+  // on a combination of credit type, credit classes, and credit batch start
+  // date. Credits taken from the basket will be immediately retired, unless
+  // disable_auto_retire is set to false, which would cause credits to be sent
+  // to the taker's tradable balance. If the basket fee governance parameter is
+  // set, a fee of equal value must be provided in the request. A greater value
+  // fee can be provided, but only the amount specified in the fee parameter
+  // will be charged. Fees from creating a basket are burned.
   rpc Create(MsgCreate) returns (MsgCreateResponse);
 
-  // Put puts credits into a basket in return for basket tokens.
+  // Put deposits credits into the basket from the holder's tradable balance in
+  // exchange for basket tokens. The amount of tokens received is calculated by
+  // the following formula: sum(credits_deposited) * (1 *
+  // 10^credit_type_exponent). The credit being deposited MUST adhere to the
+  // criteria of the basket.
   rpc Put(MsgPut) returns (MsgPutResponse);
 
-  // Take exchanges basket tokens for credits from a basket. Credits are taken
-  // deterministically, ordered by oldest batch start date to the most recent
-  // batch start date.
+  // Take exchanges basket tokens for credits from the specified basket. Credits
+  // are taken deterministically, ordered by oldest batch start date to the most
+  // recent batch start date. If the basket has disable_auto_retire set to
+  // false, both retirement_jurisdiction and retire_on_take must be set, and the
+  // taken credits will be retired immediately upon receipt. Otherwise, credits
+  // may be received as tradable or retired, based on the request.
   rpc Take(MsgTake) returns (MsgTakeResponse);
 
   // UpdateBasketFee is a governance method that allows for updating the basket
@@ -115,9 +132,7 @@ message MsgPut {
   string basket_denom = 2;
 
   // credits are credits to add to the basket. If they do not match the basket's
-  // admission criteria the operation will fail. If there are any "dust" credits
-  // left over when converting credits to basket tokens, these credits will
-  // not be converted to basket tokens and instead remain with the owner.
+  // admission criteria, the operation will fail.
   repeated BasketCredit credits = 3;
 }
 
@@ -142,7 +157,7 @@ message MsgTake {
   string amount = 3;
 
   // retirement_location is the optional retirement jurisdiction for the
-  // credits which will be used only if retire_on_take is true for this basket.
+  // credits which will be used only if retire_on_take is true.
   //
   // Deprecated (Since Revision 1): This field will be removed in the next
   // version in favor of retirement_jurisdiction. Only one of these need to be
@@ -151,11 +166,13 @@ message MsgTake {
 
   // retire_on_take is a boolean that dictates whether the ecocredits
   // received in exchange for the basket tokens will be received as
-  // retired or tradable credits.
+  // retired or tradable credits. If the basket has disable_auto_retire set to
+  // false, retire_on_take MUST be set to true, and a retirement jurisdiction
+  // must be provided.
   bool retire_on_take = 5;
 
   // retirement_jurisdiction is the optional retirement jurisdiction for the
-  // credits which will be used only if retire_on_take is true for this basket.
+  // credits which will be used only if retire_on_take is true.
   //
   // Since Revision 1
   string retirement_jurisdiction = 6;

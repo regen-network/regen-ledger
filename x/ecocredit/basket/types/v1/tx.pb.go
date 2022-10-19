@@ -229,9 +229,7 @@ type MsgPut struct {
 	// basket_denom is the basket denom to add credits to.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are credits to add to the basket. If they do not match the basket's
-	// admission criteria the operation will fail. If there are any "dust" credits
-	// left over when converting credits to basket tokens, these credits will
-	// not be converted to basket tokens and instead remain with the owner.
+	// admission criteria, the operation will fail.
 	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
@@ -344,7 +342,7 @@ type MsgTake struct {
 	// amount is the integer number of basket tokens to convert into credits.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	// retirement_location is the optional retirement jurisdiction for the
-	// credits which will be used only if retire_on_take is true for this basket.
+	// credits which will be used only if retire_on_take is true.
 	//
 	// Deprecated (Since Revision 1): This field will be removed in the next
 	// version in favor of retirement_jurisdiction. Only one of these need to be
@@ -352,10 +350,12 @@ type MsgTake struct {
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"` // Deprecated: Do not use.
 	// retire_on_take is a boolean that dictates whether the ecocredits
 	// received in exchange for the basket tokens will be received as
-	// retired or tradable credits.
+	// retired or tradable credits. If the basket has disable_auto_retire set to
+	// false, retire_on_take MUST be set to true, and a retirement jurisdiction
+	// must be provided.
 	RetireOnTake bool `protobuf:"varint,5,opt,name=retire_on_take,json=retireOnTake,proto3" json:"retire_on_take,omitempty"`
 	// retirement_jurisdiction is the optional retirement jurisdiction for the
-	// credits which will be used only if retire_on_take is true for this basket.
+	// credits which will be used only if retire_on_take is true.
 	//
 	// Since Revision 1
 	RetirementJurisdiction string `protobuf:"bytes,6,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
@@ -775,13 +775,31 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// Create creates a basket.
+	// Create creates a basket that mints basket tokens in exchange for credits,
+	// and vice versa. The basket token denom is derived from the basket name,
+	// credit type abbreviation, and credit type precision (i.e. basket name
+	// "foo", credit type exponent 6, and credit type abbreviation "C" generates
+	// the denom eco.uC.foo). Baskets can limit credit acceptance criteria based
+	// on a combination of credit type, credit classes, and credit batch start
+	// date. Credits taken from the basket will be immediately retired, unless
+	// disable_auto_retire is set to false, which would cause credits to be sent
+	// to the taker's tradable balance. If the basket fee governance parameter is
+	// set, a fee of equal value must be provided in the request. A greater value
+	// fee can be provided, but only the amount specified in the fee parameter
+	// will be charged. Fees from creating a basket are burned.
 	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
-	// Put puts credits into a basket in return for basket tokens.
+	// Put deposits credits into the basket from the holder's tradable balance in
+	// exchange for basket tokens. The amount of tokens received is calculated by
+	// the following formula: sum(credits_deposited) * (1 *
+	// 10^credit_type_exponent). The credit being deposited MUST adhere to the
+	// criteria of the basket.
 	Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error)
-	// Take exchanges basket tokens for credits from a basket. Credits are taken
-	// deterministically, ordered by oldest batch start date to the most recent
-	// batch start date.
+	// Take exchanges basket tokens for credits from the specified basket. Credits
+	// are taken deterministically, ordered by oldest batch start date to the most
+	// recent batch start date. If the basket has disable_auto_retire set to
+	// false, both retirement_jurisdiction and retire_on_take must be set, and the
+	// taken credits will be retired immediately upon receipt. Otherwise, credits
+	// may be received as tradable or retired, based on the request.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no
@@ -850,13 +868,31 @@ func (c *msgClient) UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opt
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// Create creates a basket.
+	// Create creates a basket that mints basket tokens in exchange for credits,
+	// and vice versa. The basket token denom is derived from the basket name,
+	// credit type abbreviation, and credit type precision (i.e. basket name
+	// "foo", credit type exponent 6, and credit type abbreviation "C" generates
+	// the denom eco.uC.foo). Baskets can limit credit acceptance criteria based
+	// on a combination of credit type, credit classes, and credit batch start
+	// date. Credits taken from the basket will be immediately retired, unless
+	// disable_auto_retire is set to false, which would cause credits to be sent
+	// to the taker's tradable balance. If the basket fee governance parameter is
+	// set, a fee of equal value must be provided in the request. A greater value
+	// fee can be provided, but only the amount specified in the fee parameter
+	// will be charged. Fees from creating a basket are burned.
 	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
-	// Put puts credits into a basket in return for basket tokens.
+	// Put deposits credits into the basket from the holder's tradable balance in
+	// exchange for basket tokens. The amount of tokens received is calculated by
+	// the following formula: sum(credits_deposited) * (1 *
+	// 10^credit_type_exponent). The credit being deposited MUST adhere to the
+	// criteria of the basket.
 	Put(context.Context, *MsgPut) (*MsgPutResponse, error)
-	// Take exchanges basket tokens for credits from a basket. Credits are taken
-	// deterministically, ordered by oldest batch start date to the most recent
-	// batch start date.
+	// Take exchanges basket tokens for credits from the specified basket. Credits
+	// are taken deterministically, ordered by oldest batch start date to the most
+	// recent batch start date. If the basket has disable_auto_retire set to
+	// false, both retirement_jurisdiction and retire_on_take must be set, and the
+	// taken credits will be retired immediately upon receipt. Otherwise, credits
+	// may be received as tradable or retired, based on the request.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no

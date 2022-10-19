@@ -5714,9 +5714,7 @@ type MsgPut struct {
 	// basket_denom is the basket denom to add credits to.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are credits to add to the basket. If they do not match the basket's
-	// admission criteria the operation will fail. If there are any "dust" credits
-	// left over when converting credits to basket tokens, these credits will
-	// not be converted to basket tokens and instead remain with the owner.
+	// admission criteria, the operation will fail.
 	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
@@ -5811,7 +5809,7 @@ type MsgTake struct {
 	// amount is the integer number of basket tokens to convert into credits.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	// retirement_location is the optional retirement jurisdiction for the
-	// credits which will be used only if retire_on_take is true for this basket.
+	// credits which will be used only if retire_on_take is true.
 	//
 	// Deprecated (Since Revision 1): This field will be removed in the next
 	// version in favor of retirement_jurisdiction. Only one of these need to be
@@ -5821,10 +5819,12 @@ type MsgTake struct {
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"`
 	// retire_on_take is a boolean that dictates whether the ecocredits
 	// received in exchange for the basket tokens will be received as
-	// retired or tradable credits.
+	// retired or tradable credits. If the basket has disable_auto_retire set to
+	// false, retire_on_take MUST be set to true, and a retirement jurisdiction
+	// must be provided.
 	RetireOnTake bool `protobuf:"varint,5,opt,name=retire_on_take,json=retireOnTake,proto3" json:"retire_on_take,omitempty"`
 	// retirement_jurisdiction is the optional retirement jurisdiction for the
-	// credits which will be used only if retire_on_take is true for this basket.
+	// credits which will be used only if retire_on_take is true.
 	//
 	// Since Revision 1
 	RetirementJurisdiction string `protobuf:"bytes,6,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
