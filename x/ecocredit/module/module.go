@@ -120,7 +120,7 @@ func (m Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 
 // RegisterServices implements AppModule/RegisterServices.
 func (m *Module) RegisterServices(cfg module.Configurator) {
-	svr := server.NewServer(m.key, m.legacySubspace, m.accountKeeper, m.bankKeeper, m.authority)
+	svr := server.NewServer(m.key, m.accountKeeper, m.bankKeeper, m.authority)
 	basetypes.RegisterMsgServer(cfg.MsgServer(), svr.BaseKeeper)
 	basetypes.RegisterQueryServer(cfg.QueryServer(), svr.BaseKeeper)
 
