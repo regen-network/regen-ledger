@@ -267,3 +267,41 @@ Feature: MsgSell
     """
     When the message is validated
     Then expect the error "orders[0]: ask price: amount must be a positive integer: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "orders": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "quantity": "100",
+          "ask_price": {
+            "denom": "regen",
+            "amount": "100"
+          }
+        }
+      ]
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen.marketplace/MsgSell",
+      "value":{
+        "orders":[
+          {
+            "ask_price":{
+              "amount":"100",
+              "denom":"regen"
+            },
+            "batch_denom":"C01-001-20200101-20210101-001",
+            "quantity":"100"
+          }
+        ],
+        "seller":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+      }
+    }
+    """

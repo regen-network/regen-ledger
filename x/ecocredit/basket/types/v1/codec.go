@@ -18,6 +18,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPut{}, "regen.basket/MsgPut", nil)
 	cdc.RegisterConcrete(&MsgTake{}, "regen.basket/MsgTake", nil)
 	cdc.RegisterConcrete(&MsgUpdateCurator{}, "regen.basket/MsgUpdateCurator", nil)
+	cdc.RegisterConcrete(&MsgUpdateBasketFee{}, "regen.basket/MsgUpdateBasketFee", nil)
 }
 
 var (

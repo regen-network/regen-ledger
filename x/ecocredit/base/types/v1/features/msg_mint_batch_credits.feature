@@ -178,3 +178,47 @@ Feature: MsgMintBatchCredits
     Then expect the error "origin_tx.source cannot be empty: invalid request"
 
   # Note: additional validation for origin tx covered in types_origin_tx_test.go
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "batch_denom": "C01-001-20200101-20210101-001",
+      "issuance": [
+        {
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+          "tradable_amount": "100",
+          "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ],
+      "origin_tx": {
+        "id": "0001-000001-000100-VCS-VCU-003-VER-US-0003-01012020-31122020-1",
+        "source": "verra"
+      }
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgMintBatchCredits",
+      "value":{
+        "batch_denom":"C01-001-20200101-20210101-001",
+        "issuance":[
+          {
+            "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+            "retired_amount":"100",
+            "retirement_jurisdiction":"US-WA",
+            "tradable_amount":"100"
+          }
+        ],
+        "issuer":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "origin_tx":{
+          "id":"0001-000001-000100-VCS-VCU-003-VER-US-0003-01012020-31122020-1",
+          "source":"verra"
+        }
+      }
+    }
+    """

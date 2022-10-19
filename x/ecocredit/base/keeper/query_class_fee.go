@@ -18,7 +18,6 @@ func (k Keeper) ClassFee(ctx context.Context, request *types.QueryClassFeeReques
 	}
 
 	var fee sdk.Coin
-
 	if classFee.Fee != nil {
 		var ok bool
 		fee, ok = regentypes.ProtoCoinToCoin(classFee.Fee)

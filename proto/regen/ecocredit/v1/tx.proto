@@ -137,7 +137,7 @@ service Msg {
   rpc AddClassCreator(MsgAddClassCreator) returns (MsgAddClassCreatorResponse);
 
   // RemoveClassCreator is a governance method that removes an
-  // address from the creation allowlist.
+  // address from the class creation allowlist.
   //
   // Since Revision 1
   rpc RemoveClassCreator(MsgRemoveClassCreator)

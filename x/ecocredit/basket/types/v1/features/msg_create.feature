@@ -385,3 +385,32 @@ Feature: MsgCreate
     """
     When the message is validated
     Then expect the error "more than one fee is not allowed: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "curator": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "name": "NCT",
+      "credit_type_abbrev": "C",
+      "allowed_classes": [
+        "C01"
+      ]
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen.basket/MsgCreate",
+      "value":{
+        "allowed_classes":[
+          "C01"
+        ],
+        "credit_type_abbrev":"C",
+        "curator":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "fee":[],
+        "name":"NCT"
+      }
+    }
+    """
