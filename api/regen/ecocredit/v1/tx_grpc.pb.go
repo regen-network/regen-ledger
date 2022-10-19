@@ -119,7 +119,7 @@ type MsgClient interface {
 	// Since Revision 1
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes
-	// address from the creation allowlist.
+	// address from the class creation allowlist.
 	//
 	// Since Revision 1
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
@@ -448,7 +448,7 @@ type MsgServer interface {
 	// Since Revision 1
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes
-	// address from the creation allowlist.
+	// address from the class creation allowlist.
 	//
 	// Since Revision 1
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)

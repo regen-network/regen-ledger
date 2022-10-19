@@ -26,7 +26,7 @@ type MsgClient interface {
 	Sell(ctx context.Context, in *MsgSell, opts ...grpc.CallOption) (*MsgSellResponse, error)
 	// UpdateSellOrders updates existing sell orders.
 	UpdateSellOrders(ctx context.Context, in *MsgUpdateSellOrders, opts ...grpc.CallOption) (*MsgUpdateSellOrdersResponse, error)
-	// CancelSellOrder cancels a sell order and returns the funds from escrow.
+	// CancelSellOrder cancels a sell order and returns the credits from escrow.
 	CancelSellOrder(ctx context.Context, in *MsgCancelSellOrder, opts ...grpc.CallOption) (*MsgCancelSellOrderResponse, error)
 	// BuyDirect purchases credits directly from the specified sell order.
 	BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error)
@@ -111,7 +111,7 @@ type MsgServer interface {
 	Sell(context.Context, *MsgSell) (*MsgSellResponse, error)
 	// UpdateSellOrders updates existing sell orders.
 	UpdateSellOrders(context.Context, *MsgUpdateSellOrders) (*MsgUpdateSellOrdersResponse, error)
-	// CancelSellOrder cancels a sell order and returns the funds from escrow.
+	// CancelSellOrder cancels a sell order and returns the credits from escrow.
 	CancelSellOrder(context.Context, *MsgCancelSellOrder) (*MsgCancelSellOrderResponse, error)
 	// BuyDirect purchases credits directly from the specified sell order.
 	BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error)
