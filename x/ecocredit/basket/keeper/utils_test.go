@@ -96,6 +96,7 @@ func FuzzCreditAmountToBasketCoin(f *testing.F) {
 	// similarly, 0.003 * 10^3 produces just 3, so we also consider subtracting from the adjustment.
 	prefixLen := func(d string) int {
 		prefixLen := 0
+		// first we want to capture situations where the whole number has many digits (i.e. 12423.402) as this makes the resulting number LARGER
 		if d[0] != '0' {
 			for _, c := range d {
 				if c != '.' {
@@ -105,17 +106,17 @@ func FuzzCreditAmountToBasketCoin(f *testing.F) {
 				}
 			}
 			return prefixLen
-		} else {
-			count := 0
-			for i := 2; i < len(d)-1; i++ {
-				if d[i] == '0' {
-					count--
-				} else {
-					break
-				}
-			}
-			return count
 		}
+		// then we capture situations where we have many zeroes (i.e. 0.0023) as this makes the resulting number SMALLER.
+		count := 0
+		for i := 2; i < len(d)-1; i++ {
+			if d[i] == '0' {
+				count--
+			} else {
+				break
+			}
+		}
+		return count
 	}
 
 	f.Add(uint32(6), 1.123456)
