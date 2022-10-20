@@ -15,38 +15,6 @@ on:
 permissions:
   contents: read
 
-before:
-  hooks:
-    - ./scripts/completions.sh
-
-archives:
-  - files:
-      - README.md
-      - LICENSE
-      - completions/*
-
-# brews:
-#   - install: |-
-#       bin.install "regen"
-#       bash_completion.install "completions/regen.bash" => "regen"
-#       zsh_completion.install "completions/regen.zsh" => "_regen"
-#       fish_completion.install "completions/regen.fish"  
-
-nfpms:
-  - contents:
-      - src: ./completions/regen.bash
-        dst: /usr/share/bash-completion/completions/regen
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.fish
-        dst: /usr/share/fish/vendor_completions.d/regen.fish
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.zsh
-        dst:  /usr/share/zsh/vendor-completions/_regen
-        file_info:
-          mode: 0644
-
 jobs:
   release:
     runs-on: ubuntu-latest

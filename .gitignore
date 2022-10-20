@@ -199,3 +199,5 @@ dist/
 
 # Data - ideally these don't exist
 .localnet
+
+completions
