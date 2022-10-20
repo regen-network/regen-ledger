@@ -64,7 +64,7 @@ service Msg {
   // retired upon receipt.
   rpc Send(MsgSend) returns (MsgSendResponse);
 
-  // Retire retires a specified amount of credits, removing the amount
+  // Retire retires a specified amount of tradable credits, removing the amount
   // from the credit owner's tradable balance and adding it to their retired
   // balance. Retiring credits is permanent and implies the credits are being
   // consumed as a offset.

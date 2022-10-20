@@ -2913,7 +2913,7 @@ type MsgClient interface {
 	// account to another account. Sent credits can either remain tradable or be
 	// retired upon receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
-	// Retire retires a specified amount of credits, removing the amount
+	// Retire retires a specified amount of tradable credits, removing the amount
 	// from the credit owner's tradable balance and adding it to their retired
 	// balance. Retiring credits is permanent and implies the credits are being
 	// consumed as a offset.
@@ -3242,7 +3242,7 @@ type MsgServer interface {
 	// account to another account. Sent credits can either remain tradable or be
 	// retired upon receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
-	// Retire retires a specified amount of credits, removing the amount
+	// Retire retires a specified amount of tradable credits, removing the amount
 	// from the credit owner's tradable balance and adding it to their retired
 	// balance. Retiring credits is permanent and implies the credits are being
 	// consumed as a offset.
