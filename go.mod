@@ -15,7 +15,7 @@ require (
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.22
 	github.com/tendermint/tm-db v0.6.7
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
