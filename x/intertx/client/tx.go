@@ -47,10 +47,10 @@ func GetTxCmd() *cobra.Command {
 
 func getRegisterAccountCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "register --connection-id <connection-id>",
+		Use:     "register --connection-id <connection-id> --version <version>",
 		Short:   "register an interchain account",
 		Long:    "register an interchain account for the chain corresponding to the connection-id.",
-		Example: "regen tx intertx register channel-10 v5",
+		Example: "regen tx intertx register --connection-id channel-10 --version v5",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -78,8 +78,9 @@ func getRegisterAccountCmd() *cobra.Command {
 
 func getSubmitTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "submit [path/to/sdk_msg.json]",
-		Args: cobra.ExactArgs(1),
+		Use:     "submit [path/to/sdk_msg.json]",
+		Example: "regen tx intertx submit tx.json",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
