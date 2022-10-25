@@ -50,7 +50,7 @@ func (a AppModule) DefaultGenesis(_ codec.JSONCodec) json.RawMessage {
 }
 
 func (a AppModule) ValidateGenesis(_ codec.JSONCodec, _ client.TxEncodingConfig, _ json.RawMessage) error {
-	return nil // TODO(Tyler): validate here?
+	return nil
 }
 
 func (a AppModule) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
@@ -69,7 +69,7 @@ func (a AppModule) GetQueryCmd() *cobra.Command {
 }
 
 func (a AppModule) InitGenesis(context sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []types.ValidatorUpdate {
-	return []types.ValidatorUpdate{} // TODO(Tyler): update?
+	return []types.ValidatorUpdate{}
 }
 
 func (a AppModule) ExportGenesis(context sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
