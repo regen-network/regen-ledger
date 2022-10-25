@@ -4,14 +4,6 @@ go 1.18
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-//replace github.com/regen-network/regen-ledger/types => ./types
-//
-//replace github.com/regen-network/regen-ledger/x/data => ./x/data
-//
-//replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
-//
-//replace github.com/regen-network/regen-ledger/api => ./api
-
 require (
 	github.com/cosmos/cosmos-sdk v0.46.1
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
