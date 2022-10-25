@@ -13,10 +13,9 @@ COPY ./ /work
 
 RUN LEDGER_ENABLED=false make clean build
 
-
 FROM alpine:3.14 AS run
 RUN apk add bash curl jq
-COPY contrib/images/regen-env/wrapper.sh /usr/bin/wrapper.sh
+COPY images/regen-env/wrapper.sh /usr/bin/wrapper.sh
 
 VOLUME /regen
 COPY --from=build /work/build/regen /regen/

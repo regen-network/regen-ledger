@@ -22,7 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// QueryInterchainAccount returns the interchain account for given owner address on a given connection pair
+	// QueryInterchainAccount returns the interchain account for given owner
+	// address on a given connection pair
 	InterchainAccount(ctx context.Context, in *QueryInterchainAccountRequest, opts ...grpc.CallOption) (*QueryInterchainAccountResponse, error)
 }
 
@@ -47,7 +48,8 @@ func (c *queryClient) InterchainAccount(ctx context.Context, in *QueryInterchain
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// QueryInterchainAccount returns the interchain account for given owner address on a given connection pair
+	// QueryInterchainAccount returns the interchain account for given owner
+	// address on a given connection pair
 	InterchainAccount(context.Context, *QueryInterchainAccountRequest) (*QueryInterchainAccountResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

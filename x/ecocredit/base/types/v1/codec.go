@@ -2,7 +2,6 @@ package v1
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,19 +31,22 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateProjectMetadata{}, "regen/MsgUpdateProjectMetadata", nil)
 	cdc.RegisterConcrete(&CreditTypeProposal{}, "regen/CreditTypeProposal", nil)
 	cdc.RegisterConcrete(&MsgBridgeReceive{}, "regen/MsgBridgeReceive", nil)
+	cdc.RegisterConcrete(&MsgBridge{}, "regen/MsgBridge", nil)
 	cdc.RegisterConcrete(&MsgAddCreditType{}, "regen/MsgAddCreditType", nil)
 	cdc.RegisterConcrete(&MsgAddClassCreator{}, "regen/MsgAddClassCreator", nil)
 	cdc.RegisterConcrete(&MsgRemoveClassCreator{}, "regen/MsgRemoveClassCreator", nil)
 	cdc.RegisterConcrete(&MsgSetClassCreatorAllowlist{}, "regen/MsgSetClassCreatorAllowlist", nil)
 	cdc.RegisterConcrete(&MsgUpdateClassFee{}, "regen/MsgUpdateClassFee", nil)
+	cdc.RegisterConcrete(&MsgAddAllowedBridgeChain{}, "regen/MsgAddAllowedBridgeChain", nil)
+	cdc.RegisterConcrete(&MsgRemoveAllowedBridgeChain{}, "regen/MsgRemoveAllowedBridgeChain", nil)
 }
 
 var (
-	amino = codec.NewLegacyAmino()
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	RegisterLegacyAminoCodec(legacy.Cdc)
 	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
 	sdk.RegisterLegacyAminoCodec(amino)

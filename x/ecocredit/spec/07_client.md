@@ -719,6 +719,179 @@ Example Output:
 }
 ```
 
+### BalancesByBatch
+
+The `BalancesByBatch` endpoint allows users to query all credit balances from a
+given credit batch.
+
+```bash
+regen.ecocredit.v1.Query/BalancesByBatch
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"batch_denom": "C02-001-20210101-20250101-001"}' \
+    localhost:9090 regen.ecocredit.v1.Query/BalancesByBatch
+```
+
+Example Output:
+
+```bash
+{
+  "balances": [
+    {
+      "address": "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+      "batchDenom": "C02-001-20210101-20250101-001",
+      "tradableAmount": "92.0",
+      "retiredAmount": "97",
+      "escrowedAmount": "30.0"
+    }
+  ],
+  "pagination": {
+    "nextKey": "BwEJABQDulMR5S+lTY8VaafpDwxlg7jx3AAF"
+  }
+}
+```
+
+
+### AllBalances
+
+The `AllBalances` endpoint allows users to query all credit balances.
+
+```bash
+regen.ecocredit.v1.Query/AllBalances
+```
+
+Example:
+
+```bash
+grpcurl -plaintext localhost:9090 regen.ecocredit.v1.Query/AllBalances
+```
+
+Example Output:
+
+```bash
+{
+  "balances": [
+    {
+      "address": "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+      "batchDenom": "C02-001-20210101-20250101-001",
+      "tradableAmount": "92.0",
+      "retiredAmount": "97",
+      "escrowedAmount": "30.0"
+    }
+  ],
+  "pagination": {
+    "nextKey": "BwEJABQDulMR5S+lTY8VaafpDwxlg7jx3AAF"
+  }
+}
+```
+
+### ClassCreatorAllowlist
+
+The `ClassCreatorAllowlist` endpoint allows users to query the credit class
+creator allowlist enable setting.
+
+```bash
+regen.ecocredit.v1.Query/ClassCreatorAllowlist
+```
+
+Example:
+
+```bash
+grpcurl -plaintext localhost:9090 regen.ecocredit.v1.Query/ClassCreatorAllowlist
+```
+
+Example Output:
+
+```bash
+{
+  "enabled":"true"
+}
+```
+
+### AllowedClassCreators
+
+The `AllowedClassCreators` endpoint allows users to query allowed credit class
+creators list.
+
+```bash
+regen.ecocredit.v1.Query/AllowedClassCreators
+```
+
+Example:
+
+```bash
+grpcurl -plaintext localhost:9090 regen.ecocredit.v1.Query/AllowedClassCreators
+```
+
+Example Output:
+
+```bash
+{
+  "classCreators":[
+    "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+    "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm"
+  ],
+  "pagination": {
+    "nextKey": "BwEJABQDulMR5S"
+  }
+}
+```
+
+### ClassFee
+
+The `ClassFee` endpoint allows users to query credit class creation fee.
+
+```bash
+regen.ecocredit.v1.Query/ClassFee
+```
+
+Example:
+
+```bash
+grpcurl -plaintext localhost:9090 regen.ecocredit.v1.Query/ClassFee
+```
+
+Example Output:
+
+```bash
+{
+  "fee": {
+      "denom": "uregen",
+      "amount": "20000000"
+  }
+}
+```
+
+### AllowedBridgeChains
+
+The `AllowedBridgeChains` endpoint allows users query list of chains allowed to be
+used in bridge operations.
+
+```bash
+regen.ecocredit.v1.Query/AllowedBridgeChains
+```
+
+Example:
+
+```bash
+grpcurl -plaintext localhost:9090 regen.ecocredit.v1.Query/AllowedBridgeChains
+```
+
+Example Output:
+
+```bash
+{
+  "allowedBridgeChains":[
+    "polygon"
+  ]
+}
+```
+
+
 ### Basket
 
 The `Basket` endpoint allows users to query for information on basket.
@@ -889,6 +1062,31 @@ Example Output:
       "balance": "1"
     }
   ]
+}
+```
+
+### BasketFee
+
+The `BasketFee` endpoint allows users to query basket creation fee.
+
+```bash
+regen.ecocredit.basket.v1.Query/BasketFee
+```
+
+Example
+
+```bash
+grpcurl -plaintext localhost:9090 regen.ecocredit.basket.v1.Query/BasketFee
+```
+
+Example Output:
+
+```bash
+{
+  "fee": {
+    "denom":"uregen",
+    "amount": "1000000000"
+  }
 }
 ```
 
@@ -1735,6 +1933,177 @@ Example Output:
 }
 ```
 
+### BalancesByBatch
+
+The `BalancesByBatch` endpoint allows users to query all credit balances from a
+given credit batch.
+
+```bash
+/regen/ecocredit/v1/balances-by-batch/{batch_denom}
+/regen/ecocredit/v1/batches/{batch_denom}/balances
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/batches/C02-001-20210101-20250101-001/balances
+```
+
+Example Output:
+
+```bash
+{
+  "balances": [
+    {
+      "address": "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+      "batch_denom": "C02-001-20210101-20250101-001",
+      "tradable_amount": "92.0",
+      "retired_amount": "97",
+      "escrowed_amount": "30.0"
+    }
+  ],
+  "pagination": {
+    "next_key": "BwEJABQDulMR5S+lTY8VaafpDwxlg7jx3AAF"
+  }
+}
+```
+
+### AllBalances
+
+The `AllBalances` endpoint allows users to query all credit balances.
+
+```bash
+/regen/ecocredit/v1/all-balances
+/regen/ecocredit/v1/balances
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/balances
+```
+
+Example Output:
+
+```bash
+{
+  "balances": [
+    {
+      "address": "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+      "batch_denom": "C02-001-20210101-20250101-001",
+      "tradable_amount": "92.0",
+      "retired_amount": "97",
+      "escrowed_amount": "30.0"
+    }
+  ],
+  "pagination": {
+    "next_key": "BwEJABQDulMR5S+lTY8VaafpDwxlg7jx3AAF"
+  }
+}
+```
+
+### ClassCreatorAllowlist
+
+The `ClassCreatorAllowlist` endpoint allows users to query the credit class
+creator allowlist enable setting.
+
+```bash
+/regen/ecocredit/v1/class-creator-allowlist
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/class-creator-allowlist
+```
+
+Example Output:
+
+```bash
+{
+  "enabled":"true"
+}
+```
+
+### AllowedClassCreators
+
+The `AllowedClassCreators` endpoint allows users to query allowed credit class
+creators list.
+
+```bash
+/regen/ecocredit/v1/allowed-class-creators
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/allowed-class-creators
+```
+
+Example Output:
+
+```bash
+{
+  "class_creators":[
+    "regen1qwa9xy0997j5mrc4dxn7jrcvvkpm3uwuldkrmg",
+    "regen123a7e9gvgm53zvswc6daq7c85xtzt8263lgasm"
+  ],
+  "pagination": {
+    "next_key": "BwEJABQDulMR5S"
+  }
+}
+```
+
+### ClassFee
+
+The `ClassFee` endpoint allows users to query credit class creation fee.
+
+
+```bash
+/regen/ecocredit/v1/class-fee
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/class-fee
+```
+
+Example Output:
+
+```bash
+{
+  "fee": {
+      "denom": "uregen",
+      "amount": "20000000"
+  }
+}
+```
+
+### AllowedBridgeChains
+
+The `AllowedBridgeChains` endpoint allows users query list of chains allowed to be
+used in bridge operations.
+
+```bash
+/regen/ecocredit/v1/allowed-bridge-chains
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1/allowed-bridge-chains
+```
+
+Example Output:
+
+```bash
+{
+  "allowed_bridge_chains":[
+    "polygon"
+  ]
+}
+```
 
 
 ### Basket
@@ -1899,6 +2268,31 @@ Example Output:
       "balance": "1"
     }
   ]
+}
+```
+
+### BasketFee
+
+The `BasketFee` endpoint allows users to query basket creation fee.
+
+```bash
+regen/ecocredit/basket/v1/basket-fee
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/basket/v1/basket-fee
+```
+
+Example Output:
+
+```bash
+{
+  "fee": {
+    "denom":"uregen",
+    "amount": "1000000000"
+  }
 }
 ```
 

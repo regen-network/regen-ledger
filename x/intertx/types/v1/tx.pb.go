@@ -31,9 +31,14 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgRegisterAccount defines the payload for Msg/RegisterAccount
 type MsgRegisterAccount struct {
-	Owner        string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// owner is the address of the interchain account owner.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// connection_id is the connection id string (i.e. channel-5).
 	ConnectionId string `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
-	Version      string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
+	// version is the application version string. For example, this could be an
+	// ICS27 encoded metadata type or an ICS29 encoded metadata type with a nested
+	// application version.
+	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
 }
 
 func (m *MsgRegisterAccount) Reset()         { *m = MsgRegisterAccount{} }
@@ -129,11 +134,13 @@ var xxx_messageInfo_MsgRegisterAccountResponse proto.InternalMessageInfo
 
 // MsgSubmitTx defines the payload for Msg/SubmitTx
 type MsgSubmitTx struct {
-	Owner        string     `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	ConnectionId string     `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
-	Msg          *types.Any `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
+	// owner is the owner address of the interchain account.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// connection_id is the id of the connection.
+	ConnectionId string `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
+	// msg is the bytes of the transaction msg to send.
+	Msg *types.Any `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
 }
-
 
 func (m *MsgSubmitTx) Reset()         { *m = MsgSubmitTx{} }
 func (m *MsgSubmitTx) String() string { return proto.CompactTextString(m) }

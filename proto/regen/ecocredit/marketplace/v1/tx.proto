@@ -19,7 +19,7 @@ service Msg {
   rpc UpdateSellOrders(MsgUpdateSellOrders)
       returns (MsgUpdateSellOrdersResponse);
 
-  // CancelSellOrder cancels a sell order and returns the funds from escrow.
+  // CancelSellOrder cancels a sell order and returns the credits from escrow.
   rpc CancelSellOrder(MsgCancelSellOrder) returns (MsgCancelSellOrderResponse);
 
   // BuyDirect purchases credits directly from the specified sell order.

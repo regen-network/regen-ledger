@@ -4,7 +4,7 @@ package intertxv1
 import (
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
-	_ "github.com/regen-network/regen-ledger/api/cosmos/msg/v1"
+	_ "github.com/cosmos/cosmos-sdk/api/cosmos/msg/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -1856,9 +1856,14 @@ type MsgRegisterAccount struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Owner        string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// owner is the address of the interchain account owner.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// connection_id is the connection id string (i.e. channel-5).
 	ConnectionId string `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
-	Version      string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
+	// version is the application version string. For example, this could be an
+	// ICS27 encoded metadata type or an ICS29 encoded metadata type with a nested
+	// application version.
+	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
 }
 
 func (x *MsgRegisterAccount) Reset() {
@@ -1935,9 +1940,12 @@ type MsgSubmitTx struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Owner        string     `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	ConnectionId string     `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
-	Msg          *anypb.Any `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
+	// owner is the owner address of the interchain account.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// connection_id is the id of the connection.
+	ConnectionId string `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
+	// msg is the bytes of the transaction msg to send.
+	Msg *anypb.Any `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
 }
 
 func (x *MsgSubmitTx) Reset() {

@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
-import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
 // SellOrder represents the information for a sell order.
 message SellOrder {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 1,
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1 fields : "batch_key"}
@@ -56,7 +56,7 @@ message SellOrder {
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
 message AllowedDenom {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 3
     primary_key : {fields : "bank_denom"}
     index : {id : 1 fields : "display_denom", unique : true}
@@ -85,7 +85,7 @@ message AllowedDenom {
 // less liquidity and longer settlement times. Such decisions should be taken
 // with care.
 message Market {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 4
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1 fields : "credit_type_abbrev,bank_denom", unique : true}

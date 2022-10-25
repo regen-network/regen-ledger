@@ -128,3 +128,35 @@ Feature: MsgCancel
     And a reason with length "513"
     When the message is validated
     Then expect the error "reason: max length 512: limit exceeded"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "amount": "100"
+        }
+      ],
+      "reason": "transferring credits to another registry"
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen/MsgCancel",
+      "value":{
+        "credits":[
+          {
+            "amount":"100",
+            "batch_denom":"C01-001-20200101-20210101-001"
+          }
+        ],
+        "owner":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "reason":"transferring credits to another registry"
+      }
+    }
+    """

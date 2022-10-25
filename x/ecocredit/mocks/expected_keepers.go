@@ -13,7 +13,6 @@ import (
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	types2 "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.
@@ -275,51 +274,4 @@ func (m *MockGovKeeper) GetDepositParams(ctx types.Context) v1.DepositParams {
 func (mr *MockGovKeeperMockRecorder) GetDepositParams(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDepositParams", reflect.TypeOf((*MockGovKeeper)(nil).GetDepositParams), ctx)
-}
-
-// MockParamKeeper is a mock of ParamKeeper interface.
-type MockParamKeeper struct {
-	ctrl     *gomock.Controller
-	recorder *MockParamKeeperMockRecorder
-}
-
-// MockParamKeeperMockRecorder is the mock recorder for MockParamKeeper.
-type MockParamKeeperMockRecorder struct {
-	mock *MockParamKeeper
-}
-
-// NewMockParamKeeper creates a new mock instance.
-func NewMockParamKeeper(ctrl *gomock.Controller) *MockParamKeeper {
-	mock := &MockParamKeeper{ctrl: ctrl}
-	mock.recorder = &MockParamKeeperMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockParamKeeper) EXPECT() *MockParamKeeperMockRecorder {
-	return m.recorder
-}
-
-// Get mocks base method.
-func (m *MockParamKeeper) Get(ctx types.Context, key []byte, ptr interface{}) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Get", ctx, key, ptr)
-}
-
-// Get indicates an expected call of Get.
-func (mr *MockParamKeeperMockRecorder) Get(ctx, key, ptr interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockParamKeeper)(nil).Get), ctx, key, ptr)
-}
-
-// GetParamSet mocks base method.
-func (m *MockParamKeeper) GetParamSet(ctx types.Context, ps types2.ParamSet) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GetParamSet", ctx, ps)
-}
-
-// GetParamSet indicates an expected call of GetParamSet.
-func (mr *MockParamKeeperMockRecorder) GetParamSet(ctx, ps interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetParamSet", reflect.TypeOf((*MockParamKeeper)(nil).GetParamSet), ctx, ps)
 }

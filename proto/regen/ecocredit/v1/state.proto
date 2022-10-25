@@ -3,7 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
-import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1";
@@ -11,7 +11,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/type
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...)
 message CreditType {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 1,
     primary_key : {fields : "abbreviation"}
     index : {id : 1, fields : "name", unique : true}
@@ -33,7 +33,7 @@ message CreditType {
 
 // Class represents the high-level on-chain information for a credit class.
 message Class {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 2,
     primary_key : {fields : "key", auto_increment : true}
     index : {id : 1 fields : "id", unique : true}
@@ -62,7 +62,7 @@ message Class {
 // ClassIssuers is a JOIN table for Class Info that stores the credit class
 // issuers
 message ClassIssuer {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 3,
     primary_key : {fields : "class_key,issuer"}
   };
@@ -77,7 +77,7 @@ message ClassIssuer {
 
 // Project represents the high-level on-chain information for a project.
 message Project {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 4,
     primary_key : {fields : "key", auto_increment : true}
     index : {id : 1, fields : "id", unique : true}
@@ -115,7 +115,7 @@ message Project {
 
 // Batch represents the high-level on-chain information for a credit batch.
 message Batch {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 5,
     primary_key : {fields : "key", auto_increment : true}
     index : {id : 1 fields : "denom", unique : true}
@@ -163,7 +163,7 @@ message Batch {
 // ClassSequence stores and increments the sequence number for credit classes
 // within a credit type.
 message ClassSequence {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 6,
     primary_key : {fields : "credit_type_abbrev"}
   };
@@ -180,7 +180,7 @@ message ClassSequence {
 // ProjectSequence stores and increments the sequence number for projects within
 // a credit class.
 message ProjectSequence {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 7,
     primary_key : {fields : "class_key"}
   };
@@ -197,7 +197,7 @@ message ProjectSequence {
 // BatchSequence stores and increments the sequence number for credit batches
 // within a project.
 message BatchSequence {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 8,
     primary_key : {fields : "project_key"}
   };
@@ -213,7 +213,7 @@ message BatchSequence {
 
 // BatchBalance stores each accounts credit balance.
 message BatchBalance {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 9,
     primary_key : {fields : "address,batch_key"}
     index : {id : 1, fields : "batch_key,address"}
@@ -241,7 +241,7 @@ message BatchBalance {
 
 // BatchSupply stores the supply of credits for a credit batch.
 message BatchSupply {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 10,
     primary_key : {fields : "batch_key"}
   };
@@ -276,7 +276,7 @@ message BatchSupply {
 // class_key) to prevent malicious credit class issuers from blocking any
 // bridge operations taking place within another credit class.
 message OriginTxIndex {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 11,
     primary_key : {fields : "class_key,id,source"}
   };
@@ -301,7 +301,7 @@ message OriginTxIndex {
 // that each credit batch corresponds to a single contract and credits that
 // have been bridged will always be bridged back to the original contract.
 message BatchContract {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 12,
     primary_key : {fields : "batch_key"}
     index : {id : 1, fields : "class_key,contract", unique : true}
@@ -330,7 +330,7 @@ message BatchContract {
 //
 // Since Revision 1
 message ClassCreatorAllowlist {
-  option (cosmos.orm.v1alpha1.singleton) = {
+  option (cosmos.orm.v1.singleton) = {
     id : 13
   };
 
@@ -343,7 +343,7 @@ message ClassCreatorAllowlist {
 //
 // Since Revision 1
 message AllowedClassCreator {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 14,
     primary_key : {fields : "address"}
   };
@@ -357,7 +357,7 @@ message AllowedClassCreator {
 //
 // Since Revision 1
 message ClassFee {
-  option (cosmos.orm.v1alpha1.singleton) = {
+  option (cosmos.orm.v1.singleton) = {
     id : 15
   };
 
@@ -373,7 +373,7 @@ message ClassFee {
 //
 // Since Revision 1
 message AllowedBridgeChain {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 16,
     primary_key : {fields : "chain_name"}
   };

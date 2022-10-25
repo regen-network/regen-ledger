@@ -930,7 +930,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// QueryInterchainAccountRequest is the request type for the Query/InterchainAccountAddress RPC
+// QueryInterchainAccountRequest is the request type for the
+// Query/InterchainAccountAddress RPC
 type QueryInterchainAccountRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -976,7 +977,8 @@ func (x *QueryInterchainAccountRequest) GetConnectionId() string {
 	return ""
 }
 
-// QueryInterchainAccountResponse the response type for the Query/InterchainAccountAddress RPC
+// QueryInterchainAccountResponse the response type for the
+// Query/InterchainAccountAddress RPC
 type QueryInterchainAccountResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

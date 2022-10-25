@@ -28,7 +28,8 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryInterchainAccountRequest is the request type for the Query/InterchainAccountAddress RPC
+// QueryInterchainAccountRequest is the request type for the
+// Query/InterchainAccountAddress RPC
 type QueryInterchainAccountRequest struct {
 	// owner is the address of the account that owns the ICA.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
@@ -83,7 +84,8 @@ func (m *QueryInterchainAccountRequest) GetConnectionId() string {
 	return ""
 }
 
-// QueryInterchainAccountResponse the response type for the Query/InterchainAccountAddress RPC
+// QueryInterchainAccountResponse the response type for the
+// Query/InterchainAccountAddress RPC
 type QueryInterchainAccountResponse struct {
 	// interchain_account_address is the address of the ICA.
 	InterchainAccountAddress string `protobuf:"bytes,1,opt,name=interchain_account_address,json=interchainAccountAddress,proto3" json:"interchain_account_address,omitempty"`
@@ -173,7 +175,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// QueryInterchainAccount returns the interchain account for given owner address on a given connection pair
+	// QueryInterchainAccount returns the interchain account for given owner
+	// address on a given connection pair
 	InterchainAccount(ctx context.Context, in *QueryInterchainAccountRequest, opts ...grpc.CallOption) (*QueryInterchainAccountResponse, error)
 }
 
@@ -196,7 +199,8 @@ func (c *queryClient) InterchainAccount(ctx context.Context, in *QueryInterchain
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// QueryInterchainAccount returns the interchain account for given owner address on a given connection pair
+	// QueryInterchainAccount returns the interchain account for given owner
+	// address on a given connection pair
 	InterchainAccount(context.Context, *QueryInterchainAccountRequest) (*QueryInterchainAccountResponse, error)
 }
 

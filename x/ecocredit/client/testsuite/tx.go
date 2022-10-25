@@ -30,13 +30,13 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 			name:      "missing args",
 			args:      []string{},
 			expErr:    true,
-			expErrMsg: "Error: accepts 4 arg(s), received 0",
+			expErrMsg: "Error: accepts 3 arg(s), received 0",
 		},
 		{
 			name:      "too many args",
-			args:      []string{"foo", "bar", "baz", "bar", "foo"},
+			args:      []string{"foo", "bar", "baz", "bar"},
 			expErr:    true,
-			expErrMsg: "Error: accepts 4 arg(s), received 5",
+			expErrMsg: "Error: accepts 3 arg(s), received 4",
 		},
 		{
 			name: "missing from flag",
@@ -44,7 +44,7 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 			expErr:    true,
 			expErrMsg: "Error: required flag(s) \"from\" not set",
@@ -55,8 +55,8 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				"foo",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, "foo"),
 			},
 			expErr:    true,
 			expErrMsg: "invalid decimal coin expression",
@@ -67,8 +67,8 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 		},
 		{
@@ -77,8 +77,8 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 		},
 		{
@@ -87,9 +87,9 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 				admin,
 				s.creditTypeAbbrev,
 				"metadata",
-				creditClassFee,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
 				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				fmt.Sprintf("--%s=%s", client.FlagClassFee, creditClassFee),
 			},
 		},
 	}
@@ -797,7 +797,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	// create new credit class to not interfere with other tests
@@ -806,7 +806,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	// create new credit class to not interfere with other tests
@@ -815,7 +815,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 		Issuers:          []string{admin},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	testCases := []struct {
