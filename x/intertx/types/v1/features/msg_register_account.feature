@@ -51,3 +51,25 @@ Feature: MsgRegisterAccount
     """
     When the message is validated
     Then expect the error "connection_id cannot be empty: invalid request"
+
+  Scenario: a valid amino msg
+    Given the message
+    """
+    {
+      "owner": "regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza",
+      "connection_id": "channel-5",
+      "version": "3"
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type": "intertx/MsgRegisterAccount",
+      "value":{
+        "connection_id": "channel-5",
+        "owner": "regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza",
+        "version": "3"
+      }
+    }
+    """

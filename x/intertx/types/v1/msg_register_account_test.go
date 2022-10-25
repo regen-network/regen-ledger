@@ -1,19 +1,22 @@
 package v1
 
 import (
+	"bytes"
 	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type registerAccountSuite struct {
-	t   gocuke.TestingT
-	msg *MsgRegisterAccount
-	err error
+	t         gocuke.TestingT
+	msg       *MsgRegisterAccount
+	signBytes string
+	err       error
 }
 
 func TestMsgRegisterAccount(t *testing.T) {
@@ -43,4 +46,14 @@ func (s *registerAccountSuite) ExpectNoError() {
 
 func (s *registerAccountSuite) ExpectTheError(a string) {
 	assert.ErrorContains(s.t, s.err, a)
+}
+
+func (s *registerAccountSuite) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *registerAccountSuite) ExpectTheSignBytes(a gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(a.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }
