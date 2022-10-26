@@ -7,14 +7,14 @@ import (
 	"github.com/spf13/viper"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	client2 "github.com/cosmos/cosmos-sdk/x/auth/client"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 
 	"github.com/regen-network/regen-ledger/x/intertx"
-	v1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
+	intertxv1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )
 
 const (
@@ -54,7 +54,7 @@ func getRegisterAccountCmd() *cobra.Command {
 				return err
 			}
 
-			msg := v1.MsgRegisterAccount{
+			msg := intertxv1.MsgRegisterAccount{
 				Owner:        clientCtx.GetFromAddress().String(),
 				ConnectionId: viper.GetString(FlagConnectionID),
 				Version:      viper.GetString(FlagVersion),
@@ -86,7 +86,7 @@ func getSubmitTxCmd() *cobra.Command {
 			connectionID := args[0]
 			sdkMsgs := args[1]
 
-			theTx, err := client2.ReadTxFromFile(clientCtx, sdkMsgs)
+			theTx, err := authclient.ReadTxFromFile(clientCtx, sdkMsgs)
 			if err != nil {
 				return err
 			}
@@ -96,7 +96,7 @@ func getSubmitTxCmd() *cobra.Command {
 				return sdkerrors.ErrInvalidRequest.Wrapf("expected 1 msg, got %d", lenMsgs)
 			}
 
-			msg := v1.NewMsgSubmitTx(clientCtx.GetFromAddress().String(), connectionID, innerMsgs[0])
+			msg := intertxv1.NewMsgSubmitTx(clientCtx.GetFromAddress().String(), connectionID, innerMsgs[0])
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
