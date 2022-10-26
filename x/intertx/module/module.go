@@ -73,7 +73,7 @@ func (a AppModule) InitGenesis(context sdk.Context, jsonCodec codec.JSONCodec, m
 }
 
 func (a AppModule) ExportGenesis(context sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
-	return nil // TODO(Tyler): impl?
+	return nil
 }
 
 func (a AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {}
