@@ -1,6 +1,7 @@
 package v1
 
 import (
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -41,4 +42,19 @@ func (m MsgSubmitTx) Route() string {
 
 func (m MsgSubmitTx) Type() string {
 	return sdk.MsgTypeURL(&m)
+}
+
+// NewMsgSubmitTx creates a new MsgSubmitTx instance
+func NewMsgSubmitTx(owner string, connectionID string, msg sdk.Msg) *MsgSubmitTx {
+
+	anyMsg, err := codectypes.NewAnyWithValue(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return &MsgSubmitTx{
+		Owner:        owner,
+		ConnectionId: connectionID,
+		Msg:          anyMsg,
+	}
 }
