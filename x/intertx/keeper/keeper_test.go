@@ -53,7 +53,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	ctrl := gomock.NewController(t)
 	s.cap = mocks.NewMockCapabilityKeeper(ctrl)
 	s.ica = mocks.NewMockICAControllerKeeper(ctrl)
-	s.k = NewKeeper(s.cdc, sk, s.ica, s.cap)
+	s.k = NewKeeper(s.cdc, s.ica, s.cap)
 
 	// set up addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()

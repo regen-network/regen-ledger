@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -15,17 +14,13 @@ import (
 type Keeper struct {
 	cdc codec.BinaryCodec
 
-	storeKey storetypes.StoreKey
-
 	scopedKeeper        CapabilityKeeper
 	icaControllerKeeper ICAControllerKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey, iaKeeper ICAControllerKeeper, scopedKeeper CapabilityKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, iaKeeper ICAControllerKeeper, scopedKeeper CapabilityKeeper) Keeper {
 	return Keeper{
-		cdc:      cdc,
-		storeKey: storeKey,
-
+		cdc:                 cdc,
 		scopedKeeper:        scopedKeeper,
 		icaControllerKeeper: iaKeeper,
 	}

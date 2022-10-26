@@ -281,7 +281,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibchost.StoreKey, ibctransfertypes.StoreKey, group.StoreKey,
 		ecocredit.ModuleName, data.ModuleName,
 		icahosttypes.StoreKey, ibcfeetypes.StoreKey, icacontrollertypes.StoreKey,
-		intertx.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -400,7 +399,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.MsgServiceRouter(),
 	)
 
-	app.InterTxKeeper = intertxkeeper.NewKeeper(appCodec, keys[intertx.StoreKey], app.ICAControllerKeeper, app.ScopedInterTxKeeper)
+	app.InterTxKeeper = intertxkeeper.NewKeeper(appCodec, app.ICAControllerKeeper, app.ScopedInterTxKeeper)
 	interTxModule := intertxmodule.NewModule(app.InterTxKeeper)
 	interTxIBCModule := intertxmodule.NewIBCModule(app.InterTxKeeper)
 

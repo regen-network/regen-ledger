@@ -14,11 +14,9 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 	ibcfeetypes "github.com/cosmos/ibc-go/v5/modules/apps/29-fee/types"
 
+	"github.com/regen-network/regen-ledger/v4/app/upgrades"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/intertx"
-
-	"github.com/regen-network/regen-ledger/v4/app/upgrades"
 )
 
 const Name = "v5"
@@ -72,7 +70,6 @@ var Upgrade = upgrades.Upgrade{
 			icahosttypes.StoreKey,
 			ibcfeetypes.StoreKey,
 			icacontrollertypes.StoreKey,
-			intertx.StoreKey,
 		},
 	},
 }
