@@ -2,19 +2,16 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	client2 "github.com/cosmos/cosmos-sdk/x/auth/client"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/x/intertx"
 	v1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
@@ -78,65 +75,34 @@ func getRegisterAccountCmd() *cobra.Command {
 
 func getSubmitTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "submit [path/to/sdk_msg.json]",
-		Example: "regen tx intertx submit tx.json",
-		Args:    cobra.ExactArgs(1),
+		Use:     "submit-tx [connection-id] [path/to/sdk_msg.json]",
+		Example: "regen tx intertx submit-tx channel-5 tx.json",
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			connectionID := args[0]
+			sdkMsgs := args[1]
 
-			cdc := codec.NewProtoCodec(clientCtx.InterfaceRegistry)
-
-			var txMsg sdk.Msg
-			if err := cdc.UnmarshalInterfaceJSON([]byte(args[0]), &txMsg); err != nil {
-
-				// check for file path if JSON input is not provided
-				contents, err := ioutil.ReadFile(args[0])
-				if err != nil {
-					return sdkerrors.ErrNotFound.Wrapf("could not real file at %s: %s", args[0], err.Error())
-				}
-
-				if err := cdc.UnmarshalInterfaceJSON(contents, &txMsg); err != nil {
-					return sdkerrors.ErrJSONUnmarshal.Wrap(err.Error())
-				}
-			}
-
-			anyBz, err := packAnyIntoMsg(txMsg)
+			theTx, err := client2.ReadTxFromFile(clientCtx, sdkMsgs)
 			if err != nil {
 				return err
 			}
 
-			msg := v1.MsgSubmitTx{
-				Owner:        clientCtx.GetFromAddress().String(),
-				ConnectionId: viper.GetString(FlagConnectionID),
-				Msg:          anyBz,
+			innerMsgs := theTx.GetMsgs()
+			if lenMsgs := len(innerMsgs); lenMsgs != 1 {
+				return sdkerrors.ErrInvalidRequest.Wrapf("expected 1 msg, got %d", lenMsgs)
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			msg := v1.NewMsgSubmitTx(clientCtx.GetFromAddress().String(), connectionID, innerMsgs[0])
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-
-	cmd.Flags().String(FlagConnectionID, "", "the connection end identifier on the controller chain")
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
 
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
-}
-
-// PackTxMsgAny marshals the sdk.Msg payload to a protobuf Any type
-func packAnyIntoMsg(sdkMsg sdk.Msg) (*codectypes.Any, error) {
-	msg, ok := sdkMsg.(proto.Message)
-	if !ok {
-		return nil, fmt.Errorf("can't proto marshal %T", sdkMsg)
-	}
-
-	a, err := codectypes.NewAnyWithValue(msg)
-	if err != nil {
-		return nil, err
-	}
-
-	return a, nil
 }
