@@ -1,5 +1,9 @@
 project_name: regen-ledger
 
+before:
+  hooks:
+    - ./scripts/completions.sh
+
 env:
   - GO111MODULE=on
 
@@ -126,7 +130,9 @@ archives:
     wrap_in_directory: true
     format: zip
     files:
-      - none*
+      - README.md
+      - LICENSE
+      - completions/*
 
 brews:
   - name: regen-ledger
@@ -143,6 +149,9 @@ brews:
       system "#{bin}/regen --version"
     install: |
       bin.install "regen"
+      bash_completion.install "completions/regen.bash" => "regen"
+      zsh_completion.install "completions/regen.zsh" => "_regen"
+      fish_completion.install "completions/regen.fish"  
 
 nfpms:
   - maintainer: regen-network
@@ -150,9 +159,22 @@ nfpms:
     homepage: "https://www.regen.network/"
     license: Apache2.0
     formats:
-    - deb
-    - rpm
-    - apk
+      - deb
+      - rpm
+      - apk
+    contents:
+      - src: ./completions/regen.bash
+        dst: /usr/share/bash-completion/completions/regen
+        file_info:
+          mode: 0644
+      - src: ./completions/regen.fish
+        dst: /usr/share/fish/vendor_completions.d/regen.fish
+        file_info:
+          mode: 0644
+      - src: ./completions/regen.zsh
+        dst:  /usr/share/zsh/vendor-completions/_regen
+        file_info:
+          mode: 0644
 
 release:
   github:
