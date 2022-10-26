@@ -6,7 +6,7 @@ import (
 	"github.com/regen-network/gocuke"
 	"gotest.tools/v3/assert"
 
-	codec2 "github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
@@ -16,7 +16,7 @@ import (
 type submitTxSuite struct {
 	t     gocuke.TestingT
 	msg   *MsgSubmitTx
-	codec *codec2.ProtoCodec
+	codec *codec.ProtoCodec
 	err   error
 }
 
@@ -31,7 +31,7 @@ func (s *submitTxSuite) Before(t gocuke.TestingT) {
 	ir := types.NewInterfaceRegistry()
 	RegisterInterfaces(ir)
 	banktypes.RegisterInterfaces(ir)
-	s.codec = codec2.NewProtoCodec(ir)
+	s.codec = codec.NewProtoCodec(ir)
 }
 
 func (s *submitTxSuite) ExpectTheError(a string) {
