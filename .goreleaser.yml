@@ -154,8 +154,7 @@ brews:
       fish_completion.install "completions/regen.fish"  
 
 nfpms:
-  - 
-    maintainer: regen-network
+  - maintainer: regen-network
     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
     homepage: "https://www.regen.network/"
     license: Apache2.0
