@@ -23337,10 +23337,9 @@ type MsgCreateClass struct {
 	// credit_type_abbrev is the abbreviation of the credit type under which the
 	// credit class will be created (e.g. "C", "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
-	// fee is the credit class creation fee. The specified fee must be one of the
-	// fees listed in Params.credit_class_fee. The specified amount can be greater
-	// than or equal to the listed amount but the credit class creator will only
-	// be charged the listed amount (i.e. the minimum amount).
+	// fee is the credit class creation fee. An equal fee is required if the class
+	// creation fee parameter is set. The provided fee can be greater than the
+	// parameter, but only the amount in the parameter will be charged.
 	Fee *v1beta1.Coin `protobuf:"bytes,5,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 

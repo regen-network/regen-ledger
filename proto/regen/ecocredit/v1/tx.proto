@@ -15,16 +15,17 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/type
 service Msg {
 
   // CreateClass creates a new credit class under the given credit type with an
-  // approved list of issuers and optional metadata. The fee denom must be one
-  // of the denoms listed in Params.credit_class_fee and greater than or equal
-  // to the fee amount but only the minimum amount is charged. The creator of
-  // the credit class becomes the admin of the credit class upon creation.
+  // approved list of issuers and optional metadata. If the class fee parameter
+  // is set, the fee field must be populated with equal value. A greater fee can
+  // be provided, however, the creator will only be charged the amount specified
+  // in the fee parameter. The creator of the credit class becomes the admin of
+  // the credit class upon creation.
   rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
 
   // CreateProject creates a new project under the given credit class with a
   // jurisdiction, optional metadata, and an optional reference ID. The creator
   // of the project must be an approved credit class issuer for the given credit
-  // class and the creator becomes the admin of the project upon creation.
+  // class. The creator becomes the admin of the project upon creation.
   rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
 
   // CreateBatch creates a new batch of credits under the given project with a
@@ -129,13 +130,13 @@ service Msg {
   rpc SetClassCreatorAllowlist(MsgSetClassCreatorAllowlist)
       returns (MsgSetClassCreatorAllowlistResponse);
 
-  // AddClassCreator is a governance method that allows the addition of new
+  // AddClassCreator is a governance method that allows the addition of a new
   // address to the class creation allowlist.
   //
   // Since Revision 1
   rpc AddClassCreator(MsgAddClassCreator) returns (MsgAddClassCreatorResponse);
 
-  // RemoveClassCreator is a governance method that removes
+  // RemoveClassCreator is a governance method that removes an
   // address from the class creation allowlist.
   //
   // Since Revision 1
@@ -143,8 +144,9 @@ service Msg {
       returns (MsgRemoveClassCreatorResponse);
 
   // UpdateClassFee is a governance method that allows for updating the credit
-  // class creation fee. If not set, the credit class creation fee will be
-  // removed and no fee will be required to create a credit class.
+  // class creation fee. If no fee is specified in the request, the credit
+  // class creation fee will be removed and no fee will be required to create
+  // a credit class.
   //
   // Since Revision 1
   rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
@@ -203,10 +205,9 @@ message MsgCreateClass {
   // credit class will be created (e.g. "C", "BIO").
   string credit_type_abbrev = 4;
 
-  // fee is the credit class creation fee. The specified fee must be one of the
-  // fees listed in Params.credit_class_fee. The specified amount can be greater
-  // than or equal to the listed amount but the credit class creator will only
-  // be charged the listed amount (i.e. the minimum amount).
+  // fee is the credit class creation fee. An equal fee is required if the class
+  // creation fee parameter is set. The provided fee can be greater than the
+  // parameter, but only the amount in the parameter will be charged.
   cosmos.base.v1beta1.Coin fee = 5;
 }
 
