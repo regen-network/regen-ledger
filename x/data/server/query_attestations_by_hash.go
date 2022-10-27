@@ -5,7 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -16,17 +17,17 @@ import (
 // AttestationsByHash queries data attestations by the ContentHash of the data.
 func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryAttestationsByHashRequest) (*data.QueryAttestationsByHashResponse, error) {
 	if request.ContentHash == nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+		return nil, status.Error(codes.InvalidArgument, "content hash cannot be empty")
 	}
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.InvalidArgument, "failed to convert to IRI: %s", err.Error())
 	}
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrap("data record with content hash")
+		return nil, status.Errorf(codes.NotFound, "data record with IRI: %s", iri)
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

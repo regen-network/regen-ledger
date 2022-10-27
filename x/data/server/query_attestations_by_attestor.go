@@ -5,7 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -16,12 +17,12 @@ import (
 // AttestationsByAttestor queries data attestations by an attestor.
 func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.QueryAttestationsByAttestorRequest) (*data.QueryAttestationsByAttestorResponse, error) {
 	if len(request.Attestor) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("attestor cannot be empty")
+		return nil, status.Error(codes.InvalidArgument, "attestor cannot be empty")
 	}
 
 	addr, err := sdk.AccAddressFromBech32(request.Attestor)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("attestor: %s", err)
+		return nil, status.Errorf(codes.InvalidArgument, "attestor: %s", err.Error())
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
@@ -48,7 +49,7 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 
 		dataID, err := s.stateStore.DataIDTable().Get(ctx, dataAttestor.Id)
 		if err != nil {
-			return nil, err
+			return nil, status.Errorf(codes.NotFound, err.Error())
 		}
 
 		attestations = append(attestations, &data.AttestationInfo{

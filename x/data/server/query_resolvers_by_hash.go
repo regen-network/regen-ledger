@@ -53,7 +53,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 
 		resolver, err := s.stateStore.ResolverTable().Get(ctx, item.ResolverId)
 		if err != nil {
-			return nil, status.Errorf(codes.NotFound, "failed to get resolver: %d", item.ResolverId)
+			return nil, status.Errorf(codes.NotFound, "failed to get resolver by ID: %d", item.ResolverId)
 		}
 
 		manager := sdk.AccAddress(resolver.Manager).String()

@@ -3,7 +3,8 @@ package server
 import (
 	"context"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -11,12 +12,12 @@ import (
 // ConvertHashToIRI converts a ContentHash to an IRI.
 func (s serverImpl) ConvertHashToIRI(_ context.Context, request *data.ConvertHashToIRIRequest) (*data.ConvertHashToIRIResponse, error) {
 	if request.ContentHash == nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+		return nil, status.Error(codes.InvalidArgument, "content hash cannot be empty")
 	}
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.InvalidArgument, "failed to parse IRI: %s", err.Error())
 	}
 
 	return &data.ConvertHashToIRIResponse{
