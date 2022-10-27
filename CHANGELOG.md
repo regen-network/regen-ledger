@@ -60,6 +60,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `Resolver` state validation checks
 - [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `DataResolver` state validation checks
 
+#### Fixed
+
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Return gRPC response code in query response.
+
 ### x/ecocredit
 
 #### API Breaking Changes
