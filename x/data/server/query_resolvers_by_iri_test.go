@@ -89,7 +89,7 @@ func TestQuery_ResolversByIRI(t *testing.T) {
 
 	// query resolvers with empty iri
 	_, err = s.server.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{})
-	require.EqualError(t, err, "IRI cannot be empty: invalid request")
+	require.EqualError(t, err, "rpc error: code = InvalidArgument desc = IRI cannot be empty")
 
 	// query resolvers with invalid iri
 	_, err = s.server.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{
@@ -101,5 +101,5 @@ func TestQuery_ResolversByIRI(t *testing.T) {
 	_, err = s.server.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{
 		Iri: "regen:13toVfw5KEeQwbmV733E3j9HwhVCQTxB7ojFPjGdmr7HX3kuSASGXxV.rdf",
 	})
-	require.EqualError(t, err, "data record with IRI: not found")
+	require.EqualError(t, err, "rpc error: code = NotFound desc = data record with IRI: regen:13toVfw5KEeQwbmV733E3j9HwhVCQTxB7ojFPjGdmr7HX3kuSASGXxV.rdf")
 }

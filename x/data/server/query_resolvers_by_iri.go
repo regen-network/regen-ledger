@@ -5,7 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -15,7 +16,7 @@ import (
 // ResolversByIRI queries resolvers with registered data by the IRI of the data.
 func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResolversByIRIRequest) (*data.QueryResolversByIRIResponse, error) {
 	if len(request.Iri) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
+		return nil, status.Error(codes.InvalidArgument, "IRI cannot be empty")
 	}
 
 	// check for valid IRI
@@ -26,7 +27,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrap("data record with IRI")
+		return nil, status.Errorf(codes.NotFound, "data record with IRI: %s", request.Iri)
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
@@ -53,7 +54,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 
 		resolver, err := s.stateStore.ResolverTable().Get(ctx, item.ResolverId)
 		if err != nil {
-			return nil, err
+			return nil, status.Errorf(codes.NotFound, "resolver with ID: %d", item.ResolverId)
 		}
 
 		manager := sdk.AccAddress(resolver.Manager).String()

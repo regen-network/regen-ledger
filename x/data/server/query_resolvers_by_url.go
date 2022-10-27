@@ -5,7 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -15,7 +16,7 @@ import (
 // ResolversByURL queries resolvers by URL.
 func (s serverImpl) ResolversByURL(ctx context.Context, request *data.QueryResolversByURLRequest) (*data.QueryResolversByURLResponse, error) {
 	if len(request.Url) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("URL cannot be empty")
+		return nil, status.Error(codes.InvalidArgument, "URL cannot be empty")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)

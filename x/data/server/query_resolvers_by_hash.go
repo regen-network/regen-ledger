@@ -5,7 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -15,7 +16,7 @@ import (
 // ResolversByHash queries resolvers with registered data by the ContentHash of the data.
 func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryResolversByHashRequest) (*data.QueryResolversByHashResponse, error) {
 	if request.ContentHash == nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+		return nil, status.Error(codes.InvalidArgument, "content hash cannot be empty")
 	}
 
 	iri, err := request.ContentHash.ToIRI()
@@ -25,7 +26,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrapf("data record with content hash")
+		return nil, status.Error(codes.NotFound, "data record with content hash")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
@@ -52,7 +53,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 
 		resolver, err := s.stateStore.ResolverTable().Get(ctx, item.ResolverId)
 		if err != nil {
-			return nil, err
+			return nil, status.Errorf(codes.NotFound, "failed to get resolver: %d", item.ResolverId)
 		}
 
 		manager := sdk.AccAddress(resolver.Manager).String()

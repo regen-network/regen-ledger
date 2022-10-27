@@ -89,7 +89,7 @@ func TestQuery_ResolversByHash(t *testing.T) {
 
 	// query resolvers with empty content hash
 	_, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{})
-	require.EqualError(t, err, "content hash cannot be empty: invalid request")
+	require.EqualError(t, err, "rpc error: code = InvalidArgument desc = content hash cannot be empty")
 
 	// query resolvers with invalid content hash
 	_, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{
@@ -105,5 +105,5 @@ func TestQuery_ResolversByHash(t *testing.T) {
 			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 		}},
 	})
-	require.EqualError(t, err, "data record with content hash: not found")
+	require.EqualError(t, err, "rpc error: code = NotFound desc = data record with content hash")
 }
