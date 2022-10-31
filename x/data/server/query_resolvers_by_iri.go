@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	errors "github.com/regen-network/regen-ledger/errors"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -15,23 +15,23 @@ import (
 // ResolversByIRI queries resolvers with registered data by the IRI of the data.
 func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResolversByIRIRequest) (*data.QueryResolversByIRIResponse, error) {
 	if len(request.Iri) == 0 {
-		return nil, errors.ErrInvalidArgument.Wrap("IRI cannot be empty")
+		return nil, regenerrors.ErrInvalidArgument.Wrap("IRI cannot be empty")
 	}
 
 	// check for valid IRI
 	_, err := data.ParseIRI(request.Iri)
 	if err != nil {
-		return nil, errors.ErrInvalidArgument.Wrap(err.Error())
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, errors.ErrNotFound.Wrapf("data record with IRI: %s", request.Iri)
+		return nil, regenerrors.ErrNotFound.Wrapf("data record with IRI: %s", request.Iri)
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, errors.ErrInvalidArgument.Wrap(err.Error())
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := s.stateStore.DataResolverTable().List(
@@ -40,7 +40,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 		ormlist.Paginate(pg),
 	)
 	if err != nil {
-		return nil, errors.ErrInternal.Wrap(err.Error())
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 	defer it.Close()
 
@@ -53,7 +53,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 
 		resolver, err := s.stateStore.ResolverTable().Get(ctx, item.ResolverId)
 		if err != nil {
-			return nil, errors.ErrNotFound.Wrapf("resolver with ID: %d", item.ResolverId)
+			return nil, regenerrors.ErrNotFound.Wrapf("resolver with ID: %d", item.ResolverId)
 		}
 
 		manager := sdk.AccAddress(resolver.Manager).String()
@@ -67,7 +67,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 
 	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, errors.ErrInternal.Wrap(err.Error())
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return res, nil

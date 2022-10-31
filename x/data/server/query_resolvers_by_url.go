@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	errors "github.com/regen-network/regen-ledger/errors"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -15,12 +15,12 @@ import (
 // ResolversByURL queries resolvers by URL.
 func (s serverImpl) ResolversByURL(ctx context.Context, request *data.QueryResolversByURLRequest) (*data.QueryResolversByURLResponse, error) {
 	if len(request.Url) == 0 {
-		return nil, errors.ErrInvalidArgument.Wrap("URL cannot be empty")
+		return nil, regenerrors.ErrInvalidArgument.Wrap("URL cannot be empty")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, errors.ErrInvalidArgument.Wrap(err.Error())
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := s.stateStore.ResolverTable().List(
@@ -51,7 +51,7 @@ func (s serverImpl) ResolversByURL(ctx context.Context, request *data.QueryResol
 
 	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, errors.ErrInternal.Wrap(err.Error())
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return res, nil

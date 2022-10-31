@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### General
 
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Add `errors` module
+
 #### Changed
 
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
