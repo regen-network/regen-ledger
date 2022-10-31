@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/errors"
+	errors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
