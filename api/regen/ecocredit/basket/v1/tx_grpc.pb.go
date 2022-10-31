@@ -22,24 +22,28 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// Create creates a basket that mints basket tokens in exchange for credits,
-	// and vice versa. The basket token denom is derived from the basket name,
-	// credit type abbreviation, and credit type precision (i.e. basket name
-	// "foo", credit type exponent 6, and credit type abbreviation "C" generates
-	// the denom eco.uC.foo). Baskets can limit credit acceptance criteria based
-	// on a combination of credit type, credit classes, and credit batch start
-	// date. Credits taken from the basket will be immediately retired, unless
-	// disable_auto_retire is set to false, which would cause credits to be sent
-	// to the taker's tradable balance. If the basket fee governance parameter is
-	// set, a fee of equal value must be provided in the request. A greater value
-	// fee can be provided, but only the amount specified in the fee parameter
-	// will be charged. Fees from creating a basket are burned.
+	// Create creates a basket that can hold different types of ecocredits that
+	// meet the basket's criteria. Upon depositing ecocredits into the basket,
+	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
+	// module. This allows basket tokens to be utilized within IBC. Basket tokens
+	// are fully fungible with other basket tokens within the same basket. The
+	// basket token denom is derived from the basket name, credit type
+	// abbreviation, and credit type precision (i.e. basket name "foo", credit
+	// type exponent 6, and credit type abbreviation "C" generates the denom
+	// eco.uC.foo). Baskets can limit credit acceptance criteria based on a
+	// combination of credit type, credit classes, and credit batch start date.
+	// Credits can be taken from the basket in exchange for basket tokens. Taken
+	// credits will be immediately retired, unless disable_auto_retire is set to
+	// false, which would cause credits to be sent to the taker's tradable
+	// balance. If the basket fee governance parameter is set, a fee of equal or
+	// greater value must be provided in the request. Only the amount specified in
+	// the fee parameter will be charged, even if a greater value fee is provided.
+	// Fees from creating a basket are burned.
 	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
 	// Put deposits credits into the basket from the holder's tradable balance in
 	// exchange for basket tokens. The amount of tokens received is calculated by
-	// the following formula: sum(credits_deposited) * (1 *
-	// 10^credit_type_exponent). The credit being deposited MUST adhere to the
-	// criteria of the basket.
+	// the following formula: sum(credits_deposited) * 10^credit_type_exponent.
+	// The credits being deposited MUST adhere to the criteria of the basket.
 	Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error)
 	// Take exchanges basket tokens for credits from the specified basket. Credits
 	// are taken deterministically, ordered by oldest batch start date to the most
@@ -117,24 +121,28 @@ func (c *msgClient) UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opt
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// Create creates a basket that mints basket tokens in exchange for credits,
-	// and vice versa. The basket token denom is derived from the basket name,
-	// credit type abbreviation, and credit type precision (i.e. basket name
-	// "foo", credit type exponent 6, and credit type abbreviation "C" generates
-	// the denom eco.uC.foo). Baskets can limit credit acceptance criteria based
-	// on a combination of credit type, credit classes, and credit batch start
-	// date. Credits taken from the basket will be immediately retired, unless
-	// disable_auto_retire is set to false, which would cause credits to be sent
-	// to the taker's tradable balance. If the basket fee governance parameter is
-	// set, a fee of equal value must be provided in the request. A greater value
-	// fee can be provided, but only the amount specified in the fee parameter
-	// will be charged. Fees from creating a basket are burned.
+	// Create creates a basket that can hold different types of ecocredits that
+	// meet the basket's criteria. Upon depositing ecocredits into the basket,
+	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
+	// module. This allows basket tokens to be utilized within IBC. Basket tokens
+	// are fully fungible with other basket tokens within the same basket. The
+	// basket token denom is derived from the basket name, credit type
+	// abbreviation, and credit type precision (i.e. basket name "foo", credit
+	// type exponent 6, and credit type abbreviation "C" generates the denom
+	// eco.uC.foo). Baskets can limit credit acceptance criteria based on a
+	// combination of credit type, credit classes, and credit batch start date.
+	// Credits can be taken from the basket in exchange for basket tokens. Taken
+	// credits will be immediately retired, unless disable_auto_retire is set to
+	// false, which would cause credits to be sent to the taker's tradable
+	// balance. If the basket fee governance parameter is set, a fee of equal or
+	// greater value must be provided in the request. Only the amount specified in
+	// the fee parameter will be charged, even if a greater value fee is provided.
+	// Fees from creating a basket are burned.
 	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
 	// Put deposits credits into the basket from the holder's tradable balance in
 	// exchange for basket tokens. The amount of tokens received is calculated by
-	// the following formula: sum(credits_deposited) * (1 *
-	// 10^credit_type_exponent). The credit being deposited MUST adhere to the
-	// criteria of the basket.
+	// the following formula: sum(credits_deposited) * 10^credit_type_exponent.
+	// The credits being deposited MUST adhere to the criteria of the basket.
 	Put(context.Context, *MsgPut) (*MsgPutResponse, error)
 	// Take exchanges basket tokens for credits from the specified basket. Credits
 	// are taken deterministically, ordered by oldest batch start date to the most
