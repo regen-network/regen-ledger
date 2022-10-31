@@ -31,9 +31,9 @@ func TestQuery_Resolver(t *testing.T) {
 	_, err = s.server.Resolver(s.ctx, &data.QueryResolverRequest{
 		Id: 404,
 	})
-	require.EqualError(t, err, "rpc error: code = NotFound desc = resolver with ID: 404")
+	require.EqualError(t, err, "resolver with ID: 404: not found")
 
 	// query resolvers with empty id
 	_, err = s.server.Resolver(s.ctx, &data.QueryResolverRequest{})
-	require.EqualError(t, err, "rpc error: code = InvalidArgument desc = ID cannot be empty")
+	require.EqualError(t, err, "ID cannot be empty: invalid argument")
 }
