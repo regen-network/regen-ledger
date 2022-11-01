@@ -2,8 +2,6 @@ module github.com/regen-network/regen-ledger/x/intertx
 
 go 1.18
 
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
 require (
 	cosmossdk.io/errors v1.0.0-beta.7
 	github.com/cosmos/cosmos-sdk v0.46.1
@@ -125,3 +123,5 @@ require (
 	pgregory.net/rapid v0.4.7 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

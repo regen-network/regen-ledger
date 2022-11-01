@@ -7,22 +7,19 @@ require (
 	github.com/cosmos/cosmos-sdk v0.46.3
 	github.com/cosmos/ibc-go/v5 v5.0.0
 	github.com/gorilla/mux v1.8.0
-	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
 	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
+	github.com/regen-network/regen-ledger/x/intertx v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.22
 	github.com/tendermint/tm-db v0.6.7
-	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959 // indirect
-)
 
-require github.com/regen-network/regen-ledger/x/intertx v0.0.0-00010101000000-000000000000
+)
 
 require (
 	cloud.google.com/go v0.102.1 // indirect
@@ -128,6 +125,7 @@ require (
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.34.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
@@ -150,6 +148,7 @@ require (
 	github.com/zondax/hid v0.9.1-0.20220302062450-5552068d2266 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.opencensus.io v0.23.0 // indirect
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
 	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
 	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2 // indirect
@@ -159,6 +158,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/api v0.93.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959 // indirect
 	google.golang.org/grpc v1.50.1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
