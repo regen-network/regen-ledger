@@ -14,12 +14,12 @@ var (
 	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRegisterAccount{}, "intertx/MsgRegisterAccount", nil)
 	cdc.RegisterConcrete(&MsgSubmitTx{}, "intertx/MsgSubmitTx", nil)
 }
 
-func RegisterInterfaces(registry types.InterfaceRegistry) {
+func RegisterTypes(registry types.InterfaceRegistry) {
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
@@ -29,11 +29,11 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func init() {
-	RegisterCodec(amino)
+	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
 	sdk.RegisterLegacyAminoCodec(amino)
 
 	// Register all Amino interfaces and concrete types on the authz Amino codec so that this can later be
 	// used to properly serialize MsgGrant and MsgExec instances
-	RegisterCodec(authzcodec.Amino)
+	RegisterLegacyAminoCodec(authzcodec.Amino)
 }
