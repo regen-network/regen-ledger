@@ -11,6 +11,7 @@ var (
 	_ legacytx.LegacyMsg = &MsgSubmitTx{}
 )
 
+// ValidateBasic does a sanity check on the provided data.
 func (m MsgSubmitTx) ValidateBasic() error {
 	if m.Owner == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("owner cannot be empty")
@@ -27,19 +28,23 @@ func (m MsgSubmitTx) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers.
 func (m MsgSubmitTx) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}
 }
 
+// GetSignBytes implements the LegacyMsg interface.
 func (m MsgSubmitTx) GetSignBytes() []byte {
 	return ModuleCdc.MustMarshalJSON(&m)
 }
 
+// Route implements the LegacyMsg interface.
 func (m MsgSubmitTx) Route() string {
 	return sdk.MsgTypeURL(&m)
 }
 
+// Type implements the LegacyMsg interface.
 func (m MsgSubmitTx) Type() string {
 	return sdk.MsgTypeURL(&m)
 }
