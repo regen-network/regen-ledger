@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -15,7 +16,7 @@ import (
 func (k Keeper) Projects(ctx context.Context, request *types.QueryProjectsRequest) (*types.QueryProjectsResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectIdIndexKey{}, ormlist.Paginate(pg))
@@ -35,7 +36,7 @@ func (k Keeper) Projects(ctx context.Context, request *types.QueryProjectsReques
 
 		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("class with key: %d", project.ClassKey)
 		}
 
 		info := types.ProjectInfo{
@@ -52,7 +53,7 @@ func (k Keeper) Projects(ctx context.Context, request *types.QueryProjectsReques
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryProjectsResponse{

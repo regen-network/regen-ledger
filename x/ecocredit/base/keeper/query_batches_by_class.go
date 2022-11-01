@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
@@ -17,12 +17,12 @@ import (
 func (k Keeper) BatchesByClass(ctx context.Context, request *types.QueryBatchesByClassRequest) (*types.QueryBatchesByClassResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	class, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
 	}
 
 	// we put a "-" after the class name to avoid including class names outside of the query (i.e. a query for C01 could technically include C011 otherwise).
@@ -43,7 +43,7 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *types.QueryBatchesB
 
 		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("unable to get project with key: %d", batch.ProjectKey)
 		}
 
 		info := types.BatchInfo{
@@ -62,7 +62,7 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *types.QueryBatchesB
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryBatchesByClassResponse{
