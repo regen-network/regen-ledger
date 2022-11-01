@@ -23,11 +23,12 @@ service Msg {
   // combination of credit type, credit classes, and credit batch start date.
   // Credits can be taken from the basket in exchange for basket tokens. Taken
   // credits will be immediately retired, unless disable_auto_retire is set to
-  // false, which would cause credits to be sent to the taker's tradable
-  // balance. If the basket fee governance parameter is set, a fee of equal or
-  // greater value must be provided in the request. Only the amount specified in
-  // the fee parameter will be charged, even if a greater value fee is provided.
-  // Fees from creating a basket are burned.
+  // true. When set to true, credits may be received in either a tradable or
+  // retired state, depending on the taker's request. If the basket fee
+  // governance parameter is set, a fee of equal or greater value must be
+  // provided in the request. Only the amount specified in the fee parameter
+  // will be charged, even if a greater value fee is provided. Fees from
+  // creating a basket are burned.
   rpc Create(MsgCreate) returns (MsgCreateResponse);
 
   // Put deposits credits into the basket from the holder's tradable balance in

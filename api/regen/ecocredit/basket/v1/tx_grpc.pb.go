@@ -26,7 +26,7 @@ type MsgClient interface {
 	// meet the basket's criteria. Upon depositing ecocredits into the basket,
 	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
 	// module. This allows basket tokens to be utilized within IBC. Basket tokens
-	// are fully fungible with other basket tokens within the same basket. The
+	// are fully fungible with other basket tokens from the same basket. The
 	// basket token denom is derived from the basket name, credit type
 	// abbreviation, and credit type precision (i.e. basket name "foo", credit
 	// type exponent 6, and credit type abbreviation "C" generates the denom
@@ -34,11 +34,12 @@ type MsgClient interface {
 	// combination of credit type, credit classes, and credit batch start date.
 	// Credits can be taken from the basket in exchange for basket tokens. Taken
 	// credits will be immediately retired, unless disable_auto_retire is set to
-	// false, which would cause credits to be sent to the taker's tradable
-	// balance. If the basket fee governance parameter is set, a fee of equal or
-	// greater value must be provided in the request. Only the amount specified in
-	// the fee parameter will be charged, even if a greater value fee is provided.
-	// Fees from creating a basket are burned.
+	// true. When set to true, credits may be received in either a tradable or
+	// retired state, depending on the taker's request. If the basket fee
+	// governance parameter is set, a fee of equal or greater value must be
+	// provided in the request. Only the amount specified in the fee parameter
+	// will be charged, even if a greater value fee is provided. Fees from
+	// creating a basket are burned.
 	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
 	// Put deposits credits into the basket from the holder's tradable balance in
 	// exchange for basket tokens. The amount of tokens received is calculated by
@@ -125,7 +126,7 @@ type MsgServer interface {
 	// meet the basket's criteria. Upon depositing ecocredits into the basket,
 	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
 	// module. This allows basket tokens to be utilized within IBC. Basket tokens
-	// are fully fungible with other basket tokens within the same basket. The
+	// are fully fungible with other basket tokens from the same basket. The
 	// basket token denom is derived from the basket name, credit type
 	// abbreviation, and credit type precision (i.e. basket name "foo", credit
 	// type exponent 6, and credit type abbreviation "C" generates the denom
@@ -133,11 +134,12 @@ type MsgServer interface {
 	// combination of credit type, credit classes, and credit batch start date.
 	// Credits can be taken from the basket in exchange for basket tokens. Taken
 	// credits will be immediately retired, unless disable_auto_retire is set to
-	// false, which would cause credits to be sent to the taker's tradable
-	// balance. If the basket fee governance parameter is set, a fee of equal or
-	// greater value must be provided in the request. Only the amount specified in
-	// the fee parameter will be charged, even if a greater value fee is provided.
-	// Fees from creating a basket are burned.
+	// true. When set to true, credits may be received in either a tradable or
+	// retired state, depending on the taker's request. If the basket fee
+	// governance parameter is set, a fee of equal or greater value must be
+	// provided in the request. Only the amount specified in the fee parameter
+	// will be charged, even if a greater value fee is provided. Fees from
+	// creating a basket are burned.
 	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
 	// Put deposits credits into the basket from the holder's tradable balance in
 	// exchange for basket tokens. The amount of tokens received is calculated by
