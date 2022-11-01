@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -65,7 +66,7 @@ func getRegisterAccountCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String(FlagConnectionID, "", "the connection end identifier on the controller chain")
-	cmd.Flags().String(FlagVersion, "", "")
+	cmd.Flags().String(FlagVersion, "", "the application version string")
 	_ = cmd.MarkFlagRequired(FlagConnectionID)
 
 	flags.AddTxFlagsToCmd(cmd)
@@ -75,7 +76,58 @@ func getRegisterAccountCmd() *cobra.Command {
 
 func getSubmitTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "submit-tx [connection-id] [path/to/sdk_msg.json]",
+		Use:   "submit-tx [connection-id] [path/to/sdk_msg.json]",
+		Short: "submit a transaction to be sent to an ICA host chain",
+		Long: strings.TrimSpace(`submit a transaction to be sent to the destination chain specified by the 
+connection id. The transaction in the JSON file MUST be a transaction enabled by the host chain's interchain accounts 
+module in order for it to succeed on the host chain. Example of transaction in JSON:
+{
+  "body": {
+    "messages": [
+      {
+        "@type": "/cosmos.bank.v1beta1.MsgSend",
+        "from_address": "regen1yqr0pf38v9j7ah79wmkacau5mdspsc7l0sjeva",
+        "to_address": "regen1df675r9vnf7pdedn4sf26svdsem3ugavgxmy46",
+        "amount": [
+          {
+            "denom": "uregen",
+            "amount": "10"
+          }
+        ]
+      }
+    ],
+    "memo": "",
+    "timeout_height": "0",
+    "extension_options": [],
+    "non_critical_extension_options": []
+  },
+  "auth_info": {
+    "signer_infos": [
+      {
+        "public_key": {
+          "@type": "/cosmos.crypto.secp256k1.PubKey",
+          "key": "Ak/UO4sFBMItnPUT1unbxS0ZYHwDYiFqcQdpGxxtCBT8"
+        },
+        "mode_info": {
+          "single": {
+            "mode": "SIGN_MODE_DIRECT"
+          }
+        },
+        "sequence": "31"
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas_limit": "56480",
+      "payer": "",
+      "granter": ""
+    }
+  },
+  "signatures": [
+    "kVdv1IYG5k7rNV8BewX1YPkw6T+gX+HagX5TLnrFLSxO1I6cMZJjXNBamBrZEXlLkTlWXq0DmdxFgkEVmryktA=="
+  ]
+}
+`),
 		Example: "regen tx intertx submit-tx channel-5 tx.json",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

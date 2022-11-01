@@ -27,8 +27,11 @@ func GetQueryCmd() *cobra.Command {
 
 func getInterchainAccountCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "ica [owner-account] [connection-id]",
-		Args: cobra.ExactArgs(2),
+		Use:     "ica [owner-account] [connection-id]",
+		Short:   "query the interchain account address",
+		Long:    "query the interchain account address associated with the owner address and connection id.",
+		Example: "regen q intertx ica regen1drn830y2l24pne08t7k7p7z6zms3x8p8zc3u0h channel-5",
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
