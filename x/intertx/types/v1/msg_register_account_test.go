@@ -8,8 +8,6 @@ import (
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type registerAccountSuite struct {
@@ -24,8 +22,6 @@ func TestMsgRegisterAccount(t *testing.T) {
 }
 
 func (s *registerAccountSuite) Before(t gocuke.TestingT) {
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 	s.t = t
 }
 

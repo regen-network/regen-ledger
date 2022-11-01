@@ -9,8 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type submitTxSuite struct {
@@ -25,13 +23,11 @@ func TestMsgSubmitTx(t *testing.T) {
 }
 
 func (s *submitTxSuite) Before(t gocuke.TestingT) {
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 	s.t = t
 
 	// register bank interfaces
 	ir := types.NewInterfaceRegistry()
-	RegisterInterfaces(ir)
+	RegisterTypes(ir)
 	banktypes.RegisterInterfaces(ir)
 	s.codec = codec.NewProtoCodec(ir)
 }
