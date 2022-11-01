@@ -129,7 +129,6 @@ func FuzzCreditAmountToBasketCoin(f *testing.F) {
 		if err != nil {
 			t.Skip()
 		}
-		assert.NilError(t, err)
 		if len(creditDec.String()) >= 36 { // decimals strings with length >= 36 create rounding errors.
 			t.Skip()
 		}

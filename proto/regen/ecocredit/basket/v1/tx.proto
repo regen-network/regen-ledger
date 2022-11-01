@@ -15,7 +15,7 @@ service Msg {
   // meet the basket's criteria. Upon depositing ecocredits into the basket,
   // basket tokens are minted and sent to depositor using the Cosmos SDK Bank
   // module. This allows basket tokens to be utilized within IBC. Basket tokens
-  // are fully fungible with other basket tokens within the same basket. The
+  // are fully fungible with other basket tokens from the same basket. The
   // basket token denom is derived from the basket name, credit type
   // abbreviation, and credit type precision (i.e. basket name "foo", credit
   // type exponent 6, and credit type abbreviation "C" generates the denom
