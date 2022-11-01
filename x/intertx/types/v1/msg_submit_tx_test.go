@@ -28,6 +28,8 @@ func (s *submitTxSuite) Before(t gocuke.TestingT) {
 	cfg := sdk.GetConfig()
 	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 	s.t = t
+
+	// register bank interfaces
 	ir := types.NewInterfaceRegistry()
 	RegisterInterfaces(ir)
 	banktypes.RegisterInterfaces(ir)
