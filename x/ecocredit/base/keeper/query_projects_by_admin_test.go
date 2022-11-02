@@ -5,10 +5,11 @@ import (
 
 	"gotest.tools/v3/assert"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/stretchr/testify/require"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"

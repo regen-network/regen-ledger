@@ -8,8 +8,8 @@ import (
 const moduleName = "grpc"
 
 var (
-	ErrCanceled         = errors.RegisterWithGRPCCode(moduleName, 1, codes.Canceled, "canceled")
-	ErrUnknown          = errors.RegisterWithGRPCCode(moduleName, 2, codes.Unknown, "unknown")
+	ErrCanceled          = errors.RegisterWithGRPCCode(moduleName, 1, codes.Canceled, "canceled")
+	ErrUnknown           = errors.RegisterWithGRPCCode(moduleName, 2, codes.Unknown, "unknown")
 	ErrInvalidArgument   = errors.RegisterWithGRPCCode(moduleName, 3, codes.InvalidArgument, "invalid argument")
 	ErrNotFound          = errors.RegisterWithGRPCCode(moduleName, 5, codes.NotFound, "not found")
 	ErrAlreadyExists     = errors.RegisterWithGRPCCode(moduleName, 6, codes.AlreadyExists, "already exists")

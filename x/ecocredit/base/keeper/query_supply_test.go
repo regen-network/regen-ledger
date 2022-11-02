@@ -5,8 +5,9 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"

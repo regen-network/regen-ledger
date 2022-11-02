@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to app configuration
-- [#1441](https://github.com/regen-network/regen-ledger/pull/1441) Add interchain accounts module
+- [#1441](https://github.com/regen-network/regen-ledger/pull/1441) Add interchain accounts host module
+- [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add interchain accounts controller module, IBC Fee module, and intertx module
 
 #### Changed
 
