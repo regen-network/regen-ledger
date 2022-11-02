@@ -6,13 +6,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
@@ -55,7 +55,7 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			Abbreviation: abbrev,
 		})
 		if err != nil {
-			if !ormerrors.NotFound.Is(err) {
+			if !regenerrors.ErrNotFound.Is(err) {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddCreditType, err.Error()), nil, err
 			}
 		}
