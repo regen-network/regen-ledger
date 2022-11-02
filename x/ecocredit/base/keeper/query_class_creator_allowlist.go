@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
@@ -10,7 +11,7 @@ import (
 func (k Keeper) ClassCreatorAllowlist(ctx context.Context, request *types.QueryClassCreatorAllowlistRequest) (*types.QueryClassCreatorAllowlistResponse, error) {
 	result, err := k.stateStore.ClassCreatorAllowlistTable().Get(ctx)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrapf("failed to get class creator allowlist: %s", err.Error())
 	}
 
 	return &types.QueryClassCreatorAllowlistResponse{

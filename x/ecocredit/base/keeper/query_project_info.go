@@ -4,8 +4,8 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
@@ -13,14 +13,14 @@ import (
 func (k Keeper) Project(ctx context.Context, request *types.QueryProjectRequest) (*types.QueryProjectResponse, error) {
 	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", request.ProjectId, err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get project with id %s: %s", request.ProjectId, err.Error())
 	}
 
 	admin := sdk.AccAddress(project.Admin)
 
 	class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with key %d: %s", project.ClassKey, err.Error())
 	}
 
 	info := types.ProjectInfo{

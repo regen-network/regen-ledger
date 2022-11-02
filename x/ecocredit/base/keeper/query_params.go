@@ -4,10 +4,10 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -19,7 +19,7 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 
 	allowlistEnabled, err := k.stateStore.ClassCreatorAllowlistTable().Get(ctx)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrapf("unable to get allowlist param: %s", err.Error())
 	}
 
 	itr, err := k.stateStore.AllowedClassCreatorTable().List(ctx, api.AllowedClassCreatorPrimaryKey{})
@@ -40,22 +40,22 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 
 	classFee, err := k.stateStore.ClassFeeTable().Get(ctx)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrapf("unable to get class fee param: %s", err.Error())
 	}
 
 	classFeeCoin, ok := regentypes.ProtoCoinToCoin(classFee.Fee)
 	if !ok {
-		return nil, sdkerrors.ErrInvalidCoins.Wrap("class fees")
+		return nil, regenerrors.ErrInternal.Wrap("failed to convert class fee")
 	}
 
 	basketFee, err := k.basketStore.BasketFeeTable().Get(ctx)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrapf("unable to get basket fee: %s", err.Error())
 	}
 
 	basketFeeCoin, ok := regentypes.ProtoCoinToCoin(basketFee.Fee)
 	if !ok {
-		return nil, sdkerrors.ErrInvalidCoins.Wrap("basket fees")
+		return nil, regenerrors.ErrInternal.Wrap("failed to convert basket fee")
 	}
 
 	allowedDenomsItr, err := k.marketStore.AllowedDenomTable().List(ctx, marketplacev1.AllowedDenomPrimaryKey{})

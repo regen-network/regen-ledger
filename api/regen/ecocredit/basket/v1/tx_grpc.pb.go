@@ -22,12 +22,36 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// Create creates a bank denom which wraps credits.
+	// Create creates a basket that can hold different types of ecocredits that
+	// meet the basket's criteria. Upon depositing ecocredits into the basket,
+	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
+	// module. This allows basket tokens to be utilized within IBC. Basket tokens
+	// are fully fungible with other basket tokens from the same basket. The
+	// basket token denom is derived from the basket name, credit type
+	// abbreviation, and credit type precision (i.e. basket name "foo", credit
+	// type exponent 6, and credit type abbreviation "C" generates the denom
+	// eco.uC.foo). Baskets can limit credit acceptance criteria based on a
+	// combination of credit type, credit classes, and credit batch start date.
+	// Credits can be taken from the basket in exchange for basket tokens. Taken
+	// credits will be immediately retired, unless disable_auto_retire is set to
+	// true. When set to true, credits may be received in either a tradable or
+	// retired state, depending on the taker's request. If the basket fee
+	// governance parameter is set, a fee of equal or greater value must be
+	// provided in the request. Only the amount specified in the fee parameter
+	// will be charged, even if a greater value fee is provided. Fees from
+	// creating a basket are burned.
 	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
-	// Put puts credits into a basket in return for basket tokens.
+	// Put deposits credits into the basket from the holder's tradable balance in
+	// exchange for basket tokens. The amount of tokens received is calculated by
+	// the following formula: sum(credits_deposited) * 10^credit_type_exponent.
+	// The credits being deposited MUST adhere to the criteria of the basket.
 	Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error)
-	// Take takes credits from a basket starting from the oldest
-	// credits first.
+	// Take exchanges basket tokens for credits from the specified basket. Credits
+	// are taken deterministically, ordered by oldest batch start date to the most
+	// recent batch start date. If the basket has disable_auto_retire set to
+	// false, both retirement_jurisdiction and retire_on_take must be set, and the
+	// taken credits will be retired immediately upon receipt. Otherwise, credits
+	// may be received as tradable or retired, based on the request.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no
@@ -35,7 +59,7 @@ type MsgClient interface {
 	//
 	// Since Revision 2
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
-	// UpdateCurator updates basket curator
+	// UpdateCurator updates basket curator.
 	//
 	// Since Revision 2
 	UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opts ...grpc.CallOption) (*MsgUpdateCuratorResponse, error)
@@ -98,12 +122,36 @@ func (c *msgClient) UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opt
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// Create creates a bank denom which wraps credits.
+	// Create creates a basket that can hold different types of ecocredits that
+	// meet the basket's criteria. Upon depositing ecocredits into the basket,
+	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
+	// module. This allows basket tokens to be utilized within IBC. Basket tokens
+	// are fully fungible with other basket tokens from the same basket. The
+	// basket token denom is derived from the basket name, credit type
+	// abbreviation, and credit type precision (i.e. basket name "foo", credit
+	// type exponent 6, and credit type abbreviation "C" generates the denom
+	// eco.uC.foo). Baskets can limit credit acceptance criteria based on a
+	// combination of credit type, credit classes, and credit batch start date.
+	// Credits can be taken from the basket in exchange for basket tokens. Taken
+	// credits will be immediately retired, unless disable_auto_retire is set to
+	// true. When set to true, credits may be received in either a tradable or
+	// retired state, depending on the taker's request. If the basket fee
+	// governance parameter is set, a fee of equal or greater value must be
+	// provided in the request. Only the amount specified in the fee parameter
+	// will be charged, even if a greater value fee is provided. Fees from
+	// creating a basket are burned.
 	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
-	// Put puts credits into a basket in return for basket tokens.
+	// Put deposits credits into the basket from the holder's tradable balance in
+	// exchange for basket tokens. The amount of tokens received is calculated by
+	// the following formula: sum(credits_deposited) * 10^credit_type_exponent.
+	// The credits being deposited MUST adhere to the criteria of the basket.
 	Put(context.Context, *MsgPut) (*MsgPutResponse, error)
-	// Take takes credits from a basket starting from the oldest
-	// credits first.
+	// Take exchanges basket tokens for credits from the specified basket. Credits
+	// are taken deterministically, ordered by oldest batch start date to the most
+	// recent batch start date. If the basket has disable_auto_retire set to
+	// false, both retirement_jurisdiction and retire_on_take must be set, and the
+	// taken credits will be retired immediately upon receipt. Otherwise, credits
+	// may be received as tradable or retired, based on the request.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no
@@ -111,7 +159,7 @@ type MsgServer interface {
 	//
 	// Since Revision 2
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)
-	// UpdateCurator updates basket curator
+	// UpdateCurator updates basket curator.
 	//
 	// Since Revision 2
 	UpdateCurator(context.Context, *MsgUpdateCurator) (*MsgUpdateCuratorResponse, error)
