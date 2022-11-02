@@ -14,6 +14,11 @@ func TestKeeper_BasketBalance(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
+	// nil query
+	_, err := s.k.BasketBalance(s.ctx, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "empty request: invalid argument")
+
 	// add a basket
 	basketDenom := testBasketDenom
 	batchDenom := "bar"
@@ -49,6 +54,7 @@ func TestKeeper_BasketBalance(t *testing.T) {
 		BatchDenom:  basketDenom,
 	})
 	require.Error(t, err)
+	require.ErrorContains(t, err, "basket bar not found")
 
 	// add another basket
 	basketDenom = "foo1"
