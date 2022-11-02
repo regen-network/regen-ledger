@@ -35,5 +35,5 @@ func TestQuery_Resolver(t *testing.T) {
 
 	// query resolvers with empty id
 	_, err = s.server.Resolver(s.ctx, &data.QueryResolverRequest{})
-	require.EqualError(t, err, "ID cannot be empty: invalid request")
+	require.EqualError(t, err, "ID cannot be empty: invalid argument")
 }

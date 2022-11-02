@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -16,22 +16,22 @@ import (
 // AttestationsByHash queries data attestations by the ContentHash of the data.
 func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryAttestationsByHashRequest) (*data.QueryAttestationsByHashResponse, error) {
 	if request.ContentHash == nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+		return nil, regenerrors.ErrInvalidArgument.Wrap("content hash cannot be empty")
 	}
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrapf("failed to convert to IRI: %s", err.Error())
 	}
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrap("data record with content hash")
+		return nil, regenerrors.ErrNotFound.Wrapf("data record with IRI: %s", iri)
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := s.stateStore.DataAttestorTable().List(
@@ -60,7 +60,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 
 	pageRes, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &data.QueryAttestationsByHashResponse{
