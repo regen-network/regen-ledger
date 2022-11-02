@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
@@ -17,12 +17,12 @@ import (
 func (k Keeper) BatchesByIssuer(ctx context.Context, req *types.QueryBatchesByIssuerRequest) (*types.QueryBatchesByIssuerResponse, error) {
 	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+		return nil, regenerrors.ErrInvalidArgument.Wrapf("issuer: %s", err.Error())
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := k.stateStore.BatchTable().List(ctx, api.BatchIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
@@ -41,7 +41,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *types.QueryBatchesByIs
 
 		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("unable to get project by key: %d", batch.ProjectKey)
 		}
 
 		info := types.BatchInfo{
@@ -60,7 +60,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *types.QueryBatchesByIs
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryBatchesByIssuerResponse{Batches: batches, Pagination: pr}, nil

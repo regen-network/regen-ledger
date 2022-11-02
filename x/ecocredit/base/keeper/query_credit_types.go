@@ -4,6 +4,7 @@ import (
 	"context"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -24,7 +25,7 @@ func (k Keeper) CreditTypes(ctx context.Context, _ *types.QueryCreditTypesReques
 		}
 		var creditType types.CreditType
 		if err := ormutil.PulsarToGogoSlow(ct, &creditType); err != nil {
-			return nil, err
+			return nil, regenerrors.ErrInternal.Wrap(err.Error())
 		}
 		creditTypes = append(creditTypes, &creditType)
 	}

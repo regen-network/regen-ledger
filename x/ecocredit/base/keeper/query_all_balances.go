@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -16,7 +17,7 @@ import (
 func (k Keeper) AllBalances(ctx context.Context, req *types.QueryAllBalancesRequest) (*types.QueryAllBalancesResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrapf(err.Error())
 	}
 	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalancePrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
@@ -33,7 +34,7 @@ func (k Keeper) AllBalances(ctx context.Context, req *types.QueryAllBalancesRequ
 
 		batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("batch with key: %d", balance.BatchKey)
 		}
 
 		res.Balances = append(res.Balances, &types.BatchBalanceInfo{
@@ -46,7 +47,7 @@ func (k Keeper) AllBalances(ctx context.Context, req *types.QueryAllBalancesRequ
 	}
 	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 	return &res, nil
 }

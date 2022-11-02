@@ -6,10 +6,10 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
 
@@ -55,5 +55,5 @@ func TestQueryClassesByAdmin(t *testing.T) {
 
 	// query classes by an invalid admin address
 	_, err = s.k.ClassesByAdmin(s.ctx, &types.QueryClassesByAdminRequest{Admin: "foobar"})
-	assert.ErrorContains(t, err, sdkerrors.ErrInvalidAddress.Error())
+	assert.ErrorContains(t, err, regenerrors.ErrInvalidArgument.Error())
 }

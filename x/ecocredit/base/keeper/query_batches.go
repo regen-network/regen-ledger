@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
@@ -16,7 +17,7 @@ import (
 func (k Keeper) Batches(ctx context.Context, request *types.QueryBatchesRequest) (*types.QueryBatchesResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := k.stateStore.BatchTable().List(ctx, api.BatchPrimaryKey{}, ormlist.Paginate(pg))
@@ -36,7 +37,7 @@ func (k Keeper) Batches(ctx context.Context, request *types.QueryBatchesRequest)
 
 		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("failed to get project by key: %d: %s", batch.ProjectKey, err.Error())
 		}
 
 		info := types.BatchInfo{
@@ -55,7 +56,7 @@ func (k Keeper) Batches(ctx context.Context, request *types.QueryBatchesRequest)
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryBatchesResponse{

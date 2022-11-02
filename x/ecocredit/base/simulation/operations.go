@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -12,6 +11,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
@@ -298,7 +298,7 @@ func getRandomBatchFromProject(ctx context.Context, r *rand.Rand, qryClient type
 		ProjectId: projectID,
 	})
 	if err != nil {
-		if strings.Contains(err.Error(), ormerrors.NotFound.Error()) {
+		if regenerrors.ErrNotFound.Is(err) {
 			return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, fmt.Sprintf("no credit batches for %s project", projectID)), nil
 		}
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
