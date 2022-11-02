@@ -11,7 +11,7 @@ import (
 func (k Keeper) CreditType(ctx context.Context, request *types.QueryCreditTypeRequest) (*types.QueryCreditTypeResponse, error) {
 	creditType, err := k.stateStore.CreditTypeTable().Get(ctx, request.Abbreviation)
 	if err != nil {
-		return nil, regenerrors.ErrNotFound.Wrapf("unable to get credit-type with abbreviation: %s", request.Abbreviation)
+		return nil, regenerrors.ErrNotFound.Wrapf("unable to get credit type with abbreviation: %s", request.Abbreviation)
 	}
 
 	return &types.QueryCreditTypeResponse{

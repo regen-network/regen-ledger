@@ -31,5 +31,5 @@ func TestQuery_CreditType(t *testing.T) {
 	_, err = s.k.CreditType(s.ctx, &types.QueryCreditTypeRequest{
 		Abbreviation: "D",
 	})
-	assert.Equal(t, err.Error(), "unable to get credit-type with abbreviation: D: not found")
+	assert.Equal(t, err.Error(), "unable to get credit type with abbreviation: D: not found")
 }

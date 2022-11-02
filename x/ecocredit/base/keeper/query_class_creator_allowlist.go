@@ -11,7 +11,7 @@ import (
 func (k Keeper) ClassCreatorAllowlist(ctx context.Context, request *types.QueryClassCreatorAllowlistRequest) (*types.QueryClassCreatorAllowlistResponse, error) {
 	result, err := k.stateStore.ClassCreatorAllowlistTable().Get(ctx)
 	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrapf("failed to get class creator allow-list: %s", err.Error())
+		return nil, regenerrors.ErrInternal.Wrapf("failed to get class creator allowlist: %s", err.Error())
 	}
 
 	return &types.QueryClassCreatorAllowlistResponse{

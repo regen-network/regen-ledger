@@ -19,7 +19,7 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 
 	allowlistEnabled, err := k.stateStore.ClassCreatorAllowlistTable().Get(ctx)
 	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrapf("unable to get allow-list param: %s", err.Error())
+		return nil, regenerrors.ErrInternal.Wrapf("unable to get allowlist param: %s", err.Error())
 	}
 
 	itr, err := k.stateStore.AllowedClassCreatorTable().List(ctx, api.AllowedClassCreatorPrimaryKey{})
