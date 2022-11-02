@@ -90,17 +90,17 @@ func TestQuery_AttestationsByIRI(t *testing.T) {
 
 	// query attestations with empty iri
 	_, err = s.server.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{})
-	require.EqualError(t, err, "IRI cannot be empty: invalid request")
+	require.EqualError(t, err, "IRI cannot be empty: invalid argument")
 
 	// query attestations with invalid iri
 	_, err = s.server.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: "foo",
 	})
-	require.EqualError(t, err, "failed to parse IRI foo: regen: prefix required: invalid IRI")
+	require.EqualError(t, err, "failed to parse IRI: failed to parse IRI foo: regen: prefix required: invalid IRI: invalid argument")
 
 	// query attestations with iri that has not been anchored
 	_, err = s.server.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: "regen:13toVfw5KEeQwbmV733E3j9HwhVCQTxB7ojFPjGdmr7HX3kuSASGXxV.rdf",
 	})
-	require.EqualError(t, err, "data record with IRI: not found")
+	require.EqualError(t, err, "data record with IRI: regen:13toVfw5KEeQwbmV733E3j9HwhVCQTxB7ojFPjGdmr7HX3kuSASGXxV.rdf: not found")
 }

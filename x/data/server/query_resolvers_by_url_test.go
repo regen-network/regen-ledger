@@ -52,5 +52,5 @@ func TestQuery_ResolversByURL(t *testing.T) {
 
 	// query resolvers with empty url
 	_, err = s.server.ResolversByURL(s.ctx, &data.QueryResolversByURLRequest{})
-	require.EqualError(t, err, "URL cannot be empty: invalid request")
+	require.EqualError(t, err, "URL cannot be empty: invalid argument")
 }
