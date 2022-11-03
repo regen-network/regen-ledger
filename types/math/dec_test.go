@@ -705,3 +705,9 @@ func TestToSdkInt(t *testing.T) {
 		require.Equal(t, tc.out, b.String(), "test_%d", idx)
 	}
 }
+
+func TestInfDecString(t *testing.T) {
+	_, err := NewDecFromString("iNf")
+	require.Error(t, err)
+	require.ErrorIs(t, err, ErrInfiniteString)
+}
