@@ -30,11 +30,11 @@ func TestQuery_ConvertHashToIRI(t *testing.T) {
 
 	// query attestations with empty content hash
 	_, err = s.server.ConvertHashToIRI(s.ctx, &data.ConvertHashToIRIRequest{})
-	require.EqualError(t, err, "content hash cannot be empty: invalid request")
+	require.EqualError(t, err, "content hash cannot be empty: invalid argument")
 
 	// query attestations with invalid content hash
 	_, err = s.server.ConvertHashToIRI(s.ctx, &data.ConvertHashToIRIRequest{
 		ContentHash: &data.ContentHash{},
 	})
-	require.EqualError(t, err, "invalid data.ContentHash: invalid type")
+	require.EqualError(t, err, "failed to parse IRI: invalid data.ContentHash: invalid type: invalid argument")
 }

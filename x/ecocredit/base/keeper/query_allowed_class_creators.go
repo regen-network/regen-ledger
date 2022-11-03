@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -15,7 +16,7 @@ import (
 func (k Keeper) AllowedClassCreators(ctx context.Context, req *types.QueryAllowedClassCreatorsRequest) (*types.QueryAllowedClassCreatorsResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	itr, err := k.stateStore.AllowedClassCreatorTable().List(ctx, baseapi.AllowedClassCreatorAddressIndexKey{}, ormlist.Paginate(pg))
@@ -36,7 +37,7 @@ func (k Keeper) AllowedClassCreators(ctx context.Context, req *types.QueryAllowe
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(itr.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryAllowedClassCreatorsResponse{

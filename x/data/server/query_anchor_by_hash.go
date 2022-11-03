@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/regen-network/regen-ledger/x/data"
@@ -12,22 +12,22 @@ import (
 // AnchorByHash queries a data anchor by the ContentHash of the data.
 func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorByHashRequest) (*data.QueryAnchorByHashResponse, error) {
 	if request.ContentHash == nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+		return nil, regenerrors.ErrInvalidArgument.Wrap("content hash cannot be empty")
 	}
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrap("data record with content hash")
+		return nil, regenerrors.ErrNotFound.Wrapf("data record with IRI: %s", iri)
 	}
 
 	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataID.Id)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrNotFound.Wrapf(err.Error())
 	}
 
 	return &data.QueryAnchorByHashResponse{

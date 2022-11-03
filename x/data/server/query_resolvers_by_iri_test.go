@@ -89,17 +89,17 @@ func TestQuery_ResolversByIRI(t *testing.T) {
 
 	// query resolvers with empty iri
 	_, err = s.server.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{})
-	require.EqualError(t, err, "IRI cannot be empty: invalid request")
+	require.EqualError(t, err, "IRI cannot be empty: invalid argument")
 
 	// query resolvers with invalid iri
 	_, err = s.server.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{
 		Iri: "foo",
 	})
-	require.EqualError(t, err, "failed to parse IRI foo: regen: prefix required: invalid IRI")
+	require.EqualError(t, err, "failed to parse IRI foo: regen: prefix required: invalid IRI: invalid argument")
 
 	// query resolvers with iri that has not been anchored
 	_, err = s.server.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{
 		Iri: "regen:13toVfw5KEeQwbmV733E3j9HwhVCQTxB7ojFPjGdmr7HX3kuSASGXxV.rdf",
 	})
-	require.EqualError(t, err, "data record with IRI: not found")
+	require.EqualError(t, err, "data record with IRI: regen:13toVfw5KEeQwbmV733E3j9HwhVCQTxB7ojFPjGdmr7HX3kuSASGXxV.rdf: not found")
 }

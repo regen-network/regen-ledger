@@ -12,6 +12,7 @@ import (
 	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	ibcfeetypes "github.com/cosmos/ibc-go/v5/modules/apps/29-fee/types"
 
 	"github.com/regen-network/regen-ledger/v4/app/upgrades"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -67,6 +68,8 @@ var Upgrade = upgrades.Upgrade{
 		Added: []string{
 			group.ModuleName,
 			icahosttypes.StoreKey,
+			ibcfeetypes.StoreKey,
+			icacontrollertypes.StoreKey,
 		},
 	},
 }

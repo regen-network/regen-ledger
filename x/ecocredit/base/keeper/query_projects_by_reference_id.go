@@ -3,13 +3,11 @@ package keeper
 import (
 	"context"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -17,12 +15,12 @@ import (
 // ProjectsByReferenceId queries projects by reference id.
 func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProjectsByReferenceIdRequest) (*types.QueryProjectsByReferenceIdResponse, error) { //nolint:revive,stylecheck
 	if req.ReferenceId == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "reference-id is empty")
+		return nil, regenerrors.ErrInvalidArgument.Wrap("reference-id is empty")
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectReferenceIdIndexKey{}.WithReferenceId(req.ReferenceId), ormlist.Paginate(pg))
@@ -40,7 +38,7 @@ func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProje
 
 		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("class with key: %d", project.ClassKey)
 		}
 
 		info := &types.ProjectInfo{
@@ -57,7 +55,7 @@ func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProje
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryProjectsByReferenceIdResponse{
