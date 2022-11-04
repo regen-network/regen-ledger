@@ -22,7 +22,7 @@ func (k Keeper) BasketFee(ctx context.Context, req *types.QueryBasketFeeRequest)
 		var ok bool
 		fee, ok = regentypes.ProtoCoinToCoin(basketFee.Fee)
 		if !ok {
-			return nil, regenerrors.ErrInvalidArgument.Wrap("failed to parse basket fee")
+			return nil, regenerrors.ErrInternal.Wrap("failed to parse basket fee")
 		}
 	}
 
