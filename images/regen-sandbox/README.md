@@ -11,7 +11,6 @@ docker build . -f images/regen-sandbox/Dockerfile -t regen-sandbox
 
 Running the container does the following:
 ```
-cd regen-ledger/images/regen-sandbox
 export REGEN_MNEMONIC="YOUR TESTING MNEMONIC"
 
 (cd images/regen-sandbox && docker run -v $(pwd):/regen --env REGEN_MNEMONIC regen-sandbox:latest)
