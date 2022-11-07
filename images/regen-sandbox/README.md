@@ -5,7 +5,6 @@ This container (and bootstrapping scripts) is intended to aid with end-to-end te
 
 Building locally:
 ```
-cd regen-ledger
 docker build . -f images/regen-sandbox/Dockerfile -t regen-sandbox
 ```
 
