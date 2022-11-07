@@ -22,6 +22,11 @@ func TestQuery_SellOrder(t *testing.T) {
 	expiration, err := regentypes.ParseDate("expiration", "2030-01-01")
 	require.NoError(s.t, err)
 
+	// nil request
+	_, err = s.k.SellOrder(s.ctx, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "invalid argument")
+
 	// make a sell order (with expiration)
 	order1 := api.SellOrder{
 		Seller:     s.addrs[0],
