@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
@@ -14,9 +15,13 @@ import (
 
 // SellOrders queries all sell orders in state with optional pagination
 func (k Keeper) SellOrders(ctx context.Context, req *types.QuerySellOrdersRequest) (*types.QuerySellOrdersResponse, error) {
+	if req == nil {
+		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
+	}
+
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderSellerIndexKey{}, ormlist.Paginate(pg))
@@ -36,12 +41,12 @@ func (k Keeper) SellOrders(ctx context.Context, req *types.QuerySellOrdersReques
 
 		batch, err := k.baseStore.BatchTable().Get(ctx, order.BatchKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("unable to get batch with key: %d: %s", order.BatchKey, err.Error())
 		}
 
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("unable to get market with id: %d: %s", order.MarketId, err.Error())
 		}
 
 		info := types.SellOrderInfo{
@@ -60,7 +65,7 @@ func (k Keeper) SellOrders(ctx context.Context, req *types.QuerySellOrdersReques
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QuerySellOrdersResponse{SellOrders: orders, Pagination: pr}, nil
