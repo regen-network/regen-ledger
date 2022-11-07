@@ -3,35 +3,31 @@ package keeper
 import (
 	"context"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
-	"cosmossdk.io/errors"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
 )
 
 func (k Keeper) BasketBalances(ctx context.Context, request *types.QueryBasketBalancesRequest) (*types.QueryBasketBalancesResponse, error) {
 	if request == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
 	}
 
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			return nil, errors.Wrapf(err, "basket %s not found", request.BasketDenom)
+			return nil, regenerrors.ErrNotFound.Wrapf("basket %s not found", request.BasketDenom)
 		}
-		return nil, errors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
+		return nil, regenerrors.ErrInternal.Wrapf("failed to get basket %s", request.BasketDenom)
 	}
 
 	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := k.stateStore.BasketBalanceTable().List(ctx, api.BasketBalancePrimaryKey{}.WithBasketId(basket.Id),
@@ -59,8 +55,12 @@ func (k Keeper) BasketBalances(ctx context.Context, request *types.QueryBasketBa
 			Balance:    bal.Balance,
 		})
 	}
-	it.Close()
+	defer it.Close()
 
 	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	return res, err
+	if err != nil {
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
+	}
+
+	return res, nil
 }

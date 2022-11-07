@@ -15,6 +15,11 @@ func TestQueryBalances(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
+	// nil request query
+	_, err := s.k.BasketBalances(s.ctx, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "invalid argument")
+
 	// add some baskets
 	batchDenoms := []string{"bar", "baz", "qux"}
 	require.NoError(t, s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
