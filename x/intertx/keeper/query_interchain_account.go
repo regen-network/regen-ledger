@@ -4,9 +4,9 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	types "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )
 
@@ -16,12 +16,12 @@ func (k Keeper) InterchainAccount(goCtx context.Context, req *types.QueryInterch
 
 	portID, err := icatypes.NewControllerPortID(req.Owner)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	addr, found := k.icaControllerKeeper.GetInterchainAccountAddress(ctx, req.ConnectionId, portID)
 	if !found {
-		return nil, sdkerrors.ErrNotFound.Wrapf("no account found for portID %s", portID)
+		return nil, regenerrors.ErrNotFound.Wrapf("no account found for portID %s", portID)
 	}
 
 	return &types.QueryInterchainAccountResponse{InterchainAccountAddress: addr}, nil
