@@ -16,9 +16,11 @@ else
   regen config chain-id $REGEN_CHAIN_ID
   regen config broadcast-mode block
   regen config output json
-  
+
+  # initialize .regen home directory and genesis.json
   regen init test_moniker --chain-id $REGEN_CHAIN_ID 2>&1 | jq -Rr '. as $raw | try (fromjson | "Created genesis. chain-id: \(.chain_id), moniker: \(.moniker)") catch $raw'
-  
+
+  # modify genesis file and config files (platform dependent usage of sed)
   if [[ $(uname -s) == 'Darwin' ]]; then
     # change stake denom to uregen
     sed -i "" "s/stake/uregen/g" $REGENHOME/config/genesis.json
@@ -38,7 +40,11 @@ else
     # bind on all interfaces, enabling ports to be exposed outside docker
     sed -i "s/127\.0\.0\.1/0.0.0.0/g" $REGENHOME/config/config.toml
   fi
-  
+
+  # app specific genesis file modifications
+  cat .regen/config/genesis.json | jq '.app_state.ecocredit."regen.ecocredit.v1.AllowedBridgeChain"[0] = {"chain_name": "polygon"}' > genesis.json.tmp && mv genesis.json.tmp .regen/config/genesis.json
+
+  # setup initial wallets, and validator address with gentx
   if ! [ -z "$REGEN_MNEMONIC" ]; then
     echo "Adding key to keyring for account name: addr1"
     echo $REGEN_MNEMONIC | regen keys add addr1 --account 0 --recover > /dev/null

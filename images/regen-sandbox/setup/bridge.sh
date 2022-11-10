@@ -7,10 +7,10 @@ TX_FLAGS="--from $ADDR1 --yes --fees 5000uregen"
 echo "INFO: Creating Credit Class - C01"
 regen tx ecocredit create-class $ADDR1 C "Bridging Credit Class" --class-fee 20000000uregen $TX_FLAGS | log_response
 
-echo "INFO: Bridging credits from polygon and creating new credit batch C01-001-20200101-20210101-001"
 TEMPDIR=$(mktemp -d)
 trap "rm -rf $TEMPDIR" 0 2 3 15
 
+echo "INFO: Bridging credits from polygon and creating new credit batch C01-001-20200101-20210101-001"
 cat > $TEMPDIR/msg_bridge_rcv.json <<EOL
 {
   "body": {
@@ -63,6 +63,7 @@ EOL
 regen tx sign $TEMPDIR/msg_bridge_rcv.json --from $ADDR1 > $TEMPDIR/msg_bridge_rcv_signed.json
 regen tx broadcast $TEMPDIR/msg_bridge_rcv_signed.json | log_response
 
+echo "INFO: Bridging credits back to polygon"
 cat > $TEMPDIR/msg_bridge.json <<EOL
 {
   "body": {
@@ -88,7 +89,7 @@ cat > $TEMPDIR/msg_bridge.json <<EOL
     "fee": {
       "amount": [{
         "denom": "uregen",
-        "amount": "0"
+        "amount": "5000"
       }],
       "gas_limit": "200000",
       "payer": "",
