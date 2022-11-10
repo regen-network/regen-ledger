@@ -20,7 +20,7 @@ export REGEN_MNEMONIC="YOUR TESTING MNEMONIC"
 
 The above command will start up a new chain from genesis, with 5 accounts [`addr1`, ...`addr5`]. All accounts are generated from the same mnemonic with incremental `--account` indices (using HD derivation), and seeded with 10000 REGEN tokens. `addr1` is set as the single validator in this network and has an additional 40000 REGEN tokens, all of which are self-delegated.
 
-If a `./.regen` home directory is detected, it will not initiatize a new chain, but simply run `regen start` with the existing home directory.
+If a `./.regen` home directory is detected, it will not initiatize a new chain, but simply run `regen start` with the existing home directory. If you want to always create a fresh home directory, you can override this behavior by adding a `-o` or `--overwrite-home-dir` flag to the end of your `docker run` command.
 
 You can additionally provide a comma separated list of setup scripts to run as an argument at the end of the `docker run` command, like so:
 
@@ -29,4 +29,3 @@ docker run -v $(pwd):/regen --env REGEN_MNEMONIC regen-sandbox:latest ecocredit,
 ```
 
 This will look in `./setup` for two files, `./setup/ecocredit.sh` and `./setup/data.sh` and run them in order. Stopping the docker process and running with these arguments a second time will attempt to run the scripts again and potentially popupate a second round of data.
-
