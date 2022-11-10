@@ -48,30 +48,36 @@ else
   if ! [ -z "$REGEN_MNEMONIC" ]; then
     echo "Adding key to keyring for account name: addr1"
     echo $REGEN_MNEMONIC | regen keys add addr1 --account 0 --recover > /dev/null
-    regen add-genesis-account addr1 50000000000uregen --keyring-backend test
-    regen gentx addr1 40000000000uregen --ip 127.0.0.1
-  
-    echo "Adding key to keyring for account name: addr2"
-    echo $REGEN_MNEMONIC | regen keys add addr2 --account 1 --recover > /dev/null
-    regen add-genesis-account addr2 10000000000uregen --keyring-backend test
-  
-    echo "Adding key to keyring for account name: addr3"
-    echo $REGEN_MNEMONIC | regen keys add addr3 --account 2 --recover > /dev/null
-    regen add-genesis-account addr3 10000000000uregen --keyring-backend test
-  
-    echo "Adding key to keyring for account name: addr4"
-    echo $REGEN_MNEMONIC | regen keys add addr4 --account 3 --recover > /dev/null
-    regen add-genesis-account addr4 10000000000uregen --keyring-backend test
-  
-    echo "Adding key to keyring for account name: addr5"
-    echo $REGEN_MNEMONIC | regen keys add addr5 --account 4 --recover > /dev/null
-    regen add-genesis-account addr5 10000000000uregen --keyring-backend test
   else
-    echo "No \$REGEN_MNEMONIC provided."
-    exit 1
+    REGEN_MNEMONIC=$(regen keys add addr1 | jq -r '.mnemonic')
+    echo ""
+    echo "No \$REGEN_MNEMONIC provided, using generated mnemonic:"
+    echo "    $REGEN_MNEMONIC"
+    echo ""
+    echo "Adding key to keyring for account name: addr1"
   fi
 
-  regen collect-gentxs 2>&1 | jq -r '"Collecting gentxs from \(.gentxs_dir)"'
+  echo "Adding key to keyring for account name: addr2"
+  echo $REGEN_MNEMONIC | regen keys add addr2 --account 1 --recover > /dev/null
+  regen add-genesis-account addr2 10000000000uregen --keyring-backend test
+
+  echo "Adding key to keyring for account name: addr3"
+  echo $REGEN_MNEMONIC | regen keys add addr3 --account 2 --recover > /dev/null
+  regen add-genesis-account addr3 10000000000uregen --keyring-backend test
+
+  echo "Adding key to keyring for account name: addr4"
+  echo $REGEN_MNEMONIC | regen keys add addr4 --account 3 --recover > /dev/null
+  regen add-genesis-account addr4 10000000000uregen --keyring-backend test
+
+  echo "Adding key to keyring for account name: addr5"
+  echo $REGEN_MNEMONIC | regen keys add addr5 --account 4 --recover > /dev/null
+  regen add-genesis-account addr5 10000000000uregen --keyring-backend test
+
+  echo "Setting up validator (from addr1)..."
+  regen add-genesis-account addr1 50000000000uregen --keyring-backend test
+  regen gentx addr1 40000000000uregen --ip 127.0.0.1
+
+  regen collect-gentxs 2>&1 | jq -r '"Collecting gentxs from \(.gentxs_dir) into genesis.json"'
 fi
 
 # Make sure we kill the regen process if our script exits while node is running
