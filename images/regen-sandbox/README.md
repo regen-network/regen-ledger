@@ -1,21 +1,26 @@
 # Regen Ledger Sandbox
 
-This container (and bootstrapping scripts) is intended to aid with end-to-end testing of client libraries, applications, manual local network tests, and other scenarios where you want to be able to quickly bootstrap a single node regen network (targeting any version or commit hash of regen-ledger), and populate the network with some basic data for your e2e testing or exploratory purposes.
+This container (and corresponding setup scripts) is intended to aid with end-to-end testing of client libraries, applications, manual local network tests, and other scenarios where you want to be able to quickly bootstrap a single node regen network (targeting any version or commit hash of regen-ledger), and populate the network with some basic data for your end-to-end testing or exploratory purposes.
 
 
-Building locally:
-```
+Build locally:
+```sh
 docker build . -f images/regen-sandbox/Dockerfile -t regen-sandbox
 ```
 
-Running the container does the following:
-```
+Run the container:
+```sh
+# Optionally pass your own testing memonic.
+# If no $REGEN_MNEMONIC is provided, a mnemonic
+# will be auto-generated and printed to STDOUT
 export REGEN_MNEMONIC="YOUR TESTING MNEMONIC"
 
 (cd images/regen-sandbox && docker run -v $(pwd):/regen --env REGEN_MNEMONIC regen-sandbox:latest)
 ```
 
-The above command will simply start up a new chain from genesis. If a `./.regen` home directory is detected, it will not initiatize a new chain, but simply run `regen start` with the existing home directory.
+The above command will start up a new chain from genesis, with 5 accounts [`addr1`, ...`addr5`]. All accounts are generated from the same mnemonic with incremental `--account` indices (using HD derivation), and seeded with 10000 REGEN tokens. `addr1` is set as the single validator in this network and has an additional 40000 REGEN tokens, all of which are self-delegated.
+
+If a `./.regen` home directory is detected, it will not initiatize a new chain, but simply run `regen start` with the existing home directory.
 
 You can additionally provide a comma separated list of setup scripts to run as an argument at the end of the `docker run` command, like so:
 
