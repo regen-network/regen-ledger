@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
@@ -16,12 +16,12 @@ import (
 func (k Keeper) ClassesByAdmin(ctx context.Context, req *types.QueryClassesByAdminRequest) (*types.QueryClassesByAdminResponse, error) {
 	admin, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+		return nil, regenerrors.ErrInvalidArgument.Wrapf("invalid admin: %s", err.Error())
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := k.stateStore.ClassTable().List(ctx, api.ClassAdminIndexKey{}.WithAdmin(admin), ormlist.Paginate(pg))
@@ -50,7 +50,7 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *types.QueryClassesByAdm
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryClassesByAdminResponse{Classes: classes, Pagination: pr}, nil

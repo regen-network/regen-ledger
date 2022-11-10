@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
@@ -15,14 +15,18 @@ import (
 
 // SellOrdersByBatch queries all sell orders under a specific batch denom with optional pagination
 func (k Keeper) SellOrdersByBatch(ctx context.Context, req *types.QuerySellOrdersByBatchRequest) (*types.QuerySellOrdersByBatchResponse, error) {
+	if req == nil {
+		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
+	}
+
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	batch, err := k.baseStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
 
 	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderBatchKeyIndexKey{}.WithBatchKey(batch.Key), ormlist.Paginate(pg))
@@ -42,7 +46,7 @@ func (k Keeper) SellOrdersByBatch(ctx context.Context, req *types.QuerySellOrder
 
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("could not get market with id %d: %s", order.MarketId, err.Error())
 		}
 
 		info := types.SellOrderInfo{
@@ -61,7 +65,7 @@ func (k Keeper) SellOrdersByBatch(ctx context.Context, req *types.QuerySellOrder
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QuerySellOrdersByBatchResponse{SellOrders: orders, Pagination: pr}, nil

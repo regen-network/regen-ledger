@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+	"math/big"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -85,6 +87,58 @@ func TestGetBasketBalances(t *testing.T) {
 
 	require.Equal(t, IDToBalance[1], expBatch1Amount)
 	require.Equal(t, IDToBalance[2], amtToDeposit)
+}
+
+func FuzzCreditAmountToBasketCoin(f *testing.F) {
+
+	// prefixLen returns the amount we need to adjust our length calculations by.
+	// for example, 0.23 * 10^2 produces 23, equal to the exponent. however, 1.12 * 10^2 produces 112, so we must adjust.
+	// similarly, 0.003 * 10^3 produces just 3, so we also consider subtracting from the adjustment.
+	prefixLen := func(d string) int {
+		prefixLen := 0
+		// first we want to capture situations where the whole number has many digits (i.e. 12423.402) as this makes the resulting number LARGER
+		if d[0] != '0' {
+			for _, c := range d {
+				if c != '.' {
+					prefixLen++
+				} else {
+					break
+				}
+			}
+			return prefixLen
+		}
+		// then we capture situations where we have many zeroes (i.e. 0.0023) as this makes the resulting number SMALLER.
+		count := 0
+		for i := 2; i < len(d)-1; i++ {
+			if d[i] == '0' {
+				count--
+			} else {
+				break
+			}
+		}
+		return count
+	}
+
+	f.Add(uint32(6), 1.123456)
+	f.Fuzz(func(t *testing.T, exponent uint32, dec float64) {
+		if exponent > 24 || exponent == 0 {
+			t.Skip()
+		}
+		trimmedFloat := big.NewFloat(dec).Text('f', int(exponent))
+		creditDec, err := math.NewPositiveFixedDecFromString(trimmedFloat, exponent)
+		if err != nil {
+			t.Skip()
+		}
+		if len(creditDec.String()) >= 36 { // decimals strings with length >= 36 create rounding errors.
+			t.Skip()
+		}
+		coin, err := creditAmountToBasketCoin(creditDec, exponent, "foo")
+		assert.NilError(t, err, fmt.Sprintf("error converting %s with exponent %d", creditDec.String(), exponent))
+		add := prefixLen(creditDec.String())
+		expected := int(exponent) + add
+		assert.Check(t, len(coin.Amount.String()) == expected, fmt.Sprintf("expected %v to have length %d given decimal %s and exponent %d with prefix length %d", coin, expected, creditDec.String(), exponent, add))
+
+	})
 }
 
 func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *timestamppb.Timestamp) {

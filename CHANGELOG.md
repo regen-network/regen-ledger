@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### General
 
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Add `errors` module
+
 #### Changed
 
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
@@ -19,7 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to app configuration
-- [#1441](https://github.com/regen-network/regen-ledger/pull/1441) Add interchain accounts module
+- [#1441](https://github.com/regen-network/regen-ledger/pull/1441) Add interchain accounts host module
+- [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add interchain accounts controller module, IBC Fee module, and intertx module
 
 #### Changed
 
@@ -59,6 +62,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `DataAttestor` state validation checks
 - [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `Resolver` state validation checks
 - [#1395](https://github.com/regen-network/regen-ledger/pull/1395) Add `DataResolver` state validation checks
+
+#### Fixed
+
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Return gRPC response code in query response.
 
 ### x/ecocredit
 

@@ -4,28 +4,32 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
 func (k Keeper) SellOrder(ctx context.Context, req *types.QuerySellOrderRequest) (*types.QuerySellOrderResponse, error) {
+	if req == nil {
+		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
+	}
+
 	order, err := k.stateStore.SellOrderTable().Get(ctx, req.SellOrderId)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get sell order with id %d: %s", req.SellOrderId, err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get sell order with id %d: %s", req.SellOrderId, err.Error())
 	}
 
 	seller := sdk.AccAddress(order.Seller)
 
 	batch, err := k.baseStore.BatchTable().Get(ctx, order.BatchKey)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get batch with key: %d: %s", order.BatchKey, err.Error())
 	}
 
 	market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get market with id: %d: %s", order.MarketId, err.Error())
 	}
 
 	info := types.SellOrderInfo{
