@@ -32,7 +32,7 @@ func (m AllowDenomProposal) ValidateBasic() error {
 }
 
 func (m AllowDenomProposal) String() string {
-	return fmt.Sprintf(`Credit Type Proposal:
+	return fmt.Sprintf(`Allow Denom Proposal:
   Title:       %s
   Description: %s
   Allowed Denom: %v
