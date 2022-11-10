@@ -5,16 +5,14 @@ This container (and bootstrapping scripts) is intended to aid with end-to-end te
 
 Building locally:
 ```
-cd regen-ledger
 docker build . -f images/regen-sandbox/Dockerfile -t regen-sandbox
 ```
 
 Running the container does the following:
 ```
-cd regen-ledger/images/regen-sandbox
 export REGEN_MNEMONIC="YOUR TESTING MNEMONIC"
 
-docker run -v $(pwd):/regen --env REGEN_MNEMONIC regen-sandbox:latest
+(cd images/regen-sandbox && docker run -v $(pwd):/regen --env REGEN_MNEMONIC regen-sandbox:latest)
 ```
 
 The above command will simply start up a new chain from genesis. If a `./.regen` home directory is detected, it will not initiatize a new chain, but simply run `regen start` with the existing home directory.
