@@ -5,7 +5,7 @@ go 1.18
 require (
 	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.4
-	github.com/cosmos/ibc-go/v5 v5.0.1
+	github.com/cosmos/ibc-go/v5 v5.1.0
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.0.0
