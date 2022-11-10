@@ -8,9 +8,32 @@ regen() {
   $BINARY --home $REGENHOME "$@"
 }
 
-if [ -d "$REGENHOME" ]; then
+# parse flags
+POSITIONAL_ARGS=()
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -o|--overwrite-home-dir)
+      OVERWRITE_HOMEDIR=true
+      shift # past argument
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1") # save positional arg
+      shift # past argument
+      ;;
+  esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+
+if [ -d "$REGENHOME" ] && [ "$OVERWRITE_HOMEDIR" != true ]; then
   echo "Regen home ($REGENHOME) already exists, skipping bootstrap..."
 else
+  rm -rf $REGENHOME
   regen config keyring-backend test
   regen config node http://localhost:26657
   regen config chain-id $REGEN_CHAIN_ID
