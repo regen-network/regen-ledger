@@ -70,3 +70,22 @@ Feature: Msg/MsgUpdateBasketFee
         "fee": {}
       }
       """
+    
+    Scenario: the basket fee is removed when amount is zero
+      When alice attempts to update basket fee with properties
+      """
+      {
+        "authority":"regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "fee": {
+          "denom": "uregen",
+          "amount": "0"
+        }
+      }
+      """
+      Then expect no error
+      And expect basket fee with properties
+      """
+      {
+        "fee": {}
+      }
+      """
