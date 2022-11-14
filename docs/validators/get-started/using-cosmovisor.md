@@ -5,14 +5,14 @@
 ## Installation
 
 ::: tip Cosmovisor Versions
-The following instructions use the latest version (`v1.2`), which does not support installation with `go install` and therefore `cosmovisor` must be built from source.
-
-The most recent version that supports `go install` is `v1.0`, which is still safe to use but the configuration will be different and several improvements have since been added.
+The following instructions use the latest version (`v1.4`), which now supports installation with `go install`.
 
 For more information about each version, see the release notes:
 - [Cosmovisor v1.0.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.0.0)
 - [Cosmovisor v1.1.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.1.0)
 - [Cosmovisor v1.2.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.2.0)
+- [Cosmovisor v1.3.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.3.0)
+- [Cosmovisor v1.4.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.4.0)
 :::
 
 Clone the `cosmos-sdk` repository (if not already cloned):
@@ -36,19 +36,13 @@ git fetch --all
 Check out the tagged release:
 
 ```bash
-git checkout cosmovisor/v1.2.0
+git checkout cosmovisor/v1.4.0
 ```
 
-Build the cosmovisor binary:
+Install the cosmovisor binary:
 
 ```bash
-make cosmovisor
-```
-
-Copy the built binary to your `GOBIN` directory:
-
-```bash
-cp ./cosmovisor/cosmovisor $HOME/go/bin
+go install cosmovisor
 ```
 
 Check the version:
@@ -60,7 +54,7 @@ cosmovisor version
 You should see the following (the errors following the version are expected if environment variables are not yet set, which will be set in the systemd file in the next section):
 
 ```bash
-cosmovisor version: 1.2.0
+cosmovisor version: 1.4.0
 ```
 
 ## Cosmovisor Service
