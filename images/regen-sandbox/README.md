@@ -32,3 +32,8 @@ docker run -v $(pwd):/regen --env REGEN_MNEMONIC regen-sandbox:latest ecocredit,
 ```
 
 This will look in `./setup` for two files, `./setup/ecocredit.sh` and `./setup/data.sh` and run them in order. Stopping the docker process and running with these arguments a second time will attempt to run the scripts again and potentially popupate a second round of data.
+
+Available scripts:
+- [setup/data.sh](./setup/data.sh) for data module transactions
+- [setup/ecocredit.sh](./setup/ecocredit.sh) for ecocredit & basket transactions
+- [setup/bridge.sh](./setup/bridge.sh) for bridging of ecocredits (on and off of regen network)
