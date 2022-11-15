@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
@@ -23,6 +25,8 @@ func TestMsgRegisterAccount(t *testing.T) {
 
 func (s *registerAccountSuite) Before(t gocuke.TestingT) {
 	s.t = t
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount("regen", "regenpub")
 }
 
 func (s *registerAccountSuite) TheMessage(a gocuke.DocString) {
