@@ -4,13 +4,15 @@ set -eo pipefail
 
 TX_FLAGS="--from $ADDR1 --yes --fees 5000uregen"
 
-echo "INFO: Creating Credit Class - C01"
+echo "INFO: Creating credit class for bridging..."
 regen tx ecocredit create-class $ADDR1 C "Bridging Credit Class" --class-fee 20000000uregen $TX_FLAGS | log_response
+CLASS_ID=$(regen q ecocredit classes | jq -r '.classes[-1].id')
+echo "INFO:   Credit Class ID: $CLASS_ID"
 
 TEMPDIR=$(mktemp -d)
 trap "rm -rf $TEMPDIR" 0 2 3 15
 
-echo "INFO: Bridging credits from polygon and creating new credit batch C01-001-20200101-20210101-001"
+echo "INFO: Bridging credits from polygon and creating new credit batch"
 cat > $TEMPDIR/msg_bridge_rcv.json <<EOL
 {
   "body": {
@@ -18,7 +20,7 @@ cat > $TEMPDIR/msg_bridge_rcv.json <<EOL
       {
         "@type": "/regen.ecocredit.v1.MsgBridgeReceive",
         "issuer": "$ADDR1",
-        "class_id": "C01",
+        "class_id": "$CLASS_ID",
         "project": {
           "reference_id": "VCS-001",
           "jurisdiction": "CA",
@@ -74,7 +76,7 @@ cat > $TEMPDIR/msg_bridge.json <<EOL
         "target": "polygon",
         "recipient": "0x0000000000000000000000000000000000000002",
         "credits": [{
-          "batch_denom": "C01-001-20200101-20210101-001",
+          "batch_denom": "$CLASS_ID-001-20200101-20210101-001",
           "amount": "0.000001"
         }]
       }

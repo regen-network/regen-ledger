@@ -3,19 +3,23 @@ source $(dirname $0)/utils.sh
 set -e
 
 TX_FLAGS="--from $ADDR1 --yes --fees 5000uregen"
-echo "INFO: Creating Credit Class - C01"
+
+echo "INFO: Creating credit class..."
 regen tx ecocredit create-class $ADDR1 C "Test Credit Class" --class-fee 20000000uregen $TX_FLAGS | log_response
 
-echo "INFO: Creating project C01-001"
-regen tx ecocredit create-project C01 US "Horsetail Ranch" $TX_FLAGS | log_response
+CLASS_ID=$(regen q ecocredit classes | jq -r '.classes[-1].id')
+echo "INFO:   Credit Class ID: $CLASS_ID"
 
-echo "INFO: Creating credit batch C01-001-20200101-20210101-001"
+echo "INFO: Creating project $CLASS_ID-001"
+regen tx ecocredit create-project $CLASS_ID US "Horsetail Ranch" $TX_FLAGS | log_response
+
+echo "INFO: Creating credit batch $CLASS_ID-001-20200101-20210101-001"
 TEMPDIR=$(mktemp -d)
 trap "rm -rf $TEMPDIR" 0 2 3 15
 
 cat > $TEMPDIR/batch.json <<EOL
 {
-  "project_id": "C01-001",
+  "project_id": "$CLASS_ID-001",
   "issuer": "$ADDR1",
   "issuance": [
     {
@@ -41,5 +45,5 @@ EOL
 regen tx ecocredit create-batch $TEMPDIR/batch.json $TX_FLAGS | log_response
 
 
-echo "INFO: Creating NCT basket (with C01 as allowed credit class)"
-regen tx ecocredit create-basket NCT --credit-type-abbrev C --allowed-classes C01 --basket-fee 20000000uregen --description "Testing NCT Basket" $TX_FLAGS | log_response
+echo "INFO: Creating NCT basket (with $CLASS_ID as allowed credit class)"
+regen tx ecocredit create-basket NCT --credit-type-abbrev C --allowed-classes $CLASS_ID --basket-fee 20000000uregen --description "Testing NCT Basket" $TX_FLAGS | log_response

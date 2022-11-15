@@ -119,6 +119,7 @@ sleep 3
 SUITE_NAMES=$1
 for suite in ${SUITE_NAMES//,/ }
 do
+  echo ""
   echo "INFO: Initializing state from './setup/$suite.sh'"
   ./setup/$suite.sh
 done
