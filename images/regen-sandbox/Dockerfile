@@ -18,7 +18,7 @@ COPY ./ /work
 RUN LEDGER_ENABLED=false make clean build
 
 FROM alpine:3.14 AS run
-RUN apk add bash curl jq vim
+RUN apk add bash curl jq
 COPY ./images/regen-sandbox/bootstrap.sh /usr/bin/bootstrap.sh
 
 VOLUME /regen
