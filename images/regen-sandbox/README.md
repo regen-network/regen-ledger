@@ -8,13 +8,16 @@ Build locally:
 docker build . -f images/regen-sandbox/Dockerfile -t regen-sandbox
 ```
 
-Run the container:
+Optionally export your own testing mnemonic:
 ```sh
-# Optionally pass your own testing memonic.
-# If no $REGEN_MNEMONIC is provided, a mnemonic
-# will be auto-generated and printed to STDOUT
 export REGEN_MNEMONIC="YOUR TESTING MNEMONIC"
+```
 
+*Note: If `REGEN_MNEMONIC` is not set, a testing mnemonic will be auto-generated and printed to STDOUT.*
+
+Run the container:
+
+```sh
 (cd images/regen-sandbox && docker run -v $(pwd):/regen --env REGEN_MNEMONIC regen-sandbox:latest)
 ```
 
