@@ -77,12 +77,7 @@ func PackTxMsgAny(sdkMsg sdk.Msg) (*codectypes.Any, error) {
 		return nil, fmt.Errorf("can't proto marshal %T", sdkMsg)
 	}
 
-	any, err := codectypes.NewAnyWithValue(msg)
-	if err != nil {
-		return nil, err
-	}
-
-	return any, nil
+	return codectypes.NewAnyWithValue(msg)
 }
 
 // UnpackInterfaces implements codectypes.UnpackInterfacesMessage
