@@ -9,38 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### General
 
-- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Add `errors` module
-
 #### Changed
 
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
 - [#1479](https://github.com/regen-network/regen-ledger/pull/1479) Update ORM tables from v1alpha1 to v1
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Update all modules to use `errors` module
 
 ### app
 
 #### Added
 
-- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK group module to app configuration
-- [#1441](https://github.com/regen-network/regen-ledger/pull/1441) Add interchain accounts host module
-- [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add interchain accounts controller module, IBC Fee module, and intertx module
+- [#1340](https://github.com/regen-network/regen-ledger/pull/1340) Add Cosmos SDK `group` module
+- [#1441](https://github.com/regen-network/regen-ledger/pull/1441) Add ICA `host` module
+- [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add ICA `controller` module
+- [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add IBC `fee` module
+- [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add custom `intertx` module
 
 #### Changed
 
 - [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Move application entry point to root directory
-- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Migrate from custom module manager to sdk module manager
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Migrate from custom module manager to SDK module manager
+- [#1578](https://github.com/regen-network/regen-ledger/pull/1578) Replace confio/ics23/go with Cosmos SDK ics23/go
 
 #### Removed
 
-- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module from experimental config
 - [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Remove experimental app configuration
-- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove unused RegenApp functions for setting custom keepers
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove unused functions for setting custom keepers
 - [#1546](https://github.com/regen-network/regen-ledger/pull/1546) Remove tendermint completion command
+
+### errors
+
+#### Added
+
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Add `errors` module
 
 ### types
 
-#### API Breaking Changes
+#### Changed
 
-- [#1451](https://github.com/regen-network/regen-ledger/pull/1451) ModuleID, AddressHash, InvokerFactory, and CallInfo were moved to `types/testutil/fixture`
+- [#1451](https://github.com/regen-network/regen-ledger/pull/1451) Migrate `ModuleID`, `AddressHash`, `InvokerFactory`, and `CallInfo` to `types/testutil/fixture`
 
 #### Removed
 
@@ -51,6 +58,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Refactor fixture factory to use baseApp routing and Cosmos SDK module manager
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Rename FixtureFactory to Factory to prevent package stuttering
 - [#1433](https://github.com/regen-network/regen-ledger/pull/1433) Add default page request limit when page request is nil
+
+#### Fixed
+
+- [#1590](https://github.com/regen-network/regen-ledger/pull/1590) Fix `NewDecFromString` to error if not finite
 
 ### x/data
 
@@ -65,22 +76,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 
-- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Return gRPC response code in query response.
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Return gRPC response code in query response
 
 ### x/ecocredit
-
-#### API Breaking Changes
-
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewModule` method in `ecocredit/module` requires an `authority` address.
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `NewKeeper` method in `ecocredit/core` requires an `authority` address.
-- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) The `AddCreditType` proposal handler has been removed.
-- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `NewKeeper` method in `ecocredit/marketplace` requires an `authority` address.
-- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) The `AllowedDenom` proposal handler has been removed.
-- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) The `NewModule` method in `ecocredit/module` requires a store `key`.
-- [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Bridge operations must now specify a target/source that exists in the `AllowedBridgeChain` table.
-- [#1476](https://github.com/regen-network/regen-ledger/pull/1476) `DefaultParams` function has been removed.
-- [#1476](https://github.com/regen-network/regen-ledger/pull/1476) Remove `params` argument from `ValidateGenesis`.
-- [#1543](https://github.com/regen-network/regen-ledger/pull/1543) Remove `paramsKeeper` argument from `base/Keeper`, `basket/Keeper` and `marketplace/Keeper`.
 
 #### Added
 
@@ -88,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Add `AddCreditType` msg-based gov proposal
 - [#1346](https://github.com/regen-network/regen-ledger/pull/1346) Add `RemoveAllowedDenom` msg-based gov proposal
 - [#1349](https://github.com/regen-network/regen-ledger/pull/1349) Add `UpdateBasketFees` msg-based gov proposal
-- [#1465](https://github.com/regen-network/regen-ledger/pull/1465) Renamed to `UpdateBasketFee`
+  - [#1465](https://github.com/regen-network/regen-ledger/pull/1465) Rename `UpdateBasketFees` to `UpdateBasketFee`
 - [#1351](https://github.com/regen-network/regen-ledger/pull/1351) Add `signer` option to transaction messages
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchBalance` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Add `BatchContract` state validation checks
@@ -100,19 +98,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `AddClassCreator` msg-based gov proposal
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `RemoveClassCreator` msg-based gov proposal
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `ToggleCreditClassAllowlist` msg-based gov proposal
-- [#1463](https://github.com/regen-network/regen-ledger/pull/1463) Renamed to `SetClassCreatorAllowlist`
+  - [#1463](https://github.com/regen-network/regen-ledger/pull/1463) Rename `ToggleCreditClassAllowlist` to `SetClassCreatorAllowlist`
 - [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Add `UpdateClassFees` msg-based gov proposal
-- [#1466](https://github.com/regen-network/regen-ledger/pull/1466) Renamed to `UpdateClassFee`
+  - [#1466](https://github.com/regen-network/regen-ledger/pull/1466) Rename `UpdateClassFees` to `UpdateClassFee`
 - [#1391](https://github.com/regen-network/regen-ledger/pull/1391) Add `BasketFees` params query
-- [#1465](https://github.com/regen-network/regen-ledger/pull/1465) Renamed to `BasketFee`
+  - [#1465](https://github.com/regen-network/regen-ledger/pull/1465) Rename `BasketFees` to `BasketFee`
 - [#1412](https://github.com/regen-network/regen-ledger/pull/1412) Add `EventRemoveAllowedDenom`
 - [#1416](https://github.com/regen-network/regen-ledger/pull/1416) Add `QueryAllBalances` query
 - [#1417](https://github.com/regen-network/regen-ledger/pull/1417) Add ecocredit params state migration
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
-- [#1463](https://github.com/regen-network/regen-ledger/pull/1463) Renamed to `ClassCreatorAllowlist`
+  - [#1463](https://github.com/regen-network/regen-ledger/pull/1463) Rename `CreditClassAllowlistEnabled` to `ClassCreatorAllowlist`
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `AllowedClassCreators` params query
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassFees` params query
-- [#1466](https://github.com/regen-network/regen-ledger/pull/1466) Renamed to `ClassFee`
+  - [#1466](https://github.com/regen-network/regen-ledger/pull/1466) Rename `CreditClassFees` to `ClassFee`
 - [#1423](https://github.com/regen-network/regen-ledger/pull/1423) Add `CreditClassAllowlistEnabled` params query
 - [#1450](https://github.com/regen-network/regen-ledger/pull/1450) Add `QueryBalancesByBatch` query
 - [#1462](https://github.com/regen-network/regen-ledger/pull/1462) Add `AllowedBridgeChain` table and `QueryAllowedBridgeChains` query
@@ -125,62 +123,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) `NewModule` in `ecocredit/module` requires an `authority` address
+- [#1337](https://github.com/regen-network/regen-ledger/pull/1337) `NewKeeper` in `ecocredit/core` requires an `authority` address
+- [#1342](https://github.com/regen-network/regen-ledger/pull/1342) `NewKeeper` in `ecocredit/marketplace` requires an `authority` address
+- [#1357](https://github.com/regen-network/regen-ledger/pull/1357) `NewModule` in `ecocredit/module` requires a store `key`
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Batch` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Class` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `ClassIssuer` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `CreditType` state validation checks
 - [#1362](https://github.com/regen-network/regen-ledger/pull/1362) Update `Project` state validation checks
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `DateCriteria.ToApi` to `DateCriteria.ToAPI`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `QueryProjectsByReferenceIdCmd` to `QueryProjectsByReferenceIDCmd`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `FlagReferenceId` to `FlagReferenceID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `MaxReferenceIdLength` to `MaxReferenceIDLength`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `RegexClassId` to `RegexClassID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `RegexProjectId` to `RegexProjectID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `FormatClassId` to `FormatClassID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `FormatProjectId` to `FormatProjectID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `ValidateClassId` to `ValidateClassID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `ValidateProjectId` to `ValidateProjectID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetClassIDFromProjectId` to `GetClassIDFromProjectID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetClassIdFromBatchDenom` to `GetClassIDFromBatchDenom`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetProjectIdFromBatchDenom` to `GetProjectIDFromBatchDenom`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `GetCreditTypeAbbrevFromClassId` to `GetCreditTypeAbbrevFromClassID`
-- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Renamed `BasketSupplyInvariant` to `SupplyInvariant`
-- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/marketplace` to `ecocredit/marketplace/types/v1`
-- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/client/marketplace` to `ecocredit/marketplace/client`
-- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/server/marketplace` to `ecocredit/marketplace/keeper`
-- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrated `ecocredit/simulation/marketplace` to `ecocredit/marketplace/simulation`
-- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/basket` to `ecocredit/basket/types/v1`
-- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/client/basket` to `ecocredit/basket/client`
-- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/server/basket` to `ecocredit/basket/keeper`
-- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrated `ecocredit/simulation/basket` to `ecocredit/basket/simulation`
-- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/core` to `ecocredit/base/types/v1`
-- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/client` core commands to `ecocredit/base/client`
-- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/server/core` to `ecocredit/base/keeper`
-- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrated `ecocredit/simulation` core operations to `ecocredit/base/simulation`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `DateCriteria.ToApi` to `DateCriteria.ToAPI`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `QueryProjectsByReferenceIdCmd` to `QueryProjectsByReferenceIDCmd`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `FlagReferenceId` to `FlagReferenceID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `MaxReferenceIdLength` to `MaxReferenceIDLength`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `RegexClassId` to `RegexClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `RegexProjectId` to `RegexProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `FormatClassId` to `FormatClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `FormatProjectId` to `FormatProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `ValidateClassId` to `ValidateClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `ValidateProjectId` to `ValidateProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `GetClassIDFromProjectId` to `GetClassIDFromProjectID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `GetClassIdFromBatchDenom` to `GetClassIDFromBatchDenom`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `GetProjectIdFromBatchDenom` to `GetProjectIDFromBatchDenom`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `GetCreditTypeAbbrevFromClassId` to `GetCreditTypeAbbrevFromClassID`
+- [#1384](https://github.com/regen-network/regen-ledger/pull/1384) Rename `BasketSupplyInvariant` to `SupplyInvariant`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrate `ecocredit/marketplace` to `ecocredit/marketplace/types/v1`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrate `ecocredit/client/marketplace` to `ecocredit/marketplace/client`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrate `ecocredit/server/marketplace` to `ecocredit/marketplace/keeper`
+- [#1427](https://github.com/regen-network/regen-ledger/pull/1427) Migrate `ecocredit/simulation/marketplace` to `ecocredit/marketplace/simulation`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrate `ecocredit/basket` to `ecocredit/basket/types/v1`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrate `ecocredit/client/basket` to `ecocredit/basket/client`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrate `ecocredit/server/basket` to `ecocredit/basket/keeper`
+- [#1428](https://github.com/regen-network/regen-ledger/pull/1428) Migrate `ecocredit/simulation/basket` to `ecocredit/basket/simulation`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrate `ecocredit/core` to `ecocredit/base/types/v1`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrate `ecocredit/client` core commands to `ecocredit/base/client`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrate `ecocredit/server/core` to `ecocredit/base/keeper`
+- [#1429](https://github.com/regen-network/regen-ledger/pull/1429) Migrate `ecocredit/simulation` core operations to `ecocredit/base/simulation`
 - [#1447](https://github.com/regen-network/regen-ledger/pull/1447) Rename `CoreKeeper` to `BaseKeeper`
-- [#1452](https://github.com/regen-network/regen-ledger/pull/1452) Migrated `BeginBlocker` to `ecocredit/module`
+- [#1452](https://github.com/regen-network/regen-ledger/pull/1452) Migrate `BeginBlocker` to `ecocredit/module`
 - [#1475](https://github.com/regen-network/regen-ledger/pull/1475) Convert `CreateClass` command `fee` argument to optional flag
 
 ### Fixed
 
-- [#1411](https://github.com/regen-network/regen-ledger/pull/1411/) `EventCreateBatch`, `EventMintBatchCredits`, and and `EventSend` now show "0" instead of "" for 0 value decimals.
+- [#1411](https://github.com/regen-network/regen-ledger/pull/1411) Fix zero-value in `EventCreateBatch`, `EventMintBatchCredits`, and `EventSend`
+- [#1480](https://github.com/regen-network/regen-ledger/pull/1480) Fix amino codec registration for all messages
+- [#1583](https://github.com/regen-network/regen-ledger/pull/1583) Return gRPC response code in base query response
+- [#1588](https://github.com/regen-network/regen-ledger/pull/1588) Return gRPC response code in basket and marketplace query response
 
 #### Removed
 
 - [#1337](https://github.com/regen-network/regen-ledger/pull/1337) Remove `AddCreditType` proposal handler
 - [#1342](https://github.com/regen-network/regen-ledger/pull/1342) Remove `AllowedDenom` proposal handler
-- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Removed `paramsKeeper` parameter from `core/Keeper`
+- [#1354](https://github.com/regen-network/regen-ledger/pull/1354) Remove `paramsKeeper` parameter from `core/Keeper`
 - [#1447](https://github.com/regen-network/regen-ledger/pull/1447) Remove `.core` from legacy amino codec names
-
-#### State Machine Breaking
-
-- [#1480](https://github.com/regen-network/regen-ledger/pull/1480) Fix amino codec registration for all ecocredit msgs
+- [#1476](https://github.com/regen-network/regen-ledger/pull/1476) Remove `DefaultParams` function
+- [#1476](https://github.com/regen-network/regen-ledger/pull/1476) Remove `params` argument from `ValidateGenesis`
+- [#1543](https://github.com/regen-network/regen-ledger/pull/1543) Remove `paramsKeeper` argument from `base/Keeper`
+- [#1543](https://github.com/regen-network/regen-ledger/pull/1543) Remove `paramsKeeper` argument from `basket/Keeper`
+- [#1543](https://github.com/regen-network/regen-ledger/pull/1543) Remove `paramsKeeper` argument from `marketplace/Keeper`
 
 ### x/group
 
 #### Removed
 
-- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove group module in favor of Cosmos SDK group module
+- [#1258](https://github.com/regen-network/regen-ledger/pull/1258) Remove `group` module in favor of Cosmos SDK `group` module
+
+### x/intertx
+
+#### Added
+
+- [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add `intertx` module
 
 ## [v4.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.1) - 2022-08-30
 
