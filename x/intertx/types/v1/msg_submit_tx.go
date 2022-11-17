@@ -1,6 +1,10 @@
 package v1
 
 import (
+	"fmt"
+
+	proto "github.com/gogo/protobuf/proto"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -9,6 +13,8 @@ import (
 
 var (
 	_ legacytx.LegacyMsg = &MsgSubmitTx{}
+
+	_ codectypes.UnpackInterfacesMessage = MsgSubmitTx{}
 )
 
 // ValidateBasic does a sanity check on the provided data.
@@ -52,7 +58,7 @@ func (m MsgSubmitTx) Type() string {
 // NewMsgSubmitTx creates a new MsgSubmitTx instance
 func NewMsgSubmitTx(owner string, connectionID string, msg sdk.Msg) *MsgSubmitTx {
 
-	anyMsg, err := codectypes.NewAnyWithValue(msg)
+	anyMsg, err := PackTxMsgAny(msg)
 	if err != nil {
 		panic(err)
 	}
@@ -62,4 +68,21 @@ func NewMsgSubmitTx(owner string, connectionID string, msg sdk.Msg) *MsgSubmitTx
 		ConnectionId: connectionID,
 		Msg:          anyMsg,
 	}
+}
+
+// PackTxMsgAny marshals the sdk.Msg payload to a protobuf Any type
+func PackTxMsgAny(sdkMsg sdk.Msg) (*codectypes.Any, error) {
+	msg, ok := sdkMsg.(proto.Message)
+	if !ok {
+		return nil, fmt.Errorf("can't proto marshal %T", sdkMsg)
+	}
+
+	return codectypes.NewAnyWithValue(msg)
+}
+
+// UnpackInterfaces implements codectypes.UnpackInterfacesMessage
+func (msg MsgSubmitTx) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	var sdkMsg sdk.Msg
+
+	return unpacker.UnpackAny(msg.Msg, &sdkMsg)
 }
