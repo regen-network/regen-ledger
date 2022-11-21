@@ -24,7 +24,7 @@ require (
 	github.com/tendermint/tm-db v0.6.7
 	github.com/thanhpk/randstr v1.0.4
 	google.golang.org/genproto v0.0.0-20221014213838-99cd37c6964a
-	google.golang.org/grpc v1.50.1
+	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
 	gotest.tools/v3 v3.4.0
 	pgregory.net/rapid v0.5.3
