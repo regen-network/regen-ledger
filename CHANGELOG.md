@@ -120,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1467](https://github.com/regen-network/regen-ledger/pull/1467) Add `ClassFee` state validation checks
 - [#1467](https://github.com/regen-network/regen-ledger/pull/1467) Add `BasketFee` state validation checks
 - [#1484](https://github.com/regen-network/regen-ledger/pull/1484) Add `Msg/UpdateCurator`
+- [#1623](https://github.com/regen-network/regen-ledger/pull/1623) Add `Msg/UpdateBatchMetadata`
 
 #### Changed
 
