@@ -12,7 +12,7 @@ proto_dirs=$(find ./regen -path -prune -o -name '*.proto' -print0 | xargs -0 -n1
 # loop through proto directories
 for dir in $proto_dirs; do
   # generate swagger files (filter query files)
-  query_file=$(find "${dir}" -maxdepth 1 \( -name 'query.proto' -o -name 'service.proto' \))
+  query_file=$(find "${dir}" -maxdepth 1 \( -name 'query.proto' \))
   if [[ ! -z "$query_file" ]]; then
     buf generate --template buf.gen.swagger.yaml $query_file
   fi
