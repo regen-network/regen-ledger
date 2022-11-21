@@ -778,6 +778,8 @@ func (m *EventUpdateProjectMetadata) GetProjectId() string {
 
 // EventUpdateBatchMetadata is emitted when the credit batch metadata is
 // changed.
+//
+// Since Revision 1
 type EventUpdateBatchMetadata struct {
 	// batch_denom is the unique identifier of the batch that was updated.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`

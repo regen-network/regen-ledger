@@ -11,14 +11,18 @@ import (
 
 var _ legacytx.LegacyMsg = &MsgUpdateBatchMetadata{}
 
+// Route implements the LegacyMsg interface.
 func (m MsgUpdateBatchMetadata) Route() string { return sdk.MsgTypeURL(&m) }
 
+// Type implements the LegacyMsg interface.
 func (m MsgUpdateBatchMetadata) Type() string { return sdk.MsgTypeURL(&m) }
 
+// GetSignBytes implements the LegacyMsg interface.
 func (m MsgUpdateBatchMetadata) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateBatchMetadata) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrapf("issuer: %s", err)
@@ -40,6 +44,7 @@ func (m *MsgUpdateBatchMetadata) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for the message.
 func (m *MsgUpdateBatchMetadata) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
 	return []sdk.AccAddress{addr}

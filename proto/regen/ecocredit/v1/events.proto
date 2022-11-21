@@ -171,6 +171,8 @@ message EventUpdateProjectMetadata {
 
 // EventUpdateBatchMetadata is emitted when the credit batch metadata is
 // changed.
+//
+// Since Revision 1
 message EventUpdateBatchMetadata {
 
   // batch_denom is the unique identifier of the batch that was updated.

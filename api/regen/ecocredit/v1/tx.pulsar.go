@@ -25529,6 +25529,8 @@ func (x *MsgBridge) GetCredits() []*Credits {
 }
 
 // MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
+//
+// Since Revision 1
 type MsgUpdateBatchMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -25586,6 +25588,8 @@ func (x *MsgUpdateBatchMetadata) GetNewMetadata() string {
 }
 
 // MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
+//
+// Since Revision 1
 type MsgUpdateBatchMetadataResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

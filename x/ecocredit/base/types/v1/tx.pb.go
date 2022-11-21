@@ -1775,6 +1775,8 @@ func (m *MsgBridge) GetCredits() []*Credits {
 }
 
 // MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
+//
+// Since Revision 1
 type MsgUpdateBatchMetadata struct {
 	// issuer is the address of the account that is the issuer of the batch.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
@@ -1841,6 +1843,8 @@ func (m *MsgUpdateBatchMetadata) GetNewMetadata() string {
 }
 
 // MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
+//
+// Since Revision 1
 type MsgUpdateBatchMetadataResponse struct {
 }
 

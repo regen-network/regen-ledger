@@ -489,6 +489,7 @@ Example JSON:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassMetadataCmd returns a transaction command that updates class metadata.
 func TxUpdateClassMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-metadata [class-id] [new-metadata]",
@@ -522,6 +523,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassAdminCmd returns a transaction command that updates class admin.
 func TxUpdateClassAdminCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-admin [class-id] [new-admin]",
@@ -557,6 +559,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassIssuersCmd returns a transaction command that updates class issuers.
 func TxUpdateClassIssuersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-issuers [class-id]",
@@ -618,6 +621,7 @@ regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2 --remove-i
 	return txFlags(cmd)
 }
 
+// TxUpdateProjectAdminCmd returns a transaction command that updates project admin.
 func TxUpdateProjectAdminCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-project-admin [project-id] [new-admin] [flags]",
@@ -653,6 +657,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateProjectMetadataCmd returns a transaction command that updates project metadata.
 func TxUpdateProjectMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "update-project-metadata [project-id] [new-metadata]",
@@ -679,13 +684,14 @@ func TxUpdateProjectMetadataCmd() *cobra.Command {
 	return txFlags(cmd)
 }
 
+// TxUpdateBatchMetadataCmd returns a transaction command that updates batch metadata.
 func TxUpdateBatchMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-batch-metadata [batch-denom] [new-metadata]",
 		Short: "Updates the metadata for a specific credit batch",
 		Long: `Updates the metadata for a specific credit batch.
 
-The '--from' flag must equal the credit class admin.
+The '--from' flag must equal the credit batch issuer.
 
 Parameters:
 

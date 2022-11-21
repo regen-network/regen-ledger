@@ -9406,6 +9406,8 @@ func (x *EventUpdateProjectMetadata) GetProjectId() string {
 
 // EventUpdateBatchMetadata is emitted when the credit batch metadata is
 // changed.
+//
+// Since Revision 1
 type EventUpdateBatchMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

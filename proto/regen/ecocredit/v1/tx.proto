@@ -556,6 +556,8 @@ message MsgBridge {
 }
 
 // MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
+//
+// Since Revision 1
 message MsgUpdateBatchMetadata {
   option (cosmos.msg.v1.signer) = "issuer";
 
@@ -572,6 +574,8 @@ message MsgUpdateBatchMetadata {
 }
 
 // MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
+//
+// Since Revision 1
 message MsgUpdateBatchMetadataResponse {}
 
 // MsgBridgeResponse is the Msg/Bridge response type.
