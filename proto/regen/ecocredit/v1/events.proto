@@ -110,6 +110,12 @@ message EventRetire {
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
   string jurisdiction = 4;
+
+  // reason is any arbitrary string that specifies the reason for retiring
+  // credits.
+  //
+  // Since Revision 1
+  string reason = 5;
 }
 
 // EventCancel is an event emitted when credits are cancelled. When credits are

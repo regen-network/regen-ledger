@@ -11,6 +11,24 @@ Feature: MsgRetire
           "amount": "100"
         }
       ],
+      "jurisdiction": "US-WA",
+      "reason": "offsetting electricity consumption"
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without reason
+    Given the message
+    """
+    {
+      "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "amount": "100"
+        }
+      ],
       "jurisdiction": "US-WA"
     }
     """
@@ -32,7 +50,8 @@ Feature: MsgRetire
           "amount": "100"
         }
       ],
-      "jurisdiction": "US-WA"
+      "jurisdiction": "US-WA",
+      "reason": "offsetting electricity consumption"
     }
     """
     When the message is validated
@@ -140,7 +159,8 @@ Feature: MsgRetire
           "amount": "100"
         }
       ],
-      "jurisdiction": "US-WA"
+      "jurisdiction": "US-WA",
+      "reason": "offsetting electricity consumption"
     }
     """
     When message sign bytes queried
@@ -156,7 +176,8 @@ Feature: MsgRetire
           }
         ],
         "jurisdiction":"US-WA",
-        "owner":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+        "owner":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "reason": "offsetting electricity consumption"
       }
     }
     """

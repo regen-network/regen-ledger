@@ -11,6 +11,26 @@ Feature: MsgSend
           "batch_denom": "C01-001-20200101-20210101-001",
           "tradable_amount": "100",
           "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without retirement reason
+    Given the message
+    """
+    {
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "tradable_amount": "100",
+          "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
       ]
@@ -33,7 +53,8 @@ Feature: MsgSend
         {
           "batch_denom": "C01-001-20200101-20210101-002",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -217,7 +238,8 @@ Feature: MsgSend
           "batch_denom": "C01-001-20200101-20210101-001",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -233,6 +255,7 @@ Feature: MsgSend
             "batch_denom":"C01-001-20200101-20210101-001",
             "retired_amount":"100",
             "retirement_jurisdiction":"US-WA",
+            "retirement_reason": "offsetting electricity consumption",
             "tradable_amount":"100"
           }
         ],

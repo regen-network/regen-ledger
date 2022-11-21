@@ -8,13 +8,28 @@ Feature: MsgTake
       "basket_denom": "eco.uC.NCT",
       "amount": "100",
       "retirement_jurisdiction": "US-WA",
+      "retire_on_take": true,
+      "retirement_reason": "offsetting electricity consumption"
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without retirement reason
+    Given the message
+    """
+    {
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "basket_denom": "eco.uC.NCT",
+      "amount": "100",
+      "retirement_jurisdiction": "US-WA",
       "retire_on_take": true
     }
     """
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message without retirement jurisdiction
+  Scenario: a valid message without retire on take
     Given the message
     """
     {
@@ -149,7 +164,8 @@ Feature: MsgTake
       "basket_denom": "eco.uC.NCT",
       "amount": "100",
       "retirement_jurisdiction": "US-WA",
-      "retire_on_take": true
+      "retire_on_take": true,
+      "retirement_reason": "offsetting electricity consumption"
     }
     """
     When message sign bytes queried
@@ -162,7 +178,8 @@ Feature: MsgTake
         "basket_denom":"eco.uC.NCT",
         "owner":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
         "retire_on_take":true,
-        "retirement_jurisdiction":"US-WA"
+        "retirement_jurisdiction":"US-WA",
+        "retirement_reason": "offsetting electricity consumption"
       }
     }
     """

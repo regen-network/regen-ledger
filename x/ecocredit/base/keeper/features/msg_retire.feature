@@ -121,13 +121,14 @@ Feature: Msg/Retire
         "cancelled_amount": "0"
       }
       """
-      When alice attempts to retire credit amount "10" from "US-WA"
+      When alice attempts to retire credit amount "10" with jurisdiction "US-WA" and reason "offsetting electricity consumption"
       Then expect event with properties
       """
       {
         "owner": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
         "batch_denom": "C01-001-20200101-20210101-001",
         "amount": "10",
-        "jurisdiction": "US-WA"
+        "jurisdiction": "US-WA",
+        "reason": "offsetting electricity consumption"
       }
       """

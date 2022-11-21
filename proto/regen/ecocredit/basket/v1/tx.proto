@@ -181,6 +181,13 @@ message MsgTake {
   //
   // Since Revision 1
   string retirement_jurisdiction = 6;
+
+  // retirement_reason is any arbitrary string that specifies the reason for
+  // retiring credits. The reason will be included in EventRetire and is not
+  // stored in state.
+  //
+  // Since Revision 2
+  string retirement_reason = 7;
 }
 
 // MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.

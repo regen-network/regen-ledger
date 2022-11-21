@@ -75,6 +75,13 @@ message BatchIssuance {
   // sub-national-code and postal-code are optional and can be added for
   // increased precision.
   string retirement_jurisdiction = 4;
+
+  // retirement_reason is any arbitrary string that specifies the reason for
+  // retiring credits. The reason will be included in EventRetire and is not
+  // stored in state.
+  //
+  // Since Revision 1
+  string retirement_reason = 5;
 }
 
 // OriginTx is the transaction from another chain or registry that triggered

@@ -13,6 +13,28 @@ Feature: MsgBuyDirect
             "denom": "regen",
             "amount": "100"
           },
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without retirement reason
+    Given the message
+    """
+    {
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "orders": [
+        {
+          "sell_order_id": "1",
+          "quantity": "100",
+          "bid_price": {
+            "denom": "regen",
+            "amount": "100"
+          },
           "retirement_jurisdiction": "US-WA"
         }
       ]
@@ -34,7 +56,8 @@ Feature: MsgBuyDirect
             "denom": "regen",
             "amount": "100"
           },
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         },
         {
           "sell_order_id": "1",
@@ -43,7 +66,8 @@ Feature: MsgBuyDirect
             "denom": "regen",
             "amount": "100"
           },
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -289,7 +313,8 @@ Feature: MsgBuyDirect
             "denom": "regen",
             "amount": "100"
           },
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -309,6 +334,7 @@ Feature: MsgBuyDirect
             },
             "quantity":"100",
             "retirement_jurisdiction":"US-WA",
+            "retirement_reason": "offsetting electricity consumption",
             "sell_order_id":"1"
           }
         ]
