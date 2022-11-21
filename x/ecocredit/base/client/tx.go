@@ -678,3 +678,36 @@ func TxUpdateProjectMetadataCmd() *cobra.Command {
 
 	return txFlags(cmd)
 }
+
+func TxUpdateBatchMetadataCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-batch-metadata [batch-denom] [new-metadata]",
+		Short: "Updates the metadata for a specific credit batch",
+		Long: `Updates the metadata for a specific credit batch.
+
+The '--from' flag must equal the credit class admin.
+
+Parameters:
+
+- batch-denom:   the batch denom of the credit batch to be updated
+- new-metadata:  any arbitrary metadata to attach to the credit batch`,
+		Args:    cobra.ExactArgs(2),
+		Example: `regen tx ecocredit update-batch-metadata C01-001-20200101-20210101-001 regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgUpdateBatchMetadata{
+				Issuer:      clientCtx.GetFromAddress().String(),
+				BatchDenom:  args[0],
+				NewMetadata: args[1],
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
