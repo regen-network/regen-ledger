@@ -101,6 +101,13 @@ service Msg {
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
 
+  // UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
+  // updated and only the issuer of the batch can update the batch.
+  //
+  // Since Revision 1
+  rpc UpdateBatchMetadata(MsgUpdateBatchMetadata)
+      returns (MsgUpdateBatchMetadataResponse);
+
   // Bridge processes credits being sent back to the source chain. When credits
   // are sent back to the source chain, the credits are cancelled and an event
   // is emitted to be handled by an external bridge service.
@@ -547,6 +554,29 @@ message MsgBridge {
   // credits specifies a credit batch and the number of credits being bridged.
   repeated Credits credits = 4;
 }
+
+// MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
+//
+// Since Revision 1
+message MsgUpdateBatchMetadata {
+  option (cosmos.msg.v1.signer) = "issuer";
+
+  // issuer is the address of the account that is the issuer of the batch.
+  string issuer = 1;
+
+  // batch_denom is the unique identifier of the batch.
+  string batch_denom = 2;
+
+  // new_metadata is new metadata that will replace the existing metadata. It
+  // can be any arbitrary string with a maximum length of 256 characters that
+  // includes or references the metadata to attach to the batch.
+  string new_metadata = 3;
+}
+
+// MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
+//
+// Since Revision 1
+message MsgUpdateBatchMetadataResponse {}
 
 // MsgBridgeResponse is the Msg/Bridge response type.
 message MsgBridgeResponse {}

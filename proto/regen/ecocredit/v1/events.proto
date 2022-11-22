@@ -169,6 +169,16 @@ message EventUpdateProjectMetadata {
   string project_id = 1;
 }
 
+// EventUpdateBatchMetadata is emitted when the credit batch metadata is
+// changed.
+//
+// Since Revision 1
+message EventUpdateBatchMetadata {
+
+  // batch_denom is the unique identifier of the batch that was updated.
+  string batch_denom = 1;
+}
+
 // EventSealBatch is emitted when a batch is sealed.
 message EventSealBatch {
 
