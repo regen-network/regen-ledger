@@ -11,7 +11,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.1.0
 	github.com/regen-network/regen-ledger/x/data v1.0.0
-	github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.3.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v2 v2.4.0
 	github.com/regen-network/regen-ledger/x/group v1.0.0-beta2
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cast v1.5.0
@@ -116,7 +116,7 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/regen-network/gocuke v0.6.2 // indirect
-	github.com/regen-network/regen-ledger/api v1.0.0 // indirect
+	github.com/regen-network/regen-ledger/api v1.1.0 // indirect
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
