@@ -98,6 +98,12 @@ func (s *bridgeSuite) AliceOwnsTradableCreditAmountFromTheCreditBatch(a string) 
 	require.NoError(s.t, err)
 }
 
+func (s *bridgeSuite) AliceHasAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
 func (s *bridgeSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
 	balance := &api.BatchBalance{}
 	err := jsonpb.UnmarshalString(a.Content, balance)
