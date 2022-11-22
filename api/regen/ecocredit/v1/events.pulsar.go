@@ -9230,7 +9230,7 @@ type EventRetire struct {
 	// reason is any arbitrary string that specifies the reason for retiring
 	// credits.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	Reason string `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
@@ -9547,7 +9547,7 @@ func (x *EventUpdateProjectMetadata) GetProjectId() string {
 // EventUpdateBatchMetadata is emitted when the credit batch metadata is
 // changed.
 //
-// Since Revision 1
+// Since Revision 2
 type EventUpdateBatchMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

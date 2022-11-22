@@ -169,7 +169,7 @@ service Query {
 
   // BalancesByBatch queries all credit balances from a given batch.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc BalancesByBatch(QueryBalancesByBatchRequest)
       returns (QueryBalancesByBatchResponse) {
     option (google.api.http) = {
@@ -182,7 +182,7 @@ service Query {
 
   // AllBalances queries all credit balances.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc AllBalances(QueryAllBalancesRequest) returns (QueryAllBalancesResponse) {
     option (google.api.http) = {
       get : "/regen/ecocredit/v1/all-balances"
@@ -208,7 +208,7 @@ service Query {
 
   // Params queries the ecocredit module parameters.
   //
-  // Deprecated (Since Revision 1): This rpc will be removed in the next
+  // Deprecated (Since Revision 2): This rpc will be removed in the next
   // version.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option deprecated = true;
@@ -228,7 +228,7 @@ service Query {
   // ClassCreatorAllowlist queries the credit class creator allowlist
   // enabled setting.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc ClassCreatorAllowlist(QueryClassCreatorAllowlistRequest)
       returns (QueryClassCreatorAllowlistResponse) {
     option (google.api.http).get =
@@ -237,7 +237,7 @@ service Query {
 
   // AllowedClassCreators queries allowed credit class creators list.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc AllowedClassCreators(QueryAllowedClassCreatorsRequest)
       returns (QueryAllowedClassCreatorsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-class-creators";
@@ -246,7 +246,7 @@ service Query {
   // ClassFee returns the credit class creation fee. If not set, a credit class
   // creation fee is not required.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc ClassFee(QueryClassFeeRequest) returns (QueryClassFeeResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/class-fee";
   }
@@ -254,7 +254,7 @@ service Query {
   // AllowedBridgeChains queries the list of chains allowed to be used in bridge
   // operations.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc AllowedBridgeChains(QueryAllowedBridgeChainsRequest)
       returns (QueryAllowedBridgeChainsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-bridge-chains";
@@ -556,7 +556,7 @@ message QueryBalancesResponse {
 
 // QueryBalancesByBatchRequest is the Query/BalancesByBatch request type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryBalancesByBatchRequest {
 
   // batch_denom is the denom of the batch to query by.
@@ -568,7 +568,7 @@ message QueryBalancesByBatchRequest {
 
 // QueryBalancesByBatchResponse is the Query/BalancesByBatch response type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryBalancesByBatchResponse {
 
   // balances are a list of balances from different credit batches that the
@@ -581,7 +581,7 @@ message QueryBalancesByBatchResponse {
 
 // QueryAllBalancesRequest is the Query/AllBalances request type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryAllBalancesRequest {
 
   // pagination defines an optional pagination for the request.
@@ -590,7 +590,7 @@ message QueryAllBalancesRequest {
 
 // QueryAllBalancesResponse is the Query/AllBalances response type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryAllBalancesResponse {
 
   // balances are a list of balances from different credit batches that the
@@ -661,13 +661,13 @@ message QueryParamsResponse {
   // allowed_denoms is a list of bank denoms allowed to be used in the ask price
   // of sell orders.
   //
-  // Since Revision 1
+  // Since Revision 2
   repeated AllowedDenomInfo allowed_denoms = 2;
 
   // AllowedBridgeChains is a list of chain names that are allowed to be used in
   // bridge operations.
   //
-  // Since Revision 1
+  // Since Revision 2
   repeated string allowed_bridge_chains = 3;
 }
 
@@ -785,13 +785,13 @@ message BatchBalanceInfo {
 // QueryClassCreatorAllowlistRequest is the Query/ClassCreatorAllowlist request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryClassCreatorAllowlistRequest {}
 
 // QueryClassCreatorAllowlistResponse is the Query/ClassCreatorAllowlist
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryClassCreatorAllowlistResponse {
 
   // enabled determines whether or not the allowlist for creating credit classes
@@ -802,7 +802,7 @@ message QueryClassCreatorAllowlistResponse {
 // QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryAllowedClassCreatorsRequest {
 
   // pagination defines an optional pagination for the request.
@@ -812,7 +812,7 @@ message QueryAllowedClassCreatorsRequest {
 // QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryAllowedClassCreatorsResponse {
 
   // class_creators is the list of allowed credit class creators.
@@ -824,12 +824,12 @@ message QueryAllowedClassCreatorsResponse {
 
 // QueryClassFeeRequest is the Query/ClassFee request type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryClassFeeRequest {}
 
 // QueryClassFeeResponse is the Query/ClassFee response type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryClassFeeResponse {
 
   // fee is the credit class creation fee. If not set, a credit class creation
@@ -840,13 +840,13 @@ message QueryClassFeeResponse {
 // QueryAllowedBridgeChainsRequest is the Query/AllowedBridgeChains request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryAllowedBridgeChainsRequest {}
 
 // QueryAllowedBridgeChainsResponse is the Query/AllowedBridgeChains response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 message QueryAllowedBridgeChainsResponse {
 
   // allowed_bridge_chains is a list of chains that are allowed to be used in

@@ -24274,7 +24274,8 @@ const (
 )
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgAddCreditType struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -24321,7 +24322,8 @@ func (x *MsgAddCreditType) GetCreditType() *CreditType {
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgAddCreditTypeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -25012,7 +25014,7 @@ type MsgRetire struct {
 	// reason is any arbitrary string that specifies the reason for retiring
 	// credits.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	Reason string `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
@@ -25670,7 +25672,7 @@ func (x *MsgBridge) GetCredits() []*Credits {
 
 // MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateBatchMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -25729,7 +25731,7 @@ func (x *MsgUpdateBatchMetadata) GetNewMetadata() string {
 
 // MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateBatchMetadataResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -25908,7 +25910,7 @@ func (x *MsgBridgeReceiveResponse) GetProjectId() string {
 
 // MsgAddClassCreator is the Msg/AddClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddClassCreator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -25957,7 +25959,7 @@ func (x *MsgAddClassCreator) GetCreator() string {
 // MsgSetClassCreatorAllowlist is the Msg/SetClassCreatorAllowlist request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgSetClassCreatorAllowlist struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26006,7 +26008,7 @@ func (x *MsgSetClassCreatorAllowlist) GetEnabled() bool {
 // MsgSetClassCreatorAllowlistResponse is the Msg/SetClassCreatorAllowlist
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgSetClassCreatorAllowlistResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26035,7 +26037,7 @@ func (*MsgSetClassCreatorAllowlistResponse) Descriptor() ([]byte, []int) {
 
 // MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddClassCreatorResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26064,7 +26066,7 @@ func (*MsgAddClassCreatorResponse) Descriptor() ([]byte, []int) {
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveClassCreator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26112,7 +26114,7 @@ func (x *MsgRemoveClassCreator) GetCreator() string {
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveClassCreatorResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26141,7 +26143,7 @@ func (*MsgRemoveClassCreatorResponse) Descriptor() ([]byte, []int) {
 
 // MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateClassFee struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26190,7 +26192,7 @@ func (x *MsgUpdateClassFee) GetFee() *v1beta1.Coin {
 
 // MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateClassFeeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26219,7 +26221,7 @@ func (*MsgUpdateClassFeeResponse) Descriptor() ([]byte, []int) {
 
 // MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddAllowedBridgeChain struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26269,7 +26271,7 @@ func (x *MsgAddAllowedBridgeChain) GetChainName() string {
 // MsgAddAllowedBridgeChainResponse is the Msg/AddAllowedBridgeChain response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddAllowedBridgeChainResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26298,7 +26300,7 @@ func (*MsgAddAllowedBridgeChainResponse) Descriptor() ([]byte, []int) {
 
 // MsgRemoveAllowedBridgeChain is the Msg/RemoveAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveAllowedBridgeChain struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26348,7 +26350,7 @@ func (x *MsgRemoveAllowedBridgeChain) GetChainName() string {
 // MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveAllowedBridgeChainResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -26405,7 +26407,7 @@ type MsgSend_SendCredits struct {
 	// retiring credits. This field is only required if retired_amount is
 	// positive.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RetirementReason string `protobuf:"bytes,5,opt,name=retirement_reason,json=retirementReason,proto3" json:"retirement_reason,omitempty"`
 }
 

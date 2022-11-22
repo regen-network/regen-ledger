@@ -35,7 +35,8 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgAddCreditType struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -91,7 +92,8 @@ func (m *MsgAddCreditType) GetCreditType() *CreditType {
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgAddCreditTypeResponse struct {
 }
 
@@ -871,7 +873,7 @@ type MsgSend_SendCredits struct {
 	// retiring credits. This field is only required if retired_amount is
 	// positive.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RetirementReason string `protobuf:"bytes,5,opt,name=retirement_reason,json=retirementReason,proto3" json:"retirement_reason,omitempty"`
 }
 
@@ -997,7 +999,7 @@ type MsgRetire struct {
 	// reason is any arbitrary string that specifies the reason for retiring
 	// credits.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	Reason string `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
@@ -1801,7 +1803,7 @@ func (m *MsgBridge) GetCredits() []*Credits {
 
 // MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateBatchMetadata struct {
 	// issuer is the address of the account that is the issuer of the batch.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
@@ -1869,7 +1871,7 @@ func (m *MsgUpdateBatchMetadata) GetNewMetadata() string {
 
 // MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateBatchMetadataResponse struct {
 }
 
@@ -2238,7 +2240,7 @@ func (m *MsgBridgeReceiveResponse) GetProjectId() string {
 
 // MsgAddClassCreator is the Msg/AddClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddClassCreator struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2296,7 +2298,7 @@ func (m *MsgAddClassCreator) GetCreator() string {
 // MsgSetClassCreatorAllowlist is the Msg/SetClassCreatorAllowlist request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgSetClassCreatorAllowlist struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2354,7 +2356,7 @@ func (m *MsgSetClassCreatorAllowlist) GetEnabled() bool {
 // MsgSetClassCreatorAllowlistResponse is the Msg/SetClassCreatorAllowlist
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgSetClassCreatorAllowlistResponse struct {
 }
 
@@ -2393,7 +2395,7 @@ var xxx_messageInfo_MsgSetClassCreatorAllowlistResponse proto.InternalMessageInf
 
 // MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddClassCreatorResponse struct {
 }
 
@@ -2432,7 +2434,7 @@ var xxx_messageInfo_MsgAddClassCreatorResponse proto.InternalMessageInfo
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveClassCreator struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2489,7 +2491,7 @@ func (m *MsgRemoveClassCreator) GetCreator() string {
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveClassCreatorResponse struct {
 }
 
@@ -2528,7 +2530,7 @@ var xxx_messageInfo_MsgRemoveClassCreatorResponse proto.InternalMessageInfo
 
 // MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateClassFee struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2586,7 +2588,7 @@ func (m *MsgUpdateClassFee) GetFee() *types.Coin {
 
 // MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateClassFeeResponse struct {
 }
 
@@ -2625,7 +2627,7 @@ var xxx_messageInfo_MsgUpdateClassFeeResponse proto.InternalMessageInfo
 
 // MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddAllowedBridgeChain struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2684,7 +2686,7 @@ func (m *MsgAddAllowedBridgeChain) GetChainName() string {
 // MsgAddAllowedBridgeChainResponse is the Msg/AddAllowedBridgeChain response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddAllowedBridgeChainResponse struct {
 }
 
@@ -2723,7 +2725,7 @@ var xxx_messageInfo_MsgAddAllowedBridgeChainResponse proto.InternalMessageInfo
 
 // MsgRemoveAllowedBridgeChain is the Msg/RemoveAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveAllowedBridgeChain struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2782,7 +2784,7 @@ func (m *MsgRemoveAllowedBridgeChain) GetChainName() string {
 // MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveAllowedBridgeChainResponse struct {
 }
 
@@ -3078,7 +3080,7 @@ type MsgClient interface {
 	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
 	// updated and only the issuer of the batch can update the batch.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
@@ -3095,41 +3097,41 @@ type MsgClient interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(ctx context.Context, in *MsgSetClassCreatorAllowlist, opts ...grpc.CallOption) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes an
 	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
 	// class creation fee. If no fee is specified in the request, the credit
 	// class creation fee will be removed and no fee will be required to create
 	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
@@ -3421,7 +3423,7 @@ type MsgServer interface {
 	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
 	// updated and only the issuer of the batch can update the batch.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBatchMetadata(context.Context, *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
@@ -3438,41 +3440,41 @@ type MsgServer interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(context.Context, *MsgSetClassCreatorAllowlist) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes an
 	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
 	// class creation fee. If no fee is specified in the request, the credit
 	// class creation fee will be removed and no fee will be required to create
 	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 

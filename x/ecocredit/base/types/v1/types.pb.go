@@ -188,7 +188,7 @@ type BatchIssuance struct {
 	// retiring credits. The reason will be included in EventRetire and is not
 	// stored in state.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RetirementReason string `protobuf:"bytes,5,opt,name=retirement_reason,json=retirementReason,proto3" json:"retirement_reason,omitempty"`
 }
 
@@ -342,7 +342,7 @@ func (m *OriginTx) GetNote() string {
 }
 
 // CreditTypeProposal is a gov Content type for adding a credit type.
-// Deprecated (Since Revision 1): This message is no longer used and will be
+// Deprecated (Since Revision 2): This message is no longer used and will be
 // removed in the next version. See MsgAddCreditType.
 type CreditTypeProposal struct {
 	// title is the title of the proposal.
