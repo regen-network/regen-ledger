@@ -14,7 +14,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v0.6.2
-	github.com/regen-network/regen-ledger/api v1.0.0
+	github.com/regen-network/regen-ledger/api v1.1.0
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
 	github.com/regen-network/regen-ledger/types v1.1.0
 	github.com/spf13/cobra v1.2.1
