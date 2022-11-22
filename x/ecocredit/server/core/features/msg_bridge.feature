@@ -67,8 +67,6 @@ Feature: Msg/Bridge
       """
 
     # no failing scenario - state transitions only occur upon successful message execution
-<<<<<<< HEAD:x/ecocredit/server/core/features/msg_bridge.feature
-=======
 
   Rule: Event is emitted
 
@@ -114,4 +112,3 @@ Feature: Msg/Bridge
       And alice owns tradable credits from the credit batch
       When alice attempts to bridge credits from the credit batch with target "solana"
       Then expect the error "solana is not an authorized bridge target: unauthorized"
->>>>>>> 9fbf67e7 (feat(x/ecocredit): add owner to bridge event (#1626)):x/ecocredit/base/keeper/features/msg_bridge.feature
