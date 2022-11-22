@@ -95,20 +95,3 @@ Feature: Msg/Bridge
         "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       }
       """
-
-  Rule: The target must be in the AllowedBridgeChain table
-
-    Background:
-      Given the target "polygon" is an allowed bridge chain
-
-    Scenario: the bridge chain is allowed
-      Given a credit batch exists with a batch contract entry
-      And alice owns tradable credits from the credit batch
-      When alice attempts to bridge credits from the credit batch with target "polygon"
-      Then expect no error
-
-    Scenario: the bridge chain is not allowed
-      Given a credit batch exists with a batch contract entry
-      And alice owns tradable credits from the credit batch
-      When alice attempts to bridge credits from the credit batch with target "solana"
-      Then expect the error "solana is not an authorized bridge target: unauthorized"
