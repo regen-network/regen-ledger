@@ -79,6 +79,7 @@ Feature: Msg/Bridge
       Given a credit batch exists
       And the target is an allowed chain
       And batch has batch contract entry with contract address "0x6887246668a3b87f54deb3b94ba47a6f63f32985"
+      And alice has address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       And alice owns tradable credit amount "10" from the credit batch
       And the batch supply
       """
@@ -95,7 +96,8 @@ Feature: Msg/Bridge
         "target": "polygon",
         "recipient": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
         "contract": "0x6887246668a3b87f54deb3b94ba47a6f63f32985",
-        "amount": "10"
+        "amount": "10",
+        "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       }
       """
 
