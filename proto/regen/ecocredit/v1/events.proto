@@ -199,6 +199,8 @@ message EventBridge {
   string amount = 4;
 
   // owner is the owner address.
+  //
+  // Since Revision 1
   string owner = 5;
 }
 
