@@ -1,11 +1,15 @@
 package core
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -65,8 +69,22 @@ func (s *bridgeSuite) ACreditBatchExistsWithABatchContractEntry() {
 	require.NoError(s.t, err)
 }
 
+func (s *bridgeSuite) ACreditBatchExists() {
+	s.creditBatchSetup()
+}
+
 func (s *bridgeSuite) ACreditBatchExistsWithoutABatchContractEntry() {
 	s.creditBatchSetup()
+}
+
+func (s *bridgeSuite) BatchHasBatchContractEntryWithContractAddress(a string) {
+	s.contract = a
+	err := s.k.stateStore.BatchContractTable().Insert(s.ctx, &api.BatchContract{
+		BatchKey: s.batchKey,
+		ClassKey: s.classKey,
+		Contract: s.contract,
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *bridgeSuite) AliceOwnsTradableCreditsFromTheCreditBatch() {
@@ -141,6 +159,20 @@ func (s *bridgeSuite) AliceAttemptsToBridgeCreditAmountFromTheCreditBatch(a stri
 	})
 }
 
+func (s *bridgeSuite) AliceAttemptsToBridgeCreditAmountFromTheCreditBatchTo(a, b string) {
+	s.res, s.err = s.k.Bridge(s.ctx, &core.MsgBridge{
+		Owner:     s.alice.String(),
+		Target:    s.target,
+		Recipient: b,
+		Credits: []*core.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+	})
+}
+
 func (s *bridgeSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
@@ -172,6 +204,23 @@ func (s *bridgeSuite) ExpectBatchSupply(a gocuke.DocString) {
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+}
+
+func (s *bridgeSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event core.EventBridge
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	events := s.sdkCtx.EventManager().Events()
+	eventBridge := events[len(events)-1]
+
+	require.Equal(s.t, proto.MessageName(&event), eventBridge.Type)
+
+	msg, err := sdk.ParseTypedEvent(abci.Event(eventBridge))
+	require.NoError(s.t, err)
+
+	equal := proto.Equal(&event, msg)
+	require.True(s.t, equal)
 }
 
 func (s *bridgeSuite) creditBatchSetup() {

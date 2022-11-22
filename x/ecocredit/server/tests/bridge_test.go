@@ -233,6 +233,8 @@ func (s *bridgeSuite) ExpectEventBridgeWithValues(a gocuke.DocString) {
 					require.Equal(s.t, expected.Contract, val)
 				case "amount":
 					require.Equal(s.t, expected.Amount, val)
+				case "owner":
+					require.Equal(s.t, expected.Owner, val)
 				default:
 					require.Fail(s.t, "invalid attribute")
 				}

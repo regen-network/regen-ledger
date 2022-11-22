@@ -72,7 +72,6 @@ Feature: Msg/Bridge
 
     Scenario: EventBridge is emitted
       Given a credit batch exists
-      And the target is an allowed chain
       And batch has batch contract entry with contract address "0x6887246668a3b87f54deb3b94ba47a6f63f32985"
       And alice has address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       And alice owns tradable credit amount "10" from the credit batch
