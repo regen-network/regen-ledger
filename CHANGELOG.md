@@ -5,13 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v4.1.5](https://github.com/regen-network/regen-ledger/releases/tag/v4.1.5) - 2022-11-22
+
+### x/ecocredit
+
+#### Added
+
+- [#1626](https://github.com/regen-network/regen-ledger/pull/1626) Add `owner` to `EventBridge`
+
+## [v4.1.4](https://github.com/regen-network/regen-ledger/releases/tag/v4.1.4) - 2022-10-14
+
+### General
+
+#### Changed
+
+- [#1549](https://github.com/regen-network/regen-ledger/pull/1549) Update to cosmos-sdk `v0.45.9`
+
+## [v4.1.3](https://github.com/regen-network/regen-ledger/releases/tag/v4.1.3) - 2022-10-07
+
+### app
+
+#### Fixed
+
+- [#1533](https://github.com/regen-network/regen-ledger/pull/1533) Fix validator set upgrade
+
 ## [v4.1.2](https://github.com/regen-network/regen-ledger/releases/tag/v4.1.2) - 2022-09-29
 
 ### General
 
-#### Fix
+#### Fixed
 
-- [#1509](https://github.com/regen-network/regen-ledger/pull/1509) Bump app.go to correct ecocredit version (v2.3.0)
+- [#1509](https://github.com/regen-network/regen-ledger/pull/1509) Bump `app.go` to correct ecocredit version (`v2.3.0`)
 
 ## [v4.1.1](https://github.com/regen-network/regen-ledger/releases/tag/v4.1.1) - 2022-09-29
 

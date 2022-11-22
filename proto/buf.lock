@@ -25,7 +25,4 @@ deps:
   - remote: buf.build
     owner: googleapis
     repository: googleapis
-    branch: main
-    commit: c21d9ee7a8c74d6a8cce1338a2839547
-    digest: b1-Rdf7A_4QeTLvu6BdzORkijdmHsAyJd2MHEEZWBEUFIM=
-    create_time: 2022-01-15T15:04:23.382499Z
+    commit: 5abafbf55b5c4c07ad5fb06d2599560f
