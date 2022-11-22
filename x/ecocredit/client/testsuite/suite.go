@@ -127,6 +127,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Metadata:  "metadata",
 		StartDate: &startDate,
 		EndDate:   &endDate,
+		Open:      true,
 	})
 
 	// create a basket and set test value

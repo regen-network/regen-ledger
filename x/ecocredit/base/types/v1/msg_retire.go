@@ -3,6 +3,8 @@ package v1
 import (
 	"cosmossdk.io/errors"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -41,6 +43,10 @@ func (m *MsgRetire) ValidateBasic() error {
 
 	if err := base.ValidateJurisdiction(m.Jurisdiction); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("jurisdiction: %s", err)
+	}
+
+	if len(m.Reason) > base.MaxNoteLength {
+		return ecocredit.ErrMaxLimit.Wrapf("reason: max length %d", base.MaxNoteLength)
 	}
 
 	return nil

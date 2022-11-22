@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
@@ -70,6 +71,10 @@ func (m MsgBuyDirect) ValidateBasic() error {
 		if !order.DisableAutoRetire {
 			if err := base.ValidateJurisdiction(order.RetirementJurisdiction); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("%s: retirement jurisdiction: %s", orderIndex, err)
+			}
+
+			if len(order.RetirementReason) > base.MaxNoteLength {
+				return ecocredit.ErrMaxLimit.Wrapf("%s: retirement reason: max length %d", orderIndex, base.MaxNoteLength)
 			}
 		}
 	}

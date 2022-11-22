@@ -108,6 +108,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 			autoRetire:   !order.DisableAutoRetire,
 			batchDenom:   batch.Denom,
 			jurisdiction: order.RetirementJurisdiction,
+			reason:       order.RetirementReason,
 		}); err != nil {
 			return nil, err
 		}
