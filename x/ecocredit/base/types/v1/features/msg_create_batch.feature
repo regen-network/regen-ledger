@@ -11,6 +11,29 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ],
+      "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+      "start_date": "2020-01-01T00:00:00Z",
+      "end_date": "2021-01-01T00:00:00Z"
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without retirement reason
+    Given the message
+    """
+    {
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "project_id": "C01-001",
+      "issuance": [
+        {
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+          "tradable_amount": "100",
+          "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
       ],
@@ -36,7 +59,8 @@ Feature: MsgCreateBatch
         {
           "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -58,7 +82,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -81,7 +106,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -163,7 +189,7 @@ Feature: MsgCreateBatch
 
   # Note: additional validation for batch issuance covered in types_batch_issuance_test.go
 
-  Scenario: an error is returned if metadata is exceeds 256 characters
+  Scenario: an error is returned if metadata exceeds 256 characters
     Given the message
     """
     {
@@ -174,7 +200,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -194,7 +221,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
@@ -214,7 +242,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -235,7 +264,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -257,7 +287,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -280,7 +311,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -307,7 +339,8 @@ Feature: MsgCreateBatch
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ],
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
@@ -327,6 +360,7 @@ Feature: MsgCreateBatch
             "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
             "retired_amount":"100",
             "retirement_jurisdiction":"US-WA",
+            "retirement_reason": "offsetting electricity consumption",
             "tradable_amount":"100"
           }
         ],

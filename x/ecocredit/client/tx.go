@@ -10,13 +10,6 @@ import (
 	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
 )
 
-const (
-	FlagAddIssuers             string = "add-issuers"
-	FlagRemoveIssuers          string = "remove-issuers"
-	FlagReferenceID            string = "reference-id"
-	FlagRetirementJurisdiction string = "retirement-jurisdiction"
-)
-
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
 func TxCmd(name string) *cobra.Command {
 	cmd := &cobra.Command{
@@ -41,6 +34,7 @@ func TxCmd(name string) *cobra.Command {
 		baseclient.TxUpdateClassAdminCmd(),
 		baseclient.TxUpdateProjectAdminCmd(),
 		baseclient.TxUpdateProjectMetadataCmd(),
+		baseclient.TxUpdateBatchMetadataCmd(),
 		basketclient.TxCreateBasketCmd(),
 		basketclient.TxPutInBasketCmd(),
 		basketclient.TxTakeFromBasketCmd(),

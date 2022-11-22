@@ -110,6 +110,12 @@ message EventRetire {
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
   string jurisdiction = 4;
+
+  // reason is any arbitrary string that specifies the reason for retiring
+  // credits.
+  //
+  // Since Revision 1
+  string reason = 5;
 }
 
 // EventCancel is an event emitted when credits are cancelled. When credits are
@@ -167,6 +173,16 @@ message EventUpdateProjectMetadata {
 
   // project_id is the unique identifier of the project that was updated.
   string project_id = 1;
+}
+
+// EventUpdateBatchMetadata is emitted when the credit batch metadata is
+// changed.
+//
+// Since Revision 1
+message EventUpdateBatchMetadata {
+
+  // batch_denom is the unique identifier of the batch that was updated.
+  string batch_denom = 1;
 }
 
 // EventSealBatch is emitted when a batch is sealed.

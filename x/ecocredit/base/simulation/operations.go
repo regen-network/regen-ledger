@@ -42,8 +42,9 @@ func WeightedOperations(
 		weightMsgUpdateClassIssuers       int
 		weightMsgUpdateClassMetadata      int
 		weightMsgCreateProject            int
-		weightMsgUpdateProjectMetadata    int
 		weightMsgUpdateProjectAdmin       int
+		weightMsgUpdateProjectMetadata    int
+		weightMsgUpdateBatchMetadata      int
 		weightMsgSealBatch                int
 		weightMsgMintBatchCredits         int
 		weightMsgBridge                   int
@@ -117,6 +118,12 @@ func WeightedOperations(
 	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectMetadata, &weightMsgUpdateProjectMetadata, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateProjectMetadata = WeightUpdateProjectMetadata
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateBatchMetadata, &weightMsgUpdateBatchMetadata, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateBatchMetadata = WeightUpdateBatchMetadata
 		},
 	)
 
