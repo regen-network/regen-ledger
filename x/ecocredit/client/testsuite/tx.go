@@ -1250,3 +1250,82 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestUpdateBatchMetadata() {
+	require := s.Require()
+
+	issuer := s.addr1.String()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 1",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar", "baz"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 2 arg(s), received 3",
+		},
+		{
+			name: "missing from flag",
+			args: []string{
+				s.batchDenom,
+				"metadata",
+			},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s) \"from\" not set",
+		},
+		{
+			name: "valid",
+			args: []string{
+				s.batchDenom,
+				"metadata",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, issuer),
+			},
+		},
+		{
+			name: "valid from key-name",
+			args: []string{
+				s.batchDenom,
+				"metadata",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+			},
+		},
+		{
+			name: "valid with amino-json",
+			args: []string{
+				s.batchDenom,
+				"metadata",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, issuer),
+				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		args := tc.args
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateBatchMetadataCmd()
+			args = append(args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}

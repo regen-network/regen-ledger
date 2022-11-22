@@ -90,6 +90,11 @@ type MsgClient interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
+	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
+	// updated and only the issuer of the batch can update the batch.
+	//
+	// Since Revision 1
+	UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
 	// is emitted to be handled by an external bridge service.
@@ -268,6 +273,15 @@ func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProj
 	return out, nil
 }
 
+func (c *msgClient) UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error) {
+	out := new(MsgUpdateBatchMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateBatchMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error) {
 	out := new(MsgBridgeResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/Bridge", in, out, opts...)
@@ -421,6 +435,11 @@ type MsgServer interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
+	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
+	// updated and only the issuer of the batch can update the batch.
+	//
+	// Since Revision 1
+	UpdateBatchMetadata(context.Context, *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
 	// is emitted to be handled by an external bridge service.
@@ -517,6 +536,9 @@ func (UnimplementedMsgServer) UpdateProjectAdmin(context.Context, *MsgUpdateProj
 }
 func (UnimplementedMsgServer) UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectMetadata not implemented")
+}
+func (UnimplementedMsgServer) UpdateBatchMetadata(context.Context, *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBatchMetadata not implemented")
 }
 func (UnimplementedMsgServer) Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bridge not implemented")
@@ -792,6 +814,24 @@ func _Msg_UpdateProjectMetadata_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateBatchMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBatchMetadata)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateBatchMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/UpdateBatchMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateBatchMetadata(ctx, req.(*MsgUpdateBatchMetadata))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_Bridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgBridge)
 	if err := dec(in); err != nil {
@@ -1012,6 +1052,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProjectMetadata",
 			Handler:    _Msg_UpdateProjectMetadata_Handler,
+		},
+		{
+			MethodName: "UpdateBatchMetadata",
+			Handler:    _Msg_UpdateBatchMetadata_Handler,
 		},
 		{
 			MethodName: "Bridge",

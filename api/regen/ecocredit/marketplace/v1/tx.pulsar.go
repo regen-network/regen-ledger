@@ -8333,7 +8333,7 @@ type MsgBuyDirect_Order struct {
 	// retiring credits. The reason will be included in EventRetire and is not
 	// stored in state.
 	//
-	// Since Revision 2
+	// Since Revision 1
 	RetirementReason string `protobuf:"bytes,7,opt,name=retirement_reason,json=retirementReason,proto3" json:"retirement_reason,omitempty"`
 }
 
