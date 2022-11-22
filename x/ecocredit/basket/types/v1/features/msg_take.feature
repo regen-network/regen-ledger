@@ -8,13 +8,28 @@ Feature: MsgTake
       "basket_denom": "eco.uC.NCT",
       "amount": "100",
       "retirement_jurisdiction": "US-WA",
+      "retire_on_take": true,
+      "retirement_reason": "offsetting electricity consumption"
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without retirement reason
+    Given the message
+    """
+    {
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "basket_denom": "eco.uC.NCT",
+      "amount": "100",
+      "retirement_jurisdiction": "US-WA",
       "retire_on_take": true
     }
     """
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message without retirement jurisdiction
+  Scenario: a valid message without retire on take
     Given the message
     """
     {
@@ -141,7 +156,7 @@ Feature: MsgTake
     When the message is validated
     Then expect no error
 
-  Scenario: a valid amino message
+  Scenario: an error is returned if retirement reason exceeds 512 characters
     Given the message
     """
     {
@@ -150,6 +165,22 @@ Feature: MsgTake
       "amount": "100",
       "retirement_jurisdiction": "US-WA",
       "retire_on_take": true
+    }
+    """
+    And retirement reason with length "513"
+    When the message is validated
+    Then expect the error "retirement reason: max length 512: limit exceeded"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "basket_denom": "eco.uC.NCT",
+      "amount": "100",
+      "retirement_jurisdiction": "US-WA",
+      "retire_on_take": true,
+      "retirement_reason": "offsetting electricity consumption"
     }
     """
     When message sign bytes queried
@@ -162,7 +193,8 @@ Feature: MsgTake
         "basket_denom":"eco.uC.NCT",
         "owner":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
         "retire_on_take":true,
-        "retirement_jurisdiction":"US-WA"
+        "retirement_jurisdiction":"US-WA",
+        "retirement_reason": "offsetting electricity consumption"
       }
     }
     """

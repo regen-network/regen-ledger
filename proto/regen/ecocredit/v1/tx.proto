@@ -392,6 +392,13 @@ message MsgSend {
     // country-code is required, while the sub-national-code and postal-code are
     // optional and can be added for increased precision.
     string retirement_jurisdiction = 4;
+
+    // retirement_reason is any arbitrary string that specifies the reason for
+    // retiring credits. This field is only required if retired_amount is
+    // positive.
+    //
+    // Since Revision 1
+    string retirement_reason = 5;
   }
 }
 
@@ -416,6 +423,12 @@ message MsgRetire {
   // sub-national-code and postal-code are optional and can be added for
   // increased precision.
   string jurisdiction = 3;
+
+  // reason is any arbitrary string that specifies the reason for retiring
+  // credits.
+  //
+  // Since Revision 1
+  string reason = 4;
 }
 
 // MsgRetire is the Msg/Retire response type.

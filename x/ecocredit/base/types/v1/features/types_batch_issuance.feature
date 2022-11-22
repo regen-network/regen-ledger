@@ -86,7 +86,7 @@ Feature: BatchIssuance
     When the batch issuance is validated
     Then expect the error "retired amount: expected a non-negative decimal, got -100: invalid decimal string"
 
-  Scenario: an error is returned if issuance retired amount is positive and jurisdiction is empty
+  Scenario: an error is returned if issuance retired amount is positive and retirement jurisdiction is empty
     Given the batch issuance
     """
     {
@@ -97,7 +97,7 @@ Feature: BatchIssuance
     When the batch issuance is validated
     Then expect the error "retirement jurisdiction: empty string is not allowed: parse error: invalid request"
 
-  Scenario: an error is returned if issuance retired amount is positive and jurisdiction is not formatted
+  Scenario: an error is returned if issuance retired amount is positive and retirement jurisdiction is not formatted
     Given the batch issuance
     """
     {
@@ -108,3 +108,16 @@ Feature: BatchIssuance
     """
     When the batch issuance is validated
     Then expect the error "retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+  Scenario: an error is returned if issuance retired amount is positive and retirement reason exceeds 512 characters
+    Given the batch issuance
+    """
+    {
+      "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "retired_amount": "100",
+      "retirement_jurisdiction": "US-WA"
+    }
+    """
+    And retirement reason with length "513"
+    When the batch issuance is validated
+    Then expect the error "retirement reason: max length 512: limit exceeded"
