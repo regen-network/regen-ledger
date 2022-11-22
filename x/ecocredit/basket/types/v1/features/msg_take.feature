@@ -156,6 +156,21 @@ Feature: MsgTake
     When the message is validated
     Then expect no error
 
+  Scenario: an error is returned if retirement reason exceeds 512 characters
+    Given the message
+    """
+    {
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "basket_denom": "eco.uC.NCT",
+      "amount": "100",
+      "retirement_jurisdiction": "US-WA",
+      "retire_on_take": true
+    }
+    """
+    And retirement reason with length "513"
+    When the message is validated
+    Then expect the error "retirement reason: max length 512: limit exceeded"
+
   Scenario: a valid amino message
     Given the message
     """

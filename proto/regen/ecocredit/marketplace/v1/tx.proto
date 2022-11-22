@@ -172,7 +172,7 @@ message MsgBuyDirect {
     // retiring credits. The reason will be included in EventRetire and is not
     // stored in state.
     //
-    // Since Revision 2
+    // Since Revision 1
     string retirement_reason = 7;
   }
 }
