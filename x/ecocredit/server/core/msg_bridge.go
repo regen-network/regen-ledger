@@ -47,6 +47,7 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 			Recipient: req.Recipient,
 			Contract:  batchContract.Contract,
 			Amount:    credit.Amount,
+			Owner:     req.Owner,
 		}); err != nil {
 			return nil, err
 		}
