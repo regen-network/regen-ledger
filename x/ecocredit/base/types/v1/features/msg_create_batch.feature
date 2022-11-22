@@ -189,6 +189,26 @@ Feature: MsgCreateBatch
 
   # Note: additional validation for batch issuance covered in types_batch_issuance_test.go
 
+  Scenario: an error is returned if metadata is empty
+    Given the message
+    """
+    {
+      "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "project_id": "C01-001",
+      "issuance": [
+        {
+          "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+          "tradable_amount": "100",
+          "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect the error "metadata cannot be empty: invalid request"
+
   Scenario: an error is returned if metadata exceeds 256 characters
     Given the message
     """
