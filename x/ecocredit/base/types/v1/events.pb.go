@@ -879,6 +879,8 @@ type EventBridge struct {
 	// amount is the amount of credits.
 	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 	// owner is the owner address.
+	//
+	// Since Revision 1
 	Owner string `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
