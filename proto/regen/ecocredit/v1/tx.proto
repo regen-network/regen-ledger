@@ -681,6 +681,11 @@ message MsgAddClassCreator {
   string creator = 2;
 }
 
+// MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
+//
+// Since Revision 2
+message MsgAddClassCreatorResponse {}
+
 // MsgSetClassCreatorAllowlist is the Msg/SetClassCreatorAllowlist request
 // type.
 //
@@ -700,11 +705,6 @@ message MsgSetClassCreatorAllowlist {
 //
 // Since Revision 2
 message MsgSetClassCreatorAllowlistResponse {}
-
-// MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
-//
-// Since Revision 2
-message MsgAddClassCreatorResponse {}
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 //
