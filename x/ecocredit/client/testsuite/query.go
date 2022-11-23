@@ -594,7 +594,7 @@ func (s *IntegrationTestSuite) TestQueryParamsCmd() {
 		sdk.AccAddress("issuer2").String(),
 	}, params.Params.AllowedClassCreators)
 
-	require.Equal(s.allowedDenoms, params.Params.AllowedDenoms[0].BankDenom)
+	require.Equal(s.allowedDenoms[0], params.Params.AllowedDenoms[0].BankDenom)
 
 	require.Equal(s.bridgeChain, params.Params.AllowedBridgeChains[0])
 }
