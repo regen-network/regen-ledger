@@ -41,13 +41,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 
-- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Add `errors` module
 
 ### types
 
 #### Changed
 
 - [#1451](https://github.com/regen-network/regen-ledger/pull/1451) Migrate `ModuleID`, `AddressHash`, `InvokerFactory`, and `CallInfo` to `types/testutil/fixture`
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579), [#1637](https://github.com/regen-network/regen-ledger/pull/1637) Add `errors` package
 
 #### Removed
 
