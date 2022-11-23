@@ -256,6 +256,12 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	})
 	require.NoError(err)
 
+	// set allowed bridge chain
+	err = baseStore.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{
+		ChainName: "polygon",
+	})
+	require.NoError(err)
+
 	// export genesis into target
 	target := ormjson.NewRawMessageTarget()
 	err = mdb.ExportJSON(ctx, target)
