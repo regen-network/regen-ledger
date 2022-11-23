@@ -93,7 +93,7 @@ type MsgClient interface {
 	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
 	// updated and only the issuer of the batch can update the batch.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
@@ -110,41 +110,41 @@ type MsgClient interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(ctx context.Context, in *MsgSetClassCreatorAllowlist, opts ...grpc.CallOption) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes an
 	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
 	// class creation fee. If no fee is specified in the request, the credit
 	// class creation fee will be removed and no fee will be required to create
 	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
@@ -438,7 +438,7 @@ type MsgServer interface {
 	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
 	// updated and only the issuer of the batch can update the batch.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateBatchMetadata(context.Context, *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
@@ -455,41 +455,41 @@ type MsgServer interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(context.Context, *MsgSetClassCreatorAllowlist) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes an
 	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
 	// class creation fee. If no fee is specified in the request, the credit
 	// class creation fee will be removed and no fee will be required to create
 	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

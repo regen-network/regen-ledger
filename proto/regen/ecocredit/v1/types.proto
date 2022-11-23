@@ -80,7 +80,7 @@ message BatchIssuance {
   // retiring credits. The reason will be included in EventRetire and is not
   // stored in state.
   //
-  // Since Revision 1
+  // Since Revision 2
   string retirement_reason = 5;
 }
 
@@ -109,7 +109,7 @@ message OriginTx {
 }
 
 // CreditTypeProposal is a gov Content type for adding a credit type.
-// Deprecated (Since Revision 1): This message is no longer used and will be
+// Deprecated (Since Revision 2): This message is no longer used and will be
 // removed in the next version. See MsgAddCreditType.
 message CreditTypeProposal {
   option (gogoproto.goproto_stringer) = false;
