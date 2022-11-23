@@ -435,7 +435,8 @@ func (m *CreditTypeProposal) GetCreditType() *CreditType {
 //
 // Since Revision 2
 //
-// Deprecated(Since Revision 2): This type was added to support historical queries for params but will also be removed in the next version.
+// Deprecated(Since Revision 2): This type was added to support historical
+// queries for params but will also be removed in the next version.
 type AllowedDenomInfo struct {
 	// denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
 	BankDenom string `protobuf:"bytes,1,opt,name=bank_denom,json=bankDenom,proto3" json:"bank_denom,omitempty"`

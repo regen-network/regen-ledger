@@ -4332,7 +4332,8 @@ func (x *CreditTypeProposal) GetCreditType() *CreditType {
 //
 // Since Revision 2
 //
-// Deprecated(Since Revision 2): This type was added to support historical queries for params but will also be removed in the next version.
+// Deprecated(Since Revision 2): This type was added to support historical
+// queries for params but will also be removed in the next version.
 type AllowedDenomInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

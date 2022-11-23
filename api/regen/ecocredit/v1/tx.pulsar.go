@@ -25729,7 +25729,8 @@ func (x *MsgUpdateBatchMetadata) GetNewMetadata() string {
 	return ""
 }
 
-// MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
+// MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse
+// response type.
 //
 // Since Revision 2
 type MsgUpdateBatchMetadataResponse struct {
