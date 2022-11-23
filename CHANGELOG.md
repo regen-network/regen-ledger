@@ -164,6 +164,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1447](https://github.com/regen-network/regen-ledger/pull/1447) Rename `CoreKeeper` to `BaseKeeper`
 - [#1452](https://github.com/regen-network/regen-ledger/pull/1452) Migrate `BeginBlocker` to `ecocredit/module`
 - [#1475](https://github.com/regen-network/regen-ledger/pull/1475) Convert `CreateClass` command `fee` argument to optional flag
+- [#1630](https://github.com/regen-network/regen-ledger/pull/1630) Update `MsgCreateBatch` to require `metadata`
 
 ### Fixed
 
