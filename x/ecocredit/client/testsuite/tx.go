@@ -539,7 +539,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxRetire() {
+func (s *IntegrationTestSuite) TestTxRetireCmd() {
 	require := s.Require()
 
 	owner := s.addr1.String()
@@ -662,7 +662,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxCancel() {
+func (s *IntegrationTestSuite) TestTxCancelCmd() {
 	require := s.Require()
 
 	owner := s.addr1.String()
@@ -785,7 +785,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
+func (s *IntegrationTestSuite) TestTxUpdateClassAdminCmd() {
 	require := s.Require()
 
 	admin := s.addr1.String()
@@ -892,7 +892,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
+func (s *IntegrationTestSuite) TestTxUpdateIssuersCmd() {
 	require := s.Require()
 
 	admin := s.addr1.String()
@@ -986,7 +986,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
+func (s *IntegrationTestSuite) TestTxUpdateClassMetadataCmd() {
 	require := s.Require()
 
 	admin := s.addr1.String()
@@ -1065,7 +1065,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
+func (s *IntegrationTestSuite) TestTxUpdateProjectAdminCmd() {
 	require := s.Require()
 
 	admin := s.addr1.String()
@@ -1172,7 +1172,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
+func (s *IntegrationTestSuite) TestTxUpdateProjectMetadataCmd() {
 	require := s.Require()
 
 	admin := s.addr1.String()
@@ -1251,7 +1251,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestUpdateBatchMetadata() {
+func (s *IntegrationTestSuite) TestTxUpdateBatchMetadataCmd() {
 	require := s.Require()
 
 	issuer := s.addr1.String()
@@ -1314,6 +1314,139 @@ func (s *IntegrationTestSuite) TestUpdateBatchMetadata() {
 		args := tc.args
 		s.Run(tc.name, func() {
 			cmd := client.TxUpdateBatchMetadataCmd()
+			args = append(args, s.commonTxFlags()...)
+			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Zero(res.Code, res.RawLog)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxBridgeCmd() {
+	require := s.Require()
+
+	owner := s.addr1.String()
+
+	// using json package because array is not a proto message
+	bz, err := json.Marshal([]types.Credits{
+		{
+			BatchDenom: s.batchDenom,
+			Amount:     "10",
+		},
+		{
+			BatchDenom: s.batchDenom,
+			Amount:     "10",
+		},
+	})
+	require.NoError(err)
+
+	validJSON := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	invalidJSON := testutil.WriteToNewTempFile(s.T(), `{foo:bar}`).Name()
+	duplicateJSON := testutil.WriteToNewTempFile(s.T(), `{"foo":"bar","foo":"bar"`).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 3 arg(s), received 2",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar", "baz", "foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 3 arg(s), received 4",
+		},
+		{
+			name: "missing from flag",
+			args: []string{
+				s.bridgeChain,
+				"0x0000000000000000000000000000000000000001",
+				validJSON,
+			},
+			expErr:    true,
+			expErrMsg: "Error: required flag(s) \"from\" not set",
+		},
+		{
+			name: "invalid json file",
+			args: []string{
+				s.bridgeChain,
+				"0x0000000000000000000000000000000000000001",
+				"foo.bar",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+			},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name: "invalid json format",
+			args: []string{
+				s.bridgeChain,
+				"0x0000000000000000000000000000000000000001",
+				invalidJSON,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+			},
+			expErr:    true,
+			expErrMsg: "failed to parse json: invalid character",
+		},
+		{
+			name: "duplicate json key",
+			args: []string{
+				s.bridgeChain,
+				"0x0000000000000000000000000000000000000001",
+				duplicateJSON,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+			},
+			expErr:    true,
+			expErrMsg: "failed to parse json: duplicate key",
+		},
+		{
+			name: "valid",
+			args: []string{
+				s.bridgeChain,
+				"0x0000000000000000000000000000000000000001",
+				validJSON,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+			},
+		},
+		{
+			name: "valid from key-name",
+			args: []string{
+				s.bridgeChain,
+				"0x0000000000000000000000000000000000000001",
+				validJSON,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
+			},
+		},
+		{
+			name: "valid with amino-json",
+			args: []string{
+				s.bridgeChain,
+				"0x0000000000000000000000000000000000000001",
+				validJSON,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+				fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		args := tc.args
+		s.Run(tc.name, func() {
+			cmd := client.TxBridgeCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
 			if tc.expErr {
