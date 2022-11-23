@@ -104,7 +104,7 @@ service Msg {
   // UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
   // updated and only the issuer of the batch can update the batch.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc UpdateBatchMetadata(MsgUpdateBatchMetadata)
       returns (MsgUpdateBatchMetadataResponse);
 
@@ -125,7 +125,7 @@ service Msg {
   // AddCreditType is a governance method that allows the addition of new
   // credit types to the network.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
   // SetClassCreatorAllowlist is a governance method that updates the class
@@ -133,20 +133,20 @@ service Msg {
   // the allowlist can create credit classes. When disabled, any address can
   // create credit classes.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc SetClassCreatorAllowlist(MsgSetClassCreatorAllowlist)
       returns (MsgSetClassCreatorAllowlistResponse);
 
   // AddClassCreator is a governance method that allows the addition of a new
   // address to the class creation allowlist.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc AddClassCreator(MsgAddClassCreator) returns (MsgAddClassCreatorResponse);
 
   // RemoveClassCreator is a governance method that removes an
   // address from the class creation allowlist.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc RemoveClassCreator(MsgRemoveClassCreator)
       returns (MsgRemoveClassCreatorResponse);
 
@@ -155,26 +155,27 @@ service Msg {
   // class creation fee will be removed and no fee will be required to create
   // a credit class.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
 
   // AddAllowedBridgeChain is a governance method that allows for the
   // addition of a chain to bridge ecocredits to.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc AddAllowedBridgeChain(MsgAddAllowedBridgeChain)
       returns (MsgAddAllowedBridgeChainResponse);
 
   // RemoveAllowedBridgeChain is a governance method that allows for the
   // removal of a chain to bridge ecocredits to.
   //
-  // Since Revision 1
+  // Since Revision 2
   rpc RemoveAllowedBridgeChain(MsgRemoveAllowedBridgeChain)
       returns (MsgRemoveAllowedBridgeChainResponse);
 }
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
-// Since Revision 1
+//
+// Since Revision 2
 message MsgAddCreditType {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -186,7 +187,8 @@ message MsgAddCreditType {
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
-// Since Revision 1
+//
+// Since Revision 2
 message MsgAddCreditTypeResponse {}
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -397,7 +399,7 @@ message MsgSend {
     // retiring credits. This field is only required if retired_amount is
     // positive.
     //
-    // Since Revision 1
+    // Since Revision 2
     string retirement_reason = 5;
   }
 }
@@ -427,7 +429,7 @@ message MsgRetire {
   // reason is any arbitrary string that specifies the reason for retiring
   // credits.
   //
-  // Since Revision 1
+  // Since Revision 2
   string reason = 4;
 }
 
@@ -570,7 +572,7 @@ message MsgBridge {
 
 // MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgUpdateBatchMetadata {
   option (cosmos.msg.v1.signer) = "issuer";
 
@@ -588,7 +590,7 @@ message MsgUpdateBatchMetadata {
 
 // MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgUpdateBatchMetadataResponse {}
 
 // MsgBridgeResponse is the Msg/Bridge response type.
@@ -668,7 +670,7 @@ message MsgBridgeReceiveResponse {
 
 // MsgAddClassCreator is the Msg/AddClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgAddClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -679,10 +681,15 @@ message MsgAddClassCreator {
   string creator = 2;
 }
 
+// MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
+//
+// Since Revision 2
+message MsgAddClassCreatorResponse {}
+
 // MsgSetClassCreatorAllowlist is the Msg/SetClassCreatorAllowlist request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgSetClassCreatorAllowlist {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -696,17 +703,12 @@ message MsgSetClassCreatorAllowlist {
 // MsgSetClassCreatorAllowlistResponse is the Msg/SetClassCreatorAllowlist
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgSetClassCreatorAllowlistResponse {}
-
-// MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
-//
-// Since Revision 1
-message MsgAddClassCreatorResponse {}
 
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgRemoveClassCreator {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -719,12 +721,12 @@ message MsgRemoveClassCreator {
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgRemoveClassCreatorResponse {}
 
 // MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgUpdateClassFee {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -738,12 +740,12 @@ message MsgUpdateClassFee {
 
 // MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgUpdateClassFeeResponse {}
 
 // MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgAddAllowedBridgeChain {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -758,12 +760,12 @@ message MsgAddAllowedBridgeChain {
 // MsgAddAllowedBridgeChainResponse is the Msg/AddAllowedBridgeChain response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgAddAllowedBridgeChainResponse {}
 
 // MsgRemoveAllowedBridgeChain is the Msg/RemoveAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgRemoveAllowedBridgeChain {
   option (cosmos.msg.v1.signer) = "authority";
 
@@ -778,5 +780,5 @@ message MsgRemoveAllowedBridgeChain {
 // MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 message MsgRemoveAllowedBridgeChainResponse {}

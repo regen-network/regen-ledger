@@ -966,7 +966,7 @@ func (m *BatchContract) GetContract() string {
 // table may create credit classes. When set to false, any address may create
 // credit classes. This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type ClassCreatorAllowlist struct {
 	// enabled is whether or not the allow list is enabled.
 	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
@@ -1015,7 +1015,7 @@ func (m *ClassCreatorAllowlist) GetEnabled() bool {
 // AllowedClassCreator is an allowed credit class creator. This table is
 // controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type AllowedClassCreator struct {
 	// address is the address that is allowed to create credit classes
 	Address []byte `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
@@ -1064,7 +1064,7 @@ func (m *AllowedClassCreator) GetAddress() []byte {
 // ClassFee is the credit class creation fee. If not set, a credit class
 // creation fee is not required. This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type ClassFee struct {
 	// fee is the credit class creation fee. If not set, a credit class creation
 	// fee is not required.
@@ -1116,7 +1116,7 @@ func (m *ClassFee) GetFee() *types1.Coin {
 // writing to and reading from this table in order to keep entries consistent.
 // This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type AllowedBridgeChain struct {
 	// chain_name is the name of the chain allowed to bridge ecocredits to.
 	ChainName string `protobuf:"bytes,1,opt,name=chain_name,json=chainName,proto3" json:"chain_name,omitempty"`

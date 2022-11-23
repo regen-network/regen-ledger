@@ -30214,7 +30214,7 @@ func (x *QueryBalancesResponse) GetPagination() *v1beta1.PageResponse {
 
 // QueryBalancesByBatchRequest is the Query/BalancesByBatch request type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryBalancesByBatchRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -30262,7 +30262,7 @@ func (x *QueryBalancesByBatchRequest) GetPagination() *v1beta1.PageRequest {
 
 // QueryBalancesByBatchResponse is the Query/BalancesByBatch response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryBalancesByBatchResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -30311,7 +30311,7 @@ func (x *QueryBalancesByBatchResponse) GetPagination() *v1beta1.PageResponse {
 
 // QueryAllBalancesRequest is the Query/AllBalances request type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllBalancesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -30350,7 +30350,7 @@ func (x *QueryAllBalancesRequest) GetPagination() *v1beta1.PageRequest {
 
 // QueryAllBalancesResponse is the Query/AllBalances response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllBalancesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -30652,12 +30652,12 @@ type QueryParamsResponse struct {
 	// allowed_denoms is a list of bank denoms allowed to be used in the ask price
 	// of sell orders.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedDenoms []*AllowedDenomInfo `protobuf:"bytes,2,rep,name=allowed_denoms,json=allowedDenoms,proto3" json:"allowed_denoms,omitempty"`
 	// AllowedBridgeChains is a list of chain names that are allowed to be used in
 	// bridge operations.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedBridgeChains []string `protobuf:"bytes,3,rep,name=allowed_bridge_chains,json=allowedBridgeChains,proto3" json:"allowed_bridge_chains,omitempty"`
 }
 
@@ -31110,7 +31110,7 @@ func (x *BatchBalanceInfo) GetEscrowedAmount() string {
 // QueryClassCreatorAllowlistRequest is the Query/ClassCreatorAllowlist request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassCreatorAllowlistRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31140,7 +31140,7 @@ func (*QueryClassCreatorAllowlistRequest) Descriptor() ([]byte, []int) {
 // QueryClassCreatorAllowlistResponse is the Query/ClassCreatorAllowlist
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassCreatorAllowlistResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31181,7 +31181,7 @@ func (x *QueryClassCreatorAllowlistResponse) GetEnabled() bool {
 // QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedClassCreatorsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31221,7 +31221,7 @@ func (x *QueryAllowedClassCreatorsRequest) GetPagination() *v1beta1.PageRequest 
 // QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedClassCreatorsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31269,7 +31269,7 @@ func (x *QueryAllowedClassCreatorsResponse) GetPagination() *v1beta1.PageRespons
 
 // QueryClassFeeRequest is the Query/ClassFee request type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassFeeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31298,7 +31298,7 @@ func (*QueryClassFeeRequest) Descriptor() ([]byte, []int) {
 
 // QueryClassFeeResponse is the Query/ClassFee response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassFeeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31339,7 +31339,7 @@ func (x *QueryClassFeeResponse) GetFee() *v1beta11.Coin {
 // QueryAllowedBridgeChainsRequest is the Query/AllowedBridgeChains request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedBridgeChainsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -31369,7 +31369,7 @@ func (*QueryAllowedBridgeChainsRequest) Descriptor() ([]byte, []int) {
 // QueryAllowedBridgeChainsResponse is the Query/AllowedBridgeChains response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedBridgeChainsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

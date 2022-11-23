@@ -1706,7 +1706,7 @@ func (m *QueryBalancesResponse) GetPagination() *query.PageResponse {
 
 // QueryBalancesByBatchRequest is the Query/BalancesByBatch request type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryBalancesByBatchRequest struct {
 	// batch_denom is the denom of the batch to query by.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
@@ -1763,7 +1763,7 @@ func (m *QueryBalancesByBatchRequest) GetPagination() *query.PageRequest {
 
 // QueryBalancesByBatchResponse is the Query/BalancesByBatch response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryBalancesByBatchResponse struct {
 	// balances are a list of balances from different credit batches that the
 	// account holds.
@@ -1821,7 +1821,7 @@ func (m *QueryBalancesByBatchResponse) GetPagination() *query.PageResponse {
 
 // QueryAllBalancesRequest is the Query/AllBalances request type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllBalancesRequest struct {
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1869,7 +1869,7 @@ func (m *QueryAllBalancesRequest) GetPagination() *query.PageRequest {
 
 // QueryAllBalancesResponse is the Query/AllBalances response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllBalancesResponse struct {
 	// balances are a list of balances from different credit batches that the
 	// account holds.
@@ -2232,12 +2232,12 @@ type QueryParamsResponse struct {
 	// allowed_denoms is a list of bank denoms allowed to be used in the ask price
 	// of sell orders.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedDenoms []*AllowedDenomInfo `protobuf:"bytes,2,rep,name=allowed_denoms,json=allowedDenoms,proto3" json:"allowed_denoms,omitempty"`
 	// AllowedBridgeChains is a list of chain names that are allowed to be used in
 	// bridge operations.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedBridgeChains []string `protobuf:"bytes,3,rep,name=allowed_bridge_chains,json=allowedBridgeChains,proto3" json:"allowed_bridge_chains,omitempty"`
 }
 
@@ -2757,7 +2757,7 @@ func (m *BatchBalanceInfo) GetEscrowedAmount() string {
 // QueryClassCreatorAllowlistRequest is the Query/ClassCreatorAllowlist request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassCreatorAllowlistRequest struct {
 }
 
@@ -2797,7 +2797,7 @@ var xxx_messageInfo_QueryClassCreatorAllowlistRequest proto.InternalMessageInfo
 // QueryClassCreatorAllowlistResponse is the Query/ClassCreatorAllowlist
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassCreatorAllowlistResponse struct {
 	// enabled determines whether or not the allowlist for creating credit classes
 	// is enabled.
@@ -2847,7 +2847,7 @@ func (m *QueryClassCreatorAllowlistResponse) GetEnabled() bool {
 // QueryAllowedClassCreatorsRequest is the Query/AllowedClassCreators request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedClassCreatorsRequest struct {
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -2896,7 +2896,7 @@ func (m *QueryAllowedClassCreatorsRequest) GetPagination() *query.PageRequest {
 // QueryAllowedClassCreatorsResponse is the Query/AllowedClassCreators response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedClassCreatorsResponse struct {
 	// class_creators is the list of allowed credit class creators.
 	ClassCreators []string `protobuf:"bytes,1,rep,name=class_creators,json=classCreators,proto3" json:"class_creators,omitempty"`
@@ -2953,7 +2953,7 @@ func (m *QueryAllowedClassCreatorsResponse) GetPagination() *query.PageResponse 
 
 // QueryClassFeeRequest is the Query/ClassFee request type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassFeeRequest struct {
 }
 
@@ -2992,7 +2992,7 @@ var xxx_messageInfo_QueryClassFeeRequest proto.InternalMessageInfo
 
 // QueryClassFeeResponse is the Query/ClassFee response type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryClassFeeResponse struct {
 	// fee is the credit class creation fee. If not set, a credit class creation
 	// fee is not required.
@@ -3042,7 +3042,7 @@ func (m *QueryClassFeeResponse) GetFee() *types1.Coin {
 // QueryAllowedBridgeChainsRequest is the Query/AllowedBridgeChains request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedBridgeChainsRequest struct {
 }
 
@@ -3082,7 +3082,7 @@ var xxx_messageInfo_QueryAllowedBridgeChainsRequest proto.InternalMessageInfo
 // QueryAllowedBridgeChainsResponse is the Query/AllowedBridgeChains response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type QueryAllowedBridgeChainsResponse struct {
 	// allowed_bridge_chains is a list of chains that are allowed to be used in
 	// bridge operations.
@@ -3404,11 +3404,11 @@ type QueryClient interface {
 	Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error)
 	// BalancesByBatch queries all credit balances from a given batch.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	BalancesByBatch(ctx context.Context, in *QueryBalancesByBatchRequest, opts ...grpc.CallOption) (*QueryBalancesByBatchResponse, error)
 	// AllBalances queries all credit balances.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllBalances(ctx context.Context, in *QueryAllBalancesRequest, opts ...grpc.CallOption) (*QueryAllBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
@@ -3417,7 +3417,7 @@ type QueryClient interface {
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
 	//
-	// Deprecated (Since Revision 1): This rpc will be removed in the next
+	// Deprecated (Since Revision 2): This rpc will be removed in the next
 	// version.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// CreditType queries credit type information by abbreviation.
@@ -3425,21 +3425,21 @@ type QueryClient interface {
 	// ClassCreatorAllowlist queries the credit class creator allowlist
 	// enabled setting.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	ClassCreatorAllowlist(ctx context.Context, in *QueryClassCreatorAllowlistRequest, opts ...grpc.CallOption) (*QueryClassCreatorAllowlistResponse, error)
 	// AllowedClassCreators queries allowed credit class creators list.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedClassCreators(ctx context.Context, in *QueryAllowedClassCreatorsRequest, opts ...grpc.CallOption) (*QueryAllowedClassCreatorsResponse, error)
 	// ClassFee returns the credit class creation fee. If not set, a credit class
 	// creation fee is not required.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	ClassFee(ctx context.Context, in *QueryClassFeeRequest, opts ...grpc.CallOption) (*QueryClassFeeResponse, error)
 	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
 	// operations.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedBridgeChains(ctx context.Context, in *QueryAllowedBridgeChainsRequest, opts ...grpc.CallOption) (*QueryAllowedBridgeChainsResponse, error)
 }
 
@@ -3727,11 +3727,11 @@ type QueryServer interface {
 	Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error)
 	// BalancesByBatch queries all credit balances from a given batch.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	BalancesByBatch(context.Context, *QueryBalancesByBatchRequest) (*QueryBalancesByBatchResponse, error)
 	// AllBalances queries all credit balances.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllBalances(context.Context, *QueryAllBalancesRequest) (*QueryAllBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
@@ -3740,7 +3740,7 @@ type QueryServer interface {
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
 	//
-	// Deprecated (Since Revision 1): This rpc will be removed in the next
+	// Deprecated (Since Revision 2): This rpc will be removed in the next
 	// version.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// CreditType queries credit type information by abbreviation.
@@ -3748,21 +3748,21 @@ type QueryServer interface {
 	// ClassCreatorAllowlist queries the credit class creator allowlist
 	// enabled setting.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	ClassCreatorAllowlist(context.Context, *QueryClassCreatorAllowlistRequest) (*QueryClassCreatorAllowlistResponse, error)
 	// AllowedClassCreators queries allowed credit class creators list.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedClassCreators(context.Context, *QueryAllowedClassCreatorsRequest) (*QueryAllowedClassCreatorsResponse, error)
 	// ClassFee returns the credit class creation fee. If not set, a credit class
 	// creation fee is not required.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	ClassFee(context.Context, *QueryClassFeeRequest) (*QueryClassFeeResponse, error)
 	// AllowedBridgeChains queries the list of chains allowed to be used in bridge
 	// operations.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error)
 }
 

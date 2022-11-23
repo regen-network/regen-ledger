@@ -407,7 +407,7 @@ type EventRetire struct {
 	// reason is any arbitrary string that specifies the reason for retiring
 	// credits.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	Reason string `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
@@ -791,7 +791,7 @@ func (m *EventUpdateProjectMetadata) GetProjectId() string {
 // EventUpdateBatchMetadata is emitted when the credit batch metadata is
 // changed.
 //
-// Since Revision 1
+// Since Revision 2
 type EventUpdateBatchMetadata struct {
 	// batch_denom is the unique identifier of the batch that was updated.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
