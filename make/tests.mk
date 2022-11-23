@@ -55,4 +55,4 @@ test-clean:
 	@find . -name 'coverage*.out' -delete
 
 .PHONY: test test-all test-app test-types test-x-data test-x-ecocredit \
-	 test-x-intertx test-integration test-coverage test-clean
+	test-x-intertx test-integration test-coverage test-clean

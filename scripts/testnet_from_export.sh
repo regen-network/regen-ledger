@@ -78,7 +78,7 @@ make build
 sed -i "s|\"stake\"|$bond_denom|g" "$node_genesis"
 
 # start node and deliver genesis transaction
-./build/regen start --home "$home" --halt-height 1 && wait $!
+./build/regen start --home "$home" --halt-height 1 --minimum-gas-prices 0uregen && wait $!
 
 # create temporary directory
 mkdir -p "$tmp_dir"
@@ -227,4 +227,4 @@ rm -rf $tmp_dir
 cat <<< $(jq '.app_state.gov.voting_params.voting_period = "20s"' "$node_genesis") > "$node_genesis"
 
 # start node
-./build/regen start --home "$home" --fast_sync=false
+./build/regen start --home "$home" --fast_sync=false --minimum-gas-prices 0uregen
