@@ -99,8 +99,8 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 			AllowlistEnabled:     allowlistEnabled.Enabled,
 			CreditClassFee:       sdk.Coins{classFeeCoin},
 			BasketFee:            sdk.Coins{basketFeeCoin},
+			AllowedDenoms:        allowedDenoms,
+			AllowedBridgeChains:  allowedBridgeChains,
 		},
-		AllowedDenoms:       allowedDenoms,
-		AllowedBridgeChains: allowedBridgeChains,
 	}, nil
 }
