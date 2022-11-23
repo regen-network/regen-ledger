@@ -54,6 +54,7 @@ type IntegrationTestSuite struct {
 	basketFee          sdk.Coins
 	creditTypeAbbrev   string
 	allowedDenoms      []string
+	bridgeChain        string
 	classID            string
 	projectID          string
 	projectReferenceID string
@@ -256,9 +257,11 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	})
 	require.NoError(err)
 
+	s.bridgeChain = "polygon"
+
 	// set allowed bridge chain
 	err = baseStore.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{
-		ChainName: "polygon",
+		ChainName: s.bridgeChain,
 	})
 	require.NoError(err)
 
