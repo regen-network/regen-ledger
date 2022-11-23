@@ -95,7 +95,7 @@ const redwoodValidatorSet = `{
 		{"type": "tendermint/PubKeyEd25519","value": "XilNKNUiLrN2hR/IwwLAY4P7w26rOkP7DwYyS4kCeMU="},
 		{"type": "tendermint/PubKeyEd25519","value": "FDlx1MBigiI53bMpa3rCvqEgSU9zZoc3CH7Ty5pVJfg="}
 	]	
-`
+}`
 
 type PubKeys struct {
 	Pubkeys []tmcrypto.PubKey `json:"pub_keys"`
