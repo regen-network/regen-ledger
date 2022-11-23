@@ -37,11 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove unused functions for setting custom keepers
 - [#1546](https://github.com/regen-network/regen-ledger/pull/1546) Remove tendermint completion command
 
-### errors
-
-#### Added
-
-
 ### types
 
 #### Changed
