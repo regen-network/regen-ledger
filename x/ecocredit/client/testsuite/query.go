@@ -1009,5 +1009,5 @@ func (s *IntegrationTestSuite) TestQueryAllowedBridgeChainsCmd() {
 	var res types.QueryAllowedBridgeChainsResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	s.Require().Len(res.AllowedBridgeChains, 1)
-	s.Require().Equal(res.AllowedBridgeChains[0], "polygon")
+	s.Require().Equal(res.AllowedBridgeChains[0], s.bridgeChain)
 }
