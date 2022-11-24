@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 
-	regenerrors "github.com/regen-network/regen-ledger/errors"
+	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	types "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )
 
