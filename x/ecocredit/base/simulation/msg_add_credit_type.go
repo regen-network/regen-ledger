@@ -12,7 +12,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regenerrors "github.com/regen-network/regen-ledger/errors"
+	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"

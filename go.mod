@@ -132,7 +132,6 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/regen-network/regen-ledger/api v0.8.0 // indirect
-	github.com/regen-network/regen-ledger/errors v0.0.0-00010101000000-000000000000 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
@@ -180,8 +179,6 @@ replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
 replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 
 replace github.com/regen-network/regen-ledger/api => ./api
-
-replace github.com/regen-network/regen-ledger/errors => ./errors
 
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409

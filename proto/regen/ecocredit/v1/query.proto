@@ -637,38 +637,11 @@ message QueryCreditTypesResponse {
 // QueryParamsRequest is the Query/Params request type.
 message QueryParamsRequest {}
 
-// AllowedDenom represents the information for an allowed ask denom.
-message AllowedDenomInfo {
-  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
-  string bank_denom = 1;
-
-  // display_denom is the denom to display to the user and is informational.
-  // Because the denom is likely an IBC denom, this should be chosen by
-  // governance to represent the consensus trusted name of the denom.
-  string display_denom = 2;
-
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 3;
-}
-
 // QueryParamsResponse is the Query/Params response type.
 message QueryParamsResponse {
 
   // params defines the parameters of the ecocredit module.
   Params params = 1;
-
-  // allowed_denoms is a list of bank denoms allowed to be used in the ask price
-  // of sell orders.
-  //
-  // Since Revision 2
-  repeated AllowedDenomInfo allowed_denoms = 2;
-
-  // AllowedBridgeChains is a list of chain names that are allowed to be used in
-  // bridge operations.
-  //
-  // Since Revision 2
-  repeated string allowed_bridge_chains = 3;
 }
 
 // QueryCreditTypeRequest is the Query/CreditType request type

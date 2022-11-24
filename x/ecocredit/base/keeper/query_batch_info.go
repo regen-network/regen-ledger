@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	regenerrors "github.com/regen-network/regen-ledger/errors"
 	regentypes "github.com/regen-network/regen-ledger/types"
+	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )

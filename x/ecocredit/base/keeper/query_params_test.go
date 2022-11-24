@@ -61,9 +61,8 @@ func TestQuery_Params(t *testing.T) {
 	assert.DeepEqual(t, result.Params.AllowedClassCreators, []string{s.addr.String()})
 	assert.Equal(t, result.Params.CreditClassFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))).String())
 	assert.Equal(t, result.Params.BasketFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))).String())
-	assert.Equal(t, len(result.AllowedDenoms), 1)
-	assert.Equal(t, result.AllowedDenoms[0].BankDenom, "uregen")
-
-	assert.Equal(t, len(result.AllowedBridgeChains), 1)
-	assert.Equal(t, result.AllowedBridgeChains[0], allowedChain)
+	assert.Equal(t, len(result.Params.AllowedDenoms), 1)
+	assert.Equal(t, result.Params.AllowedDenoms[0].BankDenom, "uregen")
+	assert.Equal(t, len(result.Params.AllowedBridgeChains), 1)
+	assert.Equal(t, result.Params.AllowedBridgeChains[0], allowedChain)
 }
