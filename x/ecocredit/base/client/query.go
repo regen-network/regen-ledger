@@ -86,9 +86,6 @@ regen q ecocredit class-issuers C01 --limit 10 --offset 10`,
 				ClassId:    args[0],
 				Pagination: pagination,
 			})
-			if err != nil {
-				return err
-			}
 
 			return printQueryResponse(ctx, res, err)
 		},
@@ -260,7 +257,7 @@ func QueryBatchesByClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "batches-by-class [class-id]",
 		Short: "List all credit batches by credit class",
-		Long:  "List all credit batches by credit class with pagination flags.",
+		Long:  "List all credit batches by credit class with optional pagination flags.",
 		Example: `regen q ecocredit batches-by-class C01
 regen q ecocredit batches-by-class C01 --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(1),
@@ -560,10 +557,9 @@ func QueryAllowedClassCreatorsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "allowed-class-creators",
 		Short: "Retrieve the allowed credit class creators",
-		Long:  "Retrieve the list of allowed credit class creators with pagination",
-		Example: `
-		regen q ecocredit allowed-class-creators
-		regen q ecocredit allowed-class-creators --limit 10`,
+		Long:  "Retrieve the list of allowed credit class creators with optional pagination flags.",
+		Example: `regen q ecocredit allowed-class-creators
+regen q ecocredit allowed-class-creators --limit 10`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -587,17 +583,15 @@ func QueryAllowedClassCreatorsCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
-// QueryAllBalances returns a query command that retrieves a list of all ecocredit balances
+// QueryAllBalancesCmd returns a query command that retrieves a list of all ecocredit balances
 // with pagination.
-func QueryAllBalances() *cobra.Command {
+func QueryAllBalancesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "all-balances",
 		Short: "Retrieve all ecocredit balances",
-		Long:  "Retrieve all ecocredit balances across all addresses and batch denoms with pagination",
-		Example: `
-		regen q ecocredit all-balances
-		regen q ecocredit all-balances --limit 10
-		`,
+		Long:  "Retrieve all ecocredit balances across all addresses and credit batches with optional pagination flags.",
+		Example: `regen q ecocredit all-balances
+regen q ecocredit all-balances --limit 10`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -620,9 +614,42 @@ func QueryAllBalances() *cobra.Command {
 	return qflags(cmd)
 }
 
-// QueryAllowedBridgeChains returns a query command that retrieves a list of chain that are allowed to be used
+// QueryBalancesByBatchCmd returns a query command that retrieves a list of all ecocredit balances
+// with pagination.
+func QueryBalancesByBatchCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "balances-by-batch [batch-denom]",
+		Short: "Retrieve all ecocredit balances for a given credit batch",
+		Long:  "Retrieve all ecocredit balances for a given credit batch with optional pagination flags.",
+		Example: `regen q ecocredit balances-by-batch C01-001-20200101-20210101-001
+regen q ecocredit balances-by-batch C01-001-20200101-20210101-001 --limit 10`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.BalancesByBatch(cmd.Context(), &types.QueryBalancesByBatchRequest{
+				BatchDenom: args[0],
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "all-balances")
+
+	return qflags(cmd)
+}
+
+// QueryAllowedBridgeChainsCmd returns a query command that retrieves a list of chain that are allowed to be used
 // in bridge operations.
-func QueryAllowedBridgeChains() *cobra.Command {
+func QueryAllowedBridgeChainsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "allowed-bridge-chains",
 		Short:   "Retrieve the list of allowed bridge chains",

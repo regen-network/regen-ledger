@@ -874,7 +874,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAllowedClassCreators() {
+func (s *IntegrationTestSuite) TestQueryAllowedClassCreatorsCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
@@ -929,7 +929,7 @@ func (s *IntegrationTestSuite) TestQueryAllBalancesCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	cmd := client.QueryAllBalances()
+	cmd := client.QueryAllBalancesCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{fmt.Sprintf("--%s", flags.FlagCountTotal)})
 
 	s.Require().NoError(err, out.String())
@@ -938,4 +938,76 @@ func (s *IntegrationTestSuite) TestQueryAllBalancesCmd() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	s.Require().Greater(len(res.Balances), 0)
 	s.Require().Greater(res.Pagination.Total, uint64(0))
+}
+
+func (s *IntegrationTestSuite) TestQueryBalancesByBatchCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name:           "missing args",
+			args:           []string{},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:           "too many args",
+			args:           []string{"abcde", "abcde"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "valid",
+			args:      []string{s.batchDenom},
+			expectErr: false,
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				s.batchDenom,
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryBalancesByBatchCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res types.QueryBalancesByBatchResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NotEmpty(res.Balances)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedBridgeChainsCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryAllowedBridgeChainsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryAllowedBridgeChainsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Len(res.AllowedBridgeChains, 1)
+	s.Require().Equal(res.AllowedBridgeChains[0], s.bridgeChain)
 }
