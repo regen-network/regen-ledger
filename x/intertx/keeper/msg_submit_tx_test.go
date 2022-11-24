@@ -24,7 +24,7 @@ func TestSubmitTx(t *testing.T) {
 	owner := s.addrs[0]
 	receiver := s.addrs[1]
 	sendAmt := sdk.NewCoins(sdk.NewInt64Coin("uregen", 10))
-	connectionId := "ch-5"
+	connectionID := "ch-5"
 
 	msgSend := banktypes.MsgSend{
 		FromAddress: owner.String(),
@@ -36,13 +36,13 @@ func TestSubmitTx(t *testing.T) {
 
 	msg := v1.MsgSubmitTx{
 		Owner:        owner.String(),
-		ConnectionId: connectionId,
+		ConnectionId: connectionID,
 		Msg:          anyMsg,
 	}
 
 	portID, err := icatypes.NewControllerPortID(msg.Owner)
 	assert.NilError(t, err)
-	channelId := "ch-1"
+	channelID := "ch-1"
 	serializedTx, err := icatypes.SerializeCosmosTx(s.cdc, []sdk.Msg{&msgSend})
 	assert.NilError(t, err)
 	packetData := icatypes.InterchainAccountPacketData{
@@ -56,10 +56,10 @@ func TestSubmitTx(t *testing.T) {
 	gomock.InOrder(
 		s.ica.EXPECT().
 			GetActiveChannelID(s.sdkCtx, msg.ConnectionId, portID).
-			Return(channelId, true).
+			Return(channelID, true).
 			Times(1),
 		s.cap.EXPECT().
-			GetCapability(s.sdkCtx, host.ChannelCapabilityPath(portID, channelId)).
+			GetCapability(s.sdkCtx, host.ChannelCapabilityPath(portID, channelID)).
 			Return(capability, true).
 			Times(1),
 		s.ica.EXPECT().
