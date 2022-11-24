@@ -64,14 +64,14 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 	}
 	defer allowedDenomsItr.Close()
 
-	var allowedDenoms []*types.AllowedDenomInfo
+	var allowedDenoms []*types.AllowedDenom
 	for allowedDenomsItr.Next() {
 		val, err := allowedDenomsItr.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		allowedDenoms = append(allowedDenoms, &types.AllowedDenomInfo{
+		allowedDenoms = append(allowedDenoms, &types.AllowedDenom{
 			BankDenom:    val.BankDenom,
 			DisplayDenom: val.DisplayDenom,
 			Exponent:     val.Exponent,
@@ -99,8 +99,8 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 			AllowlistEnabled:     allowlistEnabled.Enabled,
 			CreditClassFee:       sdk.Coins{classFeeCoin},
 			BasketFee:            sdk.Coins{basketFeeCoin},
+			AllowedDenoms:        allowedDenoms,
+			AllowedBridgeChains:  allowedBridgeChains,
 		},
-		AllowedDenoms:       allowedDenoms,
-		AllowedBridgeChains: allowedBridgeChains,
 	}, nil
 }
