@@ -586,8 +586,17 @@ func (s *IntegrationTestSuite) TestQueryParamsCmd() {
 
 	require.Equal(genesis.DefaultClassFee().Fee.Amount, params.Params.CreditClassFee[0].Amount)
 	require.Equal(genesis.DefaultClassFee().Fee.Denom, params.Params.CreditClassFee[0].Denom)
+
 	require.False(params.Params.AllowlistEnabled)
-	require.Equal([]string{sdk.AccAddress("issuer1").String(), sdk.AccAddress("issuer2").String()}, params.Params.AllowedClassCreators)
+
+	require.Equal([]string{
+		sdk.AccAddress("issuer1").String(),
+		sdk.AccAddress("issuer2").String(),
+	}, params.Params.AllowedClassCreators)
+
+	require.Equal(s.allowedDenoms[0], params.Params.AllowedDenoms[0].BankDenom)
+
+	require.Equal(s.bridgeChain, params.Params.AllowedBridgeChains[0])
 }
 
 func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
