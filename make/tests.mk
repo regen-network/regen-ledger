@@ -36,6 +36,11 @@ test-x-ecocredit:
 	@cd x/ecocredit && go test ./... \
 		-coverprofile=${CURRENT_DIR}/coverage-x-ecocredit.out -covermode=atomic
 
+test-x-intertx:
+	@echo "Testing Module x/intertx"
+	@cd x/intertx && go test ./... \
+		-coverprofile=${CURRENT_DIR}/coverage-x-intertx.out -covermode=atomic
+
 test-integration:
 	@echo "Testing Integration"
 	@go test ./app/testsuite/... \
@@ -49,5 +54,5 @@ test-clean:
 	@find . -name 'coverage.txt' -delete
 	@find . -name 'coverage*.out' -delete
 
-.PHONY: test test-all test-app test-types test-x-data \
-	test-x-ecocredit test-integration test-coverage test-clean
+.PHONY: test test-all test-app test-types test-x-data test-x-ecocredit \
+	test-x-intertx test-integration test-coverage test-clean

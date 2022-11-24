@@ -588,7 +588,8 @@ message MsgUpdateBatchMetadata {
   string new_metadata = 3;
 }
 
-// MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse response type.
+// MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse
+// response type.
 //
 // Since Revision 2
 message MsgUpdateBatchMetadataResponse {}

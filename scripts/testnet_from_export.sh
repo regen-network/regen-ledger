@@ -62,6 +62,9 @@ tokens=$(echo "${amount}${bond_denom}" | tr -d '"')
 # tokens2 is token amount x2 providing a starting balance with amount
 tokens2=$(echo "$(( "$amount" + "$amount" ))${bond_denom}" | tr -d '"')
 
+# gas_price is the minimum gas price for the node
+gas_price=$(echo "0${bond_denom}" | tr -d '"')
+
 # build binary
 make build
 
@@ -78,7 +81,7 @@ make build
 sed -i "s|\"stake\"|$bond_denom|g" "$node_genesis"
 
 # start node and deliver genesis transaction
-./build/regen start --home "$home" --halt-height 1 && wait $!
+./build/regen start --home "$home" --halt-height 1 --minimum-gas-prices "$gas_price" && wait $!
 
 # create temporary directory
 mkdir -p "$tmp_dir"
@@ -227,4 +230,4 @@ rm -rf $tmp_dir
 cat <<< $(jq '.app_state.gov.voting_params.voting_period = "20s"' "$node_genesis") > "$node_genesis"
 
 # start node
-./build/regen start --home "$home" --fast_sync=false
+./build/regen start --home "$home" --fast_sync=false --minimum-gas-prices "$gas_price"

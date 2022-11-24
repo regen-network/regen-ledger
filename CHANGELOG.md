@@ -37,17 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Remove unused functions for setting custom keepers
 - [#1546](https://github.com/regen-network/regen-ledger/pull/1546) Remove tendermint completion command
 
-### errors
-
-#### Added
-
-- [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Add `errors` module
-
 ### types
 
 #### Changed
 
 - [#1451](https://github.com/regen-network/regen-ledger/pull/1451) Migrate `ModuleID`, `AddressHash`, `InvokerFactory`, and `CallInfo` to `types/testutil/fixture`
+- [#1579](https://github.com/regen-network/regen-ledger/pull/1579), [#1637](https://github.com/regen-network/regen-ledger/pull/1637) Add `errors` package
 
 #### Removed
 
@@ -122,6 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1484](https://github.com/regen-network/regen-ledger/pull/1484) Add `Msg/UpdateCurator`
 - [#1623](https://github.com/regen-network/regen-ledger/pull/1623) Add `Msg/UpdateBatchMetadata`
 - [#1625](https://github.com/regen-network/regen-ledger/pull/1625) Add `reason`/`retirement_reason`
+- [#1634](https://github.com/regen-network/regen-ledger/pull/1634) Add `balances-by-batch` query command
 - [#1636](https://github.com/regen-network/regen-ledger/pull/1636) Add `bridge` transaction command
 
 #### Changed

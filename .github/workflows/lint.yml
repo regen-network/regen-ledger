@@ -29,7 +29,7 @@ jobs:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     strategy:
       matrix:
-        module: ["app", "types", "x/data", "x/ecocredit"]
+        module: ["app", "types", "x/data", "x/ecocredit", "x/intertx"]
     steps:
       - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v6
@@ -64,6 +64,14 @@ jobs:
             x/ecocredit/go.mod
             x/ecocredit/go.sum
         if: matrix.module == 'x/ecocredit'
+      - uses: technote-space/get-diff-action@v6
+        id: git-diff-intertx
+        with:
+          PATTERNS: |
+            x/intertx/**/**.go
+            x/intertx/go.mod
+            x/intertx/go.sum
+        if: matrix.module == 'x/intertx'
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
@@ -84,6 +92,10 @@ jobs:
         with:
           working-directory: "x/ecocredit"
         if: steps.git-diff-ecocredit.outputs.diff
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          working-directory: "x/intertx"
+        if: steps.git-diff-intertx.outputs.diff
 
   buf-lint:
     runs-on: ubuntu-latest

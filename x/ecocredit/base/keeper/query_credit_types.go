@@ -4,7 +4,7 @@ import (
 	"context"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	regenerrors "github.com/regen-network/regen-ledger/errors"
+	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 )
