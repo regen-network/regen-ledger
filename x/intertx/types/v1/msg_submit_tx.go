@@ -81,8 +81,8 @@ func PackTxMsgAny(sdkMsg sdk.Msg) (*codectypes.Any, error) {
 }
 
 // UnpackInterfaces implements codectypes.UnpackInterfacesMessage
-func (msg MsgSubmitTx) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+func (m MsgSubmitTx) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	var sdkMsg sdk.Msg
 
-	return unpacker.UnpackAny(msg.Msg, &sdkMsg)
+	return unpacker.UnpackAny(m.Msg, &sdkMsg)
 }

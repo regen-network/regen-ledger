@@ -15,21 +15,21 @@ func TestQueryInterchainAccount(t *testing.T) {
 	s := setupBase(t)
 	owner := s.addrs[0]
 
-	portId, err := types.NewControllerPortID(owner.String())
+	portID, err := types.NewControllerPortID(owner.String())
 	assert.NilError(t, err)
 
-	connectionId := "ch-5"
+	connectionID := "ch-5"
 
 	icaAddr := "foo"
 	s.ica.
 		EXPECT().
-		GetInterchainAccountAddress(s.ctx, connectionId, portId).
+		GetInterchainAccountAddress(s.ctx, connectionID, portID).
 		Times(1).
 		Return(icaAddr, true)
 
 	res, err := s.k.InterchainAccount(s.ctx, &v1.QueryInterchainAccountRequest{
 		Owner:        owner.String(),
-		ConnectionId: connectionId,
+		ConnectionId: connectionID,
 	})
 	assert.NilError(t, err)
 
