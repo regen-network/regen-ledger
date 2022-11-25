@@ -69,7 +69,7 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 			// Get the class admin from the --from flag
 			admin := clientCtx.GetFromAddress()
 
-			// Parse the comma-separated list of issuers
+			// parse the comma-separated list of issuers
 			issuers := strings.Split(args[0], ",")
 			for i := range issuers {
 				issuers[i] = strings.TrimSpace(issuers[i])
@@ -82,7 +82,7 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 				CreditTypeAbbrev: args[1],
 			}
 
-			// Parse and normalize credit class fee
+			// parse and normalize credit class fee
 			feeString, err := cmd.Flags().GetString(FlagClassFee)
 			if err != nil {
 				return err
@@ -267,7 +267,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the request
+			// parse the JSON file representing the request
 			msg, err := parseMsgCreateBatch(clientCtx, args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -368,7 +368,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseSendCredits(args[1])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -419,7 +419,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseCredits(args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -470,7 +470,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseCredits(args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -709,6 +709,61 @@ Parameters:
 				Issuer:      clientCtx.GetFromAddress().String(),
 				BatchDenom:  args[0],
 				NewMetadata: args[1],
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+// TxBridgeCmd returns a transaction command that bridges credits to another chain.
+func TxBridgeCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bridge [target] [recipient] [credits-json]",
+		Short: "Bridge credits to another chain",
+		Long: `Bridge credits to another chain.
+
+The '--from' flag must equal the owner of the credits.
+
+Parameters:
+
+- target:       the target chain (e.g. "polygon")
+- recipient:    the address of the recipient on the other chain
+- credits-json: path to JSON file containing credits to bridge`,
+		Example: `regen tx ecocredit bridge polygon 0x0000000000000000000000000000000000000001 credits.json
+
+Example JSON:
+
+[
+  {
+    "batch_denom": "C01-001-20200101-20210101-001",
+    "amount": "5"
+  },
+  {
+    "batch_denom": "C01-001-20200101-20210101-002",
+    "amount": "10"
+  }
+]`,
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// parse the JSON file representing the credits
+			credits, err := parseCredits(args[2])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
+			}
+
+			msg := types.MsgBridge{
+				Owner:     clientCtx.GetFromAddress().String(),
+				Target:    args[0],
+				Recipient: args[1],
+				Credits:   credits,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

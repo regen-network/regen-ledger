@@ -265,6 +265,14 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	})
 	require.NoError(err)
 
+	// set batch contract for bridge testing
+	err = baseStore.BatchContractTable().Insert(ctx, &baseapi.BatchContract{
+		BatchKey: 1,
+		ClassKey: 1,
+		Contract: "0x0000000000000000000000000000000000000000",
+	})
+	require.NoError(err)
+
 	// export genesis into target
 	target := ormjson.NewRawMessageTarget()
 	err = mdb.ExportJSON(ctx, target)
