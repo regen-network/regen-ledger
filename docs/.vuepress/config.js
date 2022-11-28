@@ -202,6 +202,7 @@ module.exports = {
             '/validators/upgrades/v3.0-upgrade',
             '/validators/upgrades/v4.0-upgrade',
             '/validators/upgrades/v4.1-upgrade',
+            // '/validators/upgrades/v5.0-upgrade', // TODO
           ],
         },
       ],
