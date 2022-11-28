@@ -69,7 +69,7 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 			// Get the class admin from the --from flag
 			admin := clientCtx.GetFromAddress()
 
-			// Parse the comma-separated list of issuers
+			// parse the comma-separated list of issuers
 			issuers := strings.Split(args[0], ",")
 			for i := range issuers {
 				issuers[i] = strings.TrimSpace(issuers[i])
@@ -82,7 +82,7 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 				CreditTypeAbbrev: args[1],
 			}
 
-			// Parse and normalize credit class fee
+			// parse and normalize credit class fee
 			feeString, err := cmd.Flags().GetString(FlagClassFee)
 			if err != nil {
 				return err
@@ -267,7 +267,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the request
+			// parse the JSON file representing the request
 			msg, err := parseMsgCreateBatch(clientCtx, args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -368,7 +368,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseSendCredits(args[1])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -419,7 +419,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseCredits(args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -470,7 +470,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseCredits(args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -489,6 +489,7 @@ Example JSON:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassMetadataCmd returns a transaction command that updates class metadata.
 func TxUpdateClassMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-metadata [class-id] [new-metadata]",
@@ -522,6 +523,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassAdminCmd returns a transaction command that updates class admin.
 func TxUpdateClassAdminCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-admin [class-id] [new-admin]",
@@ -557,6 +559,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassIssuersCmd returns a transaction command that updates class issuers.
 func TxUpdateClassIssuersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-issuers [class-id]",
@@ -618,6 +621,7 @@ regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2 --remove-i
 	return txFlags(cmd)
 }
 
+// TxUpdateProjectAdminCmd returns a transaction command that updates project admin.
 func TxUpdateProjectAdminCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-project-admin [project-id] [new-admin] [flags]",
@@ -653,6 +657,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateProjectMetadataCmd returns a transaction command that updates project metadata.
 func TxUpdateProjectMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "update-project-metadata [project-id] [new-metadata]",
@@ -670,6 +675,95 @@ func TxUpdateProjectMetadataCmd() *cobra.Command {
 				Admin:       clientCtx.GetFromAddress().String(),
 				NewMetadata: args[1],
 				ProjectId:   args[0],
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+// TxUpdateBatchMetadataCmd returns a transaction command that updates batch metadata.
+func TxUpdateBatchMetadataCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-batch-metadata [batch-denom] [new-metadata]",
+		Short: "Updates the metadata for a specific credit batch",
+		Long: `Updates the metadata for a specific credit batch.
+
+The '--from' flag must equal the credit batch issuer.
+
+Parameters:
+
+- batch-denom:   the batch denom of the credit batch to be updated
+- new-metadata:  any arbitrary metadata to attach to the credit batch`,
+		Args:    cobra.ExactArgs(2),
+		Example: `regen tx ecocredit update-batch-metadata C01-001-20200101-20210101-001 regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgUpdateBatchMetadata{
+				Issuer:      clientCtx.GetFromAddress().String(),
+				BatchDenom:  args[0],
+				NewMetadata: args[1],
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+// TxBridgeCmd returns a transaction command that bridges credits to another chain.
+func TxBridgeCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bridge [target] [recipient] [credits-json]",
+		Short: "Bridge credits to another chain",
+		Long: `Bridge credits to another chain.
+
+The '--from' flag must equal the owner of the credits.
+
+Parameters:
+
+- target:       the target chain (e.g. "polygon")
+- recipient:    the address of the recipient on the other chain
+- credits-json: path to JSON file containing credits to bridge`,
+		Example: `regen tx ecocredit bridge polygon 0x0000000000000000000000000000000000000001 credits.json
+
+Example JSON:
+
+[
+  {
+    "batch_denom": "C01-001-20200101-20210101-001",
+    "amount": "5"
+  },
+  {
+    "batch_denom": "C01-001-20200101-20210101-002",
+    "amount": "10"
+  }
+]`,
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// parse the JSON file representing the credits
+			credits, err := parseCredits(args[2])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
+			}
+
+			msg := types.MsgBridge{
+				Owner:     clientCtx.GetFromAddress().String(),
+				Target:    args[0],
+				Recipient: args[1],
+				Credits:   credits,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

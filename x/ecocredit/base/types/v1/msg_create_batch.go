@@ -44,6 +44,11 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		}
 	}
 
+	// we allow metadata to be empty for class and project but not for batch
+	if m.Metadata == "" {
+		return sdkerrors.ErrInvalidRequest.Wrapf("metadata cannot be empty")
+	}
+
 	if len(m.Metadata) > base.MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", base.MaxMetadataLength)
 	}

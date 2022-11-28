@@ -268,7 +268,7 @@ func (s *send) BobsAddress(a string) {
 	s.bob = addr
 }
 
-func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmountFrom(a, b string) {
+func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmountAndJurisdiction(a, b string) {
 	s.res, s.err = s.k.Send(s.ctx, &types.MsgSend{
 		Sender:    s.alice.String(),
 		Recipient: s.bob.String(),
@@ -277,6 +277,22 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmountFrom(a, b string)
 				BatchDenom:             s.batchDenom,
 				RetiredAmount:          a,
 				RetirementJurisdiction: b,
+			},
+		},
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmountJurisdictionAndReason(a, b, c string) {
+	s.res, s.err = s.k.Send(s.ctx, &types.MsgSend{
+		Sender:    s.alice.String(),
+		Recipient: s.bob.String(),
+		Credits: []*types.MsgSend_SendCredits{
+			{
+				BatchDenom:             s.batchDenom,
+				RetiredAmount:          a,
+				RetirementJurisdiction: b,
+				RetirementReason:       c,
 			},
 		},
 	})

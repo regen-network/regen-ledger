@@ -210,14 +210,15 @@ Feature: Msg/Take
       """
 
     Scenario: EventRetire is emitted
-      When alice attempts to take credits with basket token amount "2000000" and retire on take "true" from "US-WA"
+      When alice attempts to take credits with basket token amount "2000000" and retire on take "true" from "US-WA" and reason "offsetting electricity consumption"
       Then expect event retire with properties
       """
       {
         "owner": "regen10z82e5ztmrm4pujgummvmr7aqjzwlp6gz8k8xp",
         "batch_denom": "C01-001-20200101-20210101-001",
         "amount": "2.000000",
-        "jurisdiction": "US-WA"
+        "jurisdiction": "US-WA",
+        "reason": "offsetting electricity consumption"
       }
       """
 

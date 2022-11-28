@@ -3,6 +3,8 @@ package v1
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -29,6 +31,13 @@ func (s *msgSend) TheMessage(a gocuke.DocString) {
 	s.msg = &MsgSend{}
 	err := jsonpb.UnmarshalString(a.Content, s.msg)
 	require.NoError(s.t, err)
+}
+
+func (s *msgSend) RetirementReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Credits[0].RetirementReason = strings.Repeat("x", int(length))
 }
 
 func (s *msgSend) TheMessageIsValidated() {

@@ -328,7 +328,7 @@ message BatchContract {
 // table may create credit classes. When set to false, any address may create
 // credit classes. This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 message ClassCreatorAllowlist {
   option (cosmos.orm.v1.singleton) = {
     id : 13
@@ -341,7 +341,7 @@ message ClassCreatorAllowlist {
 // AllowedClassCreator is an allowed credit class creator. This table is
 // controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 message AllowedClassCreator {
   option (cosmos.orm.v1.table) = {
     id : 14,
@@ -355,7 +355,7 @@ message AllowedClassCreator {
 // ClassFee is the credit class creation fee. If not set, a credit class
 // creation fee is not required. This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 message ClassFee {
   option (cosmos.orm.v1.singleton) = {
     id : 15
@@ -371,7 +371,7 @@ message ClassFee {
 // writing to and reading from this table in order to keep entries consistent.
 // This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 message AllowedBridgeChain {
   option (cosmos.orm.v1.table) = {
     id : 16,

@@ -155,6 +155,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 				BatchDenom:   batchDenom,
 				Amount:       retiredAmount.String(),
 				Jurisdiction: issuance.RetirementJurisdiction,
+				Reason:       issuance.RetirementReason,
 			}); err != nil {
 				return nil, err
 			}

@@ -364,7 +364,7 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 		Issuer:    admin.String(),
 		ProjectId: pRes.ProjectId,
 		Issuance:  []*basetypes.BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
-		Metadata:  "",
+		Metadata:  "metadata",
 		StartDate: &start,
 		EndDate:   &end,
 	})
@@ -461,6 +461,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				RetirementJurisdiction: "",
 			},
 		},
+		Metadata: "metadata",
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createBatchRes)

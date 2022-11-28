@@ -31,16 +31,6 @@ Feature: MsgRegisterAccount
     When the message is validated
     Then expect the error "owner: decoding bech32 failed: invalid bech32 string length 3"
 
-  Scenario: an error is returned if version is empty
-    Given the message
-    """
-    {
-      "owner": "regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza"
-    }
-    """
-    When the message is validated
-    Then expect the error "version cannot be empty: invalid request"
-
   Scenario: an error is returned if connection id is empty
     Given the message
     """
