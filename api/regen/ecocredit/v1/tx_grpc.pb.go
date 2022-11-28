@@ -90,6 +90,11 @@ type MsgClient interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
+	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
+	// updated and only the issuer of the batch can update the batch.
+	//
+	// Since Revision 2
+	UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
 	// is emitted to be handled by an external bridge service.
@@ -105,41 +110,41 @@ type MsgClient interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(ctx context.Context, in *MsgSetClassCreatorAllowlist, opts ...grpc.CallOption) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes an
 	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
 	// class creation fee. If no fee is specified in the request, the credit
 	// class creation fee will be removed and no fee will be required to create
 	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
@@ -262,6 +267,15 @@ func (c *msgClient) UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProject
 func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error) {
 	out := new(MsgUpdateProjectMetadataResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateProjectMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error) {
+	out := new(MsgUpdateBatchMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateBatchMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -421,6 +435,11 @@ type MsgServer interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
+	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
+	// updated and only the issuer of the batch can update the batch.
+	//
+	// Since Revision 2
+	UpdateBatchMetadata(context.Context, *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
 	// is emitted to be handled by an external bridge service.
@@ -436,41 +455,41 @@ type MsgServer interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(context.Context, *MsgSetClassCreatorAllowlist) (*MsgSetClassCreatorAllowlistResponse, error)
 	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
 	// RemoveClassCreator is a governance method that removes an
 	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
 	// class creation fee. If no fee is specified in the request, the credit
 	// class creation fee will be removed and no fee will be required to create
 	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
@@ -517,6 +536,9 @@ func (UnimplementedMsgServer) UpdateProjectAdmin(context.Context, *MsgUpdateProj
 }
 func (UnimplementedMsgServer) UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectMetadata not implemented")
+}
+func (UnimplementedMsgServer) UpdateBatchMetadata(context.Context, *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBatchMetadata not implemented")
 }
 func (UnimplementedMsgServer) Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bridge not implemented")
@@ -792,6 +814,24 @@ func _Msg_UpdateProjectMetadata_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateBatchMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBatchMetadata)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateBatchMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/UpdateBatchMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateBatchMetadata(ctx, req.(*MsgUpdateBatchMetadata))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_Bridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgBridge)
 	if err := dec(in); err != nil {
@@ -1012,6 +1052,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProjectMetadata",
 			Handler:    _Msg_UpdateProjectMetadata_Handler,
+		},
+		{
+			MethodName: "UpdateBatchMetadata",
+			Handler:    _Msg_UpdateBatchMetadata_Handler,
 		},
 		{
 			MethodName: "Bridge",

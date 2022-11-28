@@ -3,11 +3,13 @@ package v1
 import (
 	"fmt"
 
+	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
-
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/base"
 )
 
@@ -46,21 +48,25 @@ func (m *MsgSend) ValidateBasic() error {
 		}
 
 		if credits.TradableAmount == "" && credits.RetiredAmount == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("tradable amount or retired amount required")
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: tradable amount or retired amount required", creditIndex)
 		}
 
 		if _, err := math.NewNonNegativeDecFromString(credits.TradableAmount); err != nil {
-			return err
+			return errors.Wrapf(err, "%s", creditIndex)
 		}
 
 		retiredAmount, err := math.NewNonNegativeDecFromString(credits.RetiredAmount)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "%s", creditIndex)
 		}
 
 		if !retiredAmount.IsZero() {
 			if err = base.ValidateJurisdiction(credits.RetirementJurisdiction); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err)
+				return sdkerrors.ErrInvalidRequest.Wrapf("%s: retirement jurisdiction: %s", creditIndex, err)
+			}
+
+			if len(credits.RetirementReason) > base.MaxNoteLength {
+				return ecocredit.ErrMaxLimit.Wrapf("%s: retirement reason: max length %d", creditIndex, base.MaxNoteLength)
 			}
 		}
 	}

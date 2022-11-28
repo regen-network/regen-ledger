@@ -11,6 +11,26 @@ Feature: MsgSend
           "batch_denom": "C01-001-20200101-20210101-001",
           "tradable_amount": "100",
           "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without retirement reason
+    Given the message
+    """
+    {
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "tradable_amount": "100",
+          "retired_amount": "100",
           "retirement_jurisdiction": "US-WA"
         }
       ]
@@ -33,7 +53,8 @@ Feature: MsgSend
         {
           "batch_denom": "C01-001-20200101-20210101-002",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -135,7 +156,7 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "tradable amount or retired amount required: invalid request"
+    Then expect the error "credits[0]: tradable amount or retired amount required: invalid request"
 
   Scenario: an error is returned if credits tradable amount is a negative decimal
     Given the message
@@ -152,7 +173,7 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "expected a non-negative decimal, got -100: invalid decimal string"
+    Then expect the error "credits[0]: expected a non-negative decimal, got -100: invalid decimal string"
 
   Scenario: an error is returned if credits retired amount is a negative decimal
     Given the message
@@ -169,7 +190,7 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "expected a non-negative decimal, got -100: invalid decimal string"
+    Then expect the error "credits[0]: expected a non-negative decimal, got -100: invalid decimal string"
 
   Scenario: an error is returned if credits retired amount is positive and retirement jurisdiction is empty
     Given the message
@@ -186,7 +207,7 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "retirement jurisdiction: empty string is not allowed: parse error: invalid request"
+    Then expect the error "credits[0]: retirement jurisdiction: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if credits retired amount is positive and retirement jurisdiction is not formatted
     Given the message
@@ -204,7 +225,26 @@ Feature: MsgSend
     }
     """
     When the message is validated
-    Then expect the error "retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+    Then expect the error "credits[0]: retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+  Scenario: an error is returned if credits retired amount is positive and retirement reason exceeds 512 characters
+    Given the message
+    """
+    {
+      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ]
+    }
+    """
+    And retirement reason with length "513"
+    When the message is validated
+    Then expect the error "credits[0]: retirement reason: max length 512: limit exceeded"
 
   Scenario: a valid amino message
     Given the message
@@ -217,7 +257,8 @@ Feature: MsgSend
           "batch_denom": "C01-001-20200101-20210101-001",
           "tradable_amount": "100",
           "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -233,6 +274,7 @@ Feature: MsgSend
             "batch_denom":"C01-001-20200101-20210101-001",
             "retired_amount":"100",
             "retirement_jurisdiction":"US-WA",
+            "retirement_reason": "offsetting electricity consumption",
             "tradable_amount":"100"
           }
         ],

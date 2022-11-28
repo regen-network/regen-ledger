@@ -45,10 +45,13 @@ func GetTxCmd() *cobra.Command {
 
 func getRegisterAccountCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "register --connection-id <connection-id> --version <version>",
-		Short:   "register an interchain account",
-		Long:    "register an interchain account for the chain corresponding to the connection-id.",
-		Example: "regen tx intertx register --connection-id channel-10 --version v5",
+		Use:   "register --connection-id <connection-id> --version <version>",
+		Short: "register an interchain account",
+		Long:  "register an interchain account for the chain corresponding to the connection-id.",
+		Example: `
+		regen tx intertx register --connection-id channel-10
+		regen tx intertx register --connection-id channel-10 --version '{"version":"ics27-1","tx_type":"sdk_multi_msg","encoding":"proto3","host_connection_id":"connection-0","controller_connection_id":"connection-0","address":"regen14zs2x38lmkw4eqvl3lpml5l8crzaxn6mpvh79z"}'
+		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

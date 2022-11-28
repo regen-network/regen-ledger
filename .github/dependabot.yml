@@ -36,6 +36,12 @@ updates:
       interval: daily
     open-pull-requests-limit: 5
 
+  - package-ecosystem: "gomod"
+    directory: "/x/intertx"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 5
+
   - package-ecosystem: "npm"
     directory: "/docs"
     schedule:

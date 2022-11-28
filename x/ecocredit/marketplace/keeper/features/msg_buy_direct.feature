@@ -339,15 +339,29 @@ Feature: Msg/BuyDirect
 
     # no failing scenario - state transitions only occur upon successful message execution
 
-  Rule: Event is emitted
+  Rule: Events are emitted
 
     Background:
       Given a credit type
+      And bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+
+    Scenario: EventRetire is emitted
+      Given alice created a sell order with id "1"
+      When bob attempts to buy credits with sell order id "1" and retirement reason "offsetting electricity consumption"
+      Then expect event retire with properties
+      """
+      {
+        "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "amount": "10",
+        "reason": "offsetting electricity consumption"
+      }
+      """
 
     Scenario: EventBuyDirect is emitted
       Given alice created a sell order with id "1"
       When bob attempts to buy credits with sell order id "1"
-      Then expect event with properties
+      Then expect event buy direct with properties
       """
       {
         "sell_order_id": 1

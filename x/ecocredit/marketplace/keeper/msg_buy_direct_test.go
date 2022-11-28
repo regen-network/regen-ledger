@@ -18,6 +18,7 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
 )
 
@@ -159,6 +160,12 @@ func (s *buyDirectSuite) TheBatchSupply(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *buyDirectSuite) BobsAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.bob = addr
+}
+
 func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -269,6 +276,25 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 				SellOrderId: id,
 				Quantity:    s.quantity,
 				BidPrice:    &s.bidPrice,
+			},
+		},
+	})
+}
+
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementReason(a, b string) {
+	id, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	s.singleBuyOrderExpectCalls()
+
+	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
+		Buyer: s.bob.String(),
+		Orders: []*types.MsgBuyDirect_Order{
+			{
+				SellOrderId:      id,
+				Quantity:         s.quantity,
+				BidPrice:         &s.bidPrice,
+				RetirementReason: b,
 			},
 		},
 	})
@@ -513,8 +539,20 @@ func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 }
 
-func (s *buyDirectSuite) ExpectEventWithProperties(a gocuke.DocString) {
+func (s *buyDirectSuite) ExpectEventBuyDirectWithProperties(a gocuke.DocString) {
 	var event types.EventBuyDirect
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *buyDirectSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
+	var event basetypes.EventRetire
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 
