@@ -12,9 +12,28 @@ For more information about each version, see the release notes:
 - [Cosmovisor v1.1.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.1.0)
 - [Cosmovisor v1.2.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.2.0)
 - [Cosmovisor v1.3.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.3.0)
-- [Cosmovisor v1.4.0](https://github.com/cosmos/cosmos-sdk/releases/tag/cosmovisor%2Fv1.4.0)
+- [Cosmovisor v1.4.0](https://github.com/cosmos/cosmos-sdk/releases/tag/tools%2Fcosmovisor%2Fv1.4.0)
 :::
 
+Use go install to install cosmovisor directly without building from source
+
+```bash
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.4.0
+```
+
+Check the version:
+
+```bash
+cosmovisor version
+```
+
+You should see the following (the errors following the version are expected if environment variables are not yet set, which will be set in the systemd file in the next section):
+
+```bash
+cosmovisor version: 1.4.0
+```
+
+### Building Cosmovisor from source
 Clone the `cosmos-sdk` repository (if not already cloned):
 
 ```bash
@@ -36,7 +55,7 @@ git fetch --all
 Check out the tagged release:
 
 ```bash
-git checkout cosmovisor/v1.4.0
+git checkout tools/cosmovisor/v1.4.0
 ```
 
 Install the cosmovisor binary:

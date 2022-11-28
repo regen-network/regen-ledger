@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// regen.intertx.v1 describes the API for the intertx module.
+//
+// The following outlines revisions and tagged versions of the compiled code in
+// relation to tagged releases in regen-network/regen-ledger:
+//
+// - Revision 0: (in progress)
+//
+package regen.intertx.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/intertx/types/v1";

@@ -231,19 +231,20 @@ Feature: Msg/Send
       And alice owns tradable credit amount "10"
 
     Scenario: Event EventRetire is emitted
-      When alice attempts to send credits to bob with retired amount "10" from "US-WA"
+      When alice attempts to send credits to bob with retired amount "10" jurisdiction "US-WA" and reason "offsetting electricity consumption"
       Then expect event retire with properties
       """
       {
         "owner": "regen10yhlcvh88sux4zmf67udhg5f5z2803z6jm0d25",
         "batch_denom": "C01-001-20200101-20210101-001",
         "amount": "10",
-        "jurisdiction": "US-WA"
+        "jurisdiction": "US-WA",
+        "reason": "offsetting electricity consumption"
       }
       """
 
     Scenario: Event EventTransfer is emitted
-      When alice attempts to send credits to bob with retired amount "10" from "US-WA"
+      When alice attempts to send credits to bob with retired amount "10" and jurisdiction "US-WA"
       Then expect event transfer with properties
       """
       {

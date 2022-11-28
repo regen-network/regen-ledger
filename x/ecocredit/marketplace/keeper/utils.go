@@ -23,6 +23,7 @@ type orderOptions struct {
 	autoRetire   bool
 	batchDenom   string
 	jurisdiction string
+	reason       string
 }
 
 // fillOrder moves credits and coins according to the order. It will:
@@ -146,6 +147,7 @@ func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api
 			BatchDenom:   opts.batchDenom,
 			Amount:       purchaseQty.String(),
 			Jurisdiction: opts.jurisdiction,
+			Reason:       opts.reason,
 		}); err != nil {
 			return err
 		}

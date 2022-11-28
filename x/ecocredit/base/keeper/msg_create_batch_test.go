@@ -176,6 +176,19 @@ func (s *createBatchSuite) ABatchContract(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *createBatchSuite) EcocreditModulesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.k.moduleAddress = addr
+}
+
+func (s *createBatchSuite) OriginTx(a gocuke.DocString) {
+	var ot types.OriginTx
+	err := json.Unmarshal([]byte(a.Content), &ot)
+	require.NoError(s.t, err)
+	s.originTx = &ot
+}
+
 func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectId(a string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
@@ -299,6 +312,60 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProperties(a gocuke.Do
 
 	msg.Issuer = s.alice.String()
 	s.res, s.err = s.k.CreateBatch(s.ctx, &msg)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a string, b string, c string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*types.BatchIssuance{
+			{
+				Recipient:      c,
+				TradableAmount: b,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom(a, b, c, d string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*types.BatchIssuance{
+			{
+				Recipient:              c,
+				RetiredAmount:          b,
+				RetirementJurisdiction: d,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
+	})
+	require.NoError(s.t, s.err)
+}
+
+func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFromWithReason(a, b, c, d, e string) {
+	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*types.BatchIssuance{
+			{
+				Recipient:              c,
+				RetiredAmount:          b,
+				RetirementJurisdiction: d,
+				RetirementReason:       e,
+			},
+		},
+		StartDate: s.startDate,
+		EndDate:   s.endDate,
+		OriginTx:  s.originTx,
+	})
+	require.NoError(s.t, s.err)
 }
 
 func (s *createBatchSuite) ExpectNoError() {
@@ -436,41 +503,6 @@ func (s *createBatchSuite) ExpectEventTransferWithProperties(a gocuke.DocString)
 	require.NoError(s.t, err)
 }
 
-func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom(a, b, c, d string) {
-	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
-		Issuer:    s.alice.String(),
-		ProjectId: a,
-		Issuance: []*types.BatchIssuance{
-			{
-				Recipient:              c,
-				RetiredAmount:          b,
-				RetirementJurisdiction: d,
-			},
-		},
-		StartDate: s.startDate,
-		EndDate:   s.endDate,
-		OriginTx:  s.originTx,
-	})
-	require.NoError(s.t, s.err)
-}
-
-func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a string, b string, c string) {
-	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
-		Issuer:    s.alice.String(),
-		ProjectId: a,
-		Issuance: []*types.BatchIssuance{
-			{
-				Recipient:      c,
-				TradableAmount: b,
-			},
-		},
-		StartDate: s.startDate,
-		EndDate:   s.endDate,
-		OriginTx:  s.originTx,
-	})
-	require.NoError(s.t, s.err)
-}
-
 func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocString) {
 	var event types.EventCreateBatch
 	err := json.Unmarshal([]byte(a.Content), &event)
@@ -481,19 +513,6 @@ func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocStri
 
 	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
-}
-
-func (s *createBatchSuite) EcocreditModulesAddress(a string) {
-	addr, err := sdk.AccAddressFromBech32(a)
-	require.NoError(s.t, err)
-	s.k.moduleAddress = addr
-}
-
-func (s *createBatchSuite) OriginTx(a gocuke.DocString) {
-	var ot types.OriginTx
-	err := json.Unmarshal([]byte(a.Content), &ot)
-	require.NoError(s.t, err)
-	s.originTx = &ot
 }
 
 func (s *createBatchSuite) getProjectSequence(projectID string) uint64 {

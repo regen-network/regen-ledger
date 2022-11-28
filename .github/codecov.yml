@@ -25,6 +25,9 @@ coverage:
       ecocredit:
         paths:
           - "x/ecocredit/"
+      intertx:
+        paths:
+          - "x/intertx/"
     changes: false
 
 comment:

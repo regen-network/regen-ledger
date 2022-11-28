@@ -95,6 +95,7 @@ func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRet
 			BatchDenom:   credit.BatchDenom,
 			Amount:       credit.Amount,
 			Jurisdiction: req.Jurisdiction,
+			Reason:       req.Reason,
 		}); err != nil {
 			return nil, err
 		}

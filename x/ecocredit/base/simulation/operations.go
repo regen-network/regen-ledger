@@ -11,7 +11,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regenerrors "github.com/regen-network/regen-ledger/errors"
+	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
@@ -42,8 +42,9 @@ func WeightedOperations(
 		weightMsgUpdateClassIssuers       int
 		weightMsgUpdateClassMetadata      int
 		weightMsgCreateProject            int
-		weightMsgUpdateProjectMetadata    int
 		weightMsgUpdateProjectAdmin       int
+		weightMsgUpdateProjectMetadata    int
+		weightMsgUpdateBatchMetadata      int
 		weightMsgSealBatch                int
 		weightMsgMintBatchCredits         int
 		weightMsgBridge                   int
@@ -117,6 +118,12 @@ func WeightedOperations(
 	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectMetadata, &weightMsgUpdateProjectMetadata, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateProjectMetadata = WeightUpdateProjectMetadata
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateBatchMetadata, &weightMsgUpdateBatchMetadata, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateBatchMetadata = WeightUpdateBatchMetadata
 		},
 	)
 

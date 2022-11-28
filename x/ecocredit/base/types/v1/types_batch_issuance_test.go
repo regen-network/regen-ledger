@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -26,6 +28,13 @@ func (s *batchIssuance) TheBatchIssuance(a gocuke.DocString) {
 	s.issuance = &BatchIssuance{}
 	err := jsonpb.UnmarshalString(a.Content, s.issuance)
 	require.NoError(s.t, err)
+}
+
+func (s *batchIssuance) RetirementReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.issuance.RetirementReason = strings.Repeat("x", int(length))
 }
 
 func (s *batchIssuance) TheBatchIssuanceIsValidated() {
