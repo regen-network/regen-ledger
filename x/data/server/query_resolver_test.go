@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 

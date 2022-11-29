@@ -3,9 +3,9 @@ package ecocredit
 import (
 	ormapi "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 
-	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	marketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 )
 
 const (

@@ -8,7 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"

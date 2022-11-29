@@ -21,9 +21,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
-	basketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	basketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"

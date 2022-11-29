@@ -14,7 +14,7 @@ import (
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"

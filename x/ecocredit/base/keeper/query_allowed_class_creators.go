@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"

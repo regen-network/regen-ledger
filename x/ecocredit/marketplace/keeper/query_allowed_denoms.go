@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"

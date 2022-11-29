@@ -3,7 +3,7 @@ package v1
 import (
 	"fmt"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 )
 

@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	marketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"

@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	marketplacev1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"

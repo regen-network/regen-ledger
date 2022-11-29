@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 

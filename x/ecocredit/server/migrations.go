@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v3"
 )
 
