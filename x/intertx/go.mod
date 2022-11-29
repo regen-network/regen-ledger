@@ -126,4 +126,6 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
+replace github.com/regen-network/regen-ledger/api/v2 => ../../api
+
 replace github.com/regen-network/regen-ledger/types/v2 => ../../types
