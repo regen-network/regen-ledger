@@ -115,6 +115,7 @@ module.exports = {
           children: [
             '/ledger/migrations/',
             '/ledger/migrations/v4.0-migration',
+            '/ledger/migrations/v5.0-migration',
           ],
         },
       ],
