@@ -21,7 +21,7 @@ import (
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )

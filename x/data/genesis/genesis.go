@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
 	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 

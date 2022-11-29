@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/v2"
 )
 
 // ToAPI converts to pulsar based data structure

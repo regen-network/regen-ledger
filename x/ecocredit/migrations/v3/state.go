@@ -6,7 +6,7 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 

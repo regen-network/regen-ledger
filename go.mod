@@ -8,7 +8,7 @@ require (
 	github.com/cosmos/ibc-go/v5 v5.1.0
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types v1.0.0
+	github.com/regen-network/regen-ledger/types/v2 v2.0.0
 	github.com/regen-network/regen-ledger/x/data/v2 v2.0.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
 	github.com/regen-network/regen-ledger/x/intertx v1.0.0
@@ -172,7 +172,7 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/regen-network/regen-ledger/api/v2 => ./api
 
-replace github.com/regen-network/regen-ledger/types => ./types
+replace github.com/regen-network/regen-ledger/types/v2 => ./types
 
 replace github.com/regen-network/regen-ledger/x/data/v2 => ./x/data
 

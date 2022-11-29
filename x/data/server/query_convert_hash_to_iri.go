@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 

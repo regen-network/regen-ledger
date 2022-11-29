@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 

@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 

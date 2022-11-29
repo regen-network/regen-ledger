@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 

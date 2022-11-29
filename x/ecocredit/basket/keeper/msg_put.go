@@ -10,7 +10,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	regenmath "github.com/regen-network/regen-ledger/types/math"
+	regenmath "github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"

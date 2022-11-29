@@ -11,7 +11,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"

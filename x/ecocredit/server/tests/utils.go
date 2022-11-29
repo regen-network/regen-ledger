@@ -14,7 +14,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	"github.com/regen-network/regen-ledger/types/testutil/fixture"
+	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v3/module"

@@ -15,8 +15,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/testutil"
-	"github.com/regen-network/regen-ledger/types/testutil/fixture"
+	"github.com/regen-network/regen-ledger/types/v2/testutil"
+	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
