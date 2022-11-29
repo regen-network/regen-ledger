@@ -22,7 +22,7 @@ Governance proposals have historically been used for updating a specific set of 
 
 With message-based governance proposals, any message can be submitted within the proposal to be executed on behalf of the `gov` module. Using the `authz` module alongside message-based governance proposals, it's now possible for a governance proposal to be submitted that would authorize another account to execute a specific message on behalf of the `gov` module account. The other account could be a group account representing a group of individuals that have expertise related to the state being managed. For example, a community staking DAO made up of a group of scientists could be granted authorization to add credit types and credit types could then be added via the voting process of the group account.
 
-All governance parameters within the `ecocredit` module have been updated to use message-based governance proposals. The `group` module also includes support for message-based governance proposals. All other modules will continue to use what are now considered "legacy" proposals.
+All governance parameters within the `ecocredit` module have been updated to support message-based governance proposals. The `data` module does not include any governance parameters. All other application modules that are imported and that include governance parameters can continue to use what are now considered "legacy" proposals to be updated.
 
 For more information about the gov module, check out the [gov module documentation](https://docs.cosmos.network/v0.46/modules/gov/).
 
