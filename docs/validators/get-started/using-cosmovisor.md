@@ -5,7 +5,6 @@
 ## Installation
 
 ::: tip Cosmovisor Versions
-
 The following instructions use the latest version (`v1.4`), which now supports installation with `go install`.
 
 For more information about each version, see the release notes:
