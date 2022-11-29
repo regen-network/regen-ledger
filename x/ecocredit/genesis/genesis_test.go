@@ -24,7 +24,7 @@ import (
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 
 func TestValidateGenesis(t *testing.T) {

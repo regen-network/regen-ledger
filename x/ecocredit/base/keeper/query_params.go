@@ -9,7 +9,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // Params queries the ecocredit module parameters.

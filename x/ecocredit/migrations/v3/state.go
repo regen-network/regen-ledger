@@ -7,7 +7,7 @@ import (
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // MigrateState performs in-place store migrations from ConsensusVersion 2 to 3.

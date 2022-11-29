@@ -9,7 +9,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 // ResolversByURL queries resolvers by URL.

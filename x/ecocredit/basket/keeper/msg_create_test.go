@@ -17,9 +17,9 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 type createSuite struct {

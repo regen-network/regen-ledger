@@ -4,7 +4,7 @@ import (
 	"context"
 
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
-	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 // ConvertHashToIRI converts a ContentHash to an IRI.

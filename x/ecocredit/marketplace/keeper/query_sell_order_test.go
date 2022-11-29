@@ -11,7 +11,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 func TestQuery_SellOrder(t *testing.T) {

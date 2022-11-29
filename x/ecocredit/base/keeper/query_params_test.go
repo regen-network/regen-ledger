@@ -11,7 +11,7 @@ import (
 	baskettypes "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	markettypes "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestQuery_Params(t *testing.T) {

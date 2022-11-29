@@ -8,7 +8,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func (k Keeper) RemoveAllowedBridgeChain(ctx context.Context, req *types.MsgRemoveAllowedBridgeChain) (*types.MsgRemoveAllowedBridgeChainResponse, error) {

@@ -10,8 +10,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
 // BuyDirect allows for the purchase of credits directly from sell orders.

@@ -5,8 +5,8 @@ import (
 
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 var (

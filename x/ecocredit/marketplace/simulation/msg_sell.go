@@ -11,10 +11,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/simulation/utils"
 )
 
 const OpWeightMsgSell = "op_weight_msg_sell" //nolint:gosec

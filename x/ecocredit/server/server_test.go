@@ -20,10 +20,10 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/module"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/testsuite"
 )
 
 func TestServer(t *testing.T) {

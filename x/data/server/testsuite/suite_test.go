@@ -19,8 +19,8 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
-	"github.com/regen-network/regen-ledger/x/data"
-	datamodule "github.com/regen-network/regen-ledger/x/data/module"
+	"github.com/regen-network/regen-ledger/x/data/v2"
+	datamodule "github.com/regen-network/regen-ledger/x/data/v2/module"
 )
 
 func TestServer(t *testing.T) {

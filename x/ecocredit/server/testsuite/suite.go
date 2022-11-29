@@ -27,11 +27,11 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
 type IntegrationTestSuite struct {

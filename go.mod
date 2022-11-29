@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/v4
+module github.com/regen-network/regen-ledger/v5
 
 go 1.18
 
@@ -9,8 +9,8 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.0.0
-	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
+	github.com/regen-network/regen-ledger/x/data/v2 v2.0.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
 	github.com/regen-network/regen-ledger/x/intertx v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cast v1.5.0
@@ -18,7 +18,6 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
-
 )
 
 require (
@@ -173,9 +172,9 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/regen-network/regen-ledger/types => ./types
 
-replace github.com/regen-network/regen-ledger/x/data => ./x/data
+replace github.com/regen-network/regen-ledger/x/data/v2 => ./x/data
 
-replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
+replace github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 

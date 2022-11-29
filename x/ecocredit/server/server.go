@@ -11,14 +11,14 @@ import (
 	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormstore"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/basket/keeper"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	marketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/keeper"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/keeper"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	marketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/keeper"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 type serverImpl struct {

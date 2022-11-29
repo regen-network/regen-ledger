@@ -2,7 +2,7 @@ package v1
 
 import (
 	"github.com/regen-network/regen-ledger/types/eth"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 
 // Validate performs basic validation of the BatchContract state type

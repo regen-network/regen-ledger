@@ -11,7 +11,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/eth"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgBridge{}

@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 func TestParseBasketCredits(t *testing.T) {

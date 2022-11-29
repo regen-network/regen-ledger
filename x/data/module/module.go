@@ -21,11 +21,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/data/client"
-	"github.com/regen-network/regen-ledger/x/data/genesis"
-	"github.com/regen-network/regen-ledger/x/data/server"
-	"github.com/regen-network/regen-ledger/x/data/simulation"
+	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v2/client"
+	"github.com/regen-network/regen-ledger/x/data/v2/genesis"
+	"github.com/regen-network/regen-ledger/x/data/v2/server"
+	"github.com/regen-network/regen-ledger/x/data/v2/simulation"
 )
 
 var (
@@ -97,7 +97,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	data.RegisterTypes(registry)
 }
 
-//nolint
+// nolint
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
 }

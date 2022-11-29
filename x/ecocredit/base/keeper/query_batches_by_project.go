@@ -10,7 +10,7 @@ import (
 	regentypes "github.com/regen-network/regen-ledger/types"
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // BatchesByProject queries for all batches in the given credit class.

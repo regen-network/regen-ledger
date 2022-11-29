@@ -7,8 +7,8 @@ import (
 
 	regentypes "github.com/regen-network/regen-ledger/types"
 	regenerrors "github.com/regen-network/regen-ledger/types/errors"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // Batch queries for information on a credit batch.

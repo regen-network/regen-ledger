@@ -11,8 +11,8 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/ormstore"
-	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/data/server/hasher"
+	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v2/server/hasher"
 )
 
 var _ data.MsgServer = serverImpl{}

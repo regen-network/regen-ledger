@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/x/data
+module github.com/regen-network/regen-ledger/x/data/v2
 
 go 1.18
 

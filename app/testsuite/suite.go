@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/regen-network/regen-ledger/v4/app"
+	"github.com/regen-network/regen-ledger/v5/app"
 )
 
 type UpgradeTestSuite struct {

@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 func TestSellOrdersByBatch(t *testing.T) {

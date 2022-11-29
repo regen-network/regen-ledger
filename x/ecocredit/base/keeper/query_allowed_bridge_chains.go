@@ -4,7 +4,7 @@ import (
 	"context"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func (k Keeper) AllowedBridgeChains(ctx context.Context, _ *types.QueryAllowedBridgeChainsRequest) (*types.QueryAllowedBridgeChainsResponse, error) {

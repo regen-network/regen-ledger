@@ -17,8 +17,8 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type bridgeSuite struct {

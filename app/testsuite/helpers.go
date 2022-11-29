@@ -25,7 +25,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/regen-network/regen-ledger/v4/app"
+	"github.com/regen-network/regen-ledger/v5/app"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in

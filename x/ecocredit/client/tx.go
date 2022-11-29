@@ -5,9 +5,9 @@ import (
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 
-	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/base/client"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
-	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
+	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/client"
+	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/client"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.

@@ -13,7 +13,7 @@ import (
 
 	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil/fixture"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 
 func (s *GenesisTestSuite) TestInitExportGenesis() {
