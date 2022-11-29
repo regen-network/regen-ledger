@@ -3,6 +3,8 @@ package v1
 import (
 	"cosmossdk.io/errors"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -35,6 +37,10 @@ func (i *BatchIssuance) Validate() error {
 		if !retiredAmount.IsZero() {
 			if err = base.ValidateJurisdiction(i.RetirementJurisdiction); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err)
+			}
+
+			if len(i.RetirementReason) > base.MaxNoteLength {
+				return ecocredit.ErrMaxLimit.Wrapf("retirement reason: max length %d", base.MaxNoteLength)
 			}
 		}
 	}

@@ -1,4 +1,8 @@
 lint:
+  directories:
+    # exclude all generated third party proto files
+    exclude:
+      - third_party
   rules:
     # ignore max line length conflicting with proto-format
     remove:

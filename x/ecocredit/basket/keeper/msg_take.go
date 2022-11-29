@@ -123,6 +123,7 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 				amountCreditsNeeded,
 				retire,
 				retirementJurisdiction,
+				msg.RetirementReason,
 			)
 			if err != nil {
 				return nil, err
@@ -153,6 +154,7 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 				balance,
 				retire,
 				retirementJurisdiction,
+				msg.RetirementReason,
 			)
 			if err != nil {
 				return nil, err
@@ -188,7 +190,7 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 	}, err
 }
 
-func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, retire bool, jurisdiction string) error {
+func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, retire bool, jurisdiction, reason string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	batch, err := k.baseStore.BatchTable().GetByDenom(ctx, batchDenom)
 	if err != nil {
@@ -226,5 +228,6 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		BatchDenom:   batchDenom,
 		Amount:       amount.String(),
 		Jurisdiction: jurisdiction,
+		Reason:       reason,
 	})
 }

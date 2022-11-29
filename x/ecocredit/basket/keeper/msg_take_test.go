@@ -257,6 +257,24 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTa
 	})
 }
 
+func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTakeFromAndReason(a, b, c, d string) {
+	s.tokenAmount = a
+
+	retireOnTake, err := strconv.ParseBool(b)
+	require.NoError(s.t, err)
+
+	s.takeExpectCalls()
+
+	s.res, s.err = s.k.Take(s.ctx, &types.MsgTake{
+		Owner:                  s.alice.String(),
+		BasketDenom:            s.basketDenom,
+		Amount:                 s.tokenAmount,
+		RetirementJurisdiction: c,
+		RetireOnTake:           retireOnTake,
+		RetirementReason:       d,
+	})
+}
+
 func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 	retireOnTake, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)

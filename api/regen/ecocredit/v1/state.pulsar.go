@@ -9665,7 +9665,7 @@ func (x *BatchContract) GetContract() string {
 // table may create credit classes. When set to false, any address may create
 // credit classes. This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type ClassCreatorAllowlist struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9705,7 +9705,7 @@ func (x *ClassCreatorAllowlist) GetEnabled() bool {
 // AllowedClassCreator is an allowed credit class creator. This table is
 // controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type AllowedClassCreator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9745,7 +9745,7 @@ func (x *AllowedClassCreator) GetAddress() []byte {
 // ClassFee is the credit class creation fee. If not set, a credit class
 // creation fee is not required. This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type ClassFee struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -9788,7 +9788,7 @@ func (x *ClassFee) GetFee() *v1beta1.Coin {
 // writing to and reading from this table in order to keep entries consistent.
 // This table is controlled via governance.
 //
-// Since Revision 1
+// Since Revision 2
 type AllowedBridgeChain struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

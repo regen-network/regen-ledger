@@ -19,7 +19,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *types.MsgUpdateBasketF
 
 	var basketFee *sdkv1beta1.Coin
 
-	if req.Fee != nil {
+	if req.Fee != nil && req.Fee.IsPositive() {
 		basketFee = regentypes.CoinToProtoCoin(*req.Fee)
 	}
 

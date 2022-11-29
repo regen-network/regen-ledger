@@ -20,10 +20,6 @@ func (m MsgRegisterAccount) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("owner: %s", err.Error())
 	}
 
-	if m.Version == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("version cannot be empty")
-	}
-
 	if m.ConnectionId == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("connection_id cannot be empty")
 	}
