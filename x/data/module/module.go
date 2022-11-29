@@ -97,7 +97,6 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	data.RegisterTypes(registry)
 }
 
-// nolint
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
 }

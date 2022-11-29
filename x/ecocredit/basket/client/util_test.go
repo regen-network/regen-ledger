@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
+
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
