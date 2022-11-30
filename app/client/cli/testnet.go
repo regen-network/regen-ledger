@@ -35,8 +35,8 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/v4/app/testsuite"
+	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
+	"github.com/regen-network/regen-ledger/v5/app/testsuite"
 )
 
 var (

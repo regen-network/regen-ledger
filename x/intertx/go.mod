@@ -12,7 +12,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v0.6.2
-	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/types/v2 v2.0.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.14.0
 	github.com/stretchr/testify v1.8.1
@@ -126,4 +126,6 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/regen-network/regen-ledger/types => ../../types
+replace github.com/regen-network/regen-ledger/api/v2 => ../../api
+
+replace github.com/regen-network/regen-ledger/types/v2 => ../../types

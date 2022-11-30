@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/v4
+module github.com/regen-network/regen-ledger/v5
 
 go 1.18
 
@@ -8,17 +8,16 @@ require (
 	github.com/cosmos/ibc-go/v5 v5.1.0
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types v1.0.0
-	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
-	github.com/regen-network/regen-ledger/x/intertx v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/types/v2 v2.0.0
+	github.com/regen-network/regen-ledger/x/data/v2 v2.0.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
+	github.com/regen-network/regen-ledger/x/intertx v1.0.0
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
-
 )
 
 require (
@@ -132,7 +131,7 @@ require (
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
-	github.com/regen-network/regen-ledger/api v0.8.0 // indirect
+	github.com/regen-network/regen-ledger/api/v2 v2.0.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
@@ -171,15 +170,15 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/regen-network/regen-ledger/types => ./types
+replace github.com/regen-network/regen-ledger/api/v2 => ./api
 
-replace github.com/regen-network/regen-ledger/x/data => ./x/data
+replace github.com/regen-network/regen-ledger/types/v2 => ./types
 
-replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
+replace github.com/regen-network/regen-ledger/x/data/v2 => ./x/data
+
+replace github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
-
-replace github.com/regen-network/regen-ledger/api => ./api
 
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
