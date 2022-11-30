@@ -14,7 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 // TxCmd returns a root CLI command handler for all x/data transaction commands.

@@ -6,10 +6,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 func (k Keeper) BasketBalances(ctx context.Context, request *types.QueryBasketBalancesRequest) (*types.QueryBasketBalancesResponse, error) {

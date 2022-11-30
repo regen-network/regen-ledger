@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 const marketplaceRoute = "regen/ecocredit/marketplace/v1"

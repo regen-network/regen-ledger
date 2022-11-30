@@ -8,7 +8,7 @@ import (
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type setClassCreatorAllowlistSuite struct {

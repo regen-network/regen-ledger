@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 func TestSellOrdersBySeller(t *testing.T) {

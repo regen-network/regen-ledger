@@ -16,7 +16,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regen "github.com/regen-network/regen-ledger/v4/app"
+	regen "github.com/regen-network/regen-ledger/v5/app"
 )
 
 func TestAppAfterImport(t *testing.T) {

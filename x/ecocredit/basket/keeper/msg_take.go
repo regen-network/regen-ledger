@@ -10,13 +10,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types/v2/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeResponse, error) {

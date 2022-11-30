@@ -10,7 +10,8 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	regen "github.com/regen-network/regen-ledger/v4/app"
+
+	regen "github.com/regen-network/regen-ledger/v5/app"
 )
 
 // Get flags every time the simulator is run

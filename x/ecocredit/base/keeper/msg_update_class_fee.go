@@ -6,9 +6,9 @@ import (
 	sdkv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func (k Keeper) UpdateClassFee(ctx context.Context, req *types.MsgUpdateClassFee) (*types.MsgUpdateClassFeeResponse, error) {

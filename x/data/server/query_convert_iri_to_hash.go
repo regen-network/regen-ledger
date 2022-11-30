@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
-	"github.com/regen-network/regen-ledger/x/data"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 // ConvertIRIToHash converts an IRI to a ContentHash.

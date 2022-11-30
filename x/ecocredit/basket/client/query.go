@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 // QueryBasketCmd returns a query command that retrieves a basket.
