@@ -11,9 +11,9 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/regen-network/regen-ledger/v4/app/testsuite"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	ecocreditv1 "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	"github.com/regen-network/regen-ledger/v5/app/testsuite"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	ecocreditv1 "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type UpgradeTestSuite struct {

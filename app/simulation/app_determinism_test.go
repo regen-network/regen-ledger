@@ -16,7 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 
-	regen "github.com/regen-network/regen-ledger/v4/app"
+	regen "github.com/regen-network/regen-ledger/v5/app"
 )
 
 func TestAppDeterminism(t *testing.T) {

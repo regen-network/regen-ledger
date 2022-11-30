@@ -38,7 +38,7 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/regen-network/regen-ledger/v4/app"
+	"github.com/regen-network/regen-ledger/v5/app"
 )
 
 // NewRootCmd creates a new root command for regen. It is called once in the

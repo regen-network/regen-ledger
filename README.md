@@ -12,8 +12,8 @@
     <a href="https://github.com/regen-network/regen-ledger/releases/latest">
         <img alt="Version" src="https://img.shields.io/github/tag/regen-network/regen-ledger" />
     </a>
-    <a href="https://pkg.go.dev/github.com/regen-network/regen-ledger/v4">
-        <img alt="Go Doc" src="https://pkg.go.dev/badge/github.com/regen-network/regen-ledger/v4" />
+    <a href="https://pkg.go.dev/github.com/regen-network/regen-ledger/v5">
+        <img alt="Go Doc" src="https://pkg.go.dev/badge/github.com/regen-network/regen-ledger/v5" />
     </a>
 </div>
 <br />

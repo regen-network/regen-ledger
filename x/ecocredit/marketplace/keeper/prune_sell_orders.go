@@ -8,8 +8,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	"github.com/regen-network/regen-ledger/types/math"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types/v2/math"
 )
 
 // PruneSellOrders is a BeginBlock function that moves escrowed credits back into their tradable balance and deletes orders

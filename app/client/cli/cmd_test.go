@@ -10,8 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"github.com/regen-network/regen-ledger/v4/app"
-	"github.com/regen-network/regen-ledger/v4/app/client/cli"
+	"github.com/regen-network/regen-ledger/v5/app"
+	"github.com/regen-network/regen-ledger/v5/app/client/cli"
 )
 
 func TestInitCmd(t *testing.T) {
