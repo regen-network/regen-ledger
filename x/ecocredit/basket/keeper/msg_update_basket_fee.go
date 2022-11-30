@@ -6,9 +6,9 @@ import (
 	sdkv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 // UpdateBasketFee is an RPC to handle basket.UpdateBasketFee

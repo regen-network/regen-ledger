@@ -3,10 +3,10 @@ package server
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/types"
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
+	"github.com/regen-network/regen-ledger/types/v2"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 
-	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 // AnchorByHash queries a data anchor by the ContentHash of the data.

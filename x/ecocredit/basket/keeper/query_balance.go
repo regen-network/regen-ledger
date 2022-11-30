@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 func (k Keeper) BasketBalance(ctx context.Context, request *types.QueryBasketBalanceRequest) (*types.QueryBasketBalanceResponse, error) {

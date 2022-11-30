@@ -9,10 +9,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/abci/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types/ormstore"
-	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/data/server/hasher"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types/v2/ormstore"
+	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v2/server/hasher"
 )
 
 var _ data.MsgServer = serverImpl{}
