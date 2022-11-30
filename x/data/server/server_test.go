@@ -18,7 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/x/data/mocks"
+	"github.com/regen-network/regen-ledger/x/data/v2/mocks"
 )
 
 const (

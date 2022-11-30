@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	regenerrors "github.com/regen-network/regen-ledger/types/errors"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // Project queries project info from the given project name.

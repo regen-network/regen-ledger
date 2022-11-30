@@ -4,11 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
 )
 
 var _ legacytx.LegacyMsg = &MsgTake{}

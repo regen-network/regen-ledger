@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 // CancelSellOrder cancels a sell order and returns the escrowed credits to the seller.

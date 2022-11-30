@@ -8,7 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func (k Keeper) RemoveClassCreator(ctx context.Context, req *types.MsgRemoveClassCreator) (*types.MsgRemoveClassCreatorResponse, error) {

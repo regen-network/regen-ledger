@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/data"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types/v2"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 func TestValidateGenesis(t *testing.T) {

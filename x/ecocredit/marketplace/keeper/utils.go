@@ -8,10 +8,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	"github.com/regen-network/regen-ledger/types/math"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types/v2/math"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.

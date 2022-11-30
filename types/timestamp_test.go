@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/v2"
 )
 
 func TestGogoToProtobufDuration(t *testing.T) {

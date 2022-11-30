@@ -2,7 +2,7 @@ package data
 
 import (
 	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 )
 
 const (

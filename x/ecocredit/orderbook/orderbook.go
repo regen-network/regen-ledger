@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	orderbookv1alpha1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/orderbook/v1alpha1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	marketplacev1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	orderbookv1alpha1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/orderbook/v1alpha1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 )
 
 // TODO: revisit when BuyOrder is reintroduced for marketplace order-book https://github.com/regen-network/regen-ledger/issues/505
