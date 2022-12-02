@@ -24,8 +24,8 @@ github.com/cockroachdb/apd/v3 v3.1.0 h1:MK3Ow7LH0W8zkd5GMKA1PvS9qG3bWFI95WaVNfyZ
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
-github.com/cosmos/cosmos-proto v1.0.0-alpha9 h1:IIl4/ucWcjaDSDMBReBvcJ2lNFCG+UD3phVoPp8Kils=
-github.com/cosmos/cosmos-proto v1.0.0-alpha9/go.mod h1:8k2GNZghi5sDRFw/scPL8gMSowT1vDA+5ouxL8GjaUE=
+github.com/cosmos/cosmos-proto v1.0.0-beta.1 h1:iDL5qh++NoXxG8hSy93FdYJut4XfgbShIocllGaXx/0=
+github.com/cosmos/cosmos-proto v1.0.0-beta.1/go.mod h1:8k2GNZghi5sDRFw/scPL8gMSowT1vDA+5ouxL8GjaUE=
 github.com/cosmos/cosmos-sdk/api v0.1.0 h1:xfSKM0e9p+EJTMQnf5PbWE6VT8ruxTABIJ64Rd064dE=
 github.com/cosmos/cosmos-sdk/api v0.1.0/go.mod h1:CupqQBskAOiTXO1XDZ/wrtWzN/wTxUvbQmOqdUhR8wI=
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 h1:9ebZL9/nCkaxer3kWWHs0YT8OOmHd7xohULM8Weep7M=
