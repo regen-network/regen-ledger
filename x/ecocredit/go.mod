@@ -55,7 +55,7 @@ require (
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/confio/ics23/go v0.7.0 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-alpha9 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-beta.1 // indirect
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect

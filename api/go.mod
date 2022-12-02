@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/api/v2
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-proto v1.0.0-alpha9
+	github.com/cosmos/cosmos-proto v1.0.0-beta.1
 	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/gogoproto v1.4.3

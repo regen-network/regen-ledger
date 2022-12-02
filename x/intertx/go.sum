@@ -125,8 +125,8 @@ github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8Nz
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
 github.com/cosmos/btcutil v1.0.4 h1:n7C2ngKXo7UC9gNyMNLbzqz7Asuf+7Qv4gnX/rOdQ44=
 github.com/cosmos/btcutil v1.0.4/go.mod h1:Ffqc8Hn6TJUdDgHBwIZLtrLQC1KdJ9jGJl/TvgUaxbU=
-github.com/cosmos/cosmos-proto v1.0.0-alpha9 h1:IIl4/ucWcjaDSDMBReBvcJ2lNFCG+UD3phVoPp8Kils=
-github.com/cosmos/cosmos-proto v1.0.0-alpha9/go.mod h1:8k2GNZghi5sDRFw/scPL8gMSowT1vDA+5ouxL8GjaUE=
+github.com/cosmos/cosmos-proto v1.0.0-beta.1 h1:iDL5qh++NoXxG8hSy93FdYJut4XfgbShIocllGaXx/0=
+github.com/cosmos/cosmos-proto v1.0.0-beta.1/go.mod h1:8k2GNZghi5sDRFw/scPL8gMSowT1vDA+5ouxL8GjaUE=
 github.com/cosmos/cosmos-sdk v0.46.6 h1:K9EZsqOZ2jQX3bIQUpn7Hk/YCoaJWRLU56PzvpX8INk=
 github.com/cosmos/cosmos-sdk v0.46.6/go.mod h1:JNklMfXo7MhDF1j/jxZCmDyOYyqhVoKB22e8p1ATEqA=
 github.com/cosmos/cosmos-sdk/api v0.1.0 h1:xfSKM0e9p+EJTMQnf5PbWE6VT8ruxTABIJ64Rd064dE=
