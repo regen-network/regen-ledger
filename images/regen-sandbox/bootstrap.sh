@@ -109,7 +109,7 @@ trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT INT
 
 # Start regen chain and immediately move it to the background
 echo "Starting up regen node..."
-regen start --log_level warn &
+regen start --log_level warn --api.enable true &
 REGEN_PID=$!
 
 # Sleep for regen node to full boot up
