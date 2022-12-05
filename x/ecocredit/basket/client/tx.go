@@ -241,7 +241,7 @@ Flags:
 		
 		`),
 		Example: `regen tx ecocredit take-from-basket eco.uC.NCT 1000
-regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --retirement-jurisdiction "US-WA 98225"`,
+regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --retirement-jurisdiction "US-WA 98225" --retirement-reason "offsetting electricity consumption"`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

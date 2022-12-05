@@ -38,8 +38,8 @@ Example JSON:
     "quantity": "5",
     "ask_price": {
       "denom": "uregen",
-      "amount" "100000000"
-	},
+      "amount": "100000000"
+    },
     "disable_auto_retire": "true"
   },
   {
@@ -47,8 +47,8 @@ Example JSON:
     "quantity": "10",
     "ask_price": {
       "denom": "uregen",
-      "amount" "100000000"
-	},
+      "amount": "100000000"
+    },
     "disable_auto_retire": false,
     "expiration": "2024-01-01T00:00:00Z"
   }
@@ -153,7 +153,7 @@ upon purchase. When set to true, credits will be received in a tradable
 state, IF AND ONLY IF the sell order also has auto retire disabled.
 
 NOTE: The bid price is the price paid PER credit. The total cost will be quantity * bid_price.`,
-		Example: `regen tx ecocredit buy-direct 1 300 10000000uregen true --retirement-jurisdiction "US-WA 98225"`,
+		Example: `regen tx ecocredit buy-direct 1 300 10000000uregen true --retirement-jurisdiction "US-WA 98225" --retirement-reason "offsetting electricity consumption"`,
 		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
