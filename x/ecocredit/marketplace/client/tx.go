@@ -16,6 +16,7 @@ import (
 
 const (
 	FlagRetirementJurisdiction = "retirement-jurisdiction"
+	FlagRetirementReason       = "retirement-reason"
 )
 
 // TxSellCmd returns a transaction command that creates sell orders.
@@ -98,8 +99,8 @@ Example JSON:
     "new_quantity": "5",
     "new_ask_price": {
       "denom": "uregen",
-      "amount" "100000000"
-	},
+      "amount": "100000000"
+    },
     "disable_auto_retire": true
   },
   {
@@ -107,8 +108,8 @@ Example JSON:
     "new_quantity": "10",
     "new_ask_price": {
       "denom": "uregen",
-      "amount" "100000000"
-	},
+      "amount": "100000000"
+    },
     "disable_auto_retire": false,
     "new_expiration": "2024-01-01T00:00:00Z"
   }
@@ -175,8 +176,12 @@ NOTE: The bid price is the price paid PER credit. The total cost will be quantit
 				return err
 			}
 
-			var retireJurisdiction string
-			retireJurisdiction, err = cmd.Flags().GetString(FlagRetirementJurisdiction)
+			retireJurisdiction, err := cmd.Flags().GetString(FlagRetirementJurisdiction)
+			if err != nil {
+				return err
+			}
+
+			retireReason, err := cmd.Flags().GetString(FlagRetirementReason)
 			if err != nil {
 				return err
 			}
@@ -190,6 +195,7 @@ NOTE: The bid price is the price paid PER credit. The total cost will be quantit
 						BidPrice:               &bidPrice,
 						DisableAutoRetire:      disableAutoRetire,
 						RetirementJurisdiction: retireJurisdiction,
+						RetirementReason:       retireReason,
 					},
 				},
 			}
@@ -199,6 +205,7 @@ NOTE: The bid price is the price paid PER credit. The total cost will be quantit
 	}
 
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "the jurisdiction to use for retirement when auto retire is true.")
+	cmd.Flags().String(FlagRetirementReason, "", "the reason for retiring the credits (optional)")
 
 	return txFlags(cmd)
 }
@@ -226,8 +233,7 @@ Example JSON:
       "denom": "uregen",
       "amount": "32000000"
     },
-    "disable_auto_retire": false,
-    "retirement_jurisdiction": "US-NY"
+    "disable_auto_retire": true
   },
   {
     "sell_order_id": 2,
@@ -237,7 +243,8 @@ Example JSON:
       "amount": "32000000"
     },
     "disable_auto_retire": false,
-    "retirement_jurisdiction": "US-NY"
+    "retirement_jurisdiction": "US-NY",
+    "retirement_reason": "offsetting electricity consumption"
   }
 ]`,
 		Args: cobra.ExactArgs(1),

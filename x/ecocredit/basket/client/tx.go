@@ -26,6 +26,7 @@ const (
 	FlagBasketFee              = "basket-fee"
 	FlagDenomDescription       = "description"
 	FlagRetirementJurisdiction = "retirement-jurisdiction"
+	FlagRetirementReason       = "retirement-reason"
 	FlagRetireOnTake           = "retire-on-take"
 )
 
@@ -182,14 +183,14 @@ Parameters:
 Example JSON:
 
 [
-	{
-		"batch_denom": "C01-001-20210101-20220101-001",
-		"amount": "10"
-	},
-	{
-		"batch_denom": "C01-001-20210101-20220101-001",
-		"amount": "10.5"
-	}
+  {
+    "batch_denom": "C01-001-20210101-20220101-001",
+    "amount": "10"
+  },
+  {
+    "batch_denom": "C01-001-20210101-20220101-001",
+    "amount": "10.5"
+  }
 ]`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -253,6 +254,11 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 				return err
 			}
 
+			retirementReason, err := cmd.Flags().GetString(FlagRetirementReason)
+			if err != nil {
+				return err
+			}
+
 			retireOnTake, err := cmd.Flags().GetBool(FlagRetireOnTake)
 			if err != nil {
 				return err
@@ -263,6 +269,7 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 				BasketDenom:            args[0],
 				Amount:                 args[1],
 				RetirementJurisdiction: retirementJurisdiction,
+				RetirementReason:       retirementReason,
 				RetireOnTake:           retireOnTake,
 			}
 
@@ -275,6 +282,7 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 	}
 
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "jurisdiction for the credits which will be used only if --retire-on-take flag is true")
+	cmd.Flags().String(FlagRetirementReason, "", "the reason for retiring the credits (optional)")
 	cmd.Flags().Bool(FlagRetireOnTake, false, "dictates whether the ecocredits received in exchange for the basket tokens will be received as retired or tradable credits")
 
 	return txFlags(cmd)
