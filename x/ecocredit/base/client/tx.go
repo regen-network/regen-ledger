@@ -440,7 +440,7 @@ Example JSON:
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
-			reason, err := cmd.Flags().GetString(FlagRetirementReason)
+			reason, err := cmd.Flags().GetString(FlagReason)
 			if err != nil {
 				return err
 			}
