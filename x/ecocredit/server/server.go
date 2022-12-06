@@ -111,6 +111,6 @@ func RegisterServices(
 	configurator.RegisterMigrationHandler(impl.RunMigrations)
 
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
-	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
+	// configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	return impl
 }
