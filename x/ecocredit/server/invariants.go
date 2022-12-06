@@ -9,8 +9,8 @@ import (
 
 // RegisterInvariants registers the ecocredit module invariants.
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
-	ir.RegisterRoute(ecocredit.ModuleName, "batch-supply", s.batchSupplyInvariant())
-	s.basketKeeper.RegisterInvariants(ir)
+	// ir.RegisterRoute(ecocredit.ModuleName, "batch-supply", s.batchSupplyInvariant())
+	// s.basketKeeper.RegisterInvariants(ir)
 }
 
 func (s serverImpl) batchSupplyInvariant() sdk.Invariant {
