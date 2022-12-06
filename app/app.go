@@ -400,7 +400,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	if err != nil {
 		panic(err)
 	}
-	app.smm.RegisterInvariants(&app.CrisisKeeper)
+	// app.smm.RegisterInvariants(&app.CrisisKeeper)
 
 	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewProposalHandler(ecocreditModule.Keeper))
 	app.GovKeeper = govkeeper.NewKeeper(
