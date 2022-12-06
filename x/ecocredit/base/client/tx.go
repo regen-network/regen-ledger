@@ -20,9 +20,11 @@ import (
 
 const (
 	FlagAddIssuers             string = "add-issuers"
+	FlagReason                 string = "reason"
 	FlagRemoveIssuers          string = "remove-issuers"
 	FlagReferenceID            string = "reference-id"
 	FlagRetirementJurisdiction string = "retirement-jurisdiction"
+	FlagRetirementReason       string = "retirement-reason"
 	FlagClassFee               string = "class-fee"
 )
 
@@ -244,21 +246,18 @@ Example JSON:
   "issuance": [
     {
       "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "tradable_amount": "1000",
-      "retired_amount": "500",
-      "retirement_jurisdiction": "US-WA"
+      "tradable_amount": "1000"
     },
     {
       "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "tradable_amount": "1000",
-      "retired_amount": "500",
-      "retirement_jurisdiction": "US-OR"
+      "retired_amount": "1000",
+      "retirement_jurisdiction": "US-OR",
+      "retirement_reason": "offsetting electricity consumption"
     }
   ],
   "metadata": "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf",
   "start_date": "2020-01-01T00:00:00Z",
-  "end_date": "2021-01-01T00:00:00Z",
-  "open": false
+  "end_date": "2021-01-01T00:00:00Z"
 }`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -305,31 +304,46 @@ Parameters:
 			if err != nil {
 				return err
 			}
+
 			retireTo, err := cmd.Flags().GetString(FlagRetirementJurisdiction)
 			if err != nil {
 				return err
 			}
+
 			tradableAmount := args[0]
+
 			retiredAmount := "0"
 			if len(retireTo) > 0 {
 				tradableAmount = "0"
 				retiredAmount = args[0]
 			}
+
+			reason, err := cmd.Flags().GetString(FlagRetirementReason)
+			if err != nil {
+				return err
+			}
+
 			credit := types.MsgSend_SendCredits{
 				TradableAmount:         tradableAmount,
 				BatchDenom:             args[1],
 				RetiredAmount:          retiredAmount,
 				RetirementJurisdiction: retireTo,
+				RetirementReason:       reason,
 			}
+
 			msg := types.MsgSend{
 				Sender:    clientCtx.GetFromAddress().String(),
 				Recipient: args[2],
 				Credits:   []*types.MsgSend_SendCredits{&credit},
 			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
+	cmd.Flags().String(FlagRetirementReason, "", "the reason for retiring the credits (optional)")
+
 	return txFlags(cmd)
 }
 
@@ -358,7 +372,8 @@ Example JSON:
     "batch_denom": "C01-001-20200101-20210101-002",
     "tradable_amount": "50",
     "retired_amount": "100",
-    "retirement_jurisdiction": "YY-ZZ 12345"
+    "retirement_jurisdiction": "YY-ZZ 12345",
+    "retirement_reason": "offsetting electricity consumption"
   }
 ]`,
 		Args: cobra.ExactArgs(2),
@@ -425,15 +440,23 @@ Example JSON:
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
 			}
 
+			reason, err := cmd.Flags().GetString(FlagReason)
+			if err != nil {
+				return err
+			}
+
 			msg := types.MsgRetire{
 				Owner:        clientCtx.GetFromAddress().String(),
 				Credits:      credits,
 				Jurisdiction: args[1],
+				Reason:       reason,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+
+	cmd.Flags().String(FlagReason, "", "the reason for retiring the credits (optional)")
 
 	return txFlags(cmd)
 }
