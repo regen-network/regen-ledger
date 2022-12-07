@@ -16,9 +16,21 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
 )
+
+type ecocreditServer struct {
+	basetypes.MsgClient
+	basetypes.QueryClient
+}
+
+type marketServer struct {
+	markettypes.MsgClient
+	markettypes.QueryClient
+}
 
 func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 	baseApp := ff.BaseApp()
