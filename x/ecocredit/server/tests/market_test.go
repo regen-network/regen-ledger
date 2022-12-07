@@ -168,7 +168,7 @@ func (s *marketSuite) ExpectSellOrderWithProperties(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, expected.Id, res.SellOrder.Id)
-	//require.Equal(s.t, expected.Seller, res.SellOrder.Seller)
+	// require.Equal(s.t, expected.Seller, res.SellOrder.Seller)
 	// require.Equal(s.t, expected.BatchKey, res.SellOrder.BatchDenom) // TODO
 	require.Equal(s.t, expected.Quantity, res.SellOrder.Quantity)
 	// require.Equal(s.t, expected.MarketId, res.SellOrder.AskDenom) // TODO
