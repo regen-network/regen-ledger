@@ -90,6 +90,18 @@ func (s *marketSuite) BobBuysCreditsWithMessage(a gocuke.DocString) {
 	_, s.err = s.marketServer.BuyDirect(s.ctx, &msg)
 }
 
+func (s *marketSuite) AliceUpdatesSellOrderWithMessage(a gocuke.DocString) {
+	var msg markettypes.MsgUpdateSellOrders
+	err := jsonpb.UnmarshalString(a.Content, &msg)
+	require.NoError(s.t, err)
+
+	// reset context events
+	s.ctx = s.fixture.Context()
+	s.sdkCtx = sdk.UnwrapSDKContext(s.ctx)
+
+	_, s.err = s.marketServer.UpdateSellOrders(s.ctx, &msg)
+}
+
 func (s *marketSuite) AliceCancelsSellOrderWithMessage(a gocuke.DocString) {
 	var msg markettypes.MsgCancelSellOrder
 	err := jsonpb.UnmarshalString(a.Content, &msg)
@@ -124,6 +136,18 @@ func (s *marketSuite) ExpectEventSellWithValues(a gocuke.DocString) {
 
 func (s *marketSuite) ExpectEventBuyWithValues(a gocuke.DocString) {
 	var expected markettypes.EventBuyDirect
+	err := jsonpb.UnmarshalString(a.Content, &expected)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&expected, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&expected, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *marketSuite) ExpectEventUpdateWithValues(a gocuke.DocString) {
+	var expected markettypes.EventUpdateSellOrder
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
 
