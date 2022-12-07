@@ -10,13 +10,12 @@ import (
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/types/v2/testutil"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2/testutil"
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
@@ -168,7 +167,7 @@ func (s *marketSuite) ExpectSellOrderWithProperties(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, expected.Id, res.SellOrder.Id)
-	// require.Equal(s.t, expected.Seller, res.SellOrder.Seller)
+	// require.Equal(s.t, expected.Seller, res.SellOrder.Seller) // TODO
 	// require.Equal(s.t, expected.BatchKey, res.SellOrder.BatchDenom) // TODO
 	require.Equal(s.t, expected.Quantity, res.SellOrder.Quantity)
 	// require.Equal(s.t, expected.MarketId, res.SellOrder.AskDenom) // TODO

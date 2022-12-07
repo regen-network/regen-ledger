@@ -1,5 +1,11 @@
 Feature: Market Integration
 
+  - create sell order and buy credits
+  - create sell order and buy credits that auto-retire
+  - create sell order and cancel sell order
+  - create multiple sell orders and buy credits from one sell order
+  - create multiple sell orders and buy credits from multiple sell orders
+
   Background:
     Given ecocredit state
     """
@@ -172,6 +178,108 @@ Feature: Market Integration
     {
       "tradable_amount": "1",
       "retired_amount": "0",
+      "cancelled_amount": "0"
+    }
+    """
+
+  Scenario: create sell order and buy credits that auto-retire
+    When alice creates sell order with message
+    """
+    {
+      "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+      "orders": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "quantity": "0.000001",
+          "ask_price": {
+            "denom": "uregen",
+            "amount": "1"
+          }
+        }
+      ]
+    }
+    """
+    Then expect no error
+    And expect event sell with values
+    """
+    {
+      "sell_order_id": "1"
+    }
+    """
+    And expect total sell orders "1"
+    And expect sell order with properties
+    """
+    {
+      "id": "1",
+      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
+      "batch_key": "0",
+      "quantity": "0.000001",
+      "market_id": "1",
+      "ask_amount": "1",
+      "disable_auto_retire": false
+    }
+    """
+    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    """
+    {
+      "tradable_amount": "0.999999",
+      "retired_amount": "0",
+      "escrowed_amount": "0.000001"
+    }
+    """
+    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    """
+    {
+      "tradable_amount": "1",
+      "retired_amount": "0",
+      "cancelled_amount": "0"
+    }
+    """
+    When bob buys credits with message
+    """
+    {
+      "buyer": "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42",
+      "orders": [
+        {
+          "sell_order_id": "1",
+          "quantity": "0.000001",
+          "bid_price": {
+            "denom": "uregen",
+            "amount": "1"
+          },
+          "retirement_jurisdiction": "US-WA"
+        }
+      ]
+    }
+    """
+    Then expect no error
+    And expect event buy with values
+    """
+    {
+      "sell_order_id": "1"
+    }
+    """
+    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    """
+    {
+      "tradable_amount": "0.999999",
+      "retired_amount": "0",
+      "escrowed_amount": "0.000000"
+    }
+    """
+    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    """
+    {
+      "tradable_amount": "0",
+      "retired_amount": "0.000001",
+      "escrowed_amount": "0"
+    }
+    """
+    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    """
+    {
+      "tradable_amount": "0.999999",
+      "retired_amount": "0.000001",
       "cancelled_amount": "0"
     }
     """
