@@ -160,6 +160,12 @@ func (s *buyDirectSuite) TheBatchSupply(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *buyDirectSuite) AlicesAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
+}
+
 func (s *buyDirectSuite) BobsAddress(a string) {
 	addr, err := sdk.AccAddressFromBech32(a)
 	require.NoError(s.t, err)
@@ -541,6 +547,18 @@ func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
 
 func (s *buyDirectSuite) ExpectEventBuyDirectWithProperties(a gocuke.DocString) {
 	var event types.EventBuyDirect
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
+}
+
+func (s *buyDirectSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {
+	var event basetypes.EventTransfer
 	err := json.Unmarshal([]byte(a.Content), &event)
 	require.NoError(s.t, err)
 

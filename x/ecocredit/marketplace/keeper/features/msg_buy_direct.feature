@@ -343,7 +343,22 @@ Feature: Msg/BuyDirect
 
     Background:
       Given a credit type
+      And alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
       And bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+
+    Scenario: EventTransfer is emitted
+      Given alice created a sell order with id "1"
+      When bob attempts to buy credits with quantity "10"
+      Then expect event transfer with properties
+      """
+      {
+        "sender": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "tradable_amount": "0",
+        "retired_amount": "10"
+      }
+      """
 
     Scenario: EventRetire is emitted
       Given alice created a sell order with id "1"
