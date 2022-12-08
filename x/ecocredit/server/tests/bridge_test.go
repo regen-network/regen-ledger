@@ -1,4 +1,3 @@
-//nolint:revive,stylecheck
 package tests
 
 import (
