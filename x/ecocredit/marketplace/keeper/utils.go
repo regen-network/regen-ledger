@@ -93,12 +93,12 @@ func (k Keeper) fillOrder(ctx context.Context, params fillOrderParams) error {
 		return err
 	}
 
-	// If auto retire is disabled, we update buyer balance tradable amount. We emit a transfer event with
+	// If auto-retire is disabled, we update buyer balance tradable amount. We emit a transfer event with
 	// the credit quantity being purchased as the tradable amount. We do not update batch supply because
 	// we do not distinguish between tradable and escrowed credits in batch supply.
 	//
 	// If auto-retire is enabled, we update buyer balance retired amount. We emit a transfer event with the
-	// credit quantity being purchases as the retired amount and a retire event with the credit quantity as
+	// credit quantity being purchased as the retired amount and a retire event with the credit quantity as
 	// the amount. We also update batch supply to reflect the retirement of the credits.
 	if !params.autoRetire {
 
