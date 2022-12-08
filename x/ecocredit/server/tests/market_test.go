@@ -122,7 +122,7 @@ func (s *marketSuite) ExpectTheError(a gocuke.DocString) {
 	require.EqualError(s.t, s.err, a.Content)
 }
 
-func (s *marketSuite) ExpectEventSellWithValues(a gocuke.DocString) {
+func (s *marketSuite) ExpectEventSell(a gocuke.DocString) {
 	var expected markettypes.EventSell
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
@@ -134,7 +134,7 @@ func (s *marketSuite) ExpectEventSellWithValues(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *marketSuite) ExpectEventBuyWithValues(a gocuke.DocString) {
+func (s *marketSuite) ExpectEventBuy(a gocuke.DocString) {
 	var expected markettypes.EventBuyDirect
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
@@ -146,7 +146,7 @@ func (s *marketSuite) ExpectEventBuyWithValues(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *marketSuite) ExpectEventUpdateWithValues(a gocuke.DocString) {
+func (s *marketSuite) ExpectEventUpdate(a gocuke.DocString) {
 	var expected markettypes.EventUpdateSellOrder
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
@@ -158,7 +158,7 @@ func (s *marketSuite) ExpectEventUpdateWithValues(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *marketSuite) ExpectEventCancelWithValues(a gocuke.DocString) {
+func (s *marketSuite) ExpectEventCancel(a gocuke.DocString) {
 	var expected markettypes.EventCancelSellOrder
 	err := jsonpb.UnmarshalString(a.Content, &expected)
 	require.NoError(s.t, err)
@@ -181,27 +181,30 @@ func (s *marketSuite) ExpectTotalSellOrders(a string) {
 	require.Equal(s.t, expected, res.Pagination.Total)
 }
 
-func (s *marketSuite) ExpectSellOrderWithProperties(a gocuke.DocString) {
-	var expected markettypes.SellOrder
-	err := jsonpb.UnmarshalString(a.Content, &expected)
+func (s *marketSuite) ExpectQuerySellOrderWithId(a string, b gocuke.DocString) {
+	id, err := strconv.ParseUint(a, 10, 64)
 	require.NoError(s.t, err)
 
-	req := &markettypes.QuerySellOrderRequest{SellOrderId: expected.Id}
+	var expected markettypes.QuerySellOrderResponse
+	err = jsonpb.UnmarshalString(b.Content, &expected)
+	require.NoError(s.t, err)
+
+	req := &markettypes.QuerySellOrderRequest{SellOrderId: id}
 	res, err := s.marketServer.SellOrder(s.ctx, req)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, expected.Id, res.SellOrder.Id)
-	// require.Equal(s.t, expected.Seller, res.SellOrder.Seller) // TODO
-	// require.Equal(s.t, expected.BatchKey, res.SellOrder.BatchDenom) // TODO
-	require.Equal(s.t, expected.Quantity, res.SellOrder.Quantity)
-	// require.Equal(s.t, expected.MarketId, res.SellOrder.AskDenom) // TODO
-	require.Equal(s.t, expected.AskAmount, res.SellOrder.AskAmount)
-	require.Equal(s.t, expected.DisableAutoRetire, res.SellOrder.DisableAutoRetire)
-	require.Equal(s.t, expected.Expiration, res.SellOrder.Expiration)
+	require.Equal(s.t, expected.SellOrder.Id, res.SellOrder.Id)
+	require.Equal(s.t, expected.SellOrder.Seller, res.SellOrder.Seller)
+	require.Equal(s.t, expected.SellOrder.BatchDenom, res.SellOrder.BatchDenom)
+	require.Equal(s.t, expected.SellOrder.Quantity, res.SellOrder.Quantity)
+	require.Equal(s.t, expected.SellOrder.AskDenom, res.SellOrder.AskDenom)
+	require.Equal(s.t, expected.SellOrder.AskAmount, res.SellOrder.AskAmount)
+	require.Equal(s.t, expected.SellOrder.DisableAutoRetire, res.SellOrder.DisableAutoRetire)
+	require.Equal(s.t, expected.SellOrder.Expiration, res.SellOrder.Expiration)
 }
 
-func (s *marketSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c gocuke.DocString) {
-	expected := &baseapi.BatchBalance{}
+func (s *marketSuite) ExpectQueryBalanceWithAddressAndBatchDenom(a, b string, c gocuke.DocString) {
+	expected := &baseapi.QueryBalanceResponse{}
 	err := jsonpb.UnmarshalString(c.Content, expected)
 	require.NoError(s.t, err)
 
@@ -211,13 +214,13 @@ func (s *marketSuite) ExpectBatchBalanceWithAddressAndBatchDenom(a, b string, c 
 	})
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, expected.TradableAmount, res.Balance.TradableAmount)
-	require.Equal(s.t, expected.RetiredAmount, res.Balance.RetiredAmount)
-	require.Equal(s.t, expected.EscrowedAmount, res.Balance.EscrowedAmount)
+	require.Equal(s.t, expected.Balance.TradableAmount, res.Balance.TradableAmount)
+	require.Equal(s.t, expected.Balance.RetiredAmount, res.Balance.RetiredAmount)
+	require.Equal(s.t, expected.Balance.EscrowedAmount, res.Balance.EscrowedAmount)
 }
 
-func (s *marketSuite) ExpectBatchSupplyWithBatchDenom(a string, b gocuke.DocString) {
-	expected := &baseapi.BatchSupply{}
+func (s *marketSuite) ExpectQuerySupplyWithBatchDenom(a string, b gocuke.DocString) {
+	expected := &baseapi.QuerySupplyResponse{}
 	err := jsonpb.UnmarshalString(b.Content, expected)
 	require.NoError(s.t, err)
 

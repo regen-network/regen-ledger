@@ -102,34 +102,38 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "1"
     }
     """
     And expect total sell orders "1"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999999",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000001"
+      "balance": {
+        "tradable_amount": "0.999999",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000001"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -155,29 +159,33 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event buy with values
+    And expect event buy
     """
     {
       "sell_order_id": "1"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999999",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000000"
+      "balance": {
+        "tradable_amount": "0.999999",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000000"
+      }
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.000001",
-      "retired_amount": "0",
-      "escrowed_amount": "0"
+      "balance": {
+        "tradable_amount": "0.000001",
+        "retired_amount": "0",
+        "escrowed_amount": "0"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -204,34 +212,38 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "1"
     }
     """
     And expect total sell orders "1"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": false
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": false
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999999",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000001"
+      "balance": {
+        "tradable_amount": "0.999999",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000001"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -257,29 +269,33 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event buy with values
+    And expect event buy
     """
     {
       "sell_order_id": "1"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999999",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000000"
+      "balance": {
+        "tradable_amount": "0.999999",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000000"
+      }
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0",
-      "retired_amount": "0.000001",
-      "escrowed_amount": "0"
+      "balance": {
+        "tradable_amount": "0",
+        "retired_amount": "0.000001",
+        "escrowed_amount": "0"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "0.999999",
@@ -307,34 +323,38 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "1"
     }
     """
     And expect total sell orders "1"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999999",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000001"
+      "balance": {
+        "tradable_amount": "0.999999",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000001"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -360,21 +380,23 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event update with values
+    And expect event update
     """
     {
       "sell_order_id": "1"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000002"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000002"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -402,34 +424,38 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "1"
     }
     """
     And expect total sell orders "1"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000002",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000002",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000002"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000002"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -455,21 +481,23 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event update with values
+    And expect event update
     """
     {
       "sell_order_id": "1"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999999",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000001"
+      "balance": {
+        "tradable_amount": "0.999999",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000001"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -497,34 +525,38 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "1"
     }
     """
     And expect total sell orders "1"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999999",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000001"
+      "balance": {
+        "tradable_amount": "0.999999",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000001"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -540,21 +572,23 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event cancel with values
+    And expect event cancel
     """
     {
       "sell_order_id": "1"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "1.000000",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000000"
+      "balance": {
+        "tradable_amount": "1.000000",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000000"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -591,46 +625,52 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "2"
     }
     """
     And expect total sell orders "2"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect sell order with properties
+    And expect query sell order with id "2"
     """
     {
-      "id": "2",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "2",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000002"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000002"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -656,29 +696,33 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event buy with values
+    And expect event buy
     """
     {
       "sell_order_id": "1"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000001"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000001"
+      }
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.000001",
-      "retired_amount": "0",
-      "escrowed_amount": "0"
+      "balance": {
+        "tradable_amount": "0.000001",
+        "retired_amount": "0",
+        "escrowed_amount": "0"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -715,46 +759,52 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "2"
     }
     """
     And expect total sell orders "2"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect sell order with properties
+    And expect query sell order with id "2"
     """
     {
-      "id": "2",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "2",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000002"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000002"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -789,29 +839,33 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event buy with values
+    And expect event buy
     """
     {
       "sell_order_id": "2"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000000"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000000"
+      }
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.000002",
-      "retired_amount": "0",
-      "escrowed_amount": "0"
+      "balance": {
+        "tradable_amount": "0.000002",
+        "retired_amount": "0",
+        "escrowed_amount": "0"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -848,46 +902,52 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "2"
     }
     """
     And expect total sell orders "2"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect sell order with properties
+    And expect query sell order with id "2"
     """
     {
-      "id": "2",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000001",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "2",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000001",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000002"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000002"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -922,21 +982,23 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event update with values
+    And expect event update
     """
     {
       "sell_order_id": "2"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999996",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000004"
+      "balance": {
+        "tradable_amount": "0.999996",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000004"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -973,46 +1035,52 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event sell with values
+    And expect event sell
     """
     {
       "sell_order_id": "2"
     }
     """
     And expect total sell orders "2"
-    And expect sell order with properties
+    And expect query sell order with id "1"
     """
     {
-      "id": "1",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000002",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "1",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000002",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect sell order with properties
+    And expect query sell order with id "2"
     """
     {
-      "id": "2",
-      "seller": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "batch_key": "0",
-      "quantity": "0.000002",
-      "market_id": "1",
-      "ask_amount": "1",
-      "disable_auto_retire": true
+      "sell_order": {
+        "id": "2",
+        "seller": "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "0.000002",
+        "ask_denom": "uregen",
+        "ask_amount": "1",
+        "disable_auto_retire": true
+      }
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999996",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000004"
+      "balance": {
+        "tradable_amount": "0.999996",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000004"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
@@ -1047,21 +1115,23 @@ Feature: Market Integration
     }
     """
     Then expect no error
-    And expect event update with values
+    And expect event update
     """
     {
       "sell_order_id": "2"
     }
     """
-    And expect batch balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
+    And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
     """
     {
-      "tradable_amount": "0.999998",
-      "retired_amount": "0",
-      "escrowed_amount": "0.000002"
+      "balance": {
+        "tradable_amount": "0.999998",
+        "retired_amount": "0",
+        "escrowed_amount": "0.000002"
+      }
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect query supply with batch denom "C01-001-20200101-20210101-001"
     """
     {
       "tradable_amount": "1",
