@@ -54,7 +54,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(app.DefaultNodeHome).
-		WithViper("")
+		WithViper(app.EnvPrefix)
 
 	rootCmd := &cobra.Command{
 		Use:   "regen",
