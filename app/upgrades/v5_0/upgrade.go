@@ -1,5 +1,4 @@
-//nolint:revive
-package v5_0
+package v5_0 //nolint:revive,stylecheck
 
 import (
 	"fmt"
