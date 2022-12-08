@@ -41,7 +41,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOr
 			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s: seller must be the seller of the sell order", updateIndex)
 		}
 
-		// applySellOrderUpdates applies the updates to the sell order
+		// apply the updates to the sell order
 		if err = k.applySellOrderUpdates(ctx, updateIndex, sellOrder, update); err != nil {
 			return nil, err
 		}
@@ -54,6 +54,12 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOr
 func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, order *api.SellOrder, update *types.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
+	order.Maker = true // maker is always true for sell orders
+
+	// set order disable auto-retire based on update, note that if the update does
+	// include disable auto-retire, disable auto-retire will be updated to false
+	order.DisableAutoRetire = update.DisableAutoRetire
+
 	// get credit type from batch key to get/create market and check precision
 	creditType, err := k.getCreditTypeFromBatchKey(ctx, order.BatchKey)
 	if err != nil {
@@ -61,7 +67,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 	}
 
 	if update.NewAskPrice != nil {
-		// get market to check if ask price denom is an allowed denom
+		// get market to check if new ask price denom is an allowed denom
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
 			return err
@@ -116,8 +122,8 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 			return err
 		}
 
-		// get decimal of current quantity (new positive fixed decimal as an added precaution)
-		currentQuantity, err := math.NewPositiveFixedDecFromString(order.Quantity, creditType.Precision)
+		// get decimal of current quantity
+		currentQuantity, err := math.NewDecFromString(order.Quantity)
 		if err != nil {
 			return err
 		}
@@ -133,12 +139,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 				return err
 			}
 
-			// TODO: investigate sub vs safe sub balance
-			//escrowQuantity, err := math.SafeSubBalance(newQuantity, currentQuantity)
-			//if err != nil {
-			//	return err
-			//}
-
 			// convert seller balance tradable credits to escrowed credits
 			if err = k.escrowCredits(ctx, updateIndex, order.Seller, order.BatchKey, escrowQuantity); err != nil {
 				return err
@@ -152,12 +152,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 				return err
 			}
 
-			// TODO: investigate sub vs safe sub balance
-			//unescrowQuantity, err := math.SafeSubBalance(currentQuantity, newQuantity)
-			//if err != nil {
-			//	return err
-			//}
-
 			// convert seller balance escrowed credits to tradable credits
 			if err = k.unescrowCredits(ctx, order.Seller, order.BatchKey, unescrowQuantity.String()); err != nil {
 				return err
@@ -167,12 +161,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 			order.Quantity = update.NewQuantity
 		}
 	}
-
-	// set order disable auto-retire based on update, note that if the update does
-	// include disable auto-retire, disable auto-retire will be updated to false
-	order.DisableAutoRetire = update.DisableAutoRetire
-
-	order.Maker = true // maker is always true for sell orders
 
 	// update sell order with new sell order properties
 	if err := k.stateStore.SellOrderTable().Update(ctx, order); err != nil {

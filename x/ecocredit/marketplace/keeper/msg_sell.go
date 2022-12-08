@@ -62,8 +62,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 			return nil, err
 		}
 
-		// escrowCredits updates seller balance, effectively converting tradable credits to
-		// escrowed credits based on the provided quantity.
+		// convert seller balance tradable credits to escrowed credits
 		if err = k.escrowCredits(ctx, orderIndex, sellerAcc, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
