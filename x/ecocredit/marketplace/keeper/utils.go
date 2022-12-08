@@ -44,8 +44,8 @@ func (k Keeper) fillOrder(ctx context.Context, params fillOrderParams) error {
 
 	// If the sell order quantity is less than the purchase quantity, return an error.
 	// If the sell order quantity is equal to the purchase quantity, remove the sell order.
-	// If the sell order quantity is greater than the purchase quantity, subtract the purchase
-	// quantity from the sell order quantity and update the sell order.
+	// If the sell order quantity is greater than the buy quantity, subtract the buy quantity
+	// from the sell order quantity and update the sell order.
 	switch sellOrderQty.Cmp(params.buyQuantity) {
 	case math.LessThan:
 		return sdkerrors.ErrInvalidRequest.Wrapf(
