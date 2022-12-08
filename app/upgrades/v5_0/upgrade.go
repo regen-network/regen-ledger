@@ -1,3 +1,4 @@
+//nolint:revive
 package v5_0
 
 import (
