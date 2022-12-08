@@ -128,8 +128,8 @@ func (k Keeper) getOrCreateMarketID(ctx context.Context, creditTypeAbbrev, bankD
 	}
 }
 
-// escrowCredits updates seller balance, effectively converting tradable credits to escrowed credits
-// based on the provided quantity.
+// escrowCredits updates seller balance, subtracting the provided quantity from tradable amount
+// and adding it to escrowed amount.
 func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, sellerAcc sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
 
 	// get seller balance to be updated

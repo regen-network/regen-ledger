@@ -42,8 +42,8 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	return k.stateStore.SellOrderTable().DeleteRange(ctx, fromKey, toKey)
 }
 
-// unescrowCredits updates seller balance, effectively converting escrowed credits to tradable credits
-// based on the provided quantity.
+// unescrowCredits updates seller balance, subtracting the provided quantity from escrowed amount
+// and adding it to tradable amount.
 func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, batchKey uint64, quantity string) error {
 
 	quantityDec, err := math.NewDecFromString(quantity)
