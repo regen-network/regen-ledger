@@ -169,6 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1480](https://github.com/regen-network/regen-ledger/pull/1480) Fix amino codec registration for all messages
 - [#1583](https://github.com/regen-network/regen-ledger/pull/1583) Return gRPC response code in base query response
 - [#1588](https://github.com/regen-network/regen-ledger/pull/1588) Return gRPC response code in basket and marketplace query response
+- [#1674](https://github.com/regen-network/regen-ledger/pull/1674) Update `MsgSend` to return an error if sender and recipient are same
 
 #### Removed
 
