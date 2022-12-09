@@ -16,10 +16,15 @@ import (
 
 // Send sends credits to a recipient.
 // Send also retires credits if the amount to retire is specified in the request.
+// NOTE: This method will return an error if both sender and recipient are same.
 func (k Keeper) Send(ctx context.Context, req *types.MsgSend) (*types.MsgSendResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sender, _ := sdk.AccAddressFromBech32(req.Sender)
 	recipient, _ := sdk.AccAddressFromBech32(req.Recipient)
+
+	if sender.Equals(recipient) {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("sender and recipient cannot be the same")
+	}
 
 	for _, credit := range req.Credits {
 		err := k.sendEcocredits(sdkCtx, credit, recipient, sender)
