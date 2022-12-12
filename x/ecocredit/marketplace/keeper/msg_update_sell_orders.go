@@ -33,7 +33,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOr
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s: sell order with id %d: %s", updateIndex, update.SellOrderId, err.Error())
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s: sell order with id %d: %s", updateIndex, update.SellOrderId, err)
 		}
 
 		sellOrderAddr := sdk.AccAddress(sellOrder.Seller)
@@ -41,10 +41,12 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOr
 			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s: seller must be the seller of the sell order", updateIndex)
 		}
 
+		// apply the updates to the sell order
 		if err = k.applySellOrderUpdates(ctx, updateIndex, sellOrder, update); err != nil {
 			return nil, err
 		}
 	}
+
 	return &types.MsgUpdateSellOrdersResponse{}, nil
 }
 
@@ -52,16 +54,26 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOr
 func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, order *api.SellOrder, update *types.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	var creditType *baseapi.CreditType
+	order.Maker = true // maker is always true for sell orders
 
+	// set order disable auto-retire based on update, note that if the update does
+	// include disable auto-retire, disable auto-retire will be updated to false
 	order.DisableAutoRetire = update.DisableAutoRetire
 
+	// get credit type from batch key to get/create market and check precision
+	creditType, err := k.getCreditTypeFromBatchKey(ctx, order.BatchKey)
+	if err != nil {
+		return err
+	}
+
 	if update.NewAskPrice != nil {
+		// get market to check if new ask price denom is an allowed denom
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
 			return err
 		}
 
+		// check if new ask price denom is an allowed denom
 		allowed, err := isDenomAllowed(ctx, update.NewAskPrice.Denom, k.stateStore.AllowedDenomTable())
 		if err != nil {
 			return err
@@ -74,10 +86,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 		}
 
 		if market.BankDenom != update.NewAskPrice.Denom {
-			creditType, err = k.getCreditTypeFromBatchKey(ctx, order.BatchKey)
-			if err != nil {
-				return err
-			}
 			marketID, err := k.getOrCreateMarketID(ctx, creditType.Abbreviation, update.NewAskPrice.Denom)
 			if err != nil {
 				return err
@@ -85,6 +93,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 			order.MarketId = marketID
 		}
 
+		// set order ask amount to new ask price amount
 		order.AskAmount = update.NewAskPrice.Amount.String()
 	}
 
@@ -100,52 +109,60 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, o
 				updateIndex, update.NewExpiration,
 			)
 		}
+
+		// set order expiration to new expiration
 		order.Expiration = timestamppb.New(*update.NewExpiration)
 	}
 
 	if update.NewQuantity != "" {
-		if creditType == nil {
-			var err error
-			creditType, err = k.getCreditTypeFromBatchKey(ctx, order.BatchKey)
-			if err != nil {
-				return err
-			}
-		}
-		newQty, err := math.NewPositiveFixedDecFromString(update.NewQuantity, creditType.Precision)
+
+		// get decimal of new quantity
+		newQuantity, err := math.NewPositiveFixedDecFromString(update.NewQuantity, creditType.Precision)
 		if err != nil {
 			return err
 		}
-		existingQty, err := math.NewDecFromString(order.Quantity)
+
+		// get decimal of current quantity
+		currentQuantity, err := math.NewDecFromString(order.Quantity)
 		if err != nil {
 			return err
 		}
-		// compare newQty and the existingQty
-		// if newQty > existingQty, we need to increase our amount escrowed by the difference of new - existing.
-		// if newQty < existingQty we need to decrease our amount escrowed by the difference of existing - new.
-		switch newQty.Cmp(existingQty) {
+
+		// compare newQuantity and currentQuantity
+		// if newQuantity > currentQuantity, we need to increase escrowed amount by the difference.
+		// if newQuantity < currentQuantity, we need to decrease escrowed amount by the difference.
+		switch newQuantity.Cmp(currentQuantity) {
 		case math.GreaterThan:
-			amtToEscrow, err := newQty.Sub(existingQty)
+			// calculate quantity of credits to escrow
+			escrowQuantity, err := newQuantity.Sub(currentQuantity)
 			if err != nil {
 				return err
 			}
-			if err = k.escrowCredits(ctx, updateIndex, order.Seller, order.BatchKey, amtToEscrow); err != nil {
+
+			// convert seller balance tradable credits to escrowed credits
+			if err = k.escrowCredits(ctx, updateIndex, order.Seller, order.BatchKey, escrowQuantity); err != nil {
 				return err
 			}
+
+			// set order quantity to new quantity
 			order.Quantity = update.NewQuantity
 		case math.LessThan:
-			amtToUnescrow, err := existingQty.Sub(newQty)
+			unescrowQuantity, err := currentQuantity.Sub(newQuantity)
 			if err != nil {
 				return err
 			}
-			if err = k.unescrowCredits(ctx, order.Seller, order.BatchKey, amtToUnescrow.String()); err != nil {
+
+			// convert seller balance escrowed credits to tradable credits
+			if err = k.unescrowCredits(ctx, order.Seller, order.BatchKey, unescrowQuantity.String()); err != nil {
 				return err
 			}
+
+			// set order quantity to new quantity
 			order.Quantity = update.NewQuantity
 		}
 	}
 
-	order.Maker = true // maker is always true for sell orders
-
+	// update sell order with new sell order properties
 	if err := k.stateStore.SellOrderTable().Update(ctx, order); err != nil {
 		return err
 	}

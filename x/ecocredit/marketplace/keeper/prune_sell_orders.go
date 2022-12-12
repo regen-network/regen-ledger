@@ -42,10 +42,11 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	return k.stateStore.SellOrderTable().DeleteRange(ctx, fromKey, toKey)
 }
 
-// unescrowCredits moves `amount` of credits from the sellerAddr's escrowed balance, into their tradable balance.
-func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, batchKey uint64, amount string) error {
+// unescrowCredits updates seller balance, subtracting the provided quantity from escrowed amount
+// and adding it to tradable amount.
+func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, batchKey uint64, quantity string) error {
 
-	creditAmt, err := math.NewDecFromString(amount)
+	quantityDec, err := math.NewDecFromString(quantity)
 	if err != nil {
 		return err
 	}
@@ -60,14 +61,15 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 			return "", "", err
 		}
 
-		escrowedDec, err = math.SafeSubBalance(escrowedDec, creditAmt)
+		escrowedDec, err = math.SafeSubBalance(escrowedDec, quantityDec)
 		if err != nil {
 			return "", "", err
 		}
-		tradableDec, err = math.SafeAddBalance(tradableDec, creditAmt)
+		tradableDec, err = math.SafeAddBalance(tradableDec, quantityDec)
 		if err != nil {
 			return "", "", err
 		}
+
 		return escrowedDec.String(), tradableDec.String(), nil
 	}
 
