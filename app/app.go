@@ -112,7 +112,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 
 	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
-	v5 "github.com/regen-network/regen-ledger/v5/app/upgrades/v5"
+	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
 	"github.com/regen-network/regen-ledger/x/data/v2"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v2/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
@@ -193,7 +193,7 @@ var (
 		return perms
 	}()
 
-	upgrades = []regenupgrades.Upgrade{v5.Upgrade}
+	upgrades = []regenupgrades.Upgrade{v5_0.Upgrade}
 )
 
 func init() {
