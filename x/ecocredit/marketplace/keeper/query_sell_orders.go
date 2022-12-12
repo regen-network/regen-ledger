@@ -24,7 +24,7 @@ func (k Keeper) SellOrders(ctx context.Context, req *types.QuerySellOrdersReques
 		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderSellerIndexKey{}, ormlist.Paginate(pg))
+	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderIdIndexKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
