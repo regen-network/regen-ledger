@@ -36,7 +36,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 		batch, err := k.baseStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
-				"%s: batch denom %s: %s", orderIndex, order.BatchDenom, err.Error(),
+				"%s: batch denom %s: %s", orderIndex, order.BatchDenom, err,
 			)
 		}
 
@@ -62,10 +62,12 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 			return nil, err
 		}
 
+		// convert seller balance tradable credits to escrowed credits
 		if err = k.escrowCredits(ctx, orderIndex, sellerAcc, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
+		// check if ask price denom is an allowed denom
 		allowed, err := isDenomAllowed(ctx, order.AskPrice.Denom, k.stateStore.AllowedDenomTable())
 		if err != nil {
 			return nil, err
@@ -109,7 +111,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 	return &types.MsgSellResponse{SellOrderIds: sellOrderIDs}, nil
 }
 
-// getOrCreateMarketID attempts to get a market, creating one otherwise, and return the Id.
+// getOrCreateMarketID attempts to get a market, otherwise creating a market, and returns the ID.
 func (k Keeper) getOrCreateMarketID(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
 	market, err := k.stateStore.MarketTable().GetByCreditTypeAbbrevBankDenom(ctx, creditTypeAbbrev, bankDenom)
 	switch err {
@@ -126,38 +128,42 @@ func (k Keeper) getOrCreateMarketID(ctx context.Context, creditTypeAbbrev, bankD
 	}
 }
 
-func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
-	bal, err := k.baseStore.BatchBalanceTable().Get(ctx, account, batchKey)
+// escrowCredits updates seller balance, subtracting the provided quantity from tradable amount
+// and adding it to escrowed amount.
+func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, sellerAcc sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
+
+	// get seller balance to be updated
+	bal, err := k.baseStore.BatchBalanceTable().Get(ctx, sellerAcc, batchKey)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf(
 			"%s: credit quantity: %v, tradable balance: 0", orderIndex, quantity,
 		)
 	}
 
+	// calculate and set seller balance tradable amount (subtract credits)
 	tradable, err := math.NewDecFromString(bal.TradableAmount)
 	if err != nil {
 		return err
 	}
-
 	newTradable, err := math.SafeSubBalance(tradable, quantity)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf(
 			"%s: credit quantity: %v, tradable balance: %v", orderIndex, quantity, tradable,
 		)
 	}
+	bal.TradableAmount = newTradable.String()
 
+	// calculate and set seller balance escrowed amount (add credits)
 	escrowed, err := math.NewDecFromString(bal.EscrowedAmount)
 	if err != nil {
 		return err
 	}
-
 	newEscrowed, err := math.SafeAddBalance(escrowed, quantity)
 	if err != nil {
 		return err
 	}
-
-	bal.TradableAmount = newTradable.String()
 	bal.EscrowedAmount = newEscrowed.String()
 
+	// update seller balance with new tradable and escrowed amounts
 	return k.baseStore.BatchBalanceTable().Update(ctx, bal)
 }

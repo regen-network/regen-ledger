@@ -283,3 +283,23 @@ Feature: MsgSend
       }
     }
     """
+
+  Scenario: an error is returned if sender and recipient are the same
+    Given the message
+    """
+    {
+      "sender":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "recipient":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "tradable_amount": "100",
+          "retired_amount": "100",
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect the error "sender and recipient cannot be the same: invalid request"
