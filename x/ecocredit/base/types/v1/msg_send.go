@@ -37,6 +37,10 @@ func (m *MsgSend) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("recipient: %s", err)
 	}
 
+	if m.Sender == m.Recipient {
+		return sdkerrors.ErrInvalidRequest.Wrap("sender and recipient cannot be the same")
+	}
+
 	if len(m.Credits) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}
