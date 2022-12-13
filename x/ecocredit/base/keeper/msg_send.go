@@ -49,117 +49,87 @@ func (k Keeper) sendEcocredits(sdkCtx sdk.Context, credit *types.MsgSend_SendCre
 	}
 	precision := creditType.Precision
 
-	batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
-	if err != nil {
-		return err
-	}
-	fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Key)
-	if err != nil {
-		if err == ormerrors.NotFound {
-			return ecocredit.ErrInsufficientCredits.Wrapf("you do not have any credits from batch %s", batch.Denom)
-		}
-		return err
-	}
-
-	toBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, to, batch.Key)
-	if err != nil {
-		if err == ormerrors.NotFound {
-			toBalance = &api.BatchBalance{
-				BatchKey:       batch.Key,
-				Address:        to,
-				TradableAmount: "0",
-				RetiredAmount:  "0",
-				EscrowedAmount: "0",
-			}
-		} else {
-			return err
-		}
-	}
-	decs, err := utils.GetNonNegativeFixedDecs(precision, toBalance.TradableAmount, toBalance.RetiredAmount, fromBalance.TradableAmount, fromBalance.RetiredAmount, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
+	creditDecs, err := utils.GetNonNegativeFixedDecs(precision, credit.TradableAmount, credit.RetiredAmount)
 	if err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	toTradableBalance, toRetiredBalance,
-		fromTradableBalance, fromRetiredBalance,
-		sendAmtTradable, sendAmtRetired,
-		batchSupplyTradable, batchSupplyRetired := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
 
+	sendAmtTradable, sendAmtRetired := creditDecs[0], creditDecs[1]
 	if !sendAmtTradable.IsZero() {
-		fromTradableBalance, err = math.SafeSubBalance(fromTradableBalance, sendAmtTradable)
+		fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Key)
+		if err != nil {
+			if err == ormerrors.NotFound {
+				return ecocredit.ErrInsufficientCredits.Wrapf("you do not have any credits from batch %s", batch.Denom)
+			}
+			return err
+		}
+
+		fromDec, err := math.NewNonNegativeFixedDecFromString(fromBalance.TradableAmount, precision)
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+
+		fromTradableBalance, err := math.SafeSubBalance(fromDec, sendAmtTradable)
 		if err != nil {
 			return ecocredit.ErrInsufficientCredits.Wrapf(
-				"tradable balance: %s, send tradable amount %s", decs[2], sendAmtTradable,
+				"tradable balance: %s, send tradable amount %s", fromDec, sendAmtTradable,
 			)
 		}
+
+		// update the "from" balance
+		if err := k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
+			BatchKey:       batch.Key,
+			Address:        from,
+			TradableAmount: fromTradableBalance.String(),
+			RetiredAmount:  fromBalance.RetiredAmount,
+			EscrowedAmount: fromBalance.EscrowedAmount,
+		}); err != nil {
+			return err
+		}
+
+		toBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, to, batch.Key)
+		if err != nil {
+			if err == ormerrors.NotFound {
+				toBalance = &api.BatchBalance{
+					BatchKey:       batch.Key,
+					Address:        to,
+					TradableAmount: "0",
+					RetiredAmount:  "0",
+					EscrowedAmount: "0",
+				}
+			} else {
+				return err
+			}
+		}
+
+		toTradableBalance, err := math.NewNonNegativeFixedDecFromString(toBalance.TradableAmount, precision)
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+
 		toTradableBalance, err = toTradableBalance.Add(sendAmtTradable)
 		if err != nil {
 			return err
 		}
+
+		// update the "to" balance
+		if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+			BatchKey:       batch.Key,
+			Address:        to,
+			TradableAmount: toTradableBalance.String(),
+			RetiredAmount:  toBalance.RetiredAmount,
+			EscrowedAmount: toBalance.EscrowedAmount,
+		}); err != nil {
+			return err
+		}
 	}
 
-	didRetire := false
 	if !sendAmtRetired.IsZero() {
-		didRetire = true
-		fromTradableBalance, err = math.SafeSubBalance(fromTradableBalance, sendAmtRetired)
-		if err != nil {
-			return ecocredit.ErrInsufficientCredits.Wrapf(
-				"tradable balance: %s, send retired amount %s", decs[2], sendAmtRetired,
-			)
-		}
-		toRetiredBalance, err = toRetiredBalance.Add(sendAmtRetired)
-		if err != nil {
+		if err := retireCredit(sdkCtx, k.stateStore, batch, credit, precision, from, to, sendAmtRetired); err != nil {
 			return err
 		}
-		batchSupplyRetired, err = batchSupplyRetired.Add(sendAmtRetired)
-		if err != nil {
-			return err
-		}
-		batchSupplyTradable, err = batchSupplyTradable.Sub(sendAmtRetired)
-		if err != nil {
-			return err
-		}
-	}
-	// update the "to" balance
-	if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		BatchKey:       batch.Key,
-		Address:        to,
-		TradableAmount: toTradableBalance.String(),
-		RetiredAmount:  toRetiredBalance.String(),
-		EscrowedAmount: toBalance.EscrowedAmount,
-	}); err != nil {
-		return err
 	}
 
-	// update the "from" balance
-	if err := k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
-		BatchKey:       batch.Key,
-		Address:        from,
-		TradableAmount: fromTradableBalance.String(),
-		RetiredAmount:  fromRetiredBalance.String(),
-		EscrowedAmount: fromBalance.EscrowedAmount,
-	}); err != nil {
-		return err
-	}
-	// update the "retired" supply only if credits were retired
-	if didRetire {
-		if err := k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
-			BatchKey:        batch.Key,
-			TradableAmount:  batchSupplyTradable.String(),
-			RetiredAmount:   batchSupplyRetired.String(),
-			CancelledAmount: batchSupply.CancelledAmount,
-		}); err != nil {
-			return err
-		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventRetire{
-			Owner:        to.String(),
-			BatchDenom:   credit.BatchDenom,
-			Amount:       sendAmtRetired.String(),
-			Jurisdiction: credit.RetirementJurisdiction,
-			Reason:       credit.RetirementReason,
-		}); err != nil {
-			return err
-		}
-	}
 	if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventTransfer{
 		Sender:         from.String(),
 		Recipient:      to.String(),
@@ -169,5 +139,122 @@ func (k Keeper) sendEcocredits(sdkCtx sdk.Context, credit *types.MsgSend_SendCre
 	}); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func retireCredit(ctx sdk.Context, stateStore api.StateStore, batch *api.Batch, credit *types.MsgSend_SendCredits,
+	precision uint32, from, to sdk.AccAddress, sendAmtRetired math.Dec) error {
+	batchKey := batch.Key
+	batchDenom := batch.Denom
+
+	fromBalance, err := stateStore.BatchBalanceTable().Get(ctx, from, batchKey)
+	if err != nil {
+		if err == ormerrors.NotFound {
+			return ecocredit.ErrInsufficientCredits.Wrapf("you do not have any credits from batch %s", batchDenom)
+		}
+		return err
+	}
+
+	tradableDec, err := math.NewNonNegativeFixedDecFromString(fromBalance.TradableAmount, precision)
+	if err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	fromTradableBalance, err := math.SafeSubBalance(tradableDec, sendAmtRetired)
+	if err != nil {
+		return ecocredit.ErrInsufficientCredits.Wrapf(
+			"tradable balance: %s, send retired amount %s", tradableDec, sendAmtRetired,
+		)
+	}
+
+	// update the "from" balance
+	if err := stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
+		BatchKey:       batchKey,
+		Address:        from,
+		TradableAmount: fromTradableBalance.String(),
+		RetiredAmount:  fromBalance.RetiredAmount,
+		EscrowedAmount: fromBalance.EscrowedAmount,
+	}); err != nil {
+		return err
+	}
+
+	toBalance, err := stateStore.BatchBalanceTable().Get(ctx, to, batchKey)
+	if err != nil {
+		if err == ormerrors.NotFound {
+			toBalance = &api.BatchBalance{
+				BatchKey:       batchKey,
+				Address:        to,
+				TradableAmount: "0",
+				RetiredAmount:  "0",
+				EscrowedAmount: "0",
+			}
+		} else {
+			return err
+		}
+	}
+
+	toRetiredBalance, err := math.NewNonNegativeFixedDecFromString(toBalance.RetiredAmount, precision)
+	if err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	toRetiredBalance, err = toRetiredBalance.Add(sendAmtRetired)
+	if err != nil {
+		return err
+	}
+
+	// update the "to" balance
+	if err := stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+		BatchKey:       batchKey,
+		Address:        to,
+		TradableAmount: toBalance.TradableAmount,
+		RetiredAmount:  toRetiredBalance.String(),
+		EscrowedAmount: toBalance.EscrowedAmount,
+	}); err != nil {
+		return err
+	}
+
+	batchSupply, err := stateStore.BatchSupplyTable().Get(ctx, batchKey)
+	if err != nil {
+		return err
+	}
+
+	supplyDecs, err := utils.GetNonNegativeFixedDecs(precision, batchSupply.TradableAmount, batchSupply.RetiredAmount)
+	if err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	batchSupplyTradable, batchSupplyRetired := supplyDecs[0], supplyDecs[1]
+
+	batchSupplyRetired, err = batchSupplyRetired.Add(sendAmtRetired)
+	if err != nil {
+		return err
+	}
+
+	batchSupplyTradable, err = batchSupplyTradable.Sub(sendAmtRetired)
+	if err != nil {
+		return err
+	}
+
+	if err := stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
+		BatchKey:        batchKey,
+		TradableAmount:  batchSupplyTradable.String(),
+		RetiredAmount:   batchSupplyRetired.String(),
+		CancelledAmount: batchSupply.CancelledAmount,
+	}); err != nil {
+		return err
+	}
+
+	if err = ctx.EventManager().EmitTypedEvent(&types.EventRetire{
+		Owner:        to.String(),
+		BatchDenom:   credit.BatchDenom,
+		Amount:       sendAmtRetired.String(),
+		Jurisdiction: credit.RetirementJurisdiction,
+		Reason:       credit.RetirementReason,
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
