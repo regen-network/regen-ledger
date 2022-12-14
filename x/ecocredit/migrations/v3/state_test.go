@@ -76,7 +76,7 @@ func TestParamsMigrations(t *testing.T) {
 	require.Equal(t, params.AllowedClassCreators, expected)
 }
 
-func TestBasketBalanceMigration(t *testing.T) {
+func TestBatchBalanceMigration(t *testing.T) {
 	paramStore, sdkCtx := setup(t)
 	sdkCtx = sdkCtx.WithChainID("regen-1")
 
@@ -88,14 +88,14 @@ func TestBasketBalanceMigration(t *testing.T) {
 	baseStore, err := baseapi.NewStateStore(ormdb)
 	require.NoError(t, err)
 
-	err = baseStore.BatchTable().Save(sdkCtx, &baseapi.Batch{
+	err = baseStore.BatchTable().Insert(sdkCtx, &baseapi.Batch{
 		Issuer:     issuer,
 		ProjectKey: 1,
 		Denom:      "C02-001-20180101-20181231-001",
 	})
 	require.NoError(t, err)
 
-	err = baseStore.BatchBalanceTable().Save(sdkCtx, &baseapi.BatchBalance{
+	err = baseStore.BatchBalanceTable().Insert(sdkCtx, &baseapi.BatchBalance{
 		BatchKey:       1,
 		Address:        creditHolder,
 		TradableAmount: "0.00",
@@ -104,7 +104,7 @@ func TestBasketBalanceMigration(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = baseStore.BatchBalanceTable().Save(sdkCtx, &baseapi.BatchBalance{
+	err = baseStore.BatchBalanceTable().Insert(sdkCtx, &baseapi.BatchBalance{
 		BatchKey:       1,
 		Address:        issuer,
 		TradableAmount: "799.95",
@@ -113,7 +113,7 @@ func TestBasketBalanceMigration(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = baseStore.BatchSupplyTable().Save(sdkCtx, &baseapi.BatchSupply{
+	err = baseStore.BatchSupplyTable().Insert(sdkCtx, &baseapi.BatchSupply{
 		BatchKey:        1,
 		TradableAmount:  "900",
 		RetiredAmount:   "100",
