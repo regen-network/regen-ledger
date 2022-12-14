@@ -76,7 +76,7 @@ func TestParamsMigrations(t *testing.T) {
 	require.Equal(t, params.AllowedClassCreators, expected)
 }
 
-func TestBasketBalanceMigration(t *testing.T) {
+func TestBatchBalanceMigration(t *testing.T) {
 	paramStore, sdkCtx := setup(t)
 	sdkCtx = sdkCtx.WithChainID("regen-1")
 
