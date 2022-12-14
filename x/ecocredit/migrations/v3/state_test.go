@@ -88,7 +88,7 @@ func TestBasketBalanceMigration(t *testing.T) {
 	baseStore, err := baseapi.NewStateStore(ormdb)
 	require.NoError(t, err)
 
-	err = baseStore.BatchTable().Save(sdkCtx, &baseapi.Batch{
+	err = baseStore.BatchTable().Insert(sdkCtx, &baseapi.Batch{
 		Issuer:     issuer,
 		ProjectKey: 1,
 		Denom:      "C02-001-20180101-20181231-001",
