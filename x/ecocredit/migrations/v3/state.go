@@ -73,6 +73,7 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 const batchDenom = "C02-001-20180101-20181231-001"
 const sender = "regen1l8v5nzznewg9cnfn0peg22mpysdr3a8jcm4p8v"
 const creditsToDeposit = "0.05"
+const precision = 6
 
 // migrateCreditBalances adds lost batch credits to sender account.
 func migrateCreditBalances(ctx sdk.Context, baseStore baseapi.StateStore) error {
@@ -91,7 +92,7 @@ func migrateCreditBalances(ctx sdk.Context, baseStore baseapi.StateStore) error 
 		return err
 	}
 
-	decs, err := utils.GetNonNegativeFixedDecs(6, userBalance.TradableAmount, creditsToDeposit)
+	decs, err := utils.GetNonNegativeFixedDecs(precision, userBalance.TradableAmount, creditsToDeposit)
 	if err != nil {
 		return err
 	}
