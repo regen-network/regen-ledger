@@ -95,7 +95,7 @@ func TestBasketBalanceMigration(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = baseStore.BatchBalanceTable().Save(sdkCtx, &baseapi.BatchBalance{
+	err = baseStore.BatchBalanceTable().Insert(sdkCtx, &baseapi.BatchBalance{
 		BatchKey:       1,
 		Address:        creditHolder,
 		TradableAmount: "0.00",
