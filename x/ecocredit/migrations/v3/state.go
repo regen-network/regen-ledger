@@ -8,6 +8,7 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
 // MigrateState performs in-place store migrations from ConsensusVersion 2 to 3.
@@ -62,5 +63,48 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 		return err
 	}
 
+	if sdkCtx.ChainID() == "regen-1" {
+		return migrateCreditBalances(sdkCtx, baseStore)
+	}
+
 	return nil
+}
+
+const batchDenom = "C02-001-20180101-20181231-001"
+const sender = "regen1l8v5nzznewg9cnfn0peg22mpysdr3a8jcm4p8v"
+const creditsToDeposit = "0.05"
+const precision = 6
+
+// migrateCreditBalances adds lost batch credits to sender account.
+func migrateCreditBalances(ctx sdk.Context, baseStore baseapi.StateStore) error {
+	batchInfo, err := baseStore.BatchTable().GetByDenom(ctx, batchDenom)
+	if err != nil {
+		return err
+	}
+
+	senderAddr, err := sdk.AccAddressFromBech32(sender)
+	if err != nil {
+		return err
+	}
+
+	userBalance, err := baseStore.BatchBalanceTable().Get(ctx, senderAddr, batchInfo.Key)
+	if err != nil {
+		return err
+	}
+
+	decs, err := utils.GetNonNegativeFixedDecs(precision, userBalance.TradableAmount, creditsToDeposit)
+	if err != nil {
+		return err
+	}
+
+	tradableAmount, creditsToAdd := decs[0], decs[1]
+
+	result, err := tradableAmount.Add(creditsToAdd)
+	if err != nil {
+		return err
+	}
+
+	userBalance.TradableAmount = result.String()
+
+	return baseStore.BatchBalanceTable().Update(ctx, userBalance)
 }
