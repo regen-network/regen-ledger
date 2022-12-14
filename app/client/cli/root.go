@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
+	"github.com/tendermint/tendermint/libs/cli"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -55,6 +56,8 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(app.DefaultNodeHome).
 		WithViper(app.EnvPrefix)
+	regenHome := cast.ToString(initClientCtx.Viper.Get(cli.HomeFlag))
+	initClientCtx = initClientCtx.WithHomeDir(regenHome)
 
 	rootCmd := &cobra.Command{
 		Use:   "regen",
