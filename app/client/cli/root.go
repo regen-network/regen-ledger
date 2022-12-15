@@ -35,7 +35,6 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	tmcfg "github.com/tendermint/tendermint/config"
-	cli "github.com/tendermint/tendermint/libs/cli"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -57,7 +56,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(app.DefaultNodeHome).
 		WithViper(app.EnvPrefix)
-	regenHome := cast.ToString(initClientCtx.Viper.Get(cli.HomeFlag))
+	regenHome := cast.ToString(initClientCtx.Viper.Get(tmcli.HomeFlag))
 	initClientCtx = initClientCtx.WithHomeDir(regenHome)
 
 	rootCmd := &cobra.Command{
