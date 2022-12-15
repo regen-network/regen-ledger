@@ -122,7 +122,7 @@ func getRedwoodState() []BalanceInfo {
 			Balances: []Balance{
 				{
 					BatchDenom: "C01-001-20170606-20210601-007",
-					Amount:     "2.480027",
+					Amount:     "2.490054",
 				},
 			},
 		},
