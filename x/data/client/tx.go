@@ -2,8 +2,8 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 
@@ -231,7 +231,7 @@ func parseContentHashes(clientCtx client.Context, filePath string) ([]*data.Cont
 		return nil, fmt.Errorf("file path is empty")
 	}
 
-	bz, err := ioutil.ReadFile(filePath)
+	bz, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}

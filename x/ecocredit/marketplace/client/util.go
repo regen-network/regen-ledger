@@ -3,7 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -20,7 +20,7 @@ func txFlags(cmd *cobra.Command) *cobra.Command {
 }
 
 func parseSellOrders(jsonFile string) ([]*types.MsgSell_Order, error) {
-	bz, err := ioutil.ReadFile(jsonFile)
+	bz, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func parseSellOrders(jsonFile string) ([]*types.MsgSell_Order, error) {
 }
 
 func parseSellUpdates(jsonFile string) ([]*types.MsgUpdateSellOrders_Update, error) {
-	bz, err := ioutil.ReadFile(jsonFile)
+	bz, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func parseSellUpdates(jsonFile string) ([]*types.MsgUpdateSellOrders_Update, err
 }
 
 func parseBuyOrders(jsonFile string) ([]*types.MsgBuyDirect_Order, error) {
-	bz, err := ioutil.ReadFile(jsonFile)
+	bz, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
