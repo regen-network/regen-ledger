@@ -1,4 +1,4 @@
-package v5
+package v5_0 //nolint:revive,stylecheck
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 
-const Name = "v5"
+const Name = "v5.0"
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName: Name,

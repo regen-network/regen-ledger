@@ -30,11 +30,6 @@ type bridgeSuite struct {
 	err             error
 }
 
-type ecocreditServer struct {
-	basetypes.MsgClient
-	basetypes.QueryClient
-}
-
 func TestBridgeIntegration(t *testing.T) {
 	gocuke.NewRunner(t, &bridgeSuite{}).Path("./features/bridge.feature").Run()
 }
