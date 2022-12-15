@@ -30,6 +30,8 @@ func (suite *UpgradeTestSuite) TestV5Upgrade() {
 	suite.Setup()
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(dummyUpgradeHeight - 1)
+	suite.Ctx = suite.Ctx.WithChainID("testing-1")
+
 	plan := upgradetypes.Plan{Name: "v5.0", Height: dummyUpgradeHeight}
 	err := suite.App.UpgradeKeeper.ScheduleUpgrade(suite.Ctx, plan)
 	suite.Require().NoError(err)
