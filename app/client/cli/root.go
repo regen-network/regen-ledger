@@ -35,7 +35,9 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	tmcfg "github.com/tendermint/tendermint/config"
+	cli "github.com/tendermint/tendermint/libs/cli"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
+
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/regen-network/regen-ledger/v5/app"
