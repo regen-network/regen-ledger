@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
 - [#1479](https://github.com/regen-network/regen-ledger/pull/1479) Update ORM tables from v1alpha1 to v1
 - [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Update all modules to use `errors` module
+- [#1689](https://github.com/regen-network/regen-ledger/pull/1689) Update all modules to Go `1.19`
 
 ### app
 
