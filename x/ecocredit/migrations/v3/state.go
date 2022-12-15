@@ -63,48 +63,123 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 		return err
 	}
 
+	var balances []BalanceInfo
 	if sdkCtx.ChainID() == "regen-1" {
-		return migrateCreditBalances(sdkCtx, baseStore)
+		balances = getMainnetState()
+	}
+
+	if sdkCtx.ChainID() == "regen-redwood-1" {
+		balances = getRedwoodState()
+	}
+
+	for _, balance := range balances {
+		if err := migrateBatchBalance(sdkCtx, baseStore, balance); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-const batchDenom = "C02-001-20180101-20181231-001"
-const sender = "regen1l8v5nzznewg9cnfn0peg22mpysdr3a8jcm4p8v"
-const creditsToDeposit = "0.05"
 const precision = 6
 
-// migrateCreditBalances adds lost batch credits to sender account.
-func migrateCreditBalances(ctx sdk.Context, baseStore baseapi.StateStore) error {
-	batchInfo, err := baseStore.BatchTable().GetByDenom(ctx, batchDenom)
+type Balance struct {
+	BatchDenom string
+	Amount     string
+}
+
+type BalanceInfo struct {
+	Sender   string
+	Balances []Balance
+}
+
+func getRedwoodState() []BalanceInfo {
+	return []BalanceInfo{
+		{
+			Sender: "regen1df675r9vnf7pdedn4sf26svdsem3ugavgxmy46",
+			Balances: []Balance{
+				{
+					BatchDenom: "C01-001-20170101-20180101-003",
+					Amount:     "1",
+				},
+				{
+					BatchDenom: "C01-001-20170101-20180101-005",
+					Amount:     "2",
+				},
+			},
+		},
+		{
+			Sender: "regen1m6d7al7yrgwv6j6sczt382x33yhxrtrxz2q09z",
+			Balances: []Balance{
+				{
+					BatchDenom: "C01-001-20170606-20210601-007",
+					Amount:     "0.01",
+				},
+			},
+		},
+		{
+			Sender: "regen1m0qh5y4ejkz3l5n6jlrntxcqx9r0x9xjv4vpcp",
+			Balances: []Balance{
+				{
+					BatchDenom: "C01-001-20170606-20210601-007",
+					Amount:     "2.490054",
+				},
+			},
+		},
+	}
+
+}
+
+func getMainnetState() []BalanceInfo {
+	return []BalanceInfo{
+		{
+			Sender: "regen1l8v5nzznewg9cnfn0peg22mpysdr3a8jcm4p8v",
+			Balances: []Balance{
+				{
+					BatchDenom: "C02-001-20180101-20181231-001",
+					Amount:     "0.05",
+				},
+			},
+		},
+	}
+}
+
+// migrateBatchBalance adds lost batch credits to sender account.
+func migrateBatchBalance(ctx sdk.Context, baseStore baseapi.StateStore, balanceInfo BalanceInfo) error {
+	senderAddr, err := sdk.AccAddressFromBech32(balanceInfo.Sender)
 	if err != nil {
 		return err
 	}
 
-	senderAddr, err := sdk.AccAddressFromBech32(sender)
-	if err != nil {
-		return err
+	for _, balance := range balanceInfo.Balances {
+
+		batchInfo, err := baseStore.BatchTable().GetByDenom(ctx, balance.BatchDenom)
+		if err != nil {
+			return err
+		}
+
+		userBalance, err := baseStore.BatchBalanceTable().Get(ctx, senderAddr, batchInfo.Key)
+		if err != nil {
+			return err
+		}
+
+		decs, err := utils.GetNonNegativeFixedDecs(precision, userBalance.TradableAmount, balance.Amount)
+		if err != nil {
+			return err
+		}
+
+		tradableAmount, creditsToAdd := decs[0], decs[1]
+
+		result, err := tradableAmount.Add(creditsToAdd)
+		if err != nil {
+			return err
+		}
+
+		userBalance.TradableAmount = result.String()
+
+		if err := baseStore.BatchBalanceTable().Update(ctx, userBalance); err != nil {
+			return err
+		}
 	}
-
-	userBalance, err := baseStore.BatchBalanceTable().Get(ctx, senderAddr, batchInfo.Key)
-	if err != nil {
-		return err
-	}
-
-	decs, err := utils.GetNonNegativeFixedDecs(precision, userBalance.TradableAmount, creditsToDeposit)
-	if err != nil {
-		return err
-	}
-
-	tradableAmount, creditsToAdd := decs[0], decs[1]
-
-	result, err := tradableAmount.Add(creditsToAdd)
-	if err != nil {
-		return err
-	}
-
-	userBalance.TradableAmount = result.String()
-
-	return baseStore.BatchBalanceTable().Update(ctx, userBalance)
+	return nil
 }
