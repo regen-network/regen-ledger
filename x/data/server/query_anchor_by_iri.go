@@ -16,7 +16,7 @@ func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorBy
 
 	contentHash, err := data.ParseIRI(request.Iri)
 	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrapf("failed to parse IRI: %s", err.Error())
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)

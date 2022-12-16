@@ -22,7 +22,7 @@ func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAt
 	// check for valid IRI
 	_, err := data.ParseIRI(request.Iri)
 	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrapf("failed to parse IRI: %s", err.Error())
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)

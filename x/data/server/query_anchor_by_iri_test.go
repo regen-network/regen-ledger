@@ -23,7 +23,7 @@ func TestQuery_AnchorByIRI(t *testing.T) {
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 		MerkleTree:                data.GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
 	}}
-	iri, err := ch.ToIRI()
+	iri, err := ch.ToIRI(nil)
 	require.NoError(t, err)
 
 	// insert data id
@@ -60,7 +60,7 @@ func TestQuery_AnchorByIRI(t *testing.T) {
 	_, err = s.server.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: "foo",
 	})
-	require.EqualError(t, err, "failed to parse IRI: failed to parse IRI foo: regen: prefix required: invalid IRI: invalid argument")
+	require.EqualError(t, err, "failed to parse IRI foo: IRI without a prefix is not allowed: invalid IRI: invalid argument")
 
 	// query data anchor with iri that has not been anchored
 	_, err = s.server.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{

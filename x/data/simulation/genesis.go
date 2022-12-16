@@ -75,7 +75,7 @@ func generateGenesisState(ormCtx context.Context, r *rand.Rand, ss api.StateStor
 			return err
 		}
 
-		iri, err := contentHash.ToIRI()
+		iri, err := contentHash.ToIRI(nil)
 		if err != nil {
 			return err
 		}

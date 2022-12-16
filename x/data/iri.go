@@ -10,19 +10,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// ToIRI converts the ContentHash to an IRI (internationalized URI) using the regen IRI scheme.
-// A ContentHash IRI will look something like regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
-// which is some base58check encoded data followed by a file extension or pseudo-extension.
-// See ContentHash_Raw.ToIRI and ContentHash_Graph.ToIRI for more details on specific formatting.
-func (ch ContentHash) ToIRI() (string, error) {
-	if chr := ch.GetRaw(); chr != nil {
-		return chr.ToIRI()
-	} else if chg := ch.GetGraph(); chg != nil {
-		return chg.ToIRI()
-	}
-	return "", sdkerrors.ErrInvalidType.Wrapf("invalid %T", ch)
-}
-
 const (
 	iriVersion0 byte = 0
 
@@ -30,9 +17,54 @@ const (
 	IriPrefixGraph byte = 1
 )
 
+type IRIOptions struct {
+	Prefix  string
+	Version byte
+}
+
+func getOptions(options *IRIOptions) IRIOptions {
+	var o IRIOptions
+	if options != nil {
+		if options.Prefix != "" {
+			o.Prefix = options.Prefix
+		} else {
+			o.Prefix = DefaultIRIPrefix
+		}
+		if options.Version != 0 {
+			o.Version = options.Version
+		} else {
+			o.Version = DefaultIRIVersion
+		}
+	} else {
+		o.Prefix = DefaultIRIPrefix
+		o.Version = DefaultIRIVersion
+	}
+	return o
+}
+
+// ToIRI converts the ContentHash to an IRI (internationalized URI) using the regen IRI scheme.
+// A ContentHash IRI will look something like regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
+// which is some base58check encoded data followed by a file extension or pseudo-extension.
+// See ContentHash_Raw.ToIRI and ContentHash_Graph.ToIRI for more details on specific formatting.
+func (ch ContentHash) ToIRI(options *IRIOptions) (string, error) {
+	if chr := ch.GetRaw(); chr != nil {
+		return chr.ToIRI(options)
+	} else if chg := ch.GetGraph(); chg != nil {
+		return chg.ToIRI(options)
+	}
+	return "", sdkerrors.ErrInvalidType.Wrapf("invalid %T", ch)
+}
+
 // ToIRI converts the ContentHash_Raw to an IRI (internationalized URI) based on the following
 // pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash))}.{media_type extension}
-func (chr ContentHash_Raw) ToIRI() (string, error) {
+func (chr ContentHash_Raw) ToIRI(options *IRIOptions) (string, error) {
+	opts := getOptions(options)
+
+	// only one version supported at this time
+	if opts.Version != iriVersion0 {
+		return "", ErrInvalidIRI.Wrapf("invalid IRI version option %v", opts.Version)
+	}
+
 	err := chr.Validate()
 	if err != nil {
 		return "", err
@@ -42,20 +74,27 @@ func (chr ContentHash_Raw) ToIRI() (string, error) {
 	bz[0] = IriPrefixRaw
 	bz[1] = byte(chr.DigestAlgorithm)
 	copy(bz[2:], chr.Hash)
-	hashStr := base58.CheckEncode(bz, iriVersion0)
+	hashStr := base58.CheckEncode(bz, opts.Version)
 
 	ext, err := chr.MediaType.ToExtension()
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("regen:%s.%s", hashStr, ext), nil
+	return fmt.Sprintf("%s:%s.%s", opts.Prefix, hashStr, ext), nil
 }
 
 // ToIRI converts the ContentHash_Graph to an IRI (internationalized URI) based on the following
 // pattern: regen:{base58check(concat(byte(0x1), byte(canonicalization_algorithm),
 // byte(merkle_tree), byte(digest_algorithm), hash))}.rdf
-func (chg ContentHash_Graph) ToIRI() (string, error) {
+func (chg ContentHash_Graph) ToIRI(options *IRIOptions) (string, error) {
+	opts := getOptions(options)
+
+	// only one version supported at this time
+	if opts.Version != iriVersion0 {
+		return "", ErrInvalidIRI.Wrapf("invalid IRI version option %v", opts.Version)
+	}
+
 	err := chg.Validate()
 	if err != nil {
 		return "", err
@@ -67,9 +106,9 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 	bz[2] = byte(chg.MerkleTree)
 	bz[3] = byte(chg.DigestAlgorithm)
 	copy(bz[4:], chg.Hash)
-	hashStr := base58.CheckEncode(bz, iriVersion0)
+	hashStr := base58.CheckEncode(bz, opts.Version)
 
-	return fmt.Sprintf("regen:%s.rdf", hashStr), nil
+	return fmt.Sprintf("%s:%s.rdf", opts.Prefix, hashStr), nil
 }
 
 // ToExtension converts the media type to a file extension based on the mediaTypeExtensions map.
@@ -112,32 +151,56 @@ func init() {
 }
 
 // ParseIRI parses an IRI string representation of a ContentHash into a ContentHash struct
-// Currently IRIs must have a "regen:" prefix, and only ContentHash_Graph and ContentHash_Raw
+// IRIs must have a prefix (e.g. "regen:"), and only ContentHash_Graph and ContentHash_Raw
 // are supported.
 func ParseIRI(iri string) (*ContentHash, error) {
-	const regenPrefix = "regen:"
-
 	if iri == "" {
 		return nil, ErrInvalidIRI.Wrap("failed to parse IRI: empty string is not allowed")
 	}
 
-	if !strings.HasPrefix(iri, regenPrefix) {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s prefix required", iri, regenPrefix)
+	splitPre := strings.Split(iri, ":")
+	if len(splitPre) < 2 {
+		return nil, ErrInvalidIRI.Wrapf(
+			"failed to parse IRI %s: IRI without a prefix is not allowed", iri,
+		)
+	}
+	if len(splitPre) > 2 {
+		return nil, ErrInvalidIRI.Wrapf(
+			"failed to parse IRI %s: IRI with multiple prefixes is not allowed", iri,
+		)
+	}
+	if len(splitPre[0]) == 0 {
+		return nil, ErrInvalidIRI.Wrapf(
+			"failed to parse IRI %s: IRI with empty prefix not allowed", iri,
+		)
 	}
 
-	hashExtPart := iri[len(regenPrefix):]
-	parts := strings.Split(hashExtPart, ".")
-	if len(parts) != 2 {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: extension required", iri)
+	splitExt := strings.Split(iri, ".")
+	if len(splitExt) < 2 {
+		return nil, ErrInvalidIRI.Wrapf(
+			"failed to parse IRI %s: IRI without an extension is not allowed", iri,
+		)
+	}
+	if len(splitExt) > 2 {
+		return nil, ErrInvalidIRI.Wrapf(
+			"failed to parse IRI %s: IRI with multiple extensions is not allowed", iri,
+		)
+	}
+	if len(splitExt[1]) == 0 {
+		return nil, ErrInvalidIRI.Wrapf(
+			"failed to parse IRI %s: IRI with empty extension not allowed", iri,
+		)
 	}
 
-	hashPart, ext := parts[0], parts[1]
+	splitExtWithoutPre := strings.Split(splitPre[1], ".")
+	hashPart, ext := splitExtWithoutPre[0], splitExtWithoutPre[1]
 
 	res, version, err := base58.CheckDecode(hashPart)
 	if err != nil {
 		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s", iri, err)
 	}
 
+	// only one version supported at this time
 	if version != iriVersion0 {
 		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version", iri)
 	}

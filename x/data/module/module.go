@@ -39,6 +39,7 @@ type Module struct {
 	bk     data.BankKeeper
 	sk     storeTypes.StoreKey
 	keeper server.Keeper
+	cfg    data.Config
 }
 
 func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []tmtypes.ValidatorUpdate {
@@ -72,7 +73,7 @@ func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
 }
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
-	impl := server.NewServer(a.sk, a.ak, a.bk)
+	impl := server.NewServer(a.sk, a.ak, a.bk, a.cfg)
 	data.RegisterMsgServer(cfg.MsgServer(), impl)
 	data.RegisterQueryServer(cfg.QueryServer(), impl)
 	a.keeper = impl
@@ -81,11 +82,12 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 var _ module.AppModuleBasic = Module{}
 var _ module.AppModuleSimulation = &Module{}
 
-func NewModule(sk storeTypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {
+func NewModule(sk storeTypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, cfg data.Config) *Module {
 	return &Module{
-		ak: ak,
-		bk: bk,
-		sk: sk,
+		ak:  ak,
+		bk:  bk,
+		sk:  sk,
+		cfg: cfg,
 	}
 }
 
@@ -97,7 +99,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	data.RegisterTypes(registry)
 }
 
-//nolint
+// nolint
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
 }

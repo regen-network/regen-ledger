@@ -16,7 +16,7 @@ import (
 )
 
 type ToIRI interface {
-	ToIRI() (string, error)
+	ToIRI(options *data.IRIOptions) (string, error)
 }
 
 // Anchor anchors a piece of data to the blockchain based on its secure hash.
@@ -33,7 +33,7 @@ func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.
 }
 
 func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
-	iri, err = ch.ToIRI()
+	iri, err = ch.ToIRI(&data.IRIOptions{Prefix: s.iriPrefix})
 	if err != nil {
 		return "", nil, nil, err
 	}

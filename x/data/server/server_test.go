@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/x/data/v2"
 	"github.com/regen-network/regen-ledger/x/data/v2/mocks"
 )
 
@@ -52,7 +53,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	ctrl := gomock.NewController(t)
 	ak := mocks.NewMockAccountKeeper(ctrl)
 	bk := mocks.NewMockBankKeeper(ctrl)
-	s.server = NewServer(sk, ak, bk)
+	cfg := data.DefaultConfig()
+	s.server = NewServer(sk, ak, bk, cfg)
 
 	// set up addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()

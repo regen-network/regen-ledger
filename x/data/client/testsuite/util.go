@@ -24,7 +24,7 @@ func (s *IntegrationTestSuite) createIRIAndGraphHash(content []byte) (string, *d
 		},
 	}
 
-	iri, err := ch.GetGraph().ToIRI()
+	iri, err := ch.GetGraph().ToIRI(nil)
 	require.NoError(err)
 
 	return iri, &ch

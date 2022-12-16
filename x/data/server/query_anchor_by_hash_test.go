@@ -22,7 +22,7 @@ func TestQuery_AnchorByHash(t *testing.T) {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}}
-	iri, err := ch.ToIRI()
+	iri, err := ch.ToIRI(nil)
 	require.NoError(t, err)
 
 	// insert data id
