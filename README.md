@@ -83,7 +83,7 @@ Contributions are more than welcome and greatly appreciated. All the information
 
 - [Git](https://git-scm.com) `>=2`
 - [Make](https://www.gnu.org/software/make/) `>=4`
-- [Go](https://golang.org/) `>=1.18`
+- [Go](https://golang.org/) `>=1.19`
 
 ### Go Tools
 
