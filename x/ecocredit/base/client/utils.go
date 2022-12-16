@@ -3,7 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
@@ -42,7 +42,7 @@ func mkQueryClient(cmd *cobra.Command) (types.QueryClient, sdkclient.Context, er
 }
 
 func parseMsgCreateBatch(clientCtx sdkclient.Context, jsonFile string) (*types.MsgCreateBatch, error) {
-	bz, err := ioutil.ReadFile(jsonFile)
+	bz, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func parseMsgCreateBatch(clientCtx sdkclient.Context, jsonFile string) (*types.M
 }
 
 func parseCredits(jsonFile string) ([]*types.Credits, error) {
-	bz, err := ioutil.ReadFile(jsonFile)
+	bz, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func parseCredits(jsonFile string) ([]*types.Credits, error) {
 }
 
 func parseSendCredits(jsonFile string) ([]*types.MsgSend_SendCredits, error) {
-	bz, err := ioutil.ReadFile(jsonFile)
+	bz, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
