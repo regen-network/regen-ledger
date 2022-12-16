@@ -56,6 +56,7 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(app.DefaultNodeHome).
 		WithViper(app.EnvPrefix)
+
 	regenHome := cast.ToString(initClientCtx.Viper.Get(tmcli.HomeFlag))
 	initClientCtx = initClientCtx.WithHomeDir(regenHome)
 
