@@ -36,7 +36,6 @@ import (
 
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/regen-network/regen-ledger/v5/app"
