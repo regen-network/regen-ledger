@@ -53,8 +53,10 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
-		WithHomeDir(app.DefaultNodeHome).
-		WithViper("")
+		WithViper(app.EnvPrefix)
+
+	regenHome := cast.ToString(initClientCtx.Viper.Get(tmcli.HomeFlag))
+	initClientCtx = initClientCtx.WithHomeDir(regenHome)
 
 	rootCmd := &cobra.Command{
 		Use:   "regen",
