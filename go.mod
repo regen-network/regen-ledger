@@ -1,6 +1,6 @@
 module github.com/regen-network/regen-ledger/v5
 
-go 1.18
+go 1.19
 
 require (
 	cosmossdk.io/math v1.0.0-beta.4

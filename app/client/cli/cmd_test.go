@@ -2,7 +2,7 @@ package cli_test
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,9 +15,7 @@ import (
 )
 
 func TestInitCmd(t *testing.T) {
-	nodeHome, err := ioutil.TempDir(t.TempDir(), ".regen")
-	require.NoError(t, err)
-
+	nodeHome := os.TempDir()
 	rootCmd, _ := cli.NewRootCmd()
 	rootCmd.SetArgs([]string{
 		"init",          // Test the init cmd
@@ -25,6 +23,6 @@ func TestInitCmd(t *testing.T) {
 		fmt.Sprintf("--%s=%s", flags.FlagHome, nodeHome), // Set home flag
 	})
 
-	err = cmd.Execute(rootCmd, app.EnvPrefix, app.DefaultNodeHome)
+	err := cmd.Execute(rootCmd, app.EnvPrefix, app.DefaultNodeHome)
 	require.NoError(t, err)
 }

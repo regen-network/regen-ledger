@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
@@ -41,7 +41,7 @@ func parseContentHash(clientCtx client.Context, filePath string) (*data.ContentH
 		return nil, fmt.Errorf("file path is empty")
 	}
 
-	bz, err := ioutil.ReadFile(filePath)
+	bz, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}

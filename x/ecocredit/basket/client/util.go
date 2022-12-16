@@ -3,7 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -20,7 +20,7 @@ func txFlags(cmd *cobra.Command) *cobra.Command {
 }
 
 func parseBasketCredits(creditsFile string) ([]*types.BasketCredit, error) {
-	bz, err := ioutil.ReadFile(creditsFile)
+	bz, err := os.ReadFile(creditsFile)
 	if err != nil {
 		return nil, err
 	}
