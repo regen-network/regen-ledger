@@ -114,7 +114,7 @@ In order to build the `regen` binary from source, you'll need the following:
 
 - [Git](https://git-scm.com) `>=2` .
 - [Make](https://www.gnu.org/software/make/) `>=4`
-- [Go](https://golang.org/) `>=1.18`
+- [Go](https://golang.org/) `>=1.19`
 
 ### Go Environment
 

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
 - [#1479](https://github.com/regen-network/regen-ledger/pull/1479) Update ORM tables from v1alpha1 to v1
 - [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Update all modules to use `errors` module
+- [#1689](https://github.com/regen-network/regen-ledger/pull/1689) Update all modules to Go `1.19`
 
 ### app
 
@@ -169,6 +170,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1480](https://github.com/regen-network/regen-ledger/pull/1480) Fix amino codec registration for all messages
 - [#1583](https://github.com/regen-network/regen-ledger/pull/1583) Return gRPC response code in base query response
 - [#1588](https://github.com/regen-network/regen-ledger/pull/1588) Return gRPC response code in basket and marketplace query response
+- [#1674](https://github.com/regen-network/regen-ledger/pull/1674) Update `MsgSend` to return an error if sender and recipient are same
+- [#1676] (https://github.com/regen-network/regen-ledger/pull/1676) Fix sell orders query index
 
 #### Removed
 

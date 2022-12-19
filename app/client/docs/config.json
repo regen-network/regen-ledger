@@ -13,9 +13,12 @@
       "url": "./app/client/docs/regen/ecocredit/v1/query.swagger.json",
       "operationIds": {
         "rename": {
+          "AllBalances": "Ecocredit/AllBalances",
           "Balance": "Ecocredit/Balance",
+          "Class": "Ecocredit/Class",
+          "Classes": "Ecocredit/Classes",
           "Params": "Ecocredit/Params",
-          "AllBalances": "Ecocredit/AllBalances"
+          "Supply": "Ecocredit/Supply"
         }
       }
     },

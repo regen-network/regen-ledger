@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -18,7 +18,7 @@ func SimulationOperations(app *RegenApp, cdc codec.Codec, config simulation.Conf
 	}
 
 	if config.ParamsFile != "" {
-		bz, err := ioutil.ReadFile(config.ParamsFile)
+		bz, err := os.ReadFile(config.ParamsFile)
 		if err != nil {
 			panic(err)
 		}
