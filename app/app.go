@@ -386,12 +386,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.ScopedIBCTransferKeeper,
 	)
 
-	app.InterTxKeeper = intertxkeeper.NewKeeper(
-		appCodec,
-		app.ICAControllerKeeper,
-		app.ScopedInterTxKeeper,
-	)
-
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
 		keys[icacontrollertypes.StoreKey],
@@ -413,6 +407,12 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.AccountKeeper,
 		app.ScopedICAHostKeeper,
 		app.MsgServiceRouter(),
+	)
+
+	app.InterTxKeeper = intertxkeeper.NewKeeper(
+		appCodec,
+		app.ICAControllerKeeper,
+		app.ScopedInterTxKeeper,
 	)
 
 	// Create IBC stacks to add to IBC router
