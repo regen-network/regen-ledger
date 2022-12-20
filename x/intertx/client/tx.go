@@ -114,7 +114,7 @@ Example JSON:
 			if err := cdc.UnmarshalInterfaceJSON([]byte(args[1]), &txMsg); err != nil {
 
 				// check for file path if JSON input is not provided
-				contents, err := os.ReadFile(args[0])
+				contents, err := os.ReadFile(args[1])
 				if err != nil {
 					return errors.Wrap(err, "neither JSON input nor path to .json file for sdk msg were provided")
 				}
