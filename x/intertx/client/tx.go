@@ -2,13 +2,15 @@ package client
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -79,79 +81,50 @@ func getRegisterAccountCmd() *cobra.Command {
 
 func getSubmitTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "submit-tx [connection-id] [path/to/sdk_msg.json]",
+		Use:   "submit-tx [connection-id] [msg.json]",
 		Short: "submit a transaction to be sent to an ICA host chain",
-		Long: strings.TrimSpace(`submit a transaction to be sent to the destination chain specified by the 
-connection id. The transaction in the JSON file MUST be a transaction enabled by the host chain's interchain accounts 
-module in order for it to succeed on the host chain. Example of transaction in JSON:
+		Long: strings.TrimSpace(`submit a transaction to be sent to the destination chain specified by the connection id.
+
+The message in the JSON file MUST be an allowed message by the host chain's ica host 
+module in order for it to succeed on the host chain.`),
+		Example: `regen tx intertx submit-tx connection-0 msg.json
+
+Example JSON:
 {
-  "body": {
-    "messages": [
-      {
-        "@type": "/cosmos.bank.v1beta1.MsgSend",
-        "from_address": "regen1yqr0pf38v9j7ah79wmkacau5mdspsc7l0sjeva",
-        "to_address": "regen1df675r9vnf7pdedn4sf26svdsem3ugavgxmy46",
-        "amount": [
-          {
-            "denom": "uregen",
-            "amount": "10"
-          }
-        ]
-      }
-    ],
-    "memo": "",
-    "timeout_height": "0",
-    "extension_options": [],
-    "non_critical_extension_options": []
-  },
-  "auth_info": {
-    "signer_infos": [
-      {
-        "public_key": {
-          "@type": "/cosmos.crypto.secp256k1.PubKey",
-          "key": "Ak/UO4sFBMItnPUT1unbxS0ZYHwDYiFqcQdpGxxtCBT8"
-        },
-        "mode_info": {
-          "single": {
-            "mode": "SIGN_MODE_DIRECT"
-          }
-        },
-        "sequence": "31"
-      }
-    ],
-    "fee": {
-      "amount": [],
-      "gas_limit": "56480",
-      "payer": "",
-      "granter": ""
+  "@type": "/cosmos.bank.v1beta1.MsgSend",
+  "from_address": "regen1yqr0pf38v9j7ah79wmkacau5mdspsc7l0sjeva",
+  "to_address": "regen1df675r9vnf7pdedn4sf26svdsem3ugavgxmy46",
+  "amount": [
+    {
+      "denom": "uregen",
+      "amount": "1000000"
     }
-  },
-  "signatures": [
-    "kVdv1IYG5k7rNV8BewX1YPkw6T+gX+HagX5TLnrFLSxO1I6cMZJjXNBamBrZEXlLkTlWXq0DmdxFgkEVmryktA=="
   ]
-}
-`),
-		Example: "regen tx intertx submit-tx channel-5 tx.json",
-		Args:    cobra.ExactArgs(2),
+}`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			connectionID := args[0]
-			sdkMsgs := args[1]
 
-			theTx, err := authclient.ReadTxFromFile(clientCtx, sdkMsgs)
-			if err != nil {
-				return err
+			cdc := codec.NewProtoCodec(clientCtx.InterfaceRegistry)
+
+			var txMsg sdk.Msg
+			if err := cdc.UnmarshalInterfaceJSON([]byte(args[1]), &txMsg); err != nil {
+
+				// check for file path if JSON input is not provided
+				contents, err := os.ReadFile(args[1])
+				if err != nil {
+					return errors.Wrap(err, "neither JSON input nor path to .json file for sdk msg were provided")
+				}
+
+				if err := cdc.UnmarshalInterfaceJSON(contents, &txMsg); err != nil {
+					return errors.Wrap(err, "error unmarshalling sdk msg file")
+				}
 			}
 
-			innerMsgs := theTx.GetMsgs()
-			if lenMsgs := len(innerMsgs); lenMsgs != 1 {
-				return sdkerrors.ErrInvalidRequest.Wrapf("expected 1 msg, got %d", lenMsgs)
-			}
-
-			msg := intertxv1.NewMsgSubmitTx(clientCtx.GetFromAddress().String(), connectionID, innerMsgs[0])
+			msg := intertxv1.NewMsgSubmitTx(clientCtx.GetFromAddress().String(), args[0], txMsg)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
