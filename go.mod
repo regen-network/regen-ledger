@@ -187,3 +187,5 @@ replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 
 replace github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+
+replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
