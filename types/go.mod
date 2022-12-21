@@ -146,4 +146,6 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.7-regen-1
 
+replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+
 replace github.com/regen-network/regen-ledger/api/v2 => ../api
