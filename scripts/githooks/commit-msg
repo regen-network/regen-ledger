@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 commitTitle="$(cat $1 | head -n1)"
+commitRegex='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\([[:alnum:]._-]+\))?(!)?: ([[:alnum:]])+([[:space:][:print:]]*)'
 
 # ignore merge
 if echo "$commitTitle" | grep -qE "^Merge branch \'"; then
@@ -8,7 +9,7 @@ if echo "$commitTitle" | grep -qE "^Merge branch \'"; then
 fi
 
 # check semantic commits
-if ! echo "$commitTitle" | grep -qE '^(?:feat|fix|docs|style|refactor|perf|test|chore)\(?(?:\w+|\s|\-|_)?\)?:\s\w+'; then
+if ! echo "$commitTitle" | grep -qE "$commitRegex"; then
 	echo "Your commit was successful but the commit message did not follow semantic commits."
 	echo "Semantic commits are not required but the first commit of a new branch should be semantic."
 	echo "See https://www.conventionalcommits.org/en/v1.0.0/ for more information about semantic commits."
