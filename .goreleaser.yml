@@ -8,29 +8,31 @@ env:
   - GO111MODULE=on
 
 builds:
-  - id: regen-darwin-amd64
-    binary: regen
-    main: ./cmd/regen
-    goarch:
-      - amd64
-    goos:
-      - darwin
-    env:
-      - CGO_ENABLED=1
-      - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
-      - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
-      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
-    flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
-      - -trimpath
-    ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+# Can be added back in when https://github.com/regen-network/regen-ledger/issues/1698 is resolved
+#
+#   - id: regen-darwin-amd64
+#   binary: regen
+#   main: ./cmd/regen
+#   goarch:
+#     - amd64
+#   goos:
+#     - darwin
+#   env:
+#     - CGO_ENABLED=1
+#     - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
+#     - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
+#     - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
+#   flags:
+#     - -mod=readonly
+#     - -tags="netgo ledger"
+#     - -trimpath
+#   ldflags:
+#     - -s -w
+#     - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#     - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#     - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#     - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#     - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
   - id: regen-darwin-arm64
     binary: regen
@@ -133,25 +135,26 @@ archives:
       - README.md
       - LICENSE
       - completions/*
-
-brews:
-  - name: regen-ledger
-    ids: 
-      - regen
-    tap:
-      owner: regen-network
-      name: regen-ledger
-      branch: homebrew-taps
-    folder: "{{ .Tag }}"
-    homepage: "https://www.regen.network/"
-    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
-    test: |
-      system "#{bin}/regen --version"
-    install: |
-      bin.install "regen"
-      bash_completion.install "completions/regen.bash" => "regen"
-      zsh_completion.install "completions/regen.zsh" => "_regen"
-      fish_completion.install "completions/regen.fish"  
+# Can be added back in when https://github.com/regen-network/regen-ledger/issues/1698 is resolved
+#
+# brews:
+#   - name: regen-ledger
+#     ids:
+#       - regen
+#     tap:
+#       owner: regen-network
+#       name: regen-ledger
+#       branch: homebrew-taps
+#     folder: "{{ .Tag }}"
+#     homepage: "https://www.regen.network/"
+#     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+#     test: |
+#       system "#{bin}/regen --version"
+#     install: |
+#       bin.install "regen"
+#       bash_completion.install "completions/regen.bash" => "regen"
+#       zsh_completion.install "completions/regen.zsh" => "_regen"
+#       fish_completion.install "completions/regen.fish"
 
 nfpms:
   - maintainer: regen-network
