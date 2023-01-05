@@ -5,13 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v5.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v5.0.0) - 2023-01-05
 
 ### General
+
+#### Added
+
+- [#1550](https://github.com/regen-network/regen-ledger/pull/1550) Add `regen-sandbox` docker image
 
 #### Changed
 
 - [#1244](https://github.com/regen-network/regen-ledger/pull/1244) Update all modules to Cosmos SDK v0.46
+  - [#1694](https://github.com/regen-network/regen-ledger/pull/1694) Update to forked version with amino fix
+  - [#1718](https://github.com/regen-network/regen-ledger/pull/1718) Update to forked version with gov migration fix
 - [#1479](https://github.com/regen-network/regen-ledger/pull/1479) Update ORM tables from v1alpha1 to v1
 - [#1579](https://github.com/regen-network/regen-ledger/pull/1579) Update all modules to use `errors` module
 - [#1689](https://github.com/regen-network/regen-ledger/pull/1689) Update all modules to Go `1.19`
@@ -25,12 +31,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add ICA `controller` module
 - [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add IBC `fee` module
 - [#1477](https://github.com/regen-network/regen-ledger/pull/1477) Add custom `intertx` module
+- [#1664](https://github.com/regen-network/regen-ledger/pull/1664) Add `fee` to `ibc-transfer` module
 
 #### Changed
 
 - [#1350](https://github.com/regen-network/regen-ledger/pull/1350) Move application entry point to root directory
 - [#1357](https://github.com/regen-network/regen-ledger/pull/1357) Migrate from custom module manager to SDK module manager
 - [#1578](https://github.com/regen-network/regen-ledger/pull/1578) Replace confio/ics23/go with Cosmos SDK ics23/go
+
+#### Fixed
+
+- [#1672](https://github.com/regen-network/regen-ledger/pull/1672) Fix `REGEN_HOME` environment variable
 
 #### Removed
 
@@ -120,6 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1625](https://github.com/regen-network/regen-ledger/pull/1625) Add `reason`/`retirement_reason`
 - [#1634](https://github.com/regen-network/regen-ledger/pull/1634) Add `balances-by-batch` query command
 - [#1636](https://github.com/regen-network/regen-ledger/pull/1636) Add `bridge` transaction command
+- [#1659](https://github.com/regen-network/regen-ledger/pull/1659) Add `reason` flag to tx commands
 
 #### Changed
 
@@ -170,8 +182,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1480](https://github.com/regen-network/regen-ledger/pull/1480) Fix amino codec registration for all messages
 - [#1583](https://github.com/regen-network/regen-ledger/pull/1583) Return gRPC response code in base query response
 - [#1588](https://github.com/regen-network/regen-ledger/pull/1588) Return gRPC response code in basket and marketplace query response
+- [#1667](https://github.com/regen-network/regen-ledger/pull/1667) Add missing `EventTransfer` event to `BuyDirect`
 - [#1674](https://github.com/regen-network/regen-ledger/pull/1674) Update `MsgSend` to return an error if sender and recipient are same
-- [#1676] (https://github.com/regen-network/regen-ledger/pull/1676) Fix sell orders query index
+- [#1676](https://github.com/regen-network/regen-ledger/pull/1676) Fix sell orders query index
 
 #### Removed
 
