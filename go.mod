@@ -172,12 +172,6 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.7-regen-2
 
-replace github.com/regen-network/regen-ledger/x/data/v2 => ./x/data
-
-replace github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
-
-replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
-
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
