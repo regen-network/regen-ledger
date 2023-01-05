@@ -884,6 +884,12 @@ github.com/regen-network/regen-ledger/api/v2 v2.0.0 h1:cOuDKcCdaMyukKzFd1ipyrsI8
 github.com/regen-network/regen-ledger/api/v2 v2.0.0/go.mod h1:BlpoWbNeDRpsmKe7y/r1m4zTTTog83mIdwJkOaOy4/0=
 github.com/regen-network/regen-ledger/types/v2 v2.0.0 h1:bilgbacLBnGdfw6udmXmqLKiwEpk/Tev0Id36ZGNCbs=
 github.com/regen-network/regen-ledger/types/v2 v2.0.0/go.mod h1:DE6OBZyUnCTjTajds2tRqhOVE3rzneQuWGflYDCX7jk=
+github.com/regen-network/regen-ledger/x/data/v2 v2.0.0 h1:J7PT0DaKCrubofki4ya/JSLYTWzP9neAGRkWOETnoho=
+github.com/regen-network/regen-ledger/x/data/v2 v2.0.0/go.mod h1:FFLp6NhFoB4kY0APs/TSz5jzXTV8696W5pIml3oYUPE=
+github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0 h1:e7Jy7p3i8c0UzB/LApb0xIkZcs9QGqagaNAdHVZ0rWg=
+github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0/go.mod h1:ot3J0xV9QXfuGDOZTJQkjlC9H0xcQtHBdAXxLKwM1M8=
+github.com/regen-network/regen-ledger/x/intertx v1.0.0 h1:pMOxxDW8y7lqoiN7mnPT+i6wTW4LC6k7kxf3Q4cEgMo=
+github.com/regen-network/regen-ledger/x/intertx v1.0.0/go.mod h1:dGHfAX3EIbX6a5W2DS/stRbpG9czuo2DakTgkN/udh4=
 github.com/retailnext/hllpp v1.0.1-0.20180308014038-101a6d2f8b52/go.mod h1:RDpi1RftBQPUCDRw6SmxeaREsAaRKnOclghuzp/WRzc=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
