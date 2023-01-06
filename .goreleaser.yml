@@ -4,137 +4,137 @@ before:
   hooks:
     - ./scripts/completions.sh
 
-env:
-  - GO111MODULE=on
+# env:
+#   - GO111MODULE=on
 
-builds:
-# Can be added back in when https://github.com/regen-network/regen-ledger/issues/1698 is resolved
-#
-#   - id: regen-darwin-amd64
-#   binary: regen
-#   main: ./cmd/regen
-#   goarch:
-#     - amd64
-#   goos:
-#     - darwin
-#   env:
-#     - CGO_ENABLED=1
-#     - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
-#     - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
-#     - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
-#   flags:
-#     - -mod=readonly
-#     - -tags="netgo ledger"
-#     - -trimpath
-#   ldflags:
-#     - -s -w
-#     - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-#     - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-#     - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-#     - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-#     - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+# builds:
+# # Can be added back in when https://github.com/regen-network/regen-ledger/issues/1698 is resolved
+# #
+# #   - id: regen-darwin-amd64
+# #   binary: regen
+# #   main: ./cmd/regen
+# #   goarch:
+# #     - amd64
+# #   goos:
+# #     - darwin
+# #   env:
+# #     - CGO_ENABLED=1
+# #     - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
+# #     - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
+# #     - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
+# #   flags:
+# #     - -mod=readonly
+# #     - -tags="netgo ledger"
+# #     - -trimpath
+# #   ldflags:
+# #     - -s -w
+# #     - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+# #     - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+# #     - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+# #     - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+# #     - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
-  - id: regen-darwin-arm64
-    binary: regen
-    main: ./cmd/regen
-    goarch:
-      - arm64
-    goos:
-      - darwin
-    env:
-      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
-    flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
-      - -trimpath
-    ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+#   - id: regen-darwin-arm64
+#     binary: regen
+#     main: ./cmd/regen
+#     goarch:
+#       - arm64
+#     goos:
+#       - darwin
+#     env:
+#       - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
+#     flags:
+#       - -mod=readonly
+#       - -tags="netgo ledger"
+#       - -trimpath
+#     ldflags:
+#       - -s -w
+#       - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
-  - id: regen-linux-amd64
-    binary: regen
-    main: ./cmd/regen
-    env:
-      - CGO_ENABLED=1
-      - CC=x86_64-linux-gnu-gcc
-      - CXX=x86_64-linux-gnu-g++
-    goarch:
-      - amd64
-    goos:
-      - linux
-    flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
-      - -trimpath
-    ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+#   - id: regen-linux-amd64
+#     binary: regen
+#     main: ./cmd/regen
+#     env:
+#       - CGO_ENABLED=1
+#       - CC=x86_64-linux-gnu-gcc
+#       - CXX=x86_64-linux-gnu-g++
+#     goarch:
+#       - amd64
+#     goos:
+#       - linux
+#     flags:
+#       - -mod=readonly
+#       - -tags="netgo ledger"
+#       - -trimpath
+#     ldflags:
+#       - -s -w
+#       - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
-  - id: regen-linux-arm64
-    binary: regen
-    main: ./cmd/regen
-    goarch:
-      - arm64
-    goos:
-      - linux
-    flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
-      - -trimpath
-    ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+#   - id: regen-linux-arm64
+#     binary: regen
+#     main: ./cmd/regen
+#     goarch:
+#       - arm64
+#     goos:
+#       - linux
+#     flags:
+#       - -mod=readonly
+#       - -tags="netgo ledger"
+#       - -trimpath
+#     ldflags:
+#       - -s -w
+#       - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
-  - id: regen-windows-amd64
-    binary: regen
-    main: ./cmd/regen
-    env:
-      - CGO_ENABLED=1
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
-    goarch:
-      - amd64
-    goos:
-      - windows
-    flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
-      - -trimpath
-    ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+#   - id: regen-windows-amd64
+#     binary: regen
+#     main: ./cmd/regen
+#     env:
+#       - CGO_ENABLED=1
+#       - CC=x86_64-w64-mingw32-gcc
+#       - CXX=x86_64-w64-mingw32-g++
+#     goarch:
+#       - amd64
+#     goos:
+#       - windows
+#     flags:
+#       - -mod=readonly
+#       - -tags="netgo ledger"
+#       - -trimpath
+#     ldflags:
+#       - -s -w
+#       - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
+#       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
+#       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
+#       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
 
-archives:
-  - id: regen
-    builds:
-      - regen-darwin-amd64
-      - regen-darwin-arm64
-      - regen-linux-amd64
-      - regen-linux-arm64
-      - regen-windows-amd64
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    wrap_in_directory: true
-    format: zip
-    files:
-      - README.md
-      - LICENSE
-      - completions/*
+# archives:
+#   - id: regen
+#     builds:
+#       - regen-darwin-amd64
+#       - regen-darwin-arm64
+#       - regen-linux-amd64
+#       - regen-linux-arm64
+#       - regen-windows-amd64
+#     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+#     wrap_in_directory: true
+#     format: zip
+#     files:
+#       - README.md
+#       - LICENSE
+#       - completions/*
 # Can be added back in when https://github.com/regen-network/regen-ledger/issues/1698 is resolved
 #
 # brews:
@@ -156,15 +156,252 @@ archives:
 #       zsh_completion.install "completions/regen.zsh" => "_regen"
 #       fish_completion.install "completions/regen.fish"
 
+# nfpms:
+#   - maintainer: regen-network
+#     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+#     homepage: "https://www.regen.network/"
+#     license: Apache2.0
+#     formats:
+#       - deb
+#       - rpm
+#       - apk
+#     contents:
+#       - src: ./completions/regen.bash
+#         dst: /usr/share/bash-completion/completions/regen
+#         file_info:
+#           mode: 0644
+#       - src: ./completions/regen.fish
+#         dst: /usr/share/fish/vendor_completions.d/regen.fish
+#         file_info:
+#           mode: 0644
+#       - src: ./completions/regen.zsh
+#         dst:  /usr/share/zsh/vendor-completions/_regen
+#         file_info:
+#           mode: 0644
+
+# release:
+#   github:
+#     owner: regen-network
+#     name: regen-ledger
+#   prerelease: auto
+#   draft: false
+
+
+
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=1
+builds:
+  - id: regen-darwin-amd64
+    binary: regen
+    main: ./cmd/regen
+    goarch:
+      - amd64
+    goos:
+      - darwin
+    env:
+      - CC=o64-clang
+      - CXX=o64-clang++
+    flags:
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -trimpath
+    ldflags:
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+  - id: regen-darwin-arm64
+    binary: regen
+    main: ./cmd/regen
+    goarch:
+      - arm64
+    goos:
+      - darwin
+    env:
+      - CC=oa64-clang
+      - CXX=oa64-clang++
+    flags:
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -trimpath
+    ldflags:
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+  - id: regen-linux-amd64
+    binary: regen
+    main: ./cmd/regen
+    env:
+      - CC=x86_64-linux-gnu-gcc
+      - CXX=x86_64-linux-gnu-g++
+    goarch:
+      - amd64
+    goos:
+      - linux
+    flags:
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -trimpath
+    ldflags:
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+      - -extldflags "-lc -lrt -lpthread --static"
+  - id: regen-linux-arm64
+    binary: regen
+    main: ./cmd/regen
+    goarch:
+      - arm64
+    goos:
+      - linux
+    env:
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
+    flags:
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -trimpath
+    ldflags:
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+      - -extldflags "-lc -lrt -lpthread --static"
+  - id: regen-windows-amd64
+    binary: regen
+    main: ./cmd/regen
+    goarch:
+      - amd64
+    goos:
+      - windows
+    env:
+      - CC=x86_64-w64-mingw32-gcc
+      - CXX=x86_64-w64-mingw32-g++
+    flags:
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -trimpath
+      - -buildmode=exe
+    ldflags:
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+universal_binaries:
+  - id: regen-darwin-universal
+    ids:
+      - regen-darwin-amd64
+      - regen-darwin-arm64
+    replace: true
+    name_template: "{{.ProjectName}}"
+archives:
+  - id: w/version
+    builds:
+      - regen-darwin-universal
+      - regen-linux-amd64
+      - regen-linux-arm64
+      - regen-windows-amd64
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    format: zip
+    files:
+      - completions*
+      - README.md
+      - LICENSE
+  - id: wo/version
+    builds:
+      - regen-darwin-universal
+      - regen-linux-amd64
+      - regen-linux-arm64
+      - regen-windows-amd64
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    format: zip
+    files:
+      - completions*
+      - README.md
+      - LICENSE
+
+dockers:
+  - dockerfile: _build/Dockerfile.akash
+    use: buildx
+    goarch: amd64
+    goos: linux
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url={{.GitURL}}
+      - --label=org.opencontainers.image.source={{.GitURL}}
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+    image_templates:
+      - 'ghcr.io/regen-network/{{ .ProjectName }}:{{ .ShortCommit }}-amd64'
+      - 'ghcr.io/regen-network/{{ .ProjectName }}:{{ .Version }}-amd64'
+      - 'ghcr.io/regen-network/{{ .ProjectName }}:{{if eq .Env.STABLE "true"}}stable{{else}}latest{{end}}-amd64'
+  - dockerfile: _build/Dockerfile.akash
+    use: buildx
+    goarch: arm64
+    goos: linux
+    build_flag_templates:
+      - --platform=linux/arm64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url={{.GitURL}}
+      - --label=org.opencontainers.image.source={{.GitURL}}
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+    image_templates:
+      - 'ghcr.io/regen-network/{{ .ProjectName }}:{{ .ShortCommit }}-arm64'
+      - 'ghcr.io/regen-network/{{ .ProjectName }}:{{ .Version }}-arm64'
+      - 'ghcr.io/regen-network/{{ .ProjectName }}:{{if eq .Env.STABLE "true"}}stable{{else}}latest{{end}}-arm64'
+docker_manifests:
+  - name_template: ghcr.io/regen-network/{{ .ProjectName }}:{{ .ShortCommit }}
+    image_templates:
+      - ghcr.io/regen-network/{{ .ProjectName }}:{{ .ShortCommit }}-amd64
+      - ghcr.io/regen-network/{{ .ProjectName }}:{{ .ShortCommit }}-arm64
+  - name_template: ghcr.io/regen-network/{{ .ProjectName }}:{{ .Version }}
+    image_templates:
+      - ghcr.io/regen-network/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/regen-network/{{ .ProjectName }}:{{ .Version }}-arm64
+  - name_template: ghcr.io/regen-network/{{ .ProjectName }}:latest
+    image_templates:
+      - ghcr.io/regen-network/{{ .ProjectName }}:latest-amd64
+      - ghcr.io/regen-network/{{ .ProjectName }}:latest-arm64
+
 nfpms:
-  - maintainer: regen-network
+  - id: w/version
+    vendor: "Regen network"
+    maintainer: regen-network
     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
     homepage: "https://www.regen.network/"
-    license: Apache2.0
     formats:
       - deb
       - rpm
-      - apk
+    license: Apache 2.0
+    contents:
+      - src: ./completions/regen.bash
+        dst: /usr/share/bash-completion/completions/regen
+        file_info:
+          mode: 0644
+      - src: ./completions/regen.fish
+        dst: /usr/share/fish/vendor_completions.d/regen.fish
+        file_info:
+          mode: 0644
+      - src: ./completions/regen.zsh
+        dst:  /usr/share/zsh/vendor-completions/_regen
+        file_info:
+          mode: 0644
+  - id: wo/version
+    vendor: "Regen network"
+    maintainer: regen-network
+    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+    homepage: "https://www.regen.network/"
+    license: Apache2.0
+    file_name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - deb
+      - rpm
     contents:
       - src: ./completions/regen.bash
         dst: /usr/share/bash-completion/completions/regen
@@ -179,9 +416,11 @@ nfpms:
         file_info:
           mode: 0644
 
+
 release:
   github:
     owner: regen-network
     name: regen-ledger
   prerelease: auto
+  mode: replace
   draft: false
