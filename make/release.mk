@@ -1,5 +1,5 @@
 
-GORELEASER_SKIP_VALIDATE ?= false
+GORELEASER_SKIP_VALIDATE ?= true
 GORELEASER_DEBUG         ?= false
 GORELEASER_RELEASE       ?= false
 GORELEASER_IMAGE         := ghcr.io/goreleaser/goreleaser-cross:v1.19.0
@@ -7,27 +7,13 @@ GO_MOD                 ?= readonly
 BUILD_TAGS             ?= osusergo,netgo,ledger,static_build
 GO_LINKMODE            ?= external
 RELEASE_TAG           ?= $(shell git describe --tags --abbrev=0)
-GORELEASER_MOUNT_CONFIG  ?= false
 
 
-ifeq ($(GORELEASER_MOUNT_CONFIG),true)
-	GORELEASER_IMAGE := -v $(HOME)/.docker/config.json:/root/.docker/config.json $(GORELEASER_IMAGE)
-endif
-
-
-ifeq ($(IS_MAINNET), true)
-	ifeq ($(IS_PREREL), false)
-		GORELEASER_HOMEBREW_NAME   := regen
-		GORELEASER_HOMEBREW_CUSTOM :=
-		IS_STABLE                  := true
-	else
-		GORELEASER_HOMEBREW_NAME   := regen-test
-		GORELEASER_HOMEBREW_CUSTOM := keg_only :unneeded, \"This is testnet release. Run brew install regen-network/tap/regen to install mainnet version\"
-	endif
-else
-	GORELEASER_HOMEBREW_NAME       := regen-edge
-	GORELEASER_HOMEBREW_CUSTOM     := keg_only :unneeded, \"This is edgenet release. Run brew install regen-network/tap/regen to install mainnet version\"
-endif
+GORELEASER_HOMEBREW_NAME   := regen
+GORELEASER_HOMEBREW_CUSTOM :=
+IS_STABLE                  := true
+	
+GO_MOD_NAME                  := $(shell go list -m 2>/dev/null)
 
 GORELEASER_BUILD_VARS := \
 -X github.com/cosmos/cosmos-sdk/version.Name=regen \
@@ -68,7 +54,6 @@ $(AKASH): modvendor
 
 .PHONY: release
 
-GO_MOD_NAME                  := $(shell go list -m 2>/dev/null)
 
 release:
 	docker run \
