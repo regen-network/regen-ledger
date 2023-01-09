@@ -22,7 +22,7 @@ require (
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
 	gotest.tools/v3 v3.4.0
-	pgregory.net/rapid v0.5.3
+	pgregory.net/rapid v0.5.5
 )
 
 require (
