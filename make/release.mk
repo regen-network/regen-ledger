@@ -3,15 +3,15 @@ GORELEASER_SKIP_VALIDATE ?= true
 GORELEASER_DEBUG         ?= false
 GORELEASER_RELEASE       ?= false
 GORELEASER_IMAGE         := ghcr.io/goreleaser/goreleaser-cross:v1.19.0
-GO_MOD                 ?= readonly
-BUILD_TAGS             ?= osusergo,netgo,ledger,static_build
-GO_LINKMODE            ?= external
-RELEASE_TAG           ?= $(shell git describe --tags --abbrev=0)
+GO_MOD                   ?= readonly
+BUILD_TAGS               ?= osusergo,netgo,ledger,static_build
+GO_LINKMODE              ?= external
+RELEASE_TAG              ?= $(shell git describe --tags --abbrev=0)
+GORELEASER_STRIP_FLAGS   ?=
 
 
 GORELEASER_HOMEBREW_NAME   := regen
-GORELEASER_HOMEBREW_CUSTOM :=
-IS_STABLE                  := true
+IS_STABLE                  := false
 	
 GO_MOD_NAME                  := $(shell go list -m 2>/dev/null)
 
@@ -58,14 +58,13 @@ $(AKASH): modvendor
 release:
 	docker run \
 		--rm \
-		-e STABLE=false \
+		-e STABLE=$(IS_STABLE) \
 		-e MOD="$(GO_MOD)" \
 		-e BUILD_TAGS="$(BUILD_TAGS)" \
 		-e BUILD_VARS="$(GORELEASER_BUILD_VARS)" \
 		-e STRIP_FLAGS="$(GORELEASER_STRIP_FLAGS)" \
 		-e LINKMODE="$(GO_LINKMODE)" \
 		-e HOMEBREW_NAME="$(GORELEASER_HOMEBREW_NAME)" \
-		-e HOMEBREW_CUSTOM="$(GORELEASER_HOMEBREW_CUSTOM)" \
 		-e GITHUB_TOKEN="$(GITHUB_TOKEN)" \
 		-e GORELEASER_CURRENT_TAG="$(RELEASE_TAG)" \
 		-v /var/run/docker.sock:/var/run/docker.sock \

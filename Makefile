@@ -2,18 +2,12 @@
 
 export GO111MODULE=on
 
-BUILD_DIR ?= $(CURDIR)/build
-REGEN_CMD := $(CURDIR)/cmd/regen
-
-BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-COMMIT := $(shell git log -1 --format='%H')
-
+BUILD_DIR             ?= $(CURDIR)/build
+REGEN_CMD             := $(CURDIR)/cmd/regen
+BRANCH                := $(shell git rev-parse --abbrev-ref HEAD)
+COMMIT                := $(shell git log -1 --format='%H')
 GORELEASER_CONFIG     ?= ./.goreleaser.yml
 GIT_HEAD_COMMIT_LONG  := $(shell git log -1 --format='%H')
-GIT_HEAD_COMMIT_SHORT := $(shell git rev-parse --short HEAD)
-GIT_HEAD_ABBREV       := $(shell git rev-parse --abbrev-ref HEAD)
-
-GORELEASER_STRIP_FLAGS ?=
 
 ifeq (,$(VERSION))
   VERSION := $(shell git describe --exact-match 2>/dev/null)
@@ -267,6 +261,12 @@ include make/tests.mk
 ###############################################################################
 
 include make/sims.mk
+
+###############################################################################
+###                               Relase                                    ###
+###############################################################################
+
+
 include make/release.mk
 
 ###############################################################################
