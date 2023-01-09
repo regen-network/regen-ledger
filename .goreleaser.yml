@@ -101,28 +101,8 @@ builds:
       - "{{ .Env.BUILD_VARS }}"
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
-universal_binaries:
-  - id: regen-darwin-universal
-    ids:
-      - regen-darwin-amd64
-      - regen-darwin-arm64
-    replace: true
-    name_template: "{{.ProjectName}}"
 archives:
-  - id: w/version
-    builds:
-      - regen-darwin-universal
-      - regen-linux-amd64
-      - regen-linux-arm64
-      - regen-windows-amd64
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    wrap_in_directory: true
-    format: zip
-    files:
-      - completions*
-      - README.md
-      - LICENSE
-  - id: wo/version
+  - id: regen
     builds:
       - regen-darwin-universal
       - regen-linux-amd64
@@ -136,58 +116,51 @@ archives:
       - README.md
       - LICENSE
 
-nfpms:
-  - id: w/version
-    vendor: "Regen network"
-    maintainer: regen-network
-    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+brews:
+  - name: regen-ledger
+    ids:
+      - regen
+    tap:
+      owner: regen-network
+      name: regen-ledger
+      branch: homebrew-taps
+    folder: "{{ .Tag }}"
     homepage: "https://www.regen.network/"
-    formats:
-      - deb
-      - rpm
-    license: Apache 2.0
-    contents:
-      - src: ./completions/regen.bash
-        dst: /usr/share/bash-completion/completions/regen
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.fish
-        dst: /usr/share/fish/vendor_completions.d/regen.fish
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.zsh
-        dst:  /usr/share/zsh/vendor-completions/_regen
-        file_info:
-          mode: 0644
-  - id: wo/version
-    vendor: "Regen network"
-    maintainer: regen-network
     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
-    homepage: "https://www.regen.network/"
-    license: Apache2.0
-    file_name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
-    formats:
-      - deb
-      - rpm
-    contents:
-      - src: ./completions/regen.bash
-        dst: /usr/share/bash-completion/completions/regen
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.fish
-        dst: /usr/share/fish/vendor_completions.d/regen.fish
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.zsh
-        dst:  /usr/share/zsh/vendor-completions/_regen
-        file_info:
-          mode: 0644
+    test: |
+      system "#{bin}/regen --version"
+    install: |
+      bin.install "regen"
+      bash_completion.install "completions/regen.bash" => "regen"
+      zsh_completion.install "completions/regen.zsh" => "_regen"
+      fish_completion.install "completions/regen.fish"
 
+nfpms:
+  - maintainer: regen-network
+    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+    homepage: "https://www.regen.network/"
+    license: Apache 2.0
+    formats:
+      - deb
+      - rpm
+      - apk
+    contents:
+      - src: ./completions/regen.bash
+        dst: /usr/share/bash-completion/completions/regen
+        file_info:
+          mode: 0644
+      - src: ./completions/regen.fish
+        dst: /usr/share/fish/vendor_completions.d/regen.fish
+        file_info:
+          mode: 0644
+      - src: ./completions/regen.zsh
+        dst:  /usr/share/zsh/vendor-completions/_regen
+        file_info:
+          mode: 0644
 
 release:
   github:
     owner: regen-network
     name: regen-ledger
   prerelease: auto
-  mode: replace
   draft: false
