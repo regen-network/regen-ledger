@@ -1,19 +1,18 @@
 
-GORELEASER_SKIP_VALIDATE ?= true
-GORELEASER_DEBUG         ?= false
-GORELEASER_RELEASE       ?= false
-GORELEASER_IMAGE         := ghcr.io/goreleaser/goreleaser-cross:v1.19.0
 GO_MOD                   ?= readonly
 BUILD_TAGS               ?= osusergo,netgo,ledger,static_build
 GO_LINKMODE              ?= external
 RELEASE_TAG              ?= $(shell git describe --tags --abbrev=0)
+GO_MOD_NAME              := $(shell go list -m 2>/dev/null)
+IS_STABLE                := false
+
+
+GORELEASER_SKIP_VALIDATE ?= true
+GORELEASER_DEBUG         ?= false
+GORELEASER_RELEASE       ?= false
+GORELEASER_IMAGE         := ghcr.io/goreleaser/goreleaser-cross:v1.19.0
 GORELEASER_STRIP_FLAGS   ?=
-
-
-GORELEASER_HOMEBREW_NAME   := regen
-IS_STABLE                  := false
-	
-GO_MOD_NAME                  := $(shell go list -m 2>/dev/null)
+GORELEASER_HOMEBREW_NAME := regen
 
 GORELEASER_BUILD_VARS := \
 -X github.com/cosmos/cosmos-sdk/version.Name=regen \
@@ -49,11 +48,7 @@ else
 	GITHUB_TOKEN=
 endif
 
-$(AKASH): modvendor
-	$(GO) build -o $@ $(BUILD_FLAGS) ./cmd/regen
-
 .PHONY: release
-
 
 release:
 	docker run \
@@ -75,4 +70,4 @@ release:
 		$(GORELEASER_SKIP_PUBLISH) \
 		--skip-validate=$(GORELEASER_SKIP_VALIDATE) \
 		--debug=$(GORELEASER_DEBUG) \
-		--rm-dist \
+		--rm-dist
