@@ -31,15 +31,6 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-<<<<<<< HEAD
-      - name: Run release setup
-        run: ./scripts/release-setup.sh
-        shell: bash
-      - uses: goreleaser/goreleaser-action@v3
-        with:
-          version: latest
-          args: release --rm-dist
-=======
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -48,7 +39,6 @@ jobs:
         run: |
           sudo rm -rf dist
           make release
->>>>>>> fdd4424d (ci(build): migrate goreleaser setup to use goreleaser-cross (#1733))
         env:
           GORELEASER_RELEASE: true
           IS_STABLE: true
