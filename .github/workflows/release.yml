@@ -7,18 +7,23 @@ name: Release
 #
 # **What does it impact**: Application release process.
 
-defaults:
-  run:
-    shell: bash
-
 on:
   push:
     tags:
       - v*
 
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # for docker/setup-buildx-action to create a GitHub release
     steps:
       - uses: actions/checkout@v3
         with:
@@ -30,12 +35,11 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: release publish
+      - name: Build and publish release
         run: |
           sudo rm -rf dist
           make release
         env:
           GORELEASER_RELEASE: true
-          GORELEASER_MOUNT_CONFIG: true
           IS_STABLE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
