@@ -8,7 +8,8 @@
 //
 // - Revision 0: v4.0.0 (api/v1.0.0, x/ecocredit/v2.0.0)
 // - Revision 1: v4.1.5 (api/v1.1.0, x/ecocredit/v2.4.0)
-// - Revision 2: (in progress)
+// - Revision 2: v5.0.0 (api/v2.0.0, x/ecocredit/v3.0.0)
+// - Revision 3: (in progress)
 //
 
 package v1

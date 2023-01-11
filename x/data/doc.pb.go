@@ -7,7 +7,8 @@
 // relation to tagged releases in regen-network/regen-ledger:
 //
 // - Revision 0: v4.0.0 (api/v1.0.0, x/data/v1.0.0)
-// - Revision 1: (in progress)
+// - Revision 1: v5.0.0 (api/v2.0.0, x/data/v2.0.0)
+// - Revision 2: (in progress)
 //
 
 package data
