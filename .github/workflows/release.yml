@@ -15,11 +15,15 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # for goreleaser/goreleaser-action to create a GitHub release
+      contents: write  # for docker/setup-buildx-action to create a GitHub release
     steps:
       - uses: actions/checkout@v3
         with:
@@ -27,12 +31,15 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - name: Run release setup
-        run: ./scripts/release-setup.sh
-        shell: bash
-      - uses: goreleaser/goreleaser-action@v4
-        with:
-          version: latest
-          args: release --rm-dist
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and publish release
+        run: |
+          sudo rm -rf dist
+          make release
         env:
+          GORELEASER_RELEASE: true
+          IS_STABLE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
