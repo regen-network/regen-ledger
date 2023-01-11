@@ -14,17 +14,21 @@ Create a `proposal.json` file using the following example (note that the name an
 
 ```json
 {
-    "title": "Add $REGEN to the currency allowlist",
-    "description": "This proposal adds $REGEN to the currency allowlist",
-    "denom": {
-        "bank_denom": "uregen",
-        "display_denom": "regen",
-        "exponent": 6
+  "title": "Add $REGEN to the currency allowlist",
+  "description": "This proposal adds $REGEN to the currency allowlist",
+  "messages": [
+    {
+      "@type": "/regen.ecocredit.marketplace.v1.MsgAddAllowedDenom",
+      "authority": "regen10d07y265gmmuvt4z0w9aw880jnsr700j9qceqh",
+      "bank_denom": "uregen",
+      "display_denom": "regen",
+      "exponent": 6
     }
+  ]
 }
 ```
 
-Each field in the json file is required and should be properly filled out.
+Each field in the json file is required and should be properly filled out. The `authority` address is the address of the gov module on Regen Mainnet (you can verify this is the correct address with `regen q auth module-account gov`).
 
 Make sure you give the proposal a meaningful title and description. The description should provide a rationale as to why this currency should be added to the list and can be written in either plain text or markdown (see [Proposal #15](https://wallet.keplr.app/chains/regen/proposals/15) for an example of a detailed description).
 

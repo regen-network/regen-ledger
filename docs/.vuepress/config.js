@@ -132,8 +132,27 @@ module.exports = {
           ],
         },
         {
+          title: 'Data Module',
+          collapsable: true,
+          sidebarDepth: 0,
+          children: [
+            {
+              title: 'Overview',
+              path: '/modules/data/',
+            },
+            '/modules/data/01_concepts',
+            '/modules/data/02_state',
+            '/modules/data/03_messages',
+            '/modules/data/04_queries',
+            '/modules/data/05_events',
+            '/modules/data/06_types',
+            '/modules/data/07_client',
+            '/modules/data/features/',
+          ],
+        },
+        {
           title: 'Ecocredit Module',
-          collapsable: false,
+          collapsable: true,
           sidebarDepth: 0,
           children: [
             {
@@ -151,22 +170,16 @@ module.exports = {
           ],
         },
         {
-          title: 'Data Module',
-          collapsable: false,
+          title: 'Intertx Module',
+          collapsable: true,
           sidebarDepth: 0,
           children: [
             {
               title: 'Overview',
-              path: '/modules/data/',
+              path: '/modules/intertx/',
             },
-            '/modules/data/01_concepts',
-            '/modules/data/02_state',
-            '/modules/data/03_messages',
-            '/modules/data/04_queries',
-            '/modules/data/05_events',
-            '/modules/data/06_types',
-            '/modules/data/07_client',
-            '/modules/data/features/',
+            '/modules/intertx/01_messages',
+            '/modules/intertx/02_queries',
           ],
         },
       ],
@@ -226,14 +239,17 @@ module.exports = {
               '/commands/regen',
               '/commands/regen_add-genesis-account',
               '/commands/regen_collect-gentxs',
+              '/commands/regen_completion',
               '/commands/regen_config',
               '/commands/regen_debug',
               '/commands/regen_export',
               '/commands/regen_gentx',
+              '/commands/regen_help',
               '/commands/regen_init',
               '/commands/regen_keys',
               '/commands/regen_migrate',
               '/commands/regen_query',
+              '/commands/regen_rollback',
               '/commands/regen_rosetta',
               '/commands/regen_start',
               '/commands/regen_status',
@@ -315,10 +331,5 @@ module.exports = {
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
-    ],
-  markdown: {
-    extendMarkdown: md => {
-      md.use(require('./markdown-it-gh'))
-    }
-  }
+  ]
 }

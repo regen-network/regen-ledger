@@ -15,31 +15,31 @@ Users wanting to interact with [Hambach Testnet](live-networks.md#hambach-testne
 Download the zip file:
 
 ```bash
-curl -LO https://github.com/regen-network/regen-ledger/releases/download/v4.0.0/regen-ledger_4.0.0_darwin_amd64.zip
+curl -LO https://github.com/regen-network/regen-ledger/releases/download/v5.0.0/regen-ledger_5.0.0_darwin_amd64.zip
 ```
 
 Verify the checksum:
 
 ```bash
-sha256sum regen-ledger_4.0.0_darwin_amd64.zip
+sha256sum regen-ledger_5.0.0_darwin_amd64.zip
 ```
 
 You should see the following:
 
 ```bash
-19a3e2107d56ef727961f8204acd272fe416794e794697199be6ff11399f9930  regen-ledger_4.0.0_darwin_amd64.zip
+26d07f258d489650f0dba059f6d3979f7550bf59514c0ee8f8912cca71bff1c6  regen-ledger_5.0.0_darwin_amd64.zip
 ```
 
 Unzip the zip file:
 
 ```bash
-unzip regen-ledger_4.0.0_darwin_amd64.zip
+unzip regen-ledger_5.0.0_darwin_amd64.zip
 ```
 
 Move the binary to your local bin directory:
 
 ```bash
-sudo mv regen-ledger_4.0.0_darwin_amd64/regen /usr/local/bin
+sudo mv regen-ledger_5.0.0_darwin_amd64/regen /usr/local/bin
 ```
 
 Open a new terminal window and check if the installation was successful:
@@ -51,7 +51,7 @@ regen version
 You should see the following:
 
 ```bash
-v4.0.0
+v5.0.0
 ```
 
 ### For Linux Distributions
@@ -59,31 +59,31 @@ v4.0.0
 Download the zip file:
 
 ```bash
-curl -LO https://github.com/regen-network/regen-ledger/releases/download/v4.0.0/regen-ledger_4.0.0_linux_amd64.zip
+curl -LO https://github.com/regen-network/regen-ledger/releases/download/v5.0.0/regen-ledger_5.0.0_linux_amd64.zip
 ```
 
 Verify the checksum:
 
 ```bash
-sha256sum regen-ledger_4.0.0_linux_amd64.zip
+sha256sum regen-ledger_5.0.0_linux_amd64.zip
 ```
 
 You should see the following:
 
 ```bash
-ca8e6020f2024f4cdb7722f917650a6334ad1f3068a8d14b0dba226bdd5532f0  regen-ledger_4.0.0_linux_amd64.zip
+edbf5beaa769f971cf6b6f3c5e45cc3f38ac7d5b9dd005cddc821ccc37771155  regen-ledger_5.0.0_linux_amd64.zip
 ```
 
 Unzip the zip file:
 
 ```bash
-unzip regen-ledger_4.0.0_linux_amd64.zip
+unzip regen-ledger_5.0.0_linux_amd64.zip
 ```
 
 Move the binary to your local bin directory:
 
 ```bash
-sudo mv regen-ledger_4.0.0_linux_amd64/regen /usr/local/bin
+sudo mv regen-ledger_5.0.0_linux_amd64/regen /usr/local/bin
 ```
 
 Check if the installation was successful:
@@ -95,12 +95,12 @@ regen version
 You should see the following:
 
 ```bash
-v4.0.0
+v5.0.0
 ```
 
 ### Other Packages
 
-Additional packages and checksums are available under "Assets" on the [Release Page](https://github.com/regen-network/regen-ledger/releases/tag/v4.0.0).
+Additional packages and checksums are available under "Assets" on the [Release Page](https://github.com/regen-network/regen-ledger/releases/tag/v5.0.0).
 
 ## Building From Source
 
@@ -136,6 +136,14 @@ cd regen-ledger
 
 Check out the latest stable version:
 
+*For the stable app configuration (used on Regen Mainnet and Redwood Testnet):*
+
+```bash
+git checkout v5.0.0
+```
+
+*For the experimental app configuration (used on Hambach Testnet):*
+
 ```bash
 git checkout v4.0.0
 ```
@@ -161,6 +169,14 @@ regen version
 ```
 
 You should see the following:
+
+*For the stable app configuration (used on Regen Mainnet and Redwood Testnet):*
+
+```bash
+v5.0.0
+```
+
+*For the experimental app configuration (used on Hambach Testnet):*
 
 ```bash
 v4.0.0
