@@ -6,33 +6,27 @@ before:
 
 env:
   - GO111MODULE=on
+  - CGO_ENABLED=1
 
 builds:
-# Can be added back in when https://github.com/regen-network/regen-ledger/issues/1698 is resolved
-#
-#   - id: regen-darwin-amd64
-#   binary: regen
-#   main: ./cmd/regen
-#   goarch:
-#     - amd64
-#   goos:
-#     - darwin
-#   env:
-#     - CGO_ENABLED=1
-#     - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
-#     - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
-#     - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
-#   flags:
-#     - -mod=readonly
-#     - -tags="netgo ledger"
-#     - -trimpath
-#   ldflags:
-#     - -s -w
-#     - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-#     - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-#     - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-#     - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-#     - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+  - id: regen-darwin-amd64
+    binary: regen
+    main: ./cmd/regen
+    goarch:
+      - amd64
+    goos:
+      - darwin
+    env:
+      - CC=o64-clang
+      - CXX=o64-clang++
+    flags:
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -trimpath
+    ldflags:
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
 
   - id: regen-darwin-arm64
     binary: regen
@@ -42,24 +36,21 @@ builds:
     goos:
       - darwin
     env:
-      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
+      - CC=oa64-clang
+      - CXX=oa64-clang++
     flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
       - -trimpath
     ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
 
   - id: regen-linux-amd64
     binary: regen
     main: ./cmd/regen
     env:
-      - CGO_ENABLED=1
       - CC=x86_64-linux-gnu-gcc
       - CXX=x86_64-linux-gnu-g++
     goarch:
@@ -67,16 +58,14 @@ builds:
     goos:
       - linux
     flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
       - -trimpath
     ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+      - -extldflags "-lc -lrt -lpthread --static"
 
   - id: regen-linux-arm64
     binary: regen
@@ -85,82 +74,78 @@ builds:
       - arm64
     goos:
       - linux
+    env:
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
     flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
       - -trimpath
     ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+      - -extldflags "-lc -lrt -lpthread --static"
 
   - id: regen-windows-amd64
     binary: regen
     main: ./cmd/regen
-    env:
-      - CGO_ENABLED=1
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
     goarch:
       - amd64
     goos:
       - windows
+    env:
+      - CC=x86_64-w64-mingw32-gcc
+      - CXX=x86_64-w64-mingw32-g++
     flags:
-      - -mod=readonly
-      - -tags="netgo ledger"
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
       - -trimpath
+      - -buildmode=exe
     ldflags:
-      - -s -w
-      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=regen
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
 
 archives:
   - id: regen
     builds:
-      - regen-darwin-amd64
-      - regen-darwin-arm64
+      - regen-darwin-universal
       - regen-linux-amd64
       - regen-linux-arm64
       - regen-windows-amd64
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
     files:
+      - completions*
       - README.md
       - LICENSE
-      - completions/*
-# Can be added back in when https://github.com/regen-network/regen-ledger/issues/1698 is resolved
-#
-# brews:
-#   - name: regen-ledger
-#     ids:
-#       - regen
-#     tap:
-#       owner: regen-network
-#       name: regen-ledger
-#       branch: homebrew-taps
-#     folder: "{{ .Tag }}"
-#     homepage: "https://www.regen.network/"
-#     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
-#     test: |
-#       system "#{bin}/regen --version"
-#     install: |
-#       bin.install "regen"
-#       bash_completion.install "completions/regen.bash" => "regen"
-#       zsh_completion.install "completions/regen.zsh" => "_regen"
-#       fish_completion.install "completions/regen.fish"
+
+brews:
+  - name: regen-ledger
+    ids:
+      - regen
+    tap:
+      owner: regen-network
+      name: regen-ledger
+      branch: homebrew-taps
+    folder: ${{ .Tag }}
+    homepage: "https://www.regen.network/"
+    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+    test: |
+      system "#{bin}/regen --version"
+    install: |
+      bin.install "regen"
+      bash_completion.install "completions/regen.bash" => "regen"
+      zsh_completion.install "completions/regen.zsh" => "_regen"
+      fish_completion.install "completions/regen.fish"
 
 nfpms:
   - maintainer: regen-network
     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
     homepage: "https://www.regen.network/"
-    license: Apache2.0
+    license: Apache 2.0
     formats:
       - deb
       - rpm
