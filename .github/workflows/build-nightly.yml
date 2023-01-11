@@ -13,6 +13,12 @@ name: Build Nightly
 #    # Runs "at 1am every day"
 #    - cron: "0 0 * * *"
 
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
 permissions:
   contents: read
 
