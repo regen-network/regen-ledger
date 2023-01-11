@@ -8,16 +8,10 @@ name: Build Nightly
 #
 # **What does it impact**: Application stability.
 
-#on:
-#  schedule:
-#    # Runs "at 1am every day"
-#    - cron: "0 0 * * *"
-
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+  schedule:
+    # Runs "at 1am every day"
+    - cron: "0 0 * * *"
 
 permissions:
   contents: read
