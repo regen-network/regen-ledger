@@ -180,15 +180,51 @@ message MsgApprove {
 Rule: The volume percentage cannot exceed the sum percentage of existing issuance policies
 ```
 
-### Fund Project
+### Reserve Credits
+
+A credit class issuer can reserve credits in a reserve specifically for the forward contract to help mitigate the risk of investment by providing credits that will be distributed to the investor in the event the project under-delivers.
+
+```protobuf
+// MsgReserve is the Msg/Reserve request type.
+message MsgReserve {
+  option (cosmos.msg.v1.signer) = "issuer";
+
+  // contract_id is the unique identifier of the contract.
+  uint64 contract_id = 1;
+
+  // issuer is the address of the issuer that approved the contract. Only the
+  // issuer in the contract can send credits to the contract reserve.
+  string issuer = 2;
+
+  // batch_denom is the batch denom of the credits being sent.
+  string batch_denom = 3;
+
+  // tradable_amount is the amount of tradable credits being sent.
+  string tradable_amount = 4;
+}
+```
+
+```feature
+Rule: Only the credit class issuer in the contract can send credits to the reserve
+```
+
+```feature
+Rule: The reserve can only receive credits from the same credit class as the project
+```
+
+```feature
+Rule: The reserve cannot receive more credits than the total volume of contracted credits
+```
+
+### Invest in Contract
 
 Any account can view available contracts and fund a project. When an account funds a project, the account has a claim to future credits issued from the project. The funds are transferred directly to the project admin.
 
 When an account funds a project and therefore owns a claim on future credits issued from the project, an issuance policy is automatically created and managed programmatically (i.e. no account has the authority to update the issuance policy and the issuance policy would only expire when the contract has ended).
 
 ```protobuf
-// MsgFundProject is the Msg/FundProject request type.
-message MsgFundProject {
+// MsgInvest is the Msg/Invest request type.
+message MsgInvest {
 
   // id is the unique identifier of the contract.
   uint64 id = 1;
@@ -274,6 +310,32 @@ message Contract {
 
   // end_date is the contract end date.
   google.protobuf.Timestamp end_date = 8;
+}
+```
+
+### Contract Reserve State
+
+```protobuf
+message ContractReserve {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 2,
+    primary_key : {fields : "contract_id"}
+  };
+
+  // contract_id is the table row identifier of the contract.
+  uint64 contract_id = 1;
+
+  // balances is the list of credit batch balances held in the reserve.
+  repeated Balances balances = 2;
+
+  message Balances {
+
+    // batch_denom is the amount of tradable credits in the reserve.
+    string batch_denom = 1;
+
+    // tradable_amount is the amount of tradable credits in the reserve.
+    string tradable_amount = 2;
+  }
 }
 ```
 
