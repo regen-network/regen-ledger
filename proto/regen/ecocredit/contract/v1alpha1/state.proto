@@ -3,7 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.contract.v1alpha1;
 
 import "cosmos/base/v1beta1/coin.proto";
-import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/orm/v1/orm.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/contract/v1alpha1/types.proto";
@@ -11,7 +11,7 @@ import "regen/ecocredit/contract/v1alpha1/types.proto";
 // Contract defines a forward contract and the table within which forward
 // contracts are stored.
 message Contract {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 1,
     primary_key : {fields : "id", auto_increment : true}
   };
@@ -49,7 +49,7 @@ message Contract {
 // ContractReserve defines a forward contract reserve (aka "buffer pool")
 // and the table within which forward contract reserves are stored.
 message ContractReserve {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 2,
     primary_key : {fields : "contract_id"}
   };
