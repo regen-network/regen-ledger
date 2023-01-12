@@ -43,7 +43,9 @@ Forward contract functionality would enable project developers to offer a percen
 
 Forward contract functionality would be implemented as a `contract` submodule within the `ecocredit` module. For reference, [(x/ecocredit): forward contract proof-of-concept][2] was submitted as an initial proof-of-concept to help illustrate this architecture.
 
-This proposal separates the approach into multiple stages. The initial stage (i.e. [Stage 1](#stage-1) is designed to serve the needs of the [Fast Forward Pilot](#fast-forward-pilot) and lay the foundation for the [Earthbanc Use Case](#earthbanc-use-case). The second stage (i.e. [Stage 2](#stage-2) is designed to serve the remaining needs of the [Earthbanc Use Case](#earthbanc-use-case). The first version of this document focuses on Stage 1 and only introduces Stage 2. Stage 2 (and additional stages) will be further explored in subsequent versions.
+This proposal separates the approach into multiple stages. The initial stage (i.e. [Stage 1](#stage-1) is designed to serve the requirements of the [Fast Forward Pilot](#fast-forward-pilot) and lay the foundation for the [Earthbanc Use Case](#earthbanc-use-case). The second stage (i.e. [Stage 2](#stage-2) is designed to serve the remaining requirements of the [Earthbanc Use Case](#earthbanc-use-case).
+
+The first version of this document focuses on Stage 1 and only introduces Stage 2. Stage 2 (and additional stages) will be further explored in subsequent versions.
 
 ### Stage 1
 
@@ -53,11 +55,11 @@ There is only one option for receiving future credits issued, which is the direc
 
 Each forward contract is specific to a single project. The project should be properly vetted by the credit class issuer(s) and the investor(s) will need to trust the credit class and/or vet the project themselves. The admin and issuer(s) of a credit class are responsible for defining their own vetting process for projects and the issuer that approves the contract will be responsible for following that process and assessing the risk of the project or working with a third party or other members of the credits class to do so.
 
-The price and volume estimates for the credits issued from the project within the timeframe of the contract will be set by the project admin and approved by the credit class issuer through an on-chain contract creation and review process. How the price and volume estimates are calculated are outside the scope of the on-chain functionality outlined within this proposal but additional information about how the calculations were made can and should be stored within the forward contract as metadata.
+The price and volume estimates for the credits issued from the project within the timeframe of the contract will be set by the project admin and approved by the credit class issuer through an on-chain contract creation and review process. How the credit price and volume estimates are calculated are outside the scope of the on-chain functionality outlined within this proposal but additional information about how the calculations were made can and should be stored within the forward contract as metadata.
 
-To mitigate the risk of the investor and therefore improve the likelihood of investment, each contract will have a reserve pool specifically for the contract where previously issued credits from the project or an equivalent project can be transferred. The reserve pool can only receive credits once the contract has been approved and the credits in the reserve pool will be held in escrow until the end of the contract. The reserve pool can only receive credits from the same credit class and the credits can only be transferred to the reserve pool by the credit class issuer. Whether the reserve pool backs the total volume of future credits being sold is up to the credit class issuer - more credits providing less risk for the investor(s) and more likelihood of the project receiving pre-financing.
+To mitigate the risk of the investor and therefore improve the likelihood of investment, each contract will have a reserve pool specifically for the contract where previously issued credits from the project or an equivalent project can be transferred. The reserve pool can only receive credits once the contract has been approved and the credits in the reserve pool will be held in escrow until the end of the contract. The reserve pool can only receive credits from the same credit class and the credits can only be transferred to the pool by the credit class issuer. Whether the reserve pool backs the total volume of future credits being sold is up to the credit class issuer with more credits providing less risk for the investor(s) and more likelihood of the project receiving pre-financing.
 
-The accepted form of funds (i.e. the accepted token denomination) is decided by the project admin and approved by the credit class issuer. There are no restrictions on which token denomination the project chooses to receive funding but the token denomination cannot be updated and a stable coin would be the most probable choice.
+The accepted form of funds (i.e. the accepted token denomination) is decided by the project admin and approved by the credit class issuer. There are no restrictions on which token denomination the project chooses to receive funding but the token denomination and amount cannot be updated once the contract has been approved, therefore a stable coin would be the most probable choice.
 
 ### Create Contract
 
@@ -285,15 +287,6 @@ Direct credit issuance to the investor(s) will be enforced with on-chain functio
 
 <!-- (TODO: replace with issuance policy RFC link) -->
 See [(x/ecocredit): issuance policy proof-of-concept][3] for more information.
-
-### Project Approval Process
-
-In additional to forward contract functionality, the [Forward Contract Bond Module][1] document describes a set of features around a project approval process. The contract approval process only partially fulfills the requested approval process. Additional functionality to support independent projects and a project application process is being explored separately. That being said, the existing credit class and project functionality can be used to accomplish the project approval process manually.
-
-In the current implementation, a project can only be created within a credit class by an approved issuer of the credit class. An organization that intends to audit projects would need to administer a credit class and designate issuers to manage the audits. The application process would be handled off chain and the issuer would approve a project by creating a project on chain.
-
-<!-- TODO: replace with independent projects RFC link -->
-See [(x/ecocredit): independent projects proof-of-concept][4] for more information about the on-chain solution.
 
 ### Stage 2
 
