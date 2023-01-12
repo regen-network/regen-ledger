@@ -316,6 +316,8 @@ message Contract {
 ### Contract Reserve State
 
 ```protobuf
+// ContractReserve defines a forward contract reserve (aka "buffer pool")
+// and the table within which forward contract reserves are stored.
 message ContractReserve {
   option (cosmos.orm.v1alpha1.table) = {
     id : 2,
@@ -326,9 +328,10 @@ message ContractReserve {
   uint64 contract_id = 1;
 
   // balances is the list of credit batch balances held in the reserve.
-  repeated Balances balances = 2;
+  repeated Balance balances = 2;
 
-  message Balances {
+  // Balance defines a balance of credits held in the reserve.
+  message Balance {
 
     // batch_denom is the amount of tradable credits in the reserve.
     string batch_denom = 1;
