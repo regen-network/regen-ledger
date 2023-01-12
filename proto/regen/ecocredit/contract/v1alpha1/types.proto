@@ -2,19 +2,19 @@ syntax = "proto3";
 
 package regen.ecocredit.contract.v1alpha1;
 
-// ContractStatus is the status of a forward contract.
-enum ContractStatus {
+// Status is the status of a forward contract.
+enum Status {
 
-  // CONTRACT_STATUS_UNSPECIFIED
-  CONTRACT_STATUS_UNSPECIFIED = 0;
+  // STATUS_UNSPECIFIED
+  STATUS_UNSPECIFIED = 0;
 
-  // CONTRACT_STATUS_PROPOSED is the initial state of a contract after the
-  // contract has been created. When the contract status is "proposed", the
-  // contract can be updated or cancelled by the project admin.
-  CONTRACT_STATUS_PROPOSED = 1;
+  // STATUS_PROPOSED is the initial state of a contract after the contract
+  // has been created. When the contract status is "proposed", the contract
+  // can be updated or cancelled by the project admin.
+  STATUS_PROPOSED = 1;
 
-  // CONTRACT_STATUS_APPROVED is the state of the contract after the contract
-  // has been approved by a credit class issuer. When the contract status is
+  // STATUS_APPROVED is the state of the contract after the contract has
+  // been approved by a credit class issuer. When the contract status is
   // "approved", the contract cannot be updated or cancelled.
-  CONTRACT_STATUS_APPROVED = 2;
+  STATUS_APPROVED = 2;
 }

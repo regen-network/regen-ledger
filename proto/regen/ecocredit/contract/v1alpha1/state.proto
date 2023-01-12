@@ -23,7 +23,7 @@ message Contract {
   string project_id = 2;
 
   // status is the status of the contract (e.g. "proposed", "approved").
-  ContractStatus status = 3;
+  Status status = 3;
 
   // metadata is any arbitrary string that includes or references additional
   // information about the contract including the initial amount of funds to

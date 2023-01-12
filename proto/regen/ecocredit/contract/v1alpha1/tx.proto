@@ -11,20 +11,20 @@ import "google/protobuf/timestamp.proto";
 service Msg {
 
   // Create creates a new forward contract. A new contract starts with status
-  // proposed and only the class admin can approve the contract.
+  // "proposed" and only the class admin can approve the contract.
   rpc Create(MsgCreate) returns (MsgCreateResponse);
 
   // Update updates a proposed forward contract. A contract can only be updated
-  // by the project admin before the contract is accepted.
+  // by the project admin before the contract is approved.
   rpc Update(MsgUpdate) returns (MsgUpdateResponse);
 
   // Cancel cancels a forward contract. A contract can only be cancelled by the
-  // project admin before the contract is accepted.
+  // project admin before the contract is approved.
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
 
   // Approve approves a proposed forward contract, changing the status of the
-  // contract to accepted and preventing any further changes. Only an approved
-  // credit class issuer can accept the contract.
+  // contract to "approved" and preventing any further changes. Only an approved
+  // credit class issuer can approve the contract.
   rpc Approve(MsgApprove) returns (MsgApproveResponse);
 
   // FundProject sends funds to a project in return for a share of the contract
@@ -150,21 +150,14 @@ message MsgFundProject {
   // the specified volume percentage.
   cosmos.base.v1beta1.Coin funds = 4;
 
-  // direct_issuance determines whether the credits will be automatically issued
-  // to the funder (i.e. the funder account will be assigned as the recipient of
-  // the issuance policy) or whether the funder will receive claim tokens (i.e.
-  // the contract submodule will be assigned as the recipient of the issuance
-  // policy and the credits can be claimed at a later point in time).
-  bool direct_issuance = 5;
-
   // auto_retire determines whether the credits will be automatically retied
   // upon issuance (i.e. the issuance policy will be set to auto-retire). This
   // option only applies if direct issuance is enabled.
-  bool auto_retire = 6;
+  bool auto_retire = 5;
 
   // retirement_jurisdiction is the jurisdiction of the funder. A jurisdiction
   // is only required if auto-retire is enabled.
-  string retirement_jurisdiction = 7;
+  string retirement_jurisdiction = 6;
 }
 
 // MsgFundProjectResponse is the Msg/FundProject response type.
