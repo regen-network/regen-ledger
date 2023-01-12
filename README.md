@@ -18,17 +18,29 @@
 </div>
 <br />
 <div align="center">
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/build.yml">
         <img alt="Build Status" src="https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/tests.yml">
         <img alt="Test Status" src="https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/sims.yml">
         <img alt="Sims Status" src="https://github.com/regen-network/regen-ledger/workflows/Sims/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/lint.yml">
         <img alt="Lint Status" src="https://github.com/regen-network/regen-ledger/workflows/Lint/badge.svg" />
+    </a>
+</div>
+<br />
+<div align="center">
+    <a href="https://github.com/regen-network/regen-ledger/actions/workflows/proto-registry.yml">
+        <img alt="Proto Registry" src="https://github.com/regen-network/regen-ledger/workflows/Proto%20Registry/badge.svg" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/actions/workflows/build-nightly.yml">
+        <img alt="Test Nightly Status" src="https://github.com/regen-network/regen-ledger/workflows/Build%20Nightly/badge.svg" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/actions/workflows/sims-nightly.yml">
+        <img alt="Sims Nightly Status" src="https://github.com/regen-network/regen-ledger/workflows/Sims%20Nightly/badge.svg" />
     </a>
 </div>
 <br />
