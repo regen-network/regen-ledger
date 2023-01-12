@@ -27,9 +27,14 @@ service Msg {
   // credit class issuer can approve the contract.
   rpc Approve(MsgApprove) returns (MsgApproveResponse);
 
-  // FundProject sends funds to a project in return for a share of the contract
+  // Reserve sends credits to the contract reserve. Only credits from the same
+  // credit class can be sent to the reserve and once the credits are sent to the
+  // reserve, the credits are held in escrow until the end of the contract.
+  rpc Reserve(MsgReserve) returns (MsgReserveResponse);
+
+  // Invest sends funds to a project in return for a share of the contract
   // and therefore ownership of future credits issued from the project.
-  rpc FundProject(MsgFundProject) returns (MsgFundProjectResponse);
+  rpc Invest(MsgInvest) returns (MsgInvestResponse);
 }
 
 // MsgCreate is the Msg/Create request type.
@@ -131,22 +136,43 @@ message MsgApprove {
 // MsgApproveResponse is the Msg/Approve response type.
 message MsgApproveResponse {}
 
-// MsgFundProject is the Msg/FundProject request type.
-message MsgFundProject {
-  option (cosmos.msg.v1.signer) = "funder";
+// MsgReserve is the Msg/Reserve request type.
+message MsgReserve {
+  option (cosmos.msg.v1.signer) = "issuer";
+
+  // contract_id is the unique identifier of the contract.
+  uint64 contract_id = 1;
+
+  // issuer is the address of the issuer that approved the contract. Only the
+  // issuer in the contract can send credits to the contract reserve.
+  string issuer = 2;
+
+  // batch_denom is the batch denom of the credits being sent.
+  string batch_denom = 3;
+
+  // tradable_amount is the amount of tradable credits being sent.
+  string tradable_amount = 4;
+}
+
+// MsgReserveResponse is the Msg/Reserve response type.
+message MsgReserveResponse {}
+
+// MsgInvest is the Msg/Invest request type.
+message MsgInvest {
+  option (cosmos.msg.v1.signer) = "investor";
 
   // id is the unique identifier of the contract.
   uint64 id = 1;
 
-  // funder is the address of the account funding the project and receiving a
+  // investor is the address of the account funding the project and receiving a
   // share of the contract in return.
-  string funder = 2;
+  string investor = 2;
 
-  // volume_percentage is the percent of all credits issued that the funder will
+  // volume_percentage is the percent of all credits issued that the investor will
   // receive.
   string volume_percentage = 3;
 
-  // funds is the token denom and amount the funder is providing in return for
+  // funds is the token denom and amount the investor is providing in return for
   // the specified volume percentage.
   cosmos.base.v1beta1.Coin funds = 4;
 
@@ -155,10 +181,10 @@ message MsgFundProject {
   // option only applies if direct issuance is enabled.
   bool auto_retire = 5;
 
-  // retirement_jurisdiction is the jurisdiction of the funder. A jurisdiction
+  // retirement_jurisdiction is the jurisdiction of the investor. A jurisdiction
   // is only required if auto-retire is enabled.
   string retirement_jurisdiction = 6;
 }
 
-// MsgFundProjectResponse is the Msg/FundProject response type.
-message MsgFundProjectResponse {}
+// MsgInvestResponse is the Msg/Invest response type.
+message MsgInvestResponse {}

@@ -8,8 +8,8 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/contract/v1alpha1/types.proto";
 
-// Contract defines a forward contract and the table within which the forward
-// contract is stored.
+// Contract defines a forward contract and the table within which forward
+// contracts are stored.
 message Contract {
   option (cosmos.orm.v1alpha1.table) = {
     id : 1,
@@ -44,4 +44,28 @@ message Contract {
 
   // end_date is the delivery end date.
   google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+}
+
+// ContractReserve defines a forward contract reserve (aka "buffer pool")
+// and the table within which forward contract reserves are stored.
+message ContractReserve {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 2,
+    primary_key : {fields : "contract_id"}
+  };
+
+  // contract_id is the table row identifier of the contract.
+  uint64 contract_id = 1;
+
+  // balances is the list of credit batch balances held in the reserve.
+  repeated Balances balances = 2;
+
+  message Balances {
+
+    // batch_denom is the amount of tradable credits in the reserve.
+    string batch_denom = 1;
+
+    // tradable_amount is the amount of tradable credits in the reserve.
+    string tradable_amount = 2;
+  }
 }
