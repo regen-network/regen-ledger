@@ -3,14 +3,15 @@ package keeper
 import (
 	"context"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // CreditType queries credit type information by abbreviation.
 func (k Keeper) CreditType(ctx context.Context, request *types.QueryCreditTypeRequest) (*types.QueryCreditTypeResponse, error) {
 	creditType, err := k.stateStore.CreditTypeTable().Get(ctx, request.Abbreviation)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrNotFound.Wrapf("unable to get credit type with abbreviation: %s", request.Abbreviation)
 	}
 
 	return &types.QueryCreditTypeResponse{

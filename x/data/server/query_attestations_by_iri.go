@@ -5,34 +5,34 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/data"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types/v2"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 // AttestationsByIRI queries data attestations by the IRI of the data.
 func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAttestationsByIRIRequest) (*data.QueryAttestationsByIRIResponse, error) {
 	if len(request.Iri) == 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
+		return nil, regenerrors.ErrInvalidArgument.Wrap("IRI cannot be empty")
 	}
 
 	// check for valid IRI
 	_, err := data.ParseIRI(request.Iri)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrapf("failed to parse IRI: %s", err.Error())
 	}
 
 	dataID, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
-		return nil, sdkerrors.ErrNotFound.Wrap("data record with IRI")
+		return nil, regenerrors.ErrNotFound.Wrapf("data record with IRI: %s", request.Iri)
 	}
 
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	it, err := s.stateStore.DataAttestorTable().List(
@@ -61,7 +61,7 @@ func (s serverImpl) AttestationsByIRI(ctx context.Context, request *data.QueryAt
 
 	pageRes, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &data.QueryAttestationsByIRIResponse{

@@ -14,21 +14,24 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 const (
 	FlagAddIssuers             string = "add-issuers"
+	FlagReason                 string = "reason"
 	FlagRemoveIssuers          string = "remove-issuers"
 	FlagReferenceID            string = "reference-id"
 	FlagRetirementJurisdiction string = "retirement-jurisdiction"
+	FlagRetirementReason       string = "retirement-reason"
+	FlagClassFee               string = "class-fee"
 )
 
 // TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-class [issuers] [credit-type-abbrev] [metadata] [fee] [flags]",
+		Use:   "create-class [issuers] [credit-type-abbrev] [metadata] [flags]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(`Creates a new credit class with transaction author (--from) as admin.
 
@@ -44,13 +47,21 @@ Parameters:
 - issuers:    	       comma separated (no spaces) list of issuer account addresses
 - credit-type-abbrev:  the abbreviation of a credit type
 - metadata:            arbitrary data attached to the credit class info
-- fee:                 fee to pay for the creation of the credit class`,
+
+Flags:
+
+- class-fee: the fee that the class creator will pay to create the credit class. It must be >= the
+required credit_class_fee param. If the credit_class_fee param is empty, no fee is required. 
+We explicitly include the class creation fee here so that the class creator acknowledges paying 
+the fee and is not surprised to learn that the they paid a fee without consent.
+
+`,
 			types.KeyAllowedClassCreators,
 			types.KeyCreditClassFee,
 		),
-		Example: `regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf 20000000uregen
-regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf 20000000uregen`,
-		Args: cobra.ExactArgs(4),
+		Example: `regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf --class-fee 20000000uregen
+regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 C regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf --class-fee 20000000uregen`,
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
@@ -60,16 +71,10 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 			// Get the class admin from the --from flag
 			admin := clientCtx.GetFromAddress()
 
-			// Parse the comma-separated list of issuers
+			// parse the comma-separated list of issuers
 			issuers := strings.Split(args[0], ",")
 			for i := range issuers {
 				issuers[i] = strings.TrimSpace(issuers[i])
-			}
-
-			// Parse and normalize credit class fee
-			fee, err := sdk.ParseCoinNormalized(args[3])
-			if err != nil {
-				return err
 			}
 
 			msg := types.MsgCreateClass{
@@ -77,12 +82,27 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 				Issuers:          issuers,
 				Metadata:         args[2],
 				CreditTypeAbbrev: args[1],
-				Fee:              &fee,
+			}
+
+			// parse and normalize credit class fee
+			feeString, err := cmd.Flags().GetString(FlagClassFee)
+			if err != nil {
+				return err
+			}
+			if feeString != "" {
+				fee, err := sdk.ParseCoinNormalized(feeString)
+				if err != nil {
+					return fmt.Errorf("failed to parse class-fee: %w", err)
+				}
+
+				msg.Fee = &fee
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+
+	cmd.Flags().String(FlagClassFee, "", "the fee that the class creator will pay to create the credit class (e.g. \"20regen\")")
 
 	return txFlags(cmd)
 }
@@ -226,21 +246,18 @@ Example JSON:
   "issuance": [
     {
       "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "tradable_amount": "1000",
-      "retired_amount": "500",
-      "retirement_jurisdiction": "US-WA"
+      "tradable_amount": "1000"
     },
     {
       "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "tradable_amount": "1000",
-      "retired_amount": "500",
-      "retirement_jurisdiction": "US-OR"
+      "retired_amount": "1000",
+      "retirement_jurisdiction": "US-OR",
+      "retirement_reason": "offsetting electricity consumption"
     }
   ],
   "metadata": "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf",
   "start_date": "2020-01-01T00:00:00Z",
-  "end_date": "2021-01-01T00:00:00Z",
-  "open": false
+  "end_date": "2021-01-01T00:00:00Z"
 }`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -249,7 +266,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the request
+			// parse the JSON file representing the request
 			msg, err := parseMsgCreateBatch(clientCtx, args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -287,31 +304,46 @@ Parameters:
 			if err != nil {
 				return err
 			}
+
 			retireTo, err := cmd.Flags().GetString(FlagRetirementJurisdiction)
 			if err != nil {
 				return err
 			}
+
 			tradableAmount := args[0]
+
 			retiredAmount := "0"
 			if len(retireTo) > 0 {
 				tradableAmount = "0"
 				retiredAmount = args[0]
 			}
+
+			reason, err := cmd.Flags().GetString(FlagRetirementReason)
+			if err != nil {
+				return err
+			}
+
 			credit := types.MsgSend_SendCredits{
 				TradableAmount:         tradableAmount,
 				BatchDenom:             args[1],
 				RetiredAmount:          retiredAmount,
 				RetirementJurisdiction: retireTo,
+				RetirementReason:       reason,
 			}
+
 			msg := types.MsgSend{
 				Sender:    clientCtx.GetFromAddress().String(),
 				Recipient: args[2],
 				Credits:   []*types.MsgSend_SendCredits{&credit},
 			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "Jurisdiction to retire the credits to. If empty, credits are not retired. (default empty)")
+	cmd.Flags().String(FlagRetirementReason, "", "the reason for retiring the credits (optional)")
+
 	return txFlags(cmd)
 }
 
@@ -340,7 +372,8 @@ Example JSON:
     "batch_denom": "C01-001-20200101-20210101-002",
     "tradable_amount": "50",
     "retired_amount": "100",
-    "retirement_jurisdiction": "YY-ZZ 12345"
+    "retirement_jurisdiction": "YY-ZZ 12345",
+    "retirement_reason": "offsetting electricity consumption"
   }
 ]`,
 		Args: cobra.ExactArgs(2),
@@ -350,7 +383,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseSendCredits(args[1])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -401,21 +434,29 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseCredits(args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
+			}
+
+			reason, err := cmd.Flags().GetString(FlagReason)
+			if err != nil {
+				return err
 			}
 
 			msg := types.MsgRetire{
 				Owner:        clientCtx.GetFromAddress().String(),
 				Credits:      credits,
 				Jurisdiction: args[1],
+				Reason:       reason,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+
+	cmd.Flags().String(FlagReason, "", "the reason for retiring the credits (optional)")
 
 	return txFlags(cmd)
 }
@@ -452,7 +493,7 @@ Example JSON:
 				return err
 			}
 
-			// Parse the JSON file representing the credits
+			// parse the JSON file representing the credits
 			credits, err := parseCredits(args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
@@ -471,6 +512,7 @@ Example JSON:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassMetadataCmd returns a transaction command that updates class metadata.
 func TxUpdateClassMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-metadata [class-id] [new-metadata]",
@@ -504,6 +546,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassAdminCmd returns a transaction command that updates class admin.
 func TxUpdateClassAdminCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-admin [class-id] [new-admin]",
@@ -539,6 +582,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateClassIssuersCmd returns a transaction command that updates class issuers.
 func TxUpdateClassIssuersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-class-issuers [class-id]",
@@ -600,6 +644,7 @@ regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2 --remove-i
 	return txFlags(cmd)
 }
 
+// TxUpdateProjectAdminCmd returns a transaction command that updates project admin.
 func TxUpdateProjectAdminCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-project-admin [project-id] [new-admin] [flags]",
@@ -635,6 +680,7 @@ Parameters:
 	return txFlags(cmd)
 }
 
+// TxUpdateProjectMetadataCmd returns a transaction command that updates project metadata.
 func TxUpdateProjectMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "update-project-metadata [project-id] [new-metadata]",
@@ -652,6 +698,95 @@ func TxUpdateProjectMetadataCmd() *cobra.Command {
 				Admin:       clientCtx.GetFromAddress().String(),
 				NewMetadata: args[1],
 				ProjectId:   args[0],
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+// TxUpdateBatchMetadataCmd returns a transaction command that updates batch metadata.
+func TxUpdateBatchMetadataCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-batch-metadata [batch-denom] [new-metadata]",
+		Short: "Updates the metadata for a specific credit batch",
+		Long: `Updates the metadata for a specific credit batch.
+
+The '--from' flag must equal the credit batch issuer.
+
+Parameters:
+
+- batch-denom:   the batch denom of the credit batch to be updated
+- new-metadata:  any arbitrary metadata to attach to the credit batch`,
+		Args:    cobra.ExactArgs(2),
+		Example: `regen tx ecocredit update-batch-metadata C01-001-20200101-20210101-001 regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgUpdateBatchMetadata{
+				Issuer:      clientCtx.GetFromAddress().String(),
+				BatchDenom:  args[0],
+				NewMetadata: args[1],
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+// TxBridgeCmd returns a transaction command that bridges credits to another chain.
+func TxBridgeCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bridge [target] [recipient] [credits-json]",
+		Short: "Bridge credits to another chain",
+		Long: `Bridge credits to another chain.
+
+The '--from' flag must equal the owner of the credits.
+
+Parameters:
+
+- target:       the target chain (e.g. "polygon")
+- recipient:    the address of the recipient on the other chain
+- credits-json: path to JSON file containing credits to bridge`,
+		Example: `regen tx ecocredit bridge polygon 0x0000000000000000000000000000000000000001 credits.json
+
+Example JSON:
+
+[
+  {
+    "batch_denom": "C01-001-20200101-20210101-001",
+    "amount": "5"
+  },
+  {
+    "batch_denom": "C01-001-20200101-20210101-002",
+    "amount": "10"
+  }
+]`,
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// parse the JSON file representing the credits
+			credits, err := parseCredits(args[2])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("failed to parse json: %s", err)
+			}
+
+			msg := types.MsgBridge{
+				Owner:     clientCtx.GetFromAddress().String(),
+				Target:    args[0],
+				Recipient: args[1],
+				Credits:   credits,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

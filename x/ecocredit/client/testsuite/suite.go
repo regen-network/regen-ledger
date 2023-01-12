@@ -22,20 +22,20 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
-	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/base/client"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/basket/client"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
-	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/client"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2"
+	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
+	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/client"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/genesis"
+	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/client"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 type IntegrationTestSuite struct {
@@ -50,10 +50,11 @@ type IntegrationTestSuite struct {
 	addr2 sdk.AccAddress
 
 	// test values
-	creditClassFee     sdk.Coins
+	creditClassFee     *sdk.Coin
 	basketFee          sdk.Coins
 	creditTypeAbbrev   string
 	allowedDenoms      []string
+	bridgeChain        string
 	classID            string
 	projectID          string
 	projectReferenceID string
@@ -92,7 +93,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Issuers:          []string{s.addr1.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &s.creditClassFee[0],
+		Fee:              s.creditClassFee,
 	})
 
 	// set test reference id
@@ -127,6 +128,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Metadata:  "metadata",
 		StartDate: &startDate,
 		EndDate:   &endDate,
+		Open:      true,
 	})
 
 	// create a basket and set test value
@@ -255,20 +257,30 @@ func (s *IntegrationTestSuite) setupGenesis() {
 	})
 	require.NoError(err)
 
+	s.bridgeChain = "polygon"
+
+	// set allowed bridge chain
+	err = baseStore.AllowedBridgeChainTable().Insert(ctx, &baseapi.AllowedBridgeChain{
+		ChainName: s.bridgeChain,
+	})
+	require.NoError(err)
+
+	// set batch contract for bridge testing
+	err = baseStore.BatchContractTable().Insert(ctx, &baseapi.BatchContract{
+		BatchKey: 1,
+		ClassKey: 1,
+		Contract: "0x0000000000000000000000000000000000000000",
+	})
+	require.NoError(err)
+
 	// export genesis into target
 	target := ormjson.NewRawMessageTarget()
 	err = mdb.ExportJSON(ctx, target)
 	require.NoError(err)
 
-	params := genesis.DefaultParams()
-
 	// set credit class and basket fees
-	s.creditClassFee = params.CreditClassFee
-	s.basketFee = params.BasketFee
-
-	// merge the params into the json target
-	err = genesis.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
-	require.NoError(err)
+	s.creditClassFee = genesis.DefaultClassFee().Fee
+	s.basketFee = sdk.NewCoins(*genesis.DefaultBasketFee().Fee)
 
 	// get raw json from target
 	json, err := target.JSON()
@@ -336,8 +348,8 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basety
 		strings.Join(msg.Issuers, ","),
 		msg.CreditTypeAbbrev,
 		msg.Metadata,
-		msg.Fee.String(),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
+		fmt.Sprintf("--%s=%s", baseclient.FlagClassFee, msg.Fee.String()),
 	}
 	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)

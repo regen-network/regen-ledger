@@ -13,8 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 const (
@@ -26,6 +26,7 @@ const (
 	FlagBasketFee              = "basket-fee"
 	FlagDenomDescription       = "description"
 	FlagRetirementJurisdiction = "retirement-jurisdiction"
+	FlagRetirementReason       = "retirement-reason"
 	FlagRetireOnTake           = "retire-on-take"
 )
 
@@ -46,7 +47,7 @@ Flags:
     false unless the credits were previously put into the basket by the address
     picking them from the basket, in which case they will remain tradable.
 - credit-type-abbrev: filters against credits from this credit type abbreviation (e.g. "BIO").
-- allowed_classes: comma separated (no spaces) list of credit classes allowed to be put in
+- allowed-classes: comma separated (no spaces) list of credit classes allowed to be put in
     the basket (e.g. "C01,C02").
 - min-start-date: the earliest start date for batches of credits allowed into the basket.
 - start-date-window: the duration of time (in seconds) measured into the past which sets a
@@ -56,7 +57,7 @@ Flags:
     curator explicitly acknowledges paying this fee and is not surprised to learn that they
     paid a big fee and didn't know beforehand.
 - description: the description to be used in the basket coin's bank denom metadata.`),
-		Example: `regen tx ecocredit create-basket NCT --credit-type-abbrev C --allowed_classes C01,C02 basket-fee 100000000uregen description "NCT basket"`,
+		Example: `regen tx ecocredit create-basket NCT --credit-type-abbrev C --allowed-classes C01,C02 --basket-fee 100000000uregen --description "NCT basket"`,
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -182,14 +183,14 @@ Parameters:
 Example JSON:
 
 [
-	{
-		"batch_denom": "C01-001-20210101-20220101-001",
-		"amount": "10"
-	},
-	{
-		"batch_denom": "C01-001-20210101-20220101-001",
-		"amount": "10.5"
-	}
+  {
+    "batch_denom": "C01-001-20210101-20220101-001",
+    "amount": "10"
+  },
+  {
+    "batch_denom": "C01-001-20210101-20220101-001",
+    "amount": "10.5"
+  }
 ]`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -240,7 +241,7 @@ Flags:
 		
 		`),
 		Example: `regen tx ecocredit take-from-basket eco.uC.NCT 1000
-regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --retirement-jurisdiction "US-WA 98225"`,
+regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --retirement-jurisdiction "US-WA 98225" --retirement-reason "offsetting electricity consumption"`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -249,6 +250,11 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 			}
 
 			retirementJurisdiction, err := cmd.Flags().GetString(FlagRetirementJurisdiction)
+			if err != nil {
+				return err
+			}
+
+			retirementReason, err := cmd.Flags().GetString(FlagRetirementReason)
 			if err != nil {
 				return err
 			}
@@ -263,6 +269,7 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 				BasketDenom:            args[0],
 				Amount:                 args[1],
 				RetirementJurisdiction: retirementJurisdiction,
+				RetirementReason:       retirementReason,
 				RetireOnTake:           retireOnTake,
 			}
 
@@ -275,7 +282,47 @@ regen tx ecocredit take-from-basket eco.uC.NCT 1000 --retire-on-take=true --reti
 	}
 
 	cmd.Flags().String(FlagRetirementJurisdiction, "", "jurisdiction for the credits which will be used only if --retire-on-take flag is true")
+	cmd.Flags().String(FlagRetirementReason, "", "the reason for retiring the credits (optional)")
 	cmd.Flags().Bool(FlagRetireOnTake, false, "dictates whether the ecocredits received in exchange for the basket tokens will be received as retired or tradable credits")
+
+	return txFlags(cmd)
+}
+
+func TxUpdateBasketCuratorCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-basket-curator [basket-denom] [new-curator]",
+		Short: "Updates the basket curator",
+		Long: strings.TrimSpace(`Updates the basket curator.
+
+The '--from' flag must equal the current basket curator.
+
+Parameters:
+
+- basket-denom:  denom of the basket to update.
+- new-curator:  account address of the new curator.
+
+`),
+		Example: `regen tx ecocredit update-basket-curator eco.uC.NCT regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw --from curator`,
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.MsgUpdateCurator{
+				Curator:    clientCtx.FromAddress.String(),
+				NewCurator: args[1],
+				Denom:      args[0],
+			}
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
 
 	return txFlags(cmd)
 }

@@ -1,6 +1,10 @@
 package v1
 
 import (
+	"bytes"
+	"encoding/json"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -9,9 +13,10 @@ import (
 )
 
 type msgRetire struct {
-	t   gocuke.TestingT
-	msg *MsgRetire
-	err error
+	t         gocuke.TestingT
+	msg       *MsgRetire
+	err       error
+	signBytes string
 }
 
 func TestMsgRetire(t *testing.T) {
@@ -28,6 +33,13 @@ func (s *msgRetire) TheMessage(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *msgRetire) ReasonWithLength(a string) {
+	length, err := strconv.ParseInt(a, 10, 64)
+	require.NoError(s.t, err)
+
+	s.msg.Reason = strings.Repeat("x", int(length))
+}
+
 func (s *msgRetire) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
@@ -38,4 +50,14 @@ func (s *msgRetire) ExpectTheError(a string) {
 
 func (s *msgRetire) ExpectNoError() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *msgRetire) MessageSignBytesQueried() {
+	s.signBytes = string(s.msg.GetSignBytes())
+}
+
+func (s *msgRetire) ExpectTheSignBytes(expected gocuke.DocString) {
+	buffer := new(bytes.Buffer)
+	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
+	require.Equal(s.t, buffer.String(), s.signBytes)
 }

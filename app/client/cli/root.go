@@ -38,7 +38,7 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/regen-network/regen-ledger/v4/app"
+	"github.com/regen-network/regen-ledger/v5/app"
 )
 
 // NewRootCmd creates a new root command for regen. It is called once in the
@@ -53,8 +53,10 @@ func NewRootCmd() (*cobra.Command, app.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
-		WithHomeDir(app.DefaultNodeHome).
-		WithViper("")
+		WithViper(app.EnvPrefix)
+
+	regenHome := cast.ToString(initClientCtx.Viper.Get(tmcli.HomeFlag))
+	initClientCtx = initClientCtx.WithHomeDir(regenHome)
 
 	rootCmd := &cobra.Command{
 		Use:   "regen",
@@ -163,7 +165,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig app.EncodingConfig) {
 		genutilcli.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
-		tmcli.NewCompletionCmd(rootCmd, true),
 		NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
 		config.Cmd(),

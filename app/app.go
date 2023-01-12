@@ -2,19 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/big"
 	"net/http"
 	"os"
-
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
-	icahost "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host"
-	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -39,6 +31,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -58,6 +51,7 @@ import (
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -69,6 +63,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -80,6 +75,7 @@ import (
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
@@ -90,10 +86,22 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
+	icacontroller "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/keeper"
-	"github.com/cosmos/ibc-go/v5/modules/apps/transfer"
+	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	ibcfee "github.com/cosmos/ibc-go/v5/modules/apps/29-fee"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v5/modules/apps/29-fee/keeper"
+	ibcfeetypes "github.com/cosmos/ibc-go/v5/modules/apps/29-fee/types"
+	ibctransfer "github.com/cosmos/ibc-go/v5/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v5/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v5/modules/core"
@@ -103,14 +111,19 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 
-	"github.com/regen-network/regen-ledger/x/data"
-	datamodule "github.com/regen-network/regen-ledger/x/data/module"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
+	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
+	"github.com/regen-network/regen-ledger/x/data/v2"
+	datamodule "github.com/regen-network/regen-ledger/x/data/v2/module"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
+	"github.com/regen-network/regen-ledger/x/intertx"
+	intertxkeeper "github.com/regen-network/regen-ledger/x/intertx/keeper"
+	intertxmodule "github.com/regen-network/regen-ledger/x/intertx/module"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/regen-network/regen-ledger/v4/app/client/docs/statik"
+	_ "github.com/regen-network/regen-ledger/v5/app/client/docs/statik"
 )
 
 const (
@@ -143,7 +156,7 @@ var (
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
+		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
@@ -157,6 +170,8 @@ var (
 			},
 		),
 		ica.AppModuleBasic{},
+		ibcfee.AppModuleBasic{},
+		intertxmodule.AppModule{},
 	)
 
 	// module account permissions
@@ -165,6 +180,7 @@ var (
 			authtypes.FeeCollectorName:      nil,
 			distrtypes.ModuleName:           nil,
 			icatypes.ModuleName:             nil,
+			ibcfeetypes.ModuleName:          nil,
 			minttypes.ModuleName:            {authtypes.Minter},
 			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
 			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
@@ -176,6 +192,8 @@ var (
 
 		return perms
 	}()
+
+	upgrades = []regenupgrades.Upgrade{v5_0.Upgrade}
 )
 
 func init() {
@@ -198,29 +216,34 @@ type RegenApp struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper    authkeeper.AccountKeeper
-	BankKeeper       bankkeeper.Keeper
-	CapabilityKeeper *capabilitykeeper.Keeper
-	StakingKeeper    stakingkeeper.Keeper
-	SlashingKeeper   slashingkeeper.Keeper
-	MintKeeper       mintkeeper.Keeper
-	DistrKeeper      distrkeeper.Keeper
-	GovKeeper        govkeeper.Keeper
-	CrisisKeeper     crisiskeeper.Keeper
-	UpgradeKeeper    upgradekeeper.Keeper
-	ParamsKeeper     paramskeeper.Keeper
-	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ICAHostKeeper    *icahostkeeper.Keeper
-	EvidenceKeeper   evidencekeeper.Keeper
-	TransferKeeper   ibctransferkeeper.Keeper
-	FeeGrantKeeper   feegrantkeeper.Keeper
-	AuthzKeeper      authzkeeper.Keeper
-	GroupKeeper      groupkeeper.Keeper
+	AccountKeeper       authkeeper.AccountKeeper
+	BankKeeper          bankkeeper.Keeper
+	CapabilityKeeper    *capabilitykeeper.Keeper
+	StakingKeeper       stakingkeeper.Keeper
+	SlashingKeeper      slashingkeeper.Keeper
+	MintKeeper          mintkeeper.Keeper
+	DistrKeeper         distrkeeper.Keeper
+	GovKeeper           govkeeper.Keeper
+	CrisisKeeper        crisiskeeper.Keeper
+	UpgradeKeeper       upgradekeeper.Keeper
+	ParamsKeeper        paramskeeper.Keeper
+	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	ICAHostKeeper       icahostkeeper.Keeper
+	IBCFeeKeeper        ibcfeekeeper.Keeper
+	ICAControllerKeeper icacontrollerkeeper.Keeper
+	InterTxKeeper       intertxkeeper.Keeper
+	EvidenceKeeper      evidencekeeper.Keeper
+	IBCTransferKeeper   ibctransferkeeper.Keeper
+	FeeGrantKeeper      feegrantkeeper.Keeper
+	AuthzKeeper         authzkeeper.Keeper
+	GroupKeeper         groupkeeper.Keeper
 
 	// make scoped keepers public for test purposes
-	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
+	ScopedIBCTransferKeeper   capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
+	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	ModuleManager *module.Manager
@@ -256,7 +279,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		authzkeeper.StoreKey,
 		ibchost.StoreKey, ibctransfertypes.StoreKey, group.StoreKey,
 		ecocredit.ModuleName, data.ModuleName,
-		icahosttypes.StoreKey,
+		icahosttypes.StoreKey, ibcfeetypes.StoreKey, icacontrollertypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -281,8 +304,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 	app.ScopedIBCKeeper = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
-	app.ScopedTransferKeeper = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	app.ScopedIBCTransferKeeper = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	app.ScopedICAHostKeeper = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
+	app.ScopedInterTxKeeper = app.CapabilityKeeper.ScopeToModule(intertx.ModuleName)
 
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
@@ -317,7 +342,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// set the governance module account as the authority for conducting upgrades
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String())
-	app.registerUpgradeHandlers()
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -338,35 +362,79 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
-	// Create Transfer Keepers
-	app.TransferKeeper = ibctransferkeeper.NewKeeper(
-		appCodec, keys[ibctransfertypes.StoreKey], app.GetSubspace(ibctransfertypes.ModuleName),
+	// Create IBC Keepers
+	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
+		app.appCodec,
+		app.keys[ibcfeetypes.StoreKey],
+		app.GetSubspace(ibcfeetypes.ModuleName),
 		app.IBCKeeper.ChannelKeeper,
-		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
-		app.AccountKeeper, app.BankKeeper, app.ScopedTransferKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 	)
-	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
 
-	icaHostKeeper := icahostkeeper.NewKeeper(
+	app.IBCTransferKeeper = ibctransferkeeper.NewKeeper(
+		appCodec,
+		keys[ibctransfertypes.StoreKey],
+		app.GetSubspace(ibctransfertypes.ModuleName),
+		app.IBCFeeKeeper, // added to support IBC fee middleware
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.ScopedIBCTransferKeeper,
+	)
+
+	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
+		appCodec,
+		keys[icacontrollertypes.StoreKey],
+		app.GetSubspace(icacontrollertypes.SubModuleName),
+		app.IBCFeeKeeper, // added to support IBC fee middleware
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.ScopedICAControllerKeeper,
+		app.MsgServiceRouter(),
+	)
+
+	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec,
 		app.keys[icahosttypes.StoreKey],
 		app.GetSubspace(icahosttypes.SubModuleName),
+		app.IBCFeeKeeper, // added to support IBC fee middleware
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
 		app.ScopedICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
-	app.ICAHostKeeper = &icaHostKeeper
 
-	icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
+	app.InterTxKeeper = intertxkeeper.NewKeeper(
+		appCodec,
+		app.ICAControllerKeeper,
+		app.ScopedInterTxKeeper,
+	)
 
-	// Create static IBC router, add transfer route, then set and seal it
+	// Create IBC stacks to add to IBC router
+	ibcTransferModule := ibctransfer.NewIBCModule(app.IBCTransferKeeper)
+	ibcTransferStack := ibcfee.NewIBCMiddleware(ibcTransferModule, app.IBCFeeKeeper)
+
+	interTxModule := intertxmodule.NewModule(app.InterTxKeeper)
+	interTxIBCModule := intertxmodule.NewIBCModule(app.InterTxKeeper)
+
+	icaControllerIBCModule := icacontroller.NewIBCMiddleware(interTxIBCModule, app.ICAControllerKeeper)
+	icaControllerStack := ibcfee.NewIBCMiddleware(icaControllerIBCModule, app.IBCFeeKeeper)
+
+	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
+	icaHostStack := ibcfee.NewIBCMiddleware(icaHostIBCModule, app.IBCFeeKeeper)
+
+	// Create static IBC router
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.
-		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+		AddRoute(ibctransfertypes.ModuleName, ibcTransferStack).
+		AddRoute(intertx.ModuleName, icaControllerStack).
+		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
+		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// create evidence keeper with router
@@ -429,12 +497,13 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		transferModule,
+		ibctransfer.NewAppModule(app.IBCTransferKeeper),
 		ecocreditMod,
 		dataMod,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		// TODO: wire up controller https://github.com/regen-network/regen-ledger/issues/1453
-		ica.NewAppModule(nil, app.ICAHostKeeper),
+		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
+		ibcfee.NewAppModule(app.IBCFeeKeeper),
+		interTxModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -467,6 +536,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
+		intertx.ModuleName,
 	)
 	app.ModuleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -493,6 +564,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
+		intertx.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -524,11 +597,16 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
+		intertx.ModuleName,
 	)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.ModuleManager.RegisterServices(app.configurator)
 	app.ModuleManager.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.ModuleManager.RegisterInvariants(&app.CrisisKeeper)
+
+	app.setUpgradeStoreLoaders()
+	app.setUpgradeHandlers()
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
@@ -548,9 +626,11 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
-		transferModule,
+		ibctransfer.NewAppModule(app.IBCTransferKeeper),
+		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ecocreditMod,
 		dataMod,
+		ibcfee.NewAppModule(app.IBCFeeKeeper),
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -564,7 +644,15 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
-	anteHandler, err := app.setCustomAnteHandler(encodingConfig.TxConfig)
+	anteHandler, err := ante.NewAnteHandler(
+		ante.HandlerOptions{
+			AccountKeeper:   app.AccountKeeper,
+			BankKeeper:      app.BankKeeper,
+			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+			FeegrantKeeper:  app.FeeGrantKeeper,
+			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+		},
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -706,6 +794,32 @@ func (app *RegenApp) RegisterTendermintService(clientCtx client.Context) {
 	)
 }
 
+func (app *RegenApp) setUpgradeStoreLoaders() {
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+
+	for _, u := range upgrades {
+		if upgradeInfo.Name == u.UpgradeName {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &u.StoreUpgrades))
+		}
+	}
+}
+
+func (app *RegenApp) setUpgradeHandlers() {
+	for _, u := range upgrades {
+		app.UpgradeKeeper.SetUpgradeHandler(
+			u.UpgradeName,
+			u.CreateUpgradeHandler(app.ModuleManager, app.configurator),
+		)
+	}
+}
+
 // RegisterSwaggerAPI registers swagger route with API Server
 func RegisterSwaggerAPI(_ client.Context, rtr *mux.Router) {
 	statikFS, err := fs.New()
@@ -742,6 +856,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(ecocredit.DefaultParamspace)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(ibcfeetypes.ModuleName)
+	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 
 	return paramsKeeper
 }

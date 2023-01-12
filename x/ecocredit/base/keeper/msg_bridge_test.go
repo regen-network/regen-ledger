@@ -11,9 +11,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/testutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2/testutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type bridgeSuite struct {
@@ -96,6 +96,12 @@ func (s *bridgeSuite) AliceOwnsTradableCreditAmountFromTheCreditBatch(a string) 
 		TradableAmount: a,
 	})
 	require.NoError(s.t, err)
+}
+
+func (s *bridgeSuite) AliceHasAddress(a string) {
+	addr, err := sdk.AccAddressFromBech32(a)
+	require.NoError(s.t, err)
+	s.alice = addr
 }
 
 func (s *bridgeSuite) AliceHasTheBatchBalance(a gocuke.DocString) {

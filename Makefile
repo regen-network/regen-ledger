@@ -2,11 +2,12 @@
 
 export GO111MODULE=on
 
-BUILD_DIR ?= $(CURDIR)/build
-REGEN_CMD := $(CURDIR)/cmd/regen
-
-BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-COMMIT := $(shell git log -1 --format='%H')
+BUILD_DIR             ?= $(CURDIR)/build
+REGEN_CMD             := $(CURDIR)/cmd/regen
+BRANCH                := $(shell git rev-parse --abbrev-ref HEAD)
+COMMIT                := $(shell git log -1 --format='%H')
+GORELEASER_CONFIG     ?= ./.goreleaser.yml
+GIT_HEAD_COMMIT_LONG  := $(shell git log -1 --format='%H')
 
 ifeq (,$(VERSION))
   VERSION := $(shell git describe --exact-match 2>/dev/null)
@@ -151,7 +152,7 @@ install: go.sum go-version
 GO_MAJOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1)
 GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
 MIN_GO_MAJOR_VERSION = 1
-MIN_GO_MINOR_VERSION = 18
+MIN_GO_MINOR_VERSION = 19
 GO_VERSION_ERROR = Golang version $(GO_MAJOR_VERSION).$(GO_MINOR_VERSION) is not supported, \
 please update to at least $(MIN_GO_MAJOR_VERSION).$(MIN_GO_MINOR_VERSION)
 
@@ -211,12 +212,11 @@ lint-fix: format
 	@find . -name 'go.mod' -type f -execdir golangci-lint run --fix --out-format=tab --issues-exit-code=0 \;
 
 format_filter = -name '*.go' -type f \
-	-not -path '*.git*' \
 	-not -name '*.pb.go' \
 	-not -name '*.gw.go' \
 	-not -name '*.pulsar.go' \
 	-not -name '*.cosmos_orm.go' \
-	-not -name 'statik.go'
+	-not -name '*statik.go'
 
 format_local = \
 	github.com/tendermint/tendermint \
@@ -225,8 +225,10 @@ format_local = \
 	github.com/regen-network/regen-ledger
 
 format:
-	@echo "Formatting imports in all go modules..."
+	@echo "Formatting all go modules..."
+	@find . $(format_filter) | xargs gofmt -s -w
 	@find . $(format_filter) | xargs goimports -w -local $(subst $(whitespace),$(comma),$(format_local))
+	@find . $(format_filter) | xargs misspell -w
 
 .PHONY: lint lint-fix format
 
@@ -236,6 +238,7 @@ format:
 
 tools: go-version
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/client9/misspell/cmd/misspell@latest
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install github.com/yoheimuta/protolint/cmd/protolint@latest
 
@@ -260,6 +263,12 @@ include make/tests.mk
 include make/sims.mk
 
 ###############################################################################
+###                                 Release                                 ###
+###############################################################################
+
+include make/release.mk
+
+###############################################################################
 ###                              Documentation                              ###
 ###############################################################################
 
@@ -272,7 +281,7 @@ docs-build:
 	@cd docs && yarn && yarn build
 
 godocs:
-	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v4/"
+	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v5/"
 	godoc -http=:6060
 
 .PHONY: docs-dev docs-build godocs
@@ -291,24 +300,24 @@ swagger: proto-swagger-gen
 ###############################################################################
 
 DOCKER := $(shell which docker)
-LOCALNET_DIR = $(CURDIR)/.testnets
+LOCALNET_DIR = $(CURDIR)/.localnet
 
 localnet-build-env:
-	$(MAKE) -C contrib/images regen-env
+	$(MAKE) -C images regen-env
 
 localnet-build-nodes:
-	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data regen-ledger/regen-env \
-			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test
+	$(DOCKER) run --rm -v $(LOCALNET_DIR):/data regen-ledger/regen-env \
+			  testnet init-files --v 4 -o /data --keyring-backend=test
 	docker-compose up -d
 
 # localnet-start will run a 4-node testnet locally. The nodes are
-# based off the docker images in: ./contrib/images/regen-env
+# based off the docker image in ./images/regen-env
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 localnet-stop:
 	docker-compose down -v
 
-.PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
+.PHONY: localnet-build-env localnet-build-nodes localnet-start localnet-stop
 
 ###############################################################################
 ###                                 Clean                                   ###

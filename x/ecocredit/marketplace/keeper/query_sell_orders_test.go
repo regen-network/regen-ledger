@@ -7,13 +7,15 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
+	"github.com/stretchr/testify/require"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 var (
@@ -29,6 +31,11 @@ func TestSellOrders(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t, 2)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classID, start, end, creditType)
+
+	// nil request
+	_, err := s.k.SellOrders(s.ctx, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "invalid argument")
 
 	order1 := insertSellOrder(t, s, s.addrs[0], 1)
 	order2 := insertSellOrder(t, s, s.addrs[1], 1)

@@ -5,22 +5,19 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // AllBalances queries all credit balances from state with optional pagination.
 // NOTE: If no pagination is given in the request, responses will be limited by the Cosmos SDK's default limit (100).
 func (k Keeper) AllBalances(ctx context.Context, req *types.QueryAllBalancesRequest) (*types.QueryAllBalancesResponse, error) {
-	if req.Pagination == nil {
-		req.Pagination = &query.PageRequest{Limit: query.DefaultLimit}
-	}
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrapf(err.Error())
 	}
 	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalancePrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
@@ -37,7 +34,7 @@ func (k Keeper) AllBalances(ctx context.Context, req *types.QueryAllBalancesRequ
 
 		batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("batch with key: %d", balance.BatchKey)
 		}
 
 		res.Balances = append(res.Balances, &types.BatchBalanceInfo{
@@ -50,7 +47,7 @@ func (k Keeper) AllBalances(ctx context.Context, req *types.QueryAllBalancesRequ
 	}
 	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 	return &res, nil
 }

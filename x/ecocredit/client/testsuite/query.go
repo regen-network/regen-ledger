@@ -7,10 +7,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base/client"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/genesis"
+	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/genesis"
 )
 
 const outputFormat = "JSON"
@@ -25,7 +25,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	})
 
 	classID2 := s.createClass(clientCtx, &types.MsgCreateClass{
@@ -33,7 +33,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	})
 
 	classIDs := [2]string{classID, classID2}
@@ -105,7 +105,7 @@ func (s *IntegrationTestSuite) TestQueryClassCmd() {
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "hi",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	}
 
 	classID := s.createClass(clientCtx, class)
@@ -581,10 +581,22 @@ func (s *IntegrationTestSuite) TestQueryParamsCmd() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &params))
 	require.NoError(err)
 
-	require.Equal(genesis.DefaultParams().BasketFee, params.Params.BasketFee)
-	require.Equal(genesis.DefaultParams().CreditClassFee, params.Params.CreditClassFee)
+	require.Equal(genesis.DefaultBasketFee().Fee.Amount, params.Params.BasketFee[0].Amount)
+	require.Equal(genesis.DefaultBasketFee().Fee.Denom, params.Params.BasketFee[0].Denom)
+
+	require.Equal(genesis.DefaultClassFee().Fee.Amount, params.Params.CreditClassFee[0].Amount)
+	require.Equal(genesis.DefaultClassFee().Fee.Denom, params.Params.CreditClassFee[0].Denom)
+
 	require.False(params.Params.AllowlistEnabled)
-	require.Equal([]string{sdk.AccAddress("issuer1").String(), sdk.AccAddress("issuer2").String()}, params.Params.AllowedClassCreators)
+
+	require.Equal([]string{
+		sdk.AccAddress("issuer1").String(),
+		sdk.AccAddress("issuer2").String(),
+	}, params.Params.AllowedClassCreators)
+
+	require.Equal(s.allowedDenoms[0], params.Params.AllowedDenoms[0].BankDenom)
+
+	require.Equal(s.bridgeChain, params.Params.AllowedBridgeChains[0])
 }
 
 func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
@@ -761,7 +773,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Fee:              &genesis.DefaultParams().CreditClassFee[0],
+		Fee:              genesis.DefaultClassFee().Fee,
 	})
 
 	testCases := []struct {
@@ -871,7 +883,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypeCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAllowedClassCreators() {
+func (s *IntegrationTestSuite) TestQueryAllowedClassCreatorsCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
@@ -926,7 +938,7 @@ func (s *IntegrationTestSuite) TestQueryAllBalancesCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = outputFormat
 
-	cmd := client.QueryAllBalances()
+	cmd := client.QueryAllBalancesCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{fmt.Sprintf("--%s", flags.FlagCountTotal)})
 
 	s.Require().NoError(err, out.String())
@@ -935,4 +947,76 @@ func (s *IntegrationTestSuite) TestQueryAllBalancesCmd() {
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	s.Require().Greater(len(res.Balances), 0)
 	s.Require().Greater(res.Pagination.Total, uint64(0))
+}
+
+func (s *IntegrationTestSuite) TestQueryBalancesByBatchCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name:           "missing args",
+			args:           []string{},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:           "too many args",
+			args:           []string{"abcde", "abcde"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "valid",
+			args:      []string{s.batchDenom},
+			expectErr: false,
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				s.batchDenom,
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+				fmt.Sprintf("--%s=%d", flags.FlagLimit, 1),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryBalancesByBatchCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res types.QueryBalancesByBatchResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NotEmpty(res.Balances)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedBridgeChainsCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = outputFormat
+
+	cmd := client.QueryAllowedBridgeChainsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+
+	s.Require().NoError(err, out.String())
+
+	var res types.QueryAllowedBridgeChainsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Len(res.AllowedBridgeChains, 1)
+	s.Require().Equal(res.AllowedBridgeChains[0], s.bridgeChain)
 }

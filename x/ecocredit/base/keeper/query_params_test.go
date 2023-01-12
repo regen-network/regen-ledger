@@ -8,10 +8,10 @@ import (
 	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	baskettypes "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	markettypes "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	baskettypes "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	markettypes "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestQuery_Params(t *testing.T) {
@@ -61,9 +61,8 @@ func TestQuery_Params(t *testing.T) {
 	assert.DeepEqual(t, result.Params.AllowedClassCreators, []string{s.addr.String()})
 	assert.Equal(t, result.Params.CreditClassFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))).String())
 	assert.Equal(t, result.Params.BasketFee.String(), sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))).String())
-	assert.Equal(t, len(result.AllowedDenoms), 1)
-	assert.Equal(t, result.AllowedDenoms[0].BankDenom, "uregen")
-
-	assert.Equal(t, len(result.AllowedBridgeChains), 1)
-	assert.Equal(t, result.AllowedBridgeChains[0], allowedChain)
+	assert.Equal(t, len(result.Params.AllowedDenoms), 1)
+	assert.Equal(t, result.Params.AllowedDenoms[0].BankDenom, "uregen")
+	assert.Equal(t, len(result.Params.AllowedBridgeChains), 1)
+	assert.Equal(t, result.Params.AllowedBridgeChains[0], allowedChain)
 }

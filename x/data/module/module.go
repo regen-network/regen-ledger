@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"math/rand"
 
-	storeTypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
+
 	tmtypes "github.com/tendermint/tendermint/abci/types"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -16,15 +16,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	storeTypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/data/client"
-	"github.com/regen-network/regen-ledger/x/data/genesis"
-	"github.com/regen-network/regen-ledger/x/data/server"
-	"github.com/regen-network/regen-ledger/x/data/simulation"
+	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v2/client"
+	"github.com/regen-network/regen-ledger/x/data/v2/genesis"
+	"github.com/regen-network/regen-ledger/x/data/v2/server"
+	"github.com/regen-network/regen-ledger/x/data/v2/simulation"
 )
 
 var (

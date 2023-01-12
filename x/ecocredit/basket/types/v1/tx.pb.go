@@ -9,7 +9,7 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
-	_ "github.com/gogo/protobuf/gogoproto"
+	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	grpc "google.golang.org/grpc"
@@ -66,11 +66,10 @@ type MsgCreate struct {
 	// date_criteria is the date criteria for batches admitted to the basket.
 	// At most, only one of the fields in the date_criteria should be set.
 	DateCriteria *DateCriteria `protobuf:"bytes,8,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
-	// fee is the basket creation fee. A fee is not required if the list of fees
-	// in Params.basket_fee is empty. The provided fee must be one of the fees
-	// listed in Params.basket_fee. The provided amount can be greater than
-	// or equal to the listed amount but the basket creator will only be charged
-	// the listed amount (i.e. the minimum amount).
+	// fee is the basket creation fee. A fee is not required if no fee exists
+	// in the basket fee parameter. The fee must be greater than or equal to the
+	// fee param. The curator will be charged the amount specified in the fee
+	// parameter, even if a greater amount is provided.
 	//
 	// Note (Since Revision 1): Although this field supports a list of fees, the
 	// basket creator must provide no more than one fee (i.e. one Coin in a list
@@ -230,9 +229,7 @@ type MsgPut struct {
 	// basket_denom is the basket denom to add credits to.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are credits to add to the basket. If they do not match the basket's
-	// admission criteria the operation will fail. If there are any "dust" credits
-	// left over when converting credits to basket tokens, these credits will
-	// not be converted to basket tokens and instead remain with the owner.
+	// admission criteria, the operation will fail.
 	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
@@ -345,7 +342,7 @@ type MsgTake struct {
 	// amount is the integer number of basket tokens to convert into credits.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	// retirement_location is the optional retirement jurisdiction for the
-	// credits which will be used only if retire_on_take is true for this basket.
+	// credits which will be used only if retire_on_take is true.
 	//
 	// Deprecated (Since Revision 1): This field will be removed in the next
 	// version in favor of retirement_jurisdiction. Only one of these need to be
@@ -353,13 +350,21 @@ type MsgTake struct {
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"` // Deprecated: Do not use.
 	// retire_on_take is a boolean that dictates whether the ecocredits
 	// received in exchange for the basket tokens will be received as
-	// retired or tradable credits.
+	// retired or tradable credits. If the basket has disable_auto_retire set to
+	// false, retire_on_take MUST be set to true, and a retirement jurisdiction
+	// must be provided.
 	RetireOnTake bool `protobuf:"varint,5,opt,name=retire_on_take,json=retireOnTake,proto3" json:"retire_on_take,omitempty"`
 	// retirement_jurisdiction is the optional retirement jurisdiction for the
-	// credits which will be used only if retire_on_take is true for this basket.
+	// credits which will be used only if retire_on_take is true.
 	//
 	// Since Revision 1
 	RetirementJurisdiction string `protobuf:"bytes,6,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
+	// retirement_reason is any arbitrary string that specifies the reason for
+	// retiring credits. The reason will be included in EventRetire and is not
+	// stored in state.
+	//
+	// Since Revision 2
+	RetirementReason string `protobuf:"bytes,7,opt,name=retirement_reason,json=retirementReason,proto3" json:"retirement_reason,omitempty"`
 }
 
 func (m *MsgTake) Reset()         { *m = MsgTake{} }
@@ -434,6 +439,13 @@ func (m *MsgTake) GetRetireOnTake() bool {
 func (m *MsgTake) GetRetirementJurisdiction() string {
 	if m != nil {
 		return m.RetirementJurisdiction
+	}
+	return ""
+}
+
+func (m *MsgTake) GetRetirementReason() string {
+	if m != nil {
+		return m.RetirementReason
 	}
 	return ""
 }
@@ -581,6 +593,112 @@ func (m *MsgUpdateBasketFeeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateBasketFeeResponse proto.InternalMessageInfo
 
+// MsgUpdateCurator is the Msg/UpdateCurator request type.
+//
+// Since Revision 2
+type MsgUpdateCurator struct {
+	// curator is the address of the basket curator.
+	Curator string `protobuf:"bytes,1,opt,name=curator,proto3" json:"curator,omitempty"`
+	// denom is the unique identifier of the basket.
+	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
+	// new_curator is the address of the account that will become the
+	// new curator of the basket.
+	NewCurator string `protobuf:"bytes,3,opt,name=new_curator,json=newCurator,proto3" json:"new_curator,omitempty"`
+}
+
+func (m *MsgUpdateCurator) Reset()         { *m = MsgUpdateCurator{} }
+func (m *MsgUpdateCurator) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateCurator) ProtoMessage()    {}
+func (*MsgUpdateCurator) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a60f962a3c61f018, []int{8}
+}
+func (m *MsgUpdateCurator) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateCurator) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateCurator.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateCurator) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateCurator.Merge(m, src)
+}
+func (m *MsgUpdateCurator) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateCurator) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateCurator.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateCurator proto.InternalMessageInfo
+
+func (m *MsgUpdateCurator) GetCurator() string {
+	if m != nil {
+		return m.Curator
+	}
+	return ""
+}
+
+func (m *MsgUpdateCurator) GetDenom() string {
+	if m != nil {
+		return m.Denom
+	}
+	return ""
+}
+
+func (m *MsgUpdateCurator) GetNewCurator() string {
+	if m != nil {
+		return m.NewCurator
+	}
+	return ""
+}
+
+// MsgUpdateCuratorResponse is the Msg/UpdateCurator response type.
+//
+// Since Revision 2
+type MsgUpdateCuratorResponse struct {
+}
+
+func (m *MsgUpdateCuratorResponse) Reset()         { *m = MsgUpdateCuratorResponse{} }
+func (m *MsgUpdateCuratorResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateCuratorResponse) ProtoMessage()    {}
+func (*MsgUpdateCuratorResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a60f962a3c61f018, []int{9}
+}
+func (m *MsgUpdateCuratorResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateCuratorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateCuratorResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateCuratorResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateCuratorResponse.Merge(m, src)
+}
+func (m *MsgUpdateCuratorResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateCuratorResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateCuratorResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateCuratorResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreate)(nil), "regen.ecocredit.basket.v1.MsgCreate")
 	proto.RegisterType((*MsgCreateResponse)(nil), "regen.ecocredit.basket.v1.MsgCreateResponse")
@@ -590,6 +708,8 @@ func init() {
 	proto.RegisterType((*MsgTakeResponse)(nil), "regen.ecocredit.basket.v1.MsgTakeResponse")
 	proto.RegisterType((*MsgUpdateBasketFee)(nil), "regen.ecocredit.basket.v1.MsgUpdateBasketFee")
 	proto.RegisterType((*MsgUpdateBasketFeeResponse)(nil), "regen.ecocredit.basket.v1.MsgUpdateBasketFeeResponse")
+	proto.RegisterType((*MsgUpdateCurator)(nil), "regen.ecocredit.basket.v1.MsgUpdateCurator")
+	proto.RegisterType((*MsgUpdateCuratorResponse)(nil), "regen.ecocredit.basket.v1.MsgUpdateCuratorResponse")
 }
 
 func init() {
@@ -597,59 +717,64 @@ func init() {
 }
 
 var fileDescriptor_a60f962a3c61f018 = []byte{
-	// 824 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0xcf, 0x6f, 0xdc, 0x44,
-	0x14, 0x8e, 0xe3, 0x74, 0x93, 0x7d, 0x49, 0x37, 0x74, 0x5a, 0xb5, 0xee, 0xaa, 0x72, 0xb7, 0x56,
-	0x51, 0x97, 0xd2, 0xd8, 0x24, 0x15, 0x20, 0x7a, 0x4b, 0xb6, 0xe2, 0x80, 0xba, 0xa2, 0x32, 0x81,
-	0x03, 0x3f, 0x64, 0xcd, 0xda, 0x0f, 0xd7, 0xec, 0xda, 0xb3, 0x9a, 0x19, 0x6f, 0x92, 0x2b, 0x37,
-	0x6e, 0xfd, 0x3b, 0x38, 0xf1, 0x0f, 0x70, 0xef, 0xb1, 0x47, 0x4e, 0x80, 0x92, 0x03, 0xff, 0x03,
-	0x27, 0x34, 0x3f, 0xd6, 0x59, 0x1a, 0x75, 0x0b, 0x3d, 0x79, 0xe6, 0x7b, 0xdf, 0x7b, 0x33, 0xef,
-	0x7d, 0x9f, 0x6d, 0x08, 0x38, 0xe6, 0x58, 0x45, 0x98, 0xb2, 0x94, 0x63, 0x56, 0xc8, 0x68, 0x44,
-	0xc5, 0x18, 0x65, 0x34, 0xdb, 0x8d, 0xe4, 0x71, 0x38, 0xe5, 0x4c, 0x32, 0x72, 0x53, 0x73, 0xc2,
-	0x86, 0x13, 0x1a, 0x4e, 0x38, 0xdb, 0xed, 0xfa, 0x29, 0x13, 0x25, 0x13, 0x2a, 0x0b, 0xa3, 0xd9,
-	0xee, 0x08, 0x25, 0xdd, 0x8d, 0x52, 0x56, 0x54, 0x26, 0xb5, 0x7b, 0xc3, 0xc6, 0x4b, 0x91, 0xab,
-	0x92, 0xa5, 0xc8, 0x6d, 0xe0, 0x5a, 0xce, 0x72, 0xa6, 0x97, 0x91, 0x5a, 0x59, 0xf4, 0xdd, 0x25,
-	0xb7, 0x39, 0x99, 0xa2, 0x30, 0xb4, 0xe0, 0x57, 0x17, 0xda, 0x43, 0x91, 0x0f, 0x38, 0x52, 0x89,
-	0xc4, 0x83, 0xf5, 0xb4, 0xe6, 0x54, 0x32, 0xee, 0x39, 0x3d, 0xa7, 0xdf, 0x8e, 0xe7, 0x5b, 0x42,
-	0x60, 0xad, 0xa2, 0x25, 0x7a, 0xab, 0x1a, 0xd6, 0x6b, 0xd2, 0x83, 0xcd, 0x0c, 0x45, 0xca, 0x8b,
-	0xa9, 0x2c, 0x58, 0xe5, 0xb9, 0x3a, 0xb4, 0x08, 0x11, 0x1f, 0x36, 0xf0, 0x78, 0xca, 0x2a, 0xac,
-	0xa4, 0xb7, 0xd6, 0x73, 0xfa, 0x97, 0x0f, 0x56, 0x3d, 0x27, 0x6e, 0x30, 0x12, 0xc2, 0xd5, 0xac,
-	0x10, 0x74, 0x34, 0xc1, 0x84, 0xd6, 0x92, 0x25, 0x1c, 0x65, 0xc1, 0xd1, 0xbb, 0xd4, 0x73, 0xfa,
-	0x1b, 0xf1, 0x15, 0x1b, 0xda, 0xaf, 0x25, 0x8b, 0x75, 0x80, 0x3c, 0x00, 0x62, 0xba, 0x49, 0x54,
-	0x0f, 0x09, 0x1d, 0x8d, 0x38, 0xce, 0xbc, 0x96, 0x3e, 0xf8, 0x1d, 0x13, 0x39, 0x3c, 0x99, 0xe2,
-	0xbe, 0xc6, 0xc9, 0x3d, 0xd8, 0xa6, 0x93, 0x09, 0x3b, 0xc2, 0x2c, 0x49, 0x27, 0x54, 0x08, 0x14,
-	0xde, 0x7a, 0xcf, 0xed, 0xb7, 0xe3, 0x8e, 0x85, 0x07, 0x06, 0x25, 0x4f, 0xe0, 0x72, 0x46, 0x25,
-	0x26, 0x29, 0x2f, 0x24, 0xf2, 0x82, 0x7a, 0x1b, 0x3d, 0xa7, 0xbf, 0xb9, 0x77, 0x2f, 0x7c, 0xad,
-	0x5a, 0xe1, 0x63, 0x2a, 0x71, 0x60, 0xe9, 0xf1, 0x56, 0xb6, 0xb0, 0x23, 0xdf, 0x81, 0xfb, 0x3d,
-	0xa2, 0xd7, 0xee, 0xb9, 0xfd, 0xcd, 0xbd, 0x9b, 0xa1, 0x91, 0x4d, 0xa5, 0x62, 0x68, 0x65, 0x0d,
-	0x07, 0xac, 0xa8, 0x0e, 0x3e, 0x78, 0xf1, 0xfb, 0xed, 0x95, 0x9f, 0xff, 0xb8, 0xdd, 0xcf, 0x0b,
-	0xf9, 0xac, 0x1e, 0x85, 0x29, 0x2b, 0x23, 0xab, 0xb1, 0x79, 0xec, 0x88, 0x6c, 0x6c, 0xc5, 0x52,
-	0x09, 0x22, 0x56, 0x75, 0x1f, 0x6d, 0xfd, 0xf8, 0xd7, 0x2f, 0xf7, 0xe7, 0xba, 0x04, 0x1f, 0xc1,
-	0x95, 0x46, 0xbe, 0x18, 0xc5, 0x94, 0x55, 0x02, 0xc9, 0x1d, 0xd8, 0x32, 0x37, 0x4d, 0x32, 0xac,
-	0x58, 0x69, 0xb5, 0xdc, 0x34, 0xd8, 0x63, 0x05, 0x05, 0xcf, 0x1d, 0x68, 0x0d, 0x45, 0xfe, 0xb4,
-	0x96, 0xe4, 0x1a, 0x5c, 0x62, 0x47, 0x15, 0xce, 0x25, 0x37, 0x9b, 0x0b, 0x35, 0x56, 0x2f, 0xd4,
-	0x20, 0xfb, 0xb0, 0x6e, 0xe6, 0x22, 0x3c, 0x57, 0x37, 0xbb, 0x6c, 0x60, 0x07, 0x7a, 0x35, 0xd0,
-	0x70, 0x3c, 0xcf, 0x7b, 0x04, 0xaa, 0x19, 0x73, 0x62, 0xf0, 0x09, 0x74, 0xcc, 0x8d, 0x9a, 0x3e,
-	0x94, 0x80, 0x25, 0xab, 0x2b, 0x99, 0x70, 0x4c, 0xb1, 0x98, 0x61, 0x66, 0xef, 0xd8, 0x31, 0x70,
-	0x6c, 0xd1, 0xe0, 0x6f, 0x07, 0xd6, 0x87, 0x22, 0x3f, 0xa4, 0x63, 0x7c, 0xfb, 0x76, 0xae, 0x43,
-	0xcb, 0x94, 0xb5, 0x4e, 0xb6, 0x3b, 0xf2, 0x10, 0xae, 0x1a, 0x5f, 0x96, 0x58, 0xc9, 0x64, 0xc2,
-	0x52, 0xaa, 0xed, 0xae, 0xfc, 0xdc, 0xd6, 0x7e, 0x26, 0xe7, 0xe1, 0x27, 0x36, 0x4a, 0xee, 0x42,
-	0xc7, 0xa0, 0x09, 0xab, 0x12, 0x49, 0xc7, 0x73, 0x53, 0x6f, 0x19, 0xf4, 0xf3, 0x4a, 0xdf, 0xf5,
-	0x63, 0xb8, 0xb1, 0x50, 0xfa, 0x87, 0x9a, 0x17, 0x22, 0x2b, 0x52, 0x5d, 0xde, 0x98, 0xfa, 0xfa,
-	0x79, 0xf8, 0xb3, 0x85, 0xe8, 0xbf, 0xe6, 0x76, 0x08, 0xdb, 0xb6, 0xf7, 0x66, 0x70, 0x0b, 0xca,
-	0x38, 0x6f, 0xa7, 0x4c, 0xc0, 0x80, 0x0c, 0x45, 0xfe, 0xe5, 0x54, 0x59, 0xdb, 0x30, 0x3e, 0x45,
-	0x24, 0xb7, 0xa0, 0x4d, 0x6b, 0xf9, 0x8c, 0xf1, 0x42, 0x9e, 0xd8, 0x01, 0x9f, 0x03, 0xe4, 0x7d,
-	0xe3, 0xfc, 0x55, 0xfd, 0xf6, 0xbc, 0xde, 0xf9, 0xc6, 0xc7, 0x1d, 0xd5, 0xc2, 0x79, 0x72, 0x70,
-	0x0b, 0xba, 0x17, 0x0f, 0x9c, 0x77, 0xb4, 0xf7, 0x93, 0x0b, 0xee, 0x50, 0xe4, 0xe4, 0x5b, 0x68,
-	0xd9, 0x6f, 0xd5, 0xdd, 0x25, 0x2d, 0x35, 0xaf, 0x44, 0xf7, 0xc1, 0x7f, 0x61, 0x35, 0x73, 0xfb,
-	0x02, 0x5c, 0xf5, 0x46, 0xdc, 0x59, 0x9e, 0xf4, 0xb4, 0x96, 0xdd, 0xf7, 0xde, 0x48, 0x69, 0x8a,
-	0x7e, 0x05, 0x6b, 0x5a, 0xec, 0x60, 0x79, 0x8a, 0xe2, 0x74, 0xef, 0xbf, 0x99, 0xd3, 0xd4, 0x3d,
-	0x82, 0xed, 0x57, 0xe5, 0xd9, 0x59, 0x9e, 0xfe, 0x0a, 0xbd, 0xfb, 0xe1, 0xff, 0xa2, 0xcf, 0x0f,
-	0x3e, 0xf8, 0xe6, 0xc5, 0xa9, 0xef, 0xbc, 0x3c, 0xf5, 0x9d, 0x3f, 0x4f, 0x7d, 0xe7, 0xf9, 0x99,
-	0xbf, 0xf2, 0xf2, 0xcc, 0x5f, 0xf9, 0xed, 0xcc, 0x5f, 0xf9, 0x7a, 0x7f, 0xe1, 0x53, 0xa6, 0x4b,
-	0xef, 0x54, 0x28, 0x8f, 0x18, 0x1f, 0xdb, 0xdd, 0x04, 0xb3, 0x1c, 0x79, 0x74, 0x7c, 0xf1, 0xb7,
-	0xa4, 0x3f, 0x73, 0xea, 0xb7, 0xd7, 0xd2, 0xff, 0xa5, 0x87, 0xff, 0x04, 0x00, 0x00, 0xff, 0xff,
-	0xcb, 0x27, 0x7e, 0xf4, 0x4e, 0x07, 0x00, 0x00,
+	// 902 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x56, 0xcd, 0x6e, 0xdb, 0x46,
+	0x10, 0x36, 0x25, 0x5b, 0xb2, 0x46, 0xb6, 0x1c, 0x6f, 0x8c, 0x84, 0x11, 0x02, 0x59, 0x21, 0x52,
+	0x44, 0x8d, 0x63, 0xaa, 0xb6, 0xd1, 0x16, 0xcd, 0xcd, 0x56, 0xd0, 0x43, 0x11, 0xa1, 0x01, 0xeb,
+	0xf6, 0xd0, 0x1f, 0x10, 0x14, 0x39, 0x65, 0x58, 0x49, 0xbb, 0xca, 0xee, 0x4a, 0xb2, 0xaf, 0x7d,
+	0x82, 0xbc, 0x45, 0x81, 0x9e, 0xfa, 0x02, 0xbd, 0xe7, 0x98, 0x63, 0x4f, 0x6d, 0x61, 0x1f, 0xfa,
+	0x12, 0x3d, 0x04, 0xdc, 0x5d, 0x52, 0x8a, 0x0d, 0x2b, 0x89, 0x4f, 0xda, 0xfd, 0xe6, 0x9b, 0xd9,
+	0x9d, 0xf9, 0x66, 0x96, 0x02, 0x87, 0x63, 0x8c, 0xb4, 0x8d, 0x21, 0x0b, 0x39, 0x46, 0x89, 0x6c,
+	0xf7, 0x02, 0xd1, 0x47, 0xd9, 0x9e, 0xec, 0xb5, 0xe5, 0x89, 0x3b, 0xe2, 0x4c, 0x32, 0x72, 0x47,
+	0x71, 0xdc, 0x9c, 0xe3, 0x6a, 0x8e, 0x3b, 0xd9, 0xab, 0x37, 0x42, 0x26, 0x86, 0x4c, 0xa4, 0x5e,
+	0xd8, 0x9e, 0xec, 0xf5, 0x50, 0x06, 0x7b, 0xed, 0x90, 0x25, 0x54, 0xbb, 0xd6, 0x6f, 0x1b, 0xfb,
+	0x50, 0xc4, 0x69, 0xc8, 0xa1, 0x88, 0x8d, 0x61, 0x2b, 0x66, 0x31, 0x53, 0xcb, 0x76, 0xba, 0x32,
+	0xe8, 0x47, 0x0b, 0x6e, 0x73, 0x3a, 0x42, 0xa1, 0x69, 0xce, 0x9f, 0x45, 0xa8, 0x74, 0x45, 0xdc,
+	0xe1, 0x18, 0x48, 0x24, 0x36, 0x94, 0xc3, 0x31, 0x0f, 0x24, 0xe3, 0xb6, 0xd5, 0xb4, 0x5a, 0x15,
+	0x2f, 0xdb, 0x12, 0x02, 0xcb, 0x34, 0x18, 0xa2, 0x5d, 0x50, 0xb0, 0x5a, 0x93, 0x26, 0x54, 0x23,
+	0x14, 0x21, 0x4f, 0x46, 0x32, 0x61, 0xd4, 0x2e, 0x2a, 0xd3, 0x3c, 0x44, 0x1a, 0xb0, 0x8a, 0x27,
+	0x23, 0x46, 0x91, 0x4a, 0x7b, 0xb9, 0x69, 0xb5, 0xd6, 0x8f, 0x0a, 0xb6, 0xe5, 0xe5, 0x18, 0x71,
+	0xe1, 0x66, 0x94, 0x88, 0xa0, 0x37, 0x40, 0x3f, 0x18, 0x4b, 0xe6, 0x73, 0x94, 0x09, 0x47, 0x7b,
+	0xa5, 0x69, 0xb5, 0x56, 0xbd, 0x4d, 0x63, 0x3a, 0x1c, 0x4b, 0xe6, 0x29, 0x03, 0x79, 0x04, 0x44,
+	0x67, 0xe3, 0xa7, 0x39, 0xf8, 0x41, 0xaf, 0xc7, 0x71, 0x62, 0x97, 0xd4, 0xc1, 0x37, 0xb4, 0xe5,
+	0xf8, 0x74, 0x84, 0x87, 0x0a, 0x27, 0x0f, 0x60, 0x23, 0x18, 0x0c, 0xd8, 0x14, 0x23, 0x3f, 0x1c,
+	0x04, 0x42, 0xa0, 0xb0, 0xcb, 0xcd, 0x62, 0xab, 0xe2, 0xd5, 0x0c, 0xdc, 0xd1, 0x28, 0x79, 0x0a,
+	0xeb, 0x51, 0x20, 0xd1, 0x0f, 0x79, 0x22, 0x91, 0x27, 0x81, 0xbd, 0xda, 0xb4, 0x5a, 0xd5, 0xfd,
+	0x07, 0xee, 0x95, 0x6a, 0xb9, 0x4f, 0x02, 0x89, 0x1d, 0x43, 0xf7, 0xd6, 0xa2, 0xb9, 0x1d, 0xf9,
+	0x09, 0x8a, 0x3f, 0x23, 0xda, 0x95, 0x66, 0xb1, 0x55, 0xdd, 0xbf, 0xe3, 0x6a, 0xd9, 0x52, 0x57,
+	0x74, 0x8d, 0xac, 0x6e, 0x87, 0x25, 0xf4, 0xe8, 0x93, 0x57, 0x7f, 0x6f, 0x2f, 0xfd, 0xfe, 0xcf,
+	0x76, 0x2b, 0x4e, 0xe4, 0xf3, 0x71, 0xcf, 0x0d, 0xd9, 0xb0, 0x6d, 0x34, 0xd6, 0x3f, 0xbb, 0x22,
+	0xea, 0x1b, 0xb1, 0x52, 0x07, 0xe1, 0xa5, 0x71, 0x1f, 0xaf, 0xfd, 0xfa, 0xdf, 0x1f, 0x0f, 0x33,
+	0x5d, 0x9c, 0xcf, 0x60, 0x33, 0x97, 0xcf, 0x43, 0x31, 0x62, 0x54, 0x20, 0xb9, 0x07, 0x6b, 0xfa,
+	0xa6, 0x7e, 0x84, 0x94, 0x0d, 0x8d, 0x96, 0x55, 0x8d, 0x3d, 0x49, 0x21, 0xe7, 0xa5, 0x05, 0xa5,
+	0xae, 0x88, 0x9f, 0x8d, 0x25, 0xd9, 0x82, 0x15, 0x36, 0xa5, 0x98, 0x49, 0xae, 0x37, 0x97, 0x62,
+	0x14, 0x2e, 0xc5, 0x20, 0x87, 0x50, 0xd6, 0x75, 0x11, 0x76, 0x51, 0x25, 0xbb, 0xa8, 0x60, 0x47,
+	0x6a, 0xd5, 0x51, 0xb0, 0x97, 0xf9, 0x3d, 0x86, 0x34, 0x19, 0x7d, 0xa2, 0xf3, 0x05, 0xd4, 0xf4,
+	0x8d, 0xf2, 0x3c, 0x52, 0x01, 0x87, 0x6c, 0x4c, 0xa5, 0xcf, 0x31, 0xc4, 0x64, 0x82, 0x91, 0xb9,
+	0x63, 0x4d, 0xc3, 0x9e, 0x41, 0x9d, 0xdf, 0x0a, 0x50, 0xee, 0x8a, 0xf8, 0x38, 0xe8, 0xe3, 0xf5,
+	0xd3, 0xb9, 0x05, 0x25, 0x1d, 0xd6, 0x74, 0xb2, 0xd9, 0x91, 0x03, 0xb8, 0xa9, 0xfb, 0x72, 0x88,
+	0x54, 0xfa, 0x03, 0x16, 0x06, 0xaa, 0xdd, 0xd3, 0x7e, 0xae, 0xa8, 0x7e, 0x26, 0x33, 0xf3, 0x53,
+	0x63, 0x25, 0xf7, 0xa1, 0xa6, 0x51, 0x9f, 0x51, 0x5f, 0x06, 0xfd, 0xac, 0xa9, 0xd7, 0x34, 0xfa,
+	0x35, 0x55, 0x77, 0xfd, 0x1c, 0x6e, 0xcf, 0x85, 0xfe, 0x65, 0xcc, 0x13, 0x11, 0x25, 0xa1, 0x0a,
+	0xaf, 0x9b, 0xfa, 0xd6, 0xcc, 0xfc, 0xd5, 0x9c, 0x95, 0xec, 0xc0, 0xe6, 0x9c, 0x23, 0xc7, 0x40,
+	0x30, 0x6a, 0x97, 0xf5, 0x1c, 0xcc, 0x0c, 0x9e, 0xc2, 0xdf, 0x2a, 0xf2, 0x31, 0x6c, 0x98, 0x42,
+	0xe5, 0x55, 0x9e, 0x93, 0xd1, 0xba, 0x9e, 0x8c, 0x0e, 0x03, 0xd2, 0x15, 0xf1, 0xb7, 0xa3, 0x74,
+	0x0e, 0x34, 0xe3, 0x4b, 0x44, 0x72, 0x17, 0x2a, 0xc1, 0x58, 0x3e, 0x67, 0x3c, 0x91, 0xa7, 0x46,
+	0x8d, 0x19, 0x40, 0x76, 0xf4, 0x98, 0x14, 0xd4, 0xa8, 0x5d, 0x3d, 0x26, 0xba, 0xe9, 0x6b, 0x69,
+	0x0a, 0x33, 0x67, 0xe7, 0x2e, 0xd4, 0x2f, 0x1f, 0x98, 0x65, 0xe4, 0xbc, 0x80, 0x1b, 0xb9, 0xb5,
+	0x63, 0x1e, 0xb0, 0xab, 0x9f, 0xb6, 0x2d, 0x58, 0x99, 0xef, 0x09, 0xbd, 0x21, 0xdb, 0x50, 0xa5,
+	0x38, 0xf5, 0x33, 0x1f, 0xdd, 0x12, 0x40, 0x71, 0x6a, 0x02, 0x5e, 0x98, 0xc3, 0x3a, 0xd8, 0x17,
+	0x8f, 0xcc, 0xae, 0xb3, 0xff, 0x7f, 0x11, 0x8a, 0x5d, 0x11, 0x93, 0x1f, 0xa1, 0x64, 0xde, 0xd9,
+	0xfb, 0x0b, 0x2a, 0x9c, 0x8f, 0x73, 0xfd, 0xd1, 0xfb, 0xb0, 0x72, 0x19, 0xbf, 0x81, 0x62, 0x3a,
+	0xcd, 0xf7, 0x16, 0x3b, 0x3d, 0x1b, 0xcb, 0xfa, 0xc7, 0xef, 0xa4, 0xe4, 0x41, 0xbf, 0x83, 0x65,
+	0xd5, 0xa8, 0xce, 0x62, 0x97, 0x94, 0x53, 0x7f, 0xf8, 0x6e, 0x4e, 0x1e, 0x77, 0x0a, 0x1b, 0x17,
+	0xbb, 0x65, 0x77, 0xb1, 0xfb, 0x05, 0x7a, 0xfd, 0xd3, 0x0f, 0xa2, 0xe7, 0x07, 0xbf, 0x80, 0xf5,
+	0xb7, 0xfb, 0x62, 0xe7, 0x7d, 0xe2, 0x18, 0x72, 0xfd, 0xe0, 0x03, 0xc8, 0xd9, 0x91, 0x47, 0x3f,
+	0xbc, 0x3a, 0x6b, 0x58, 0xaf, 0xcf, 0x1a, 0xd6, 0xbf, 0x67, 0x0d, 0xeb, 0xe5, 0x79, 0x63, 0xe9,
+	0xf5, 0x79, 0x63, 0xe9, 0xaf, 0xf3, 0xc6, 0xd2, 0xf7, 0x87, 0x73, 0x2f, 0xbf, 0x0a, 0xbc, 0x4b,
+	0x51, 0x4e, 0x19, 0xef, 0x9b, 0xdd, 0x00, 0xa3, 0x18, 0x79, 0xfb, 0xe4, 0xf2, 0x57, 0x5c, 0x7d,
+	0x15, 0xd2, 0x7f, 0x09, 0x25, 0xf5, 0x19, 0x3f, 0x78, 0x13, 0x00, 0x00, 0xff, 0xff, 0x30, 0xe5,
+	0xfb, 0x03, 0x7d, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -664,12 +789,36 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// Create creates a bank denom which wraps credits.
+	// Create creates a basket that can hold different types of ecocredits that
+	// meet the basket's criteria. Upon depositing ecocredits into the basket,
+	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
+	// module. This allows basket tokens to be utilized within IBC. Basket tokens
+	// are fully fungible with other basket tokens from the same basket. The
+	// basket token denom is derived from the basket name, credit type
+	// abbreviation, and credit type precision (i.e. basket name "foo", credit
+	// type exponent 6, and credit type abbreviation "C" generates the denom
+	// eco.uC.foo). Baskets can limit credit acceptance criteria based on a
+	// combination of credit type, credit classes, and credit batch start date.
+	// Credits can be taken from the basket in exchange for basket tokens. Taken
+	// credits will be immediately retired, unless disable_auto_retire is set to
+	// true. When set to true, credits may be received in either a tradable or
+	// retired state, depending on the taker's request. If the basket fee
+	// governance parameter is set, a fee of equal or greater value must be
+	// provided in the request. Only the amount specified in the fee parameter
+	// will be charged, even if a greater value fee is provided. Fees from
+	// creating a basket are burned.
 	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
-	// Put puts credits into a basket in return for basket tokens.
+	// Put deposits credits into the basket from the holder's tradable balance in
+	// exchange for basket tokens. The amount of tokens received is calculated by
+	// the following formula: sum(credits_deposited) * 10^credit_type_exponent.
+	// The credits being deposited MUST adhere to the criteria of the basket.
 	Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error)
-	// Take takes credits from a basket starting from the oldest
-	// credits first.
+	// Take exchanges basket tokens for credits from the specified basket. Credits
+	// are taken deterministically, ordered by oldest batch start date to the most
+	// recent batch start date. If the basket has disable_auto_retire set to
+	// false, both retirement_jurisdiction and retire_on_take must be set, and the
+	// taken credits will be retired immediately upon receipt. Otherwise, credits
+	// may be received as tradable or retired, based on the request.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no
@@ -677,6 +826,10 @@ type MsgClient interface {
 	//
 	// Since Revision 2
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
+	// UpdateCurator updates basket curator.
+	//
+	// Since Revision 2
+	UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opts ...grpc.CallOption) (*MsgUpdateCuratorResponse, error)
 }
 
 type msgClient struct {
@@ -723,14 +876,47 @@ func (c *msgClient) UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee,
 	return out, nil
 }
 
+func (c *msgClient) UpdateCurator(ctx context.Context, in *MsgUpdateCurator, opts ...grpc.CallOption) (*MsgUpdateCuratorResponse, error) {
+	out := new(MsgUpdateCuratorResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/UpdateCurator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// Create creates a bank denom which wraps credits.
+	// Create creates a basket that can hold different types of ecocredits that
+	// meet the basket's criteria. Upon depositing ecocredits into the basket,
+	// basket tokens are minted and sent to depositor using the Cosmos SDK Bank
+	// module. This allows basket tokens to be utilized within IBC. Basket tokens
+	// are fully fungible with other basket tokens from the same basket. The
+	// basket token denom is derived from the basket name, credit type
+	// abbreviation, and credit type precision (i.e. basket name "foo", credit
+	// type exponent 6, and credit type abbreviation "C" generates the denom
+	// eco.uC.foo). Baskets can limit credit acceptance criteria based on a
+	// combination of credit type, credit classes, and credit batch start date.
+	// Credits can be taken from the basket in exchange for basket tokens. Taken
+	// credits will be immediately retired, unless disable_auto_retire is set to
+	// true. When set to true, credits may be received in either a tradable or
+	// retired state, depending on the taker's request. If the basket fee
+	// governance parameter is set, a fee of equal or greater value must be
+	// provided in the request. Only the amount specified in the fee parameter
+	// will be charged, even if a greater value fee is provided. Fees from
+	// creating a basket are burned.
 	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
-	// Put puts credits into a basket in return for basket tokens.
+	// Put deposits credits into the basket from the holder's tradable balance in
+	// exchange for basket tokens. The amount of tokens received is calculated by
+	// the following formula: sum(credits_deposited) * 10^credit_type_exponent.
+	// The credits being deposited MUST adhere to the criteria of the basket.
 	Put(context.Context, *MsgPut) (*MsgPutResponse, error)
-	// Take takes credits from a basket starting from the oldest
-	// credits first.
+	// Take exchanges basket tokens for credits from the specified basket. Credits
+	// are taken deterministically, ordered by oldest batch start date to the most
+	// recent batch start date. If the basket has disable_auto_retire set to
+	// false, both retirement_jurisdiction and retire_on_take must be set, and the
+	// taken credits will be retired immediately upon receipt. Otherwise, credits
+	// may be received as tradable or retired, based on the request.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
 	// UpdateBasketFee is a governance method that allows for updating the basket
 	// creation fee. If not set, the basket creation fee will be removed and no
@@ -738,6 +924,10 @@ type MsgServer interface {
 	//
 	// Since Revision 2
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)
+	// UpdateCurator updates basket curator.
+	//
+	// Since Revision 2
+	UpdateCurator(context.Context, *MsgUpdateCurator) (*MsgUpdateCuratorResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -755,6 +945,9 @@ func (*UnimplementedMsgServer) Take(ctx context.Context, req *MsgTake) (*MsgTake
 }
 func (*UnimplementedMsgServer) UpdateBasketFee(ctx context.Context, req *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasketFee not implemented")
+}
+func (*UnimplementedMsgServer) UpdateCurator(ctx context.Context, req *MsgUpdateCurator) (*MsgUpdateCuratorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCurator not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -833,6 +1026,24 @@ func _Msg_UpdateBasketFee_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateCurator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateCurator)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateCurator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.basket.v1.Msg/UpdateCurator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateCurator(ctx, req.(*MsgUpdateCurator))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.ecocredit.basket.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -852,6 +1063,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateBasketFee",
 			Handler:    _Msg_UpdateBasketFee_Handler,
+		},
+		{
+			MethodName: "UpdateCurator",
+			Handler:    _Msg_UpdateCurator_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1090,6 +1305,13 @@ func (m *MsgTake) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.RetirementReason) > 0 {
+		i -= len(m.RetirementReason)
+		copy(dAtA[i:], m.RetirementReason)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RetirementReason)))
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.RetirementJurisdiction) > 0 {
 		i -= len(m.RetirementJurisdiction)
 		copy(dAtA[i:], m.RetirementJurisdiction)
@@ -1240,6 +1462,73 @@ func (m *MsgUpdateBasketFeeResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgUpdateCurator) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateCurator) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateCurator) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.NewCurator) > 0 {
+		i -= len(m.NewCurator)
+		copy(dAtA[i:], m.NewCurator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.NewCurator)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Curator) > 0 {
+		i -= len(m.Curator)
+		copy(dAtA[i:], m.Curator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Curator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateCuratorResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateCuratorResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateCuratorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1376,6 +1665,10 @@ func (m *MsgTake) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.RetirementReason)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -1412,6 +1705,36 @@ func (m *MsgUpdateBasketFee) Size() (n int) {
 }
 
 func (m *MsgUpdateBasketFeeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateCurator) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Curator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.NewCurator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateCuratorResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2266,6 +2589,38 @@ func (m *MsgTake) Unmarshal(dAtA []byte) error {
 			}
 			m.RetirementJurisdiction = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetirementReason", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetirementReason = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -2516,6 +2871,202 @@ func (m *MsgUpdateBasketFeeResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgUpdateBasketFeeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateCurator) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateCurator: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateCurator: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Curator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Curator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewCurator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewCurator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateCuratorResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateCuratorResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateCuratorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

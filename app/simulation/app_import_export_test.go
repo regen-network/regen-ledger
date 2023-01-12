@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -31,9 +31,9 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 
-	regen "github.com/regen-network/regen-ledger/v4/app"
-	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	regen "github.com/regen-network/regen-ledger/v5/app"
+	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 
 func TestAppImportExport(t *testing.T) {
@@ -61,9 +61,6 @@ func TestAppImportExport(t *testing.T) {
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, app.Name())
-
-	// TODO: remove after https://github.com/cosmos/ibc-go/issues/2151 is resolved
-	removeICAFromSimulation(app)
 
 	// run randomized simulation
 	_, simParams, simErr := simulateFromSeed(t, app, config)

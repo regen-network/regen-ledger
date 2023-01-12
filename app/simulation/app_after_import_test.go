@@ -16,7 +16,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regen "github.com/regen-network/regen-ledger/v4/app"
+	regen "github.com/regen-network/regen-ledger/v5/app"
 )
 
 func TestAppAfterImport(t *testing.T) {
@@ -44,9 +44,6 @@ func TestAppAfterImport(t *testing.T) {
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, app.Name())
-
-	// TODO: remove after https://github.com/cosmos/ibc-go/issues/2151 is resolved
-	removeICAFromSimulation(app)
 
 	// run randomized simulation
 	stopEarly, simParams, simErr := simulateFromSeed(t, app, config)

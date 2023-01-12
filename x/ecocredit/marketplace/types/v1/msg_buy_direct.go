@@ -7,9 +7,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	"github.com/regen-network/regen-ledger/types/v2/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgBuyDirect{}
@@ -72,6 +72,10 @@ func (m MsgBuyDirect) ValidateBasic() error {
 			if err := base.ValidateJurisdiction(order.RetirementJurisdiction); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("%s: retirement jurisdiction: %s", orderIndex, err)
 			}
+
+			if len(order.RetirementReason) > base.MaxNoteLength {
+				return ecocredit.ErrMaxLimit.Wrapf("%s: retirement reason: max length %d", orderIndex, base.MaxNoteLength)
+			}
 		}
 	}
 
@@ -84,7 +88,7 @@ func (m MsgBuyDirect) GetSigners() []sdk.AccAddress {
 }
 
 func (m MsgBuyDirect) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgBuyDirect) Route() string { return sdk.MsgTypeURL(&m) }

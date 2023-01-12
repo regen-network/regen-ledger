@@ -4,11 +4,12 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/regen-network/regen-ledger/types"
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/types/v2"
 )
 
 func TestCoinToProtoCoin(t *testing.T) {

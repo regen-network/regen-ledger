@@ -6,20 +6,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 // SellOrders queries all sell orders in state with optional pagination
 func (k Keeper) SellOrders(ctx context.Context, req *types.QuerySellOrdersRequest) (*types.QuerySellOrdersResponse, error) {
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, err
+	if req == nil {
+		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
 	}
 
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderSellerIndexKey{}, ormlist.Paginate(pg))
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
+	if err != nil {
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
+	}
+
+	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderIdIndexKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -36,12 +41,12 @@ func (k Keeper) SellOrders(ctx context.Context, req *types.QuerySellOrdersReques
 
 		batch, err := k.baseStore.BatchTable().Get(ctx, order.BatchKey)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("unable to get batch with key: %d: %s", order.BatchKey, err.Error())
 		}
 
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
-			return nil, err
+			return nil, regenerrors.ErrNotFound.Wrapf("unable to get market with id: %d: %s", order.MarketId, err.Error())
 		}
 
 		info := types.SellOrderInfo{
@@ -60,7 +65,7 @@ func (k Keeper) SellOrders(ctx context.Context, req *types.QuerySellOrdersReques
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QuerySellOrdersResponse{SellOrders: orders, Pagination: pr}, nil

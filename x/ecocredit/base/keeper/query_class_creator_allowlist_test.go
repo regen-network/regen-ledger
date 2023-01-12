@@ -5,8 +5,8 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestQuery_ClassCreatorAllowlist(t *testing.T) {

@@ -6,8 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	"github.com/regen-network/regen-ledger/types/v2/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
 
 // Validate checks if a BatchIssuance is valid.
@@ -35,6 +36,10 @@ func (i *BatchIssuance) Validate() error {
 		if !retiredAmount.IsZero() {
 			if err = base.ValidateJurisdiction(i.RetirementJurisdiction); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("retirement jurisdiction: %s", err)
+			}
+
+			if len(i.RetirementReason) > base.MaxNoteLength {
+				return ecocredit.ErrMaxLimit.Wrapf("retirement reason: max length %d", base.MaxNoteLength)
 			}
 		}
 	}

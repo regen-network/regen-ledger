@@ -146,3 +146,35 @@ Feature: MsgPut
     """
     When the message is validated
     Then expect the error "expected a positive decimal, got -100: invalid decimal string: invalid request"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "basket_denom": "eco.uC.NCT",
+      "credits": [
+        {
+          "batch_denom": "C01-001-20200101-20210101-001",
+          "amount": "100"
+        }
+      ]
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen.basket/MsgPut",
+      "value":{
+        "basket_denom":"eco.uC.NCT",
+        "credits":[
+          {
+            "amount":"100",
+            "batch_denom":"C01-001-20200101-20210101-001"
+          }
+        ],
+        "owner":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
+      }
+    }
+    """

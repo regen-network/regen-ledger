@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
+
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestBalancesByBatch(t *testing.T) {

@@ -7,6 +7,9 @@ import (
 
 	"cosmossdk.io/math"
 
+	"github.com/stretchr/testify/require"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -16,13 +19,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 
-	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
+	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/simulation"
 )
 
 func TestRandomizedGenState(t *testing.T) {

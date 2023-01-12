@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 const (

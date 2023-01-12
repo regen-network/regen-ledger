@@ -5,14 +5,19 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 func TestKeeper_BasketBalance(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+
+	// nil query
+	_, err := s.k.BasketBalance(s.ctx, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "empty request: invalid argument")
 
 	// add a basket
 	basketDenom := testBasketDenom
@@ -49,6 +54,7 @@ func TestKeeper_BasketBalance(t *testing.T) {
 		BatchDenom:  basketDenom,
 	})
 	require.Error(t, err)
+	require.ErrorContains(t, err, "basket bar not found")
 
 	// add another basket
 	basketDenom = "foo1"

@@ -5,12 +5,13 @@ import (
 	"fmt"
 
 	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/types/math"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	"github.com/regen-network/regen-ledger/types/v2/math"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
 // BuyDirect allows for the purchase of credits directly from sell orders.
@@ -29,7 +30,10 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, order.SellOrderId)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s: sell order with id %d: %s", orderIndex, order.SellOrderId, err.Error())
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: sell order with id %d: %s",
+				orderIndex, order.SellOrderId, err,
+			)
 		}
 
 		// check if buyer account is equal to seller account
@@ -55,7 +59,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		if err != nil {
 			return nil, err
 		}
-		creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
+		buyQuantity, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 				"%s: decimal places exceeds precision: quantity: %s, credit type precision: %d",
@@ -66,7 +70,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		// check that bid price and ask price denoms match
 		market, err := k.stateStore.MarketTable().Get(ctx, sellOrder.MarketId)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("market id %d: %s", sellOrder.MarketId, err.Error())
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("market id %d: %s", sellOrder.MarketId, err)
 		}
 		if order.BidPrice.Denom != market.BankDenom {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
@@ -89,24 +93,31 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		}
 
 		// check address has the total cost (price per * order quantity)
-		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
-		cost, err := getTotalCost(sellOrderAskAmount, creditOrderQty)
+		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
+		cost, err := getTotalCost(sellOrderAskAmount, buyQuantity)
 		if err != nil {
 			return nil, err
 		}
-		coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
-		if bal.IsLT(coinCost) {
+		totalCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
+		if buyerBalance.IsLT(totalCost) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
 				"%s: quantity: %s, ask price: %s%s, total price: %v, bank balance: %v",
-				orderIndex, order.Quantity, sellOrder.AskAmount, market.BankDenom, coinCost, bal,
+				orderIndex, order.Quantity, sellOrder.AskAmount, market.BankDenom, totalCost, buyerBalance,
 			)
 		}
 
-		// fill the order, updating balances and the sell order in state
-		if err = k.fillOrder(ctx, orderIndex, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
+		// fillOrder updates seller balance, buyer balance, batch supply, and transfers calculated
+		// total cost from buyer account to seller account.
+		if err = k.fillOrder(ctx, fillOrderParams{
+			orderIndex:   orderIndex,
+			sellOrder:    sellOrder,
+			buyerAcc:     buyerAcc,
+			buyQuantity:  buyQuantity,
+			totalCost:    totalCost,
 			autoRetire:   !order.DisableAutoRetire,
 			batchDenom:   batch.Denom,
 			jurisdiction: order.RetirementJurisdiction,
+			reason:       order.RetirementReason,
 		}); err != nil {
 			return nil, err
 		}

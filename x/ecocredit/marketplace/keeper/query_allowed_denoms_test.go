@@ -5,23 +5,34 @@ import (
 
 	"gotest.tools/v3/assert"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 func TestQueryAllowedDenoms(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t, 0)
 
+	// nil request
+	_, err := s.k.AllowedDenoms(s.ctx, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "invalid argument")
+
+	// no allowed denoms present
+	_, err = s.k.AllowedDenoms(s.ctx, &types.QueryAllowedDenomsRequest{})
+	assert.NilError(t, err)
+
 	allowedDenom := api.AllowedDenom{
 		BankDenom:    "uregen",
 		DisplayDenom: "regen",
 		Exponent:     18,
 	}
-	err := s.marketStore.AllowedDenomTable().Insert(s.ctx, &allowedDenom)
+	err = s.marketStore.AllowedDenomTable().Insert(s.ctx, &allowedDenom)
 	assert.NilError(t, err)
 
 	allowedDenomOsmo := api.AllowedDenom{

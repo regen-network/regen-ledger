@@ -8,10 +8,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 func TestQuery_SellOrder(t *testing.T) {
@@ -21,6 +21,11 @@ func TestQuery_SellOrder(t *testing.T) {
 
 	expiration, err := regentypes.ParseDate("expiration", "2030-01-01")
 	require.NoError(s.t, err)
+
+	// nil request
+	_, err = s.k.SellOrder(s.ctx, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "invalid argument")
 
 	// make a sell order (with expiration)
 	order1 := api.SellOrder{

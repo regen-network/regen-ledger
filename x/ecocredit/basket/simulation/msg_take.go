@@ -10,10 +10,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/simulation/utils"
 )
 
 const OpWeightMsgTake = "op_weight_take_from_basket" //nolint:gosec

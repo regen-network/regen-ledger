@@ -115,6 +115,7 @@ module.exports = {
           children: [
             '/ledger/migrations/',
             '/ledger/migrations/v4.0-migration',
+            '/ledger/migrations/v5.0-migration',
           ],
         },
       ],
@@ -201,6 +202,8 @@ module.exports = {
             '/validators/upgrades/v2.0-upgrade',
             '/validators/upgrades/v3.0-upgrade',
             '/validators/upgrades/v4.0-upgrade',
+            '/validators/upgrades/v4.1-upgrade',
+            '/validators/upgrades/v5.0-upgrade',
           ],
         },
       ],
@@ -259,6 +262,7 @@ module.exports = {
           collapsable: false,
           children: [
             '/tutorials/ibc-transfers',
+            '/tutorials/currency-allowlist-proposal',
           ],
         },
         {

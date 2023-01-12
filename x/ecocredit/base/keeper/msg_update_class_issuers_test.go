@@ -10,10 +10,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2/testutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type updateClassIssuers struct {
@@ -29,10 +29,6 @@ func TestUpdateClassIssuers(t *testing.T) {
 }
 
 func (s *updateClassIssuers) Before(t gocuke.TestingT) {
-	// TODO: move to init function in the root directory of the module #1243
-	cfg := sdk.GetConfig()
-	cfg.SetBech32PrefixForAccount("regen", "regenpub")
-
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
 	s.bob = s.addr2

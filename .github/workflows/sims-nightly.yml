@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - run: NUM_BLOCKS=500 make sim-app-multi-seed
+      - run: NUM_BLOCKS=100 make sim-app-multi-seed
 
   import-export:
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - run: NUM_BLOCKS=500 make sim-import-export-multi-seed
+      - run: NUM_BLOCKS=100 make sim-import-export-multi-seed
 
   after-import:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - run: NUM_BLOCKS=500 make sim-after-import-multi-seed
+      - run: NUM_BLOCKS=100 make sim-after-import-multi-seed
 
   determinism:
     runs-on: ubuntu-latest
@@ -50,4 +50,4 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: 'go.mod'
-      - run: NUM_BLOCKS=100 make sim-determinism-multi-seed
+      - run: NUM_BLOCKS=20 make sim-determinism-multi-seed

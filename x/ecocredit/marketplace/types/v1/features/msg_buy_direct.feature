@@ -13,6 +13,28 @@ Feature: MsgBuyDirect
             "denom": "regen",
             "amount": "100"
           },
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: a valid message without retirement reason
+    Given the message
+    """
+    {
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "orders": [
+        {
+          "sell_order_id": "1",
+          "quantity": "100",
+          "bid_price": {
+            "denom": "regen",
+            "amount": "100"
+          },
           "retirement_jurisdiction": "US-WA"
         }
       ]
@@ -34,7 +56,8 @@ Feature: MsgBuyDirect
             "denom": "regen",
             "amount": "100"
           },
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         },
         {
           "sell_order_id": "1",
@@ -43,7 +66,8 @@ Feature: MsgBuyDirect
             "denom": "regen",
             "amount": "100"
           },
-          "retirement_jurisdiction": "US-WA"
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
         }
       ]
     }
@@ -275,3 +299,67 @@ Feature: MsgBuyDirect
     """
     When the message is validated
     Then expect the error "orders[0]: retirement jurisdiction: expected format <country-code>[-<region-code>[ <postal-code>]]: parse error: invalid request"
+
+  Scenario: an error is returned if disable auto-retire is true and retirement reason exceeds 512 characters
+    Given the message
+    """
+    {
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "orders": [
+        {
+          "sell_order_id": 1,
+          "quantity": "100",
+          "bid_price": {
+            "denom": "regen",
+            "amount": "100"
+          },
+          "retirement_jurisdiction": "US-WA"
+        }
+      ]
+    }
+    """
+    And retirement reason with length "513"
+    When the message is validated
+    Then expect the error "orders[0]: retirement reason: max length 512: limit exceeded"
+
+  Scenario: a valid amino message
+    Given the message
+    """
+    {
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "orders": [
+        {
+          "sell_order_id": "1",
+          "quantity": "100",
+          "bid_price": {
+            "denom": "regen",
+            "amount": "100"
+          },
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption"
+        }
+      ]
+    }
+    """
+    When message sign bytes queried
+    Then expect the sign bytes
+    """
+    {
+      "type":"regen.marketplace/MsgBuyDirect",
+      "value":{
+        "buyer":"regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+        "orders":[
+          {
+            "bid_price": {
+              "amount":"100",
+              "denom":"regen"
+            },
+            "quantity":"100",
+            "retirement_jurisdiction":"US-WA",
+            "retirement_reason": "offsetting electricity consumption",
+            "sell_order_id":"1"
+          }
+        ]
+      }
+    }
+    """

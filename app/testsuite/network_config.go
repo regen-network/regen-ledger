@@ -16,8 +16,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/v4/app"
+	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
+	"github.com/regen-network/regen-ledger/v5/app"
 )
 
 func NewRegenAppConstructor(encCfg app.EncodingConfig) network.AppConstructor {
@@ -25,7 +25,7 @@ func NewRegenAppConstructor(encCfg app.EncodingConfig) network.AppConstructor {
 		return app.NewRegenApp(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 			encCfg,
-			app.EmptyAppOptions{},
+			EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 		)

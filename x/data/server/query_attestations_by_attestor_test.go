@@ -10,8 +10,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/x/data"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 func TestQuery_AttestationsByAttestor(t *testing.T) {
@@ -76,11 +76,11 @@ func TestQuery_AttestationsByAttestor(t *testing.T) {
 
 	// query attestations with empty attestor
 	_, err = s.server.AttestationsByAttestor(s.ctx, &data.QueryAttestationsByAttestorRequest{})
-	require.EqualError(t, err, "attestor cannot be empty: invalid request")
+	require.EqualError(t, err, "attestor cannot be empty: invalid argument")
 
 	// query attestations with invalid attestor address
 	_, err = s.server.AttestationsByAttestor(s.ctx, &data.QueryAttestationsByAttestorRequest{
 		Attestor: "foo",
 	})
-	require.EqualError(t, err, "attestor: decoding bech32 failed: invalid bech32 string length 3: invalid address")
+	require.EqualError(t, err, "attestor: decoding bech32 failed: invalid bech32 string length 3: invalid argument")
 }

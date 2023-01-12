@@ -15,7 +15,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 )
 
 func sdkContextForStoreKey(key *storetypes.KVStoreKey) sdk.Context {

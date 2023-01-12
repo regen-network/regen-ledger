@@ -12,23 +12,35 @@
     <a href="https://github.com/regen-network/regen-ledger/releases/latest">
         <img alt="Version" src="https://img.shields.io/github/tag/regen-network/regen-ledger" />
     </a>
-    <a href="https://pkg.go.dev/github.com/regen-network/regen-ledger/v4">
-        <img alt="Go Doc" src="https://pkg.go.dev/badge/github.com/regen-network/regen-ledger/v4" />
+    <a href="https://pkg.go.dev/github.com/regen-network/regen-ledger/v5">
+        <img alt="Go Doc" src="https://pkg.go.dev/badge/github.com/regen-network/regen-ledger/v5" />
     </a>
 </div>
 <br />
 <div align="center">
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/build.yml">
         <img alt="Build Status" src="https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/tests.yml">
         <img alt="Test Status" src="https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/sims.yml">
         <img alt="Sims Status" src="https://github.com/regen-network/regen-ledger/workflows/Sims/badge.svg" />
     </a>
-    <a href="https://github.com/regen-network/regen-ledger/commits/main">
+    <a href="https://github.com/regen-network/regen-ledger/commits/actions/workflows/lint.yml">
         <img alt="Lint Status" src="https://github.com/regen-network/regen-ledger/workflows/Lint/badge.svg" />
+    </a>
+</div>
+<br />
+<div align="center">
+    <a href="https://github.com/regen-network/regen-ledger/actions/workflows/proto-registry.yml">
+        <img alt="Proto Registry" src="https://github.com/regen-network/regen-ledger/workflows/Proto%20Registry/badge.svg" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/actions/workflows/build-nightly.yml">
+        <img alt="Test Nightly Status" src="https://github.com/regen-network/regen-ledger/workflows/Build%20Nightly/badge.svg" />
+    </a>
+    <a href="https://github.com/regen-network/regen-ledger/actions/workflows/sims-nightly.yml">
+        <img alt="Sims Nightly Status" src="https://github.com/regen-network/regen-ledger/workflows/Sims%20Nightly/badge.svg" />
     </a>
 </div>
 <br />
@@ -83,7 +95,61 @@ Contributions are more than welcome and greatly appreciated. All the information
 
 - [Git](https://git-scm.com) `>=2`
 - [Make](https://www.gnu.org/software/make/) `>=4`
-- [Go](https://golang.org/) `>=1.18`
+- [Go](https://golang.org/) `>=1.19`
+
+### Go Tools
+
+Install go tools:
+
+```
+make tools
+```
+
+### Git Hooks
+
+Configure git hooks:
+
+```
+git config core.hooksPath scripts/githooks
+```
+
+### Lint and Format
+
+Run linter in all go modules:
+
+```
+make lint
+```
+
+Run linter and attempt to fix errors in all go modules:
+
+```
+make lint-fix
+```
+
+Run formatting in all go modules:
+
+```
+make format
+```
+
+Run linter for all proto files:
+
+```
+make proto-lint
+```
+
+Run linter and attempt to fix errors for all proto files:
+
+```
+make proto-lint-fix
+```
+
+Run formatting for all proto files:
+
+```
+make proto-format
+```
 
 ### Running Tests
 

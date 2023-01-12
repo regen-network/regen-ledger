@@ -8,11 +8,11 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 // Create is an RPC to handle basket.MsgCreate

@@ -6,11 +6,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
 // Retire credits to the specified jurisdiction.
@@ -95,6 +95,7 @@ func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRet
 			BatchDenom:   credit.BatchDenom,
 			Amount:       credit.Amount,
 			Jurisdiction: req.Jurisdiction,
+			Reason:       req.Reason,
 		}); err != nil {
 			return nil, err
 		}

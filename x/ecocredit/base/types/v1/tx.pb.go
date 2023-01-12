@@ -8,7 +8,7 @@ import (
 	fmt "fmt"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
-	_ "github.com/gogo/protobuf/gogoproto"
+	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
@@ -35,7 +35,8 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgAddCreditType struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -91,7 +92,8 @@ func (m *MsgAddCreditType) GetCreditType() *CreditType {
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
-// Since Revision 1
+//
+// Since Revision 2
 type MsgAddCreditTypeResponse struct {
 }
 
@@ -145,10 +147,9 @@ type MsgCreateClass struct {
 	// credit_type_abbrev is the abbreviation of the credit type under which the
 	// credit class will be created (e.g. "C", "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
-	// fee is the credit class creation fee. The specified fee must be one of the
-	// fees listed in Params.credit_class_fee. The specified amount can be greater
-	// than or equal to the listed amount but the credit class creator will only
-	// be charged the listed amount (i.e. the minimum amount).
+	// fee is the credit class creation fee. An equal fee is required if the class
+	// creation fee parameter is set. The provided fee can be greater than the
+	// parameter, but only the amount in the parameter will be charged.
 	Fee *types.Coin `protobuf:"bytes,5,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
@@ -868,6 +869,12 @@ type MsgSend_SendCredits struct {
 	// country-code is required, while the sub-national-code and postal-code are
 	// optional and can be added for increased precision.
 	RetirementJurisdiction string `protobuf:"bytes,4,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
+	// retirement_reason is any arbitrary string that specifies the reason for
+	// retiring credits. This field is only required if retired_amount is
+	// positive.
+	//
+	// Since Revision 2
+	RetirementReason string `protobuf:"bytes,5,opt,name=retirement_reason,json=retirementReason,proto3" json:"retirement_reason,omitempty"`
 }
 
 func (m *MsgSend_SendCredits) Reset()         { *m = MsgSend_SendCredits{} }
@@ -931,6 +938,13 @@ func (m *MsgSend_SendCredits) GetRetirementJurisdiction() string {
 	return ""
 }
 
+func (m *MsgSend_SendCredits) GetRetirementReason() string {
+	if m != nil {
+		return m.RetirementReason
+	}
+	return ""
+}
+
 // MsgSendResponse is the Msg/Send response type.
 type MsgSendResponse struct {
 }
@@ -982,6 +996,11 @@ type MsgRetire struct {
 	// sub-national-code and postal-code are optional and can be added for
 	// increased precision.
 	Jurisdiction string `protobuf:"bytes,3,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
+	// reason is any arbitrary string that specifies the reason for retiring
+	// credits.
+	//
+	// Since Revision 2
+	Reason string `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
 func (m *MsgRetire) Reset()         { *m = MsgRetire{} }
@@ -1034,6 +1053,13 @@ func (m *MsgRetire) GetCredits() []*Credits {
 func (m *MsgRetire) GetJurisdiction() string {
 	if m != nil {
 		return m.Jurisdiction
+	}
+	return ""
+}
+
+func (m *MsgRetire) GetReason() string {
+	if m != nil {
+		return m.Reason
 	}
 	return ""
 }
@@ -1775,6 +1801,114 @@ func (m *MsgBridge) GetCredits() []*Credits {
 	return nil
 }
 
+// MsgUpdateBatchMetadata is the Msg/UpdateBatchMetadata request type.
+//
+// Since Revision 2
+type MsgUpdateBatchMetadata struct {
+	// issuer is the address of the account that is the issuer of the batch.
+	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// batch_denom is the unique identifier of the batch.
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// new_metadata is new metadata that will replace the existing metadata. It
+	// can be any arbitrary string with a maximum length of 256 characters that
+	// includes or references the metadata to attach to the batch.
+	NewMetadata string `protobuf:"bytes,3,opt,name=new_metadata,json=newMetadata,proto3" json:"new_metadata,omitempty"`
+}
+
+func (m *MsgUpdateBatchMetadata) Reset()         { *m = MsgUpdateBatchMetadata{} }
+func (m *MsgUpdateBatchMetadata) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBatchMetadata) ProtoMessage()    {}
+func (*MsgUpdateBatchMetadata) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{29}
+}
+func (m *MsgUpdateBatchMetadata) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBatchMetadata) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBatchMetadata.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBatchMetadata) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBatchMetadata.Merge(m, src)
+}
+func (m *MsgUpdateBatchMetadata) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBatchMetadata) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBatchMetadata.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBatchMetadata proto.InternalMessageInfo
+
+func (m *MsgUpdateBatchMetadata) GetIssuer() string {
+	if m != nil {
+		return m.Issuer
+	}
+	return ""
+}
+
+func (m *MsgUpdateBatchMetadata) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *MsgUpdateBatchMetadata) GetNewMetadata() string {
+	if m != nil {
+		return m.NewMetadata
+	}
+	return ""
+}
+
+// MsgUpdateBatchMetadataResponse is the Msg/UpdateBatchMetadataResponse
+// response type.
+//
+// Since Revision 2
+type MsgUpdateBatchMetadataResponse struct {
+}
+
+func (m *MsgUpdateBatchMetadataResponse) Reset()         { *m = MsgUpdateBatchMetadataResponse{} }
+func (m *MsgUpdateBatchMetadataResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBatchMetadataResponse) ProtoMessage()    {}
+func (*MsgUpdateBatchMetadataResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{30}
+}
+func (m *MsgUpdateBatchMetadataResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBatchMetadataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBatchMetadataResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBatchMetadataResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBatchMetadataResponse.Merge(m, src)
+}
+func (m *MsgUpdateBatchMetadataResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBatchMetadataResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBatchMetadataResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBatchMetadataResponse proto.InternalMessageInfo
+
 // MsgBridgeResponse is the Msg/Bridge response type.
 type MsgBridgeResponse struct {
 }
@@ -1783,7 +1917,7 @@ func (m *MsgBridgeResponse) Reset()         { *m = MsgBridgeResponse{} }
 func (m *MsgBridgeResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgBridgeResponse) ProtoMessage()    {}
 func (*MsgBridgeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{29}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{31}
 }
 func (m *MsgBridgeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1832,7 +1966,7 @@ func (m *MsgBridgeReceive) Reset()         { *m = MsgBridgeReceive{} }
 func (m *MsgBridgeReceive) String() string { return proto.CompactTextString(m) }
 func (*MsgBridgeReceive) ProtoMessage()    {}
 func (*MsgBridgeReceive) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{30}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{32}
 }
 func (m *MsgBridgeReceive) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1918,7 +2052,7 @@ func (m *MsgBridgeReceive_Batch) Reset()         { *m = MsgBridgeReceive_Batch{}
 func (m *MsgBridgeReceive_Batch) String() string { return proto.CompactTextString(m) }
 func (*MsgBridgeReceive_Batch) ProtoMessage()    {}
 func (*MsgBridgeReceive_Batch) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{30, 0}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{32, 0}
 }
 func (m *MsgBridgeReceive_Batch) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1998,7 +2132,7 @@ func (m *MsgBridgeReceive_Project) Reset()         { *m = MsgBridgeReceive_Proje
 func (m *MsgBridgeReceive_Project) String() string { return proto.CompactTextString(m) }
 func (*MsgBridgeReceive_Project) ProtoMessage()    {}
 func (*MsgBridgeReceive_Project) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{30, 1}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{32, 1}
 }
 func (m *MsgBridgeReceive_Project) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2062,7 +2196,7 @@ func (m *MsgBridgeReceiveResponse) Reset()         { *m = MsgBridgeReceiveRespon
 func (m *MsgBridgeReceiveResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgBridgeReceiveResponse) ProtoMessage()    {}
 func (*MsgBridgeReceiveResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{31}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{33}
 }
 func (m *MsgBridgeReceiveResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2107,7 +2241,7 @@ func (m *MsgBridgeReceiveResponse) GetProjectId() string {
 
 // MsgAddClassCreator is the Msg/AddClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddClassCreator struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2119,7 +2253,7 @@ func (m *MsgAddClassCreator) Reset()         { *m = MsgAddClassCreator{} }
 func (m *MsgAddClassCreator) String() string { return proto.CompactTextString(m) }
 func (*MsgAddClassCreator) ProtoMessage()    {}
 func (*MsgAddClassCreator) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{32}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{34}
 }
 func (m *MsgAddClassCreator) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2162,10 +2296,49 @@ func (m *MsgAddClassCreator) GetCreator() string {
 	return ""
 }
 
+// MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
+//
+// Since Revision 2
+type MsgAddClassCreatorResponse struct {
+}
+
+func (m *MsgAddClassCreatorResponse) Reset()         { *m = MsgAddClassCreatorResponse{} }
+func (m *MsgAddClassCreatorResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddClassCreatorResponse) ProtoMessage()    {}
+func (*MsgAddClassCreatorResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{35}
+}
+func (m *MsgAddClassCreatorResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddClassCreatorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddClassCreatorResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddClassCreatorResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddClassCreatorResponse.Merge(m, src)
+}
+func (m *MsgAddClassCreatorResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddClassCreatorResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddClassCreatorResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddClassCreatorResponse proto.InternalMessageInfo
+
 // MsgSetClassCreatorAllowlist is the Msg/SetClassCreatorAllowlist request
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgSetClassCreatorAllowlist struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2177,7 +2350,7 @@ func (m *MsgSetClassCreatorAllowlist) Reset()         { *m = MsgSetClassCreatorA
 func (m *MsgSetClassCreatorAllowlist) String() string { return proto.CompactTextString(m) }
 func (*MsgSetClassCreatorAllowlist) ProtoMessage()    {}
 func (*MsgSetClassCreatorAllowlist) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{33}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{36}
 }
 func (m *MsgSetClassCreatorAllowlist) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2223,7 +2396,7 @@ func (m *MsgSetClassCreatorAllowlist) GetEnabled() bool {
 // MsgSetClassCreatorAllowlistResponse is the Msg/SetClassCreatorAllowlist
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgSetClassCreatorAllowlistResponse struct {
 }
 
@@ -2231,7 +2404,7 @@ func (m *MsgSetClassCreatorAllowlistResponse) Reset()         { *m = MsgSetClass
 func (m *MsgSetClassCreatorAllowlistResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSetClassCreatorAllowlistResponse) ProtoMessage()    {}
 func (*MsgSetClassCreatorAllowlistResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{34}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{37}
 }
 func (m *MsgSetClassCreatorAllowlistResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2260,48 +2433,9 @@ func (m *MsgSetClassCreatorAllowlistResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSetClassCreatorAllowlistResponse proto.InternalMessageInfo
 
-// MsgAddClassCreatorResponse is the Msg/AddClassCreator response type.
-//
-// Since Revision 1
-type MsgAddClassCreatorResponse struct {
-}
-
-func (m *MsgAddClassCreatorResponse) Reset()         { *m = MsgAddClassCreatorResponse{} }
-func (m *MsgAddClassCreatorResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAddClassCreatorResponse) ProtoMessage()    {}
-func (*MsgAddClassCreatorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{35}
-}
-func (m *MsgAddClassCreatorResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgAddClassCreatorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgAddClassCreatorResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgAddClassCreatorResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddClassCreatorResponse.Merge(m, src)
-}
-func (m *MsgAddClassCreatorResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgAddClassCreatorResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddClassCreatorResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgAddClassCreatorResponse proto.InternalMessageInfo
-
 // MsgRemoveClassCreator is the Msg/RemoveClassCreator request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveClassCreator struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2313,7 +2447,7 @@ func (m *MsgRemoveClassCreator) Reset()         { *m = MsgRemoveClassCreator{} }
 func (m *MsgRemoveClassCreator) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveClassCreator) ProtoMessage()    {}
 func (*MsgRemoveClassCreator) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{36}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{38}
 }
 func (m *MsgRemoveClassCreator) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2358,7 +2492,7 @@ func (m *MsgRemoveClassCreator) GetCreator() string {
 
 // MsgRemoveClassCreatorResponse is the Msg/RemoveClasssCreator response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveClassCreatorResponse struct {
 }
 
@@ -2366,7 +2500,7 @@ func (m *MsgRemoveClassCreatorResponse) Reset()         { *m = MsgRemoveClassCre
 func (m *MsgRemoveClassCreatorResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveClassCreatorResponse) ProtoMessage()    {}
 func (*MsgRemoveClassCreatorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{37}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{39}
 }
 func (m *MsgRemoveClassCreatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2397,7 +2531,7 @@ var xxx_messageInfo_MsgRemoveClassCreatorResponse proto.InternalMessageInfo
 
 // MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateClassFee struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2410,7 +2544,7 @@ func (m *MsgUpdateClassFee) Reset()         { *m = MsgUpdateClassFee{} }
 func (m *MsgUpdateClassFee) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassFee) ProtoMessage()    {}
 func (*MsgUpdateClassFee) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{38}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{40}
 }
 func (m *MsgUpdateClassFee) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2455,7 +2589,7 @@ func (m *MsgUpdateClassFee) GetFee() *types.Coin {
 
 // MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgUpdateClassFeeResponse struct {
 }
 
@@ -2463,7 +2597,7 @@ func (m *MsgUpdateClassFeeResponse) Reset()         { *m = MsgUpdateClassFeeResp
 func (m *MsgUpdateClassFeeResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdateClassFeeResponse) ProtoMessage()    {}
 func (*MsgUpdateClassFeeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{39}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{41}
 }
 func (m *MsgUpdateClassFeeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2494,7 +2628,7 @@ var xxx_messageInfo_MsgUpdateClassFeeResponse proto.InternalMessageInfo
 
 // MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddAllowedBridgeChain struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2507,7 +2641,7 @@ func (m *MsgAddAllowedBridgeChain) Reset()         { *m = MsgAddAllowedBridgeCha
 func (m *MsgAddAllowedBridgeChain) String() string { return proto.CompactTextString(m) }
 func (*MsgAddAllowedBridgeChain) ProtoMessage()    {}
 func (*MsgAddAllowedBridgeChain) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{40}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{42}
 }
 func (m *MsgAddAllowedBridgeChain) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2553,7 +2687,7 @@ func (m *MsgAddAllowedBridgeChain) GetChainName() string {
 // MsgAddAllowedBridgeChainResponse is the Msg/AddAllowedBridgeChain response
 // type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgAddAllowedBridgeChainResponse struct {
 }
 
@@ -2561,7 +2695,7 @@ func (m *MsgAddAllowedBridgeChainResponse) Reset()         { *m = MsgAddAllowedB
 func (m *MsgAddAllowedBridgeChainResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgAddAllowedBridgeChainResponse) ProtoMessage()    {}
 func (*MsgAddAllowedBridgeChainResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{41}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{43}
 }
 func (m *MsgAddAllowedBridgeChainResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2592,7 +2726,7 @@ var xxx_messageInfo_MsgAddAllowedBridgeChainResponse proto.InternalMessageInfo
 
 // MsgRemoveAllowedBridgeChain is the Msg/RemoveAllowedBridgeChain request type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveAllowedBridgeChain struct {
 	// authority is the address of the governance account.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -2605,7 +2739,7 @@ func (m *MsgRemoveAllowedBridgeChain) Reset()         { *m = MsgRemoveAllowedBri
 func (m *MsgRemoveAllowedBridgeChain) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveAllowedBridgeChain) ProtoMessage()    {}
 func (*MsgRemoveAllowedBridgeChain) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{42}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{44}
 }
 func (m *MsgRemoveAllowedBridgeChain) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2651,7 +2785,7 @@ func (m *MsgRemoveAllowedBridgeChain) GetChainName() string {
 // MsgRemoveAllowedBridgeChainResponse is the Msg/RemoveAllowedBridgeChain
 // response type.
 //
-// Since Revision 1
+// Since Revision 2
 type MsgRemoveAllowedBridgeChainResponse struct {
 }
 
@@ -2659,7 +2793,7 @@ func (m *MsgRemoveAllowedBridgeChainResponse) Reset()         { *m = MsgRemoveAl
 func (m *MsgRemoveAllowedBridgeChainResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveAllowedBridgeChainResponse) ProtoMessage()    {}
 func (*MsgRemoveAllowedBridgeChainResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2b8ae49f50a3ddbd, []int{43}
+	return fileDescriptor_2b8ae49f50a3ddbd, []int{45}
 }
 func (m *MsgRemoveAllowedBridgeChainResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2719,15 +2853,17 @@ func init() {
 	proto.RegisterType((*MsgUpdateProjectMetadata)(nil), "regen.ecocredit.v1.MsgUpdateProjectMetadata")
 	proto.RegisterType((*MsgUpdateProjectMetadataResponse)(nil), "regen.ecocredit.v1.MsgUpdateProjectMetadataResponse")
 	proto.RegisterType((*MsgBridge)(nil), "regen.ecocredit.v1.MsgBridge")
+	proto.RegisterType((*MsgUpdateBatchMetadata)(nil), "regen.ecocredit.v1.MsgUpdateBatchMetadata")
+	proto.RegisterType((*MsgUpdateBatchMetadataResponse)(nil), "regen.ecocredit.v1.MsgUpdateBatchMetadataResponse")
 	proto.RegisterType((*MsgBridgeResponse)(nil), "regen.ecocredit.v1.MsgBridgeResponse")
 	proto.RegisterType((*MsgBridgeReceive)(nil), "regen.ecocredit.v1.MsgBridgeReceive")
 	proto.RegisterType((*MsgBridgeReceive_Batch)(nil), "regen.ecocredit.v1.MsgBridgeReceive.Batch")
 	proto.RegisterType((*MsgBridgeReceive_Project)(nil), "regen.ecocredit.v1.MsgBridgeReceive.Project")
 	proto.RegisterType((*MsgBridgeReceiveResponse)(nil), "regen.ecocredit.v1.MsgBridgeReceiveResponse")
 	proto.RegisterType((*MsgAddClassCreator)(nil), "regen.ecocredit.v1.MsgAddClassCreator")
+	proto.RegisterType((*MsgAddClassCreatorResponse)(nil), "regen.ecocredit.v1.MsgAddClassCreatorResponse")
 	proto.RegisterType((*MsgSetClassCreatorAllowlist)(nil), "regen.ecocredit.v1.MsgSetClassCreatorAllowlist")
 	proto.RegisterType((*MsgSetClassCreatorAllowlistResponse)(nil), "regen.ecocredit.v1.MsgSetClassCreatorAllowlistResponse")
-	proto.RegisterType((*MsgAddClassCreatorResponse)(nil), "regen.ecocredit.v1.MsgAddClassCreatorResponse")
 	proto.RegisterType((*MsgRemoveClassCreator)(nil), "regen.ecocredit.v1.MsgRemoveClassCreator")
 	proto.RegisterType((*MsgRemoveClassCreatorResponse)(nil), "regen.ecocredit.v1.MsgRemoveClassCreatorResponse")
 	proto.RegisterType((*MsgUpdateClassFee)(nil), "regen.ecocredit.v1.MsgUpdateClassFee")
@@ -2741,122 +2877,125 @@ func init() {
 func init() { proto.RegisterFile("regen/ecocredit/v1/tx.proto", fileDescriptor_2b8ae49f50a3ddbd) }
 
 var fileDescriptor_2b8ae49f50a3ddbd = []byte{
-	// 1825 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x59, 0x4f, 0x6f, 0x1b, 0x45,
-	0x1b, 0xef, 0xda, 0x4e, 0x6c, 0x3f, 0x4e, 0xd3, 0x76, 0xda, 0xa6, 0xee, 0xa6, 0x71, 0x5c, 0xb7,
-	0x79, 0x9b, 0xe6, 0x4d, 0xd7, 0x4a, 0xfa, 0xbe, 0xaa, 0x5a, 0x84, 0x4a, 0x92, 0xaa, 0x22, 0x48,
-	0x2e, 0xc8, 0x0d, 0x42, 0x54, 0x20, 0x6b, 0xbd, 0x3b, 0xd9, 0x6c, 0xb1, 0x77, 0xad, 0xdd, 0x71,
-	0x92, 0x0a, 0x84, 0x04, 0xe2, 0xc0, 0x8d, 0x9e, 0x11, 0x1f, 0x02, 0x71, 0xe1, 0x03, 0x70, 0x81,
-	0x5b, 0x2f, 0x08, 0x6e, 0x45, 0xed, 0x81, 0x2f, 0xc1, 0x01, 0xed, 0xcc, 0xec, 0x78, 0x77, 0xbd,
-	0x7f, 0x6c, 0x4a, 0x2f, 0x91, 0x67, 0xe6, 0x37, 0xcf, 0xf3, 0x7b, 0x9e, 0x99, 0x79, 0xfe, 0x6c,
-	0x60, 0xd1, 0xc1, 0x06, 0xb6, 0x9a, 0x58, 0xb3, 0x35, 0x07, 0xeb, 0x26, 0x69, 0x1e, 0x6e, 0x34,
-	0xc9, 0xb1, 0x32, 0x70, 0x6c, 0x62, 0x23, 0x44, 0x17, 0x15, 0xb1, 0xa8, 0x1c, 0x6e, 0xc8, 0x35,
-	0xcd, 0x76, 0xfb, 0xb6, 0xdb, 0xec, 0xaa, 0x2e, 0x6e, 0x1e, 0x6e, 0x74, 0x31, 0x51, 0x37, 0x9a,
-	0x9a, 0x6d, 0x5a, 0x6c, 0x8f, 0x7c, 0x81, 0xaf, 0xf7, 0x5d, 0xc3, 0x93, 0xd5, 0x77, 0x0d, 0xbe,
-	0x70, 0xce, 0xb0, 0x0d, 0x9b, 0xfe, 0x6c, 0x7a, 0xbf, 0xf8, 0xec, 0xb2, 0x61, 0xdb, 0x46, 0x0f,
-	0x37, 0xe9, 0xa8, 0x3b, 0xdc, 0x6f, 0x12, 0xb3, 0x8f, 0x5d, 0xa2, 0xf6, 0x07, 0x1c, 0x50, 0x8b,
-	0x21, 0xe8, 0x12, 0x95, 0xe0, 0x94, 0x75, 0xf2, 0x64, 0x80, 0x5d, 0xb6, 0xde, 0xf8, 0x42, 0x82,
-	0xd3, 0x2d, 0xd7, 0xd8, 0xd2, 0xf5, 0x1d, 0xba, 0xbe, 0xf7, 0x64, 0x80, 0xd1, 0x25, 0x28, 0xab,
-	0x43, 0x72, 0x60, 0x3b, 0x26, 0x79, 0x52, 0x95, 0xea, 0xd2, 0x6a, 0xb9, 0x3d, 0x9a, 0x40, 0x77,
-	0xa1, 0xc2, 0x64, 0x75, 0x3c, 0x41, 0xd5, 0x5c, 0x5d, 0x5a, 0xad, 0x6c, 0xd6, 0x94, 0x71, 0x67,
-	0x28, 0x23, 0x91, 0x6d, 0xd0, 0xc4, 0xef, 0x3b, 0xf3, 0x5f, 0xfe, 0xf9, 0xfd, 0xda, 0x48, 0x60,
-	0x43, 0x86, 0x6a, 0x94, 0x42, 0x1b, 0xbb, 0x03, 0xdb, 0x72, 0x71, 0xe3, 0x27, 0x09, 0xe6, 0x5b,
-	0xae, 0xb1, 0xe3, 0x60, 0x95, 0xe0, 0x9d, 0x9e, 0xea, 0xba, 0xe8, 0x1c, 0xcc, 0xa8, 0x7a, 0xdf,
-	0xb4, 0x38, 0x33, 0x36, 0x40, 0x55, 0x28, 0x9a, 0xae, 0x3b, 0xc4, 0x8e, 0x5b, 0xcd, 0xd5, 0xf3,
-	0xab, 0xe5, 0xb6, 0x3f, 0x44, 0x32, 0x94, 0xfa, 0x98, 0xa8, 0xba, 0x4a, 0xd4, 0x6a, 0x9e, 0x6e,
-	0x11, 0x63, 0xb4, 0x0e, 0x28, 0x60, 0x4b, 0x47, 0xed, 0x76, 0x1d, 0x7c, 0x58, 0x2d, 0x50, 0xd4,
-	0xe9, 0x11, 0xe5, 0x2d, 0x3a, 0x8f, 0xfe, 0x0b, 0xf9, 0x7d, 0x8c, 0xab, 0x33, 0xd4, 0xe2, 0x8b,
-	0x0a, 0x3b, 0x4a, 0xc5, 0x3b, 0x6a, 0x85, 0x1f, 0xb5, 0xb2, 0x63, 0x9b, 0x56, 0xdb, 0x43, 0xdd,
-	0x01, 0xcf, 0x4a, 0x46, 0xae, 0x71, 0x13, 0x16, 0xc2, 0x46, 0xf8, 0xf6, 0xa1, 0x8b, 0x50, 0xd2,
-	0xbc, 0x89, 0x8e, 0xa9, 0x73, 0x7b, 0x8a, 0x74, 0xbc, 0xab, 0x37, 0x7e, 0x60, 0x47, 0xc3, 0x76,
-	0xbd, 0xe7, 0xd8, 0x8f, 0xb1, 0x46, 0x12, 0x8c, 0x0f, 0x4a, 0xc9, 0x85, 0xa4, 0xa4, 0x5a, 0xdf,
-	0x80, 0xb9, 0xc7, 0x43, 0xc7, 0x74, 0x75, 0x53, 0x23, 0xa6, 0x6d, 0x71, 0xbb, 0x43, 0x73, 0xe8,
-	0x32, 0xcc, 0x39, 0x78, 0x1f, 0x3b, 0xd8, 0xd2, 0xb0, 0x27, 0x7e, 0x86, 0x62, 0x2a, 0x62, 0x6e,
-	0x57, 0x0f, 0x59, 0x7a, 0x9b, 0x9e, 0x65, 0x88, 0xb3, 0xb0, 0x75, 0x09, 0x60, 0xc0, 0xa6, 0x46,
-	0xd6, 0x96, 0xf9, 0xcc, 0xae, 0xde, 0xf8, 0x2b, 0x17, 0x38, 0xea, 0x6d, 0x95, 0x68, 0x07, 0x68,
-	0x01, 0x66, 0xd9, 0x29, 0x72, 0x34, 0x1f, 0x45, 0x24, 0xe5, 0x22, 0x92, 0xd0, 0x9b, 0x50, 0xf2,
-	0x80, 0xaa, 0xa5, 0xe1, 0x6a, 0xbe, 0x9e, 0x5f, 0xad, 0x6c, 0x5e, 0x8e, 0xbb, 0x9e, 0x54, 0xc7,
-	0x2e, 0x07, 0xb6, 0xc5, 0x96, 0x90, 0xcb, 0x0a, 0x11, 0x97, 0xdd, 0x05, 0x70, 0x89, 0xea, 0x90,
-	0x8e, 0xae, 0x12, 0xff, 0x26, 0xc8, 0x0a, 0x7b, 0xa5, 0x8a, 0xff, 0x4a, 0x95, 0x3d, 0xff, 0x95,
-	0x6e, 0x17, 0x9e, 0x3e, 0x5f, 0x96, 0xda, 0x65, 0xba, 0xe7, 0x9e, 0x4a, 0x30, 0x7a, 0x03, 0x4a,
-	0xd8, 0xd2, 0xd9, 0xf6, 0xd9, 0x09, 0xb7, 0x17, 0xb1, 0xa5, 0xd3, 0xcd, 0x08, 0x0a, 0xf6, 0x00,
-	0x5b, 0xd5, 0x62, 0x5d, 0x5a, 0x2d, 0xb5, 0xe9, 0x6f, 0x74, 0x1b, 0xca, 0xb6, 0x63, 0x1a, 0xa6,
-	0xd5, 0x21, 0xc7, 0xd5, 0x12, 0x95, 0x78, 0x29, 0xce, 0xda, 0x77, 0x29, 0x68, 0xef, 0xb8, 0x5d,
-	0xb2, 0xf9, 0xaf, 0x3b, 0x15, 0xef, 0xe0, 0xb8, 0x4f, 0x1b, 0xb7, 0x03, 0x77, 0x94, 0x7a, 0x46,
-	0x9c, 0xdb, 0x32, 0x54, 0xba, 0xde, 0x44, 0x47, 0xc7, 0x96, 0xdd, 0xe7, 0x47, 0x01, 0x74, 0xea,
-	0x9e, 0x37, 0xd3, 0xf8, 0x55, 0x82, 0xb3, 0x2d, 0xd7, 0x68, 0x99, 0x16, 0xa1, 0x3b, 0xd9, 0x3b,
-	0x76, 0x13, 0x8f, 0x2f, 0x22, 0x30, 0x17, 0x15, 0xf8, 0xaa, 0x07, 0x18, 0x72, 0x49, 0xe1, 0x9f,
-	0xbb, 0x64, 0x09, 0x16, 0x63, 0xcc, 0x12, 0xb1, 0x69, 0x0f, 0xe6, 0x5a, 0xae, 0xf1, 0x10, 0xab,
-	0xbd, 0xf4, 0xdb, 0x9a, 0x65, 0x6e, 0x58, 0xe9, 0x02, 0x9c, 0x0b, 0x4a, 0x15, 0xda, 0x7e, 0xc9,
-	0x41, 0x91, 0x2e, 0x58, 0xba, 0xa7, 0xc9, 0xc5, 0x96, 0x3e, 0xd2, 0xc4, 0x46, 0x5e, 0xe0, 0x76,
-	0xb0, 0x66, 0x0e, 0x4c, 0x6c, 0x11, 0xff, 0x59, 0x88, 0x09, 0xb4, 0x05, 0x45, 0x66, 0xbb, 0xcb,
-	0x9d, 0x7a, 0x2d, 0xce, 0x29, 0x5c, 0x87, 0xe2, 0xfd, 0xf1, 0x2d, 0xf6, 0xf7, 0xc9, 0x3f, 0x4a,
-	0x50, 0x09, 0x2c, 0x64, 0x5e, 0x0d, 0x74, 0x0d, 0x4e, 0x11, 0x47, 0xd5, 0xd5, 0x6e, 0x0f, 0x77,
-	0xd4, 0xbe, 0x3d, 0x14, 0xbc, 0xe6, 0xfd, 0xe9, 0x2d, 0x3a, 0x8b, 0x56, 0x60, 0xde, 0xc1, 0xc4,
-	0x74, 0xb0, 0xee, 0xe3, 0x58, 0xb4, 0x3a, 0xc9, 0x67, 0x39, 0xec, 0x16, 0x5c, 0x60, 0x13, 0x7d,
-	0x6c, 0x91, 0x4e, 0x4c, 0xf4, 0x5a, 0x18, 0x2d, 0xbf, 0x13, 0x58, 0xe5, 0x3e, 0x66, 0x7e, 0x6a,
-	0x9c, 0x81, 0x53, 0xdc, 0x4c, 0xe1, 0xde, 0xaf, 0x25, 0x28, 0xb7, 0x5c, 0xa3, 0x4d, 0x77, 0x7b,
-	0x61, 0xd6, 0x3e, 0xb2, 0x84, 0x7f, 0xd9, 0x00, 0xfd, 0x7f, 0xe4, 0xc0, 0x1c, 0x75, 0xe0, 0x62,
-	0x72, 0xd6, 0x1b, 0x39, 0x6d, 0x2c, 0xcc, 0xe6, 0xc7, 0xc3, 0x2c, 0x8f, 0xa1, 0x54, 0x4d, 0xe3,
-	0x2c, 0x9c, 0x11, 0x4c, 0x04, 0xbf, 0xcf, 0x28, 0xbd, 0x1d, 0xef, 0x7e, 0xf7, 0xfe, 0x5d, 0x7a,
-	0x0b, 0x30, 0xeb, 0x60, 0xd5, 0x15, 0xc4, 0xf8, 0x28, 0x86, 0x12, 0xd3, 0x2e, 0x28, 0xd9, 0xf4,
-	0xd5, 0xbf, 0x3f, 0xd0, 0xfd, 0xac, 0xb6, 0x45, 0x93, 0xd1, 0xd4, 0x29, 0x6a, 0x11, 0xca, 0x16,
-	0x3e, 0xea, 0xb0, 0x4d, 0x3c, 0x47, 0x59, 0xf8, 0x88, 0x4a, 0x0b, 0x25, 0x17, 0xf6, 0x1e, 0xa3,
-	0x0a, 0x05, 0x9f, 0xef, 0x24, 0x38, 0x1f, 0x5e, 0xdf, 0xe5, 0x25, 0xc0, 0xd4, 0x94, 0x96, 0xa1,
-	0xa2, 0xea, 0x7a, 0xc7, 0xaf, 0x28, 0xf2, 0xb4, 0xa2, 0x00, 0x55, 0xd7, 0x7d, 0x89, 0xf4, 0xba,
-	0xf6, 0xed, 0x43, 0x2c, 0x30, 0x05, 0x8a, 0x39, 0xc9, 0x66, 0x39, 0x2c, 0xc4, 0x7e, 0x19, 0x96,
-	0x62, 0xd9, 0x09, 0xfe, 0xc7, 0x34, 0x02, 0x07, 0x00, 0x2d, 0x3f, 0xeb, 0x4c, 0xcd, 0xff, 0x32,
-	0xcc, 0x79, 0x2e, 0x8d, 0x64, 0xfe, 0x8a, 0x85, 0x8f, 0x7c, 0x99, 0x21, 0x6a, 0x75, 0xa8, 0xc5,
-	0x6b, 0x16, 0xdc, 0x86, 0x01, 0xd7, 0xf2, 0xbc, 0x9e, 0x76, 0xda, 0x19, 0x09, 0x7a, 0xe2, 0x13,
-	0x0f, 0xfa, 0x2c, 0xa8, 0x56, 0xf0, 0xfa, 0x9c, 0xd6, 0x1b, 0x21, 0x40, 0x86, 0xd7, 0x32, 0xa8,
-	0x4d, 0xe9, 0xb9, 0x06, 0xd4, 0x93, 0xf4, 0x0b, 0x8e, 0xdf, 0xb2, 0xd0, 0xb2, 0xed, 0x98, 0xba,
-	0x91, 0x14, 0x5a, 0x16, 0x60, 0x96, 0xa8, 0x8e, 0x81, 0xfd, 0xf0, 0xc8, 0x47, 0xe1, 0x88, 0x9e,
-	0x8f, 0x46, 0xf4, 0xc0, 0x8b, 0x2f, 0x4c, 0xfe, 0xe2, 0x63, 0x5e, 0x36, 0xe3, 0x26, 0x18, 0x3f,
-	0x2f, 0xd0, 0xd2, 0xd3, 0x9f, 0xd5, 0xb0, 0x79, 0x88, 0x13, 0xd3, 0x5b, 0xca, 0x35, 0xbc, 0x0f,
-	0x45, 0xee, 0x59, 0xca, 0xbd, 0xb2, 0xb9, 0x9e, 0x90, 0x71, 0x42, 0x9a, 0x14, 0xbf, 0x70, 0xf4,
-	0x37, 0xa3, 0xb7, 0x60, 0x86, 0xe6, 0x14, 0x9e, 0xcc, 0xd7, 0x26, 0x92, 0xc2, 0xd2, 0x27, 0xdb,
-	0x18, 0x2e, 0x09, 0x66, 0xa6, 0x29, 0x09, 0xe4, 0xdf, 0x24, 0x98, 0x61, 0x09, 0x3e, 0x74, 0x18,
-	0x52, 0xf4, 0x30, 0x16, 0x60, 0x36, 0x94, 0xe1, 0xf8, 0x28, 0x52, 0x32, 0xe6, 0x5f, 0xad, 0x64,
-	0x2c, 0x4c, 0x5b, 0x32, 0x06, 0x8b, 0xd9, 0x99, 0x70, 0x31, 0x2b, 0xf7, 0xa0, 0xe8, 0xf7, 0x15,
-	0xd1, 0x32, 0x5f, 0x1a, 0x2b, 0xf3, 0xc7, 0xd2, 0x58, 0x2e, 0xa6, 0x5b, 0x48, 0xe9, 0x36, 0xc2,
-	0x55, 0xce, 0x23, 0xfa, 0x6e, 0x43, 0x07, 0x36, 0x71, 0xbd, 0x99, 0xf1, 0x84, 0x1b, 0x1f, 0x01,
-	0xe2, 0xfd, 0xa4, 0x77, 0x0d, 0x69, 0x45, 0x6b, 0x3b, 0x19, 0x4d, 0x6d, 0x95, 0xbe, 0x24, 0x0f,
-	0x28, 0xee, 0x30, 0x1b, 0x8e, 0x75, 0xab, 0x98, 0x26, 0xa1, 0x87, 0x98, 0x04, 0xa5, 0x6f, 0xf5,
-	0x7a, 0xf6, 0x51, 0xcf, 0x74, 0x49, 0xb6, 0x1a, 0x6c, 0x79, 0x55, 0x0f, 0xa3, 0x5d, 0x6a, 0xfb,
-	0xc3, 0x31, 0x35, 0x2b, 0x70, 0x25, 0x45, 0x8d, 0x78, 0xa9, 0x97, 0x40, 0x1e, 0xb7, 0x55, 0xac,
-	0x76, 0x68, 0xd4, 0x6e, 0xd3, 0x94, 0xf4, 0x5a, 0x9c, 0xc1, 0xe2, 0xf3, 0xb8, 0x02, 0xc1, 0xc0,
-	0xa2, 0xe1, 0x25, 0x90, 0x59, 0xee, 0xe3, 0xac, 0xef, 0x0b, 0xbc, 0xcb, 0xce, 0x4d, 0xd4, 0x65,
-	0x47, 0x09, 0x2d, 0xc2, 0xc5, 0x31, 0x7d, 0x82, 0x8c, 0xe1, 0x7f, 0x68, 0xa0, 0x7e, 0xc4, 0x3a,
-	0xbb, 0x7e, 0x3b, 0x07, 0xaa, 0x69, 0x65, 0x70, 0x5a, 0x02, 0xd0, 0x3c, 0x58, 0xc7, 0x52, 0xfb,
-	0xd8, 0xbf, 0x71, 0x74, 0xe6, 0x81, 0xda, 0x1f, 0x67, 0xc1, 0xb2, 0x42, 0xac, 0x22, 0x41, 0xe6,
-	0x31, 0xbd, 0x47, 0xcc, 0x75, 0xaf, 0x9b, 0x0f, 0xbb, 0x4c, 0x49, 0xba, 0x7c, 0x4a, 0x9b, 0xdf,
-	0x20, 0xc8, 0xb7, 0x5c, 0x03, 0x7d, 0x0c, 0x95, 0xe0, 0x07, 0x97, 0x46, 0x42, 0xb8, 0x0d, 0x60,
-	0xe4, 0xb5, 0x6c, 0x8c, 0x78, 0xdf, 0x1a, 0x9c, 0x0c, 0x7f, 0xd4, 0xb8, 0x9a, 0xba, 0x99, 0xa3,
-	0xe4, 0xf5, 0x49, 0x50, 0x42, 0x89, 0xb0, 0x81, 0x85, 0xee, 0x74, 0x1b, 0x28, 0x26, 0xc3, 0x86,
-	0x70, 0x4f, 0xdc, 0x83, 0xd3, 0x63, 0xed, 0x6e, 0x52, 0x3b, 0x15, 0x05, 0xca, 0xcd, 0x09, 0x81,
-	0x42, 0xdb, 0x07, 0x50, 0x1e, 0xb5, 0x99, 0xf5, 0xc4, 0xae, 0x8d, 0x23, 0xe4, 0xd5, 0x2c, 0x84,
-	0x10, 0xfc, 0x36, 0x14, 0x68, 0x43, 0xb9, 0x98, 0xd2, 0x09, 0xca, 0x57, 0x52, 0x16, 0x85, 0xa4,
-	0x07, 0x30, 0xcb, 0x7b, 0xa7, 0xa5, 0x04, 0x38, 0x5b, 0x96, 0x57, 0x52, 0x97, 0x83, 0xf2, 0x78,
-	0xb3, 0x93, 0x24, 0x8f, 0x2d, 0x27, 0xca, 0x0b, 0x37, 0x2b, 0xde, 0x81, 0x8d, 0x75, 0x2a, 0x49,
-	0x07, 0x16, 0x05, 0x26, 0x1e, 0x58, 0x52, 0x2b, 0x82, 0x1c, 0x40, 0x31, 0x6d, 0xc8, 0xf5, 0x6c,
-	0x31, 0x1c, 0x2a, 0x6f, 0x4c, 0x0c, 0x15, 0x3a, 0x87, 0x70, 0x36, 0xae, 0x77, 0x58, 0xcb, 0x96,
-	0xe4, 0x63, 0xe5, 0xcd, 0xc9, 0xb1, 0xe3, 0xa6, 0x86, 0xda, 0x82, 0x74, 0x53, 0x83, 0xd0, 0x0c,
-	0x53, 0xe3, 0xaa, 0x7e, 0xf4, 0x29, 0x9c, 0x8f, 0x2f, 0xf9, 0xd7, 0x27, 0x91, 0x25, 0xcc, 0xfd,
-	0xdf, 0x34, 0xe8, 0xe0, 0xcd, 0xe4, 0xa5, 0xfc, 0x52, 0x6a, 0x1d, 0x9a, 0x78, 0x33, 0xc3, 0xc5,
-	0xb6, 0x17, 0x0e, 0xc3, 0x85, 0xf6, 0xd5, 0x49, 0xca, 0x5b, 0x79, 0xa2, 0x52, 0x3a, 0xa8, 0x24,
-	0xfc, 0x8d, 0x3f, 0x49, 0x49, 0x08, 0x95, 0xa8, 0x24, 0xf6, 0x63, 0x3d, 0xfa, 0x4a, 0x82, 0x6a,
-	0x62, 0x61, 0xd4, 0x4c, 0x8c, 0x22, 0xf1, 0x1b, 0xe4, 0x5b, 0x53, 0x6e, 0x10, 0x34, 0x4c, 0x38,
-	0x15, 0x2d, 0xfe, 0xfe, 0x93, 0x62, 0x47, 0x00, 0x27, 0x2b, 0x93, 0xe1, 0x82, 0x97, 0x3f, 0xa6,
-	0xba, 0xba, 0x9e, 0x18, 0xe2, 0xa2, 0xd0, 0xc4, 0xcb, 0x9f, 0x5c, 0x52, 0xa1, 0x7d, 0x98, 0x8f,
-	0xd4, 0x53, 0x2b, 0xd9, 0xcf, 0xf6, 0x3e, 0xc6, 0xf2, 0x8d, 0x89, 0x60, 0xc1, 0x47, 0x16, 0x5f,
-	0x2a, 0xa5, 0x5c, 0x8a, 0x71, 0x74, 0xe2, 0x23, 0x4b, 0xad, 0x8e, 0xe8, 0x55, 0x4a, 0xac, 0x8d,
-	0x9a, 0xa9, 0x4e, 0x8b, 0xe1, 0x70, 0x6b, 0xca, 0x0d, 0x3e, 0x8d, 0xed, 0x0f, 0x7f, 0x7e, 0x51,
-	0x93, 0x9e, 0xbd, 0xa8, 0x49, 0x7f, 0xbc, 0xa8, 0x49, 0x4f, 0x5f, 0xd6, 0x4e, 0x3c, 0x7b, 0x59,
-	0x3b, 0xf1, 0xfb, 0xcb, 0xda, 0x89, 0x47, 0x77, 0x0d, 0x93, 0x1c, 0x0c, 0xbb, 0x8a, 0x66, 0xf7,
-	0x9b, 0x54, 0xf8, 0x0d, 0x0b, 0x93, 0x23, 0xdb, 0xf9, 0x84, 0x8f, 0x7a, 0x58, 0x37, 0xb0, 0xd3,
-	0x3c, 0x0e, 0xfc, 0xeb, 0x8d, 0xfe, 0x4f, 0x90, 0xfe, 0xf3, 0xad, 0x79, 0xb8, 0xd1, 0x9d, 0xa5,
-	0xbd, 0xdb, 0xcd, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x71, 0x68, 0x0f, 0xb4, 0x63, 0x1c, 0x00,
-	0x00,
+	// 1886 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x59, 0x4f, 0x6f, 0xdb, 0xca,
+	0x11, 0x0f, 0x25, 0xd9, 0x92, 0x46, 0x8e, 0xe3, 0xd0, 0x89, 0xa3, 0xd0, 0xb1, 0xac, 0x28, 0x71,
+	0xe3, 0x38, 0x0e, 0x05, 0x3b, 0x2d, 0x82, 0xa4, 0x28, 0x52, 0xdb, 0x41, 0x50, 0x17, 0x50, 0x5a,
+	0x28, 0x2e, 0x8a, 0x06, 0x2d, 0x04, 0x8a, 0x5c, 0xd3, 0x4c, 0x25, 0x52, 0x20, 0x57, 0xb6, 0x83,
+	0x16, 0x05, 0x52, 0x14, 0x3d, 0xe7, 0x5c, 0xf4, 0xd0, 0x8f, 0x50, 0xf4, 0x2b, 0xf4, 0xd2, 0x63,
+	0x2e, 0x45, 0x7b, 0x4b, 0x91, 0x14, 0x78, 0xdf, 0xe0, 0x9d, 0xde, 0xe1, 0x81, 0xbb, 0xcb, 0x15,
+	0x97, 0xe2, 0x3f, 0x25, 0x2f, 0x17, 0xc3, 0x3b, 0x3b, 0x3b, 0xf3, 0x9b, 0x99, 0xdd, 0xf9, 0x43,
+	0xc1, 0xaa, 0x8b, 0x4c, 0x64, 0xb7, 0x91, 0xee, 0xe8, 0x2e, 0x32, 0x2c, 0xdc, 0x3e, 0xdd, 0x69,
+	0xe3, 0x73, 0x75, 0xe4, 0x3a, 0xd8, 0x91, 0x65, 0xb2, 0xa9, 0xf2, 0x4d, 0xf5, 0x74, 0x47, 0x69,
+	0xe8, 0x8e, 0x37, 0x74, 0xbc, 0x76, 0x5f, 0xf3, 0x50, 0xfb, 0x74, 0xa7, 0x8f, 0xb0, 0xb6, 0xd3,
+	0xd6, 0x1d, 0xcb, 0xa6, 0x67, 0x94, 0x6b, 0x6c, 0x7f, 0xe8, 0x99, 0xbe, 0xac, 0xa1, 0x67, 0xb2,
+	0x8d, 0x2b, 0xa6, 0x63, 0x3a, 0xe4, 0xdf, 0xb6, 0xff, 0x1f, 0xa3, 0xae, 0x9b, 0x8e, 0x63, 0x0e,
+	0x50, 0x9b, 0xac, 0xfa, 0xe3, 0xe3, 0x36, 0xb6, 0x86, 0xc8, 0xc3, 0xda, 0x70, 0xc4, 0x18, 0x1a,
+	0x31, 0x00, 0x3d, 0xac, 0x61, 0x94, 0xb2, 0x8f, 0x5f, 0x8f, 0x90, 0x47, 0xf7, 0x5b, 0x6f, 0x24,
+	0x58, 0xea, 0x78, 0xe6, 0x9e, 0x61, 0x1c, 0x90, 0xfd, 0xa3, 0xd7, 0x23, 0x24, 0xdf, 0x80, 0xaa,
+	0x36, 0xc6, 0x27, 0x8e, 0x6b, 0xe1, 0xd7, 0x75, 0xa9, 0x29, 0x6d, 0x56, 0xbb, 0x13, 0x82, 0xfc,
+	0x04, 0x6a, 0x54, 0x56, 0xcf, 0x17, 0x54, 0x2f, 0x34, 0xa5, 0xcd, 0xda, 0x6e, 0x43, 0x9d, 0x76,
+	0x86, 0x3a, 0x11, 0xd9, 0x05, 0x9d, 0xff, 0xff, 0x78, 0xf1, 0x8f, 0x5f, 0xfd, 0x7d, 0x6b, 0x22,
+	0xb0, 0xa5, 0x40, 0x3d, 0x0a, 0xa1, 0x8b, 0xbc, 0x91, 0x63, 0x7b, 0xa8, 0xf5, 0x4f, 0x09, 0x16,
+	0x3b, 0x9e, 0x79, 0xe0, 0x22, 0x0d, 0xa3, 0x83, 0x81, 0xe6, 0x79, 0xf2, 0x15, 0x98, 0xd3, 0x8c,
+	0xa1, 0x65, 0x33, 0x64, 0x74, 0x21, 0xd7, 0xa1, 0x6c, 0x79, 0xde, 0x18, 0xb9, 0x5e, 0xbd, 0xd0,
+	0x2c, 0x6e, 0x56, 0xbb, 0xc1, 0x52, 0x56, 0xa0, 0x32, 0x44, 0x58, 0x33, 0x34, 0xac, 0xd5, 0x8b,
+	0xe4, 0x08, 0x5f, 0xcb, 0xdb, 0x20, 0x87, 0x6c, 0xe9, 0x69, 0xfd, 0xbe, 0x8b, 0x4e, 0xeb, 0x25,
+	0xc2, 0xb5, 0x34, 0x81, 0xbc, 0x47, 0xe8, 0xf2, 0x3d, 0x28, 0x1e, 0x23, 0x54, 0x9f, 0x23, 0x16,
+	0x5f, 0x57, 0x69, 0x28, 0x55, 0x3f, 0xd4, 0x2a, 0x0b, 0xb5, 0x7a, 0xe0, 0x58, 0x76, 0xd7, 0xe7,
+	0x7a, 0x0c, 0xbe, 0x95, 0x14, 0x5c, 0xeb, 0x01, 0xac, 0x88, 0x46, 0x04, 0xf6, 0xc9, 0xd7, 0xa1,
+	0xa2, 0xfb, 0x84, 0x9e, 0x65, 0x30, 0x7b, 0xca, 0x64, 0x7d, 0x68, 0xb4, 0xfe, 0x41, 0x43, 0x43,
+	0x4f, 0xfd, 0xdc, 0x75, 0x5e, 0x21, 0x1d, 0x27, 0x18, 0x1f, 0x96, 0x52, 0x10, 0xa4, 0xa4, 0x5a,
+	0xdf, 0x82, 0x85, 0x57, 0x63, 0xd7, 0xf2, 0x0c, 0x4b, 0xc7, 0x96, 0x63, 0x33, 0xbb, 0x05, 0x9a,
+	0x7c, 0x13, 0x16, 0x5c, 0x74, 0x8c, 0x5c, 0x64, 0xeb, 0xc8, 0x17, 0x3f, 0x47, 0x78, 0x6a, 0x9c,
+	0x76, 0x68, 0x08, 0x96, 0x3e, 0x22, 0xb1, 0x14, 0x30, 0x73, 0x5b, 0xd7, 0x00, 0x46, 0x94, 0x34,
+	0xb1, 0xb6, 0xca, 0x28, 0x87, 0x46, 0xeb, 0x9b, 0x42, 0x28, 0xd4, 0xfb, 0x1a, 0xd6, 0x4f, 0xe4,
+	0x15, 0x98, 0xa7, 0x51, 0x64, 0xdc, 0x6c, 0x15, 0x91, 0x54, 0x88, 0x48, 0x92, 0x7f, 0x04, 0x15,
+	0x9f, 0x51, 0xb3, 0x75, 0x54, 0x2f, 0x36, 0x8b, 0x9b, 0xb5, 0xdd, 0x9b, 0x71, 0xd7, 0x93, 0xe8,
+	0x38, 0x64, 0x8c, 0x5d, 0x7e, 0x44, 0x70, 0x59, 0x29, 0xe2, 0xb2, 0x27, 0x00, 0x1e, 0xd6, 0x5c,
+	0xdc, 0x33, 0x34, 0x1c, 0xdc, 0x04, 0x45, 0xa5, 0xaf, 0x54, 0x0d, 0x5e, 0xa9, 0x7a, 0x14, 0xbc,
+	0xd2, 0xfd, 0xd2, 0xdb, 0xf7, 0xeb, 0x52, 0xb7, 0x4a, 0xce, 0x3c, 0xd5, 0x30, 0x92, 0x7f, 0x08,
+	0x15, 0x64, 0x1b, 0xf4, 0xf8, 0x7c, 0xce, 0xe3, 0x65, 0x64, 0x1b, 0xe4, 0xb0, 0x0c, 0x25, 0x67,
+	0x84, 0xec, 0x7a, 0xb9, 0x29, 0x6d, 0x56, 0xba, 0xe4, 0x7f, 0xf9, 0x11, 0x54, 0x1d, 0xd7, 0x32,
+	0x2d, 0xbb, 0x87, 0xcf, 0xeb, 0x15, 0x22, 0xf1, 0x46, 0x9c, 0xb5, 0x3f, 0x23, 0x4c, 0x47, 0xe7,
+	0xdd, 0x8a, 0xc3, 0xfe, 0x7b, 0x5c, 0xf3, 0x03, 0xc7, 0x7c, 0xda, 0x7a, 0x14, 0xba, 0xa3, 0xc4,
+	0x33, 0x3c, 0x6e, 0xeb, 0x50, 0xeb, 0xfb, 0x84, 0x9e, 0x81, 0x6c, 0x67, 0xc8, 0x42, 0x01, 0x84,
+	0xf4, 0xd4, 0xa7, 0xb4, 0xfe, 0x2d, 0xc1, 0x72, 0xc7, 0x33, 0x3b, 0x96, 0x8d, 0xc9, 0x49, 0xfa,
+	0x8e, 0xbd, 0xc4, 0xf0, 0x45, 0x04, 0x16, 0xa2, 0x02, 0x3f, 0x37, 0x80, 0x82, 0x4b, 0x4a, 0x9f,
+	0xee, 0x92, 0x35, 0x58, 0x8d, 0x31, 0x8b, 0xe7, 0xa6, 0x23, 0x58, 0xe8, 0x78, 0xe6, 0x0b, 0xa4,
+	0x0d, 0xd2, 0x6f, 0x6b, 0x96, 0xb9, 0xa2, 0xd2, 0x15, 0xb8, 0x12, 0x96, 0xca, 0xb5, 0x7d, 0x5d,
+	0x80, 0x32, 0xd9, 0xb0, 0x0d, 0x5f, 0x93, 0x87, 0x6c, 0x63, 0xa2, 0x89, 0xae, 0xfc, 0xc4, 0xed,
+	0x22, 0xdd, 0x1a, 0x59, 0xc8, 0xc6, 0xc1, 0xb3, 0xe0, 0x04, 0x79, 0x0f, 0xca, 0xd4, 0x76, 0x8f,
+	0x39, 0xf5, 0x4e, 0x9c, 0x53, 0x98, 0x0e, 0xd5, 0xff, 0x13, 0x58, 0x1c, 0x9c, 0x53, 0xfe, 0x2f,
+	0x41, 0x2d, 0xb4, 0x91, 0x79, 0x35, 0xe4, 0x3b, 0x70, 0x09, 0xbb, 0x9a, 0xa1, 0xf5, 0x07, 0xa8,
+	0xa7, 0x0d, 0x9d, 0x31, 0xc7, 0xb5, 0x18, 0x90, 0xf7, 0x08, 0x55, 0xde, 0x80, 0x45, 0x17, 0x61,
+	0xcb, 0x45, 0x46, 0xc0, 0x47, 0xb3, 0xd5, 0x45, 0x46, 0x65, 0x6c, 0x0f, 0xe1, 0x1a, 0x25, 0x0c,
+	0x91, 0x8d, 0x7b, 0x31, 0xd9, 0x6b, 0x65, 0xb2, 0xfd, 0xd3, 0x70, 0x1e, 0xbb, 0x07, 0x97, 0x43,
+	0x07, 0x5d, 0xa4, 0x79, 0x8e, 0xcd, 0x92, 0xd9, 0xd2, 0x64, 0xa3, 0x4b, 0xe8, 0x2c, 0x20, 0xd4,
+	0xa9, 0xad, 0xcb, 0x70, 0x89, 0xf9, 0x84, 0xc7, 0xe2, 0x6f, 0x12, 0x54, 0x3b, 0x9e, 0xd9, 0x25,
+	0xe7, 0xfc, 0x9c, 0xec, 0x9c, 0xd9, 0x3c, 0x18, 0x74, 0x21, 0xff, 0x60, 0xe2, 0xed, 0x02, 0xf1,
+	0xf6, 0x6a, 0x72, 0x89, 0x9c, 0x78, 0x78, 0x2a, 0x27, 0x17, 0x63, 0x72, 0xf2, 0x0a, 0xcc, 0x33,
+	0x03, 0xa8, 0xcd, 0x6c, 0xc5, 0x12, 0x31, 0x51, 0xdf, 0x5a, 0x86, 0xcb, 0x1c, 0x21, 0xc7, 0xfd,
+	0x7b, 0x02, 0xfb, 0xc0, 0x7f, 0x24, 0x83, 0xef, 0x16, 0xf6, 0x04, 0x52, 0x31, 0x03, 0x12, 0xd5,
+	0xce, 0x21, 0x39, 0x24, 0x75, 0xfc, 0x62, 0x64, 0x04, 0xa5, 0x71, 0x8f, 0x54, 0xb4, 0x99, 0xeb,
+	0xdc, 0x2a, 0x54, 0x6d, 0x74, 0xd6, 0xa3, 0x87, 0x58, 0xa1, 0xb3, 0xd1, 0x19, 0x91, 0x26, 0x54,
+	0x28, 0xfa, 0xa8, 0xa3, 0x0a, 0x39, 0x9e, 0xbf, 0x4a, 0x70, 0x55, 0xdc, 0x3f, 0x64, 0x7d, 0xc4,
+	0xcc, 0x90, 0xd6, 0xa1, 0xa6, 0x19, 0x46, 0x2f, 0x68, 0x4b, 0x8a, 0xa4, 0x2d, 0x01, 0xcd, 0x30,
+	0x02, 0x89, 0xe4, 0xce, 0x0f, 0x9d, 0x53, 0xc4, 0x79, 0x4a, 0x84, 0xe7, 0x22, 0xa5, 0x32, 0x36,
+	0x01, 0xfd, 0x3a, 0xac, 0xc5, 0xa2, 0xe3, 0xf8, 0xcf, 0x49, 0x1a, 0x0f, 0x31, 0x74, 0x82, 0xd2,
+	0x35, 0x33, 0xfe, 0x9b, 0xb0, 0xe0, 0xbb, 0x34, 0xd2, 0x3e, 0xd4, 0x6c, 0x74, 0x16, 0xc8, 0x14,
+	0xa0, 0x35, 0xa1, 0x11, 0xaf, 0x99, 0x63, 0x1b, 0x87, 0x5c, 0xcb, 0x9a, 0x83, 0xb4, 0x68, 0x67,
+	0x54, 0xf9, 0xdc, 0x11, 0x0f, 0xfb, 0x2c, 0xac, 0x96, 0xe3, 0xfa, 0x03, 0x69, 0x5a, 0x04, 0x86,
+	0x0c, 0xaf, 0x65, 0x40, 0x9b, 0xd1, 0x73, 0x2d, 0x68, 0x26, 0xe9, 0xe7, 0x18, 0xff, 0x42, 0x53,
+	0xce, 0xbe, 0x6b, 0x19, 0x66, 0x52, 0xca, 0x59, 0x81, 0x79, 0xac, 0xb9, 0x26, 0x0a, 0x72, 0x2c,
+	0x5b, 0x89, 0x65, 0xa1, 0x18, 0x2d, 0x0b, 0xa1, 0x17, 0x5f, 0xca, 0xff, 0xe2, 0x85, 0x97, 0xfd,
+	0x46, 0x0a, 0xdd, 0x3a, 0x52, 0xb6, 0xb8, 0xff, 0x3e, 0xb9, 0x07, 0xc8, 0xe1, 0x43, 0xa1, 0x6e,
+	0x86, 0xaf, 0x9f, 0x00, 0x81, 0xbb, 0x90, 0xe6, 0x1f, 0xea, 0x41, 0x4e, 0x7c, 0x5f, 0x22, 0x5d,
+	0x76, 0x40, 0xd5, 0x91, 0x75, 0x8a, 0x12, 0x41, 0xa7, 0x3c, 0x96, 0x67, 0x50, 0x66, 0xf1, 0x27,
+	0x48, 0x6b, 0xbb, 0xdb, 0x09, 0xc5, 0x55, 0xd0, 0xa4, 0x06, 0x3d, 0x72, 0x70, 0x58, 0xfe, 0x31,
+	0xcc, 0x11, 0x27, 0xb0, 0xbe, 0x65, 0x2b, 0x97, 0x14, 0xda, 0x29, 0xd0, 0x83, 0x62, 0xf7, 0x33,
+	0x37, 0x4b, 0xf7, 0xa3, 0xfc, 0x47, 0x82, 0x39, 0xda, 0xcb, 0x08, 0x57, 0x46, 0x8a, 0x5e, 0x99,
+	0x15, 0x98, 0x17, 0x8a, 0x39, 0x5b, 0x45, 0xba, 0xe3, 0xe2, 0xe7, 0x75, 0xc7, 0xa5, 0x59, 0xbb,
+	0xe3, 0x70, 0xdf, 0x3e, 0x27, 0xf6, 0xed, 0xca, 0x00, 0xca, 0xc1, 0x08, 0x15, 0x9d, 0x68, 0xa4,
+	0xa9, 0x89, 0x66, 0xaa, 0x08, 0x17, 0x62, 0x8a, 0x70, 0xca, 0x60, 0x25, 0x5e, 0xcc, 0x97, 0x24,
+	0xbb, 0x08, 0x01, 0xcb, 0xdd, 0x5a, 0x67, 0x24, 0x9a, 0xd6, 0xaf, 0x41, 0x66, 0xa3, 0xb3, 0x7f,
+	0x0d, 0x49, 0xf3, 0xee, 0xb8, 0x19, 0xf3, 0x7b, 0x9d, 0xbc, 0x77, 0x9f, 0x91, 0xdf, 0x61, 0xba,
+	0x9c, 0x1a, 0xcc, 0x6f, 0x80, 0x32, 0x2d, 0x9d, 0xbf, 0x1c, 0x44, 0x0a, 0xe9, 0x0b, 0x84, 0xc3,
+	0xbb, 0x7b, 0x83, 0x81, 0x73, 0x36, 0xb0, 0x3c, 0x9c, 0x0d, 0x02, 0xd9, 0x7e, 0xfb, 0x47, 0x8d,
+	0xaa, 0x74, 0x83, 0xe5, 0x14, 0x88, 0x0d, 0xb8, 0x95, 0xa2, 0x86, 0xa3, 0xe9, 0x91, 0xda, 0xd2,
+	0x25, 0x85, 0xf3, 0x8b, 0x38, 0x83, 0x56, 0x91, 0x69, 0x05, 0x1c, 0x81, 0x4d, 0xd2, 0x4b, 0xa8,
+	0xfe, 0x3d, 0x43, 0x59, 0x9f, 0x52, 0xd8, 0x07, 0x85, 0x42, 0xae, 0x0f, 0x0a, 0x51, 0x40, 0xab,
+	0x70, 0x7d, 0x4a, 0x1f, 0x07, 0x63, 0x06, 0xdf, 0x54, 0x88, 0xa7, 0x90, 0x41, 0xaf, 0xdf, 0xc1,
+	0x89, 0x66, 0xd9, 0x19, 0x98, 0xd6, 0x00, 0x74, 0x9f, 0xad, 0x67, 0x6b, 0x43, 0x14, 0xdc, 0x38,
+	0x42, 0x79, 0xae, 0x0d, 0xa7, 0x51, 0xd0, 0xda, 0x15, 0xab, 0x88, 0x83, 0x79, 0x45, 0x6e, 0x0a,
+	0x75, 0xdd, 0x97, 0xc6, 0x43, 0xaf, 0x4b, 0x92, 0xae, 0x00, 0xd2, 0xee, 0x9f, 0x97, 0xa1, 0xd8,
+	0xf1, 0x4c, 0xf9, 0x37, 0x50, 0x0b, 0x7f, 0x5b, 0x6a, 0x25, 0xa4, 0xdb, 0x10, 0x8f, 0xb2, 0x95,
+	0xcd, 0xc3, 0xdf, 0xb7, 0x0e, 0x17, 0xc5, 0xef, 0x37, 0xb7, 0x53, 0x0f, 0x33, 0x2e, 0x65, 0x3b,
+	0x0f, 0x17, 0x57, 0xc2, 0x6d, 0xa0, 0xa9, 0x3b, 0xdd, 0x06, 0xc2, 0x93, 0x61, 0x83, 0x38, 0xfe,
+	0x0f, 0x60, 0x69, 0x6a, 0xb2, 0x4f, 0x9a, 0x1c, 0xa3, 0x8c, 0x4a, 0x3b, 0x27, 0x23, 0xd7, 0xf6,
+	0x4b, 0xa8, 0x4e, 0x26, 0xea, 0x66, 0xe2, 0x80, 0xca, 0x38, 0x94, 0xcd, 0x2c, 0x0e, 0x2e, 0xf8,
+	0x27, 0x50, 0x22, 0xb3, 0xf3, 0x6a, 0xca, 0xd0, 0xab, 0xdc, 0x4a, 0xd9, 0xe4, 0x92, 0x9e, 0xc3,
+	0x3c, 0x9b, 0xfc, 0xd6, 0x12, 0xd8, 0xe9, 0xb6, 0xb2, 0x91, 0xba, 0x1d, 0x96, 0xc7, 0x46, 0xb2,
+	0x24, 0x79, 0x74, 0x3b, 0x51, 0x9e, 0x38, 0x52, 0xf9, 0x01, 0x9b, 0x9a, 0xa7, 0x92, 0x02, 0x16,
+	0x65, 0x4c, 0x0c, 0x58, 0xd2, 0xc0, 0x24, 0xbb, 0x20, 0xc7, 0x0c, 0x4b, 0x77, 0xb3, 0xc5, 0x30,
+	0x56, 0x65, 0x27, 0x37, 0x2b, 0xd7, 0x39, 0x86, 0xe5, 0xb8, 0x09, 0x67, 0x2b, 0x5b, 0x52, 0xc0,
+	0xab, 0xec, 0xe6, 0xe7, 0x9d, 0x36, 0x55, 0x18, 0x5e, 0xd2, 0x4d, 0x0d, 0xb3, 0x66, 0x98, 0x1a,
+	0x37, 0x9b, 0xc8, 0xbf, 0x83, 0xab, 0xf1, 0x83, 0xc9, 0x76, 0x1e, 0x59, 0xdc, 0xdc, 0xef, 0xcf,
+	0xc2, 0x3d, 0xed, 0x67, 0xb1, 0xa7, 0x4f, 0xf7, 0xb3, 0xc0, 0x9b, 0xe1, 0xe7, 0xd8, 0x46, 0xdd,
+	0x7f, 0x10, 0x6c, 0xce, 0x59, 0x4b, 0x6d, 0x7f, 0x13, 0x1f, 0x84, 0xd8, 0xe3, 0xfb, 0x59, 0x58,
+	0xec, 0xef, 0x6f, 0xe7, 0xe9, 0xaa, 0x95, 0x5c, 0x1d, 0x7c, 0x58, 0x89, 0xf8, 0x2b, 0x4a, 0x92,
+	0x12, 0x81, 0x2b, 0x51, 0x49, 0xec, 0xcf, 0x21, 0xf2, 0x9f, 0x24, 0xa8, 0x27, 0x76, 0x5c, 0xed,
+	0xc4, 0xe4, 0x15, 0x7f, 0x40, 0x79, 0x38, 0xe3, 0x01, 0x0e, 0xc3, 0x82, 0x4b, 0xd1, 0x9e, 0xf3,
+	0x7b, 0x29, 0x76, 0x84, 0xf8, 0x14, 0x35, 0x1f, 0x5f, 0xf8, 0xcd, 0xc5, 0x34, 0x75, 0x77, 0x13,
+	0x33, 0x6b, 0x94, 0x35, 0xf1, 0xcd, 0x25, 0x77, 0x72, 0xf2, 0x31, 0x2c, 0x46, 0xda, 0xb8, 0x8d,
+	0xec, 0x6c, 0xf1, 0x0c, 0x21, 0xe5, 0x7e, 0x2e, 0xb6, 0xf0, 0xdb, 0x8e, 0xef, 0xd0, 0x52, 0x2e,
+	0xc5, 0x34, 0x77, 0xe2, 0xdb, 0x4e, 0x6d, 0xca, 0xc8, 0x55, 0x4a, 0x6c, 0xc9, 0xda, 0xa9, 0x4e,
+	0x8b, 0xc1, 0xf0, 0x70, 0xc6, 0x03, 0x01, 0x8c, 0xfd, 0x5f, 0xfd, 0xeb, 0x43, 0x43, 0x7a, 0xf7,
+	0xa1, 0x21, 0xfd, 0xef, 0x43, 0x43, 0x7a, 0xfb, 0xb1, 0x71, 0xe1, 0xdd, 0xc7, 0xc6, 0x85, 0xff,
+	0x7e, 0x6c, 0x5c, 0x78, 0xf9, 0xc4, 0xb4, 0xf0, 0xc9, 0xb8, 0xaf, 0xea, 0xce, 0xb0, 0x4d, 0x84,
+	0xdf, 0xb7, 0x11, 0x3e, 0x73, 0xdc, 0xdf, 0xb2, 0xd5, 0x00, 0x19, 0x26, 0x72, 0xdb, 0xe7, 0xa1,
+	0x1f, 0x37, 0xc9, 0xaf, 0xae, 0xe4, 0xe7, 0xcd, 0xf6, 0xe9, 0x4e, 0x7f, 0x9e, 0x8c, 0x8c, 0x0f,
+	0xbe, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xc0, 0xcf, 0x49, 0x61, 0xc5, 0x1d, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2872,15 +3011,16 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	// CreateClass creates a new credit class under the given credit type with an
-	// approved list of issuers and optional metadata. The fee denom must be one
-	// of the denoms listed in Params.credit_class_fee and greater than or equal
-	// to the fee amount but only the minimum amount is charged. The creator of
-	// the credit class becomes the admin of the credit class upon creation.
+	// approved list of issuers and optional metadata. If the class fee parameter
+	// is set, the fee field must be populated with equal value. A greater fee can
+	// be provided, however, the creator will only be charged the amount specified
+	// in the fee parameter. The creator of the credit class becomes the admin of
+	// the credit class upon creation.
 	CreateClass(ctx context.Context, in *MsgCreateClass, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
 	// CreateProject creates a new project under the given credit class with a
 	// jurisdiction, optional metadata, and an optional reference ID. The creator
 	// of the project must be an approved credit class issuer for the given credit
-	// class and the creator becomes the admin of the project upon creation.
+	// class. The creator becomes the admin of the project upon creation.
 	CreateProject(ctx context.Context, in *MsgCreateProject, opts ...grpc.CallOption) (*MsgCreateProjectResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
@@ -2938,6 +3078,11 @@ type MsgClient interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
+	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
+	// updated and only the issuer of the batch can update the batch.
+	//
+	// Since Revision 2
+	UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
 	// is emitted to be handled by an external bridge service.
@@ -2953,40 +3098,41 @@ type MsgClient interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(ctx context.Context, in *MsgSetClassCreatorAllowlist, opts ...grpc.CallOption) (*MsgSetClassCreatorAllowlistResponse, error)
-	// AddClassCreator is a governance method that allows the addition of new
+	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(ctx context.Context, in *MsgAddClassCreator, opts ...grpc.CallOption) (*MsgAddClassCreatorResponse, error)
-	// RemoveClassCreator is a governance method that removes
-	// address from the creation allowlist.
+	// RemoveClassCreator is a governance method that removes an
+	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(ctx context.Context, in *MsgRemoveClassCreator, opts ...grpc.CallOption) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
-	// class creation fee. If not set, the credit class creation fee will be
-	// removed and no fee will be required to create a credit class.
+	// class creation fee. If no fee is specified in the request, the credit
+	// class creation fee will be removed and no fee will be required to create
+	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
@@ -3115,6 +3261,15 @@ func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProj
 	return out, nil
 }
 
+func (c *msgClient) UpdateBatchMetadata(ctx context.Context, in *MsgUpdateBatchMetadata, opts ...grpc.CallOption) (*MsgUpdateBatchMetadataResponse, error) {
+	out := new(MsgUpdateBatchMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateBatchMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error) {
 	out := new(MsgBridgeResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/Bridge", in, out, opts...)
@@ -3199,15 +3354,16 @@ func (c *msgClient) RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveA
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// CreateClass creates a new credit class under the given credit type with an
-	// approved list of issuers and optional metadata. The fee denom must be one
-	// of the denoms listed in Params.credit_class_fee and greater than or equal
-	// to the fee amount but only the minimum amount is charged. The creator of
-	// the credit class becomes the admin of the credit class upon creation.
+	// approved list of issuers and optional metadata. If the class fee parameter
+	// is set, the fee field must be populated with equal value. A greater fee can
+	// be provided, however, the creator will only be charged the amount specified
+	// in the fee parameter. The creator of the credit class becomes the admin of
+	// the credit class upon creation.
 	CreateClass(context.Context, *MsgCreateClass) (*MsgCreateClassResponse, error)
 	// CreateProject creates a new project under the given credit class with a
 	// jurisdiction, optional metadata, and an optional reference ID. The creator
 	// of the project must be an approved credit class issuer for the given credit
-	// class and the creator becomes the admin of the project upon creation.
+	// class. The creator becomes the admin of the project upon creation.
 	CreateProject(context.Context, *MsgCreateProject) (*MsgCreateProjectResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
@@ -3265,6 +3421,11 @@ type MsgServer interface {
 	// UpdateProjectMetadata updates the project metadata. Only the admin of the
 	// project can update the project.
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
+	// UpdateBatchMetadata updates the batch metadata. Only an "open" batch can be
+	// updated and only the issuer of the batch can update the batch.
+	//
+	// Since Revision 2
+	UpdateBatchMetadata(context.Context, *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error)
 	// Bridge processes credits being sent back to the source chain. When credits
 	// are sent back to the source chain, the credits are cancelled and an event
 	// is emitted to be handled by an external bridge service.
@@ -3280,40 +3441,41 @@ type MsgServer interface {
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	// SetClassCreatorAllowlist is a governance method that updates the class
 	// creator allowlist enabled setting. When enabled, only addresses listed in
 	// the allowlist can create credit classes. When disabled, any address can
 	// create credit classes.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	SetClassCreatorAllowlist(context.Context, *MsgSetClassCreatorAllowlist) (*MsgSetClassCreatorAllowlistResponse, error)
-	// AddClassCreator is a governance method that allows the addition of new
+	// AddClassCreator is a governance method that allows the addition of a new
 	// address to the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddClassCreator(context.Context, *MsgAddClassCreator) (*MsgAddClassCreatorResponse, error)
-	// RemoveClassCreator is a governance method that removes
-	// address from the creation allowlist.
+	// RemoveClassCreator is a governance method that removes an
+	// address from the class creation allowlist.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveClassCreator(context.Context, *MsgRemoveClassCreator) (*MsgRemoveClassCreatorResponse, error)
 	// UpdateClassFee is a governance method that allows for updating the credit
-	// class creation fee. If not set, the credit class creation fee will be
-	// removed and no fee will be required to create a credit class.
+	// class creation fee. If no fee is specified in the request, the credit
+	// class creation fee will be removed and no fee will be required to create
+	// a credit class.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error)
 	// RemoveAllowedBridgeChain is a governance method that allows for the
 	// removal of a chain to bridge ecocredits to.
 	//
-	// Since Revision 1
+	// Since Revision 2
 	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)
 }
 
@@ -3359,6 +3521,9 @@ func (*UnimplementedMsgServer) UpdateProjectAdmin(ctx context.Context, req *MsgU
 }
 func (*UnimplementedMsgServer) UpdateProjectMetadata(ctx context.Context, req *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectMetadata not implemented")
+}
+func (*UnimplementedMsgServer) UpdateBatchMetadata(ctx context.Context, req *MsgUpdateBatchMetadata) (*MsgUpdateBatchMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBatchMetadata not implemented")
 }
 func (*UnimplementedMsgServer) Bridge(ctx context.Context, req *MsgBridge) (*MsgBridgeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Bridge not implemented")
@@ -3626,6 +3791,24 @@ func _Msg_UpdateProjectMetadata_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateBatchMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBatchMetadata)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateBatchMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/UpdateBatchMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateBatchMetadata(ctx, req.(*MsgUpdateBatchMetadata))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_Bridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgBridge)
 	if err := dec(in); err != nil {
@@ -3843,6 +4026,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProjectMetadata",
 			Handler:    _Msg_UpdateProjectMetadata_Handler,
+		},
+		{
+			MethodName: "UpdateBatchMetadata",
+			Handler:    _Msg_UpdateBatchMetadata_Handler,
 		},
 		{
 			MethodName: "Bridge",
@@ -4480,6 +4667,13 @@ func (m *MsgSend_SendCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.RetirementReason) > 0 {
+		i -= len(m.RetirementReason)
+		copy(dAtA[i:], m.RetirementReason)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RetirementReason)))
+		i--
+		dAtA[i] = 0x2a
+	}
 	if len(m.RetirementJurisdiction) > 0 {
 		i -= len(m.RetirementJurisdiction)
 		copy(dAtA[i:], m.RetirementJurisdiction)
@@ -4554,6 +4748,13 @@ func (m *MsgRetire) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Reason) > 0 {
+		i -= len(m.Reason)
+		copy(dAtA[i:], m.Reason)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Reason)))
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.Jurisdiction) > 0 {
 		i -= len(m.Jurisdiction)
 		copy(dAtA[i:], m.Jurisdiction)
@@ -5086,6 +5287,73 @@ func (m *MsgBridge) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgUpdateBatchMetadata) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBatchMetadata) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBatchMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.NewMetadata) > 0 {
+		i -= len(m.NewMetadata)
+		copy(dAtA[i:], m.NewMetadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.NewMetadata)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Issuer) > 0 {
+		i -= len(m.Issuer)
+		copy(dAtA[i:], m.Issuer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Issuer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateBatchMetadataResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBatchMetadataResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBatchMetadataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func (m *MsgBridgeResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -5364,6 +5632,29 @@ func (m *MsgAddClassCreator) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgAddClassCreatorResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddClassCreatorResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddClassCreatorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func (m *MsgSetClassCreatorAllowlist) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -5420,29 +5711,6 @@ func (m *MsgSetClassCreatorAllowlistResponse) MarshalTo(dAtA []byte) (int, error
 }
 
 func (m *MsgSetClassCreatorAllowlistResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgAddClassCreatorResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgAddClassCreatorResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgAddClassCreatorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -5980,6 +6248,10 @@ func (m *MsgSend_SendCredits) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.RetirementReason)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -6009,6 +6281,10 @@ func (m *MsgRetire) Size() (n int) {
 		}
 	}
 	l = len(m.Jurisdiction)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Reason)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -6241,6 +6517,36 @@ func (m *MsgBridge) Size() (n int) {
 	return n
 }
 
+func (m *MsgUpdateBatchMetadata) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Issuer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.NewMetadata)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateBatchMetadataResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *MsgBridgeResponse) Size() (n int) {
 	if m == nil {
 		return 0
@@ -6363,6 +6669,15 @@ func (m *MsgAddClassCreator) Size() (n int) {
 	return n
 }
 
+func (m *MsgAddClassCreatorResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *MsgSetClassCreatorAllowlist) Size() (n int) {
 	if m == nil {
 		return 0
@@ -6380,15 +6695,6 @@ func (m *MsgSetClassCreatorAllowlist) Size() (n int) {
 }
 
 func (m *MsgSetClassCreatorAllowlistResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgAddClassCreatorResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -8356,6 +8662,38 @@ func (m *MsgSend_SendCredits) Unmarshal(dAtA []byte) error {
 			}
 			m.RetirementJurisdiction = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetirementReason", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetirementReason = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -8553,6 +8891,38 @@ func (m *MsgRetire) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Jurisdiction = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Reason", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Reason = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -10015,6 +10385,202 @@ func (m *MsgBridge) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *MsgUpdateBatchMetadata) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateBatchMetadata: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateBatchMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Issuer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewMetadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewMetadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateBatchMetadataResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateBatchMetadataResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateBatchMetadataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *MsgBridgeResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -10879,6 +11445,56 @@ func (m *MsgAddClassCreator) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *MsgAddClassCreatorResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddClassCreatorResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddClassCreatorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *MsgSetClassCreatorAllowlist) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -11008,56 +11624,6 @@ func (m *MsgSetClassCreatorAllowlistResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgSetClassCreatorAllowlistResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgAddClassCreatorResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddClassCreatorResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddClassCreatorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

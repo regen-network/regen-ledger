@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestParseMsgCreateBatch(t *testing.T) {

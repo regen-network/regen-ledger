@@ -8,8 +8,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/x/data"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 func TestQuery_ResolversByHash(t *testing.T) {
@@ -89,13 +89,13 @@ func TestQuery_ResolversByHash(t *testing.T) {
 
 	// query resolvers with empty content hash
 	_, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{})
-	require.EqualError(t, err, "content hash cannot be empty: invalid request")
+	require.EqualError(t, err, "content hash cannot be empty: invalid argument")
 
 	// query resolvers with invalid content hash
 	_, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{
 		ContentHash: &data.ContentHash{},
 	})
-	require.EqualError(t, err, "invalid data.ContentHash: invalid type")
+	require.EqualError(t, err, "invalid data.ContentHash: invalid type: invalid argument")
 
 	// query resolvers with content hash that has not been anchored
 	_, err = s.server.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{

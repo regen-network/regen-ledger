@@ -5,12 +5,14 @@ import (
 
 	"gotest.tools/v3/assert"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestQuery_Projects_By_Admin(t *testing.T) {
@@ -82,4 +84,9 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 	res, err = s.k.ProjectsByAdmin(s.ctx, &types.QueryProjectsByAdminRequest{Admin: admin2.String()})
 	assert.NilError(t, err)
 	assert.Equal(t, len(res.Projects), 1)
+
+	// query project by invalid bech32 address
+	_, err = s.k.ProjectsByAdmin(s.ctx, &types.QueryProjectsByAdminRequest{Admin: "address"})
+	require.Error(t, err)
+	require.Equal(t, "decoding bech32 failed: invalid bech32 string length 7: invalid argument", err.Error())
 }

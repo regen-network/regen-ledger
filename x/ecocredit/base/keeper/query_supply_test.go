@@ -5,10 +5,12 @@ import (
 
 	"gotest.tools/v3/assert"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestQuery_Supply(t *testing.T) {
@@ -27,6 +29,12 @@ func TestQuery_Supply(t *testing.T) {
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
+
+	// supply not found
+	_, err := s.k.Supply(s.ctx, &types.QuerySupplyRequest{BatchDenom: batchDenom})
+	require.Error(t, err)
+	assert.Equal(t, "unable to get batch supply for batch: C01-001-20200101-20220101-001: invalid argument", err.Error())
+
 	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchKey:        1,
 		TradableAmount:  tradable,

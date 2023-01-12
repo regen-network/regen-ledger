@@ -8,8 +8,8 @@ import (
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 // QuerySellOrderCmd returns a query command that retrieves information for a given sell order.

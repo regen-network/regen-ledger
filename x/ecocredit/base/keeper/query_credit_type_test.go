@@ -5,10 +5,8 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestQuery_CreditType(t *testing.T) {
@@ -33,5 +31,5 @@ func TestQuery_CreditType(t *testing.T) {
 	_, err = s.k.CreditType(s.ctx, &types.QueryCreditTypeRequest{
 		Abbreviation: "D",
 	})
-	assert.ErrorIs(t, err, ormerrors.NotFound)
+	assert.Equal(t, err.Error(), "unable to get credit type with abbreviation: D: not found")
 }

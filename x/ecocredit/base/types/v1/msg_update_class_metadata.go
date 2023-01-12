@@ -5,8 +5,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgUpdateClassMetadata{}
@@ -16,7 +16,7 @@ func (m MsgUpdateClassMetadata) Route() string { return sdk.MsgTypeURL(&m) }
 func (m MsgUpdateClassMetadata) Type() string { return sdk.MsgTypeURL(&m) }
 
 func (m MsgUpdateClassMetadata) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgUpdateClassMetadata) ValidateBasic() error {

@@ -3,8 +3,8 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/keeper"
 )
 
 // RegisterInvariants registers the ecocredit module invariants.

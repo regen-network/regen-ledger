@@ -3,8 +3,10 @@ package keeper
 import (
 	"context"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types/v2/math"
 )
 
 // GetBasketBalanceMap calculates credit balance of each batch within the basket
@@ -55,4 +57,21 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 	}
 
 	return batchKeyToBalance, nil
+}
+
+// creditAmountToBasketCoin calculates the coins to mint to the credit depositor using the following formula:
+// coinAmount = creditAmt * (1 * 10^exp)
+func creditAmountToBasketCoin(creditAmt math.Dec, exp uint32, denom string) (sdk.Coin, error) {
+	multiplier := math.NewDecFinite(1, int32(exp))
+	tokenAmt, err := multiplier.MulExact(creditAmt)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	amtInt, err := tokenAmt.BigInt()
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	return sdk.NewCoin(denom, sdk.NewIntFromBigInt(amtInt)), nil
 }

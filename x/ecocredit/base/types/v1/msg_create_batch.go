@@ -7,8 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgCreateBatch{}
@@ -21,7 +21,7 @@ func (m MsgCreateBatch) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.
 func (m MsgCreateBatch) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a sanity check on the provided data.
@@ -42,6 +42,11 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		if err := issuance.Validate(); err != nil {
 			return errors.Wrapf(err, "issuance[%d]", i)
 		}
+	}
+
+	// we allow metadata to be empty for class and project but not for batch
+	if m.Metadata == "" {
+		return sdkerrors.ErrInvalidRequest.Wrapf("metadata cannot be empty")
 	}
 
 	if len(m.Metadata) > base.MaxMetadataLength {

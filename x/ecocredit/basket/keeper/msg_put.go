@@ -8,14 +8,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	regenmath "github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	regenmath "github.com/regen-network/regen-ledger/types/v2/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
@@ -70,12 +70,12 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 			return nil, err
 		}
 		// get the amount of basket tokens to give to the depositor
-		tokens, err := creditAmountToBasketCoins(amt, creditType.Precision, basket.BasketDenom)
+		tokens, err := creditAmountToBasketCoin(amt, creditType.Precision, basket.BasketDenom)
 		if err != nil {
 			return nil, err
 		}
 		// update the total amount received so far
-		amountReceived = amountReceived.Add(tokens[0].Amount)
+		amountReceived = amountReceived.Add(tokens.Amount)
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&basetypes.EventTransfer{
 			Sender:         ownerString,
@@ -113,9 +113,9 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 }
 
 // canBasketAcceptCredit checks that a credit adheres to the specifications of a basket. Specifically, it checks:
-//  - batch's start time is within the basket's specified time window or min start date
-//  - class is in the basket's allowed class store
-//  - type matches the baskets specified credit type.
+// - batch's start time is within the basket's specified time window or min start date
+// - class is in the basket's allowed class store
+// - type matches the baskets specified credit type.
 func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batch *baseapi.Batch) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
@@ -216,21 +216,4 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 		return err
 	}
 	return nil
-}
-
-// creditAmountToBasketCoins calculates the tokens to award to the depositor
-func creditAmountToBasketCoins(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
-	var coins sdk.Coins
-	multiplier := regenmath.NewDecFinite(1, int32(exp))
-	tokenAmt, err := multiplier.MulExact(creditAmt)
-	if err != nil {
-		return coins, err
-	}
-
-	amtInt, err := tokenAmt.BigInt()
-	if err != nil {
-		return coins, err
-	}
-
-	return sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(amtInt))}, nil
 }

@@ -33,6 +33,7 @@ var (
 	ErrInvalidDecString   = errors.Register(mathCodespace, 1, "invalid decimal string")
 	ErrUnexpectedRounding = errors.Register(mathCodespace, 2, "unexpected rounding")
 	ErrNonIntegeral       = errors.Register(mathCodespace, 3, "value is non-integral")
+	ErrInfiniteString     = errors.Register(mathCodespace, 4, "value is infinite")
 )
 
 // In cosmos-sdk#7773, decimal128 (with 34 digits of precision) was suggested for performing
@@ -54,7 +55,13 @@ func NewDecFromString(s string) (Dec, error) {
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
-	return Dec{*d}, nil
+
+	d1 := Dec{*d}
+	if d1.dec.Form == apd.Infinite {
+		return d1, ErrInfiniteString.Wrapf(s)
+	}
+
+	return d1, nil
 }
 
 func NewNonNegativeDecFromString(s string) (Dec, error) {
@@ -233,12 +240,10 @@ func (x Dec) String() string {
 }
 
 // Cmp compares x and y and returns:
-//
-//   -1 if x <  y
-//    0 if x == y
-//   +1 if x >  y
-//   undefined if d or x are NaN
-//
+// -1 if x <  y
+// 0 if x == y
+// +1 if x >  y
+// undefined if d or x are NaN
 func (x Dec) Cmp(y Dec) int {
 	return x.dec.Cmp(&y.dec)
 }

@@ -6,26 +6,24 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	baseapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/ormstore"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/base/keeper"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/basket/keeper"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1"
-	marketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/keeper"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1"
+	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
+	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2/ormstore"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/keeper"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	marketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/keeper"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
 type serverImpl struct {
-	legacySubspace paramtypes.Subspace
-	bankKeeper     ecocredit.BankKeeper
-	accountKeeper  ecocredit.AccountKeeper
+	bankKeeper    ecocredit.BankKeeper
+	accountKeeper ecocredit.AccountKeeper
 
 	BaseKeeper        basekeeper.Keeper
 	BasketKeeper      basketkeeper.Keeper
@@ -38,12 +36,11 @@ type serverImpl struct {
 }
 
 //nolint:revive
-func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
+func NewServer(storeKey storetypes.StoreKey,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
 	s := serverImpl{
-		legacySubspace: legacySubspace,
-		bankKeeper:     bankKeeper,
-		accountKeeper:  accountKeeper,
+		bankKeeper:    bankKeeper,
+		accountKeeper: accountKeeper,
 	}
 
 	// ensure ecocredit module account is set
@@ -69,8 +66,8 @@ func NewServer(storeKey storetypes.StoreKey, legacySubspace paramtypes.Subspace,
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
 	s.BaseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
-	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, s.legacySubspace, basketAddr, authority)
-	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, s.legacySubspace, authority)
+	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority)
+	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority)
 
 	return s
 }

@@ -86,7 +86,7 @@ Move the binary to your local bin directory:
 sudo mv regen-ledger_4.0.0_linux_amd64/regen /usr/local/bin
 ```
 
-Open a new terminal window and check if the installation was successful:
+Check if the installation was successful:
 
 ```bash
 regen version
@@ -114,7 +114,7 @@ In order to build the `regen` binary from source, you'll need the following:
 
 - [Git](https://git-scm.com) `>=2` .
 - [Make](https://www.gnu.org/software/make/) `>=4`
-- [Go](https://golang.org/) `>=1.18`
+- [Go](https://golang.org/) `>=1.19`
 
 ### Go Environment
 

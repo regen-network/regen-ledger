@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type removeAllowedBridgeChainSuite struct {

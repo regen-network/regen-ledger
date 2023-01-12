@@ -7,8 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgRetire{}
@@ -21,7 +21,7 @@ func (m MsgRetire) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.
 func (m MsgRetire) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a sanity check on the provided data.
@@ -42,6 +42,10 @@ func (m *MsgRetire) ValidateBasic() error {
 
 	if err := base.ValidateJurisdiction(m.Jurisdiction); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("jurisdiction: %s", err)
+	}
+
+	if len(m.Reason) > base.MaxNoteLength {
+		return ecocredit.ErrMaxLimit.Wrapf("reason: max length %d", base.MaxNoteLength)
 	}
 
 	return nil

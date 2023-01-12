@@ -11,9 +11,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/testutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2/testutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type retire struct {
@@ -192,6 +192,21 @@ func (s *retire) AliceAttemptsToRetireCreditsWithBatchDenom(a string) {
 	})
 }
 
+func (s *retire) AliceAttemptsToRetireCreditAmountWithJurisdictionAndReason(a, b, c string) {
+	s.res, s.err = s.k.Retire(s.ctx, &types.MsgRetire{
+		Owner: s.alice.String(),
+		Credits: []*types.Credits{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+		Jurisdiction: b,
+		Reason:       c,
+	})
+	require.NoError(s.t, s.err)
+}
+
 func (s *retire) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
@@ -223,20 +238,6 @@ func (s *retire) ExpectBatchSupply(a gocuke.DocString) {
 
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
-}
-
-func (s *retire) AliceAttemptsToRetireCreditAmountFrom(a string, b string) {
-	s.res, s.err = s.k.Retire(s.ctx, &types.MsgRetire{
-		Owner: s.alice.String(),
-		Credits: []*types.Credits{
-			{
-				BatchDenom: s.batchDenom,
-				Amount:     a,
-			},
-		},
-		Jurisdiction: b,
-	})
-	require.NoError(s.t, s.err)
 }
 
 func (s *retire) ExpectEventWithProperties(a gocuke.DocString) {

@@ -2,8 +2,8 @@ package client
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 
@@ -14,7 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
 // TxCmd returns a root CLI command handler for all x/data transaction commands.
@@ -231,7 +231,7 @@ func parseContentHashes(clientCtx client.Context, filePath string) ([]*data.Cont
 		return nil, fmt.Errorf("file path is empty")
 	}
 
-	bz, err := ioutil.ReadFile(filePath)
+	bz, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}

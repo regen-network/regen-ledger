@@ -7,12 +7,11 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 func TestQueryBatchesByIssuer(t *testing.T) {
@@ -70,5 +69,5 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 
 	// query batches by an invalid address
 	_, err = s.k.BatchesByIssuer(s.ctx, &types.QueryBatchesByIssuerRequest{Issuer: "foobar"})
-	assert.ErrorContains(t, err, sdkerrors.ErrInvalidAddress.Error())
+	assert.ErrorContains(t, err, "decoding bech32 failed: invalid bech32 string length 6: invalid argument")
 }

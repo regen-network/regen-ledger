@@ -5,24 +5,24 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	regentypes "github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 // BatchesByProject queries for all batches in the given credit class.
 func (k Keeper) BatchesByProject(ctx context.Context, request *types.QueryBatchesByProjectRequest) (*types.QueryBatchesByProjectResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
 	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", request.ProjectId, err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get project with id %s: %s", request.ProjectId, err.Error())
 	}
 
 	it, err := k.stateStore.BatchTable().List(ctx, api.BatchProjectKeyIndexKey{}.WithProjectKey(project.Key), ormlist.Paginate(pg))
@@ -56,7 +56,7 @@ func (k Keeper) BatchesByProject(ctx context.Context, request *types.QueryBatche
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
-		return nil, err
+		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryBatchesByProjectResponse{
