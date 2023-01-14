@@ -106,8 +106,6 @@ For more information about the properties of an allowed denom, see [AllowedDenom
 
 <br/>
 
-![Ecocredit Types](./assets/types.png)
-
 ![Credit Class Roles](./assets/roles.png)
 
 ![Allowlist Params](./assets/params.png)
