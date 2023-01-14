@@ -6,6 +6,9 @@ The `ecocredit` module provides additional types used in multiple services or fo
 
 <!-- listed alphabetically -->
 
+- [AllowedDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.AllowedDenom)
+- [BatchIssuance](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.BatchIssuance)
+- [Credits](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Credits)
 - [CreditTypeProposal](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.CreditTypeProposal)
 - [OriginTx](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.OriginTx)
 - [Params](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Params)

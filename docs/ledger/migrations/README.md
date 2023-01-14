@@ -1,8 +1,9 @@
 # Migration Overview
 
-The migration guides within this section are written for developers writing applications that consume the Regen Ledger API. The first migration guide is for Regen Ledger v4.0:
+The migration guides within this section are written for developers writing applications that consume the Regen Ledger API.
 
 - [Migration Guide v4.0](v4.0-migration.md)
+- [Migration Guide v5.0](v5.0-migration.md)
 
 This first page provides an overview of our release process. In addition, we provide some tips on how application developers can stay up to date and prepare ahead of time.
 
