@@ -46,7 +46,7 @@ eco_readme="# Features\n\n"
 eco_readme+="## Types\n\n"
 eco_readme+="### Base\n\n"
 
-for file in $(find ./x/ecocredit/base/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
+for file in $(find ./x/ecocredit/base/types/v1/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")
   eco_readme+="- [$name](./types/$name.html)\n"
   "$GOBIN/gherkin2markdown" "$file" > "$eco_types_dir/$name.md"
@@ -54,7 +54,7 @@ done
 
 eco_readme+="### Basket\n\n"
 
-for file in $(find ./x/ecocredit/basket/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
+for file in $(find ./x/ecocredit/basket/types/v1/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")
   eco_readme+="- [$name](./types/$name.html)\n"
   "$GOBIN/gherkin2markdown" "$file" > "$eco_types_dir/$name.md"
@@ -62,7 +62,7 @@ done
 
 eco_readme+="### Marketplace\n\n"
 
-for file in $(find ./x/ecocredit/marketplace/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
+for file in $(find ./x/ecocredit/marketplace/types/v1/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")
   eco_readme+="- [$name](./types/$name.html)\n"
   "$GOBIN/gherkin2markdown" "$file" > "$eco_types_dir/$name.md"
@@ -71,7 +71,7 @@ done
 eco_readme+="## Server\n\n"
 eco_readme+="### Base\n\n"
 
-for file in $(find ./x/ecocredit/server/core -path -prune -o -name '*.feature' | sort -t '\0' -n); do
+for file in $(find ./x/ecocredit/base/keeper/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")
   eco_readme+="- [$name](./server/$name.html)\n"
   "$GOBIN/gherkin2markdown" "$file" > "$eco_server_dir/$name.md"
@@ -79,7 +79,7 @@ done
 
 eco_readme+="### Basket\n\n"
 
-for file in $(find ./x/ecocredit/server/basket -path -prune -o -name '*.feature' | sort -t '\0' -n); do
+for file in $(find ./x/ecocredit/basket/keeper/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")
   eco_readme+="- [$name](./server/$name.html)\n"
   "$GOBIN/gherkin2markdown" "$file" > "$eco_server_dir/$name.md"
@@ -87,7 +87,7 @@ done
 
 eco_readme+="### Marketplace\n\n"
 
-for file in $(find ./x/ecocredit/server/marketplace -path -prune -o -name '*.feature' | sort -t '\0' -n); do
+for file in $(find ./x/ecocredit/marketplace/keeper/features -path -prune -o -name '*.feature' | sort -t '\0' -n); do
   name=$(basename "${file%.*}")
   eco_readme+="- [$name](./server/$name.html)\n"
   "$GOBIN/gherkin2markdown" "$file" > "$eco_server_dir/$name.md"
