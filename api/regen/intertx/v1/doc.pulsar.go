@@ -18,7 +18,8 @@ import (
 // The following outlines revisions and tagged versions of the compiled code in
 // relation to tagged releases in regen-network/regen-ledger:
 //
-// - Revision 0: (in progress)
+// - Revision 0: v5.0.0 (api/v2.0.0, x/intertx/v1.0.0)
+// - Revision 1: (in progress)
 //
 
 const (
