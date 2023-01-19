@@ -31,15 +31,15 @@ A credit class issuer is an account entrusted by the credit class admin to issue
 
 ### Off-Chain Forward Contracts
 
-A forward contract requires credits to be delivered either in full or over time to an investor as the credits become available. Issuance policies would enable an off-chain agreement to be enforced on chain; a percentage of each credit issuance could be issued to an account until an amount of credits has been delivered or an end date has been reached. An issuance policy would enable this requirement to be enforced programmatically on chain and therefore properly accounted for by credit class issuers.
+A forward contract requires credits to be delivered either in full or over time to an investor as the credits become available. Issuance policies would enable an off-chain agreement to be enforced on chain; a percentage of each credit issuance would be issued to an account until an amount of credits has been delivered or an end date has been reached.Issuance policies would enable such requirements to be enforced programmatically on chain and therefore properly accounted for by credit class issuers.
 
 ### On-Chain Forward Contracts
 
-This proposal is written in parallel with a proposal for [on-chain forward contract functionality][1]. On-chain forward contract functionality would enable a project to create a forward contract, the forward contract would then be approved by a credit class issuer, and investors would then be able to purchase shares of future credits issued by the project. In the initial implementation, an issuance policy would be created at the time of investment and therefore each credit issuance from the project within the timeframe of the contract would require a percentage of the credits to be issued to the investor.
+This proposal is written in parallel with a proposal for [on-chain forward contract functionality][1]. On-chain forward contract functionality enables a project to create a forward contract, the forward contract to be approved by a credit class issuer, and investors to purchase shares of future credits issued by the project. In the current specification, an issuance policy is created at the time of investment and therefore guaranteeing a percentage of credits from each issuance to be issued to the investor.
 
 ### Royalties and Other Agreements
 
-Other agreements such as royalties (where credits are used as the unit of payment) can be enforced through issuance policies. Various parties involved in producing, monitoring, verifying, reviewing, or issuing credits may have contractual agreements with the credit class or project that guarantees credits are received in the form of royalties.
+Other agreements such as royalties (where credits are used as the unit of payment) can be enforced through issuance policies. Various parties involved in producing, monitoring, verifying, reviewing, or issuing credits may have contractual agreements with the credit class or project that guarantees credits are received as a form of payment. Issuance policies are not designed for any one use case.
 
 ## Approach
 
