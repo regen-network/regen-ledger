@@ -19,7 +19,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/grpc v1.52.0
+	google.golang.org/grpc v1.52.1
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
 	gotest.tools/v3 v3.4.0
 	pgregory.net/rapid v0.5.5
