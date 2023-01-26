@@ -33,9 +33,50 @@ Forward contract functionality would enable projects to offer a percentage of fu
 
 The "Fast Forward Pilot" described within this document is potentially one of many pilots that are being developed as a part of the Fast Forward working group. The pilot described here involves UNDO Carbon (the supplier), Spirals Protocol (the buyer), and Regen Network Development (the infrastructure provider).
 
+The following expectations were discussed and the "✓" indicates what we aligned on for an initial implementation:
+
+**Initial payment**
+
+1. Buyer pays full upfront cost for future credits ✓
+2. Buyer pays partial upfront cost for future credits
+3. Buyer payment is held in escrow for future credits
+4. Buyer pays no upfront cost for future credits
+
+**Payment amount**
+
+1. Discount from current market price based on years out
+2. Discount from current market price based on risk
+3. Discount from current market price based on combination ✓
+
+**Representation**
+
+1. Buyer receives no asset and contract is baked into the protocol ✓
+2. Buyer receives a liquid asset representing the percent of future credits
+    1. The asset is tradable
+    2. The asset is not tradable
+3. Buyer receives vouchers for credits that will mature (i.e. ex-ante)
+
+**Credit delivery (time)**
+
+1. Buyer receives credits as they are issued (percent of each issuance) ✓
+2. Buyer receives credits at the end of the contract (total percent/credits)
+3. Buyer receives vouchers at the time of purchase (i.e. ex-ante)
+
+**Credit delivery (quantity)**
+
+1. Buyer receives percentage in the contract (no insurance)
+    1. If more/less credits are issued, buyer receives more/less
+    2. Once expected credit amount issued, buyer receives no more ✓
+2. Buyer receives percentage in the contract (with insurance)
+    1. Previously issued credits are held in a reserve pool ✓
+    2. Future credits issued if credits not delivered within time-frame
+3. Buyer receives exact credits that mature (i.e. ex-ante)
+
 ...
 
 ### Earthbanc Use Case
+
+See [Forward Contract Bond Module][1].
 
 ...
 
@@ -317,8 +358,8 @@ message Contract {
   
   // buffer_window is the duration after the end date in which credits may
   // still be issued with a monitoring period that falls within the start
-  // and end data of the contract. The credits held in the reserve pool are
-  // not distributed or returned until end data + buffer window.
+  // and end date of the contract. The credits held in the reserve pool are
+  // not distributed or returned until end date + buffer window.
   google.protobuf.Duration buffer_window = 9;
 }
 ```
