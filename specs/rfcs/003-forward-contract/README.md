@@ -100,7 +100,7 @@ To mitigate the risk of investment, and to therefore improve the likelihood of a
 
 The reserve pool would only accept credits from the same credit class and from the credit class issuer that approved the contract. Whether the reserve pool backs a partial amount or the total amount of credits being sold is up to the credit class issuer; the more credits held in the reserve pool providing less risk for the investor(s) and more likelihood of the project receiving funds.
 
-The accepted form of funds (i.e. token denomination) is decided by the project admin and approved by the credit class issuer during the contract creation and review process. There would be no restrictions on what token denomination the project chooses but the token denomination and amount would be unalterable after the contract has been approved, therefore a stable coin would be the most probable choice.
+The accepted form of funds (i.e. token denomination) is decided by the project admin and approved by the credit class issuer during the contract creation and review process. There would be no restrictions on what the project chooses but the token denomination and amount would be unalterable after the contract has been approved, therefore a stable coin would be the most probable choice.
 
 ### Contract Submodule
 
@@ -423,11 +423,11 @@ message ContractReserve {
 }
 ```
 
-### Contract Expiration
+### Contract Termination
 
-The contract will automatically expire once the contracted credit volume has been delivered or when the contract end date (with an optional buffer window) has been reached. If the end date (plus the optional buffer window) is reached before the contracted credit volume has been delivered, credits from the reserve pool will be delivered in place of the contracted credits up to the amount available in the reserve pool. 
+The contract will end once the contracted credit volume has been delivered or when the contract end date (with an optional buffer window) has been reached. If the end date (plus the optional buffer window) is reached before the contracted credit volume has been delivered, credits from the reserve pool will be delivered in place of the contracted credits up to the amount available in the reserve pool. 
 
-### Automated Credit Issuance
+### Credit Issuance
 
 Direct credit issuance to the investor(s) will be enforced with on-chain functionality. At the time of funding the project, an investor has the option of choosing to receive credits in a retired or tradable state upon issuance. This functionality will be handled by "issuance policies" and explored as a separate feature set built alongside the initial implementation of forward contract functionality.
 
