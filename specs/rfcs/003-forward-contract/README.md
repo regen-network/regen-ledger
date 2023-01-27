@@ -100,7 +100,7 @@ To mitigate the risk of investment, and to therefore improve the likelihood of a
 
 The reserve pool would only accept credits from the same credit class and from the credit class issuer that approved the contract. Whether the reserve pool backs a partial amount or the total amount of credits being sold is up to the credit class issuer; the more credits held in the reserve pool providing less risk for the investor(s) and more likelihood of the project receiving funds.
 
-The accepted form of funds (i.e. the accepted token denomination) is decided by the project admin and approved by the credit class issuer during the contract creation and review process. There would be no restrictions on what token denomination the project chooses but the token denomination and amount would be unalterable after the contract has been approved, therefore a stable coin would be the most probable choice.
+The accepted form of funds (i.e. token denomination) is decided by the project admin and approved by the credit class issuer during the contract creation and review process. There would be no restrictions on what token denomination the project chooses but the token denomination and amount would be unalterable after the contract has been approved, therefore a stable coin would be the most probable choice.
 
 ### Contract Submodule
 
@@ -121,29 +121,35 @@ message MsgCreate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract including the initial amount of funds to
-  // collect, the initial volume percentage offered, estimated total supply,
-  // forward contract supply, and estimated price per credit type unit.
+  // information about the contract such as calculations made to determine
+  // the volume of credits and the price per credit.
   string metadata = 3;
 
-  // funds_to_collect is the denom and amount the project is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 4;
+  // ask_price is the token denomination and amount the project is asking
+  // for per credit.
+  cosmos.base.v1beta1.Coin ask_price = 4;
 
-  // volume_percentage is the percent of future credits issued that will be
-  // available to purchase.
-  string volume_percentage = 5;
+  // amount is the amount of future credits issued that will be available to
+  // purchase. The amount is a decimal value with a precision determined by
+  // the credit type of the credit class.
+  string amount = 5;
+
+  // volume_percentage is the percentage of future credits issued that will be
+  // available to purchase. The percentage is used to determine the amount of
+  // credits issued to investors with each credit issuance.
+  string volume_percentage = 6;
 
   // start_date is the contract start date.
-  google.protobuf.Timestamp start_date = 6;
+  google.protobuf.Timestamp start_date = 7;
 
   // end_date is the contract end date.
-  google.protobuf.Timestamp end_date = 7;
+  google.protobuf.Timestamp end_date = 8;
   
   // buffer_window is the duration after the end date in which credits may
   // still be issued with a monitoring period that falls within the start
   // and end date of the contract. The credits held in the reserve pool are
   // not distributed or returned until end date + buffer window.
-  google.protobuf.Duration buffer_window = 8;
+  google.protobuf.Duration buffer_window = 9;
 }
 ```
 
@@ -166,23 +172,35 @@ message MsgUpdate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract including the initial amount of funds to
-  // collect, the initial volume percentage offered, estimated total supply,
-  // forward contract supply, and estimated price per credit type unit.
+  // information about the contract such as calculations made to determine
+  // the volume of credits and the price per credit.
   string metadata = 3;
 
-  // funds_to_collect is the denom and amount the project is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 4;
+  // ask_price is the token denomination and amount the project is asking
+  // for per credit.
+  cosmos.base.v1beta1.Coin ask_price = 4;
 
-  // volume_percentage is the percent of future credits issued that will be
-  // available to purchase.
-  string volume_percentage = 5;
+  // amount is the amount of future credits issued that will be available to
+  // purchase. The amount is a decimal value with a precision determined by
+  // the credit type of the credit class.
+  string amount = 5;
+
+  // volume_percentage is the percentage of future credits issued that will be
+  // available to purchase. The percentage is used to determine the amount of
+  // credits to be issued to investors with each credit issuance.
+  string volume_percentage = 6;
 
   // start_date is the contract start date.
-  google.protobuf.Timestamp start_date = 6;
+  google.protobuf.Timestamp start_date = 7;
 
   // end_date is the contract end date.
-  google.protobuf.Timestamp end_date = 7;
+  google.protobuf.Timestamp end_date = 8;
+  
+  // buffer_window is the duration after the end date in which credits may
+  // still be issued with a monitoring period that falls within the start
+  // and end date of the contract. The credits held in the reserve pool are
+  // not distributed or returned until end date + buffer window.
+  google.protobuf.Duration buffer_window = 9;
 }
 ```
 
@@ -233,7 +251,7 @@ Rule: The volume percentage cannot exceed the sum percentage of existing issuanc
 
 ### Reserve Credits
 
-The credit class issuer can reserve credits in a reserve pool specifically for the forward contract to help mitigate the risk of investment by providing credits that will be distributed to the investor if the project under-delivers.
+The credit class issuer can reserve credits in a reserve pool that backs the forward contract to help mitigate the risk of investment by providing credits that will be distributed to the investor if the project under-delivers.
 
 ```protobuf
 // MsgReserve is the Msg/Reserve request type.
@@ -267,11 +285,9 @@ Rule: The reserve can only receive credits from the same credit class as the pro
 Rule: The reserve cannot receive more credits than the total volume of contracted credits
 ```
 
-### Invest in Contract
+### Invest in Project
 
-Any account can view available contracts and fund a project. When an account funds a project, the account has a claim to future credits issued from the project. The funds are transferred directly to the project admin.
-
-When an account funds a project and therefore owns a claim on future credits issued from the project, an issuance policy is automatically created and managed programmatically (i.e. no account has the authority to update the issuance policy and the issuance policy would only expire when the contract has ended).
+Any account can view available contracts and fund a project. When an account funds a project, funds are transferred directly to the project admin and an issuance policy is created and managed programmatically with the investor as the recipient.
 
 ```protobuf
 // MsgInvest is the Msg/Invest request type.
@@ -280,25 +296,27 @@ message MsgInvest {
   // id is the unique identifier of the contract.
   uint64 id = 1;
 
-  // funder is the address of the account funding the project and receiving a
-  // share of future credits issued from the project.
-  string funder = 2;
+  // investor is the address of the account funding the project and receiving a
+  // percentage of future credits issued from the project.
+  string investor = 2;
 
-  // volume_percentage is the percent of all credits issued that the funder will
-  // receive.
-  string volume_percentage = 3;
-
-  // funds is the token denom and amount the funder is providing in return for
-  // the specified volume percentage. The required amount is determined based on
-  // the volume percentage provided and only the required amount is sent.
-  cosmos.base.v1beta1.Coin funds = 4;
+  // bid_price is the price per credit the investor is paying in return for
+  // the specified amount of future credits issued. The bid price must be
+  // greater than or equal to the ask price defined within the contract and
+  // only the ask price will be charged at the time of investment.
+  cosmos.base.v1beta1.Coin bid_price = 3;
   
+  // amount is the total amount of future credits issued that the investor is
+  // purchasing and will receive over time with each credit issuance based on
+  // the volume percentage defined within the contract.
+  string amount = 4;
+
   // auto_retire determines whether the credits will be automatically retied upon
   // issuance (i.e. the issuance policy will be set to auto-retire).
   bool auto_retire = 5;
   
-  // retirement_jurisdiction is the jurisdiction of the funder. A jurisdiction is
-  // only required if auto-retire is enabled.
+  // retirement_jurisdiction is the jurisdiction of the investor. A jurisdiction
+  // is only required if auto-retire is enabled.
   string retirement_jurisdiction = 6;
 }
 ```
@@ -316,7 +334,7 @@ Rule: The funds amount must be greater than or equal to the calculated cost
 ```
 
 ```feature
-Rule: The funds are deducted from the token balance of the funder
+Rule: The funds are deducted from the token balance of the investor
 ```
 
 ```feature
@@ -343,30 +361,36 @@ message Contract {
   ContractStatus status = 3;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract including the initial amount of funds to
-  // collect, the initial volume percentage offered, estimated total supply,
-  // forward contract supply, and estimated price per credit type unit.
+  // information about the contract such as calculations made to determine
+  // the volume of credits and the price per credit.
   string metadata = 4;
 
-  // volume_percentage is the remaining percent of all credits issued that
-  // are be available to claim.
-  string volume_percentage = 5;
+  // ask_price is the token denomination and amount the project is asking
+  // for per credit.
+  cosmos.base.v1beta1.Coin ask_price = 5;
 
-  // funds_to_collect is the denom and remaining amount of funds the project
-  // is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 6;
+  // amount is the amount of future credits issued that are available to
+  // purchase. The amount will decrease with each investment, therefore
+  // representing the remaining amount of credits available.
+  string amount = 6;
+
+  // volume_percentage is the percentage of future credits issued that was
+  // made available to purchase. The volume percentage is used to determine
+  // the percentage of future credits issued in each credit issuance based
+  // on the amount of credits purchased by an investor.
+  string volume_percentage = 7;
 
   // start_date is the contract start date.
-  google.protobuf.Timestamp start_date = 7;
+  google.protobuf.Timestamp start_date = 8;
 
   // end_date is the contract end date.
-  google.protobuf.Timestamp end_date = 8;
+  google.protobuf.Timestamp end_date = 9;
   
   // buffer_window is the duration after the end date in which credits may
   // still be issued with a monitoring period that falls within the start
   // and end date of the contract. The credits held in the reserve pool are
   // not distributed or returned until end date + buffer window.
-  google.protobuf.Duration buffer_window = 9;
+  google.protobuf.Duration buffer_window = 10;
 }
 ```
 
@@ -414,11 +438,11 @@ See [(x/ecocredit): issuance policy proof-of-concept][3] for more information.
 
 Following the initial implementation, additional functionality could be added to support the liquidity of claims on future credits issued from a project enabling investors to receive tradable assets representing such claims.
 
-Investors would have the option of receiving tokens immediately instead of receiving credits directly over time. The tokens would then be used to redeem credits from a claim account (i.e. an account managed programmatically by the `contract` submodule). Receiving tokens would enable investors to transfer their claim and the owner(s) of those tokens would then be able to redeem credits at a time of their choosing.
+Investors would have the option of receiving tokens immediately instead of receiving credits directly over time. The tokens would then be used to claim credits from a claim account (i.e. an account managed programmatically by the `contract` submodule). Receiving tokens would enable investors to transfer their claim and the owner(s) of those tokens would then be able to claim credits at a time of their choosing.
 
-The amount of tokens sent to the investor upon funding a project would be calculated based on the percent of the claim. The tokens would be specific to the project and the denomination would include information about the most recent credits redeemed. Rather than an issuance policy being created using the investor account as the recipient, an issuance policy would be created using the claim account as the recipient and the credits would be held by the claim account until redeemed by the token owner.
+The amount of tokens sent to the investor upon funding a project would be calculated based on the percent of the claim. The tokens would be specific to the project and the denomination would include information about the most recent credits claimed. Rather than an issuance policy being created using the investor account as the recipient, an issuance policy would be created using the claim account as the recipient and the credits would be held by the claim account until claimed by the token owner.
 
-When a token owner redeems credits from the claim account, the owner would exchange the tokens for the credits issued from the project and receive new tokens equal to the amount of tokens used to redeem credits. The denomination of the tokens would include the batch sequence number of the most recent batch from which the credits were redeemed and redeeming credits would burn the tokens sent to the claim account and return tokens with an updated denomination.
+When a token owner claims credits from the claim account, the owner would exchange the tokens for the credits issued from the project and receive new tokens equal to the amount of tokens used to claim credits. The denomination of the tokens would include the batch sequence number of the most recent batch from which the credits were claimed and claiming credits would burn the tokens sent to the claim account and return tokens with an updated denomination.
 
 ## Rationale
 
