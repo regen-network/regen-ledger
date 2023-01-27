@@ -27,7 +27,7 @@ This RFC aims to lay out a high-level architecture and feature set for forward c
 
 Regen Ledger provides a framework that enables individuals or organizations to design and issue credits for ecosystem services in the form of on-chain assets. Ecosystem service credits represent positive ecological outcomes and are issued after those outcomes have been measured and quantified. Projects providing ecosystem services usually receive payment after individuals or organizations purchase credits leaving projects responsible for paying upfront costs or seeking out financial support to start, continue, or expand their operations.
 
-Forward contract functionality would enable projects to offer a percentage of future credits issued and receive funding before those credits have been measured and quantified. A Project would work alongside a credit class issuer to estimate the volume and price of credits and then submit a forward contract to be approved by the credit class issuer. Once the contract has been approved, individuals and organizations would then be able to provide upfront funding for projects in exchange for a percentage of future credits issued.
+Forward contract functionality would enable projects to offer future credits issued and receive funding before those credits have been measured and quantified. A Project would work alongside a credit class issuer to estimate the volume and price of credits and then submit a forward contract to be approved by the credit class issuer. Once the contract has been approved, individuals and organizations would then be able to provide upfront funding for projects in exchange for future credits issued.
 
 ### Fast Forward Pilot
 
@@ -90,7 +90,7 @@ This proposal separates the approach into two stages. The initial stage (i.e. [S
 
 The first stage includes the implementation of direct credit issuance and support for forward contracts that are specific to a single project whereby the project is vetted by a credit class issuer and the risk of the project under-delivering is either shared by the credit class (a risk in reserve credits and reputation) and the investor(s) (a risk in investment) or held solely by the credit class (the credit class provides reserve credits that fully back the future credits issued).
 
-In the initial implementation, there would only be one option for receiving credits, which is the direct issuance of credits to the account that purchases credits via the forward contract (i.e. the investor). The credits are delivered over time as they are issued; the investor receives a percentage of each credit issuance from the project where the monitoring period meets the date criteria of the contract. The percentage of credits delivered with each credit issuance is based on the percentage the investor purchased and enforced by on-chain functionality.
+In the initial implementation, there would only be one option for receiving credits, which is the direct issuance of credits to the account that purchases credits via the forward contract (i.e. the investor). The credits are delivered over time as they are issued; the investor receives a percentage of each credit issuance from the project where the monitoring period meets the date criteria of the contract. The percentage of credits delivered with each credit issuance is based on the amount the investor purchased and enforced by on-chain functionality.
 
 Each forward contract is specific to a single project. The project should be properly vetted by the credit class issuer(s), and the investor(s) will need to trust the credit class and/or vet the project themselves. The admin and issuer(s) of a credit class are responsible for defining their own vetting process for projects and the issuer that approves the contract will be responsible for following that process and assessing the risk of the project and/or work with a third party or other credit class issuers to do so.
 
@@ -311,8 +311,8 @@ message MsgInvest {
   // the volume percentage defined within the contract.
   string amount = 4;
 
-  // auto_retire determines whether the credits will be automatically retied upon
-  // issuance (i.e. the issuance policy will be set to auto-retire).
+  // auto_retire determines whether the credits will be automatically retied
+  // upon issuance (i.e. the issuance policy will be set to auto-retire).
   bool auto_retire = 5;
   
   // retirement_jurisdiction is the jurisdiction of the investor. A jurisdiction
@@ -346,7 +346,7 @@ Rule: The funds are added to the token balance of the project admin
 ```protobuf
 // Contract defines a forward contract and the forward contract table.
 message Contract {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 1,
     primary_key : {fields : "id", auto_increment : true}
   };
@@ -400,7 +400,7 @@ message Contract {
 // ContractReserve defines a forward contract reserve (aka "buffer pool")
 // and the table within which forward contract reserves are stored.
 message ContractReserve {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id : 2,
     primary_key : {fields : "contract_id"}
   };
@@ -436,11 +436,11 @@ See [(x/ecocredit): issuance policy proof-of-concept][3] for more information.
 
 ### Stage 2
 
-Following the initial implementation, additional functionality could be added to support the liquidity of claims on future credits issued from a project enabling investors to receive tradable assets representing such claims.
+Following the initial implementation, additional functionality could be added to support the liquidity of claims on future credits issued from a project enabling investors to receive tradable assets representing their investment.
 
-Investors would have the option of receiving tokens immediately instead of receiving credits directly over time. The tokens would then be used to claim credits from a claim account (i.e. an account managed programmatically by the `contract` submodule). Receiving tokens would enable investors to transfer their claim and the owner(s) of those tokens would then be able to claim credits at a time of their choosing.
+Investors would have the option of receiving tokens immediately instead of receiving credits directly over time. The tokens would then be used to claim credits from a claim account (i.e. an account managed programmatically by the `contract` submodule). Receiving tokens would enable investors to transfer their investment and the owner(s) of those tokens would then be able to claim credits at a time of their choosing.
 
-The amount of tokens sent to the investor upon funding a project would be calculated based on the percent of the claim. The tokens would be specific to the project and the denomination would include information about the most recent credits claimed. Rather than an issuance policy being created using the investor account as the recipient, an issuance policy would be created using the claim account as the recipient and the credits would be held by the claim account until claimed by the token owner.
+The amount of tokens sent to the investor upon funding a project would be calculated based on the investment. The tokens would be specific to the project and the denomination would include information about the most recent credits claimed. Rather than an issuance policy being created using the investor account as the recipient, an issuance policy would be created using the claim account as the recipient and the credits would be held by the claim account until claimed by the token owner.
 
 When a token owner claims credits from the claim account, the owner would exchange the tokens for the credits issued from the project and receive new tokens equal to the amount of tokens used to claim credits. The denomination of the tokens would include the batch sequence number of the most recent batch from which the credits were claimed and claiming credits would burn the tokens sent to the claim account and return tokens with an updated denomination.
 
