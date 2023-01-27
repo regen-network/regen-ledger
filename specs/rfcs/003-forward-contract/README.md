@@ -84,7 +84,7 @@ See [Forward Contract Bond Module][1].
 
 <!-- The recommended approach to fulfill the needs presented in the previous section. -->
 
-This proposal separates the approach into two stages. The initial stage (i.e. [Stage 1](#stage-1)) is designed to serve the requirements of the [Fast Forward Pilot](#fast-forward-pilot) and lay the foundation for the [Earthbanc Use Case](#earthbanc-use-case). The second stage (i.e. [Stage 2](#stage-2)) is designed to serve the remaining requirements of the [Earthbanc Use Case](#earthbanc-use-case) and is left open-ended for further specification in subsequent version or separate proposal.
+This proposal separates the approach into two stages. The initial stage (i.e. [Stage 1](#stage-1)) is designed to serve the requirements of the [Fast Forward Pilot](#fast-forward-pilot) and lay the foundation for the [Earthbanc Use Case](#earthbanc-use-case). The second stage (i.e. [Stage 2](#stage-2)) is designed to serve the remaining requirements of the [Earthbanc Use Case](#earthbanc-use-case) and is left open-ended for further specification in a subsequent version or separate proposal.
 
 ### Stage 1
 
@@ -92,15 +92,15 @@ The first stage includes the implementation of direct credit issuance and suppor
 
 In the initial implementation, there would only be one option for receiving credits, which is the direct issuance of credits to the account that purchases credits via the forward contract (i.e. the investor). The credits are delivered over time as they are issued; the investor receives a percentage of each credit issuance from the project where the monitoring period meets the date criteria of the contract. The percentage of credits delivered with each credit issuance is based on the percentage the investor purchased and enforced by on-chain functionality.
 
-Each forward contract is specific to a single project. The project should be properly vetted by the credit class issuer(s), and the investor(s) will need to trust the credit class and/or vet the project themselves. The admin and issuer(s) of a credit class are responsible for defining their own vetting process for projects and the issuer that approves the contract will be responsible for following that process and assessing the risk of the project and/or work with a third party or other issuers of the credits class to do so.
+Each forward contract is specific to a single project. The project should be properly vetted by the credit class issuer(s), and the investor(s) will need to trust the credit class and/or vet the project themselves. The admin and issuer(s) of a credit class are responsible for defining their own vetting process for projects and the issuer that approves the contract will be responsible for following that process and assessing the risk of the project and/or work with a third party or other credit class issuers to do so.
 
-The price and volume estimates for future credits issued from the project within the timeframe of the contract will be set by the project admin and approved by the credit class issuer through an on-chain contract creation and review process. How the credit price and volume estimates are calculated are outside the scope of on-chain functionality but additional information about how the calculations were made should be stored on chain within the forward contract as verifiable supporting data.
+The price and volume estimates for future credits issued from the project within the timeframe of the contract will be set by the project admin and approved by the credit class issuer through an on-chain contract creation and review process. How the credit price and volume estimates are calculated are outside the scope of on-chain functionality but additional information about how the calculations were made can and should be stored on chain within the forward contract as verifiable supporting data.
 
 To mitigate the risk of investment, and to therefore improve the likelihood of a project receiving funding, each contract will have a reserve pool specifically for the contract where previously issued credits from the project or an equivalent project can be deposited. The reserve pool would only accept credits once the contract has been approved and the credits would be held in the reserve pool until the end of the contract or until the reserve pool has more credits than what remains in the contract (in which case the difference could be withdrawn).
 
 The reserve pool would only accept credits from the same credit class and from the credit class issuer that approved the contract. Whether the reserve pool backs a partial amount or the total amount of credits being sold is up to the credit class issuer; the more credits held in the reserve pool providing less risk for the investor(s) and more likelihood of the project receiving funds.
 
-The accepted form of funds (i.e. the accepted token denomination) is decided by the project admin and approved by the credit class issuer. There would be no restrictions on what token denomination the project chooses but the token denomination and amount would be unalterable after the contract has been approved, therefore a stable coin would be the most probable choice.
+The accepted form of funds (i.e. the accepted token denomination) is decided by the project admin and approved by the credit class issuer during the contract creation and review process. There would be no restrictions on what token denomination the project chooses but the token denomination and amount would be unalterable after the contract has been approved, therefore a stable coin would be the most probable choice.
 
 ### Contract Submodule
 
@@ -138,6 +138,12 @@ message MsgCreate {
 
   // end_date is the contract end date.
   google.protobuf.Timestamp end_date = 7;
+  
+  // buffer_window is the duration after the end date in which credits may
+  // still be issued with a monitoring period that falls within the start
+  // and end date of the contract. The credits held in the reserve pool are
+  // not distributed or returned until end date + buffer window.
+  google.protobuf.Duration buffer_window = 8;
 }
 ```
 
