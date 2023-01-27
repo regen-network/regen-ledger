@@ -5,6 +5,7 @@ package regen.ecocredit.contract.v1alpha1;
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 // Msg is the regen.ecocredit.contract.v1alpha1 Msg service.
@@ -28,8 +29,8 @@ service Msg {
   rpc Approve(MsgApprove) returns (MsgApproveResponse);
 
   // Reserve sends credits to the contract reserve. Only credits from the same
-  // credit class can be sent to the reserve and once the credits are sent to the
-  // reserve, the credits are held in escrow until the end of the contract.
+  // credit class can be sent to the reserve and once the credits are sent to
+  // the reserve, the credits are held in escrow until the end of the contract.
   rpc Reserve(MsgReserve) returns (MsgReserveResponse);
 
   // Invest sends funds to a project in return for a share of the contract
@@ -48,23 +49,35 @@ message MsgCreate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract including the initial amount of funds to
-  // collect, the initial volume percentage offered, estimated total supply,
-  // forward contract supply, and estimated price per credit type unit.
+  // information about the contract such as calculations made to determine
+  // the volume of credits and the price per credit.
   string metadata = 3;
 
-  // volume_percentage is the percent of all credits issued that will be
-  // available to purchase in shares.
-  string volume_percentage = 4;
+  // ask_price is the token denomination and amount the project is asking
+  // for per credit.
+  cosmos.base.v1beta1.Coin ask_price = 4;
 
-  // funds_to_collect is the denom and amount the project is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 5;
+  // amount is the amount of future credits issued that will be available to
+  // purchase. The amount is a decimal value with a precision determined by
+  // the credit type of the credit class.
+  string amount = 5;
 
-  // start_date is the delivery start date.
-  google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
+  // volume_percentage is the percentage of future credits issued that will be
+  // available to purchase. The percentage is used to determine the amount of
+  // credits issued to investors with each credit issuance.
+  string volume_percentage = 6;
 
-  // end_date is the delivery end date.
-  google.protobuf.Timestamp end_date = 7 [ (gogoproto.stdtime) = true ];
+  // start_date is the contract start date.
+  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the contract end date.
+  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+
+  // buffer_window is the duration after the end date in which credits may
+  // still be issued with a monitoring period that falls within the start
+  // and end date of the contract. The credits held in the reserve pool are
+  // not distributed or returned until end date + buffer window.
+  google.protobuf.Duration buffer_window = 9;
 }
 
 // MsgCreateResponse is the Msg/Create response type.
@@ -85,23 +98,35 @@ message MsgUpdate {
   string project_admin = 2;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract including the initial amount of funds to
-  // collect, the initial volume percentage offered, estimated total supply,
-  // forward contract supply, and estimated price per credit type unit.
+  // information about the contract such as calculations made to determine
+  // the volume of credits and the price per credit.
   string metadata = 3;
 
-  // volume_percentage is the percent of all credits issued that will be
-  // available to purchase in shares.
-  string volume_percentage = 4;
+  // ask_price is the token denomination and amount the project is asking
+  // for per credit.
+  cosmos.base.v1beta1.Coin ask_price = 4;
 
-  // funds_to_collect is the denom and amount the project is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 5;
+  // amount is the amount of future credits issued that will be available to
+  // purchase. The amount is a decimal value with a precision determined by
+  // the credit type of the credit class.
+  string amount = 5;
 
-  // start_date is the delivery start date.
-  google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
+  // volume_percentage is the percentage of future credits issued that will be
+  // available to purchase. The percentage is used to determine the amount of
+  // credits to be issued to investors with each credit issuance.
+  string volume_percentage = 6;
 
-  // end_date is the delivery end date.
-  google.protobuf.Timestamp end_date = 7 [ (gogoproto.stdtime) = true ];
+  // start_date is the contract start date.
+  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the contract end date.
+  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+
+  // buffer_window is the duration after the end date in which credits may
+  // still be issued with a monitoring period that falls within the start
+  // and end date of the contract. The credits held in the reserve pool are
+  // not distributed or returned until end date + buffer window.
+  google.protobuf.Duration buffer_window = 9;
 }
 
 // MsgUpdateResponse is the Msg/Update response type.
@@ -165,20 +190,22 @@ message MsgInvest {
   uint64 id = 1;
 
   // investor is the address of the account funding the project and receiving a
-  // share of the contract in return.
+  // percentage of future credits issued from the project.
   string investor = 2;
 
-  // volume_percentage is the percent of all credits issued that the investor will
-  // receive.
-  string volume_percentage = 3;
+  // bid_price is the price per credit the investor is paying in return for
+  // the specified amount of future credits issued. The bid price must be
+  // greater than or equal to the ask price defined within the contract and
+  // only the ask price will be charged at the time of investment.
+  cosmos.base.v1beta1.Coin bid_price = 3;
 
-  // funds is the token denom and amount the investor is providing in return for
-  // the specified volume percentage.
-  cosmos.base.v1beta1.Coin funds = 4;
+  // amount is the total amount of future credits issued that the investor is
+  // purchasing and will receive over time with each credit issuance based on
+  // the volume percentage defined within the contract.
+  string amount = 4;
 
   // auto_retire determines whether the credits will be automatically retied
-  // upon issuance (i.e. the issuance policy will be set to auto-retire). This
-  // option only applies if direct issuance is enabled.
+  // upon issuance (i.e. the issuance policy will be set to auto-retire).
   bool auto_retire = 5;
 
   // retirement_jurisdiction is the jurisdiction of the investor. A jurisdiction

@@ -4,12 +4,11 @@ package regen.ecocredit.contract.v1alpha1;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/orm/v1/orm.proto";
-import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/contract/v1alpha1/types.proto";
 
-// Contract defines a forward contract and the table within which forward
-// contracts are stored.
+// Contract defines a forward contract and the forward contract table.
 message Contract {
   option (cosmos.orm.v1.table) = {
     id : 1,
@@ -26,24 +25,36 @@ message Contract {
   Status status = 3;
 
   // metadata is any arbitrary string that includes or references additional
-  // information about the contract including the initial amount of funds to
-  // collect, the initial volume percentage offered, estimated total supply,
-  // forward contract supply, and estimated price per credit type unit.
-  google.protobuf.Timestamp metadata = 4;
+  // information about the contract such as calculations made to determine
+  // the volume of credits and the price per credit.
+  string metadata = 4;
 
-  // volume_percentage is the remaining percent of all credits issued that
-  // are be available to claim.
-  string volume_percentage = 5;
+  // ask_price is the token denomination and amount the project is asking
+  // for per credit.
+  cosmos.base.v1beta1.Coin ask_price = 5;
 
-  // funds_to_collect is the denom and remaining amount of funds the project
-  // is collecting.
-  cosmos.base.v1beta1.Coin funds_to_collect = 6;
+  // amount is the amount of future credits issued that are available to
+  // purchase. The amount will decrease with each investment, therefore
+  // representing the remaining amount of credits available.
+  string amount = 6;
 
-  // start_date is the delivery start date.
-  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+  // volume_percentage is the percentage of future credits issued that was
+  // made available to purchase. The volume percentage is used to determine
+  // the percentage of future credits issued in each credit issuance based
+  // on the amount of credits purchased by an investor.
+  string volume_percentage = 7;
 
-  // end_date is the delivery end date.
-  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+  // start_date is the contract start date.
+  google.protobuf.Timestamp start_date = 8;
+
+  // end_date is the contract end date.
+  google.protobuf.Timestamp end_date = 9;
+
+  // buffer_window is the duration after the end date in which credits may
+  // still be issued with a monitoring period that falls within the start
+  // and end date of the contract. The credits held in the reserve pool are
+  // not distributed or returned until end date + buffer window.
+  google.protobuf.Duration buffer_window = 10;
 }
 
 // ContractReserve defines a forward contract reserve (aka "buffer pool")
@@ -63,10 +74,10 @@ message ContractReserve {
   // Balance defines a balance of credits held in the reserve.
   message Balance {
 
-    // batch_denom is the amount of tradable credits in the reserve.
+    // batch_denom is the denom of the credits in the reserve.
     string batch_denom = 1;
 
-    // tradable_amount is the amount of tradable credits in the reserve.
+    // tradable_amount is the amount of the credits in the reserve.
     string tradable_amount = 2;
   }
 }
