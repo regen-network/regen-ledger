@@ -125,9 +125,9 @@ message MsgCreate {
   // the volume of credits and the price per credit.
   string metadata = 3;
 
-  // ask_price is the token denomination and amount the project is asking
-  // for per credit.
-  cosmos.base.v1beta1.Coin ask_price = 4;
+  // price is the token denomination and amount the project is asking for
+  // per credit.
+  cosmos.base.v1beta1.Coin price = 4;
 
   // amount is the amount of future credits issued that will be available to
   // purchase. The amount is a decimal value with a precision determined by
@@ -176,9 +176,9 @@ message MsgUpdate {
   // the volume of credits and the price per credit.
   string metadata = 3;
 
-  // ask_price is the token denomination and amount the project is asking
-  // for per credit.
-  cosmos.base.v1beta1.Coin ask_price = 4;
+  // price is the token denomination and amount the project is asking for
+  // per credit.
+  cosmos.base.v1beta1.Coin price = 4;
 
   // amount is the amount of future credits issued that will be available to
   // purchase. The amount is a decimal value with a precision determined by
@@ -300,24 +300,18 @@ message MsgInvest {
   // percentage of future credits issued from the project.
   string investor = 2;
 
-  // bid_price is the price per credit the investor is paying in return for
-  // the specified amount of future credits issued. The bid price must be
-  // greater than or equal to the ask price defined within the contract and
-  // only the ask price will be charged at the time of investment.
-  cosmos.base.v1beta1.Coin bid_price = 3;
-  
   // amount is the total amount of future credits issued that the investor is
   // purchasing and will receive over time with each credit issuance based on
   // the volume percentage defined within the contract.
-  string amount = 4;
+  string amount = 3;
 
   // auto_retire determines whether the credits will be automatically retied
   // upon issuance (i.e. the issuance policy will be set to auto-retire).
-  bool auto_retire = 5;
+  bool auto_retire = 4;
   
   // retirement_jurisdiction is the jurisdiction of the investor. A jurisdiction
   // is only required if auto-retire is enabled.
-  string retirement_jurisdiction = 6;
+  string retirement_jurisdiction = 5;
 }
 ```
 
@@ -365,9 +359,9 @@ message Contract {
   // the volume of credits and the price per credit.
   string metadata = 4;
 
-  // ask_price is the token denomination and amount the project is asking
-  // for per credit.
-  cosmos.base.v1beta1.Coin ask_price = 5;
+  // price is the token denomination and amount the project is asking for
+  // per credit.
+  cosmos.base.v1beta1.Coin price = 5;
 
   // amount is the amount of future credits issued that are available to
   // purchase. The amount will decrease with each investment, therefore
