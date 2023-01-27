@@ -423,7 +423,7 @@ message ContractReserve {
 }
 ```
 
-### Contract Termination
+### Contract End
 
 The contract will end once the contracted credit volume has been delivered or when the contract end date (with an optional buffer window) has been reached. If the end date (plus the optional buffer window) is reached before the contracted credit volume has been delivered, credits from the reserve pool will be delivered in place of the contracted credits up to the amount available in the reserve pool. 
 
@@ -436,7 +436,7 @@ See [(x/ecocredit): issuance policy proof-of-concept][3] for more information.
 
 ### Stage 2
 
-Following the initial implementation, additional functionality could be added to support the liquidity of claims on future credits issued from a project enabling investors to receive tradable assets representing their investment.
+Following the initial implementation, additional functionality could be added to support the liquidity of future credits enabling investors to receive tradable assets representing their investment.
 
 Investors would have the option of receiving tokens immediately instead of receiving credits directly over time. The tokens would then be used to claim credits from a claim account (i.e. an account managed programmatically by the `contract` submodule). Receiving tokens would enable investors to transfer their investment and the owner(s) of those tokens would then be able to claim credits at a time of their choosing.
 
