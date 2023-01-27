@@ -29,9 +29,9 @@ message Contract {
   // the volume of credits and the price per credit.
   string metadata = 4;
 
-  // ask_price is the token denomination and amount the project is asking
-  // for per credit.
-  cosmos.base.v1beta1.Coin ask_price = 5;
+  // price is the token denomination and amount the project is asking for
+  // per credit.
+  cosmos.base.v1beta1.Coin price = 5;
 
   // amount is the amount of future credits issued that are available to
   // purchase. The amount will decrease with each investment, therefore
