@@ -93,8 +93,6 @@ func TestValidateDateCriteria(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {
-			t.Parallel()
-
 			err := tc.d.Validate()
 			errorMatches(t, err, tc.err)
 		})
