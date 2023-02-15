@@ -28,21 +28,9 @@ Check out the genesis version:
 git checkout v1.0.0
 ```
 
-*For Redwood Testnet:*
-
-```bash
-git checkout v1.0.0
-```
-
 Build and install the `regen` binary:
 
 *For Regen Mainnet:*
-
-```bash
-make install
-```
-
-*For Redwood Testnet:*
 
 ```bash
 make install
@@ -57,12 +45,6 @@ regen version
 You should see the following:
 
 *For Regen Mainnet:*
-
-```bash
-v1.0.0
-```
-
-*For Redwood Testnet:*
 
 ```bash
 v1.0.0

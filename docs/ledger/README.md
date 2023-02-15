@@ -14,24 +14,12 @@ Redwood Testnet is a test network with the same configuration as Regen Mainnet. 
 
 For more information, check out [Get Started: Live Networks](get-started/live-networks.md#redwood-testnet).
 
-## Hambach Testnet
-
-Hambach Testnet is a test network with experimental modules enabled (modules that are either still in development or under consideration). Developers can use Hambach Testnet to test out features not available on Regen Mainnet. Unofficial REGEN tokens can be redeemed using a faucet.
-
-Hambach Testnet includes the following experimental modules:
-
-- [Group Module](../modules/group/README.md) (alpha version, not the same version in Cosmos SDK v0.46)
-- [CosmWasm Module](https://docs.cosmwasm.com/docs/1.0/)
-
-For more information, check out [Get Started: Live Networks](get-started/live-networks.md#hambach-testnet).
-
 ## Block Explorers
 
 The following block explorers currently support Regen Ledger:
 
 - [Aneka - Regen Mainnet](https://regen.aneka.io)
 - [Aneka - Redwood Testnet](https://redwood.regen.aneka.io)
-- [Aneka - Hambach Testnet](https://hambach.regen.aneka.io)
 - [Big Dipper - Regen Mainnet](https://regen.bigdipper.live)
 - [Mintscan - Regen Mainnet](https://mintscan.io/regen)
 - [Ping - Regen Mainnet](https://ping.pub/regen)

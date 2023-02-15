@@ -100,7 +100,7 @@ Additional packages and checksums are available under "Assets" on the [Release P
 
 ## Building From Source
 
-The following installation instructions include two options, one for installing the `regen` binary with the "stable app configuration" and another with the "experimental app configuration".
+The following installation instructions includes one option for installing the `regen` binary with the "stable app configuration".
 
 ### Prerequisites
 
@@ -130,15 +130,12 @@ cd regen-ledger
 
 Check out the latest stable version:
 
-*For the stable app configuration (used on Regen Mainnet and Redwood Testnet):*
-
 ```bash
 git checkout v5.0.0
 ```
 
 Build and install the `regen` binary:
 
-*For the stable app configuration (used on Regen Mainnet and Redwood Testnet):*
 
 ```bash
 make install
@@ -151,8 +148,6 @@ regen version
 ```
 
 You should see the following:
-
-*For the stable app configuration (used on Regen Mainnet and Redwood Testnet):*
 
 ```bash
 v5.0.0
