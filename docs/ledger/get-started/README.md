@@ -150,5 +150,5 @@ regen version
 You should see the following:
 
 ```bash
-v5.0.0 
+v5.0.0
 ```
