@@ -22,15 +22,12 @@ cd regen-ledger
 
 Check out the genesis version:
 
-*For Regen Mainnet:*
-
 ```bash
 git checkout v1.0.0
 ```
 
 Build and install the `regen` binary:
 
-*For Regen Mainnet:*
 
 ```bash
 make install
@@ -43,8 +40,6 @@ regen version
 ```
 
 You should see the following:
-
-*For Regen Mainnet:*
 
 ```bash
 v1.0.0
