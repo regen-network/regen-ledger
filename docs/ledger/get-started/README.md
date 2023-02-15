@@ -100,7 +100,7 @@ Additional packages and checksums are available under "Assets" on the [Release P
 
 ## Building From Source
 
-The following installation instructions includes one option for installing the `regen` binary with the "stable app configuration".
+The following installation instructions are for installing the `regen` binary.
 
 ### Prerequisites
 
