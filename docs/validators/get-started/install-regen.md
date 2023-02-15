@@ -34,12 +34,6 @@ git checkout v1.0.0
 git checkout v1.0.0
 ```
 
-*For Hambach Testnet:*
-
-```bash
-git checkout v4.0.0
-```
-
 Build and install the `regen` binary:
 
 *For Regen Mainnet:*
@@ -52,12 +46,6 @@ make install
 
 ```bash
 make install
-```
-
-*For Hambach Testnet:*
-
-```bash
-EXPERIMENTAL=true make install
 ```
 
 Check to make sure the installation was successful:
@@ -78,10 +66,4 @@ v1.0.0
 
 ```bash
 v1.0.0
-```
-
-*For Hambach Testnet:*
-
-```bash
-v4.0.0
 ```
