@@ -142,6 +142,8 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) 
 		event = &types.EventBridgeReceive{
 			BatchDenom: batchRes.BatchDenom,
 			ProjectId:  project.Id,
+			Amount:     req.Batch.Amount,
+			OriginTx:   req.OriginTx,
 		}
 
 		// set bridge receive response
