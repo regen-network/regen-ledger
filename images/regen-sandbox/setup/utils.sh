@@ -1,7 +1,3 @@
-regen() {
-  $BINARY --home $REGENHOME "$@"
-}
-
 log_response() {
   jq -r "if .code == 0 then \"INFO:   TxHash: \(.txhash)\" else \"ERROR: (code \(.code)) \(.raw_log)\" end"
 }

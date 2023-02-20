@@ -4,10 +4,6 @@ set -eo pipefail
 
 REGEN_CHAIN_ID="regen-sandbox"
 
-regen() {
-  $BINARY --home $REGENHOME "$@"
-}
-
 # parse flags
 POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
