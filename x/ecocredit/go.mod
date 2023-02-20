@@ -178,6 +178,9 @@ replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 // https://github.com/regen-network/regen-ledger/security/dependabot/94
 replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
 
+// https://github.com/regen-network/regen-ledger/security/dependabot/105
+replace golang.org/x/net => golang.org/x/net v0.7.0
+
 replace github.com/regen-network/regen-ledger/api/v2 => ../../api
 
 replace github.com/regen-network/regen-ledger/types/v2 => ../../types

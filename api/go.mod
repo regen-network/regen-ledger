@@ -36,3 +36,6 @@ require (
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 )
+
+// https://github.com/regen-network/regen-ledger/security/dependabot/105
+replace golang.org/x/net => golang.org/x/net v0.7.0
