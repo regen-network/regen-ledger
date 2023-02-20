@@ -180,13 +180,15 @@ replace github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 
-// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
-// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
-replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
-
 replace github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
+// https://github.com/regen-network/regen-ledger/security/dependabot/86
+replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.7
+
 // https://github.com/regen-network/regen-ledger/security/dependabot/94
 replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
+
+// https://github.com/regen-network/regen-ledger/security/dependabot/105
+replace golang.org/x/net => golang.org/x/net v0.7.0
