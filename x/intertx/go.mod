@@ -110,11 +110,11 @@ require (
 	github.com/zondax/ledger-go v0.14.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/crypto v0.2.0 // indirect
-	golang.org/x/exp v0.0.0-20221205204356-47842c84f3db // indirect
-	golang.org/x/net v0.5.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
-	golang.org/x/term v0.4.0 // indirect
-	golang.org/x/text v0.6.0 // indirect
+	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect
+	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -129,6 +129,10 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-replace github.com/regen-network/regen-ledger/api/v2 => ../../api
+// https://github.com/regen-network/regen-ledger/security/dependabot/94
+replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
+
+// https://github.com/regen-network/regen-ledger/security/dependabot/105
+replace golang.org/x/net => golang.org/x/net v0.7.0
 
 replace github.com/regen-network/regen-ledger/types/v2 => ../../types
