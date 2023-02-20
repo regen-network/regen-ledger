@@ -151,6 +151,9 @@ replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 // https://github.com/regen-network/regen-ledger/security/dependabot/86
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.7
 
+// https://github.com/regen-network/regen-ledger/security/dependabot/94
+replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
+
 // https://github.com/regen-network/regen-ledger/security/dependabot/105
 replace golang.org/x/net => golang.org/x/net v0.7.0
 
