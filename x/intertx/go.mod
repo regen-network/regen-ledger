@@ -129,6 +129,4 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-replace github.com/regen-network/regen-ledger/api/v2 => ../../api
-
 replace github.com/regen-network/regen-ledger/types/v2 => ../../types
