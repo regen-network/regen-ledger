@@ -25,8 +25,7 @@ COPY --from=build /work/build/regen /usr/bin/
 WORKDIR /regen
 EXPOSE 26656 26657 9090 1317
 
-ENV BINARY /usr/bin/regen
-ENV REGENHOME /regen/.regen
+ENV REGEN_HOME /regen/.regen
 
 ENTRYPOINT ["/usr/bin/bootstrap.sh"]
 STOPSIGNAL SIGTERM
