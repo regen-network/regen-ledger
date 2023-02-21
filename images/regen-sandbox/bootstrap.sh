@@ -4,10 +4,6 @@ set -eo pipefail
 
 REGEN_CHAIN_ID="regen-sandbox"
 
-regen() {
-  $BINARY --home $REGENHOME "$@"
-}
-
 # parse flags
 POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
@@ -30,10 +26,10 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 
-if [ -d "$REGENHOME" ] && [ "$OVERWRITE_HOMEDIR" != true ]; then
-  echo "Regen home ($REGENHOME) already exists, skipping bootstrap..."
+if [ -d "$REGEN_HOME" ] && [ "$OVERWRITE_HOMEDIR" != true ]; then
+  echo "Regen home ($REGEN_HOME) already exists, skipping bootstrap..."
 else
-  rm -rf $REGENHOME
+  rm -rf $REGEN_HOME
   regen config keyring-backend test
   regen config node http://localhost:26657
   regen config chain-id $REGEN_CHAIN_ID
@@ -46,22 +42,22 @@ else
   # modify genesis file and config files (platform dependent usage of sed)
   if [[ $(uname -s) == 'Darwin' ]]; then
     # change stake denom to uregen
-    sed -i "" "s/stake/uregen/g" $REGENHOME/config/genesis.json
+    sed -i "" "s/stake/uregen/g" $REGEN_HOME/config/genesis.json
     # set min gas price
-    sed -i "" "s/minimum-gas-prices = \"\"/minimum-gas-prices = \"0.025uregen\"/g" $REGENHOME/config/app.toml
+    sed -i "" "s/minimum-gas-prices = \"\"/minimum-gas-prices = \"0.025uregen\"/g" $REGEN_HOME/config/app.toml
     # decrease block-time so tests run faster
-    sed -i "" "s/timeout_commit = \"5s\"/timeout_commit = \"500ms\"/g" $REGENHOME/config/config.toml
+    sed -i "" "s/timeout_commit = \"5s\"/timeout_commit = \"500ms\"/g" $REGEN_HOME/config/config.toml
     # bind on all interfaces, enabling ports to be exposed outside docker
-    sed -i "" "s/127\.0\.0\.1/0.0.0.0/g" $REGENHOME/config/config.toml
+    sed -i "" "s/127\.0\.0\.1/0.0.0.0/g" $REGEN_HOME/config/config.toml
   else
     # change stake denom to uregen
-    sed -i "s/stake/uregen/g" $REGENHOME/config/genesis.json
+    sed -i "s/stake/uregen/g" $REGEN_HOME/config/genesis.json
     # set min gas price
-    sed -i "s/minimum-gas-prices = \"\"/minimum-gas-prices = \"0.025uregen\"/g" $REGENHOME/config/app.toml
+    sed -i "s/minimum-gas-prices = \"\"/minimum-gas-prices = \"0.025uregen\"/g" $REGEN_HOME/config/app.toml
     # decrease block-time so tests run faster
-    sed -i "s/timeout_commit = \"5s\"/timeout_commit = \"500ms\"/g" $REGENHOME/config/config.toml
+    sed -i "s/timeout_commit = \"5s\"/timeout_commit = \"500ms\"/g" $REGEN_HOME/config/config.toml
     # bind on all interfaces, enabling ports to be exposed outside docker
-    sed -i "s/127\.0\.0\.1/0.0.0.0/g" $REGENHOME/config/config.toml
+    sed -i "s/127\.0\.0\.1/0.0.0.0/g" $REGEN_HOME/config/config.toml
   fi
 
   # app specific genesis file modifications
