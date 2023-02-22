@@ -66,7 +66,13 @@ Feature: Bridge Integration
     """
     {
       "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-001"
+      "batch_denom": "C01-001-20200101-20210101-001",
+      "amount": "100",
+      "origin_tx": {
+        "id": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "source": "polygon",
+        "contract": "0x0000000000000000000000000000000000000001"
+      }
     }
     """
     And expect total projects "1"
@@ -169,7 +175,13 @@ Feature: Bridge Integration
     """
     {
       "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-001"
+      "batch_denom": "C01-001-20200101-20210101-001",
+      "amount": "100",
+      "origin_tx": {
+        "id": "0x0000000000000000000000000000000000000000000000000000000000000002",
+        "source": "polygon",
+        "contract": "0x0000000000000000000000000000000000000001"
+      }
     }
     """
     And expect total projects "1"
@@ -214,7 +226,13 @@ Feature: Bridge Integration
     """
     {
       "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-002"
+      "batch_denom": "C01-001-20200101-20210101-002",
+      "amount": "100",
+      "origin_tx": {
+        "id": "0x0000000000000000000000000000000000000000000000000000000000000003",
+        "source": "polygon",
+        "contract": "0x0000000000000000000000000000000000000002"
+      }
     }
     """
     And expect total projects "1"
@@ -277,7 +295,13 @@ Feature: Bridge Integration
     """
     {
       "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-002"
+      "batch_denom": "C01-001-20200101-20210101-002",
+      "amount": "100",
+      "origin_tx": {
+        "id": "0x0000000000000000000000000000000000000000000000000000000000000004",
+        "source": "polygon",
+        "contract": "0x0000000000000000000000000000000000000002"
+      }
     }
     """
     And expect total projects "1"
@@ -330,7 +354,13 @@ Feature: Bridge Integration
     """
     {
       "project_id": "C01-002",
-      "batch_denom": "C01-002-20200101-20210101-001"
+      "batch_denom": "C01-002-20200101-20210101-001",
+      "amount": "100",
+      "origin_tx": {
+        "id": "0x0000000000000000000000000000000000000000000000000000000000000005",
+        "source": "polygon",
+        "contract": "0x0000000000000000000000000000000000000003"
+      }
     }
     """
     And expect total projects "2"
