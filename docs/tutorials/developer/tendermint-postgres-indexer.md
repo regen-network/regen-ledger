@@ -161,7 +161,7 @@ The following query will get all events from the `data` module:
 ```sql
 SELECT *
 FROM event_attributes
-WHERE tx_id IN (SELECT tx_id FROM event_attributes WHERE type LIKE '%.data.%' group by tx_id);
+WHERE type LIKE 'regen.data.%';
 ```
 
 The following query will get all block events:
