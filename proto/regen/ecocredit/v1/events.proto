@@ -230,4 +230,11 @@ message EventBridgeReceive {
   // batch_denom is the unique identifier of the credit batch either created
   // or within which the credits were dynamically minted.
   string batch_denom = 2;
+
+  // amount is the amount of credits.
+  string amount = 3;
+
+  // origin_tx is the transaction from another chain or registry that triggered
+  // the minting of credits within the credit batch.
+  OriginTx origin_tx = 4;
 }
