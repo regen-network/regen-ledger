@@ -153,7 +153,7 @@ The following query will get all events from the `ecocredit` module:
 ```sql
 SELECT *
 FROM event_attributes
-WHERE tx_id IN (SELECT tx_id FROM event_attributes WHERE type LIKE '%.ecocredit.%' group by tx_id);
+WHERE type LIKE 'regen.ecocredit.%';
 ```
     
 The following query will get all events from the `data` module:
