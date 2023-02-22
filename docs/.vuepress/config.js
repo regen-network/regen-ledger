@@ -275,14 +275,16 @@ module.exports = {
           title: 'User Tutorials',
           collapsable: false,
           children: [
-            '/tutorials/ibc-transfers',
-            '/tutorials/currency-allowlist-proposal',
+            '/tutorials/user/ibc-transfers',
+            '/tutorials/user/currency-allowlist-proposal',
           ],
         },
         {
           title: 'Developer Tutorials',
           collapsable: false,
-          children: [],
+          children: [
+            '/tutorials/developer/tendermint-postgres-indexer',
+          ],
         },
       ],
       '/specs/': [
