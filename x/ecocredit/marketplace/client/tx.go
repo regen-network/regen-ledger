@@ -153,7 +153,7 @@ upon purchase. When set to true, credits will be received in a tradable
 state, IF AND ONLY IF the sell order also has auto retire disabled.
 
 NOTE: The bid price is the price paid PER credit. The total cost will be quantity * bid_price.`,
-		Example: `regen tx ecocredit buy-direct 1 300 10000000uregen true --retirement-jurisdiction "US-WA 98225" --retirement-reason "offsetting electricity consumption"`,
+		Example: `regen tx ecocredit buy-direct 1 300 10000000uregen false --retirement-jurisdiction "US-WA 98225" --retirement-reason "offsetting electricity consumption"`,
 		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

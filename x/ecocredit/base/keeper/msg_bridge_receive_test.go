@@ -2,6 +2,7 @@
 package keeper
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -15,6 +16,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	"github.com/regen-network/regen-ledger/types/v2/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
@@ -486,6 +488,18 @@ func (s *bridgeReceiveSuite) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 	require.Equal(s.t, expected.CancelledAmount, balance.CancelledAmount)
+}
+
+func (s *bridgeReceiveSuite) ExpectEventWithProperties(a gocuke.DocString) {
+	var event types.EventBridgeReceive
+	err := json.Unmarshal([]byte(a.Content), &event)
+	require.NoError(s.t, err)
+
+	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&event, sdkEvent)
+	require.NoError(s.t, err)
 }
 
 func (s *bridgeReceiveSuite) getProjectSequence(projectID string) uint64 {

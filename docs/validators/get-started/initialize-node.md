@@ -21,12 +21,6 @@ regen init [moniker] --chain-id regen-1
 regen init [moniker] --chain-id regen-redwood-1
 ```
 
-*For Hambach Testnet:*
-
-```bash
-regen init [moniker] --chain-id regen-hambach-1
-```
-
 ## Update Genesis
 
 Update the genesis file.
@@ -41,12 +35,6 @@ curl http://mainnet.regen.network:26657/genesis | jq .result.genesis > ~/.regen/
 
 ```bash
 curl http://redwood.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
-```
-
-*For Hambach Testnet:*
-
-```bash
-curl http://hambach.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 ## Update Peers
@@ -64,13 +52,6 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 ```bash
 PERSISTENT_PEERS="d5ceac343e48c7522c3a5a8c0cf5cb896d1f8a60@redwood.regen.network:26656,61f53f226a4a71968a87583f58902405e289b4b9@redwood-sentry.vitwit.com:26656"
-sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
-```
-
-*For Hambach Testnet:*
-
-```bash
-PERSISTENT_PEERS="4f5c0be7705bf4acb5b99dcaf93190059ac283a1@hambach.regen.network:26656,578b74c81f08a812b5f1a76a53b00a8ad3cfec57@hambach-sentry.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 

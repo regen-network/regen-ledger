@@ -224,3 +224,34 @@ Feature: Msg/BridgeReceive
     Scenario: the OriginTx source is not in the AllowedBridgeChain table
       When alice attempts to bridge credits with OriginTx Source "solana"
       Then expect the error "solana is not an authorized bridge source: unauthorized"
+
+  Rule: Event is emitted
+
+    Scenario: EventBridgeReceive is emitted
+      Given a credit type with abbreviation "C"
+      And a credit class with id "C01" and issuer alice
+      And allowed bridge chain "polygon"
+      And a project with id "C01-001"
+      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      And the batch contract
+      """
+      {
+        "batch_key": 1,
+        "class_key": 1,
+        "contract": "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+      }
+      """
+      When alice attempts to bridge credits with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+      Then expect event with properties
+      """
+      {
+        "project_id": "C01-001",
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "amount": "10",
+        "origin_tx": {
+          "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",
+          "source": "polygon",
+          "contract": "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
+        }
+      }
+      """
