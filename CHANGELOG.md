@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]()
+## [v5.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v5.0.1) - 2023-02-23
+
+### General
+
+#### Changed
+
+- [#1799](https://github.com/regen-network/regen-ledger/pull/1799) Update all modules to cosmos-sdk v0.46.10-regen-1
+- [#1799](https://github.com/regen-network/regen-ledger/pull/1799) Update all modules to tendermint v0.34.26 (informalsystems)
+
+#### Fixed
+
+- [#1789](https://github.com/regen-network/regen-ledger/pull/1789) Fix `REGEN_HOME` environment variable in `regen-sandbox`
 
 ### x/ecocredit
 
