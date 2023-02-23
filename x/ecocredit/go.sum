@@ -1009,8 +1009,8 @@ github.com/regen-network/gocuke v0.6.2 h1:pHviZ0kKAq2U2hN2q3smKNxct6hS0mGByFMHGn
 github.com/regen-network/gocuke v0.6.2/go.mod h1:zYaqIHZobHyd0xOrHGPQjbhGJsuZ1oElx150u2o1xuk=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
-github.com/regen-network/regen-ledger/api/v2 v2.0.0 h1:cOuDKcCdaMyukKzFd1ipyrsI8+3UBwFrK/K3H8pzhIg=
-github.com/regen-network/regen-ledger/api/v2 v2.0.0/go.mod h1:BlpoWbNeDRpsmKe7y/r1m4zTTTog83mIdwJkOaOy4/0=
+github.com/regen-network/regen-ledger/api/v2 v2.1.0 h1:3OFiMT4v58Po2q5VCwFSJCNwJm0sCZr4Grh0RDkEfBk=
+github.com/regen-network/regen-ledger/api/v2 v2.1.0/go.mod h1:BlpoWbNeDRpsmKe7y/r1m4zTTTog83mIdwJkOaOy4/0=
 github.com/regen-network/regen-ledger/types/v2 v2.0.0 h1:bilgbacLBnGdfw6udmXmqLKiwEpk/Tev0Id36ZGNCbs=
 github.com/regen-network/regen-ledger/types/v2 v2.0.0/go.mod h1:DE6OBZyUnCTjTajds2tRqhOVE3rzneQuWGflYDCX7jk=
 github.com/retailnext/hllpp v1.0.1-0.20180308014038-101a6d2f8b52/go.mod h1:RDpi1RftBQPUCDRw6SmxeaREsAaRKnOclghuzp/WRzc=
