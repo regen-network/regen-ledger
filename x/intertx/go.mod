@@ -110,21 +110,12 @@ require (
 	github.com/zondax/hid v0.9.1 // indirect
 	github.com/zondax/ledger-go v0.14.1 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
-<<<<<<< HEAD
-	golang.org/x/crypto v0.2.0 // indirect
-	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
-	golang.org/x/net v0.2.0 // indirect
-	golang.org/x/sys v0.2.0 // indirect
-	golang.org/x/term v0.2.0 // indirect
-	golang.org/x/text v0.4.0 // indirect
-=======
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect
 	golang.org/x/net v0.6.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
->>>>>>> d3e52e14 (build: bump sdk and tendermint and update changelog (#1799))
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -138,8 +129,6 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.10-regen-1
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-<<<<<<< HEAD
-=======
 
 // https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.10
 replace github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.26
@@ -149,6 +138,3 @@ replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
 
 // https://github.com/regen-network/regen-ledger/security/dependabot/105
 replace golang.org/x/net => golang.org/x/net v0.7.0
-
-replace github.com/regen-network/regen-ledger/types/v2 => ../../types
->>>>>>> d3e52e14 (build: bump sdk and tendermint and update changelog (#1799))
