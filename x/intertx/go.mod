@@ -13,13 +13,13 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/regen-network/gocuke v0.6.2
-	github.com/regen-network/regen-ledger/types/v2 v2.0.0
+	github.com/regen-network/regen-ledger/types/v2 v2.1.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.14.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.26
 	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
+	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
 	google.golang.org/grpc v1.51.0
 	gotest.tools/v3 v3.4.0
 )
