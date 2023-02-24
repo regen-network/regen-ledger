@@ -9,9 +9,9 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types/v2 v2.1.0
-	github.com/regen-network/regen-ledger/x/data/v2 v2.0.0
-	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
-	github.com/regen-network/regen-ledger/x/intertx v1.0.0
+	github.com/regen-network/regen-ledger/x/data/v2 v2.1.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.1.0
+	github.com/regen-network/regen-ledger/x/intertx v1.1.0
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
@@ -150,7 +150,7 @@ require (
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect
 	golang.org/x/net v0.6.0 // indirect
-	golang.org/x/oauth2 v0.1.0 // indirect
+	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
