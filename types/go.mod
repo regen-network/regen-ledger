@@ -16,7 +16,7 @@ require (
 	github.com/regen-network/regen-ledger/api/v2 v2.0.0
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/cobra v1.6.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/tendermint v0.34.26
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/grpc v1.53.0
