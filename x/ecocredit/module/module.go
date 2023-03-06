@@ -42,7 +42,7 @@ var (
 )
 
 const (
-	ConsensusVersion = 3 // ConsensusVersion is the module consensus version
+	ConsensusVersion = 4 // ConsensusVersion is the module consensus version
 )
 
 // Module implements the AppModule interface.
