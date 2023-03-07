@@ -327,10 +327,10 @@ func setup(t *testing.T) (sdk.Context, baseapi.StateStore) {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 
-	modDb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 
-	baseStore, err := baseapi.NewStateStore(modDb)
+	baseStore, err := baseapi.NewStateStore(modDB)
 	require.NoError(t, err)
 
 	return sdkCtx, baseStore
