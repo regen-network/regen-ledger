@@ -47,3 +47,11 @@ pull_request_rules:
       backport:
         branches:
           - release/v5.0.x
+  - name: backport patches to v5.1.x branch
+    conditions:
+      - base=main
+      - label=backport/v5.1.x
+    actions:
+      backport:
+        branches:
+          - release/v5.1.x
