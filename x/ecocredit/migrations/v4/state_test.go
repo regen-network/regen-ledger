@@ -29,13 +29,13 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 	// issuer is the same for all credit batches
 	issuer := sdk.MustAccAddressFromBech32("regen1v2ncquer9r2ytlkxh2djmmsq3e8we6rjc9snfn")
 
-	// generic project key (we only need to test unchanged)
+	// generic project key (we only need to test unchanged after migration)
 	projectKey := uint64(1)
 
-	// generic timestamp (we only need to test unchanged)
+	// generic timestamp (we only need to test unchanged after migration)
 	timestamp := timestamppb.Now()
 
-	batches := []baseapi.Batch{
+	batches := []*baseapi.Batch{
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-001
 		{
 			Issuer:       issuer,
@@ -227,7 +227,7 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 
 	// add batches to state
 	for _, batch := range batches {
-		require.NoError(t, baseStore.BatchTable().Insert(sdkCtx, &batch))
+		require.NoError(t, baseStore.BatchTable().Insert(sdkCtx, batch))
 	}
 
 	// execute state migrations
