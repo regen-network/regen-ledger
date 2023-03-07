@@ -3,10 +3,10 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	v4 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v4"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v3"
+	v4 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v4"
 )
 
 // Migrator is a struct for handling in-place store migrations.
