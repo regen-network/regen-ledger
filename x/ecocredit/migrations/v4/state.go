@@ -33,87 +33,87 @@ func getMainnetBatches() []Batch {
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-001
 		{
 			Denom:       "C01-001-20150101-20151231-001",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-002
 		{
 			Denom:       "C01-001-20150101-20151231-002",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-003
 		{
 			Denom:       "C01-001-20150101-20151231-003",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-004
 		{
 			Denom:       "C01-001-20150101-20151231-004",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-005
 		{
 			Denom:       "C01-001-20150101-20151231-005",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-002-20190101-20191231-001
 		{
 			Denom:       "C01-002-20190101-20191231-001",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-002-20190101-20191231-002
 		{
 			Denom:       "C01-002-20190101-20191231-002",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-002-20190101-20191231-003
 		{
 			Denom:       "C01-002-20190101-20191231-003",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-002-20190101-20191231-004
 		{
 			Denom:       "C01-002-20190101-20191231-004",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-003-20150701-20160630-001
 		{
 			Denom:       "C01-003-20150701-20160630-001",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C02-001-20180101-20181231-001
 		{
 			Denom:       "C02-001-20180101-20181231-001",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C02-003-20200630-20220629-001
 		{
 			Denom:       "C02-003-20200630-20220629-001",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C02-002-20211012-20241013-001
 		{
 			Denom:       "C02-002-20211012-20241013-001",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C02-004-20210102-20211207-001
 		{
 			Denom:       "C02-004-20210102-20211207-001",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-002-20190101-20191231-005
 		{
 			Denom:       "C01-002-20190101-20191231-005",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-006
 		{
 			Denom:       "C01-001-20150101-20151231-006",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-002-20190101-20191231-006
 		{
 			Denom:       "C01-002-20190101-20191231-006",
-			NewMetadata: "regen1...",
+			NewMetadata: "regen:",
 		},
 	}
 }

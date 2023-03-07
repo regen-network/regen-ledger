@@ -235,71 +235,71 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 
 	b1, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-001")
 	require.NoError(t, err)
-	require.Equal(t, b1.Metadata, "regen1...")
+	require.Equal(t, b1.Metadata, "regen:")
 
 	b2, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-002")
 	require.NoError(t, err)
-	require.Equal(t, b2.Metadata, "regen1...")
+	require.Equal(t, b2.Metadata, "regen:")
 
 	b3, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-003")
 	require.NoError(t, err)
-	require.Equal(t, b3.Metadata, "regen1...")
+	require.Equal(t, b3.Metadata, "regen:")
 
 	b4, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-003")
 	require.NoError(t, err)
-	require.Equal(t, b4.Metadata, "regen1...")
+	require.Equal(t, b4.Metadata, "regen:")
 
 	b5, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-004")
 	require.NoError(t, err)
-	require.Equal(t, b5.Metadata, "regen1...")
+	require.Equal(t, b5.Metadata, "regen:")
 
 	b6, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-005")
 	require.NoError(t, err)
-	require.Equal(t, b6.Metadata, "regen1...")
+	require.Equal(t, b6.Metadata, "regen:")
 
 	b7, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-002-20190101-20191231-001")
 	require.NoError(t, err)
-	require.Equal(t, b7.Metadata, "regen1...")
+	require.Equal(t, b7.Metadata, "regen:")
 
 	b8, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-002-20190101-20191231-002")
 	require.NoError(t, err)
-	require.Equal(t, b8.Metadata, "regen1...")
+	require.Equal(t, b8.Metadata, "regen:")
 
 	b9, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-002-20190101-20191231-003")
 	require.NoError(t, err)
-	require.Equal(t, b9.Metadata, "regen1...")
+	require.Equal(t, b9.Metadata, "regen:")
 
 	b10, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-002-20190101-20191231-004")
 	require.NoError(t, err)
-	require.Equal(t, b10.Metadata, "regen1...")
+	require.Equal(t, b10.Metadata, "regen:")
 
 	b11, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-003-20150701-20160630-001")
 	require.NoError(t, err)
-	require.Equal(t, b11.Metadata, "regen1...")
+	require.Equal(t, b11.Metadata, "regen:")
 
 	b12, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C02-001-20180101-20181231-001")
 	require.NoError(t, err)
-	require.Equal(t, b12.Metadata, "regen1...")
+	require.Equal(t, b12.Metadata, "regen:")
 
 	b13, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C02-003-20200630-20220629-001")
 	require.NoError(t, err)
-	require.Equal(t, b13.Metadata, "regen1...")
+	require.Equal(t, b13.Metadata, "regen:")
 
 	b14, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C02-002-20211012-20241013-001")
 	require.NoError(t, err)
-	require.Equal(t, b14.Metadata, "regen1...")
+	require.Equal(t, b14.Metadata, "regen:")
 
 	b15, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C02-004-20210102-20211207-001")
 	require.NoError(t, err)
-	require.Equal(t, b15.Metadata, "regen1...")
+	require.Equal(t, b15.Metadata, "regen:")
 
 	b16, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-002-20190101-20191231-005")
 	require.NoError(t, err)
-	require.Equal(t, b16.Metadata, "regen1...")
+	require.Equal(t, b16.Metadata, "regen:")
 
 	b17, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-006")
 	require.NoError(t, err)
-	require.Equal(t, b17.Metadata, "regen1...")
+	require.Equal(t, b17.Metadata, "regen:")
 
 	// ensure all other fields are unchanged
 	for i := range batches {

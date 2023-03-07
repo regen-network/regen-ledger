@@ -3,6 +3,7 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	v4 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v4"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v3"
@@ -33,6 +34,17 @@ func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 	// add polygon to the allowed bridge chain table, as this was a hard coded requirement previously.
 	err := baseStore.AllowedBridgeChainTable().Insert(ctx, &ecocreditv1.AllowedBridgeChain{ChainName: "polygon"})
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Migrate3to4 migrates from version 3 to 4.
+func (m Migrator) Migrate3to4(ctx sdk.Context) error {
+
+	baseStore, _, _ := m.keeper.GetStateStores()
+	if err := v4.MigrateState(ctx, baseStore); err != nil {
 		return err
 	}
 

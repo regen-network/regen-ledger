@@ -113,6 +113,7 @@ import (
 
 	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
 	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
+	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_1"
 	"github.com/regen-network/regen-ledger/x/data/v2"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v2/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
@@ -193,7 +194,10 @@ var (
 		return perms
 	}()
 
-	upgrades = []regenupgrades.Upgrade{v5_0.Upgrade}
+	upgrades = []regenupgrades.Upgrade{
+		v5_0.Upgrade,
+		v5_1.Upgrade,
+	}
 )
 
 func init() {
