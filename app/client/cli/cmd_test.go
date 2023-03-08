@@ -3,6 +3,7 @@ package cli_test
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,14 +16,24 @@ import (
 )
 
 func TestInitCmd(t *testing.T) {
-	nodeHome := os.TempDir()
+	tmp := os.TempDir()
+	nodeHome := filepath.Join(tmp, "test_init_cmd")
+
+	// clean up previous test home directory
+	err := os.RemoveAll(nodeHome)
+	require.NoError(t, err)
+
+	// create new test home directory
+	err = os.Mkdir(nodeHome, 0755)
+	require.NoError(t, err)
+
 	rootCmd, _ := cli.NewRootCmd()
 	rootCmd.SetArgs([]string{
-		"init",          // Test the init cmd
-		"regenapp-test", // Moniker
-		fmt.Sprintf("--%s=%s", flags.FlagHome, nodeHome), // Set home flag
+		"init",
+		"test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, nodeHome),
 	})
 
-	err := cmd.Execute(rootCmd, app.EnvPrefix, app.DefaultNodeHome)
+	err = cmd.Execute(rootCmd, app.EnvPrefix, nodeHome)
 	require.NoError(t, err)
 }
