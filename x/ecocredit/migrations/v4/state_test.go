@@ -297,7 +297,7 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, b16.Metadata, "regen:13toVhaPG4MzeWcmoriPhQ5jRGx6ohhdzBPREoarrdqTRVCP8Xj7scM.rdf")
 
-	b17, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-002-20150101-20151231-006")
+	b17, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-002-20190101-20191231-006")
 	require.NoError(t, err)
 	require.Equal(t, b17.Metadata, "regen:13toVh3NyL4uDzLFcrf6rUFMQnV8af87tBdSzh1Dvsc8zgEx193Y7hr.rdf")
 
