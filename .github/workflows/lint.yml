@@ -72,7 +72,7 @@ jobs:
             x/intertx/go.mod
             x/intertx/go.sum
         if: matrix.module == 'x/intertx'
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
@@ -126,7 +126,7 @@ jobs:
         with:
           PATTERNS: |
             **/**.proto
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
           go-version-file: 'go.mod'
         if: steps.git-diff-proto.outputs.diff
