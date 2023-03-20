@@ -141,39 +141,39 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 			}
 
 			break
-		} else {
-			credits = append(credits, &types.BasketCredit{
-				BatchDenom: basketBalance.BatchDenom,
-				Amount:     balance.String(),
-			})
+		}
 
-			err = k.addCreditBalance(
-				ctx,
-				acct,
-				basketBalance.BatchDenom,
-				balance,
-				retire,
-				retirementJurisdiction,
-				msg.RetirementReason,
-			)
-			if err != nil {
-				return nil, err
-			}
+		credits = append(credits, &types.BasketCredit{
+			BatchDenom: basketBalance.BatchDenom,
+			Amount:     balance.String(),
+		})
 
-			err = k.stateStore.BasketBalanceTable().Delete(ctx, basketBalance)
-			if err != nil {
-				return nil, err
-			}
+		err = k.addCreditBalance(
+			ctx,
+			acct,
+			basketBalance.BatchDenom,
+			balance,
+			retire,
+			retirementJurisdiction,
+			msg.RetirementReason,
+		)
+		if err != nil {
+			return nil, err
+		}
 
-			// basket balance == credits needed
-			if cmp == 0 {
-				break
-			}
+		err = k.stateStore.BasketBalanceTable().Delete(ctx, basketBalance)
+		if err != nil {
+			return nil, err
+		}
 
-			amountCreditsNeeded, err = amountCreditsNeeded.Sub(balance)
-			if err != nil {
-				return nil, err
-			}
+		// basket balance == credits needed
+		if cmp == 0 {
+			break
+		}
+
+		amountCreditsNeeded, err = amountCreditsNeeded.Sub(balance)
+		if err != nil {
+			return nil, err
 		}
 
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgTake balance iteration")

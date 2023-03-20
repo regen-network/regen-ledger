@@ -63,7 +63,7 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			Exponent:     6,
 		}
 
-		any, err := codectypes.NewAnyWithValue(&msg)
+		anyMsg, err := codectypes.NewAnyWithValue(&msg)
 		if err != nil {
 			return simtypes.NoOpMsg(TypeMsgAddAllowedDenom, TypeMsgAddAllowedDenom, err.Error()), nil, err
 		}
@@ -72,7 +72,7 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
-			Messages:       []*codectypes.Any{any},
+			Messages:       []*codectypes.Any{anyMsg},
 		}
 
 		txCtx := simulation.OperationInput{

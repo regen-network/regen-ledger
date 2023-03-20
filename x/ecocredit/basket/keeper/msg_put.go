@@ -212,8 +212,6 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 		}
 		bal.Balance = newBalance.String()
 	}
-	if err = k.stateStore.BasketBalanceTable().Save(ctx, bal); err != nil {
-		return err
-	}
-	return nil
+
+	return k.stateStore.BasketBalanceTable().Save(ctx, bal)
 }
