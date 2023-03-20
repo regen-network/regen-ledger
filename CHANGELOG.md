@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v5.0.1](https://github.com/regen-network/regen-ledger/releases/tag/v5.0.1) - 2023-02-23
+## [v5.1.0](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.0) - TBD
 
 ### General
 
@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - [#1785](https://github.com/regen-network/regen-ledger/pull/1785) Add `amount` and `origin_tx` to `EventBridgeReceive`
+- [#1837](https://github.com/regen-network/regen-ledger/pull/1837) Add `batch_denom` to `EventBridge`
 
 ## [v5.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v5.0.0) - 2023-01-05
 

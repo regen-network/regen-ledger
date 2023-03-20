@@ -415,7 +415,8 @@ Feature: Bridge Integration
       "recipient": "0x1000000000000000000000000000000000000000",
       "contract": "0x0000000000000000000000000000000000000001",
       "amount": "200",
-      "owner": "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42"
+      "owner": "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42",
+      "batch_denom": "C01-001-20200101-20210101-001"
     }
     """
     And expect batch supply with batch denom "C01-001-20200101-20210101-001"
