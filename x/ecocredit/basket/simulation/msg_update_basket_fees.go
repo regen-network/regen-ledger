@@ -24,8 +24,8 @@ var TypeMsgUpdateBasketFee = types.MsgUpdateBasketFee{}.Route()
 const WeightUpdateBasketFees = 100
 
 // SimulateMsgUpdateBasketFee generates a Basket/MsgUpdateBasketFee with random values.
-func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient basetypes.QueryServer,
-	basketQryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
+func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, _ basetypes.QueryServer,
+	_ types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -57,7 +57,7 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			Fee:       &fee,
 		}
 
-		any, err := codectypes.NewAnyWithValue(&msg)
+		anyMsg, err := codectypes.NewAnyWithValue(&msg)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, err.Error()), nil, err
 		}
@@ -66,7 +66,7 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
-			Messages:       []*codectypes.Any{any},
+			Messages:       []*codectypes.Any{anyMsg},
 		}
 
 		txCtx := simulation.OperationInput{

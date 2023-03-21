@@ -430,11 +430,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		return err
 	}
 
-	if err := ss.AllowedBridgeChainTable().Insert(ctx, &api.AllowedBridgeChain{
+	return ss.AllowedBridgeChainTable().Insert(ctx, &api.AllowedBridgeChain{
 		ChainName: "polygon",
-	}); err != nil {
-		return err
-	}
-
-	return nil
+	})
 }

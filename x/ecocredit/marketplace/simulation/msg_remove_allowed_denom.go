@@ -59,7 +59,7 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			Denom:     response.AllowedDenoms[r.Intn(len(response.AllowedDenoms))].BankDenom,
 		}
 
-		any, err := codectypes.NewAnyWithValue(&msg)
+		anyMsg, err := codectypes.NewAnyWithValue(&msg)
 		if err != nil {
 			return simtypes.NoOpMsg(TypeMsgAddAllowedDenom, TypeMsgAddAllowedDenom, err.Error()), nil, err
 		}
@@ -68,7 +68,7 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
-			Messages:       []*codectypes.Any{any},
+			Messages:       []*codectypes.Any{anyMsg},
 		}
 
 		txCtx := simulation.OperationInput{

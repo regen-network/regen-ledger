@@ -122,11 +122,7 @@ func (m *MsgBridgeReceive) ValidateBasic() error {
 	}
 
 	// basic origin tx validation (includes valid ethereum contract address if contract is not empty)
-	if err := m.OriginTx.Validate(); err != nil {
-		return err
-	}
-
-	return nil
+	return m.OriginTx.Validate()
 }
 
 // GetSigners returns the expected signers for MsgCancel.

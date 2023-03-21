@@ -10,7 +10,7 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
-func (k Keeper) BasketFee(ctx context.Context, req *types.QueryBasketFeeRequest) (*types.QueryBasketFeeResponse, error) {
+func (k Keeper) BasketFee(ctx context.Context, _ *types.QueryBasketFeeRequest) (*types.QueryBasketFeeResponse, error) {
 	basketFee, err := k.stateStore.BasketFeeTable().Get(ctx)
 	if err != nil {
 		return nil, regenerrors.ErrInternal.Wrap(err.Error())
