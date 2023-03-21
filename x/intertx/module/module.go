@@ -78,17 +78,17 @@ func (a AppModule) GetQueryCmd() *cobra.Command {
 }
 
 // InitGenesis implements AppModule/InitGenesis.
-func (a AppModule) InitGenesis(context sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []types.ValidatorUpdate {
+func (a AppModule) InitGenesis(_ sdk.Context, _ codec.JSONCodec, _ json.RawMessage) []types.ValidatorUpdate {
 	return []types.ValidatorUpdate{}
 }
 
 // ExportGenesis implements AppModule/ExportGenesis.
-func (a AppModule) ExportGenesis(context sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
+func (a AppModule) ExportGenesis(_ sdk.Context, _ codec.JSONCodec) json.RawMessage {
 	return nil
 }
 
 // RegisterInvariants implements AppModule/RegisterInvariants.
-func (a AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {}
+func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // Route implements AppModule/Route.
 func (a AppModule) Route() sdk.Route {
@@ -101,7 +101,7 @@ func (a AppModule) QuerierRoute() string {
 }
 
 // LegacyQuerierHandler implements AppModule/LegacyQuerierHandler.
-func (a AppModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
