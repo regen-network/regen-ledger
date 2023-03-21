@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1785](https://github.com/regen-network/regen-ledger/pull/1785) Add `amount` and `origin_tx` to `EventBridgeReceive`
 - [#1837](https://github.com/regen-network/regen-ledger/pull/1837) Add `batch_denom` to `EventBridge`
+- [#1841](https://github.com/regen-network/regen-ledger/pull/1841) Add `--years-in-the-past` to `create-basket` command
+
+#### Fixed
+
+- [#1841](https://github.com/regen-network/regen-ledger/pull/1841) Fix `years_in_the_past` not being set when creating a basket
+- [#1841](https://github.com/regen-network/regen-ledger/pull/1841) Fix `--start-date-window` with `create-basket` command
 
 ## [v5.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v5.0.0) - 2023-01-05
 
