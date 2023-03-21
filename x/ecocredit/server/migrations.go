@@ -6,6 +6,7 @@ import (
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v3"
+	v4 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v4"
 )
 
 // Migrator is a struct for handling in-place store migrations.
@@ -37,4 +38,10 @@ func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 	}
 
 	return nil
+}
+
+// Migrate3to4 migrates from version 3 to 4.
+func (m Migrator) Migrate3to4(ctx sdk.Context) error {
+	baseStore, _, _ := m.keeper.GetStateStores()
+	return v4.MigrateState(ctx, baseStore)
 }
