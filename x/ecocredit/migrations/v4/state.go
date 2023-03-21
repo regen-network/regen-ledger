@@ -126,9 +126,5 @@ func migrateBatchMetadata(ctx sdk.Context, baseStore ecocreditv1.StateStore, bat
 
 	b.Metadata = batch.NewMetadata
 
-	if err := baseStore.BatchTable().Update(ctx, b); err != nil {
-		return err
-	}
-
-	return nil
+	return baseStore.BatchTable().Update(ctx, b)
 }
