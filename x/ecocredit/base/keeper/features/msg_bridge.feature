@@ -97,7 +97,8 @@ Feature: Msg/Bridge
         "recipient": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
         "contract": "0x6887246668a3b87f54deb3b94ba47a6f63f32985",
         "amount": "10",
-        "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+        "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "batch_denom": "C01-001-20200101-20210101-001"
       }
       """
 
