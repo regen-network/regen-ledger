@@ -190,17 +190,13 @@ func (k Keeper) sendTradable(ctx context.Context, params sendParams) error {
 	}
 
 	// update recipient balance with new tradable amount
-	if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+	return k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
 		BatchKey:       params.batchKey,
 		Address:        params.recipient,
 		TradableAmount: newRecipientTradable.String(),
 		RetiredAmount:  recipientBalance.RetiredAmount,
 		EscrowedAmount: recipientBalance.EscrowedAmount,
-	}); err != nil {
-		return err
-	}
-
-	return nil
+	})
 }
 
 func (k Keeper) sendRetired(ctx sdk.Context, params sendParams) error {
@@ -306,14 +302,10 @@ func (k Keeper) sendRetired(ctx sdk.Context, params sendParams) error {
 	}
 
 	// update batch supply with new tradable and retired amounts
-	if err := k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
+	return k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 		BatchKey:        params.batchKey,
 		TradableAmount:  newSupplyTradable.String(),
 		RetiredAmount:   newSupplyRetired.String(),
 		CancelledAmount: batchSupply.CancelledAmount,
-	}); err != nil {
-		return err
-	}
-
-	return nil
+	})
 }
