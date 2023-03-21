@@ -62,14 +62,14 @@ func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 }
 */
 
-func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batch *ecocreditv1.Batch) error {
+func (o orderbook) OnInsertSellOrder(_ context.Context, _ *marketplacev1.SellOrder, _ *ecocreditv1.Batch) error {
 	return nil
 }
 
-func (o orderbook) ProcessBatch(ctx context.Context) error {
+func (o orderbook) ProcessBatch(_ context.Context) error {
 	return nil
 }
 
-func (o orderbook) Reload(ctx context.Context) error {
+func (o orderbook) Reload(_ context.Context) error {
 	return nil
 }

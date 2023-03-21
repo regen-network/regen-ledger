@@ -52,11 +52,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if err := validateBasketFee(p.BasketFee); err != nil {
-		return err
-	}
-
-	return nil
+	return validateBasketFee(p.BasketFee)
 }
 
 func validateCreditClassFee(i interface{}) error {
@@ -65,11 +61,7 @@ func validateCreditClassFee(i interface{}) error {
 		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
-	if err := v.Validate(); err != nil {
-		return err
-	}
-
-	return nil
+	return v.Validate()
 }
 
 func validateAllowedClassCreators(i interface{}) error {
@@ -101,11 +93,7 @@ func validateBasketFee(i interface{}) error {
 		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
-	if err := v.Validate(); err != nil {
-		return err
-	}
-
-	return nil
+	return v.Validate()
 }
 
 // NewParams creates a new Params object.

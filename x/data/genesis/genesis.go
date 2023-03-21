@@ -42,11 +42,7 @@ func ValidateGenesis(jsonData json.RawMessage) error {
 		return err
 	}
 
-	if err := moduleDB.ValidateJSON(jsonSource); err != nil {
-		return err
-	}
-
-	return nil
+	return moduleDB.ValidateJSON(jsonSource)
 }
 
 func validateMsg(m proto.Message) error {

@@ -59,13 +59,13 @@ func SimulateMsgAddClassCreator(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			Creator:   proposerAddr,
 		}
 
-		any, err := codectypes.NewAnyWithValue(&proposalMsg)
+		anyMsg, err := codectypes.NewAnyWithValue(&proposalMsg)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddClassCreator, err.Error()), nil, err
 		}
 
 		msg := &govtypes.MsgSubmitProposal{
-			Messages:       []*codectypes.Any{any},
+			Messages:       []*codectypes.Any{anyMsg},
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),

@@ -24,7 +24,7 @@ const WeightSetClassCreatorAllowlist = 33
 
 // SimulateMsgSetClassCreatorAllowlist generates a MsgSetClassCreatorAllowlist with random values.
 func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
-	qryClient types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	_ types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -50,13 +50,13 @@ func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredi
 			Enabled:   r.Float32() < 0.3, // 30% chance of allowlist being enabled,
 		}
 
-		any, err := codectypes.NewAnyWithValue(&proposalMsg)
+		anyMsg, err := codectypes.NewAnyWithValue(&proposalMsg)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, err.Error()), nil, err
 		}
 
 		msg := &govtypes.MsgSubmitProposal{
-			Messages:       []*codectypes.Any{any},
+			Messages:       []*codectypes.Any{anyMsg},
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
