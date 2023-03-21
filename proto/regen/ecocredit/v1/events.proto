@@ -218,6 +218,11 @@ message EventBridge {
   //
   // Since Revision 1
   string owner = 5;
+
+  // batch_denom is the credit batch denom.
+  //
+  // Since Revision 3
+  string batch_denom = 6;
 }
 
 // EventBridgeReceive is emitted when credits are bridged from another chain.
@@ -232,9 +237,13 @@ message EventBridgeReceive {
   string batch_denom = 2;
 
   // amount is the amount of credits.
+  //
+  // Since Revision 3
   string amount = 3;
 
   // origin_tx is the transaction from another chain or registry that triggered
   // the minting of credits within the credit batch.
+  //
+  // Since Revision 3
   OriginTx origin_tx = 4;
 }

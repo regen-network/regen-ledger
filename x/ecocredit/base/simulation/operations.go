@@ -29,8 +29,8 @@ func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	govk ecocredit.GovKeeper,
-	qryClient types.QueryServer, basketQryClient baskettypes.QueryServer,
-	mktQryClient markettypes.QueryServer, authority sdk.AccAddress) simulation.WeightedOperations {
+	qryClient types.QueryServer, _ baskettypes.QueryServer,
+	_ markettypes.QueryServer, authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
 		weightMsgCreateClass              int
