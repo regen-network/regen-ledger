@@ -51,7 +51,7 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 	require.Equal(t, true, b.DisableAutoRetire)
 	require.Equal(t, "C", b.CreditTypeAbbrev)
 	require.Equal(t, (*basketapi.DateCriteria)(nil), b.DateCriteria) // TODO
-	require.Equal(t, uint32(6), b.Exponent)
+	require.Equal(t, uint32(6), b.Exponent)                          //nolint:staticcheck
 	require.Equal(t, curator.Bytes(), b.Curator)
 }
 
