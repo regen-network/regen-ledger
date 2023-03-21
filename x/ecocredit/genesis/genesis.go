@@ -233,11 +233,7 @@ func ValidateGenesis(data json.RawMessage) error {
 	}
 
 	// verify calculated total amount of each credit batch matches the total supply
-	if err := validateSupply(batchIDToCalSupply, batchIDToSupply); err != nil {
-		return err
-	}
-
-	return nil
+	return validateSupply(batchIDToCalSupply, batchIDToSupply)
 }
 
 func validateMsg(m proto.Message) error {

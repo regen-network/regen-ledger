@@ -53,11 +53,12 @@ func (k Keeper) Bridge(ctx context.Context, req *types.MsgBridge) (*types.MsgBri
 		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventBridge{
-			Target:    req.Target,
-			Recipient: req.Recipient,
-			Contract:  batchContract.Contract,
-			Amount:    credit.Amount,
-			Owner:     req.Owner,
+			Target:     req.Target,
+			Recipient:  req.Recipient,
+			Contract:   batchContract.Contract,
+			Amount:     credit.Amount,
+			Owner:      req.Owner,
+			BatchDenom: credit.BatchDenom,
 		}); err != nil {
 			return nil, err
 		}

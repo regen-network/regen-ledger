@@ -67,7 +67,7 @@ func (a Module) QuerierRoute() string {
 	return data.ModuleName
 }
 
-func (a Module) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+func (a Module) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
@@ -97,9 +97,11 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	data.RegisterTypes(registry)
 }
 
-//nolint
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
-	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
+	err := data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage {
@@ -169,17 +171,17 @@ func (Module) GenerateGenesisState(simState *module.SimulationState) {
 
 // ProposalContents returns all the data content functions used to
 // simulate proposals.
-func (Module) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
+func (Module) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
 	return nil
 }
 
 // RandomizedParams creates randomized data param changes for the simulator.
-func (Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+func (Module) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
 	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for data module's types
-func (Module) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
 }
 
 // WeightedOperations returns all the data module operations with their respective weights.

@@ -11,7 +11,7 @@ import (
 )
 
 // ClassFee queries credit class creation fees.
-func (k Keeper) ClassFee(ctx context.Context, request *types.QueryClassFeeRequest) (*types.QueryClassFeeResponse, error) {
+func (k Keeper) ClassFee(ctx context.Context, _ *types.QueryClassFeeRequest) (*types.QueryClassFeeResponse, error) {
 	classFee, err := k.stateStore.ClassFeeTable().Get(ctx)
 	if err != nil {
 		return nil, regenerrors.ErrInternal.Wrapf("failed to get class fee: %s", err.Error())
