@@ -14,9 +14,5 @@ import (
 func BeginBlocker(ctx sdk.Context, k server.Keeper) error {
 	defer telemetry.ModuleMeasureSince(ecocredit.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
-	if err := k.PruneOrders(ctx); err != nil {
-		return err
-	}
-
-	return nil
+	return k.PruneOrders(ctx)
 }
