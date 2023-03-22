@@ -9,6 +9,7 @@ Feature: Msg/Create
   - when the basket includes a credit type that exists
   - when the basket criteria includes credit classes that exist
   - when the basket criteria includes credit classes that match the credit type
+  - when the basket criteria includes optional date criteria
   - the user token balance is updated and only the minimum fee is taken
   - the basket denom is formatted with a prefix based on credit type precision
   - the response includes the basket denom
@@ -147,6 +148,23 @@ Feature: Msg/Create
       Given a credit class with id "BIO01"
       When alice attempts to create a basket with credit type "C" and allowed class "BIO01"
       Then expect the error "basket specified credit type C, but class BIO01 is of type BIO: invalid request"
+
+  Rule: The basket criteria may include optional start date criteria
+
+    Background:
+      Given a credit type
+
+    Scenario: basket criteria minimum start date
+      When alice attempts to create a basket with minimum start date "2020-01-01"
+      Then expect minimum start date "2020-01-01"
+
+    Scenario: basket criteria start date window
+      When alice attempts to create a basket with start date window "43800h"
+      Then expect start date window "43800h"
+
+    Scenario: basket criteria years in the past
+      When alice attempts to create a basket with years in the past "10"
+      Then expect years in the past "10"
 
   Rule: The user token balance is updated and only the minimum fee is taken
 

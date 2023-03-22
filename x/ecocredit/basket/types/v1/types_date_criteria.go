@@ -16,6 +16,8 @@ func (d *DateCriteria) ToAPI() *api.DateCriteria {
 		return &api.DateCriteria{MinStartDate: types.GogoToProtobufTimestamp(x)}
 	} else if x := d.GetStartDateWindow(); x != nil {
 		return &api.DateCriteria{StartDateWindow: types.GogoToProtobufDuration(x)}
+	} else if x := d.GetYearsInThePast(); x != 0 {
+		return &api.DateCriteria{YearsInThePast: x}
 	}
 	return nil
 }
