@@ -5,8 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
-	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
@@ -17,6 +18,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	v4 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v4"
 )
@@ -50,8 +52,10 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 	require.Equal(t, "NCT", b.Name)
 	require.Equal(t, true, b.DisableAutoRetire)
 	require.Equal(t, "C", b.CreditTypeAbbrev)
-	require.Equal(t, (*basketapi.DateCriteria)(nil), b.DateCriteria) // TODO
-	require.Equal(t, uint32(6), b.Exponent)                          //nolint:staticcheck
+	require.Equal(t, (*timestamppb.Timestamp)(nil), b.DateCriteria.MinStartDate)
+	require.Equal(t, (*durationpb.Duration)(nil), b.DateCriteria.StartDateWindow)
+	require.Equal(t, uint32(10), b.DateCriteria.YearsInThePast)
+	require.Equal(t, uint32(6), b.Exponent) //nolint:staticcheck
 	require.Equal(t, curator.Bytes(), b.Curator)
 }
 

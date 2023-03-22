@@ -24,7 +24,9 @@ func migrateBasket(ctx sdk.Context, basketStore basketv1.StateStore) error {
 
 	b.DisableAutoRetire = true
 
-	b.DateCriteria = nil // TODO
+	b.DateCriteria = &basketv1.DateCriteria{
+		YearsInThePast: 10,
+	}
 
 	return basketStore.BasketTable().Update(ctx, b)
 }
