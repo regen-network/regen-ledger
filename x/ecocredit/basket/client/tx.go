@@ -52,7 +52,7 @@ Flags:
     the basket (e.g. "C01,C02").
 - min-start-date: the earliest start date for batches of credits allowed into the basket
 	(e.g. \"2012-01-01\").
-- start-date-window: the duration of time (in seconds) measured into the past which sets a
+- start-date-window: the amount of time (formatted as a duration string) measured into the past which sets a
     cutoff for batch start dates when adding new credits to the basket (e.g. "43800h").
 - years-in-the-past: the number of years in the past which sets a cutoff for batch start
 	dates when adding new credits to the basket (e.g. 10).
