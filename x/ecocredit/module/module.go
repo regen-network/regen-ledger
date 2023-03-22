@@ -42,7 +42,7 @@ var (
 )
 
 const (
-	ConsensusVersion = 3 // ConsensusVersion is the module consensus version
+	ConsensusVersion = 4 // ConsensusVersion is the module consensus version
 )
 
 // Module implements the AppModule interface.
@@ -132,6 +132,10 @@ func (m *Module) RegisterServices(cfg module.Configurator) {
 
 	migrator := server.NewMigrator(svr, m.legacySubspace)
 	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, migrator.Migrate2to3); err != nil {
+		panic(err)
+	}
+
+	if err := cfg.RegisterMigration(ecocredit.ModuleName, 3, migrator.Migrate3to4); err != nil {
 		panic(err)
 	}
 
