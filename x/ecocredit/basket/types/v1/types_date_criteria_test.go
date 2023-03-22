@@ -29,6 +29,11 @@ func TestDateCriteriaToAPI(t *testing.T) {
 	dw := dc.ToAPI().GetStartDateWindow()
 	require.NotNil(dw)
 	require.Equal(durStd, dw.AsDuration(), "handles window date")
+
+	dc = &DateCriteria{YearsInThePast: 10}
+	yip := dc.ToAPI().GetYearsInThePast()
+	require.NotNil(yip)
+	require.Equal(uint32(10), yip, "handles years in the past")
 }
 
 func TestValidateDateCriteria(t *testing.T) {
