@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/v5
 go 1.19
 
 require (
-	cosmossdk.io/math v1.0.0-beta.4
+	cosmossdk.io/math v1.0.0
 	github.com/cosmos/cosmos-sdk v0.46.7
 	github.com/cosmos/ibc-go/v5 v5.2.0
 	github.com/gorilla/mux v1.8.0
@@ -12,7 +12,7 @@ require (
 	github.com/regen-network/regen-ledger/x/data/v2 v2.1.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.1.0
 	github.com/regen-network/regen-ledger/x/intertx v1.1.0
-	github.com/rs/zerolog v1.28.0
+	github.com/rs/zerolog v1.29.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.2
