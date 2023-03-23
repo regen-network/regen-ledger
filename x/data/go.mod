@@ -18,7 +18,7 @@ require (
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.2
-	github.com/tendermint/tendermint v0.34.26
+	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.7
 	golang.org/x/crypto v0.7.0
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
@@ -53,6 +53,7 @@ require (
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
 	github.com/cockroachdb/apd/v3 v3.1.0 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
+	github.com/cometbft/cometbft-db v0.7.0 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3 // indirect
@@ -84,7 +85,7 @@ require (
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/btree v1.0.1 // indirect
+	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -144,6 +145,7 @@ require (
 	github.com/spf13/viper v1.13.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 // indirect
+	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.5.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
@@ -170,12 +172,12 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.10-regen-1
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.11-regen-1
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.10
-replace github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.26
+// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.11
+replace github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
 
 // https://github.com/regen-network/regen-ledger/security/dependabot/86
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.7
