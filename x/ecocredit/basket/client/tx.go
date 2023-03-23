@@ -23,6 +23,7 @@ const (
 	FlagAllowedClasses         = "allowed-classes"
 	FlagMinimumStartDate       = "minimum-start-date"
 	FlagStartDateWindow        = "start-date-window"
+	FlagYearsInThePast         = "years-in-the-past"
 	FlagBasketFee              = "basket-fee"
 	FlagDenomDescription       = "description"
 	FlagRetirementJurisdiction = "retirement-jurisdiction"
@@ -49,9 +50,12 @@ Flags:
 - credit-type-abbrev: filters against credits from this credit type abbreviation (e.g. "BIO").
 - allowed-classes: comma separated (no spaces) list of credit classes allowed to be put in
     the basket (e.g. "C01,C02").
-- min-start-date: the earliest start date for batches of credits allowed into the basket.
-- start-date-window: the duration of time (in seconds) measured into the past which sets a
-    cutoff for batch start dates when adding new credits to the basket.
+- min-start-date: the earliest start date for batches of credits allowed into the basket
+	(e.g. \"2012-01-01\").
+- start-date-window: the amount of time (formatted as a duration string) measured into the past which sets a
+    cutoff for batch start dates when adding new credits to the basket (e.g. "43800h").
+- years-in-the-past: the number of years in the past which sets a cutoff for batch start
+	dates when adding new credits to the basket (e.g. 10).
 - basket-fee: the fee that the curator will pay to create the basket. It must be >= the
     required Params.basket_creation_fee. We include the fee explicitly here so that the
     curator explicitly acknowledges paying this fee and is not surprised to learn that they
@@ -87,7 +91,13 @@ Flags:
 			if err != nil {
 				return err
 			}
-			startDateWindow, err := cmd.Flags().GetUint64(FlagStartDateWindow)
+
+			startDateWindow, err := cmd.Flags().GetString(FlagStartDateWindow)
+			if err != nil {
+				return err
+			}
+
+			yearsInThePast, err := cmd.Flags().GetUint32(FlagYearsInThePast)
 			if err != nil {
 				return err
 			}
@@ -97,8 +107,13 @@ Flags:
 				return err
 			}
 
-			if minStartDateString != "" && startDateWindow != 0 {
-				return fmt.Errorf("both %s and %s cannot be set", FlagStartDateWindow, FlagMinimumStartDate)
+			if (minStartDateString != "" && startDateWindow != "") ||
+				(startDateWindow != "" && yearsInThePast != 0) ||
+				(minStartDateString != "" && yearsInThePast != 0) {
+				return fmt.Errorf(
+					"only one date criteria option can be set: %s, %s, or %s",
+					FlagStartDateWindow, FlagMinimumStartDate, FlagYearsInThePast,
+				)
 			}
 
 			var dateCriteria *types.DateCriteria
@@ -115,10 +130,17 @@ Flags:
 				dateCriteria = &types.DateCriteria{MinStartDate: minStartDate}
 			}
 
-			if startDateWindow != 0 {
-				startDateWindowDuration := time.Duration(startDateWindow)
+			if startDateWindow != "" {
+				startDateWindowDuration, err := time.ParseDuration(startDateWindow)
+				if err != nil {
+					return fmt.Errorf("failed to parse start_date_window: %w", err)
+				}
 				startDateWindow := prototypes.DurationProto(startDateWindowDuration)
 				dateCriteria = &types.DateCriteria{StartDateWindow: startDateWindow}
+			}
+
+			if yearsInThePast != 0 {
+				dateCriteria = &types.DateCriteria{YearsInThePast: yearsInThePast}
 			}
 
 			fee := sdk.Coins{}
@@ -157,7 +179,8 @@ Flags:
 	cmd.Flags().String(FlagCreditTypeAbbrev, "", "filters against credits from this credit type abbreviation (e.g. \"C\")")
 	cmd.Flags().StringSlice(FlagAllowedClasses, []string{}, "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
 	cmd.Flags().String(FlagMinimumStartDate, "", "the earliest start date for batches of credits allowed into the basket (e.g. \"2012-01-01\")")
-	cmd.Flags().Uint64(FlagStartDateWindow, 0, "sets a cutoff for batch start dates when adding new credits to the basket (e.g. 1325404800)")
+	cmd.Flags().String(FlagStartDateWindow, "", "sets a cutoff for batch start dates when adding new credits to the basket (e.g. \"43800h\")")
+	cmd.Flags().Uint32(FlagYearsInThePast, 0, "the earliest start date for batches of credits allowed into the basket based on number of years in the past (e.g. 10)")
 	cmd.Flags().String(FlagBasketFee, "", "the fee that the curator will pay to create the basket (e.g. \"20regen\")")
 	cmd.Flags().String(FlagDenomDescription, "", "the description to be used in the bank denom metadata.")
 
