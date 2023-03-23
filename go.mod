@@ -15,13 +15,8 @@ require (
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
-<<<<<<< HEAD
-	github.com/stretchr/testify v1.8.1
-	github.com/tendermint/tendermint v0.34.26
-=======
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/tendermint v0.34.27
->>>>>>> a3d3276f (build: bump sdk to v0.46.11-regen-1 and replace tendermint (#1851))
 	github.com/tendermint/tm-db v0.6.7
 )
 
@@ -156,7 +151,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
@@ -165,7 +160,7 @@ require (
 	google.golang.org/api v0.103.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
-	google.golang.org/grpc v1.51.0 // indirect
+	google.golang.org/grpc v1.52.0 // indirect
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

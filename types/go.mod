@@ -16,15 +16,10 @@ require (
 	github.com/regen-network/regen-ledger/api/v2 v2.1.0
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cobra v1.6.1
-<<<<<<< HEAD
-	github.com/stretchr/testify v1.8.1
-	github.com/tendermint/tendermint v0.34.26
-=======
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/tendermint v0.34.27
->>>>>>> a3d3276f (build: bump sdk to v0.46.11-regen-1 and replace tendermint (#1851))
 	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/grpc v1.51.0
+	google.golang.org/grpc v1.52.0
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
 	gotest.tools/v3 v3.4.0
 	pgregory.net/rapid v0.5.3
@@ -138,7 +133,7 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
