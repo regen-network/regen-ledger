@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 
-- [#1799](https://github.com/regen-network/regen-ledger/pull/1799) Update all modules to cosmos-sdk v0.46.10-regen-1
-- [#1799](https://github.com/regen-network/regen-ledger/pull/1799) Update all modules to tendermint v0.34.26 (informalsystems)
+- [#1851](https://github.com/regen-network/regen-ledger/pull/1851) Update all modules to cosmos-sdk v0.46.11-regen-1
+- [#1851](https://github.com/regen-network/regen-ledger/pull/1851) Update all modules to cometbft v0.34.27 (previously tendermint)
 
 #### Fixed
 
