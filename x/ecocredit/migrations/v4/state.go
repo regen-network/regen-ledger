@@ -11,9 +11,9 @@ func MigrateState(sdkCtx sdk.Context, baseStore ecocreditv1.StateStore, basketSt
 	if sdkCtx.ChainID() == "regen-1" {
 
 		// mainnet batch metadata migration
-		batches := getBatches()
-		for _, batch := range batches {
-			if err := migrateBatchMetadata(sdkCtx, baseStore, batch); err != nil {
+		batchUpdates := getBatchUpdates()
+		for _, batchUpdate := range batchUpdates {
+			if err := migrateBatchMetadata(sdkCtx, baseStore, batchUpdate); err != nil {
 				return err
 			}
 		}
@@ -32,7 +32,7 @@ type Batch struct {
 	NewMetadata string
 }
 
-func getBatches() []Batch {
+func getBatchUpdates() []Batch {
 	return []Batch{
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-001
 		{
