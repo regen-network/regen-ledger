@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/gogo/protobuf/jsonpb"
+	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -210,6 +212,59 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithNameAndCreditType(a string
 	})
 }
 
+func (s *createSuite) AliceAttemptsToCreateABasketWithMinimumStartDate(a string) {
+	s.createExpectCalls()
+
+	ts, err := regentypes.ParseDate(a, a)
+	require.NoError(s.t, err)
+
+	minStartDate, err := gogotypes.TimestampProto(ts)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		DateCriteria: &types.DateCriteria{
+			MinStartDate: minStartDate,
+		},
+	})
+}
+
+func (s *createSuite) AliceAttemptsToCreateABasketWithStartDateWindow(a string) {
+	s.createExpectCalls()
+
+	dur, err := time.ParseDuration(a)
+	require.NoError(s.t, err)
+
+	startDateWindow := gogotypes.DurationProto(dur)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		DateCriteria: &types.DateCriteria{
+			StartDateWindow: startDateWindow,
+		},
+	})
+}
+
+func (s *createSuite) AliceAttemptsToCreateABasketWithYearsInThePast(a string) {
+	s.createExpectCalls()
+
+	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		DateCriteria: &types.DateCriteria{
+			YearsInThePast: uint32(yearsInThePast),
+		},
+	})
+}
+
 func (s *createSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
@@ -231,6 +286,46 @@ func (s *createSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, res, s.res)
+}
+
+func (s *createSuite) ExpectMinimumStartDate(a string) {
+	ts, err := regentypes.ParseDate(a, a)
+	require.NoError(s.t, err)
+
+	minStartDate, err := gogotypes.TimestampProto(ts)
+	require.NoError(s.t, err)
+
+	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
+		BasketDenom: s.res.BasketDenom,
+	})
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, minStartDate, dc.BasketInfo.DateCriteria.MinStartDate)
+}
+
+func (s *createSuite) ExpectStartDateWindow(a string) {
+	dur, err := time.ParseDuration(a)
+	require.NoError(s.t, err)
+
+	startDateWindow := gogotypes.DurationProto(dur)
+
+	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
+		BasketDenom: s.res.BasketDenom,
+	})
+	require.NoError(s.t, err)
+	require.Equal(s.t, startDateWindow, dc.BasketInfo.DateCriteria.StartDateWindow)
+}
+
+func (s *createSuite) ExpectYearsInThePast(a string) {
+	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
+		BasketDenom: s.res.BasketDenom,
+	})
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, uint32(yearsInThePast), dc.BasketInfo.DateCriteria.YearsInThePast)
 }
 
 func (s *createSuite) ExpectEventWithProperties(a gocuke.DocString) {
