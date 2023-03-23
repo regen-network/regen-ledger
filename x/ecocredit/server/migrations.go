@@ -42,6 +42,6 @@ func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 
 // Migrate3to4 migrates from version 3 to 4.
 func (m Migrator) Migrate3to4(ctx sdk.Context) error {
-	baseStore, _, _ := m.keeper.GetStateStores()
-	return v4.MigrateState(ctx, baseStore)
+	baseStore, basketStore, _ := m.keeper.GetStateStores()
+	return v4.MigrateState(ctx, baseStore, basketStore)
 }
