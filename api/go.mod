@@ -38,4 +38,4 @@ require (
 )
 
 // https://github.com/regen-network/regen-ledger/security/dependabot/105
-replace golang.org/x/net => golang.org/x/net v0.7.0
+replace golang.org/x/net => golang.org/x/net v0.8.0
