@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -17,13 +18,14 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	v4 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v4"
 )
 
-func TestMainnetMigrateBatchMetadata(t *testing.T) {
-	sdkCtx, baseStore := setup(t)
+func TestMainnetMigrations(t *testing.T) {
+	sdkCtx, baseStore, basketStore := setup(t)
 	sdkCtx = sdkCtx.WithChainID("regen-1")
 
 	// issuer is the same for all credit batches
@@ -230,8 +232,24 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 		require.NoError(t, baseStore.BatchTable().Insert(sdkCtx, batch))
 	}
 
+	curator := sdk.MustAccAddressFromBech32("regen1mrvlgpmrjn9s7r7ct69euqfgxjazjt2l5lzqcd")
+
+	// http://mainnet.regen.network:1317/regen/ecocredit/basket/v1/baskets/eco.uC.NCT
+	basket := &basketapi.Basket{
+		BasketDenom:       "eco.uC.NCT",
+		Name:              "NCT",
+		DisableAutoRetire: false,
+		CreditTypeAbbrev:  "C",
+		DateCriteria:      nil,
+		Exponent:          6,
+		Curator:           curator,
+	}
+
+	// add basket to state
+	require.NoError(t, basketStore.BasketTable().Insert(sdkCtx, basket))
+
 	// execute state migrations
-	require.NoError(t, v4.MigrateState(sdkCtx, baseStore))
+	require.NoError(t, v4.MigrateState(sdkCtx, baseStore, basketStore))
 
 	b1, err := baseStore.BatchTable().GetByDenom(sdkCtx, "C01-001-20150101-20151231-001")
 	require.NoError(t, err)
@@ -313,9 +331,21 @@ func TestMainnetMigrateBatchMetadata(t *testing.T) {
 		require.Equal(t, b.IssuanceDate.AsTime(), timestamp.AsTime())
 		require.Equal(t, b.Open, false)
 	}
+
+	b, err := basketStore.BasketTable().GetByBasketDenom(sdkCtx, "eco.uC.NCT")
+	require.NoError(t, err)
+
+	require.Equal(t, "NCT", b.Name)
+	require.Equal(t, true, b.DisableAutoRetire)
+	require.Equal(t, "C", b.CreditTypeAbbrev)
+	require.Equal(t, (*timestamppb.Timestamp)(nil), b.DateCriteria.MinStartDate)
+	require.Equal(t, (*durationpb.Duration)(nil), b.DateCriteria.StartDateWindow)
+	require.Equal(t, uint32(10), b.DateCriteria.YearsInThePast)
+	require.Equal(t, uint32(6), b.Exponent) //nolint:staticcheck
+	require.Equal(t, curator.Bytes(), b.Curator)
 }
 
-func setup(t *testing.T) (sdk.Context, baseapi.StateStore) {
+func setup(t *testing.T) (sdk.Context, baseapi.StateStore, basketapi.StateStore) {
 	ecocreditKey := sdk.NewKVStoreKey("ecocredit")
 
 	db := dbm.NewMemDB()
@@ -333,5 +363,8 @@ func setup(t *testing.T) (sdk.Context, baseapi.StateStore) {
 	baseStore, err := baseapi.NewStateStore(modDB)
 	require.NoError(t, err)
 
-	return sdkCtx, baseStore
+	basketStore, err := basketapi.NewStateStore(modDB)
+	require.NoError(t, err)
+
+	return sdkCtx, baseStore, basketStore
 }

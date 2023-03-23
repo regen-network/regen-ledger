@@ -2,20 +2,24 @@ package v4
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	basketv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 )
 
 // MigrateState performs in-place store migrations from ConsensusVersion 3 to 4.
-func MigrateState(sdkCtx sdk.Context, baseStore ecocreditv1.StateStore) error {
-	var batches []Batch
-
+func MigrateState(sdkCtx sdk.Context, baseStore ecocreditv1.StateStore, basketStore basketv1.StateStore) error {
 	if sdkCtx.ChainID() == "regen-1" {
-		batches = getMainnetBatches()
-	}
 
-	for _, batch := range batches {
-		if err := migrateBatchMetadata(sdkCtx, baseStore, batch); err != nil {
+		// mainnet batch metadata migration
+		batchUpdates := getBatchUpdates()
+		for _, batchUpdate := range batchUpdates {
+			if err := migrateBatchMetadata(sdkCtx, baseStore, batchUpdate); err != nil {
+				return err
+			}
+		}
+
+		// mainnet basket criteria migration
+		if err := migrateBasketCriteria(sdkCtx, basketStore); err != nil {
 			return err
 		}
 	}
@@ -28,7 +32,7 @@ type Batch struct {
 	NewMetadata string
 }
 
-func getMainnetBatches() []Batch {
+func getBatchUpdates() []Batch {
 	return []Batch{
 		// http://mainnet.regen.network:1317/regen/ecocredit/v1/batches/C01-001-20150101-20151231-001
 		{
@@ -127,4 +131,19 @@ func migrateBatchMetadata(ctx sdk.Context, baseStore ecocreditv1.StateStore, bat
 	b.Metadata = batch.NewMetadata
 
 	return baseStore.BatchTable().Update(ctx, b)
+}
+
+func migrateBasketCriteria(ctx sdk.Context, basketStore basketv1.StateStore) error {
+	b, err := basketStore.BasketTable().GetByBasketDenom(ctx, "eco.uC.NCT")
+	if err != nil {
+		return err
+	}
+
+	b.DisableAutoRetire = true
+
+	b.DateCriteria = &basketv1.DateCriteria{
+		YearsInThePast: 10,
+	}
+
+	return basketStore.BasketTable().Update(ctx, b)
 }
