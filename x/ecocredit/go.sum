@@ -372,8 +372,8 @@ github.com/coreos/go-systemd/v22 v22.3.3-0.20220203105225-a9a7ef127534/go.mod h1
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cosmos/btcutil v1.0.5 h1:t+ZFcX77LpKtDBhjucvnOH8C2l2ioGsBNEQ3jef8xFk=
 github.com/cosmos/btcutil v1.0.5/go.mod h1:IyB7iuqZMJlthe2tkIFL33xPyzbFYP0XVdS8P5lUPis=
-github.com/cosmos/cosmos-proto v1.0.0-beta.1 h1:iDL5qh++NoXxG8hSy93FdYJut4XfgbShIocllGaXx/0=
-github.com/cosmos/cosmos-proto v1.0.0-beta.1/go.mod h1:8k2GNZghi5sDRFw/scPL8gMSowT1vDA+5ouxL8GjaUE=
+github.com/cosmos/cosmos-proto v1.0.0-beta.3 h1:VitvZ1lPORTVxkmF2fAp3IiA61xVwArQYKXTdEcpW6o=
+github.com/cosmos/cosmos-proto v1.0.0-beta.3/go.mod h1:t8IASdLaAq+bbHbjq4p960BvcTqtwuAxid3b/2rOD6I=
 github.com/cosmos/cosmos-sdk/api v0.1.0 h1:xfSKM0e9p+EJTMQnf5PbWE6VT8ruxTABIJ64Rd064dE=
 github.com/cosmos/cosmos-sdk/api v0.1.0/go.mod h1:CupqQBskAOiTXO1XDZ/wrtWzN/wTxUvbQmOqdUhR8wI=
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 h1:9ebZL9/nCkaxer3kWWHs0YT8OOmHd7xohULM8Weep7M=
@@ -1027,8 +1027,8 @@ github.com/regen-network/gocuke v0.6.2 h1:pHviZ0kKAq2U2hN2q3smKNxct6hS0mGByFMHGn
 github.com/regen-network/gocuke v0.6.2/go.mod h1:zYaqIHZobHyd0xOrHGPQjbhGJsuZ1oElx150u2o1xuk=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
-github.com/regen-network/regen-ledger/api/v2 v2.1.0 h1:3OFiMT4v58Po2q5VCwFSJCNwJm0sCZr4Grh0RDkEfBk=
-github.com/regen-network/regen-ledger/api/v2 v2.1.0/go.mod h1:BlpoWbNeDRpsmKe7y/r1m4zTTTog83mIdwJkOaOy4/0=
+github.com/regen-network/regen-ledger/api/v2 v2.2.0 h1:da7ofFx2Q1+kyseKxZHWWZqw8fHOP1Ti8uxDOdWFOr4=
+github.com/regen-network/regen-ledger/api/v2 v2.2.0/go.mod h1:acik56MozkBDT9WTnCJtOLF2gXOQfTdtgkV87ah/L5A=
 github.com/regen-network/regen-ledger/types/v2 v2.1.0 h1:2OnlTj8BaJp2gIv+h0i+llgCFMfGmsN53VuR/7sVows=
 github.com/regen-network/regen-ledger/types/v2 v2.1.0/go.mod h1:upGy8nkK/G3KpPDMKvGflT91ZBHUYbVeD/R91Ynj+Zg=
 github.com/retailnext/hllpp v1.0.1-0.20180308014038-101a6d2f8b52/go.mod h1:RDpi1RftBQPUCDRw6SmxeaREsAaRKnOclghuzp/WRzc=
