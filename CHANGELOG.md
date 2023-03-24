@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [#1789](https://github.com/regen-network/regen-ledger/pull/1789) Fix `REGEN_HOME` environment variable in `regen-sandbox`
 
+### app
+
+#### Added
+
+- [#1812](https://github.com/regen-network/regen-ledger/pull/1812) Add ecocredit batch metadata migration
+- [#1842](https://github.com/regen-network/regen-ledger/pull/1842) Add NCT basket date criteria migration
+
+#### Fixed
+
+- [#1857](https://github.com/regen-network/regen-ledger/pull/1857) Fix unregistered IBC client update proposal
+
 ### x/ecocredit
 
 #### Added
