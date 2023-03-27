@@ -1,4 +1,4 @@
-//nolint:revive,stylecheck
+//nolint:stylecheck
 package keeper
 
 import (
@@ -40,9 +40,10 @@ func (s *updateDateCriteriaSuite) TheAuthorityAddress(a string) {
 }
 
 func (s *updateDateCriteriaSuite) ABasketWithDenom(a string) {
-	s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
+	err := s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom: a,
 	})
+	require.NoError(s.t, err)
 }
 
 func (s *updateDateCriteriaSuite) AliceAttemptsToUpdateDateCriteriaWithMessage(a gocuke.DocString) {

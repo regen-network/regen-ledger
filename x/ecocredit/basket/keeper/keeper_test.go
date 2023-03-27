@@ -32,18 +32,17 @@ const (
 )
 
 type baseSuite struct {
-	t           gocuke.TestingT
-	db          ormdb.ModuleDB
-	ctx         context.Context
-	k           Keeper
-	ctrl        *gomock.Controller
-	addrs       []sdk.AccAddress
-	stateStore  api.StateStore
-	baseStore   baseapi.StateStore
-	basketStore api.StateStore
-	bankKeeper  *mocks.MockBankKeeper
-	storeKey    *storetypes.KVStoreKey
-	sdkCtx      sdk.Context
+	t          gocuke.TestingT
+	db         ormdb.ModuleDB
+	ctx        context.Context
+	k          Keeper
+	ctrl       *gomock.Controller
+	addrs      []sdk.AccAddress
+	stateStore api.StateStore
+	baseStore  baseapi.StateStore
+	bankKeeper *mocks.MockBankKeeper
+	storeKey   *storetypes.KVStoreKey
+	sdkCtx     sdk.Context
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
