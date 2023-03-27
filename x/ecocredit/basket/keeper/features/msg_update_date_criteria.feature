@@ -1,11 +1,43 @@
 Feature: Msg/UpdateDateCriteria
 
   Basket date criteria can be updated:
+  - when the basket exists
   - when the authority is the governance account
   - when the basket date criteria is empty
   - when the basket date criteria includes minimum start date
   - when the basket date criteria includes start date window
   - when the basket date criteria includes years in the past
+
+  Rule: The basket must exist
+
+    Scenario: the basket does not exist
+      Given the authority address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+      When alice attempts to update date criteria with message
+      """
+      {
+        "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "denom": "eco.uC.NCT",
+        "new_date_criteria": {
+          "years_in_the_past": 10
+        }
+      }
+      """
+      Then expect the error "basket with denom eco.uC.NCT does not exist: not found"
+
+    Scenario: the basket exists
+      Given the authority address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+      And a basket with denom "eco.uC.NCT"
+      When alice attempts to update date criteria with message
+      """
+      {
+        "authority": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "denom": "eco.uC.NCT",
+        "new_date_criteria": {
+          "years_in_the_past": 10
+        }
+      }
+      """
+      Then expect no error
 
   Rule: The authority address is the governance account
 
