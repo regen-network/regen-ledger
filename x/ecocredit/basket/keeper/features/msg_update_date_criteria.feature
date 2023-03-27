@@ -9,6 +9,21 @@ Feature: Msg/UpdateDateCriteria
 
   Rule: The authority address is the governance account
 
+    Scenario: the authority is not the governance account
+      Given the authority address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+      And a basket with denom "eco.uC.NCT"
+      When alice attempts to update date criteria with message
+      """
+      {
+        "authority": "regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s",
+        "denom": "eco.uC.NCT",
+        "new_date_criteria": {
+          "years_in_the_past": 10
+        }
+      }
+      """
+      Then expect the error "invalid authority: expected regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68, got regen1fua8speyxgempgy06gpfs0p4z32zznkqakm57s: expected gov account as only signer for proposal message"
+
     Scenario: the authority is the governance account
       Given the authority address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
       And a basket with denom "eco.uC.NCT"
