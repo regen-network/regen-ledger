@@ -74,3 +74,13 @@ message EventUpdateCurator {
   // denom is the basket denom.
   string denom = 1;
 }
+
+// EventUpdateDateCriteria is an event emitted when the basket date criteria is
+// updated.
+//
+// Since Revision 3
+message EventUpdateDateCriteria {
+
+  // denom is the basket denom.
+  string denom = 1;
+}
