@@ -1,4 +1,3 @@
-//nolint:stylecheck
 package keeper
 
 import (
