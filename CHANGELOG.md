@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#1785](https://github.com/regen-network/regen-ledger/pull/1785) Add `amount` and `origin_tx` to `EventBridgeReceive`
 - [#1837](https://github.com/regen-network/regen-ledger/pull/1837) Add `batch_denom` to `EventBridge`
 - [#1841](https://github.com/regen-network/regen-ledger/pull/1841) Add `--years-in-the-past` to `create-basket` command
+- [#1864](https://github.com/regen-network/regen-ledger/pull/1864) Add `MsgUpdateDateCriteria` to basket submodule
 
 #### Fixed
 
