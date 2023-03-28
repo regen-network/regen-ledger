@@ -49,18 +49,18 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addrs[0]
 	s.aliceTokenBalance = sdk.Coin{
-		Denom:  "eco.uC.NCT",
+		Denom:  testBasketDenom,
 		Amount: sdkMath.NewInt(100),
 	}
 	s.basketTokenSupply = sdk.Coin{
-		Denom:  "eco.uC.NCT",
+		Denom:  testBasketDenom,
 		Amount: sdkMath.NewInt(100),
 	}
 	s.classID = testClassID
 	s.creditTypeAbbrev = "C"
 	s.creditTypePrecision = 6
 	s.batchDenom = "C01-001-20200101-20210101-001"
-	s.basketDenom = "eco.uC.NCT"
+	s.basketDenom = testBasketDenom
 	s.tradableCredits = "100"
 }
 

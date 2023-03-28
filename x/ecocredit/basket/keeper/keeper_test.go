@@ -75,8 +75,6 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	assert.NilError(t, err)
 
 	s.k = NewKeeper(s.stateStore, s.baseStore, s.bankKeeper, moduleAddress, authority)
-	s.baseStore, err = baseapi.NewStateStore(s.db)
-	assert.NilError(t, err)
 
 	// add test addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()
