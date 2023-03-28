@@ -1021,10 +1021,10 @@ github.com/regen-network/cosmos-sdk v0.46.11-regen-1/go.mod h1:bG4AkW9bqc8ycrryy
 github.com/regen-network/gocuke v0.6.2 h1:pHviZ0kKAq2U2hN2q3smKNxct6hS0mGByFMHGnWA97M=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
-github.com/regen-network/regen-ledger/api/v2 v2.2.0 h1:da7ofFx2Q1+kyseKxZHWWZqw8fHOP1Ti8uxDOdWFOr4=
-github.com/regen-network/regen-ledger/api/v2 v2.2.0/go.mod h1:acik56MozkBDT9WTnCJtOLF2gXOQfTdtgkV87ah/L5A=
-github.com/regen-network/regen-ledger/types/v2 v2.2.0 h1:hq/bWDFeHrfBKGCLFWjP2nPulNL7DeiWMPQevlgxat8=
-github.com/regen-network/regen-ledger/types/v2 v2.2.0/go.mod h1:5sJ7dmCAE3LTjVCt9BtgpOeX5KyAZfgL0fOAlskoYZA=
+github.com/regen-network/regen-ledger/api/v2 v2.3.0 h1:JxIBz1TwTAxTGS+W++cNRYAixIoiQuwNYgJTiIcT0W0=
+github.com/regen-network/regen-ledger/api/v2 v2.3.0/go.mod h1:acik56MozkBDT9WTnCJtOLF2gXOQfTdtgkV87ah/L5A=
+github.com/regen-network/regen-ledger/types/v2 v2.3.0 h1:4UtZCAHI+oJgL0/1JKeICj8TOC2F9DV7kA68ukx+kPY=
+github.com/regen-network/regen-ledger/types/v2 v2.3.0/go.mod h1:G6DnrSX1ZpPlGVA+jnVrTtyh0QA2sGbjscqrDc4cE1g=
 github.com/regen-network/regen-ledger/x/data/v2 v2.2.0 h1:6r0rPB4CwBP04s7XpmbEw2q5luiOdeJPwjdMinAgvt0=
 github.com/regen-network/regen-ledger/x/data/v2 v2.2.0/go.mod h1:yTxBOqDQ3/6k4/+AUL5cARCm1d2+FkMAUa/EjbzmqXk=
 github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.2.0 h1:kObqthgS8LAV6a+3/LCp6GOQnH6JA7SBM4CpT8vtbmY=
