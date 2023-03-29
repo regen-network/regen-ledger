@@ -2,7 +2,7 @@
 
 The ecocredit module emits events upon the successful execution of messages. The events for the ecocredit module are defined in the proto files available on [Buf Schema Registry](https://buf.build/regen/regen-ledger).
 
-## Ecocredit Core
+## Ecocredit Module
 
 <!-- listed alphabetically -->
 
@@ -33,6 +33,7 @@ The ecocredit module emits events upon the successful execution of messages. The
 - [EventPut](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.EventPut)
 - [EventTake](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.EventTake)
 - [UpdateCurator](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.UpdateCurator)
+- [EventUpdateDateCriteria](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.EventUpdateDateCriteria)
 
 ## Marketplace Submodule
 
