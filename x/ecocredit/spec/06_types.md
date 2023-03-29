@@ -2,7 +2,7 @@
 
 The `ecocredit` module provides additional types used in multiple services or for governance.
 
-## Ecocredit Core
+## Ecocredit Module
 
 <!-- listed alphabetically -->
 

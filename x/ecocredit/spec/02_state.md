@@ -2,7 +2,7 @@
 
 The `ecocredit` module uses the `orm` package as an abstraction layer over the `KVStore` that enables the creation of database tables with primary and secondary keys. The tables used within the ecocredit module are defined in the proto files available on [Buf Schema Registry](https://buf.build/regen/regen-ledger).
 
-## Ecocredit Core
+## Ecocredit Module
 
 <!-- listed alphabetically -->
 
