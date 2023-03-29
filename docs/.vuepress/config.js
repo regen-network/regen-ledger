@@ -116,6 +116,7 @@ module.exports = {
             '/ledger/migrations/',
             '/ledger/migrations/v4.0-migration',
             '/ledger/migrations/v5.0-migration',
+            '/ledger/migrations/v5.1-migration',
           ],
         },
       ],
