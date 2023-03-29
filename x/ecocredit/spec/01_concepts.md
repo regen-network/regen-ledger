@@ -1,6 +1,6 @@
 # Concepts
 
-## Ecocredit Core
+## Ecocredit Module
 
 ### Credit Class
 

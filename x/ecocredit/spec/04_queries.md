@@ -4,7 +4,7 @@ The ecocredit module provides a query service for querying the state of the ecoc
 
 For examples on how to query state using gRPC and REST, see the [ecocredit client](07_client.md) documentation, and for examples using the `regen` binary, see [regen query ecocredit](../../commands/regen_query_ecocredit.html).
 
-## Ecocredit Core
+## Ecocredit Module
 
 <!-- listed alphabetically -->
 
