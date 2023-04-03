@@ -21,7 +21,7 @@ require (
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.7
-	github.com/thanhpk/randstr v1.0.4
+	github.com/thanhpk/randstr v1.0.5
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
 	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.30.0
