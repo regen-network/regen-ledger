@@ -6,7 +6,7 @@ SWAGGER_DIR=./app/client/docs
 SWAGGER_UI_DIR=${SWAGGER_DIR}/swagger-ui
 
 SDK_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/cosmos-sdk)
-IBC_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/ibc-go/v5)
+IBC_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/ibc-go/v7)
 
 SDK_RAW_URL=https://raw.githubusercontent.com/cosmos/cosmos-sdk/${SDK_VERSION}/client/docs/swagger-ui/swagger.yaml
 IBC_RAW_URL=https://raw.githubusercontent.com/cosmos/ibc-go/${IBC_VERSION}/docs/client/swagger-ui/swagger.yaml

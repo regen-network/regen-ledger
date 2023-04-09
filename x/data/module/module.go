@@ -9,7 +9,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	tmtypes "github.com/tendermint/tendermint/abci/types"
+	tmtypes "github.com/cometbft/cometbft/abci/types"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -78,8 +78,10 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 	a.keeper = impl
 }
 
-var _ module.AppModuleBasic = Module{}
-var _ module.AppModuleSimulation = &Module{}
+var (
+	_ module.AppModuleBasic      = Module{}
+	_ module.AppModuleSimulation = &Module{}
+)
 
 func NewModule(sk storeTypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {
 	return &Module{

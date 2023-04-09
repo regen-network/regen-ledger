@@ -1,7 +1,7 @@
 package ormutil
 
 import (
-	gogoproto "github.com/gogo/protobuf/proto"
+	gogoproto "github.com/cosmos/gogoproto/proto"
 	"google.golang.org/protobuf/proto"
 
 	queryv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"

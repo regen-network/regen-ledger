@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/jsonpb"
-	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/cosmos/gogoproto/jsonpb"
+	gogotypes "github.com/cosmos/gogoproto/types"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -341,7 +341,6 @@ func (s *createSuite) ExpectEventWithProperties(a gocuke.DocString) {
 }
 
 func (s *createSuite) createExpectCalls() {
-
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 

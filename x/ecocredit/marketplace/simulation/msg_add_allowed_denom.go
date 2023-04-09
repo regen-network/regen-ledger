@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/simapp"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -24,11 +24,11 @@ const WeightAddAllowedDenom = 100
 var TypeMsgAddAllowedDenom = types.MsgAddAllowedDenom{}.Route()
 
 func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
+	qryClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
 

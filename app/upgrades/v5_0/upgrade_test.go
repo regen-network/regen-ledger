@@ -8,8 +8,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/v5/app/testsuite"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"

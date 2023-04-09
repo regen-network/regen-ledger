@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gogo/protobuf/proto"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
-	dbm "github.com/tendermint/tm-db"
 
 	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -20,7 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"

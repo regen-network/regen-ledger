@@ -7,8 +7,8 @@ import (
 
 	"cosmossdk.io/math"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"

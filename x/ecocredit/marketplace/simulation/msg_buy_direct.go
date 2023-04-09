@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	"cosmossdk.io/simapp"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -24,7 +24,8 @@ var TypeMsgBuyDirect = types.MsgBuyDirect{}.Route()
 
 // SimulateMsgBuyDirect generates a Marketplace/MsgBuyDirect with random values.
 func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+	_ basetypes.QueryServer, mktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -98,6 +99,5 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		return utils.GenAndDeliverTxWithRandFees(r, txCtx)
-
 	}
 }

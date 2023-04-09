@@ -7,12 +7,12 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
+	"github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/x/intertx"
 	intertxClient "github.com/regen-network/regen-ledger/x/intertx/client"
@@ -20,9 +20,7 @@ import (
 	v1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )
 
-var (
-	_ module.AppModule = AppModule{}
-)
+var _ module.AppModule = AppModule{}
 
 // AppModule implements the AppModule interface for the capability module.
 type AppModule struct {

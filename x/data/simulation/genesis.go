@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -63,7 +63,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 }
 
 func generateGenesisState(ormCtx context.Context, r *rand.Rand, ss api.StateStore,
-	simState *module.SimulationState) error {
+	simState *module.SimulationState,
+) error {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		return err

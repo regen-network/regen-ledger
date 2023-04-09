@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/gogo/protobuf/jsonpb"
-	gogoproto "github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/jsonpb"
+	gogoproto "github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -946,7 +946,8 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 
 // setupStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
 func setupStateAndExportJSON(t *testing.T,
-	setupFunc func(ctx context.Context, ss baseapi.StateStore)) json.RawMessage {
+	setupFunc func(ctx context.Context, ss baseapi.StateStore),
+) json.RawMessage {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)

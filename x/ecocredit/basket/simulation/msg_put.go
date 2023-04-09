@@ -5,9 +5,9 @@ import (
 	"math/rand"
 	"strings"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	helpers "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
@@ -26,7 +26,8 @@ var TypeMsgPut = types.MsgPut{}.Route()
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
 func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	rest "github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/regen-network/regen-ledger/x/data/v2"

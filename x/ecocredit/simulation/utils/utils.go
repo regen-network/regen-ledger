@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	helpers "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -68,7 +68,6 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 		[]uint64{account.GetSequence()},
 		txCtx.SimAccount.PrivKey,
 	)
-
 	if err != nil {
 		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
 	}
@@ -107,7 +106,8 @@ func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient basetypes.QueryS
 }
 
 func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
-	accs []simtypes.Account, addr, msgType string) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
+	accs []simtypes.Account, addr, msgType string,
+) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
 	accAddr, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
 		return nil, nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err

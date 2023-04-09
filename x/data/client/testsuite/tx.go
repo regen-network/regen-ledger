@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
@@ -62,7 +62,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	info2, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
-	var commonFlags = []string{
+	commonFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
@@ -216,7 +216,7 @@ func (s *IntegrationTestSuite) TestTxAnchor() {
 	clientCtx.FromAddress = val.Address
 	require := s.Require()
 
-	var commonFlags = []string{
+	commonFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
@@ -269,7 +269,7 @@ func (s *IntegrationTestSuite) TestTxAttest() {
 	clientCtx.FromAddress = val.Address
 	require := s.Require()
 
-	var commonFlags = []string{
+	commonFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
@@ -336,7 +336,7 @@ func (s *IntegrationTestSuite) TestDefineResolverCmd() {
 	clientCtx := val.ClientCtx
 	require := s.Require()
 
-	var commonFlags = []string{
+	commonFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
@@ -390,7 +390,7 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 	clientCtx := val.ClientCtx
 	require := s.Require()
 
-	var commonFlags = []string{
+	commonFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),

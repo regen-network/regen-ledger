@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/suite"
-	dbm "github.com/tendermint/tm-db"
 
 	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -67,9 +67,7 @@ type basketServer struct {
 	baskettypes.MsgClient
 }
 
-var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
-)
+var createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
 
 func NewIntegrationTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
@@ -1026,7 +1024,6 @@ func (s *IntegrationTestSuite) assertSellerBalancesUpdated(accBefore, accAfter a
 }
 
 func (s *IntegrationTestSuite) assertBuyerBalancesUpdated(accBefore, accAfter accountInfo, tradable, retired math.Dec, totalCost sdk.Coin) {
-
 	expectedTradable := accBefore.tradable
 	expectedRetired := accBefore.retired
 

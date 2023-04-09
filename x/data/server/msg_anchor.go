@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	gogotypes "github.com/gogo/protobuf/types"
+	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"cosmossdk.io/errors"
 

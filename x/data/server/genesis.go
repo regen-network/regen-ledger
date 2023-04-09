@@ -3,10 +3,10 @@ package server
 import (
 	"encoding/json"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // InitGenesis performs genesis initialization for the data module. It

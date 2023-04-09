@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	"cosmossdk.io/simapp"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -25,7 +25,8 @@ var TypeMsgUpdateSellOrder = types.MsgUpdateSellOrders{}.Route()
 
 // SimulateMsgUpdateSellOrder generates a Marketplace/MsgUpdateSellOrder with random values.
 func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
+	_ basetypes.QueryServer, mktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

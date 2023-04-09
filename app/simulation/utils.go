@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"cosmossdk.io/simapp"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
