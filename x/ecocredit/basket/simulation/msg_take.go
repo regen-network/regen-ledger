@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -25,7 +25,8 @@ var TypeMsgTake = types.MsgTake{}.Route()
 
 // SimulateMsgTake generates a Basket/MsgTake with random values.
 func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+	_ basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

@@ -12,11 +12,11 @@ import (
 
 	sdkMath "cosmossdk.io/math"
 
-	tmconfig "github.com/tendermint/tendermint/config"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	tmconfig "github.com/cometbft/cometbft/config"
+	tmos "github.com/cometbft/cometbft/libs/os"
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+	"github.com/cometbft/cometbft/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -139,7 +139,6 @@ Example:
 			args.algo, _ = cmd.Flags().GetString(flags.FlagKeyAlgorithm)
 
 			return initTestnetFiles(clientCtx, cmd, config, mbm, genBalIterator, args)
-
 		},
 	}
 
@@ -165,7 +164,6 @@ Example:
 	regen testnet --v 4 --output-dir ./.localnet
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-
 			args := startArgs{}
 			args.outputDir, _ = cmd.Flags().GetString(flagOutputDir)
 			args.chainID, _ = cmd.Flags().GetString(flags.FlagChainID)
@@ -179,7 +177,6 @@ Example:
 			args.printMnemonic, _ = cmd.Flags().GetBool(flagPrintMnemonic)
 
 			return startTestnet(cmd, args)
-
 		},
 	}
 
@@ -192,7 +189,7 @@ Example:
 	return cmd
 }
 
-const nodeDirPerm = 0755
+const nodeDirPerm = 0o755
 
 // initTestnetFiles initializes testnet files for a testnet to be run in a separate process
 func initTestnetFiles(
@@ -203,7 +200,6 @@ func initTestnetFiles(
 	genBalIterator banktypes.GenesisBalancesIterator,
 	args initArgs,
 ) error {
-
 	if args.chainID == "" {
 		args.chainID = "chain-" + tmrand.NewRand().Str(6)
 	}
@@ -362,7 +358,6 @@ func initGenFiles(
 	genAccounts []authtypes.GenesisAccount, genBalances []banktypes.Balance,
 	genFiles []string, numValidators int,
 ) error {
-
 	appGenState := mbm.DefaultGenesis(clientCtx.Codec)
 
 	// set the accounts in the genesis state
@@ -412,7 +407,6 @@ func collectGenFiles(
 	nodeIDs []string, valPubKeys []cryptotypes.PubKey, numValidators int,
 	outputDir, nodeDirPrefix, nodeDaemonHome string, genBalIterator banktypes.GenesisBalancesIterator,
 ) error {
-
 	var appState json.RawMessage
 	genTime := tmtime.Now()
 
@@ -480,12 +474,12 @@ func calculateIP(ip string, i int) (string, error) {
 func writeFile(name string, dir string, contents []byte) error {
 	file := filepath.Join(dir, name)
 
-	err := tmos.EnsureDir(dir, 0755)
+	err := tmos.EnsureDir(dir, 0o755)
 	if err != nil {
 		return err
 	}
 
-	err = tmos.WriteFile(file, contents, 0644)
+	err = tmos.WriteFile(file, contents, 0o644)
 	if err != nil {
 		return err
 	}

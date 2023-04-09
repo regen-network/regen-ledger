@@ -3,9 +3,9 @@ package simulation
 import (
 	"math/rand"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -24,7 +24,8 @@ const WeightSetClassCreatorAllowlist = 33
 
 // SimulateMsgSetClassCreatorAllowlist generates a MsgSetClassCreatorAllowlist with random values.
 func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
-	_ types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	_ types.QueryServer, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

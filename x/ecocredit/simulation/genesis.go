@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
@@ -197,7 +197,8 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 }
 
 func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore,
-	basketStore basketapi.StateStore, ms marketplaceapi.StateStore) error {
+	basketStore basketapi.StateStore, ms marketplaceapi.StateStore,
+) error {
 	accs := simState.Accounts
 	r := simState.Rand
 

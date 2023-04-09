@@ -9,7 +9,6 @@ require (
 	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/gogoproto v1.4.7
-	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.5.9
@@ -20,7 +19,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/tendermint v0.34.27
-	github.com/tendermint/tm-db v0.6.7
+	github.com/cometbft/cometbft-db v0.6.7
 	github.com/thanhpk/randstr v1.0.5
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
 	google.golang.org/grpc v1.54.0
@@ -171,23 +170,9 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.11-regen-1
+replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.1
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
-// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.11
-replace github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/86
-replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.7
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/94
-replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/105
-replace golang.org/x/net => golang.org/x/net v0.7.0
 
 replace github.com/regen-network/regen-ledger/api/v2 => ../../api
 

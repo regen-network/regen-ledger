@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
+	"github.com/cosmos/gogoproto/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -46,8 +46,10 @@ func TestValidateDateCriteria(t *testing.T) {
 	}{
 		{
 			"bad-min_start_date",
-			DateCriteria{MinStartDate: &types.Timestamp{
-				Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix()},
+			DateCriteria{
+				MinStartDate: &types.Timestamp{
+					Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix(),
+				},
 			},
 			"min_start_date must be after",
 		},

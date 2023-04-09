@@ -16,7 +16,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -26,7 +26,6 @@ import (
 
 // Factory defines an interface for creating server test fixtures
 type Factory interface {
-
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
 	Setup() Fixture
 
@@ -43,7 +42,6 @@ type Factory interface {
 // Fixture defines an interface for interacting with app services in tests
 // independent of the backend.
 type Fixture interface {
-
 	// Context is the context.Context to be used with gRPC generated client code.
 	Context() context.Context
 

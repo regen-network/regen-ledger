@@ -29,7 +29,7 @@ require (
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20200815110645-5c35d600f0ca // indirect
-	github.com/tendermint/tm-db v0.6.7 // indirect
+	github.com/cometbft/cometbft-db v0.6.7 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect
 	golang.org/x/net v0.8.0 // indirect

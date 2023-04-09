@@ -3,7 +3,7 @@ package v1
 import (
 	"fmt"
 
-	proto "github.com/gogo/protobuf/proto"
+	proto "github.com/cosmos/gogoproto/proto"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -57,7 +57,6 @@ func (m MsgSubmitTx) Type() string {
 
 // NewMsgSubmitTx creates a new MsgSubmitTx instance
 func NewMsgSubmitTx(owner string, connectionID string, msg sdk.Msg) *MsgSubmitTx {
-
 	anyMsg, err := PackTxMsgAny(msg)
 	if err != nil {
 		panic(err)

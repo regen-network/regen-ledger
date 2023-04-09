@@ -7,14 +7,14 @@ import (
 
 	"cosmossdk.io/errors"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/proto"
 	"google.golang.org/grpc/encoding"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/cometbft/cometbft/abci/types"
 )
 
 type router struct {
@@ -99,7 +99,6 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			cacheMs.Write()
 		}
 		return nil
-
 	}, nil
 }
 

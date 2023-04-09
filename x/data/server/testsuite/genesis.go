@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	gogoproto "github.com/gogo/protobuf/proto"
+	gogoproto "github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -94,7 +94,6 @@ func (s *GenesisTestSuite) TestInitGenesis() {
 	exported, err := s.fixture.ExportGenesis(s.genesisCtx)
 	require.NoError(err)
 	require.NotNil(exported)
-
 }
 
 func (s *GenesisTestSuite) TearDownSuite() {

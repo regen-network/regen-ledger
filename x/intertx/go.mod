@@ -4,10 +4,9 @@ go 1.19
 
 require (
 	cosmossdk.io/errors v1.0.0-beta.7
-	github.com/cosmos/cosmos-sdk v0.46.7
+	github.com/cosmos/cosmos-sdk v0.47.1
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
-	github.com/cosmos/ibc-go/v5 v5.2.0
-	github.com/gogo/protobuf v1.3.3
+	github.com/cosmos/ibc-go/v7 v7.0.0
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -17,8 +16,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2
-	github.com/tendermint/tendermint v0.34.27
-	github.com/tendermint/tm-db v0.6.7
+	github.com/cometbft/cometbft-db v0.7.0
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
 	google.golang.org/grpc v1.54.0
 	gotest.tools/v3 v3.4.0
@@ -123,19 +121,8 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.11-regen-1
-
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.11
-replace github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/94
-replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/105
-replace golang.org/x/net => golang.org/x/net v0.7.0
+replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.1
 
 replace github.com/regen-network/regen-ledger/types/v2 => ../../types

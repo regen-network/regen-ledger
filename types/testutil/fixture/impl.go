@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

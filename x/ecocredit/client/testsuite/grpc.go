@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	rest "github.com/cosmos/cosmos-sdk/testutil"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )

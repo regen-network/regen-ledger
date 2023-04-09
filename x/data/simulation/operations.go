@@ -6,10 +6,10 @@ import (
 	"math/rand"
 	"strings"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	helpers "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -43,8 +43,8 @@ const (
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak data.AccountKeeper, bk data.BankKeeper,
-	qryClient data.QueryServer) simulation.WeightedOperations {
-
+	qryClient data.QueryServer,
+) simulation.WeightedOperations {
 	var (
 		weightMsgAnchor           int
 		weightMsgAttest           int
@@ -269,7 +269,8 @@ func genResolverURL(r *rand.Rand) string {
 
 // SimulateMsgRegisterResolver generates a MsgRegisterResolver with random values.
 func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
-	qryClient data.QueryServer) simtypes.Operation {
+	qryClient data.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

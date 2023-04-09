@@ -8,13 +8,13 @@ import (
 	"math/rand"
 	"testing"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	"cosmossdk.io/simapp"
+	helpers "github.com/cosmos/cosmos-sdk/testutil/sims"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
 )

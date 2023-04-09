@@ -3,8 +3,8 @@ package simulation
 import (
 	"math/rand"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -23,11 +23,11 @@ const WeightRetire = 80
 
 // SimulateMsgRetire generates a MsgRetire with random values.
 func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		ctx := sdk.WrapSDKContext(sdkCtx)
 		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgRetire)
 		if class == nil {

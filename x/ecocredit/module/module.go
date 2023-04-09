@@ -8,7 +8,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -67,7 +67,6 @@ func NewModule(
 	legacySubspace paramtypes.Subspace,
 	govKeeper ecocredit.GovKeeper,
 ) *Module {
-
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
 	if !legacySubspace.HasKeyTable() {
 		legacySubspace = legacySubspace.WithKeyTable(basetypes.ParamKeyTable())
