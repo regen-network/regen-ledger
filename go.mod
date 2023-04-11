@@ -11,10 +11,6 @@ require (
 	github.com/cosmos/ibc-go/v7 v7.0.0
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types/v2 v2.0.0
-	github.com/regen-network/regen-ledger/x/data/v2 v2.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/x/intertx v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.7.0
@@ -139,7 +135,6 @@ require (
 	github.com/prometheus/common v0.40.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-	github.com/regen-network/regen-ledger/api/v2 v2.0.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect

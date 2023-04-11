@@ -18,7 +18,7 @@ import (
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
 func (app *RegenApp) ExportAppStateAndValidators(
-	forZeroHeight bool, jailAllowedAddrs []string,
+	forZeroHeight bool, jailAllowedAddrs []string, modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	// as if they could withdraw from the start of the next block
 	ctx := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
@@ -31,11 +31,7 @@ func (app *RegenApp) ExportAppStateAndValidators(
 		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := map[string]json.RawMessage{}
-	for name, v := range app.ModuleManager.ExportGenesis(ctx, app.appCodec) {
-		genState[name] = v
-	}
-
+	genState := app.mm.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err

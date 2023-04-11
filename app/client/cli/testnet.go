@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 
 	sdkMath "cosmossdk.io/math"
 
@@ -79,10 +80,19 @@ type startArgs struct {
 
 func addTestnetFlagsToCmd(cmd *cobra.Command) {
 	cmd.Flags().Int(flagNumValidators, 4, "Number of validators to initialize the testnet with")
-	cmd.Flags().StringP(flagOutputDir, "o", "./.localnet", "Directory to store initialization data for the testnet")
+	cmd.Flags().StringP(flagOutputDir, "o", "./.testnets", "Directory to store initialization data for the testnet")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
-	cmd.Flags().String(server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom), "Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01uregen)")
-	cmd.Flags().String(flags.FlagKeyAlgorithm, string(hd.Secp256k1Type), "Key signing algorithm to generate keys for")
+	cmd.Flags().String(server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom), "Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01photino,0.001stake)")
+	cmd.Flags().String(flags.FlagKeyType, string(hd.Secp256k1Type), "Key signing algorithm to generate keys for")
+
+	// support old flags name for backwards compatibility
+	cmd.Flags().SetNormalizeFunc(func(f *pflag.FlagSet, name string) pflag.NormalizedName {
+		if name == "algo" {
+			name = flags.FlagKeyType
+		}
+
+		return pflag.NormalizedName(name)
+	})
 }
 
 // NewTestnetCmd creates a root testnet command with subcommands to run an in-process testnet or initialize
@@ -102,7 +112,7 @@ func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBala
 	return testnetCmd
 }
 
-// get cmd to initialize all files for tendermint testnet and application
+// testnetInitFilesCmd returns a cmd to initialize all files for tendermint testnet and application
 func testnetInitFilesCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init-files",
@@ -116,7 +126,7 @@ or a similar setup where each node has a manually configurable IP address.
 Note, strict routability for addresses is turned off in the config file.
 
 Example:
-	regen testnet init-files --v 4 --output-dir ./.localnet --starting-ip-address 192.168.10.2
+	simd testnet init-files --v 4 --output-dir ./.testnets --starting-ip-address 192.168.10.2
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -136,7 +146,7 @@ Example:
 			args.nodeDaemonHome, _ = cmd.Flags().GetString(flagNodeDaemonHome)
 			args.startingIPAddress, _ = cmd.Flags().GetString(flagStartingIPAddress)
 			args.numValidators, _ = cmd.Flags().GetInt(flagNumValidators)
-			args.algo, _ = cmd.Flags().GetString(flags.FlagKeyAlgorithm)
+			args.algo, _ = cmd.Flags().GetString(flags.FlagKeyType)
 
 			return initTestnetFiles(clientCtx, cmd, config, mbm, genBalIterator, args)
 		},
@@ -144,14 +154,14 @@ Example:
 
 	addTestnetFlagsToCmd(cmd)
 	cmd.Flags().String(flagNodeDirPrefix, "node", "Prefix the directory name for each node with (node results in node0, node1, ...)")
-	cmd.Flags().String(flagNodeDaemonHome, "regen", "Home directory of the node's daemon configuration")
+	cmd.Flags().String(flagNodeDaemonHome, "simd", "Home directory of the node's daemon configuration")
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
 
 	return cmd
 }
 
-// get cmd to start multi validator in-process testnet
+// testnetStartCmd returns a cmd to start multi validator in-process testnet
 func testnetStartCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start",
@@ -161,7 +171,7 @@ and generate "v" directories, populated with necessary validator configuration f
 (private validator, genesis, config, etc.).
 
 Example:
-	regen testnet --v 4 --output-dir ./.localnet
+	simd testnet --v 4 --output-dir ./.testnets
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			args := startArgs{}
@@ -169,7 +179,7 @@ Example:
 			args.chainID, _ = cmd.Flags().GetString(flags.FlagChainID)
 			args.minGasPrices, _ = cmd.Flags().GetString(server.FlagMinGasPrices)
 			args.numValidators, _ = cmd.Flags().GetInt(flagNumValidators)
-			args.algo, _ = cmd.Flags().GetString(flags.FlagKeyAlgorithm)
+			args.algo, _ = cmd.Flags().GetString(flags.FlagKeyType)
 			args.enableLogging, _ = cmd.Flags().GetBool(flagEnableLogging)
 			args.rpcAddress, _ = cmd.Flags().GetString(flagRPCAddress)
 			args.apiAddress, _ = cmd.Flags().GetString(flagAPIAddress)
@@ -426,7 +436,7 @@ func collectGenFiles(
 			return err
 		}
 
-		nodeAppState, err := genutil.GenAppStateFromConfig(clientCtx.Codec, clientCtx.TxConfig, nodeConfig, initCfg, *genDoc, genBalIterator)
+		nodeAppState, err := genutil.GenAppStateFromConfig(clientCtx.Codec, clientCtx.TxConfig, nodeConfig, initCfg, *genDoc, genBalIterator, genutiltypes.DefaultMessageValidator)
 		if err != nil {
 			return err
 		}

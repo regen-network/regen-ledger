@@ -224,23 +224,23 @@ type RegenApp struct {
 	AccountKeeper       authkeeper.AccountKeeper
 	BankKeeper          bankkeeper.Keeper
 	CapabilityKeeper    *capabilitykeeper.Keeper
-	StakingKeeper       stakingkeeper.Keeper
+	StakingKeeper       *stakingkeeper.Keeper
 	SlashingKeeper      slashingkeeper.Keeper
 	MintKeeper          mintkeeper.Keeper
 	DistrKeeper         distrkeeper.Keeper
 	GovKeeper           govkeeper.Keeper
-	CrisisKeeper        crisiskeeper.Keeper
-	UpgradeKeeper       upgradekeeper.Keeper
+	CrisisKeeper        *crisiskeeper.Keeper
+	UpgradeKeeper       *upgradekeeper.Keeper
 	ParamsKeeper        paramskeeper.Keeper
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	ICAHostKeeper       icahostkeeper.Keeper
 	IBCFeeKeeper        ibcfeekeeper.Keeper
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	InterTxKeeper       intertxkeeper.Keeper
-	EvidenceKeeper      evidencekeeper.Keeper
 	IBCTransferKeeper   ibctransferkeeper.Keeper
-	FeeGrantKeeper      feegrantkeeper.Keeper
 	AuthzKeeper         authzkeeper.Keeper
+	EvidenceKeeper      evidencekeeper.Keeper
+	FeeGrantKeeper      feegrantkeeper.Keeper
 	GroupKeeper         groupkeeper.Keeper
 
 	// make scoped keepers public for test purposes
@@ -251,7 +251,7 @@ type RegenApp struct {
 	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
 
 	// the module manager
-	ModuleManager *module.Manager
+	mm *module.Manager
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -261,8 +261,7 @@ type RegenApp struct {
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
-func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
-	homePath string, invCheckPeriod uint, encodingConfig EncodingConfig,
+func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *RegenApp {

@@ -27,7 +27,7 @@ func TestInitCmd(t *testing.T) {
 	err = os.Mkdir(nodeHome, 0755)
 	require.NoError(t, err)
 
-	rootCmd, _ := cli.NewRootCmd()
+	rootCmd := cli.NewRootCmd()
 	rootCmd.SetArgs([]string{
 		"init",
 		"test",

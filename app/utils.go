@@ -29,7 +29,7 @@ func SimulationOperations(app *RegenApp, cdc codec.Codec, config simulation.Conf
 		}
 	}
 
-	simState.ParamChanges = app.SimulationManager().GenerateParamChanges(config.Seed)
-	simState.Contents = app.SimulationManager().GetProposalContents(simState)
+	simState.LegacyProposalContents = app.SimulationManager().GetProposalContents(simState) //nolint:staticcheck
+	simState.ProposalMsgs = app.SimulationManager().GetProposalMsgs(simState)
 	return app.SimulationManager().WeightedOperations(simState)
 }
