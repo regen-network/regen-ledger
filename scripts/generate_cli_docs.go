@@ -10,7 +10,7 @@ import (
 
 // generate documentation for all regen app commands
 func main() {
-	rootCmd, _ := cli.NewRootCmd()
+	rootCmd := cli.NewRootCmd()
 	err := doc.GenMarkdownTree(rootCmd, "commands")
 	if err != nil {
 		log.Fatal(err)
