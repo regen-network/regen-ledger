@@ -12,7 +12,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/v5/app/testsuite"
-	ecocreditv1 "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
 type UpgradeTestSuite struct {
@@ -38,10 +38,10 @@ func (suite *UpgradeTestSuite) TestV5Upgrade() {
 	suite.Require().True(exists)
 
 	// force the app to have params so migration does not fail
-	ss, ok := suite.App.ParamsKeeper.GetSubspace(ecocreditv1.ModuleName)
+	ss, ok := suite.App.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
 	assert.True(suite.T(), ok)
 	fees := sdk.NewCoins(sdk.NewInt64Coin("uregen", 10))
-	ss.SetParamSet(suite.Ctx, &ecocreditv1.Params{CreditClassFee: fees, BasketFee: fees})
+	ss.SetParamSet(suite.Ctx, &ecocredit.Params{CreditClassFee: fees, BasketFee: fees})
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(dummyUpgradeHeight)
 	suite.Require().NotPanics(func() {
