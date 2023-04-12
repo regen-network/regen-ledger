@@ -60,7 +60,7 @@ func setup(t *testing.T) fixture.Factory {
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
+		cdc, authKey, authtypes.ProtoBaseAccount, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen", authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(

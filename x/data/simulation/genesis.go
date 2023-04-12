@@ -24,9 +24,8 @@ import (
 func RandomizedGenState(simState *module.SimulationState) {
 	r := simState.Rand
 
-	db := dbm.NewMemDB()
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
-		CommitmentStore: db,
+		CommitmentStore: dbm.NewMemDB(),
 	})
 
 	ormdb, err := ormdb.NewModuleDB(&data.ModuleSchema, ormdb.ModuleDBOptions{})
