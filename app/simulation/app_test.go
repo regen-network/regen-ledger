@@ -8,13 +8,20 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"cosmossdk.io/simapp"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
+	"github.com/regen-network/regen-ledger/v5/app/testsuite"
 )
 
+const SimAppChainID = "simulation-app"
+
 func TestApp(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("app", "simulation")
+	config := simcli.NewConfigFromFlags()
+	config.ChainID = SimAppChainID
+
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app", "simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping app simulation")
 	}
@@ -30,24 +37,22 @@ func TestApp(t *testing.T) {
 		db,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
-		simapp.FlagPeriodValue,
-		regen.MakeEncodingConfig(),
-		simapp.EmptyAppOptions{},
-		fauxMerkleModeOpt,
+		testsuite.EmptyAppOptions{},
 	)
 	require.Equal(t, regen.AppName, app.Name())
 
 	// run randomized simulation
-	_, simParams, simErr := simulateFromSeed(t, app, config)
+	_, simParams, simErr := simulateFromSeed(
+		t,
+		app,
+		config)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err = simtestutil.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		simtestutil.PrintStats(db)
 	}
 }

@@ -4,19 +4,21 @@ import (
 	"os"
 	"testing"
 
-	"cosmossdk.io/simapp"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
 )
 
 // Get flags every time the simulator is run
 func init() {
-	simapp.GetSimulatorFlags()
+	simcli.GetSimulatorFlags()
 }
 
 type StoreKeysPrefixes struct {
@@ -42,7 +44,7 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 		t,
 		os.Stdout,
 		app.BaseApp,
-		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
+		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
 		simtypes.RandomAccounts,
 		regen.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),

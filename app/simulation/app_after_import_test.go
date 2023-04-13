@@ -10,17 +10,21 @@ import (
 	"github.com/stretchr/testify/require"
 
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 
-	"cosmossdk.io/simapp"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
+	"github.com/regen-network/regen-ledger/v5/app/testsuite"
 )
 
 func TestAppAfterImport(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-after-import-1", "sim-1")
+	config := simcli.NewConfigFromFlags()
+	config.ChainID = SimAppChainID
+
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app-import-export", "sim-1", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping app-after-import simulation")
 	}
@@ -36,12 +40,7 @@ func TestAppAfterImport(t *testing.T) {
 		db,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
-		simapp.FlagPeriodValue,
-		regen.MakeEncodingConfig(),
-		simapp.EmptyAppOptions{},
-		fauxMerkleModeOpt,
+		testsuite.EmptyAppOptions{},
 	)
 	require.Equal(t, regen.AppName, app.Name())
 
@@ -49,12 +48,12 @@ func TestAppAfterImport(t *testing.T) {
 	stopEarly, simParams, simErr := simulateFromSeed(t, app, config)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err = simtestutil.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		simtestutil.PrintStats(db)
 	}
 
 	if stopEarly {
@@ -64,12 +63,12 @@ func TestAppAfterImport(t *testing.T) {
 
 	fmt.Printf("exporting genesis...\n")
 
-	exported, err := app.ExportAppStateAndValidators(true, []string{})
+	exported, err := app.ExportAppStateAndValidators(true, []string{}, []string{})
 	require.NoError(t, err)
 
 	fmt.Printf("importing genesis...\n")
 
-	_, newDB, newDir, _, _, err := simapp.SetupSimulation("app-after-import-2", "sim-2")
+	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "app-import-export", "sim-1", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
@@ -78,16 +77,11 @@ func TestAppAfterImport(t *testing.T) {
 	}()
 
 	newApp := regen.NewRegenApp(
-		log.NewNopLogger(),
-		newDB,
+		logger,
+		db,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
-		simapp.FlagPeriodValue,
-		regen.MakeEncodingConfig(),
-		simapp.EmptyAppOptions{},
-		fauxMerkleModeOpt,
+		testsuite.EmptyAppOptions{},
 	)
 	require.Equal(t, regen.AppName, newApp.Name())
 
@@ -99,7 +93,7 @@ func TestAppAfterImport(t *testing.T) {
 		t,
 		os.Stdout,
 		newApp.BaseApp,
-		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
+		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
 		simtypes.RandomAccounts,
 		regen.SimulationOperations(newApp, newApp.AppCodec(), config),
 		app.ModuleAccountAddrs(),

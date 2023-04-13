@@ -876,3 +876,8 @@ func BlockedAddresses() map[string]bool {
 func (app *RegenApp) RegisterNodeService(clientCtx client.Context) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
+
+// DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
+func (a *RegenApp) DefaultGenesis() map[string]json.RawMessage {
+	return ModuleBasics.DefaultGenesis(a.appCodec)
+}

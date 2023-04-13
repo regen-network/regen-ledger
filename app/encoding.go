@@ -1,11 +1,11 @@
 package app
 
 import (
-	"cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	"github.com/regen-network/regen-ledger/v5/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig

@@ -18,9 +18,10 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
 	"github.com/regen-network/regen-ledger/v5/app"
+	"github.com/regen-network/regen-ledger/v5/app/params"
 )
 
-func NewRegenAppConstructor(encCfg app.EncodingConfig) network.AppConstructor {
+func NewRegenAppConstructor(encCfg params.EncodingConfig) network.AppConstructor {
 	return func(val network.Validator) servertypes.Application {
 		return app.NewRegenApp(
 			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,

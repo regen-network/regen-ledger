@@ -26,12 +26,13 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/regen-network/regen-ledger/v5/app"
+	"github.com/regen-network/regen-ledger/v5/app/params"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
 // RegenApp testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var DefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
@@ -54,7 +55,7 @@ type SetupOptions struct {
 	InvCheckPeriod     uint
 	HomePath           string
 	SkipUpgradeHeights map[int64]bool
-	EncConfig          app.EncodingConfig
+	EncConfig          params.EncodingConfig
 	AppOpts            types.AppOptions
 }
 
@@ -89,7 +90,7 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
 
-	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.SkipUpgradeHeights, options.HomePath, options.InvCheckPeriod, options.EncConfig, options.AppOpts)
+	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.AppOpts)
 	genesisState := app.NewDefaultGenesisState(regenApp.AppCodec())
 	genesisState = genesisStateWithValSet(t, regenApp, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
 
@@ -169,7 +170,7 @@ func genesisStateWithValSet(t *testing.T,
 	})
 
 	// update total supply
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	return genesisState

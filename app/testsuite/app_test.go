@@ -34,7 +34,7 @@ func TestSimAppExportAndBlockedAddrs(t *testing.T) {
 	regenApp.Commit()
 
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := app.NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, app.DefaultNodeHome, 0, encCfg, EmptyAppOptions{})
-	_, err := app2.ExportAppStateAndValidators(false, []string{})
+	app2 := app.NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, EmptyAppOptions{})
+	_, err := app2.ExportAppStateAndValidators(false, []string{}, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }
