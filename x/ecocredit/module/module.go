@@ -92,16 +92,6 @@ func (m Module) Name() string {
 	return ecocredit.ModuleName
 }
 
-// Route implements AppModule/Route.
-func (m Module) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-// QuerierRoute implements AppModule/QuerierRoute.
-func (m Module) QuerierRoute() string {
-	return ecocredit.ModuleName
-}
-
 // RegisterInvariants implements AppModule/RegisterInvariants.
 func (m Module) RegisterInvariants(reg sdk.InvariantRegistry) {
 	m.Keeper.RegisterInvariants(reg)
@@ -265,9 +255,6 @@ func (m Module) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 		panic(err)
 	}
 }
-
-// LegacyQuerierHandler implements AppModule/LegacyQuerierHandler.
-func (m Module) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 /* -------------------- AppModuleSimulation -------------------- */
 

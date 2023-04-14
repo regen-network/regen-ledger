@@ -214,7 +214,6 @@ cosmossdk.io/store v0.1.0-alpha.1.0.20230328185921-37ba88872dbc h1:9piuA+NYmhe+S
 cosmossdk.io/store v0.1.0-alpha.1.0.20230328185921-37ba88872dbc/go.mod h1:UFF5rmjN7WYVfxo6ArdY/l1+yyWMURBWOmSJypGqFHQ=
 cosmossdk.io/tools/rosetta v0.2.1 h1:ddOMatOH+pbxWbrGJKRAawdBkPYLfKXutK9IETnjYxw=
 cosmossdk.io/tools/rosetta v0.2.1/go.mod h1:Pqdc1FdvkNV3LcNIkYWt2RQY6IP1ge6YWZk8MhhO9Hw=
-cosmossdk.io/x/feegrant v0.0.0-20230413173746-13493d364555 h1:LwDa86NmzfkIO5ngxeauYt5kSsnN8CbkYpghFjnkDgc=
 cosmossdk.io/x/feegrant v0.0.0-20230413173746-13493d364555/go.mod h1:oWbG/dltVIjb6FNd9+CzOsbpRYh+pS0DDa8cS3DUZng=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 filippo.io/edwards25519 v1.0.0-rc.1/go.mod h1:N1IkdkCkiLB6tki+MYJoSx2JTY9NUlxZE7eHn5EwJns=
@@ -414,6 +413,8 @@ github.com/cosmos/cosmos-db v1.0.0-rc.1 h1:SjnT8B6WKMW9WEIX32qMhnEEKcI7ZP0+G1Sa9
 github.com/cosmos/cosmos-db v1.0.0-rc.1/go.mod h1:Dnmk3flSf5lkwCqvvjNpoxjpXzhxnCAFzKHlbaForso=
 github.com/cosmos/cosmos-proto v1.0.0-beta.2 h1:X3OKvWgK9Gsejo0F1qs5l8Qn6xJV/AzgIWR2wZ8Nua8=
 github.com/cosmos/cosmos-proto v1.0.0-beta.2/go.mod h1:+XRCLJ14pr5HFEHIUcn51IKXD1Fy3rkEQqt4WqmN4V0=
+github.com/cosmos/cosmos-proto v1.0.0-beta.3 h1:VitvZ1lPORTVxkmF2fAp3IiA61xVwArQYKXTdEcpW6o=
+github.com/cosmos/cosmos-proto v1.0.0-beta.3/go.mod h1:t8IASdLaAq+bbHbjq4p960BvcTqtwuAxid3b/2rOD6I=
 github.com/cosmos/cosmos-sdk v0.47.1 h1:HnaCYtaAMWZp1SdlwwE1mPJ8kFlZ/TuEJ/ciNXH6Uno=
 github.com/cosmos/cosmos-sdk v0.47.1/go.mod h1:14tO5KQaTrl2q3OxBnDRfue7TRN9zkXS0cLutrSqkOo=
 github.com/cosmos/cosmos-sdk/api v0.1.0 h1:xfSKM0e9p+EJTMQnf5PbWE6VT8ruxTABIJ64Rd064dE=
@@ -422,6 +423,8 @@ github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 h1:9ebZL9/nCkaxer3kWWHs0YT8OOm
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5/go.mod h1:wDFkBmFsFolsfsAfsLON7xX0EuWIvNxMO7NDjrijYU8=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12 h1:EswjcLv+gVv5cwUzLT98kp+5sYdp43OD+iFvtC7t9ww=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12/go.mod h1:XSTyCzMsetl+BoUgUF0F2FoU2LT+Zm7sxzhVgjayCnM=
+github.com/cosmos/cosmos-sdk/x/feegrant v0.0.0-20230413173746-13493d364555 h1:L1mSzVISEZTtB2ginf/Por6STeLyGL9F7A7vhtbTz4Y=
+github.com/cosmos/cosmos-sdk/x/feegrant v0.0.0-20230413173746-13493d364555/go.mod h1:oWbG/dltVIjb6FNd9+CzOsbpRYh+pS0DDa8cS3DUZng=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=

@@ -88,21 +88,6 @@ func (a AppModule) ExportGenesis(_ sdk.Context, _ codec.JSONCodec) json.RawMessa
 // RegisterInvariants implements AppModule/RegisterInvariants.
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-// Route implements AppModule/Route.
-func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(intertx.RouterKey, nil)
-}
-
-// QuerierRoute implements AppModule/QuerierRoute.
-func (a AppModule) QuerierRoute() string {
-	return intertx.QuerierRoute
-}
-
-// LegacyQuerierHandler implements AppModule/LegacyQuerierHandler.
-func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
-
 // RegisterServices implements AppModule/RegisterServices.
 func (a AppModule) RegisterServices(cfg module.Configurator) {
 	v1.RegisterMsgServer(cfg.MsgServer(), a.keeper)

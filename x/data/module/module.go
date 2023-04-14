@@ -59,18 +59,6 @@ func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.Raw
 
 func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-func (a Module) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-func (a Module) QuerierRoute() string {
-	return data.ModuleName
-}
-
-func (a Module) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
-
 func (a *Module) RegisterServices(cfg module.Configurator) {
 	impl := server.NewServer(a.sk, a.ak, a.bk)
 	data.RegisterMsgServer(cfg.MsgServer(), impl)

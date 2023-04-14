@@ -20,6 +20,7 @@ require (
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
 	google.golang.org/grpc v1.54.0
 	gotest.tools/v3 v3.4.0
+	github.com/coinbase/rosetta-sdk-go/types v1.0.0
 )
 
 require (
@@ -38,7 +39,7 @@ require (
 	github.com/cockroachdb/apd/v3 v3.1.0 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-beta.3 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
 	github.com/cosmos/cosmos-sdk/api v0.1.0 // indirect
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
@@ -122,7 +123,5 @@ require (
 )
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
-replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.1
 
 replace github.com/regen-network/regen-ledger/types/v2 => ../../types

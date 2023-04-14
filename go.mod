@@ -43,7 +43,7 @@ require (
 	cloud.google.com/go/iam v0.12.0 // indirect
 	cloud.google.com/go/storage v1.29.0 // indirect
 	cosmossdk.io/api v0.4.0 // indirect
-	cosmossdk.io/core v0.6.1 // indirect
+	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
 	cosmossdk.io/errors v1.0.0-beta.7 // indirect
 	cosmossdk.io/x/feegrant v0.0.0-20230413173746-13493d364555
@@ -203,9 +203,7 @@ replace github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.1
-
-replace github.com/cosmos/cosmos-proto => github.com/cosmos/cosmos-proto v1.0.0-beta.2
-
 // https://github.com/regen-network/regen-ledger/security/dependabot/86
 replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.8.1
+
+replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.1

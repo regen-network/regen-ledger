@@ -8,7 +8,7 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cometbft/cometbft v0.37.1-0.20230411132551-3a91d155e664
 	github.com/cometbft/cometbft-db v0.7.0
-	github.com/cosmos/cosmos-sdk v0.48.0
+	github.com/cosmos/cosmos-sdk v0.47.1
 	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/gogoproto v1.4.7
@@ -159,8 +159,6 @@ require (
 )
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
-replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.1
 
 replace github.com/regen-network/regen-ledger/api/v2 => ../../api
 
