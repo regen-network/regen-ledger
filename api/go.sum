@@ -20,8 +20,8 @@ github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 h1:9ebZL9/nCkaxer3kWWHs0YT8OOm
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5/go.mod h1:wDFkBmFsFolsfsAfsLON7xX0EuWIvNxMO7NDjrijYU8=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12 h1:EswjcLv+gVv5cwUzLT98kp+5sYdp43OD+iFvtC7t9ww=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12/go.mod h1:XSTyCzMsetl+BoUgUF0F2FoU2LT+Zm7sxzhVgjayCnM=
-github.com/cosmos/gogoproto v1.4.9 h1:MjVmV6F1yk1rJLWtKeYdGQcTbE880t+VlRcayEBqUKQ=
-github.com/cosmos/gogoproto v1.4.9/go.mod h1:c0ysUnwvnlR+RmCUvqqii7pp8kHBB/DBcp/5VLA/nQk=
+github.com/cosmos/gogoproto v1.4.10 h1:QH/yT8X+c0F4ZDacDv3z+xE3WU1P1Z3wQoLMBRJoKuI=
+github.com/cosmos/gogoproto v1.4.10/go.mod h1:3aAZzeRWpAwr+SS/LLkICX2/kDFyaYVzckBDzygIxek=
 github.com/cosmos/gorocksdb v1.2.0 h1:d0l3jJG8M4hBouIZq0mDUHZ+zjOx044J3nGRskwTb4Y=
 github.com/cosmos/gorocksdb v1.2.0/go.mod h1:aaKvKItm514hKfNJpUJXnnOWeBnk2GL4+Qw9NHizILw=
 github.com/cpuguy83/go-md2man v1.0.10/go.mod h1:SmD6nW6nTyfqj6ABTjUi3V3JVMnlJmwcJI5acqYI6dE=
