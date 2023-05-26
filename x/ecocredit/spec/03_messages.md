@@ -4,7 +4,7 @@ The ecocredit module provides a message service for interacting with the state o
 
 For examples on how to interact with state using the `regen` binary, see [regen tx ecocredit](../../commands/regen_tx_ecocredit.md).
 
-## Ecocredit Core
+## Ecocredit Module
 
 <!-- listed alphabetically -->
 
@@ -41,6 +41,7 @@ For examples on how to interact with state using the `regen` binary, see [regen 
 - [Take](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.Take)
 - [UpdateBasketFee](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.UpdateBasketFee)
 - [UpdateCurator](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.UpdateCurator)
+- [MsgUpdateDateCriteria](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.MsgUpdateDateCriteria)
 
 ## Marketplace Submodule
 
