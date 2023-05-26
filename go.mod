@@ -11,7 +11,7 @@ require (
 	github.com/regen-network/regen-ledger/types/v2 v2.3.0
 	github.com/regen-network/regen-ledger/x/data/v2 v2.3.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.3.0
-	github.com/regen-network/regen-ledger/x/intertx v1.3.0
+	github.com/regen-network/regen-ledger/x/intertx v1.3.1
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
