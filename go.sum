@@ -1029,8 +1029,8 @@ github.com/regen-network/regen-ledger/x/data/v2 v2.3.0 h1:wW19d1Pic5gfyuezYB48/b
 github.com/regen-network/regen-ledger/x/data/v2 v2.3.0/go.mod h1:TJT846ARJ4xQwwLZYyEqDyNfMDbQUN3YY2mI5UqJ/Ms=
 github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.3.0 h1:hgR5fKgqu1l87ZrKpU0ynt6oFYqBo/SiI8FKCpXla/M=
 github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.3.0/go.mod h1:g7C963blS3ciIKhewOwzfM5YKyl3DE8pgqE3AOmHiBg=
-github.com/regen-network/regen-ledger/x/intertx v1.3.0 h1:GIOYUB+mXMMCz5MFOZ+rgFWgyA0t4CBaCr0bk1ZEeV0=
-github.com/regen-network/regen-ledger/x/intertx v1.3.0/go.mod h1:u1xFDIbTiWwLAxZPRlzu8wqZsW1h4pprxP/mlCqLsv4=
+github.com/regen-network/regen-ledger/x/intertx v1.3.1 h1:yjO9nBL+WqQhaJ7b6jErIf2hwoPUQp6YApSda5EKfx0=
+github.com/regen-network/regen-ledger/x/intertx v1.3.1/go.mod h1:tvOGx7W1/3aeHULmIyTZNN2f7lpzytd9zoqwV3H4AmU=
 github.com/retailnext/hllpp v1.0.1-0.20180308014038-101a6d2f8b52/go.mod h1:RDpi1RftBQPUCDRw6SmxeaREsAaRKnOclghuzp/WRzc=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
