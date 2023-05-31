@@ -8,14 +8,13 @@ Regen Ledger is a public Proof-of-Stake (PoS) blockchain application built with 
 
 For more information, check out [Get Started: Live Networks](get-started/live-networks.md#regen-mainnet).
 
-### Block Exploreres
+### Block Explorers
 
 The following block explorers currently support Regen Mainnet:
 
 - [Mintscan - Regen Mainnet](https://mintscan.io/regen)
 - [Big Dipper - Regen Mainnet](https://regen.bigdipper.live)
 - [Ping - Regen Mainnet](https://ping.pub/regen)
-- [SkyNet - Regen Mainnet](https://skynetexplorers.com/regen-network)
 
 ## Redwood Testnet
 
