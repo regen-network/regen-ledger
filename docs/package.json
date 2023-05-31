@@ -18,7 +18,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.1.1",
     "vuepress": "^1.9.2"
   }
 }
