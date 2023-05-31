@@ -8,22 +8,26 @@ Regen Ledger is a public Proof-of-Stake (PoS) blockchain application built with 
 
 For more information, check out [Get Started: Live Networks](get-started/live-networks.md#regen-mainnet).
 
+### Block Exploreres
+
+The following block explorers currently support Regen Mainnet:
+
+- [Mintscan - Regen Mainnet](https://mintscan.io/regen)
+- [Big Dipper - Regen Mainnet](https://regen.bigdipper.live)
+- [Ping - Regen Mainnet](https://ping.pub/regen)
+- [SkyNet - Regen Mainnet](https://skynetexplorers.com/regen-network)
+
 ## Redwood Testnet
 
 Redwood Testnet is a test network with the same configuration as Regen Mainnet. Developers can use Redwood Testnet to test out features in a stable testing environment. Unofficial REGEN tokens can be redeemed using a faucet.
 
 For more information, check out [Get Started: Live Networks](get-started/live-networks.md#redwood-testnet).
 
-## Block Explorers
+### Block Explorers
 
-The following block explorers currently support Regen Ledger:
+The following block explorers currently support Regen Redwood Testnet:
 
-- [Aneka - Regen Mainnet](https://regen.aneka.io)
 - [Aneka - Redwood Testnet](https://redwood.regen.aneka.io)
-- [Big Dipper - Regen Mainnet](https://regen.bigdipper.live)
-- [Mintscan - Regen Mainnet](https://mintscan.io/regen)
-- [Ping - Regen Mainnet](https://ping.pub/regen)
-- [SkyNet - Regen Mainnet](https://skynetexplorers.com/regen-network)
 
 ## Wallets
 
@@ -37,5 +41,5 @@ The following wallets currently support Regen Ledger:
 
 Have any questions, comments, or new ideas? The following community channels are the best place to start for technical topics related to Regen Ledger:
 
-- [Regen Network Discord](https://discord.gg/regen-network)
 - [Regen Network Forum](https://forum.regen.network)
+- [Regen Network Discord](https://discord.gg/regen-network)
