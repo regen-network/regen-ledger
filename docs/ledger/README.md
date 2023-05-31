@@ -32,9 +32,9 @@ The following block explorers currently support Regen Redwood Testnet:
 
 The following wallets currently support Regen Ledger:
 
-- [Keplr - Regen Mainnet](https://wallet.keplr.app)
-- [Cosmostation - Regen Mainnet](https://wallet.cosmostation.io/regen)
-- [Forbole - Regen Mainnet](https://x.forbole.com/wallets)
+- [Keplr](https://wallet.keplr.app) (supports Mainnet and testnets)
+- [Cosmostation](https://wallet.cosmostation.io/regen)
+- [Forbole](https://x.forbole.com/wallets)
 
 ## Community
 
