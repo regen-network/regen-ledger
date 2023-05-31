@@ -1,4 +1,4 @@
-# Live Networks
+# Live Networks and Faucets
 
 This document provides an overview of the live networks currently running the `regen-ledger` blockchain application and how to interact with a live network using the `regen` binary.
 
@@ -19,6 +19,10 @@ The following URL is the node address for a full node operated by RND and VitWit
 - [http://mainnet.regen.network:26657/](http://mainnet.regen.network:26657/)
 - [http://regen.rpc.vitwit.com:26657/](http://regen.rpc.vitwit.com:26657/)
 
+RND also operates an archive node, available at:
+
+- [http://archive.regen.network:26657/](http://archive.regen.network:26657/)
+
 For more information, see [regen-network/mainnet](https://github.com/regen-network/mainnet).
 
 ### Redwood Testnet
@@ -35,6 +39,19 @@ The following URLs are node addresses for full nodes operated by RND and VitWit:
 - [http://redwood-sentry.vitwit.com:26657/](http://redwood-sentry.vitwit.com:26657/)
 
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
+
+#### Faucets
+
+In order to interact with Regen Redwood Testnet, you'll need some tokens. You can redeem testnet REGEN tokens via the following faucet:
+
+- [Chora.io Faucet](https://chora.io/faucet) (connect to `regen-redwood-1`)
+  - Has a limit of 3 redemptions, of 1 REGEN each
+
+If you need more tokens, you can use the following `curl` command, which sends 10 REGEN:
+
+```bash
+curl -X POST -d '{"address": "YOUR_REGEN_ADDRESS"}' http://redwood.regen.network:8000
+```
 
 ## Interacting With A Node
 
@@ -67,13 +84,3 @@ regen config
 ```
 
 For more information about using the CLI, see [Command-Line Interface](../infrastructure/interfaces.md#command-line-interface).
-
-## Testnet Tokens
-
-In order to interact with the test networks, you'll need some tokens. You can redeem tokens for each test network by executing the following `curl` commands.
-
-*For Redwood Testnet:*
-
-```bash
-curl http://redwood-sentry.vitwit.com:8000/faucet/<account_address>
-```
