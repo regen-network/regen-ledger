@@ -42,7 +42,7 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 #### Faucets
 
-In order to interact with Regen Redwood testnet, you'll need some tokens. You can redeem tokens for by executing the following `curl` commands.
+In order to interact with Regen Redwood testnet, you'll need some tokens. You can redeem testnet REGEN tokens via the following faucet:
 
 - [Chora.io Faucet](https://chora.io/faucet) (connect to `regen-redwood-1`)
   - Has a limit of 3 redemptions, of 1 REGEN each
