@@ -130,7 +130,7 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 // https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.11
-replace github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
+replace github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.28
 
 // https://github.com/regen-network/regen-ledger/security/dependabot/94
 replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
