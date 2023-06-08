@@ -78,22 +78,27 @@ jobs:
         if: env.GIT_DIFF
       - uses: golangci/golangci-lint-action@v3
         with:
+          version: v1.52
           working-directory: "."
         if: steps.git-diff-app.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
+          version: v1.52
           working-directory: "types"
         if: steps.git-diff-types.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
+          version: v1.52
           working-directory: "x/data"
         if: steps.git-diff-data.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
+          version: v1.52
           working-directory: "x/ecocredit"
         if: steps.git-diff-ecocredit.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
+          version: v1.52
           working-directory: "x/intertx"
         if: steps.git-diff-intertx.outputs.diff
 
