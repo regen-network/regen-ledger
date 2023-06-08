@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 
 - [#1942](https://github.com/regen-network/regen-ledger/pull/1942) Update all modules to cosmos-sdk v0.46.13-regen-1
+- [#1942](https://github.com/regen-network/regen-ledger/pull/1942) Update all modules to cometbft v0.34.28
 
 ## [v5.1.1](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.1) - 2023-05-26
 
