@@ -8,7 +8,7 @@ require (
 	github.com/cosmos/ibc-go/v5 v5.2.1
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types/v2 v2.3.0
+	github.com/regen-network/regen-ledger/types/v2 v2.3.1
 	github.com/regen-network/regen-ledger/x/data/v2 v2.3.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.3.0
 	github.com/regen-network/regen-ledger/x/intertx v1.3.1
