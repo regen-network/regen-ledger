@@ -166,13 +166,13 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
-	pgregory.net/rapid v0.6.1 // indirect
+	pgregory.net/rapid v0.6.2 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.11-regen-1
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.13-regen-1
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
