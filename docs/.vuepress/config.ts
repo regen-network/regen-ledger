@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import { defaultTheme, defineUserConfig } from 'vuepress'
+import { defaultTheme, defineUserConfig } from 'vuepress-vite'
 
 const { description } = require('../package')
 
