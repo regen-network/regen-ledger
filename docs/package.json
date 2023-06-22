@@ -18,13 +18,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-<<<<<<< HEAD
-    "dotenv": "^16.0.3",
-    "vuepress": "^1.9.2"
-=======
     "@vuepress/plugin-google-analytics": "^2.0.0-beta.63",
     "dotenv": "^16.3.1",
     "vuepress-vite": "^2.0.0-beta.63"
->>>>>>> ea32d997 (docs: upgrade vuepress to v2 (#1958))
   }
 }
