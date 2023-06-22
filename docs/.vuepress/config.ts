@@ -1,62 +1,32 @@
-require('dotenv').config()
+import dotenv from 'dotenv'
+dotenv.config()
+
+import { defaultTheme, defineUserConfig } from 'vuepress-vite'
 
 const { description } = require('../package')
-const webpack = require('webpack')
 
-module.exports = {
-  configureWebpack: (config) => {
-    return { plugins: [
-      new webpack.EnvironmentPlugin({ ...process.env })
-    ]}
-  },
-  /**
-   * Ref：https://v1.vuepress.vuejs.org/config/#title
-   */
+import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
+import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
+import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
+
+/**
+ * Ref：https://v2.vuepress.vuejs.org/guide/configuration.html#config-file
+ */
+export default defineUserConfig({
   title: 'Regen Ledger Documentation',
-  /**
-   * Ref：https://v1.vuepress.vuejs.org/config/#description
-   */
   description: description,
-  /**
-   * Extra tags to be injected to the page HTML `<head>`
-   *
-   * ref：https://v1.vuepress.vuejs.org/config/#head
-   */
   head: [
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
-    /**
-     * Google Analytics 4 is not supported in vuepress v1 but will be in v2.
-     * The following is a workaround until we update to vuepress v2.
-     *
-     * ref：https://github.com/vuejs/vuepress/issues/2713
-     */
-    [
-      'script',
-      {
-        async: true,
-        src: 'https://www.googletagmanager.com/gtag/js?id=' + process.env.GOOGLE_ANALYTICS_ID,
-      },
-    ],
-    [
-      'script',
-      {},
-      [
-        "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '" + process.env.GOOGLE_ANALYTICS_ID + "');",
-      ],
-    ],
   ],
-
-  /**
-   * Theme configuration, here is the default theme configuration for VuePress.
-   *
-   * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
-   */
-  themeConfig: {
+  theme: defaultTheme({
     repo: 'regen-network/regen-ledger',
     docsDir: 'docs',
-    nav: [
+    contributors: false,
+    editLink: false,
+    lastUpdated: false,
+    navbar: [
       {
         text: 'Regen Ledger',
         link: '/ledger/',
@@ -86,14 +56,14 @@ module.exports = {
     sidebar: {
       '/ledger/': [
         {
-          title: 'Introduction',
+          text: 'Introduction',
           collapsable: false,
           children: [
             '/ledger/',
           ],
         },
         {
-          title: 'Get Started',
+          text: 'Get Started',
           collapsable: false,
           children: [
             '/ledger/get-started/',
@@ -102,7 +72,7 @@ module.exports = {
           ],
         },
         {
-          title: 'Infrastructure',
+          text: 'Infrastructure',
           collapsable: false,
           children: [
             '/ledger/infrastructure/',
@@ -110,7 +80,7 @@ module.exports = {
           ],
         },
         {
-          title: 'Migration Guides',
+          text: 'Migration Guides',
           collapsable: false,
           children: [
             '/ledger/migrations/',
@@ -122,24 +92,24 @@ module.exports = {
       ],
       '/modules/': [
         {
-          title: 'Modules',
+          text: 'Modules',
           collapsable: false,
           sidebarDepth: 0,
           children: [
             {
-              title: 'List of Modules',
-              path: '/modules/',
+              text: 'List of Modules',
+              link: '/modules/',
             },
           ],
         },
         {
-          title: 'Data Module',
+          text: 'Data Module',
           collapsable: true,
           sidebarDepth: 0,
           children: [
             {
-              title: 'Overview',
-              path: '/modules/data/',
+              text: 'Overview',
+              link: '/modules/data/',
             },
             '/modules/data/01_concepts',
             '/modules/data/02_state',
@@ -152,13 +122,13 @@ module.exports = {
           ],
         },
         {
-          title: 'Ecocredit Module',
+          text: 'Ecocredit Module',
           collapsable: true,
           sidebarDepth: 0,
           children: [
             {
-              title: 'Overview',
-              path: '/modules/ecocredit/',
+              text: 'Overview',
+              link: '/modules/ecocredit/',
             },
             '/modules/ecocredit/01_concepts',
             '/modules/ecocredit/02_state',
@@ -171,13 +141,13 @@ module.exports = {
           ],
         },
         {
-          title: 'Intertx Module',
+          text: 'Intertx Module',
           collapsable: true,
           sidebarDepth: 0,
           children: [
             {
-              title: 'Overview',
-              path: '/modules/intertx/',
+              text: 'Overview',
+              link: '/modules/intertx/',
             },
             '/modules/intertx/01_messages',
             '/modules/intertx/02_queries',
@@ -186,17 +156,17 @@ module.exports = {
       ],
       '/validators/': [
         {
-          title: 'Validators',
+          text: 'Validators',
           collapsable: false,
           children: [
             {
-              title: 'Overview',
-              path: '/validators/',
+              text: 'Overview',
+              link: '/validators/',
             },
           ],
         },
         {
-          title: 'Get Started',
+          text: 'Get Started',
           collapsable: false,
           children: [
             '/validators/get-started/',
@@ -209,7 +179,7 @@ module.exports = {
           ]
         },
         {
-          title: 'Upgrade Guides',
+          text: 'Upgrade Guides',
           collapsable: false,
           children: [
             '/validators/upgrades/',
@@ -224,57 +194,57 @@ module.exports = {
       ],
       '/commands/': [
         {
-          title: 'Commands',
+          text: 'Commands',
           collapsable: false,
           children: [
             {
-              title: 'List of Commands',
-              path: '/commands/',
+              text: 'List of Commands',
+              link: '/commands/',
             },
           ],
         },
         {
-          title: 'Regen App',
+          text: 'Regen App',
           collapsable: false,
           sidebarDepth: 0,
           children: [
-              '/commands/regen',
-              '/commands/regen_add-genesis-account',
-              '/commands/regen_collect-gentxs',
-              '/commands/regen_config',
-              '/commands/regen_debug',
-              '/commands/regen_export',
-              '/commands/regen_gentx',
-              '/commands/regen_init',
-              '/commands/regen_keys',
-              '/commands/regen_migrate',
-              '/commands/regen_query',
-              '/commands/regen_rollback',
-              '/commands/regen_rosetta',
-              '/commands/regen_start',
-              '/commands/regen_status',
-              '/commands/regen_tendermint',
-              '/commands/regen_testnet',
-              '/commands/regen_tx',
-              '/commands/regen_validate-genesis',
-              '/commands/regen_version',
+            { text: 'regen', link: '/commands/regen' },
+            { text: 'regen add-genesis-account', link: '/commands/regen_add-genesis-account' },
+            { text: 'regen collect-gentxs', link: '/commands/regen_collect-gentxs' },
+            { text: 'regen config', link: '/commands/regen_config' },
+            { text: 'regen debug', link: '/commands/regen_debug' },
+            { text: 'regen export', link: '/commands/regen_export' },
+            { text: 'regen gentx', link: '/commands/regen_gentx' },
+            { text: 'regen init', link: '/commands/regen_init' },
+            { text: 'regen keys', link: '/commands/regen_keys' },
+            { text: 'regen migrate', link: '/commands/regen_migrate' },
+            { text: 'regen query', link: '/commands/regen_query' },
+            { text: 'regen rollback', link: '/commands/regen_rollback' },
+            { text: 'regen rosetta', link: '/commands/regen_rosetta' },
+            { text: 'regen start', link: '/commands/regen_start' },
+            { text: 'regen status', link: '/commands/regen_status' },
+            { text: 'regen tendermint', link: '/commands/regen_tendermint' },
+            { text: 'regen testnet', link: '/commands/regen_testnet' },
+            { text: 'regen tx', link: '/commands/regen_tx' },
+            { text: 'regen validate-genesis', link: '/commands/regen_validate-genesis' },
+            { text: 'regen version', link: '/commands/regen_version' },
           ]
         },
       ],
       '/tutorials/': [
         {
-          title: 'Tutorials',
+          text: 'Tutorials',
           collapsable: false,
           sidebarDepth: 0,
           children: [
             {
-              title: 'List of Tutorials',
-              path: '/tutorials/',
+              text: 'List of Tutorials',
+              link: '/tutorials/',
             },
           ],
         },
         {
-          title: 'User Tutorials',
+          text: 'User Tutorials',
           collapsable: false,
           children: [
             '/tutorials/user/ibc-transfers',
@@ -282,7 +252,7 @@ module.exports = {
           ],
         },
         {
-          title: 'Developer Tutorials',
+          text: 'Developer Tutorials',
           collapsable: false,
           children: [
             '/tutorials/developer/tendermint-postgres-indexer',
@@ -291,47 +261,47 @@ module.exports = {
       ],
       '/specs/': [
         {
-          title: 'Specifications',
+          text: 'Specifications',
           collapsable: false,
           sidebarDepth: 0,
           children: [
             {
-              title: 'Overview',
-              path: '/specs/',
+              text: 'Overview',
+              link: '/specs/',
             },
             '/specs/regen-ledger',
           ],
         },
         {
-          title: 'RFCs',
+          text: 'RFCs',
           collapsable: false,
           children: [
             {
-              title: 'RFC Overview',
-              path: '/specs/rfcs/',
+              text: 'RFC Overview',
+              link: '/specs/rfcs/',
             },
             '/specs/rfcs/001-ecocredit-module/',
             '/specs/rfcs/002-basket-functionality/',
           ],
         },
         {
-          title: 'ADRs',
+          text: 'ADRs',
           collapsable: false,
           children: [
             {
-              title: 'ADR Overview',
-              path: '/specs/adrs/',
+              text: 'ADR Overview',
+              link: '/specs/adrs/',
             },
           ],
         },
       ],
     },
-  },
-  /**
-   * Apply plugins，ref：https://v1.vuepress.vuejs.org/plugin/
-   */
+  }),
   plugins: [
-    '@vuepress/plugin-back-to-top',
-    '@vuepress/plugin-medium-zoom',
+    backToTopPlugin(),
+    mediumZoomPlugin(),
+    googleAnalyticsPlugin({
+      id: process.env.GOOGLE_ANALYTICS_ID
+    }),
   ]
-}
+})

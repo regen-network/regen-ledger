@@ -1,8 +1,10 @@
 # os
 .DS_Store
 
-# build
+# vuepress
 dist
+.cache
+.temp
 
 # npm/yarn
 node_modules
