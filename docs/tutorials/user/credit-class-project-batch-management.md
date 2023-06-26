@@ -32,31 +32,203 @@ The [Regen Registry Standards](https://github.com/regen-network/regen-registry-s
 
 #### Classes
 
-The following includes the expected fields for a credit class:
+The following includes a template for a credit class:
 
 ```jsonld
 {
-  "@context": ""
+  "@context": {
+    "schema": "http://schema.org/",
+    "regen": "https://schema.regen.network#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema:itemListElement": {
+      "@container": "@list"
+    },
+    "regen:sectoralScope": {
+      "@container": "@list"
+    },
+    "regen:offsetGenerationMethod": {
+      "@container": "@list"
+    },
+    "regen:projectActivities": {
+      "@container": "@list"
+    },
+    "schema:url": {
+      "@type": "schema:URL"
+    }
+  },
+  "schema:name": "",
+  "schema:description": "",
+  "schema:url": "",
+  "regen:sourceRegistry": {
+    "schema:name": "",
+    "schema:url": ""
+  },
+  "regen:sectoralScope": [
+    ""
+  ],
+  "regen:offsetGenerationMethod": [
+    ""
+  ],
+  "regen:approvedMethodologies": {
+    "@type": "schema:ItemList",
+    "schema:itemListElement": [
+      {
+        "schema:name": "",
+        "schema:url": "",
+        "schema:identifier": "",
+        "schema:version": ""
+      },
+      {
+        "schema:name": "",
+        "schema:url": "",
+        "schema:identifier": "",
+        "schema:version": ""
+      }
+    ],
+    "schema:url": ""
+  },
+  "regen:ecosystemType": [
+    ""
+  ],
+  "regen:verificationMethod": "",
+  "regen:projectActivities": [
+    ""
+  ]
 }
 ```
 
 #### Projects
 
-The following includes the expected fields for a project:
+The following includes a template for a project:
 
 ```jsonld
 {
-  "@context": ""
+  "@context": {
+    "schema": "http://schema.org/",
+    "regen": "https://schema.regen.network#",
+    "qudt": "http://qudt.org/schema/qudt/",
+    "unit": "http://qudt.org/vocab/unit/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "regen:projectDesignDocument": {
+      "@type": "schema:URL"
+    },
+    "schema:url": {
+      "@type": "schema:URL"
+    },
+    "qudt:unit": {
+      "@type": "qudt:Unit"
+    },
+    "qudt:numericValue": {
+      "@type": "xsd:double"
+    },
+    "regen:projectStartDate": {
+      "@type": "xsd:date"
+    },
+    "regen:projectEndDate": {
+      "@type": "xsd:date"
+    },
+    "regen:offsetGenerationMethod": {
+      "@container": "@list"
+    }
+  },
+  "@id": "https://app.regen.network/project/<ID>",
+  "schema:name": "",
+  "schema:description": "",
+  "regen:projectDesignDocument": "",
+  "regen:projectDeveloper": {
+    "schema:name": "",
+    "schema:url": ""
+  },
+  "regen:projectType": "",
+  "regen:projectActivity": {
+    "schema:name": "",
+    "schema:url": ""
+  },
+  "regen:offsetGenerationMethod": [
+    ""
+  ],
+  "regen:projectSize": {
+    "qudt:unit": "",
+    "qudt:numericValue": 0
+  },
+  "regen:projectStartDate": "",
+  "regen:projectEndDate": "",
+  "schema:location": {
+    "@context": {
+      "type": "@type",
+      "@vocab": "https://purl.org/geojson/vocab#",
+      "coordinates": {
+        "@container": "@list"
+      },
+      "bbox": {
+        "@container": "@list"
+      }
+    },
+    "type": "Feature",
+    "place_name": "",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        0,
+        0
+      ]
+    }
+  },
+  "regen:offsetProtocol": {
+    "schema:name": "",
+    "schema:url": "",
+    "schema:version": ""
+  }
 }
 ```
 
 #### Batches
 
-The following includes the expected fields for a credit batch:
+The following includes a template for a credit batch:
 
 ```jsonld
 {
-  "@context": ""
+  "@context": {
+    "schema": "http://schema.org/",
+    "regen": "https://schema.regen.network#",
+    "regen:additionalCertifications": {
+      "@container": "@list"
+    },
+    "regen:verificationReports": {
+      "@container": "@list"
+    },
+    "schema:url": {
+      "@type": "schema:URL"
+    }
+  },
+  "regen:verificationReports": [
+    {
+      "schema:url": ""
+    }
+  ],
+  "regen:projectVerifier": {
+    "schema:name": "",
+    "schema:url": {
+      "@type": "schema:URL",
+      "@value": ""
+    }
+  },
+  "regen:additionalCertifications": [
+    {
+      "schema:name": "",
+      "schema:url": {
+        "@type": "schema:URL",
+        "@value": ""
+      }
+    },
+    {
+      "schema:name": "",
+      "schema:url": {
+        "@type": "schema:URL",
+        "@value": ""
+      }
+    }
+  ]
 }
 ```
 
@@ -282,7 +454,7 @@ For more information about the command, add `--help` or check out [the docs](../
 
 ## Conclusion
 
-Congratulations! You have now created a credit class, project, and batch with supporting data using the same standard and practices as Regen Network Development.
+Congratulations! You have now created a credit class, project, and batch with supporting data using the same standards and practices as Regen Network Development.
 
 ### Regen Mainnet
 
