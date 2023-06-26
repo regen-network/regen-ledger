@@ -24,7 +24,7 @@ Credit classes, projects, and batches are stored as objects in on-chain applicat
 
 Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend doing the same. If you use the same IRI generation method, your data will be readable by Regen Network Development applications.
 
-The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate an IRI for the `metadata` field, we will first need to construct "graph" data for our credit classes, projects, and batches.
+The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of our credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that is RDF compliant (see [Resource Description Framework (RDF)](https://www.w3.org/RDF/)).
 
 ### JSON-LD
 
@@ -68,7 +68,7 @@ Once we have the supporting data for a credit class, project, and batch, we can 
 curl -X POST -d '<json-ld>' https://api.registry.regen.network/iri-gen
 ```
 
-This is the IRI that we will use for `metadata` when creating our credit class, project, and batch.
+We now have the IRIs for the `metadata` fields of our credit class, project, and batch.
 
 ## Data Resolvers
 
@@ -76,11 +76,13 @@ At this point in the tutorial, we have our supporting data for a credit class, p
 
 If you are managing your own credit origination process, you need to host your own data. If you are not ready to figure out a solution for hosting data but you are ready to create a credit class, project, and batch, then feel free to skip to the [next section](#credit-class) and come back later.
 
-To make your data available in Regen Network Development applications, you need to use the same IRI generation method mentioned in the previous section and create a data resolver using the `data` module that points applications to the hosted data when provided the IRI of the data.
+To make your data available in Regen Network Development applications, you need to use the same IRI generation method we used in the previous section and create a data resolver using the `data` module that points applications to the hosted data when provided the IRI of the data.
+
+For more information about the `data` module, see [Data Concepts](../../modules/data/01_concepts.md).
 
 ### Define Resolver
 
-The following command will create a data resolver with a url of `[url]`. This is the url at which you are hosting the data. When provided an IRI (e.g. `[url] + [iri]`), the assumption is that an application will be able to fetch the data in complete or partial form depending on how you manage privacy.
+The following command will create a data resolver with a url of `[url]`. This is the URL at which you are hosting the data. You are claiming that given an IRI (e.g. `[url] + [iri]`), an application can fetch the data in complete or partial form depending on how you manage privacy.
 
 To create a data resolver, run the following command:
 
@@ -93,17 +95,17 @@ For more information about the command, add `--help` or check out [the docs](../
 Now that you created a data resolver, you can query it by id:
 
 ```sh
-regen q data resolver <id>
+regen q data resolver [id]
 ```
 
 ### Content Hash
 
-Before we can anchor and register the data we constructed in the previous section, we must convert the IRIs we generated into a JSON object representing the content hash.
+Before we can anchor and register the data we created in the previous section, we must convert our IRIs into JSON objects representing content hashes on chain.
 
 To convert an IRI to a content hash, run the following command:
 
 ```sh
-regen q data convert-iri-to-hash <iri>
+regen q data convert-iri-to-hash [iri]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_query_data_convert-iri-to-hash.md).
@@ -112,12 +114,12 @@ For more information about the command, add `--help` or check out [the docs](../
 
 The data for each credit class, project, and batch can now be registered to the resolver. The account that created the resolver is the only account that can register data to the resolver.
 
-With the next command you can register all your data at once. You can register credit class, project, and batch data using the content hashes generated in the last step.
+With the next command, you can register all your data at once. You can register credit class, project, and batch data using the content hashes we converted from IRIs in the last step.
 
 To register data to a resolver, run the following command:
 
 ```sh
-regen tx data register-resolver [resolver_id] [content_hashes_json]
+regen tx data register-resolver [resolver-id] [content-hashes-json]
 ```
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_data_register-resolver.md).
 
@@ -127,30 +129,64 @@ Now that you registered data to the resolver, you can look up resolvers by IRI:
 regen q data resolvers-by-iri [iri]
 ```
 
+If the data is in fact hosted at the location the data resolver is pointing to, the data is now available in Regen Network Development applications.
+
 ## Credit Class
 
-Now that we have supporting data, we have our IRIs for each, and we may or may not be hosting and resolving our own data, we can move on to creating and managing a credit class.
+Now that we have data for our class, project, and batch, we have IRIs for each, and we may or may not be hosting the data, we are ready to create a credit class.
 
-A credit class represents a collection of projects and issuers whereby the projects are following the same standards and practices and the issuers are issuing credits on behalf of the projects.
+A credit class represents a collection of projects and issuers whereby the projects within a credit class are following the same standards and the issuers are issuing credits on their behalf.
 
-For more information about credit classes, see [Ecocredit Concepts](http://localhost:8080/modules/ecocredit/01_concepts.html).
+For more information about credit classes, see [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
 ### Create Credit Class
+
+Before we create a credit class, we need to check the credit class creator allowlist and that we have enough tokens for the credit class creation fee.
+
+To check whether the credit class creator allowlist is enabled, run the following command:
+
+```sh
+regen q ecocredit class-creator-allowlist
+```
+
+To check allowed credit class creators (only if allowlist enabled), run the following command:
+
+```sh
+regen q ecocredit allowed-class-creators
+```
+
+To check the credit class creation fee, run the following command:
+
+```sh
+regen q ecocredit class-fee
+```
+
+You should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the token amount and denomination needed to create a credit class, which we add to the next command using the `--class-fee` flag.
+
+We are now ready to create a credit class and to use the IRI we generated earlier in this tutorial. The IRI for the credit class can be used in the next command as the value of `[metadata]`.
 
 To create a credit class, run the following command:
 
 ```sh
-regen tx ecocredit create-class ...
+regen tx ecocredit create-class [issuers] [credit-type-abbrev] [metadata]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_create-class.md).
 
+Now that you created a credit class, you can look up the credit class by id:
+
+```sh
+regen q ecocredit class [class-id]
+```
+
 ### Update Credit Class
+
+Only the admin of a credit class can update the credit class. The account that created the credit class is assigned as the admin upon creation. After the credit class has been created, the admin can update the credit class, including the account assigned as the admin.
 
 To update a credit class admin, run the following command:
 
 ```sh
-regen tx ecocredit update-class-admin ...
+regen tx ecocredit update-class-admin [class-id] [new-admin]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_update-class-admin.md).
@@ -158,7 +194,7 @@ For more information about the command, add `--help` or check out [the docs](../
 To update credit class issuers, run the following command:
 
 ```sh
-regen tx ecocredit update-class-issuers ...
+regen tx ecocredit update-class-issuers [class-id]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_update-class-issuers.md).
@@ -166,31 +202,39 @@ For more information about the command, add `--help` or check out [the docs](../
 To update credit class metadata, run the following command:
 
 ```sh
-regen tx ecocredit update-class-metadata ...
+regen tx ecocredit update-class-metadata [class-id] [new-metadata]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_update-class-metadata.md).
 
 ## Project
 
-Creating and updating a project...
+Now that we have a credit class, we can create a project within the credit class. Only an account listed as a credit class issuer can create a project within the credit class.
+
+A project represents a group or individual providing ecosystem services. The ecological outcomes of a project are measured and verified and then credits are issued by a credit class issuer.
+
+For more information about projects, see [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
 ### Create Project
+
+We are now ready to create a project and to use the IRI we generated earlier in this tutorial. The IRI for the project can be used in the next command as the value of `[metadata]`.
 
 To create a project, run the following command:
 
 ```sh
-regen tx ecocredit create-project ...
+regen tx ecocredit create-project [class-id] [jurisdiction] [metadata]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_create-project.md).
 
 ### Update Project
 
+Only the admin of a project can update the project. The account that created the project (i.e. the credit class issuer) is assigned as the admin upon creation. After the project has been created, the admin can update the project, including the account assigned as the admin.
+
 To update a project admin, run the following command:
 
 ```sh
-regen tx ecocredit update-project-admin ...
+regen tx ecocredit update-project-admin [project-id] [new-admin]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_update-project-admin.md).
@@ -198,42 +242,52 @@ For more information about the command, add `--help` or check out [the docs](../
 To update project metadata, run the following command:
 
 ```sh
-regen tx ecocredit update-project-metadata ...
+regen tx ecocredit update-project-metadata [project-id] [new-metadata]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_update-project-metadata.md).
 
 ## Credit Batch
 
-Creating and updating a credit batch...
+Now that we have a project, we can create a credit batch and issue credits. Only an account listed as a credit class issuer can create a credit batch for projects within the credit class.
 
+A credit batch is a vintage of credits for a given project and at the time of creation, credits are issued to a list of recipients, which can include accounts representing buffer pools.
+
+For more information about credit batches, see [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
 ### Create Batch
+
+We are now ready to create a credit batch and to use the IRI we generated earlier in this tutorial. The IRI for the credit batch can be used in the next command as the value of `[metadata]`.
 
 To create a batch, run the following command:
 
 ```sh
-regen tx ecocredit create-batch ...
+regen tx ecocredit create-batch [batch-json]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_create-batch.md).
 
 ### Update Batch
 
-A credit batch can only be updated if the batch is "open". This is not common or recommended unless you are bridging credits to and from another chain or registry.
+A credit batch can only be updated if the batch is "open" and only by the issuer. It is not common or recommended to create "open" credit batches
+unless you are operating a bridge.
 
 To update batch metadata, run the following command:
 
 ```sh
-regen tx ecocredit update-batch-metadata ...
+regen tx ecocredit update-batch-metadata [batch-denom] [new-metadata]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_update-batch-metadata.md).
 
-## Regen Mainnet
+## Conclusion
+
+Congratulations! You have now created a credit class, project, and batch with supporting data using the same standard and practices as Regen Network Development.
+
+### Regen Mainnet
 
 Everything you've done here can also be done using [Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet). All you need to do is update the configuration for the `regen` binary to use a different chain ID and node endpoint (you'll also need to own official REGEN tokens). See [Live Networks](../../ledger/get-started/live-networks.md) for configuration instructions.
 
-## Regen Marketplace
+### Regen Marketplace
 
-You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice there is not much information on the pages but you have some new capabilities. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
+You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice there is not much information on the pages but you have some new abilities. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
