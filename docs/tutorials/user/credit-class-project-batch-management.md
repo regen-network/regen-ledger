@@ -24,7 +24,7 @@ Credit classes, projects, and batches are stored as objects in on-chain applicat
 
 Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend doing the same. If you use the same IRI generation method, your data will be readable by Regen Network Development applications.
 
-The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of our credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that is RDF compliant (see [Resource Description Framework (RDF)](https://www.w3.org/RDF/)).
+The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of a credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that is RDF compliant (see [Resource Description Framework (RDF)](https://www.w3.org/RDF/)).
 
 ### JSON-LD
 
@@ -240,7 +240,7 @@ Once we have the supporting data for a credit class, project, and batch, we can 
 curl -X POST -d '<json-ld>' https://api.registry.regen.network/iri-gen
 ```
 
-We now have the IRIs for the `metadata` fields of our credit class, project, and batch.
+We now have the IRIs for the `metadata` field of each credit class, project, and batch.
 
 ## Data Resolvers
 
@@ -301,7 +301,7 @@ Now that you registered data to the resolver, you can look up resolvers by IRI:
 regen q data resolvers-by-iri [iri]
 ```
 
-If the data is in fact hosted at the location the data resolver is pointing to, the data is now available in Regen Network Development applications.
+If the data is in fact hosted at the location the data resolver is pointing to, the data can be fetched by Regen Network Development applications.
 
 ## Credit Class
 
@@ -311,7 +311,8 @@ A credit class represents a collection of projects and issuers whereby the proje
 
 For more information about credit classes, see [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
-### Create Credit Class
+### Allowlist and Fee
+
 
 Before we create a credit class, we need to check the credit class creator allowlist and that we have enough tokens for the credit class creation fee.
 
@@ -334,6 +335,8 @@ regen q ecocredit class-fee
 ```
 
 You should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the token amount and denomination needed to create a credit class, which we add to the next command using the `--class-fee` flag.
+
+### Create Credit Class
 
 We are now ready to create a credit class and to use the IRI we generated earlier in this tutorial. The IRI for the credit class can be used in the next command as the value of `[metadata]`.
 
