@@ -419,7 +419,7 @@ For more information about the command, add `--help` or check out [the docs](../
 
 Now that we have a project, we can create a credit batch and issue credits. Only an account listed as a credit class issuer can create a credit batch for projects within the credit class.
 
-A credit batch is a vintage of credits for a given project and at the time of creation, credits are issued to a list of recipients, which can include accounts representing buffer pools.
+A credit batch is a vintage of credits for a given project and, at the time of creation, credits are issued to a list of recipients, which can include accounts representing buffer pools.
 
 For more information about credit batches, see [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
@@ -450,7 +450,7 @@ For more information about the command, add `--help` or check out [the docs](../
 
 ## Conclusion
 
-Congratulations! You have now created a credit class, project, and batch with supporting data using the same standards and practices as Regen Network Development.
+Congratulations! You have now created and updated a credit class, project, and batch with supporting data using the same standards and practices as Regen Network Development.
 
 ### Regen Mainnet
 
