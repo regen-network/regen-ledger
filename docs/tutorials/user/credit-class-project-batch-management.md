@@ -2,7 +2,9 @@
 
 This tutorial covers the creation and management of credit classes, projects, and batches using the [command-line interface (CLI)](../../ledger/infrastructure/interfaces.html#command-line-interface). This tutorial will demonstrate with data standards and practices used by Regen Network Development for [Regen Registry Program](https://library.regen.network/).
 
-For information about creating and managing credit classes, projects, and credit batches using the [Regen Marketplace](https://app.regen.network/) application, see [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace).
+For information about working with, and having your credit class approved by, Regen Registry, see [Regen Registry Credit Classes](https://library.regen.network/v/regen-registry-program-guide/credit-classes).
+
+For information about creating and managing credit classes, projects, and batches using the [Regen Marketplace](https://app.regen.network/) application, see [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace).
 
 ## Prerequisites
 
@@ -131,7 +133,6 @@ The following includes a template for a project:
       "@container": "@list"
     }
   },
-  "@id": "https://app.regen.network/project/<ID>",
   "schema:name": "",
   "schema:description": "",
   "regen:projectDesignDocument": "",
@@ -208,25 +209,16 @@ The following includes a template for a credit batch:
   ],
   "regen:projectVerifier": {
     "schema:name": "",
-    "schema:url": {
-      "@type": "schema:URL",
-      "@value": ""
-    }
+    "schema:url": ""
   },
   "regen:additionalCertifications": [
     {
       "schema:name": "",
-      "schema:url": {
-        "@type": "schema:URL",
-        "@value": ""
-      }
+      "schema:url": ""
     },
     {
       "schema:name": "",
-      "schema:url": {
-        "@type": "schema:URL",
-        "@value": ""
-      }
+      "schema:url": ""
     }
   ]
 }
@@ -255,6 +247,8 @@ For more information about the `data` module, see [Data Concepts](../../modules/
 ### Define Resolver
 
 The following command will create a data resolver with a url of `[url]`. This is the URL at which you are hosting the data. You are claiming that given an IRI (e.g. `[url] + [iri]`), an application can fetch the data in complete or partial form depending on how you manage privacy.
+
+For example, if data with IRI `regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf` is registered to resolver with URL `https://data.example.com/`, an application should be able to fetch the data at `https://data.example.com/regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf`.
 
 To create a data resolver, run the following command:
 
@@ -313,8 +307,7 @@ For more information about credit classes, see [Ecocredit Concepts](../../module
 
 ### Allowlist and Fee
 
-
-Before we create a credit class, we need to check the credit class creator allowlist and that we have enough tokens for the credit class creation fee.
+Before we create a credit class, we need to check the [credit class creator allowlist](../../modules/ecocredit/01_concepts.md#credit-class-creator-allowlist) and that we have enough tokens for the credit class creation fee.
 
 To check whether the credit class creator allowlist is enabled, run the following command:
 
@@ -432,7 +425,7 @@ For more information about credit batches, see [Ecocredit Concepts](../../module
 
 ### Create Batch
 
-We are now ready to create a credit batch and to use the IRI we generated earlier in this tutorial. The IRI for the credit batch can be used in the next command as the value of `[metadata]`.
+We are now ready to create a credit batch and to use the IRI we generated earlier in this tutorial. The IRI for the credit batch can be used in the next command within `[batch-json]`.
 
 To create a batch, run the following command:
 
