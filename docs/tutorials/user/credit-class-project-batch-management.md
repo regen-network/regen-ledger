@@ -395,6 +395,12 @@ regen tx ecocredit create-project [class-id] [jurisdiction] [metadata]
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_create-project.md).
 
+Now that you created a project, you can look up the project by id:
+
+```sh
+regen q ecocredit project [project-id]
+```
+
 ### Update Project
 
 Only the admin of a project can update the project. The account that created the project (i.e. the credit class issuer) is assigned as the admin upon creation. After the project has been created, the admin can update the project, including the account assigned as the admin.
@@ -434,6 +440,18 @@ regen tx ecocredit create-batch [batch-json]
 ```
 
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_create-batch.md).
+
+Now that you created a credit batch, you can look up the credit batch by denom:
+
+```sh
+regen q ecocredit batch [batch-denom]
+```
+
+You can also look up all credit balances for a given credit batch by batch denom:
+
+```sh
+regen q ecocredit balances-by-batch [batch-denom]
+```
 
 ### Update Batch
 
