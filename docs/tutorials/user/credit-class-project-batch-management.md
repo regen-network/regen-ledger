@@ -32,7 +32,7 @@ The IRI contains a content hash with embedded information about how the content 
 
 The [Regen Registry Standards](https://github.com/regen-network/regen-registry-standards) repository includes the data schemas currently being used by Regen Network Development. Following this approach, we start with building a [JSON-LD](https://json-ld.org/) object for each credit class, project, and batch we intend to create.
 
-The following templates can be used as a starting point. Users should feel free to add their own fields in additions to the ones provided. New fields that are added from other vocabularies should include references in the JSON-LD `@context`. See [The Context](https://www.w3.org/TR/json-ld11/#the-context) for more information.
+The following templates can be used as a starting point. Users should feel free to add their own fields in addition to the ones provided. New fields that are added from other vocabularies should include references in the JSON-LD `@context`. See [The Context](https://www.w3.org/TR/json-ld11/#the-context) for more information.
 
 #### Classes
 
