@@ -24,7 +24,7 @@ To create classes, projects, and batches on chain using the `ecocredit` module, 
 
 Credit classes, projects, and batches are stored as objects in on-chain application state. Each object has a `metadata` field that can be any arbitrary `string` with a maximum length of `256`. There are no additional restrictions on `metadata` but it was designed for content hashes.
 
-Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend doing the same. If you use the same IRI generation method, your data will be readable by Regen Network Development applications.
+Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend doing the same. If you use the same IRI format, your data will be readable by Regen Network Development applications.
 
 The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of a credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that is RDF compliant (see [Resource Description Framework (RDF)](https://www.w3.org/RDF/)).
 
