@@ -246,7 +246,7 @@ For more information about the `data` module, see [Data Concepts](../../modules/
 
 ### Define Resolver
 
-The following command will create a data resolver with a url of `[url]`. This is the URL at which you are hosting the data. You are claiming that given an IRI (e.g. `[url] + [iri]`), an application can fetch the data in complete or partial form depending on how you manage privacy.
+The following command will create a data resolver with a url of `[url]`. This is the URL at which you are hosting the data. You are claiming that given an IRI, an application can fetch the data at a specific host and path (e.g. `[url] + [iri]`) in complete or partial form depending on how you manage privacy.
 
 For example, if data with IRI `regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf` is registered to resolver with URL `https://data.example.com/`, an application should be able to fetch the data at `https://data.example.com/regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf`.
 
