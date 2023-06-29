@@ -478,6 +478,6 @@ Everything you've done here can also be done using [Regen Mainnet](../../ledger/
 
 ### Regen Marketplace
 
-You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice the pages are a bit empty, but you now have the ability to make updates to them when you are logged with Keplr.
+You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice the pages are a bit empty, but you now have the ability to make updates to them when you are logged in with Keplr.
 
 Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
