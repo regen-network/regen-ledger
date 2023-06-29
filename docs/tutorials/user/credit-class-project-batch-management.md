@@ -26,11 +26,13 @@ Credit classes, projects, and batches are stored as objects in on-chain applicat
 
 Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend doing the same. If you use the same IRI format, your data will be readable by Regen Network Development applications.
 
-The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of a credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that is RDF compliant (see [Resource Description Framework (RDF)](https://www.w3.org/RDF/)).
+The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of a credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that conforms to the [Resource Description Framework (RDF)](https://www.w3.org/TR/rdf11-concepts/) data model. For more information about the relationship between RDF data and JSON-LD, see [Relationship to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf). 
 
 ### JSON-LD
 
 The [Regen Registry Standards](https://github.com/regen-network/regen-registry-standards) repository includes the data schemas currently being used by Regen Network Development. Following this approach, we start with building a [JSON-LD](https://json-ld.org/) object for each credit class, project, and batch we intend to create.
+
+The following templates can be used as a starting point. Users should feel free to add their own fields in additions to the ones provided. New fields that are added from other vocabularies should include references in the JSON-LD `@context`. See [The Context](https://www.w3.org/TR/json-ld11/#the-context) for more information.
 
 #### Classes
 
@@ -476,4 +478,6 @@ Everything you've done here can also be done using [Regen Mainnet](../../ledger/
 
 ### Regen Marketplace
 
-You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice there is not much information on the pages but you have some new abilities. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
+You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice the pages are a bit empty, but you now have the ability to make updates to them when you are logged with Keplr.
+
+Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
