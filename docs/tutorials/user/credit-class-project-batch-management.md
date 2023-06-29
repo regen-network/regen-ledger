@@ -229,7 +229,7 @@ The following includes a template for a credit batch:
 Once we have the supporting data for a credit class, project, and batch, we can then generate an IRI for each using the following command:
 
 ```sh
-curl -X GET -d '<json-ld>' https://api.registry.regen.network/iri-gen
+curl -X GET -d '<json-ld>' -H "Content-Type: application/json" https://api.registry.regen.network/iri-gen
 ```
 
 We now have the IRIs for the `metadata` field of each credit class, project, and batch.
