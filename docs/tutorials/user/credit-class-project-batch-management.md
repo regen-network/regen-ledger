@@ -2,9 +2,7 @@
 
 This tutorial covers the creation and management of credit classes, projects, and batches using the [command-line interface (CLI)](../../ledger/infrastructure/interfaces.html#command-line-interface). This tutorial will demonstrate with data standards and practices used by Regen Network Development for [Regen Registry Program](https://library.regen.network/).
 
-For information about working with, and having your credit class approved by, Regen Registry, see [Regen Registry Credit Classes](https://library.regen.network/v/regen-registry-program-guide/credit-classes).
-
-For information about creating and managing credit classes, projects, and batches using the [Regen Marketplace](https://app.regen.network/) application, see [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace).
+For information about working with, and having your credit class approved by, Regen Registry, see [Regen Registry Credit Classes](https://library.regen.network/v/regen-registry-program-guide/credit-classes). For information about managing credit classes, projects, and batches using the [Regen Marketplace](https://app.regen.network/) application, see [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace).
 
 ## Prerequisites
 
@@ -26,13 +24,13 @@ Credit classes, projects, and batches are stored as objects in on-chain applicat
 
 Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend doing the same. If you use the same IRI format, your data will be readable by Regen Network Development applications.
 
-The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of a credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that conforms to the [Resource Description Framework (RDF)](https://www.w3.org/TR/rdf11-concepts/) data model. For more information about the relationship between RDF data and JSON-LD, see [Relationship to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf). 
+The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of a credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that conforms to the [Resource Description Framework (RDF)](https://www.w3.org/TR/rdf11-concepts/) data model. For more information about the relationship between RDF and JSON-LD, see [Relationship to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf). 
 
 ### JSON-LD
 
 The [Regen Registry Standards](https://github.com/regen-network/regen-registry-standards) repository includes the data schemas currently being used by Regen Network Development. Following this approach, we start with building a [JSON-LD](https://json-ld.org/) object for each credit class, project, and batch we intend to create.
 
-The following templates can be used as a starting point. Users should feel free to add their own fields in addition to the ones provided. New fields that are added from other vocabularies should include references in the JSON-LD `@context`. See [The Context](https://www.w3.org/TR/json-ld11/#the-context) for more information.
+The following templates can be used as a starting point. Feel free to add your own fields in addition to the ones provided. New fields added from other vocabularies should include references in the JSON-LD `@context`. For more information about `@context`, see [The Context](https://www.w3.org/TR/json-ld11/#the-context).
 
 #### Classes
 
@@ -242,13 +240,13 @@ At this point in the tutorial, we have our supporting data for a credit class, p
 
 If you are managing your own credit origination process, you need to host your own data. If you are not ready to figure out a solution for hosting data but you are ready to create a credit class, project, and batch, then feel free to skip to the [next section](#credit-class) and come back later.
 
-To make your data available in Regen Network Development applications, you need to use the same IRI generation method we used in the previous section and create a data resolver using the `data` module that points applications to the hosted data when provided the IRI of the data.
+To make your data available in Regen Network Development applications, you need to use the same IRI format we introduced in the previous section and create a data resolver using the `data` module that points applications to the hosted data when provided the IRI of the data.
 
 For more information about the `data` module, see [Data Concepts](../../modules/data/01_concepts.md).
 
 ### Define Resolver
 
-The following command will create a data resolver with a url of `[url]`. This is the URL at which you are hosting the data. You are claiming that given an IRI, an application can fetch the data at a specific host and path (e.g. `[url] + [iri]`) in complete or partial form depending on how you manage privacy.
+The following command will create a data resolver with a url of `[url]`. This is the URL at which you are hosting the data. You are claiming that given an IRI, an application can fetch the data at a specific host and path (e.g. `[url] + [iri]`) in complete or partial form.
 
 For example, if data with IRI `regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf` is registered to resolver with URL `https://data.example.com/`, an application should be able to fetch the data at `https://data.example.com/regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf`.
 
@@ -449,7 +447,7 @@ Now that you created a credit batch, you can look up the credit batch by denom:
 regen q ecocredit batch [batch-denom]
 ```
 
-You can also look up all credit balances for a given credit batch by batch denom:
+You can also look up all credit balances for a credit batch by denom:
 
 ```sh
 regen q ecocredit balances-by-batch [batch-denom]
@@ -478,6 +476,4 @@ Everything you've done here can also be done using [Regen Mainnet](../../ledger/
 
 ### Regen Marketplace
 
-You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice the pages are a bit empty, but you now have the ability to make updates to them when you are logged in with Keplr.
-
-Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
+You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice the pages are a bit empty, but you now have the ability to update them when logged in with Keplr. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
