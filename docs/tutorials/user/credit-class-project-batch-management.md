@@ -22,7 +22,7 @@ To create classes, projects, and batches on chain using the `ecocredit` module, 
 
 Credit classes, projects, and batches are stored as objects in on-chain application state. Each object has a `metadata` field that can be any arbitrary `string` with a maximum length of `256`. There are no additional restrictions on `metadata` but it was designed for content hashes.
 
-Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend doing the same. If you use the same IRI format, your data will be readable by Regen Network Development applications.
+Regen Network Development uses a custom [Internationalized Resource Identifier (IRI)](../../modules/data/01_concepts#iri) as the value of `metadata` for credit classes, projects, and batches created and managed by Regen Registry. If you are managing your own credit origination process, we recommend using the same IRI format, which will make your data readable by applications using Regen Network Development standards.
 
 The IRI contains a content hash with embedded information about how the content hash was created and how the data was hashed. To generate IRIs for the `metadata` fields of a credit class, project, and batch, we first need to construct "graph" data using JSON-LD format. When we say "graph" data here, we mean data that conforms to the [Resource Description Framework (RDF)](https://www.w3.org/TR/rdf11-concepts/) data model. For more information about the relationship between RDF and JSON-LD, see [Relationship to RDF](https://www.w3.org/TR/json-ld/#relationship-to-rdf). 
 
@@ -240,7 +240,7 @@ At this point in the tutorial, we have our supporting data for a credit class, p
 
 If you are managing your own credit origination process, you need to host your own data. If you are not ready to figure out a solution for hosting data but you are ready to create a credit class, project, and batch, then feel free to skip to the [next section](#credit-class) and come back later.
 
-To make your data available in Regen Network Development applications, you need to use the same IRI format we introduced in the previous section and create a data resolver using the `data` module that points applications to the hosted data when provided the IRI of the data.
+To make your data available in applications using Regen Network Development standards, you need to use the same IRI format we introduced in the previous section and create a data resolver using the `data` module that points applications to the hosted data when provided the IRI of the data.
 
 For more information about the `data` module, see [Data Concepts](../../modules/data/01_concepts.md).
 
@@ -266,7 +266,7 @@ regen q data resolver [id]
 
 ### Content Hash
 
-Before we can anchor and register the data we created in the previous section, we must convert our IRIs into JSON objects representing content hashes on chain.
+Before we can anchor and register the data we created in the previous section, we need to convert our IRIs into JSON objects representing content hashes on chain.
 
 To convert an IRI to a content hash, run the following command:
 
@@ -295,7 +295,7 @@ Now that you registered data to the resolver, you can look up resolvers by IRI:
 regen q data resolvers-by-iri [iri]
 ```
 
-If the data is in fact hosted at the location the data resolver is pointing to, the data can be fetched by Regen Network Development applications.
+If the data is in fact hosted at the location the data resolver is pointing to, the data can now be fetched within applications using the same standards as Regen Network Development.
 
 ## Credit Class
 
