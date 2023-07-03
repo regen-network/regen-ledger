@@ -6,7 +6,7 @@ An Internationalized Resource Identifier (IRI) is used within the data module to
 
 The IRI for a [raw content hash](#raw-content-hash) and a [graph content hash](#graph-content-hash) follow the same format but differ in how the content hash is encoded to accommodate for different properties. Each IRI includes a prefix, base58 encoded data (the encoded content hash), and a file extension.
 
-The format for a content hash:
+The format for an IRI:
 
 ```
 regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
