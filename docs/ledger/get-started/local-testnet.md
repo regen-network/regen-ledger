@@ -5,6 +5,7 @@ This document provides instructions for running a single node network on your lo
 ## Prerequisites
 
 - [Install Regen](./README.md)
+- [Manage Keys](./manage-keys.md)
 
 ## Quickstart
 

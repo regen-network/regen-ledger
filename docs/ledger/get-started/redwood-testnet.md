@@ -5,6 +5,7 @@ This document provides information about available node endpoints for Redwood Te
 ## Prerequisites
 
 - [Install Regen](./README.md)
+- [Manage Keys](./manage-keys.md)
 
 ## Node Endpoints
 

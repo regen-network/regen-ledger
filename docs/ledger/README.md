@@ -50,7 +50,7 @@ Learn how to interact with Regen Mainnet using the `regen` binary:
 
 ## Redwood Testnet
 
-Redwood Testnet (otherwise referred to as "Regen Redwood") is a stable test network with the same configuration as Regen Mainnet. Developers can use Redwood Testnet to test out features. Unofficial REGEN tokens can be redeemed using a faucet (see [Redwood Testnet](./get-started/redwood-testnet.md)).
+Redwood Testnet (otherwise referred to as "Regen Redwood") is a stable test network with the same configuration as Regen Mainnet. Developers can use Redwood Testnet to test out features. Unofficial REGEN tokens can be redeemed using a token faucet.
 
 #### Wallets
 

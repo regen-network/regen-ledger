@@ -5,6 +5,7 @@ This document provides information about available node endpoints for Regen Main
 ## Prerequisites
 
 - [Install Regen](./README.md)
+- [Manage Keys](./manage-keys.md)
 
 ## Node Endpoints
 
