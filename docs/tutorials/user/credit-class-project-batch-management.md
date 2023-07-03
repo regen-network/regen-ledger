@@ -56,11 +56,16 @@ The following includes a template for a credit class:
     },
     "schema:url": {
       "@type": "schema:URL"
+    },
+    "schema:image": {
+      "@type": "schema:URL"
     }
   },
+  "@type": "regen:CreditClass",
   "schema:name": "",
   "schema:description": "",
   "schema:url": "",
+  "schema:image": "",
   "regen:sourceRegistry": {
     "schema:name": "",
     "schema:url": ""
@@ -133,6 +138,7 @@ The following includes a template for a project:
       "@container": "@list"
     }
   },
+  "@type": "regen:Project",
   "schema:name": "",
   "schema:description": "",
   "regen:projectDesignDocument": "",
@@ -202,6 +208,7 @@ The following includes a template for a credit batch:
       "@type": "schema:URL"
     }
   },
+  "@type": "regen:CreditBatch",
   "regen:verificationReports": [
     {
       "schema:url": ""
