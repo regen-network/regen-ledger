@@ -14,6 +14,14 @@ The following RPC endpoints are for full nodes operated by RND and VitWit:
 - [http://redwood.regen.network:26657/](http://redwood.regen.network:26657/)
 - [http://redwood-sentry.vitwit.com:26657/](http://redwood-sentry.vitwit.com:26657/)
 
+## Testnet Tokens
+
+To interact with Redwood Testnet, you'll need some testnet tokens. You can redeem unofficial REGEN tokens using the following command:
+
+```sh
+curl -X POST -d '{"address": "YOUR_REGEN_ADDRESS"}' http://redwood.regen.network:8000
+```
+
 ## Configuration
 
 To interact with a node on Redwood Testnet, we first need to make sure we have `chain-id` and `node` properly configured for the `regen` binary.
@@ -44,12 +52,4 @@ To configure the node endpoint for all commands, run the following:
 
 ```sh
 regen config node http://redwood.regen.network:26657/
-```
-
-## Testnet Tokens
-
-To interact with Redwood Testnet, you'll need some testnet tokens. You can redeem unofficial REGEN tokens using the following command:
-
-```sh
-curl -X POST -d '{"address": "YOUR_REGEN_ADDRESS"}' http://redwood.regen.network:8000
 ```

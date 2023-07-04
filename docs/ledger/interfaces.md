@@ -81,7 +81,7 @@ curl \
     http://localhost:1317/cosmos/bank/v1beta1/balances/<address>
 ```
 
-You can also use you browser: [http://localhost:1317/cosmos/bank/v1beta1/balances/](http://localhost:1317/cosmos/bank/v1beta1/balances/)
+You can also use your browser: [http://localhost:1317/cosmos/bank/v1beta1/balances/](http://localhost:1317/cosmos/bank/v1beta1/balances/)
 
 If you are running a local node and the REST server is not working, make sure the REST service is enabled in `~/.regen/config/app.toml`. If you enable Swagger, the OpenAPI documentation will be available at [http://localhost:1317/swagger/](http://localhost:1317/swagger/).
 
