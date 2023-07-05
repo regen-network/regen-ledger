@@ -7,7 +7,8 @@ For information about working with, and having your credit class approved by, Re
 ## Prerequisites
 
 - [Install Regen](../../ledger/get-started)
-- [Redwood Testnet](../../ledger/get-started/live-networks.md#redwood-testnet)
+- [Manage Keys](../../ledger/get-started/manage-keys.md)
+- [Redwood Testnet](../../ledger/get-started/redwood-testnet.md)
 
 ## Recommended
 
