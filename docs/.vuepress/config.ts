@@ -57,31 +57,24 @@ export default defineUserConfig({
       '/ledger/': [
         {
           text: 'Introduction',
-          collapsable: false,
           children: [
             '/ledger/',
+            '/ledger/architecture',
+            '/ledger/interfaces',
           ],
         },
         {
           text: 'Get Started',
-          collapsable: false,
           children: [
             '/ledger/get-started/',
+            '/ledger/get-started/manage-keys',
             '/ledger/get-started/local-testnet',
-            '/ledger/get-started/live-networks',
-          ],
-        },
-        {
-          text: 'Infrastructure',
-          collapsable: false,
-          children: [
-            '/ledger/infrastructure/',
-            '/ledger/infrastructure/interfaces',
+            '/ledger/get-started/regen-mainnet',
+            '/ledger/get-started/redwood-testnet',
           ],
         },
         {
           text: 'Migration Guides',
-          collapsable: false,
           children: [
             '/ledger/migrations/',
             '/ledger/migrations/v4.0-migration',
@@ -93,8 +86,6 @@ export default defineUserConfig({
       '/modules/': [
         {
           text: 'Modules',
-          collapsable: false,
-          sidebarDepth: 0,
           children: [
             {
               text: 'List of Modules',
@@ -104,8 +95,6 @@ export default defineUserConfig({
         },
         {
           text: 'Data Module',
-          collapsable: true,
-          sidebarDepth: 0,
           children: [
             {
               text: 'Overview',
@@ -123,8 +112,6 @@ export default defineUserConfig({
         },
         {
           text: 'Ecocredit Module',
-          collapsable: true,
-          sidebarDepth: 0,
           children: [
             {
               text: 'Overview',
@@ -142,8 +129,6 @@ export default defineUserConfig({
         },
         {
           text: 'Intertx Module',
-          collapsable: true,
-          sidebarDepth: 0,
           children: [
             {
               text: 'Overview',
@@ -157,7 +142,6 @@ export default defineUserConfig({
       '/validators/': [
         {
           text: 'Validators',
-          collapsable: false,
           children: [
             {
               text: 'Overview',
@@ -167,7 +151,6 @@ export default defineUserConfig({
         },
         {
           text: 'Get Started',
-          collapsable: false,
           children: [
             '/validators/get-started/',
             '/validators/get-started/install-regen',
@@ -180,7 +163,6 @@ export default defineUserConfig({
         },
         {
           text: 'Upgrade Guides',
-          collapsable: false,
           children: [
             '/validators/upgrades/',
             '/validators/upgrades/v2.0-upgrade',
@@ -195,7 +177,6 @@ export default defineUserConfig({
       '/commands/': [
         {
           text: 'Commands',
-          collapsable: false,
           children: [
             {
               text: 'List of Commands',
@@ -205,8 +186,6 @@ export default defineUserConfig({
         },
         {
           text: 'Regen App',
-          collapsable: false,
-          sidebarDepth: 0,
           children: [
             { text: 'regen', link: '/commands/regen' },
             { text: 'regen add-genesis-account', link: '/commands/regen_add-genesis-account' },
@@ -234,8 +213,6 @@ export default defineUserConfig({
       '/tutorials/': [
         {
           text: 'Tutorials',
-          collapsable: false,
-          sidebarDepth: 0,
           children: [
             {
               text: 'List of Tutorials',
@@ -245,7 +222,6 @@ export default defineUserConfig({
         },
         {
           text: 'User Tutorials',
-          collapsable: false,
           children: [
             '/tutorials/user/ibc-transfers',
             '/tutorials/user/currency-allowlist-proposal',
@@ -254,7 +230,6 @@ export default defineUserConfig({
         },
         {
           text: 'Developer Tutorials',
-          collapsable: false,
           children: [
             '/tutorials/developer/tendermint-postgres-indexer',
           ],
@@ -263,8 +238,6 @@ export default defineUserConfig({
       '/specs/': [
         {
           text: 'Specifications',
-          collapsable: false,
-          sidebarDepth: 0,
           children: [
             {
               text: 'Overview',
@@ -275,7 +248,6 @@ export default defineUserConfig({
         },
         {
           text: 'RFCs',
-          collapsable: false,
           children: [
             {
               text: 'RFC Overview',
@@ -287,7 +259,6 @@ export default defineUserConfig({
         },
         {
           text: 'ADRs',
-          collapsable: false,
           children: [
             {
               text: 'ADR Overview',

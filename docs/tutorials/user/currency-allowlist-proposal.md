@@ -4,7 +4,7 @@ Allowed currencies are currencies (or "denoms") that can be used for the asking 
 
 Community members or representatives of projects/protocols are encouraged to submit proposals to add allowed currencies. See [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for additional information about submitting proposals and to ensure the recommended steps are taken for a successful proposal.
 
-This document provides instructions for submitting a currency allowlist proposal using the [command-line interface (CLI)](../../ledger/infrastructure/interfaces.md#command-line-interface). For instructions on how to install the `regen` binary, see [Install Regen](../../ledger/get-started/README.md).
+This document provides instructions for submitting a currency allowlist proposal using the [command-line interface (CLI)](../../ledger/interfaces.md#command-line-interface). For instructions on how to install the `regen` binary, see [Install Regen](../../ledger/get-started/README.md).
 
 ## Create Proposal
 

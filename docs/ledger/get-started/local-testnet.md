@@ -2,9 +2,10 @@
 
 This document provides instructions for running a single node network on your local machine and then submitting your first few transactions to that network using the command line. Running a single node network is a great way to get familiar with Regen Ledger and its functionality.
 
-## Install Regen
+## Prerequisites
 
-If you have not already done so, first you'll need to [Install Regen](README.md).
+- [Install Regen](./README.md)
+- [Manage Keys](./manage-keys.md)
 
 ## Quickstart
 
