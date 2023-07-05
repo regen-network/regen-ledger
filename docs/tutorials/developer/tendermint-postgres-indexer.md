@@ -80,7 +80,7 @@ The next step is to test the indexer using a local test network.
 The following documentation will help you get started:
 
 - [Install Regen](https://docs.regen.network/ledger/get-started/#building-from-source)
-- [Local Testnet](https://docs.regen.network/ledger/get-started/local-testnet.html#create-accounts)
+- [Manage Keys](https://docs.regen.network/ledger/get-started/local-testnet.html#manage-keys)
 
 ## Postgres indexer configuration
 

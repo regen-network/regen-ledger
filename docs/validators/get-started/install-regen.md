@@ -1,12 +1,12 @@
 # Install Regen
 
-The following instructions are for building the `regen` binary from source, also available at [Install Regen](../../ledger/get-started) alongside general information about the `regen` binary.
+The following instructions are for building and installing the `regen` binary. In these instructions, we use the same version that was used to start both Regen Mainnet and Redwood Testnet. An alternative to syncing a node from genesis is [Using State Sync](using-state-sync.md) with the latest version.
 
-A significant difference here is that the genesis binary is used for each chain because a validator node needs to start from genesis (unless [Using State Sync](using-state-sync.md)).
+## Prerequisites
 
-The following instructions also assume that you have already completed [Initial Setup](README).
+- [Initial Setup](README)
 
-### Installation
+## Installation
 
 Clone the `regen-ledger` repository:
 
