@@ -8,6 +8,7 @@ const { description } = require('../package')
 import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
 import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
 import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
+import codeCopyPlugin from '@snippetors/vuepress-plugin-code-copy';
 
 /**
  * Ref：https://v2.vuepress.vuejs.org/guide/configuration.html#config-file
@@ -275,5 +276,6 @@ export default defineUserConfig({
     googleAnalyticsPlugin({
       id: process.env.GOOGLE_ANALYTICS_ID
     }),
+    codeCopyPlugin(),
   ]
 })
