@@ -240,6 +240,8 @@ Once we have the supporting data for a credit class, project, and batch, we can 
 curl -X GET -d '<json-ld>' -H "Content-Type: application/json" https://api.registry.regen.network/iri-gen
 ```
 
+In the above example, you can also use a filepath instead of the raw JSON-LD. To read data from a file directly, you can add the `@` symbol followed by the filepath, e.g. `@/path/to/file.jsonld`.
+
 We now have the IRIs for the `metadata` field of each credit class, project, and batch.
 
 ## Data Resolvers
