@@ -1,4 +1,4 @@
-# IBC Transfers
+# IBC Transfers and Interchain Accounts
 
 The [Inter-Blockchain Communication (IBC)](https://ibcprotocol.org/) protocol is enabled on Regen Mainnet meaning token holders can transfer tokens between Regen Mainnet and other IBC enabled blockchains.
 

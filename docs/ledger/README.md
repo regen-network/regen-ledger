@@ -64,7 +64,7 @@ The following block explorers currently support Redwood Testnet:
 
 - [Aneka](https://redwood.regen.aneka.io)
 
-#### Testnet Tokens
+#### Token Faucets
 
 The following token faucets currently support Redwood Testnet:
 
@@ -88,4 +88,4 @@ Have any questions, comments, or new ideas? The following community channels are
 Are you interested in contributing to the Regen Ledger codebase or documentation? Check out the contributing guidelines and feel free to open an issue or pull request:
 
 - [Regen Ledger GitHub](https://github.com/regen-network/regen-ledger)
-- [Regen Ledger Contributing](https://github.com/regen-network/regen-ledger/CONTRIBUTING.md)
+- [Regen Ledger Contributing](https://github.com/regen-network/regen-ledger/blob/main/CONTRIBUTING.md)
