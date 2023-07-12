@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/x/intertx
 go 1.19
 
 require (
-	cosmossdk.io/errors v1.0.0-beta.7
+	cosmossdk.io/errors v1.0.0
 	github.com/cosmos/cosmos-sdk v0.46.12
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/ibc-go/v5 v5.3.1
@@ -111,7 +111,7 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/term v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
