@@ -12,7 +12,7 @@ require (
 	github.com/regen-network/regen-ledger/x/data/v2 v2.0.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
 	github.com/regen-network/regen-ledger/x/intertx v1.0.0
-	github.com/rs/zerolog v1.29.1
+	github.com/rs/zerolog v1.30.0
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
