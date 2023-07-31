@@ -22,8 +22,8 @@ require (
 	github.com/tendermint/tendermint v0.34.28
 	github.com/tendermint/tm-db v0.6.7
 	github.com/thanhpk/randstr v1.0.6
-	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
-	google.golang.org/grpc v1.56.2
+	google.golang.org/genproto/googleapis/api v0.0.0-20230526203410-71b5a4ffd15e
+	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 	gotest.tools/v3 v3.5.0
 	pgregory.net/rapid v1.0.0
@@ -158,12 +158,15 @@ require (
 	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
+	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/term v0.7.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.114.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20230629202037-9506855d4529 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230706204954-ccb25ca9f130 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
