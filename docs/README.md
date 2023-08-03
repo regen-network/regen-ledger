@@ -14,6 +14,6 @@ features:
 - title: Built on Cosmos SDK
   details: Interchain compatible out of the box. Expose your ecocredits to a world of secondary markets
     with IBC.
-footer: Regen Network Development Inc.
+footer: Regen Network Development, PBC
 ---
 
