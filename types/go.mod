@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/types/v2
 go 1.19
 
 require (
-	cosmossdk.io/errors v1.0.0-beta.7
+	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.0.1
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.46.12
@@ -12,17 +12,17 @@ require (
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/regen-network/gocuke v0.6.2
+	github.com/regen-network/gocuke v0.6.3
 	github.com/regen-network/regen-ledger/api/v2 v2.0.0
-	github.com/rs/zerolog v1.29.1
+	github.com/rs/zerolog v1.30.0
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
 	github.com/tendermint/tendermint v0.34.28
 	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/grpc v1.56.1
+	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 	gotest.tools/v3 v3.5.0
-	pgregory.net/rapid v1.0.0
+	pgregory.net/rapid v1.1.0
 )
 
 require (
@@ -31,7 +31,6 @@ require (
 	github.com/99designs/keyring v1.2.1 // indirect
 	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
-	github.com/alecthomas/participle/v2 v2.0.0-alpha7 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
@@ -52,8 +51,10 @@ require (
 	github.com/cosmos/iavl v0.19.6 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.2 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
-	github.com/cucumber/common/gherkin/go/v22 v22.0.0 // indirect
-	github.com/cucumber/common/messages/go/v17 v17.1.1 // indirect
+	github.com/cucumber/common/messages/go/v19 v19.1.2 // indirect
+	github.com/cucumber/gherkin/go/v26 v26.0.3 // indirect
+	github.com/cucumber/messages/go/v21 v21.0.1 // indirect
+	github.com/cucumber/tag-expressions/go/v5 v5.0.1 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
@@ -131,11 +132,13 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0 // indirect
-	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/term v0.7.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
-	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
+	google.golang.org/genproto v0.0.0-20230629202037-9506855d4529 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20230526203410-71b5a4ffd15e // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230706204954-ccb25ca9f130 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
