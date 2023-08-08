@@ -170,7 +170,7 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.13-regen-1
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.13-regen-1.0.20230808200833-1ca44628edae
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
