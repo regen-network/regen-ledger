@@ -89,6 +89,19 @@ In this section we submit a message-based governance proposal to add a [credit t
 
 For more information about credit types, see [Ecocredit Overview](../../modules/ecocredit) and [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
+### Create Metadata
+
+Using the following as a template, create a JSON file that includes the proposal metadata.
+
+```json
+{
+  "title": "Add biodiversity credit type",
+  "summary": "This proposal adds a new biodiversity credit type."
+}
+```
+
+Either upload this file to IPFS or simply convert this file to a JSON string, and then either the hash or JSON string can be used in the following section as "metadata".
+
 ### Create Proposal
 
 Using the following as a template, create a JSON file that includes information about the proposal and the message to be executed if the proposal is successful:
@@ -96,7 +109,8 @@ Using the following as a template, create a JSON file that includes information 
 ```json
 {
   "title": "Add biodiversity credit type",
-  "description": "This proposal adds a new biodiversity credit type.",
+  "summary": "This proposal adds a new biodiversity credit type.",
+  "metadata": "<ipfs-hash-or-json-string>",
   "messages": [
     {
       "@type": "/regen.ecocredit.v1.MsgAddCreditType",
@@ -134,6 +148,19 @@ Keep in mind that non-native tokens represented by an IBC denom are different wi
 
 Check out [Understanding IBC Denoms](https://tutorials.cosmos.network/tutorials/understanding-ibc-denoms/) for more information.
 
+### Create Metadata
+
+Using the following as a template, create a JSON file that includes the proposal metadata.
+
+```json
+{
+  "title": "Add $REGEN to the marketplace allowlist",
+  "summary": "This proposal adds $REGEN to the marketplace allowlist."
+}
+```
+
+Either upload this file to IPFS or simply convert this file to a JSON string, and then either the hash or JSON string can be used in the following section as "metadata".
+
 ### Create Proposal
 
 Using the following as a template, create a JSON file that includes information about the proposal and the message to be executed if the proposal is successful:
@@ -141,7 +168,8 @@ Using the following as a template, create a JSON file that includes information 
 ```json
 {
   "title": "Add $REGEN to the marketplace allowlist",
-  "description": "This proposal adds $REGEN to the marketplace allowlist",
+  "summary": "This proposal adds $REGEN to the marketplace allowlist.",
+  "metadata": "<ipfs-hash-or-json-string>",
   "messages": [
     {
       "@type": "/regen.ecocredit.marketplace.v1.MsgAddAllowedDenom",
@@ -174,6 +202,19 @@ In this section we submit a message-based governance proposal to grant an accoun
 
 Check out [Authz Overview](https://docs.cosmos.network/v0.46/modules/authz/) for more information about authorizations.
 
+### Create Metadata
+
+Using the following as a template, create a JSON file that includes the proposal metadata.
+
+```json
+{
+  "title": "Grant authorization for adding credit types",
+  "summary": "This proposal grants an authorization to a group account."
+}
+```
+
+Either upload this file to IPFS or simply convert this file to a JSON string, and then either the hash or JSON string can be used in the following section as "metadata".
+
 ### Create Proposal
 
 Using the following as a template, create a JSON file that includes information about the proposal and the message to be executed if the proposal is successful:
@@ -181,7 +222,8 @@ Using the following as a template, create a JSON file that includes information 
 ```json
 {
   "title": "Grant authorization for adding credit types",
-  "description": "This proposal grants an authorization to a group account to call MsgAddCreditType on behalf of the gov module",
+  "summary": "This proposal grants an authorization to a group account.",
+  "metadata": "<ipfs-hash-or-json-string>",
   "messages": [
     {
       "@type": "/cosmos.authz.v1beta1.MsgGrant",
