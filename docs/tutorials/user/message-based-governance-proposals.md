@@ -2,9 +2,7 @@
 
 This tutorial uses the [command-line interface (CLI)](../../ledger/interfaces.md#command-line-interface) to demonstrates how to submit message-based governance proposals. This tutorial uses messages from the `ecocredit` and `authz` modules as examples but any message for any module wired up to Regen Ledger works the same. For example, you could create and manage a group using governance proposals and the `group` module.
 
-Community members are encouraged to submit governance proposals on all networks governed and maintained by the Regen Network community. If you are planning to submit a proposal to Regen Mainnet, make sure you follow [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for a successful outcome.
-
-Also, if you are submitting a proposal to Regen Mainnet, make sure you provide a meaningful title and description. The description should include a rationale as to why this proposal should pass and can be written in either plain text or markdown (see [Proposal #15](https://wallet.keplr.app/chains/regen/proposals/15) for an example).
+Community members are encouraged to submit thoughtful governance proposals on all networks governed and maintained by the Regen Network community. If you are planning to submit a proposal to Regen Mainnet, make sure you follow [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for a successful outcome.
 
 ## Prerequisites
 
@@ -18,23 +16,15 @@ Also, if you are submitting a proposal to Regen Mainnet, make sure you provide a
 
 ## Introduction
 
-Governance proposals have historically been used to update a specific set of parameters defined within each application module. These types of proposals are now referred to as "legacy" proposals and are slowly being replaced by message-based governance proposals.
+For Regen Ledger and other Cosmos SDK applications, governance proposals known as "parameter-change proposals" have historically been used to update a specific set of parameters defined within each application module. As of Cosmos SDK `v0.46`, parameter-change proposals became known as "legacy" proposals in favor of message-based governance proposals.
 
-Following the upgrade to Regen Ledger `v5`, the `submit-proposal` command now submits message-based governance proposals, so if you need to submit a proposal to update a module parameter outside the `ecocredit` module, you will mostly likely need to use the [submit-legacy-proposal](../../commands/regen_tx_gov_submit-legacy-proposal.md) command rather than `submit-proposal`.
+Following the upgrade to Regen Ledger `v5`, the [submit-proposal](../../commands/regen_tx_gov_submit-proposal.md) command submits message-based governance proposals and the [submit-legacy-proposal](../../commands/regen_tx_gov_submit-legacy-proposal.md) command submits "legacy" proposals including "parameter-change proposals". To submit a parameter-change proposal for any module other than the `ecocredit` module, you need to use the `submit-legacy-proposal` command.
 
-When the `ecocredit` module was updated in `v5` to use message-based governance proposals, how ecocredit "parameters" are changed was also updated, which means `submit-legacy-proposal` no longer works with the `ecocredit` module.
-
-Although how "parameters" are changed, you can still query them using the following command:
-
-```sh
-regen q ecocredit params
-```
-
-Each of these are now stored separately in state and are more loosely defined as parameters. A new set of messages were also added to update each independently. The messages can only be executed by the `authority` account, which is currently configured to be the `gov` module account.
+With message-based governance proposals, the messages in each proposal are signed by the `gov` module account if and when the proposal is executed, or in other words, messages within a proposal are called on behalf of the `gov` module account and therefore the `gov` module account also has the ability to create and manage entities such as credit classes and governance bodies (i.e. groups).
 
 #### Gov Account
 
-With message-based governance proposals, the `gov` module account is the signer for each message within a proposal when the proposal is executed. As the signer, we need to know the address of the `gov` module account for when we construct our messages.
+With message-based governance proposals, the `gov` module account is the signer for each message in a proposal if and when the proposal is executed. As the signer, we need to know the address of the `gov` module account when we construct our messages.
 
 To look up the `gov` module account, run the following command:
 
@@ -55,6 +45,38 @@ account:
   name: gov
   permissions:
   - burner
+```
+
+#### Ecocredit Module
+
+The `ecocredit` module is currently the only module wired up in Regen Ledger that supports message-based governance proposals specifically for updating "parameters" but any message from any module can be used in message-based governance proposals (as demonstrated below with `MsgGrant`).
+
+With the migration to message-based governance proposals, a new set of messages were added to the `ecocredit` module that only an `authority` account can execute. In the current configuration of Regen Ledger, the `gov` module account is the `authority` account, and for the purpose of this tutorial we can think of the `authority` account as being synonymous with the `gov` account.
+
+The following is the complete list of `ecocredit` messages added in Regen Ledger `v5` to support the changing of module "parameters" using message-based governance proposals:
+
+- [regen.ecocredit.v1.MsgAddAllowedBridgeChain](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.AddAllowedBridgeChain)
+- [regen.ecocredit.v1.MsgAddClassCreator](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.AddClassCreator)
+- [regen.ecocredit.v1.MsgAddCreditType](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.AddCreditType)
+- [regen.ecocredit.v1.MsgRemoveAllowedBridgeChain](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.RemoveAllowedBridgeChain)
+- [regen.ecocredit.v1.MsgRemoveClassCreator](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.RemoveClassCreator)
+- [regen.ecocredit.v1.MsgSetClassCreatorAllowlist](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.SetClassCreatorAllowlist)
+- [regen.ecocredit.v1.MsgUpdateClassFee](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.UpdateClassFee)
+- [regen.ecocredit.basket.v1.MsgUpdateDateCriteria](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.UpdateDateCriteria)
+- [regen.ecocredit.basket.v1.MsgUpdateBasketFee](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.UpdateBasketFee)
+- [regen.ecocredit.marketplace.v1.MsgAddAllowedDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Msg.AddAllowedDenom)
+- [regen.ecocredit.marketplace.v1.MsgRemoveAllowedDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Msg.RemoveAllowedDenom)
+
+You can still query `ecocredit` "parameters" using the following command:
+
+```sh
+regen q ecocredit params
+```
+
+Each of these "parameters" are now stored separately in state. You can also query them individually. To see all available queries for the `ecocredit` module, run the following command:
+
+```sh
+regen q ecocredit --help
 ```
 
 #### Submit Proposals

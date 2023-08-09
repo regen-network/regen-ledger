@@ -41,7 +41,7 @@ For examples on how to interact with state using the `regen` binary, see [regen 
 - [Take](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.Take)
 - [UpdateBasketFee](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.UpdateBasketFee)
 - [UpdateCurator](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.UpdateCurator)
-- [MsgUpdateDateCriteria](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.MsgUpdateDateCriteria)
+- [UpdateDateCriteria](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.UpdateDateCriteria)
 
 ## Marketplace Submodule
 
