@@ -51,9 +51,9 @@ account:
 
 The `ecocredit` module is currently the only module wired up in Regen Ledger that supports message-based governance proposals specifically for updating "parameters" but any message from any module can be used in message-based governance proposals (as [demonstrated below](#grant-authorization) with `MsgGrant`).
 
-With the migration to message-based governance proposals, a new set of messages were added to the `ecocredit` module that only an `authority` account can execute. In the current configuration of Regen Ledger, the `gov` module account is the `authority` account, and for the purpose of this tutorial we can think of the `authority` account as being synonymous with the `gov` account.
+With the migration to message-based governance proposals, a new set of messages were added to the `ecocredit` module that only an `authority` account can execute. In the current configuration of Regen Ledger, the `gov` module account is the `authority` account, and for the purpose of this tutorial we can think of the `authority` account as being synonymous with the `gov` module account.
 
-The following is the complete list of `ecocredit` messages added in Regen Ledger `v5` to support the changing of module "parameters" using message-based governance proposals:
+The following is the complete list of `ecocredit` messages added in Regen Ledger `v5` to support the changing of "parameters" using message-based governance proposals:
 
 - [regen.ecocredit.v1.MsgAddAllowedBridgeChain](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.AddAllowedBridgeChain)
 - [regen.ecocredit.v1.MsgAddClassCreator](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.AddClassCreator)
@@ -85,7 +85,7 @@ In the following sections, examples of message-based governance proposals using 
 
 ## Add Credit Type
 
-In this section we submit a message-based governance proposal to add a [credit type](../../modules/ecocredit/01_concepts.md#credit-type) to an allowlist of network approved credit types. A credit type represents the primary unit of measurement used when measuring ecological outcomes and is used when creating new credit classes.
+In this section we submit a message-based governance proposal to add a [credit type](../../modules/ecocredit/01_concepts.md#credit-type) to an allowlist of network approved credit types. A credit type represents the primary unit of measurement used when measuring ecological outcomes. Each credit class is assigned a single credit type upon creation.
 
 For more information about credit types, see [Ecocredit Overview](../../modules/ecocredit) and [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
