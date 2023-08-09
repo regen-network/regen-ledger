@@ -20,11 +20,11 @@ For Regen Ledger and other Cosmos SDK applications, governance proposals known a
 
 Following the upgrade to Regen Ledger `v5`, the [submit-proposal](../../commands/regen_tx_gov_submit-proposal.md) command submits message-based governance proposals and the [submit-legacy-proposal](../../commands/regen_tx_gov_submit-legacy-proposal.md) command submits "legacy" proposals including "parameter-change proposals". To submit a parameter-change proposal for any module other than the `ecocredit` module, you need to use the `submit-legacy-proposal` command.
 
-With message-based governance proposals, the messages in each proposal are signed by the `gov` module account if and when the proposal is executed, or in other words, messages within a proposal are called on behalf of the `gov` module account and therefore the `gov` module account also has the ability to create and manage entities such as credit classes and governance bodies (i.e. groups).
+With message-based governance proposals, the messages in each proposal are signed by the `gov` module account if and when the proposal is executed, or in other words, messages within a proposal are called on behalf of the `gov` module account. This makes it possible for the `gov` module account also has the ability to create and manage entities such as credit classes and groups.
 
 #### Gov Account
 
-With message-based governance proposals, the `gov` module account is the signer for each message in a proposal if and when the proposal is executed. As the signer, we need to know the address of the `gov` module account for when we construct our messages.
+With message-based governance proposals, the `gov` module account is the signer for each message in a proposal if and when the proposal is executed. As the signer, we need to know the address of the `gov` module account for when we construct messages.
 
 To look up the `gov` module account, run the following command:
 
@@ -51,7 +51,7 @@ account:
 
 The `ecocredit` module is currently the only module wired up in Regen Ledger that supports message-based governance proposals specifically for updating "parameters" but any message from any module can be used in message-based governance proposals (as [demonstrated below](#grant-authorization) with `MsgGrant`).
 
-With the migration to message-based governance proposals, a new set of messages were added to the `ecocredit` module that only an `authority` account can execute. In the current configuration of Regen Ledger, the `gov` module account is the `authority` account, and for the purpose of this tutorial we can think of the `authority` account as being synonymous with the `gov` module account.
+With the migration to message-based governance proposals, a new set of messages were added to the `ecocredit` module that only an `authority` account can execute. In the current configuration of Regen Ledger, the `gov` module account is the `authority` account, and for the purpose of this tutorial we can think of the `authority` account as synonymous with the `gov` module account.
 
 The following is the complete list of `ecocredit` messages added in Regen Ledger `v5` to support the changing of "parameters" using message-based governance proposals:
 
