@@ -24,7 +24,7 @@ With message-based governance proposals, the messages in each proposal are signe
 
 #### Gov Account
 
-With message-based governance proposals, the `gov` module account is the signer for each message in a proposal if and when the proposal is executed. As the signer, we need to know the address of the `gov` module account when we construct our messages.
+With message-based governance proposals, the `gov` module account is the signer for each message in a proposal if and when the proposal is executed. As the signer, we need to know the address of the `gov` module account for when we construct our messages.
 
 To look up the `gov` module account, run the following command:
 
@@ -49,7 +49,7 @@ account:
 
 #### Ecocredit Module
 
-The `ecocredit` module is currently the only module wired up in Regen Ledger that supports message-based governance proposals specifically for updating "parameters" but any message from any module can be used in message-based governance proposals (as demonstrated below with `MsgGrant`).
+The `ecocredit` module is currently the only module wired up in Regen Ledger that supports message-based governance proposals specifically for updating "parameters" but any message from any module can be used in message-based governance proposals (as [demonstrated below](#grant-authorization) with `MsgGrant`).
 
 With the migration to message-based governance proposals, a new set of messages were added to the `ecocredit` module that only an `authority` account can execute. In the current configuration of Regen Ledger, the `gov` module account is the `authority` account, and for the purpose of this tutorial we can think of the `authority` account as being synonymous with the `gov` account.
 
@@ -81,11 +81,13 @@ regen q ecocredit --help
 
 #### Submit Proposals
 
-The next sections of the tutorial provides governance proposal examples. Each example only includes one message but all messages could be included within a single proposal in which case all messages included would all be executed within the same transaction when the proposal is executed.
+In the following sections, examples of message-based governance proposals using `ecocredit` and `authz` messages are provided. Each example only includes one message but all messages could be included within a single message-based governance proposal in which case all messages would be executed in the order provided when the proposal is executed.
 
 ## Add Credit Type
 
-...
+In this section we submit a message-based governance proposal to add a [credit type](../../modules/ecocredit/01_concepts.md#credit-type) to an allowlist of network approved credit types. A credit type represents the primary unit of measurement used when measuring ecological outcomes and is used when creating new credit classes.
+
+For more information about credit types, see [Ecocredit Overview](../../modules/ecocredit) and [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
 ### Create Proposal
 
@@ -99,7 +101,12 @@ Using the following as a template, create a JSON file that includes information 
     {
       "@type": "/regen.ecocredit.v1.MsgAddCreditType",
       "authority": "regen10d07y265gmmuvt4z0w9aw880jnsr700j9qceqh",
-      "": ""
+      "credit_type": {
+        "abbreviation": "BIO",
+        "name": "biodiversity",
+        "unit": "species per square kilometer",
+        "precision": 6
+      }
     }
   ]
 }
@@ -208,4 +215,8 @@ For more information about the command, add `--help` or see [the docs](../../com
 
 ## Conclusion
 
-For more messages, check out [Modules](../../modules).
+Congratulations! You have now successfully submitted a message-based governance proposal.
+
+Feel free to experiment with submitting message-based governance proposals on Redwood Testnet. If you submit a proposal on Redwood Testnet that you would like to see succeed, be sure to reach out on Discord, otherwise the proposal may go unnoticed.
+
+As mentioned above, proposals submitted to Regen Mainnet should follow [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for best results. We also recommend submitting a proposal on Redwood Testnet before submitting on Regen Mainnet if you are new to message-based governance proposals or proposals in general.
