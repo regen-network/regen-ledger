@@ -194,7 +194,7 @@ For more information about the command, add `--help` or see [the docs](../../com
 
 ## Grant Authorization
 
-In this section we submit a message-based governance proposal to grant an account the authorization to call `MsgAddCreditType` without going through a network-wide governance process. Keep in mind that we could grant an authorization for any message, and doing so enables the account represented as the grantee to act on behalf of the gov module. 
+In this section we submit a message-based governance proposal to grant an account an authorization to call `MsgAddCreditType` without going through a network-wide governance process. Keep in mind that we could grant an authorization for any message, and doing so enables the account represented as the grantee to act on behalf of the gov module. 
 
 Check out [Authz Overview](https://docs.cosmos.network/v0.46/modules/authz/) for more information about authorizations.
 
@@ -205,7 +205,7 @@ Using the following as a template, create a JSON file that includes the proposal
 ```json
 {
   "title": "Grant authorization for adding credit types",
-  "summary": "This proposal grants an authorization to a group account."
+  "summary": "This proposal grants an authorization for adding credit types."
 }
 ```
 
@@ -251,7 +251,9 @@ For more information about the command, add `--help` or see [the docs](../../com
 
 ## View Proposal
 
-Once you've submitted a proposal, you can query all proposals using the following command:
+Once you've submitted a proposal, you can view the proposal using a query command.
+
+You can query all proposals using the following command:
 
 ```sh
 regen q gov proposals
