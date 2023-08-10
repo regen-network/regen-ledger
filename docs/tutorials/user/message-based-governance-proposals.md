@@ -249,6 +249,20 @@ regen tx gov submit-proposal [proposal-json]
 
 For more information about the command, add `--help` or see [the docs](../../commands/regen_tx_gov_submit-proposal.md).
 
+## View Proposal
+
+Once you've submitted a proposal, you can query all proposals using the following command:
+
+```sh
+regen q gov proposals
+```
+
+You can also query an individual proposal using the following command:
+
+```sh
+regen q gov proposal [proposal-id]
+```
+
 ## Conclusion
 
 Congratulations! You have now successfully submitted a message-based governance proposal.
