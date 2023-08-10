@@ -1,6 +1,6 @@
 # Message-Based Governance Proposals
 
-This tutorial uses the [command-line interface (CLI)](../../ledger/interfaces.md#command-line-interface) to demonstrates how to submit message-based governance proposals. This tutorial uses messages from the `ecocredit` and `authz` modules as examples but any message for any module wired up to Regen Ledger works the same. For example, you could create and manage a group using governance proposals and the `group` module.
+This tutorial uses the [command-line interface (CLI)](../../ledger/interfaces.md#command-line-interface) to demonstrate how to submit message-based governance proposals. This tutorial uses messages from the `ecocredit` and `authz` modules as examples but any message for any module wired up to Regen Ledger works the same. For example, you could create and manage a group using governance proposals and the `group` module.
 
 Community members are encouraged to submit thoughtful governance proposals on all networks governed and maintained by the Regen Network community. If you are planning to submit a proposal to Regen Mainnet, make sure you follow [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for a successful outcome.
 
