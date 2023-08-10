@@ -108,8 +108,6 @@ Using the following as a template, create a JSON file that includes information 
 
 ```json
 {
-  "title": "Add biodiversity credit type",
-  "summary": "This proposal adds a new biodiversity credit type.",
   "metadata": "<ipfs-hash-or-json-string>",
   "messages": [
     {
@@ -167,8 +165,6 @@ Using the following as a template, create a JSON file that includes information 
 
 ```json
 {
-  "title": "Add $REGEN to the marketplace allowlist",
-  "summary": "This proposal adds $REGEN to the marketplace allowlist.",
   "metadata": "<ipfs-hash-or-json-string>",
   "messages": [
     {
@@ -221,8 +217,6 @@ Using the following as a template, create a JSON file that includes information 
 
 ```json
 {
-  "title": "Grant authorization for adding credit types",
-  "summary": "This proposal grants an authorization to a group account.",
   "metadata": "<ipfs-hash-or-json-string>",
   "messages": [
     {
