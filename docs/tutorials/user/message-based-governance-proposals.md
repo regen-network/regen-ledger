@@ -100,7 +100,7 @@ Using the following as a template, create a JSON file that includes the proposal
 }
 ```
 
-Either upload this file to IPFS or simply convert this file to a JSON string, and then either the hash or JSON string can be used in the following section as "metadata".
+Upload this file to IPFS, and then use the IPFS hash in the following section as "metadata".
 
 ### Create Proposal
 
@@ -108,7 +108,7 @@ Using the following as a template, create a JSON file that includes information 
 
 ```json
 {
-  "metadata": "<ipfs-hash-or-json-string>",
+  "metadata": "<ipfs-hash>",
   "messages": [
     {
       "@type": "/regen.ecocredit.v1.MsgAddCreditType",
@@ -157,7 +157,7 @@ Using the following as a template, create a JSON file that includes the proposal
 }
 ```
 
-Either upload this file to IPFS or simply convert this file to a JSON string, and then either the hash or JSON string can be used in the following section as "metadata".
+Upload this file to IPFS, and then use the IPFS hash in the following section as "metadata".
 
 ### Create Proposal
 
@@ -165,7 +165,7 @@ Using the following as a template, create a JSON file that includes information 
 
 ```json
 {
-  "metadata": "<ipfs-hash-or-json-string>",
+  "metadata": "<ipfs-hash>",
   "messages": [
     {
       "@type": "/regen.ecocredit.marketplace.v1.MsgAddAllowedDenom",
@@ -209,7 +209,7 @@ Using the following as a template, create a JSON file that includes the proposal
 }
 ```
 
-Either upload this file to IPFS or simply convert this file to a JSON string, and then either the hash or JSON string can be used in the following section as "metadata".
+Upload this file to IPFS, and then use the IPFS hash in the following section as "metadata".
 
 ### Create Proposal
 
@@ -217,7 +217,7 @@ Using the following as a template, create a JSON file that includes information 
 
 ```json
 {
-  "metadata": "<ipfs-hash-or-json-string>",
+  "metadata": "<ipfs-hash>",
   "messages": [
     {
       "@type": "/cosmos.authz.v1beta1.MsgGrant",
@@ -228,7 +228,7 @@ Using the following as a template, create a JSON file that includes information 
           "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
           "msg": "/regen.ecocredit.v1.MsgAddCreditType"
         },
-        "expiration": null
+        "expiration": "2024-01-01T00:00:00Z"
       }
     }
   ]
@@ -269,6 +269,6 @@ regen q gov proposal [proposal-id]
 
 Congratulations! You have now successfully submitted a message-based governance proposal.
 
-Feel free to experiment with submitting message-based governance proposals on Redwood Testnet. If you submit a proposal on Redwood Testnet that you would like to see succeed, be sure to reach out on Discord, otherwise the proposal may go unnoticed.
+If you submit a proposal on Redwood Testnet that you would like to see succeed, be sure to reach out on Discord, otherwise the proposal may go unnoticed.
 
 As mentioned above, proposals submitted to Regen Mainnet should follow [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for best results. We also recommend submitting a proposal on Redwood Testnet before submitting on Regen Mainnet if you are new to message-based governance proposals or proposals in general.
