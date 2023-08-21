@@ -225,7 +225,7 @@ export default defineUserConfig({
           text: 'User Tutorials',
           children: [
             '/tutorials/user/ibc-transfers',
-            '/tutorials/user/currency-allowlist-proposal',
+            '/tutorials/user/message-based-governance-proposals',
             '/tutorials/user/credit-class-project-batch-management',
           ],
         },
