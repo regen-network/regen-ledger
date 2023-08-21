@@ -482,7 +482,7 @@ Congratulations! You have now created and updated a credit class, project, and b
 
 ### Regen Mainnet
 
-Everything you've done here can also be done using [Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet). All you need to do is update the configuration for the `regen` binary to use a different chain ID and node endpoint (you'll also need to own official REGEN tokens). See [Live Networks](../../ledger/get-started/live-networks.md) for configuration instructions.
+Everything you've done here can also be done using Regen Mainnet. All you need to do is update the configuration for the `regen` binary to use a different chain ID and node endpoint (you'll also need to own official REGEN tokens). See [Regen Mainnet](../../ledger/get-started/regen-mainnet.md) for configuration instructions.
 
 ### Regen Marketplace
 
