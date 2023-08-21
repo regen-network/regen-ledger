@@ -16,15 +16,21 @@ The `os` (i.e. "operating system") keyring backend is best for users planning to
 
 The `test` keyring backend is best for testing, i.e. when security or recovery is not a concern. When using the `test` keyring backed, the keys are stored in the application's "home" directory.
 
+To check the current configuration, run the following:
+
+```sh
+regen config
+```
+
 To configure the keyring backend for all commands, run the following:
 
 ```sh
-regen config keyring-backend test
+regen config keyring-backend [keyring-backend]
 ```
 
 ## Add Key
 
-When you add a key, you are adding a new or existing key to the keyring backend. If you already have an existing key that you would prefer to reuse here, you can use the `--recover` flag.
+When you add a key, you are adding a new or existing key to the keyring backend. If you already have an existing key that you would prefer to reuse here, you can use the `--recover` flag. Also, if you have a ledger device, you can use the `--ledger` flag.
 
 To add a key to the keyring backed, run the following command:
 
