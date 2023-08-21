@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/v5
 go 1.19
 
 require (
-	cosmossdk.io/math v1.0.1
+	cosmossdk.io/math v1.1.2
 	github.com/cosmos/cosmos-sdk v0.46.12
 	github.com/cosmos/ibc-go/v5 v5.3.1
 	github.com/gorilla/mux v1.8.0
