@@ -349,6 +349,8 @@ To create a credit class, run the following command:
 regen tx ecocredit create-class [issuers] [credit-type-abbrev] [metadata]
 ```
 
+The `credit-type-abbrev` must be one of the allowed credit types for your chain.
+By default, the only allowed credit type is `C`, so unless you've manually configured other credit types in your chains genesis file, you will need to use `C` here.
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_create-class.md).
 
 Now that you created a credit class, you can look up the credit class by id:
