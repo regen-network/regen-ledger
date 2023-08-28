@@ -315,9 +315,9 @@ A credit class represents a collection of projects and issuers whereby the proje
 
 For more information about credit classes, see [Ecocredit Concepts](../../modules/ecocredit/01_concepts.md).
 
-### Allowlist and Fee
+### Allowlist, Type, and Fee
 
-Before we create a credit class, we need to check the [credit class creator allowlist](../../modules/ecocredit/01_concepts.md#credit-class-creator-allowlist) and that we have enough tokens for the credit class creation fee.
+Before we create a credit class, we need to check the [credit class creator allowlist](../../modules/ecocredit/01_concepts.md#credit-class-creator-allowlist), the available [credit types](../../modules/ecocredit/01_concepts.md#credit-type), and that we have enough tokens for the credit class creation fee.
 
 To check whether the credit class creator allowlist is enabled, run the following command:
 
@@ -331,13 +331,19 @@ To check allowed credit class creators (only if allowlist enabled), run the foll
 regen q ecocredit allowed-class-creators
 ```
 
+To check available credit types, run the following command:
+
+```sh
+regen q ecocredit credit-types
+```
+
 To check the credit class creation fee, run the following command:
 
 ```sh
 regen q ecocredit class-fee
 ```
 
-You should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the token amount and denomination needed to create a credit class, which we add to the next command using the `--class-fee` flag.
+If you are connected to Regen Redwood, you should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the list of available credit types, including the `credit-type-abbrev` for each credit type, and the token amount and denomination for the credit class creation fee, which we add to the next command using the `--class-fee` flag.
 
 ### Create Credit Class
 
@@ -349,8 +355,6 @@ To create a credit class, run the following command:
 regen tx ecocredit create-class [issuers] [credit-type-abbrev] [metadata]
 ```
 
-The `credit-type-abbrev` must be one of the allowed credit types for your chain.
-By default, the only allowed credit type is `C`, so unless you've manually configured other credit types in your chains genesis file, you will need to use `C` here.
 For more information about the command, add `--help` or check out [the docs](../../commands/regen_tx_ecocredit_create-class.md).
 
 Now that you created a credit class, you can look up the credit class by id:
