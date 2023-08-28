@@ -343,7 +343,7 @@ To check the credit class creation fee, run the following command:
 regen q ecocredit class-fee
 ```
 
-If you are connected to Regen Redwood, you should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the list of available credit types, including the `credit-type-abbrev` for each credit type, and the token amount and denomination for the credit class creation fee, which we add to the next command using the `--class-fee` flag.
+If you are connected to Redwood Testnet, you should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the list of available credit types, including the `credit-type-abbrev` for each credit type, and the token amount and denomination for the credit class creation fee, which we add to the next command using the `--class-fee` flag.
 
 The values queried above are all managed through an on-chain governance process, meaning these values can be updated via governance proposals. For more information about submitting governance proposals to update these values, check out [Message-Based Governance Proposals](./message-based-governance-proposals.md).
 
