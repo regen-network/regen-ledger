@@ -19,7 +19,7 @@
   "license": "MIT",
   "devDependencies": {
     "@snippetors/vuepress-plugin-code-copy": "^1.2.3",
-    "@vuepress/plugin-google-analytics": "^2.0.0-beta.66",
+    "@vuepress/plugin-google-analytics": "^2.0.0-beta.67",
     "dotenv": "^16.3.1",
     "vuepress-vite": "^2.0.0-beta.67"
   }
