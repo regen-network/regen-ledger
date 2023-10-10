@@ -69,6 +69,7 @@ The following block explorers currently support Redwood Testnet:
 The following token faucets currently support Redwood Testnet:
 
 - [Chora](https://chora.io/faucet)
+- [Regen](https://app.regen.network/faucet)
 
 #### Command-Line
 
