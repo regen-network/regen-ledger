@@ -9,6 +9,8 @@ import { backToTopPlugin } from '@vuepress/plugin-back-to-top'
 import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
 import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
 import codeCopyPlugin from '@snippetors/vuepress-plugin-code-copy';
+import { sitemapPlugin } from "vuepress-plugin-sitemap2";
+
 
 /**
  * Ref：https://v2.vuepress.vuejs.org/guide/configuration.html#config-file
@@ -277,5 +279,8 @@ export default defineUserConfig({
       id: process.env.GOOGLE_ANALYTICS_ID
     }),
     codeCopyPlugin(),
+    sitemapPlugin({
+        hostname: "https://docs.regen.network",
+    })
   ]
 })
