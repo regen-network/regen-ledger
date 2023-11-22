@@ -1,10 +1,11 @@
 syntax = "proto3";
+
 package regen.ecocredit.v1alpha1;
 
-import "regen/ecocredit/v1alpha1/types.proto";
 import "gogoproto/gogo.proto";
+import "regen/ecocredit/v1alpha1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1alpha1";
 
 // GenesisState defines ecocredit module's genesis state.
 message GenesisState {
@@ -19,7 +20,7 @@ message GenesisState {
   repeated BatchInfo batch_info = 3;
 
   // sequences is the list of credit type sequence.
-  repeated CreditTypeSeq sequences  = 4;
+  repeated CreditTypeSeq sequences = 4;
 
   // balances is the list of credit batch tradable/retired units.
   repeated Balance balances = 5;

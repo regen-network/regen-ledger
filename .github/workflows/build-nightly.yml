@@ -1,0 +1,42 @@
+name: Build Nightly
+
+# **What it does**: Builds the regen application on a set
+# schedule using the goreleaser configuration.
+#
+# **Why we have it**: Ensures the application can be built
+# using the goreleaser configuration.
+#
+# **What does it impact**: Application stability.
+
+on:
+  schedule:
+    # Runs "at 1am every day"
+    - cron: "0 0 * * *"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build release
+        run: |
+          sudo rm -rf dist
+          make release
+        env:
+          GORELEASER_DEBUG: true

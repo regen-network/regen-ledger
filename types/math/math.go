@@ -4,9 +4,10 @@ package math
 import (
 	"fmt"
 
+	"cosmossdk.io/errors"
 	"github.com/cockroachdb/apd/v2"
 
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var exactContext = apd.Context{
@@ -46,7 +47,7 @@ func SafeSubBalance(x Dec, y Dec) (Dec, error) {
 	}
 
 	if z.IsNegative() {
-		return z, errors.ErrInsufficientFunds
+		return z, sdkerrors.ErrInsufficientFunds
 	}
 
 	return z, nil
@@ -59,7 +60,7 @@ func SafeAddBalance(x Dec, y Dec) (Dec, error) {
 
 	if x.IsNegative() || y.IsNegative() {
 		return z, errors.Wrap(
-			errors.ErrInvalidRequest,
+			sdkerrors.ErrInvalidRequest,
 			fmt.Sprintf("AddBalance() requires two non-negative Dec parameters, but received %s and %s", x, y))
 	}
 

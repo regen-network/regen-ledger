@@ -1,4 +1,4 @@
-// Mostly copied from https://github.com/cosmos/gaia/tree/master/app
+// Mostly copied from https://github.com/cosmos/gaia/tree/main/app
 package app
 
 import (

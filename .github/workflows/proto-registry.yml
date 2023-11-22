@@ -1,0 +1,34 @@
+name: Proto Registry
+
+# **What it does**: Pushes proto files to buf schema registry when
+# proto files have been modified (https://buf.build/regen/regen-ledger).
+#
+# **Why we have it**: Buf schema registry serves as a source of truth
+# for application developers consuming the Regen Ledger API.
+#
+# **What does it impact**: Application accessibility.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'proto/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bufbuild/buf-setup-action@v1
+      - uses: bufbuild/buf-push-action@v1
+        with:
+          input: 'proto'
+          buf_token: ${{ secrets.BUF_TOKEN }}

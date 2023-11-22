@@ -1,0 +1,269 @@
+syntax = "proto3";
+
+package regen.ecocredit.basket.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "regen/ecocredit/basket/v1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/types/v1";
+
+// Msg is the regen.ecocredit.basket.v1 Msg service.
+service Msg {
+  // Create creates a basket that can hold different types of ecocredits that
+  // meet the basket's criteria. Upon depositing ecocredits into the basket,
+  // basket tokens are minted and sent to depositor using the Cosmos SDK Bank
+  // module. This allows basket tokens to be utilized within IBC. Basket tokens
+  // are fully fungible with other basket tokens from the same basket. The
+  // basket token denom is derived from the basket name, credit type
+  // abbreviation, and credit type precision (i.e. basket name "foo", credit
+  // type exponent 6, and credit type abbreviation "C" generates the denom
+  // eco.uC.foo). Baskets can limit credit acceptance criteria based on a
+  // combination of credit type, credit classes, and credit batch start date.
+  // Credits can be taken from the basket in exchange for basket tokens. Taken
+  // credits will be immediately retired, unless disable_auto_retire is set to
+  // true. When set to true, credits may be received in either a tradable or
+  // retired state, depending on the taker's request. If the basket fee
+  // governance parameter is set, a fee of equal or greater value must be
+  // provided in the request. Only the amount specified in the fee parameter
+  // will be charged, even if a greater value fee is provided. Fees from
+  // creating a basket are burned.
+  rpc Create(MsgCreate) returns (MsgCreateResponse);
+
+  // Put deposits credits into the basket from the holder's tradable balance in
+  // exchange for basket tokens. The amount of tokens received is calculated by
+  // the following formula: sum(credits_deposited) * 10^credit_type_exponent.
+  // The credits being deposited MUST adhere to the criteria of the basket.
+  rpc Put(MsgPut) returns (MsgPutResponse);
+
+  // Take exchanges basket tokens for credits from the specified basket. Credits
+  // are taken deterministically, ordered by oldest batch start date to the most
+  // recent batch start date. If the basket has disable_auto_retire set to
+  // false, both retirement_jurisdiction and retire_on_take must be set, and the
+  // taken credits will be retired immediately upon receipt. Otherwise, credits
+  // may be received as tradable or retired, based on the request.
+  rpc Take(MsgTake) returns (MsgTakeResponse);
+
+  // UpdateBasketFee is a governance method that allows for updating the basket
+  // creation fee. If not set, the basket creation fee will be removed and no
+  // fee will be required to create a basket.
+  //
+  // Since Revision 2
+  rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
+
+  // UpdateCurator updates basket curator.
+  //
+  // Since Revision 2
+  rpc UpdateCurator(MsgUpdateCurator) returns (MsgUpdateCuratorResponse);
+
+  // UpdateDateCriteria is a governance method that allows for updating the date
+  // criteria of a basket. Updating basket date criteria could affect the value
+  // of basket tokens and therefore requires a network-wide governance process.
+  //
+  // Since Revision 3
+  rpc UpdateDateCriteria(MsgUpdateDateCriteria)
+      returns (MsgUpdateDateCriteriaResponse);
+}
+
+// MsgCreateBasket is the Msg/CreateBasket request type.
+message MsgCreate {
+  option (cosmos.msg.v1.signer) = "curator";
+
+  // curator is the address of the basket curator who is able to change certain
+  // basket settings.
+  string curator = 1;
+
+  // name will be used to together with prefix to create a bank denom for this
+  // basket token. It can be between 3-8 alphanumeric characters, with the
+  // first character being alphabetic.
+  //
+  // The bank denom will be formed from name and credit type with the format
+  // `eco.<prefix><credit_type_abbrev>.<name>` where prefix is the prefix of
+  // a standard SI unit derived from credit type precision.
+  string name = 2;
+
+  // description is a human-readable description of the basket denom that should
+  // be at most 256 characters.
+  string description = 3;
+
+  // Deprecated (Since Revision 1): This field is no longer used and will be
+  // removed in the next version. The value of credit type precision is always
+  // used as the exponent when determining the prefix for basket denom, defining
+  // bank denom metadata, and converting credits to/from basket tokens.
+  uint32 exponent = 4 [ deprecated = true ];
+
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
+  bool disable_auto_retire = 5;
+
+  // credit_type_abbrev is the abbreviation of the credit type this basket is
+  // able to hold.
+  string credit_type_abbrev = 6;
+
+  // allowed_classes are the credit classes allowed to be put in the basket
+  repeated string allowed_classes = 7;
+
+  // date_criteria is the date criteria for batches admitted to the basket.
+  // At most, only one of the date criteria fields can be set.
+  DateCriteria date_criteria = 8;
+
+  // fee is the basket creation fee. A fee is not required if no fee exists
+  // in the basket fee parameter. The fee must be greater than or equal to the
+  // fee param. The curator will be charged the amount specified in the fee
+  // parameter, even if a greater amount is provided.
+  //
+  // Note (Since Revision 1): Although this field supports a list of fees, the
+  // basket creator must provide no more than one fee (i.e. one Coin in a list
+  // of Coins). Providing more than one fee will fail basic message validation.
+  // This field will be updated to a single fee rather than a list of fees in
+  // the next version to reflect these requirements.
+  repeated cosmos.base.v1beta1.Coin fee = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// MsgCreateBasketResponse is the Msg/CreateBasket response type.
+message MsgCreateResponse {
+
+  // basket_denom is the unique denomination ID of the newly created basket.
+  string basket_denom = 1;
+}
+
+// MsgAddToBasket is the Msg/AddToBasket request type.
+message MsgPut {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  // owner is the owner of credits being put into the basket.
+  string owner = 1;
+
+  // basket_denom is the basket denom to add credits to.
+  string basket_denom = 2;
+
+  // credits are credits to add to the basket. If they do not match the basket's
+  // admission criteria, the operation will fail.
+  repeated BasketCredit credits = 3;
+}
+
+// MsgAddToBasketResponse is the Msg/AddToBasket response type.
+message MsgPutResponse {
+
+  // amount_received is the integer amount of basket tokens received.
+  string amount_received = 1;
+}
+
+// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
+message MsgTake {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  // owner is the owner of the basket tokens.
+  string owner = 1;
+
+  // basket_denom is the basket bank denom to take credits from.
+  string basket_denom = 2;
+
+  // amount is the integer number of basket tokens to convert into credits.
+  string amount = 3;
+
+  // retirement_location is the optional retirement jurisdiction for the
+  // credits which will be used only if retire_on_take is true.
+  //
+  // Deprecated (Since Revision 1): This field will be removed in the next
+  // version in favor of retirement_jurisdiction. Only one of these need to be
+  // set and retirement_jurisdiction will be used if both are set.
+  string retirement_location = 4 [ deprecated = true ];
+
+  // retire_on_take is a boolean that dictates whether the ecocredits
+  // received in exchange for the basket tokens will be received as
+  // retired or tradable credits. If the basket has disable_auto_retire set to
+  // false, retire_on_take MUST be set to true, and a retirement jurisdiction
+  // must be provided.
+  bool retire_on_take = 5;
+
+  // retirement_jurisdiction is the optional retirement jurisdiction for the
+  // credits which will be used only if retire_on_take is true.
+  //
+  // Since Revision 1
+  string retirement_jurisdiction = 6;
+
+  // retirement_reason is any arbitrary string that specifies the reason for
+  // retiring credits. The reason will be included in EventRetire and is not
+  // stored in state.
+  //
+  // Since Revision 2
+  string retirement_reason = 7;
+}
+
+// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
+message MsgTakeResponse {
+
+  // credits are the credits taken out of the basket.
+  repeated BasketCredit credits = 1;
+}
+
+// MsgUpdateBasketFee is the Msg/UpdateBasketFee request type.
+//
+// Since Revision 2
+message MsgUpdateBasketFee {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // fee is the basket creation fee. If not set, the basket creation fee will be
+  // removed and no fee will be required to create a basket.
+  cosmos.base.v1beta1.Coin fee = 2;
+}
+
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+//
+// Since Revision 2
+message MsgUpdateBasketFeeResponse {}
+
+// MsgUpdateCurator is the Msg/UpdateCurator request type.
+//
+// Since Revision 2
+message MsgUpdateCurator {
+  option (cosmos.msg.v1.signer) = "curator";
+
+  // curator is the address of the basket curator.
+  string curator = 1;
+
+  // denom is the unique identifier of the basket.
+  string denom = 2;
+
+  // new_curator is the address of the account that will become the
+  // new curator of the basket.
+  string new_curator = 3;
+}
+
+// MsgUpdateCuratorResponse is the Msg/UpdateCurator response type.
+//
+// Since Revision 2
+message MsgUpdateCuratorResponse {}
+
+// MsgUpdateDateCriteria is the Msg/UpdateDateCriteria request type.
+//
+// Since Revision 3
+message MsgUpdateDateCriteria {
+  option (cosmos.msg.v1.signer) = "curator";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the unique identifier of the basket.
+  string denom = 2;
+
+  // new_date_criteria is the new date criteria for batches admitted to the
+  // basket. At most, only one of the date criteria fields can be set.
+  DateCriteria new_date_criteria = 8;
+}
+
+// MsgUpdateDateCriteriaResponse is the Msg/UpdateDateCriteria response type.
+//
+// Since Revision 3
+message MsgUpdateDateCriteriaResponse {}

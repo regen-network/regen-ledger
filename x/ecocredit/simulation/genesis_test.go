@@ -5,16 +5,25 @@ import (
 	"math/rand"
 	"testing"
 
+	"cosmossdk.io/math"
+
 	"github.com/stretchr/testify/require"
+	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
+
+	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/simulation"
 )
 
 func TestRandomizedGenState(t *testing.T) {
@@ -31,33 +40,56 @@ func TestRandomizedGenState(t *testing.T) {
 		Rand:         r,
 		NumBonded:    3,
 		Accounts:     simtypes.RandomAccounts(r, 3),
-		InitialStake: 1000,
+		InitialStake: math.NewInt(1000),
 		GenState:     make(map[string]json.RawMessage),
 	}
 
 	simulation.RandomizedGenState(&simState)
 
-	var ecocreditGenesis ecocredit.GenesisState
-	simState.Cdc.MustUnmarshalJSON(simState.GenState[ecocredit.ModuleName], &ecocreditGenesis)
+	bz := simState.GenState[ecocredit.ModuleName]
 
-	require.Equal(t, ecocreditGenesis.Params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
-	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
-	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(18))))
-	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
-
-	require.Len(t, ecocreditGenesis.ClassInfo, 3)
-	require.Len(t, ecocreditGenesis.BatchInfo, 3)
-	require.Len(t, ecocreditGenesis.Balances, 6)
-	require.Len(t, ecocreditGenesis.Supplies, 3)
-
-	require.Equal(t, ecocreditGenesis.Sequences, []*ecocredit.CreditTypeSeq{
-		{
-			Abbreviation: "C",
-			SeqNumber:    4,
-		},
-		{
-			Abbreviation: "BIO",
-			SeqNumber:    4,
-		},
+	db := dbm.NewMemDB()
+	backend := ormtable.NewBackend(ormtable.BackendOptions{
+		CommitmentStore: db,
+		IndexStore:      db,
 	})
+
+	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+
+	ormCtx := ormtable.WrapContextDefault(backend)
+	baseStore, err := api.NewStateStore(ormdb)
+	require.NoError(t, err)
+
+	marketStore, err := marketapi.NewStateStore(ormdb)
+	require.NoError(t, err)
+
+	jsonSource, err := ormjson.NewRawMessageSource(bz)
+	require.NoError(t, err)
+
+	err = ormdb.ImportJSON(ormCtx, jsonSource)
+	require.NoError(t, err)
+
+	allowListEnabled, err := baseStore.ClassCreatorAllowlistTable().Get(ormCtx)
+	require.NoError(t, err)
+
+	require.True(t, allowListEnabled.Enabled)
+
+	creator, err := sdk.AccAddressFromBech32("regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4")
+	require.NoError(t, err)
+
+	_, err = baseStore.AllowedClassCreatorTable().Get(ormCtx, creator)
+	require.NoError(t, err)
+
+	classFee, err := baseStore.ClassFeeTable().Get(ormCtx)
+	require.NoError(t, err)
+
+	require.Equal(t, classFee.Fee.Denom, sdk.DefaultBondDenom)
+	require.Equal(t, classFee.Fee.Amount, "8")
+
+	allowedDenom, err := marketStore.AllowedDenomTable().Get(ormCtx, sdk.DefaultBondDenom)
+	require.NoError(t, err)
+	require.Equal(t, allowedDenom.BankDenom, sdk.DefaultBondDenom)
+	require.Equal(t, allowedDenom.DisplayDenom, sdk.DefaultBondDenom)
+	require.Equal(t, allowedDenom.Exponent, uint32(18))
 }

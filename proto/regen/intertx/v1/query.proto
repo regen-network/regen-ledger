@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package regen.intertx.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/intertx/types/v1";
+
+// Query defines the gRPC querier service.
+service Query {
+
+  // QueryInterchainAccount returns the interchain account for given owner
+  // address on a given connection pair
+  rpc InterchainAccount(QueryInterchainAccountRequest)
+      returns (QueryInterchainAccountResponse) {
+    option (google.api.http).get =
+        "/regen/intertx/v1/interchain-account/{owner}/{connection_id}";
+  }
+}
+
+// QueryInterchainAccountRequest is the request type for the
+// Query/InterchainAccountAddress RPC
+message QueryInterchainAccountRequest {
+
+  // owner is the address of the account that owns the ICA.
+  string owner = 1;
+
+  // connection_id is the connection the ICA claimed.
+  string connection_id = 2;
+}
+
+// QueryInterchainAccountResponse the response type for the
+// Query/InterchainAccountAddress RPC
+message QueryInterchainAccountResponse {
+
+  // interchain_account_address is the address of the ICA.
+  string interchain_account_address = 1;
+}

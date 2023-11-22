@@ -1,0 +1,53 @@
+name: Sims Nightly
+
+# **What it does**: Runs application simulations with multiple seeds
+# and increased block numbers on a set schedule.
+#
+# **Why we have it**: Ensures the application is production ready.
+#
+# **What does it impact**: Application stability.
+
+on:
+  schedule:
+    # Runs "at 1am every day"
+    - cron: "0 0 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+      - run: NUM_BLOCKS=100 make sim-app-multi-seed
+
+  import-export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+      - run: NUM_BLOCKS=100 make sim-import-export-multi-seed
+
+  after-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+      - run: NUM_BLOCKS=100 make sim-after-import-multi-seed
+
+  determinism:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+      - run: NUM_BLOCKS=20 make sim-determinism-multi-seed

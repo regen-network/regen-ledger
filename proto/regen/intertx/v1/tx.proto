@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package regen.intertx.v1;
+
+import "cosmos/msg/v1/msg.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/intertx/types/v1";
+
+// Msg defines the intertx Msg service.
+service Msg {
+  // Register defines a rpc handler for MsgRegisterAccount
+  rpc RegisterAccount(MsgRegisterAccount) returns (MsgRegisterAccountResponse);
+  // SubmitTx defines a rpc handler for MsgSubmitTx
+  rpc SubmitTx(MsgSubmitTx) returns (MsgSubmitTxResponse);
+}
+
+// MsgRegisterAccount defines the payload for Msg/RegisterAccount
+message MsgRegisterAccount {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  // owner is the address of the interchain account owner.
+  string owner = 1;
+
+  // connection_id is the connection id string (i.e. channel-5).
+  string connection_id = 2;
+
+  // version is the application version string. For example, this could be an
+  // ICS27 encoded metadata type or an ICS29 encoded metadata type with a nested
+  // application version.
+  string version = 3;
+}
+
+// MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
+message MsgRegisterAccountResponse {}
+
+// MsgSubmitTx defines the payload for Msg/SubmitTx
+message MsgSubmitTx {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  // owner is the owner address of the interchain account.
+  string owner = 1;
+
+  // connection_id is the id of the connection.
+  string connection_id = 2;
+
+  // msg is the bytes of the transaction msg to send.
+  google.protobuf.Any msg = 3;
+}
+
+// MsgSubmitTxResponse defines the response for Msg/SubmitTx
+message MsgSubmitTxResponse {}

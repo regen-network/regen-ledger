@@ -1,10 +1,11 @@
 ---
 home: true
-heroImage: /regen-logo.png
+heroImage: /regen-ledger.png
 heroText: Regen Ledger 
-tagline: Technical docs for Regen Network's blockchain
-actionText: Introduction →
-actionLink: /intro/
+tagline: Technical documentation for Regen Network's blockchain application and networks
+actions:
+- text: Introduction →
+  link: /ledger/
 features:
 - title: Ecosystem Service Credits
   details: Design and issue your own ecocredit. Agroforestry? Grasslands? Cover crops? You name it!
@@ -13,6 +14,6 @@ features:
 - title: Built on Cosmos SDK
   details: Interchain compatible out of the box. Expose your ecocredits to a world of secondary markets
     with IBC.
-footer: Regen Network Development Inc.
+footer: Regen Network Development, PBC
 ---
 

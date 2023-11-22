@@ -1,0 +1,225 @@
+syntax = "proto3";
+
+package regen.ecocredit.marketplace.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
+
+// Msg is the regen.ecocredit.marketplace.v1 Msg service.
+service Msg {
+
+  // Sell creates new sell orders.
+  rpc Sell(MsgSell) returns (MsgSellResponse);
+
+  // UpdateSellOrders updates existing sell orders.
+  rpc UpdateSellOrders(MsgUpdateSellOrders)
+      returns (MsgUpdateSellOrdersResponse);
+
+  // CancelSellOrder cancels a sell order and returns the credits from escrow.
+  rpc CancelSellOrder(MsgCancelSellOrder) returns (MsgCancelSellOrderResponse);
+
+  // BuyDirect purchases credits directly from the specified sell order.
+  rpc BuyDirect(MsgBuyDirect) returns (MsgBuyDirectResponse);
+
+  // AddAllowedDenom is a governance method that allows the addition of
+  // new allowed denom.
+  //
+  // Since Revision 1
+  rpc AddAllowedDenom(MsgAddAllowedDenom) returns (MsgAddAllowedDenomResponse);
+
+  // RemoveAllowedDenom is a governance method that removes allowed denom.
+  //
+  // Since Revision 1
+  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
+      returns (MsgRemoveAllowedDenomResponse);
+}
+
+// MsgSell is the Msg/Sell request type.
+message MsgSell {
+  option (cosmos.msg.v1.signer) = "seller";
+
+  // seller is the address of the account that is selling credits.
+  string seller = 1;
+
+  // orders are the sell orders being created.
+  repeated Order orders = 2;
+
+  // Order is the content of a new sell order.
+  message Order {
+
+    // batch_denom is the credit batch being sold.
+    string batch_denom = 1;
+
+    // quantity is the quantity of credits being sold from this batch. If it is
+    // less then the balance of credits the owner has available at the time this
+    // sell order is matched, the quantity will be adjusted downwards to the
+    // owner's balance. However, if the balance of credits is less than this
+    // quantity at the time the sell order is created, the operation will fail.
+    string quantity = 2;
+
+    // ask_price is the price the seller is asking for each unit of the
+    // batch_denom. Each credit unit of the batch will be sold for at least the
+    // ask_price or more.
+    cosmos.base.v1beta1.Coin ask_price = 3;
+
+    // disable_auto_retire disables auto-retirement of credits which allows a
+    // buyer to disable auto-retirement in their buy order enabling them to
+    // resell the credits to another buyer.
+    bool disable_auto_retire = 4;
+
+    // expiration is an optional timestamp when the sell order expires. When the
+    // expiration time is reached, the sell order is removed from state.
+    google.protobuf.Timestamp expiration = 5 [ (gogoproto.stdtime) = true ];
+  }
+}
+
+// MsgSellResponse is the Msg/Sell response type.
+message MsgSellResponse {
+
+  // sell_order_ids are the sell order IDs of the newly created sell orders.
+  repeated uint64 sell_order_ids = 1;
+}
+
+// MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
+message MsgUpdateSellOrders {
+  option (cosmos.msg.v1.signer) = "seller";
+
+  // seller is the address of the account that is selling credits.
+  string seller = 1;
+
+  // updates are updates to existing sell orders.
+  repeated Update updates = 2;
+
+  // Update is an update to an existing sell order.
+  message Update {
+
+    // sell_order_id is the ID of an existing sell order.
+    uint64 sell_order_id = 1;
+
+    // new_quantity is the updated quantity of credits available to sell.
+    string new_quantity = 2;
+
+    // new_ask_price is the new ask price for this sell order
+    cosmos.base.v1beta1.Coin new_ask_price = 3;
+
+    // disable_auto_retire updates the disable_auto_retire field in the sell
+    // order.
+    bool disable_auto_retire = 4;
+
+    // new_expiration is an optional timestamp when the sell order expires. When
+    // the expiration time is reached, the sell order is removed from state.
+    google.protobuf.Timestamp new_expiration = 5 [ (gogoproto.stdtime) = true ];
+  }
+}
+
+// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
+message MsgUpdateSellOrdersResponse {}
+
+// MsgCancelSellOrder is the Msg/CancelSellOrder request type.
+message MsgCancelSellOrder {
+  option (cosmos.msg.v1.signer) = "seller";
+
+  // seller is the address of the account that created the sell order and is
+  // therefore authorized to cancel the sell order.
+  string seller = 1;
+
+  // sell_order_id is the id of the seller order to cancel.
+  uint64 sell_order_id = 2;
+}
+
+// MsgCancelSellOrder is the Msg/CancelSellOrder response type.
+message MsgCancelSellOrderResponse {}
+
+// MsgBuyDirect is the Msg/BuyDirect request type.
+message MsgBuyDirect {
+  option (cosmos.msg.v1.signer) = "buyer";
+
+  // buyer is the address of the account that is buying credits.
+  string buyer = 1;
+
+  // orders is a list of orders for ecocredits.
+  repeated Order orders = 2;
+
+  // Order contains the information needed to purchase an ecocredit.
+  message Order {
+
+    // sell_order_id is the sell order ID against which the buyer is trying
+    // to buy.
+    uint64 sell_order_id = 2;
+
+    // quantity is the quantity of credits to buy.
+    string quantity = 3;
+
+    // bid_price is the price the buyer is willing to pay per credit.
+    cosmos.base.v1beta1.Coin bid_price = 4;
+
+    // disable_auto_retire allows auto-retirement to be disabled. If it is set
+    // to true the credits will not auto-retire and can be resold assuming that
+    // the corresponding sell order has auto-retirement disabled. If the sell
+    // order hasn't disabled auto-retirement and the buy order tries to disable
+    // it, that buy order will fail.
+    bool disable_auto_retire = 5;
+
+    // retirement_jurisdiction is the optional retirement jurisdiction for the
+    // credits which will be used only if disable_auto_retire is false.
+    string retirement_jurisdiction = 6;
+
+    // retirement_reason is any arbitrary string that specifies the reason for
+    // retiring credits. The reason will be included in EventRetire and is not
+    // stored in state.
+    //
+    // Since Revision 1
+    string retirement_reason = 7;
+  }
+}
+
+// MsgBuyDirectResponse is the Msg/BuyDirect response type.
+message MsgBuyDirectResponse {}
+
+// MsgAddAllowedDenom is the Msg/AddAllowedDenom request type.
+//
+// Since Revision 1
+message MsgAddAllowedDenom {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+  string bank_denom = 2;
+
+  // display_denom is the denom to display to the user and is informational.
+  // Because the denom is likely an IBC denom, this should be chosen by
+  // governance to represent the consensus trusted name of the denom.
+  string display_denom = 3;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 4;
+}
+
+// MsgAddAllowedDenomResponse is the Msg/AddAllowedDenom response type.
+//
+// Since Revision 1
+message MsgAddAllowedDenomResponse {}
+
+// MsgRemoveAllowedDenom is the Msg/RemoveAllowedDenom request type.
+//
+// Since Revision 1
+message MsgRemoveAllowedDenom {
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // denom is the denom to remove (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
+}
+
+// MsgRemoveAllowedDenomResponse is the Msg/RemoveAllowedDenom response type.
+//
+// Since Revision 1
+message MsgRemoveAllowedDenomResponse {}

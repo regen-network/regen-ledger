@@ -3,21 +3,22 @@ package ormstore
 import (
 	"testing"
 
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/cosmos/cosmos-sdk/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	storetypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/reflect/protoreflect"
+
+	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 )
 
-func sdkContextForStoreKey(key *types.KVStoreKey) sdk.Context {
+func sdkContextForStoreKey(key *storetypes.KVStoreKey) sdk.Context {
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
 	cms.MountStoreWithDB(key, storetypes.StoreTypeIAVL, db)
@@ -29,11 +30,14 @@ func sdkContextForStoreKey(key *types.KVStoreKey) sdk.Context {
 }
 
 func TestStoreKeyDB(t *testing.T) {
-	storeKey := types.NewKVStoreKey("test")
+	storeKey := storetypes.NewKVStoreKey("test")
 	db, err := NewStoreKeyDB(
-		ormdb.ModuleSchema{FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-			1: ecocreditv1beta1.File_regen_ecocredit_v1beta1_state_proto,
-		}},
+		&ormv1alpha1.ModuleSchemaDescriptor{
+			SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
+				{Id: 1, ProtoFileName: ecocreditv1.File_regen_ecocredit_v1_state_proto.Path()},
+			},
+			Prefix: nil,
+		},
 		storeKey,
 		ormdb.ModuleDBOptions{},
 	)
@@ -41,17 +45,17 @@ func TestStoreKeyDB(t *testing.T) {
 	sdkCtx := sdkContextForStoreKey(storeKey)
 	ctx := sdk.WrapSDKContext(sdkCtx)
 
-	creditTypeTable := db.GetTable(&ecocreditv1beta1.CreditType{})
+	creditTypeTable := db.GetTable(&ecocreditv1.CreditType{})
 	require.NotNil(t, creditTypeTable)
 
-	require.NoError(t, creditTypeTable.Save(ctx, &ecocreditv1beta1.CreditType{
+	require.NoError(t, creditTypeTable.Save(ctx, &ecocreditv1.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tons of co2e",
 		Precision:    6,
 	}))
 
-	creditType := &ecocreditv1beta1.CreditType{
+	creditType := &ecocreditv1.CreditType{
 		Abbreviation: "C",
 	}
 	found, err := creditTypeTable.Get(ctx, creditType)

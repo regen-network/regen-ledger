@@ -183,8 +183,9 @@ tags
 
 build/
 
-# swagger-gen
-/tmp-swagger-gen
+# proto files used for swagger
+third_party/
+
 # OS
 .DS_Store
 
@@ -197,4 +198,6 @@ dist/
 .pre-commit-config.yaml
 
 # Data - ideally these don't exist
-.testnets
+.localnet
+
+completions
