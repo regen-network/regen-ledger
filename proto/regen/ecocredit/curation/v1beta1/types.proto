@@ -5,13 +5,21 @@ package regen.ecocredit.curation.v1beta1;
 // TagTarget represents the target of a tag.
 message TagTarget {
   oneof sum {
+    string address = 1;
     // class_id indicates that this tag targets all the credits within a given class.
-    string class_id = 1;
+    string class_id = 2;
 
     // project_id indicates that this tag targets all the credits within a given project.
-    string project_id = 2;
+    string project_id = 3;
 
     // batch_id indicates that this tag targets the credits within a batch.
-    string batch_id = 3;
+    string batch_id = 4;
   }
+}
+
+message AllowedTagTargets {
+  bool address = 1;
+  bool class = 2;
+  bool project = 3;
+  bool batch = 4;
 }
