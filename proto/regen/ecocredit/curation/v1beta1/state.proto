@@ -3,83 +3,80 @@ syntax = "proto3";
 package regen.ecocredit.curation.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
-
-message TagSet {
-  option (cosmos.orm.v1alpha1.table) = {
-    id: 1,
-    primary_key: {fields: "id", auto_increment: true}
-    index: {id: 1, fields: "curator"}
-  };
-
-  uint64 id = 1;
-  string curator = 2;
-  string domain_name = 3;
-}
+import "regen/ecocredit/curation/v1beta1/types.proto";
 
 message TagDefinition {
   option (cosmos.orm.v1alpha1.table) = {
     id: 1,
     primary_key: {fields: "id", auto_increment: true}
-    index: {id: 1, fields: "tag_set,name", unique: true}
   };
 
   uint64 id = 1;
-  uint64 tag_set = 2;
-  string name = 3;
-  bytes metadata = 4;
+  bytes curator_address = 2;
+  TagMeta metadata = 3;
+  TagType type = 4;
 }
 
-// NumericAttributeDefinition allows curators to define numeric attributes
-// which can be assigned to credit classes
-message NumericAttributeDefinition {
+
+message NumericTagType {
+  int32 precision = 1;
+  string min = 2;
+  string max = 3;
+  NumericTagTypeSize size = 4;
+}
+
+enum NumericTagTypeSize {
+  NUMERIC_TAG_TYPE_SIZE_32_UNSPECIFIED = 0;
+  NUMERIC_TAG_TYPE_SIZE_64 = 1;
+}
+
+message AddressTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 1,
-    primary_key: {fields: "id", auto_increment: true}
-    index: {id: 1, fields: "owner_address"}
+    id: 2,
+    primary_key: {fields: "class_id,tag_id"}
   };
 
-  uint64 id = 1;
-  bytes owner_address = 2;
-  bytes metadata = 3;
+  bytes address = 1;
+  uint64 tag_id = 2;
+  TagValue value = 3;
+}
 
-  // max_decimal_places
-  uint32 max_decimal_places = 4;
-  optional int32 min = 5;
-  optional int32 max = 6;
+message TagValue {
+  oneof sum {
+    uint32 uint32_value = 1;
+    uint64 uint64_value = 2;
+  }
 }
 
 message ClassTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 1,
+    id: 3,
     primary_key: {fields: "class_id,tag_id"}
   };
 
   uint64 class_id = 1;
   uint64 tag_id = 2;
-  bytes metadata = 3;
+  TagValue value = 3;
 }
 
-message TagEntry {
+message ProjectTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 1,
-    primary_key: {fields: "target,tag_id"}
+    id: 4,
+    primary_key: {fields: "project_id,tag_id"}
   };
 
-  string target = 1;
+  uint64 project_id = 1;
   uint64 tag_id = 2;
-  bytes metadata = 3;
+  TagValue value = 3;
 }
 
-message NumericAttributeEntry {
+message BatchTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 1,
-    primary_key: {fields: "target,tag_id"}
-    index:{id: 1, fields: "tag_id,value"}
+    id: 5,
+    primary_key: {fields: "batch_id,tag_id"}
   };
 
-  string target = 1;
-  uint64 attr_id = 2;
-  bytes metadata = 3;
-  // value represents a 32-bit decimal value with 2 decimal places, equivalent to value/100.
-  sfixed32 value = 4;
+  uint64 batch_id = 1;
+  uint64 tag_id = 2;
+  TagValue value = 3;
 }

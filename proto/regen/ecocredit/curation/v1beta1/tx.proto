@@ -6,29 +6,17 @@ import "regen/ecocredit/curation/v1beta1/types.proto";
 
 service Msg {
   rpc DefineTag(MsgDefineTag) returns (MsgDefineTagResponse) {}
-  rpc DefineNumericAttr(MsgDefineNumericAttr) returns (MsgDefineNumericAttrResponse) {}
   rpc Tag(MsgTag) returns (MsgTagResponse) {}
-  rpc SetNumericAttr(MsgSetNumericAttr) returns (MsgSetNumericAttrResponse) {}
+  rpc TagNumeric(MsgTagNumeric) returns (MsgTagNumericResponse) {}
 }
 
 message MsgDefineTag {
   string curator = 1;
-  AllowedTagTargets targets = 2;
+  TagMeta meta = 2;
+  TagType type = 3;
 }
 
 message MsgDefineTagResponse {
-  string tag_id = 1;
-}
-
-message MsgDefineNumericAttr {
-  string curator = 1;
-  AllowedTagTargets targets = 2;
-  string min = 3;
-  string max = 4;
-  int32 precision = 5;
-}
-
-message MsgDefineNumericAttrResponse {
   string tag_id = 1;
 }
 
@@ -38,7 +26,7 @@ message MsgTag {
   string curator = 1;
 
   // taggings are the tag operations.
-  repeated Tagging taggings = 2;
+  repeated Tagging operations = 2;
 
   // Tagging is a tag operations.
   message Tagging {
@@ -49,25 +37,27 @@ message MsgTag {
 
     // untag indicates that a tag should be removed if set to true.
     bool untag = 3;
-
   }
 }
 
 message MsgTagResponse { }
 
-message MsgSetNumericAttr {
+message MsgTagNumeric {
   string curator = 1;
 
-  repeated SetAttr set_attr = 2;
+  repeated NumericTagging operations = 2;
 
-  message SetAttr {
-    string attr_id = 1;
+  message NumericTagging {
+    string tag_id = 1;
 
     TagTarget target = 2;
 
-    // value should be empty delete
+    // value is the decimal string representation of the numeric value to set.
+    // If it is empty, the value will be deleted.
+    // value must be within the range of the attribute's min and max values
+    // and must not exceed the attribute's precision.
     string value = 3;
   }
 }
 
-message MsgSetNumericAttrResponse {}
+message MsgTagNumericResponse { }

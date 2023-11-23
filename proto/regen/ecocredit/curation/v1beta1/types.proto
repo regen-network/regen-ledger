@@ -5,7 +5,10 @@ package regen.ecocredit.curation.v1beta1;
 // TagTarget represents the target of a tag.
 message TagTarget {
   oneof sum {
+    // address indicates that this tag targets the address of an account such as a credit class admin
+    // or a project admin.
     string address = 1;
+
     // class_id indicates that this tag targets all the credits within a given class.
     string class_id = 2;
 
@@ -22,4 +25,38 @@ message AllowedTagTargets {
   bool class = 2;
   bool project = 3;
   bool batch = 4;
+}
+
+message TagMeta {
+  string name = 1;
+  string description = 2;
+  AllowedTagTargets allowed_targets = 3;
+}
+
+message TagType {
+  oneof sum {
+    TagTagType tag = 1;
+    NumericTagType numeric = 2;
+  }
+}
+
+// TagTagType represents a tag that can either be present or not present.
+message TagTagType {}
+
+// NumericTagType represents a tag that can have a numeric value.
+message NumericTagType {
+  // min is the minimum value of the attribute as a decimal string. It is required.
+  string min = 1;
+
+  // max is the maximum value of the attribute as a decimal string. It is required.
+  string max = 2;
+
+  // precision is the number of significant decimal places after the decimal point if it is a positive value.
+  // For instance 1 indicates that 3.54 would be an invalid value and that 3.5 is the most precise value
+  // that could be submitted.
+  // If it is a negative value, it is the number of non-significant digits after the decimal point.
+  // For instance -1 indicates that 34 would be an invalid value and that 30 is the most precise value
+  // that could be submitted.
+  // A value of 0 indicates an integer value.
+  int32 precision = 3;
 }
