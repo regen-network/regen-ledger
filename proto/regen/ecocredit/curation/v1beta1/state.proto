@@ -15,68 +15,114 @@ message TagDefinition {
   bytes curator_address = 2;
   TagMeta metadata = 3;
   TagType type = 4;
-}
-
-
-message NumericTagType {
-  int32 precision = 1;
-  string min = 2;
-  string max = 3;
-  NumericTagTypeSize size = 4;
+  // size is the size that a numeric tag occupies in compressed indexes. It is intended to be
+  // used just in order book matching, and not for other purposes.
+  NumericTagTypeSize size = 5;
 }
 
 enum NumericTagTypeSize {
-  NUMERIC_TAG_TYPE_SIZE_32_UNSPECIFIED = 0;
-  NUMERIC_TAG_TYPE_SIZE_64 = 1;
+  // NUMERIC_TAG_TYPE_SIZE_UNSPECIFIED indicates that the tag isn't numeric.
+  NUMERIC_TAG_TYPE_SIZE_UNSPECIFIED = 0;
+
+  // NUMERIC_TAG_TYPE_SIZE_32 indicates that values of the tag can fit in 32 bits in compressed indexes.
+  NUMERIC_TAG_TYPE_SIZE_32 = 1;
+
+  // NUMERIC_TAG_TYPE_SIZE_64 indicates that values of the tag can fit in 64 bits.
+  NUMERIC_TAG_TYPE_SIZE_64 = 2;
 }
 
 message AddressTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
     id: 2,
-    primary_key: {fields: "class_id,tag_id"}
+    primary_key: {fields: "address,tag_id"}
+    index: {id: 1, fields: "tag_id,address"}
   };
 
   bytes address = 1;
   uint64 tag_id = 2;
-  TagValue value = 3;
 }
 
-message TagValue {
-  oneof sum {
-    uint32 uint32_value = 1;
-    uint64 uint64_value = 2;
-  }
+message AddressNumericTagEntry {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 3,
+    primary_key: {fields: "address,tag_id"}
+    index: {id: 1, fields: "tag_id,address"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  bytes address = 1;
+  uint64 tag_id = 2;
+  uint64 value = 3;
 }
 
 message ClassTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
     id: 3,
     primary_key: {fields: "class_id,tag_id"}
+    index: {id: 1, fields: "tag_id,class_id"}
   };
 
   uint64 class_id = 1;
   uint64 tag_id = 2;
-  TagValue value = 3;
+}
+
+message ClassNumericTagEntry {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 4,
+    primary_key: {fields: "class_id,tag_id"}
+    index: {id: 1, fields: "tag_id,class_id"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  uint64 class_id = 1;
+  uint64 tag_id = 2;
+  uint64 value = 3;
 }
 
 message ProjectTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
     id: 4,
     primary_key: {fields: "project_id,tag_id"}
+    index: {id: 1, fields: "tag_id,project_id"}
   };
 
   uint64 project_id = 1;
   uint64 tag_id = 2;
-  TagValue value = 3;
+}
+
+message ProjectNumericTagEntry {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 5,
+    primary_key: {fields: "project_id,tag_id"}
+    index: {id: 1, fields: "tag_id,project_id"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  uint64 project_id = 1;
+  uint64 tag_id = 2;
+  uint64 value = 3;
 }
 
 message BatchTagEntry {
   option (cosmos.orm.v1alpha1.table) = {
     id: 5,
     primary_key: {fields: "batch_id,tag_id"}
+    index: {id: 1, fields: "tag_id,batch_id"}
   };
 
   uint64 batch_id = 1;
   uint64 tag_id = 2;
-  TagValue value = 3;
+}
+
+message BatchNumericTagEntry {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 6,
+    primary_key: {fields: "batch_id,tag_id"}
+    index: {id: 1, fields: "tag_id,batch_id"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  uint64 batch_id = 1;
+  uint64 tag_id = 2;
+  uint64 value = 3;
 }
