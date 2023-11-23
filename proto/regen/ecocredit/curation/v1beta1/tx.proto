@@ -8,6 +8,8 @@ service Msg {
   rpc DefineTag(MsgDefineTag) returns (MsgDefineTagResponse) {}
   rpc Tag(MsgTag) returns (MsgTagResponse) {}
   rpc TagNumeric(MsgTagNumeric) returns (MsgTagNumericResponse) {}
+  rpc UpdateCurator(MsgUpdateCurator) returns (MsgUpdateCuratorResponse) {}
+  rpc UpdateMetadata(MsgUpdateMetadata) returns (MsgUpdateMetadataResponse) {}
 }
 
 message MsgDefineTag {
@@ -61,3 +63,19 @@ message MsgTagNumeric {
 }
 
 message MsgTagNumericResponse { }
+
+message MsgUpdateCurator {
+  string curator = 1;
+  string tag_id = 2;
+  string new_curator = 3;
+}
+
+message MsgUpdateCuratorResponse { }
+
+message MsgUpdateMetadata {
+  string curator = 1;
+  string tag_id = 2;
+  TagMeta meta = 3;
+}
+
+message MsgUpdateMetadataResponse { }
