@@ -4,78 +4,106 @@ package regen.ecocredit.curation.v1beta1;
 
 import "regen/ecocredit/curation/v1beta1/types.proto";
 
+// Msg is the eco-credit curation Msg service definition.
 service Msg {
+  // DefineTag defines a new tag.
   rpc DefineTag(MsgDefineTag) returns (MsgDefineTagResponse) {}
+
+  // Tag tags a target with a tag.
   rpc Tag(MsgTag) returns (MsgTagResponse) {}
-  rpc TagNumeric(MsgTagNumeric) returns (MsgTagNumericResponse) {}
+
+  // Untag removes a tag from a target.
+  rpc Untag(MsgUntag) returns (MsgTagResponse) {}
+
+  // UpdateCurator updates the curator of a tag.
   rpc UpdateCurator(MsgUpdateCurator) returns (MsgUpdateCuratorResponse) {}
+
+  // UpdateMetadata updates the metadata of a tag.
   rpc UpdateMetadata(MsgUpdateMetadata) returns (MsgUpdateMetadataResponse) {}
 }
 
+// MsgDefineTag is the Msg/DefineTag request type.
 message MsgDefineTag {
+  // curator is the address of the curator that will be able to tag and untag
+  // this tag.
   string curator = 1;
+
+  // meta is the metadata associated with the tag.
   TagMeta meta = 2;
+
+  // type defines the type of the tag.
   TagType type = 3;
 }
 
+// MsgDefineTagResponse is the Msg/DefineTag response type.
 message MsgDefineTagResponse {
+  // tag_id is the unique identifier of the tag.
   string tag_id = 1;
 }
 
 // MsgTag is the Msg/Tag request type.
 message MsgTag {
-  // curator
+  // curator is the address of the tag curator.
   string curator = 1;
 
-  // taggings are the tag operations.
-  repeated Tagging operations = 2;
-
-  // Tagging is a tag operations.
-  message Tagging {
-    string tag_id = 1;
-
-    // targets are the tag operation targets.
-    repeated TagTarget targets = 2;
-
-    // untag indicates that a tag should be removed if set to true.
-    bool untag = 3;
-  }
-}
-
-message MsgTagResponse { }
-
-message MsgTagNumeric {
-  string curator = 1;
-
-  repeated NumericTagging operations = 2;
-
-  message NumericTagging {
-    string tag_id = 1;
-
-    TagTarget target = 2;
-
-    // value is the decimal string representation of the numeric value to set.
-    // If it is empty, the value will be deleted.
-    // value must be within the range of the attribute's min and max values
-    // and must not exceed the attribute's precision.
-    string value = 3;
-  }
-}
-
-message MsgTagNumericResponse { }
-
-message MsgUpdateCurator {
-  string curator = 1;
+  // tag_id is the unique identifier of the tag.
   string tag_id = 2;
+
+  // target is the target of the tag.
+  TagTarget target = 3;
+
+  // value is the decimal string representation of the numeric value to set
+  // when the tag is a numeric tag. It should not be set when the tag is a
+  // not a numeric tag.
+  // value must be within the range of the attribute's min and max values
+  // and must not exceed the attribute's precision.
+  string value = 4;
+}
+
+// MsgTagResponse is the Msg/Tag response type.
+message MsgTagResponse {}
+
+// MsgUntag is the Msg/Untag request type.
+message MsgUntag {
+  // curator is the address of the tag curator.
+  string curator = 1;
+
+  // tag_id is the unique identifier of the tag.
+  string tag_id = 2;
+
+  // target is the target of the tag.
+  TagTarget target = 3;
+}
+
+// MsgUntagResponse is the Msg/Untag response type.
+message MsgUntagResponse {}
+
+// MsgUpdateCurator is the Msg/UpdateCurator request type.
+message MsgUpdateCurator {
+  // curator is the address of the tag curator.
+  string curator = 1;
+
+  // tag_id is the unique identifier of the tag.
+  string tag_id = 2;
+
+  // new_curator is the new curator address.
   string new_curator = 3;
 }
 
-message MsgUpdateCuratorResponse { }
+// MsgUpdateCuratorResponse is the Msg/UpdateCurator response type.
+message MsgUpdateCuratorResponse {}
 
+// MsgUpdateMetadata is the Msg/UpdateMetadata request type.
 message MsgUpdateMetadata {
+  // curator is the address of the tag curator.
   string curator = 1;
+
+  // tag_id is the unique identifier of the tag.
   string tag_id = 2;
+
+  // meta is the new metadata.
   TagMeta meta = 3;
 }
 
-message MsgUpdateMetadataResponse { }
+// MsgUpdateMetadataResponse is the Msg/UpdateMetadata response type.
+message MsgUpdateMetadataResponse {}

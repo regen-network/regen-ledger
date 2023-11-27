@@ -4,6 +4,7 @@ package regen.ecocredit.curation.v1beta1;
 
 // TagTarget represents the target of a tag.
 message TagTarget {
+  // sum is the target of the tag.
   oneof sum {
     // address indicates that this tag targets the address of an account such as a credit class admin
     // or a project admin.
@@ -20,22 +21,41 @@ message TagTarget {
   }
 }
 
+// AllowedTagTargets represents the targets that a tag can be applied to.
 message AllowedTagTargets {
+  // address indicates that this tag can be applied to the address of an account such as a credit class admin.
   bool address = 1;
+
+  // class indicates that this tag can be applied to all the credits within a given class.
   bool class = 2;
+
+  // project indicates that this tag can be applied to all the credits within a given project.
   bool project = 3;
+
+  // batch indicates that this tag can be applied to the credits within a batch.
   bool batch = 4;
 }
 
+// TagMeta represents the metadata of a tag.
 message TagMeta {
+  // name is the name of the tag. It is not considered unique among tags and is informational only.
   string name = 1;
+
+  // description is a description of the tag. It is informational only.
   string description = 2;
+
+  // allowed_targets is the targets that this tag can be applied to.
   AllowedTagTargets allowed_targets = 3;
 }
 
+// TagType represents the type of a tag.
 message TagType {
+  // sum is the type of the tag.
   oneof sum {
+    // tag indicates that this tag is a tag that can either be present or not present.
     TagTagType tag = 1;
+
+    // numeric indicates that this tag is a tag that can have a numeric value.
     NumericTagType numeric = 2;
   }
 }
@@ -43,7 +63,10 @@ message TagType {
 // TagTagType represents a tag that can either be present or not present.
 message TagTagType {}
 
-// NumericTagType represents a tag that can have a numeric value.
+// NumericTagType represents a tag that can have a numeric value. Numeric values are represented as
+// uint64s in storage and have a fixed precision. They are not considered floating point values.
+// The range of numeric values must be representable within the range of a uint64 given the provided
+// min, max and precision.
 message NumericTagType {
   // min is the minimum value of the attribute as a decimal string. It is required.
   string min = 1;
