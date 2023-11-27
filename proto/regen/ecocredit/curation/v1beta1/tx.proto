@@ -4,6 +4,8 @@ package regen.ecocredit.curation.v1beta1;
 
 import "regen/ecocredit/curation/v1beta1/types.proto";
 
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/curation/types/v1beta1;curationv1beta1";
+
 // Msg is the eco-credit curation Msg service definition.
 service Msg {
   // DefineTag defines a new tag.
@@ -13,7 +15,7 @@ service Msg {
   rpc Tag(MsgTag) returns (MsgTagResponse) {}
 
   // Untag removes a tag from a target.
-  rpc Untag(MsgUntag) returns (MsgTagResponse) {}
+  rpc Untag(MsgUntag) returns (MsgUntagResponse) {}
 
   // UpdateCurator updates the curator of a tag.
   rpc UpdateCurator(MsgUpdateCurator) returns (MsgUpdateCuratorResponse) {}

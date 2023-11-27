@@ -2,12 +2,14 @@ syntax = "proto3";
 
 package regen.ecocredit.curation.v1beta1;
 
-import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/orm/v1/orm.proto";
 import "regen/ecocredit/curation/v1beta1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/curation/types/v1beta1;curationv1beta1";
 
 // TagDefinition defines a tag.
 message TagDefinition {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 1,
     primary_key: {fields: "id", auto_increment: true}
   };
@@ -31,7 +33,7 @@ message TagDefinition {
 
 // AddressTagEntry defines a boolean tag for an address.
 message AddressTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 2,
     primary_key: {fields: "address,tag_id"}
     index: {id: 1, fields: "tag_id,address"}
@@ -46,7 +48,7 @@ message AddressTagEntry {
 
 // AddressNumericTagEntry defines a numeric tag for an address.
 message AddressNumericTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 3,
     primary_key: {fields: "address,tag_id"}
     index: {id: 1, fields: "tag_id,address"}
@@ -65,7 +67,7 @@ message AddressNumericTagEntry {
 
 // ClassTagEntry defines a boolean tag for a class.
 message ClassTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 3,
     primary_key: {fields: "class_id,tag_id"}
     index: {id: 1, fields: "tag_id,class_id"}
@@ -80,7 +82,7 @@ message ClassTagEntry {
 
 // ClassNumericTagEntry defines a numeric tag for a class.
 message ClassNumericTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 4,
     primary_key: {fields: "class_id,tag_id"}
     index: {id: 1, fields: "tag_id,class_id"}
@@ -99,7 +101,7 @@ message ClassNumericTagEntry {
 
 // ProjectTagEntry defines a boolean tag for a project.
 message ProjectTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 4,
     primary_key: {fields: "project_id,tag_id"}
     index: {id: 1, fields: "tag_id,project_id"}
@@ -114,7 +116,7 @@ message ProjectTagEntry {
 
 // ProjectNumericTagEntry defines a numeric tag for a project.
 message ProjectNumericTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 5,
     primary_key: {fields: "project_id,tag_id"}
     index: {id: 1, fields: "tag_id,project_id"}
@@ -133,7 +135,7 @@ message ProjectNumericTagEntry {
 
 // BatchTagEntry defines a boolean tag for a batch.
 message BatchTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 5,
     primary_key: {fields: "batch_id,tag_id"}
     index: {id: 1, fields: "tag_id,batch_id"}
@@ -148,7 +150,7 @@ message BatchTagEntry {
 
 // BatchNumericTagEntry defines a numeric tag for a batch.
 message BatchNumericTagEntry {
-  option (cosmos.orm.v1alpha1.table) = {
+  option (cosmos.orm.v1.table) = {
     id: 6,
     primary_key: {fields: "batch_id,tag_id"}
     index: {id: 1, fields: "tag_id,batch_id"}
