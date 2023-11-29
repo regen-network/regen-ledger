@@ -132,8 +132,13 @@ enum GraphCanonicalizationAlgorithm {
   // unspecified and invalid
   GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
 
-  // URDNA2015 graph hashing
+  // URDNA2015 graph canonicalization algorithm.
   GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015 = 1;
+
+  // RDFC 1.0 graph canonicalization algorithm. Essentially the same as URDNA2015 with some
+  // small clarifications around escaping of escape characters. New users should use this
+  // instead of URDNA2015.
+  GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0 = 2;
 }
 
 // GraphMerkleTree is the graph merkle tree type used for hashing, if any
