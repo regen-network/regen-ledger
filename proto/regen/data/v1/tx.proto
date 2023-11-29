@@ -114,11 +114,18 @@ message MsgDefineResolver {
   // the manager should make use of cosmos.authz.
   string manager = 1;
 
-  // resolver_url is a resolver URL which should refer to an HTTP service
-  // which will respond to a GET request with the IRI of a ContentHash
+  // resolver_url is a resolver URL.
+  //
+  // If it refers to an HTTP URL, that HTTP service should
+  // respond to a GET request with the IRI of a ContentHash as the path parameter
   // and return the content if it exists or a 404. For graph data, resolvers
   // should use the HTTP Accept header to negotiate the RDF serialization
   // format.
+  //
+  // To use IPFS, the resolver_url ipfs: should be defined and u
+  // resolver for any data hosted on IPFS. Content hashes must be
+  // adapted to IPFS's CID format. Only content hashes which have
+  // an equivalent CID representation can be used with IPFS.
   string resolver_url = 2;
 }
 
