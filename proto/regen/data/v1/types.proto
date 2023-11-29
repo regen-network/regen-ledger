@@ -144,17 +144,18 @@ enum GraphMerkleTree {
 
   // specifies that the content hash for the graph is based on the following merkle tree algorithm:
   // 1. the graph is canonicalized using the specified canonicalization algorithm
-  // 2. each triple in the canonicalized graph is hashed as follows:
-  //    a. the number of triples in the graph is used as the subject and predicate salt prefix
-  //    b. the subject is hashed using the specified digest algorithm and the salt prefix
-  //    c. the predicate is hashed using the specified digest algorithm and the salt prefix
-  //    d. the object is hashed using the specified digest algorithm and a salt prefix consisting of the subject hash and predicate hash
-  //    e. the resulting hashes are concatenated
-  // 3. each concatenated triple hash is concatenated with the following concatenated triple hash and these
+  // 2. the whole canonicalized graph is hashed using the specified digest algorithm and this
+  //    hash is used as the salt
+  // 3. each triple in the canonicalized graph is hashed as follows:
+  //    a. the subject is hashed using the specified digest algorithm and the salt prefix
+  //    b. the predicate is hashed using the specified digest algorithm and the salt prefix
+  //    c. the object is hashed using the specified digest algorithm and the salt prefix
+  //    e. the resulting hashes are concatenated and hashed using the specified digest algorithm
+  // 4. each triple hash is concatenated with the neighboring triple hash and these
   //    concatenated hashes are hashed using the specified digest algorithm and inserted into an array. If
   //    there is an odd number of concatenated triple hashes, the last concatenated triple hash is hashed
   //    with itself and placed in the array.
-  // 4. this process is repeated on the resulting array until there is only one hash remaining which is
+  // 5. this process is repeated on the resulting array until there is only one hash remaining which is
   //    the graph hash
   //
   // This algorithm is allows for selectively disclosing any individual triples or parts of triples in the graph
