@@ -122,10 +122,13 @@ message MsgDefineResolver {
   // should use the HTTP Accept header to negotiate the RDF serialization
   // format.
   //
-  // To use IPFS, the resolver_url ipfs: should be defined and u
+  // To use IPFS, the resolver_url ipfs: should be defined and used as the
   // resolver for any data hosted on IPFS. Content hashes must be
-  // adapted to IPFS's CID format. Only content hashes which have
-  // an equivalent CID representation can be used with IPFS.
+  // adapted to IPFS's CID format. The multicodec raw (0x55) should
+  // be used for all raw content hashes and the multicodec rdfc-1 (0xb403)
+  // should be used for all graph content hashes (unless new canonicalization
+  // or merkle tree algorithms are used which may or may not be supported
+  // by IPFS).
   string resolver_url = 2;
 }
 
