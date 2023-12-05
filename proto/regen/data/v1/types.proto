@@ -148,6 +148,7 @@ enum GraphMerkleTree {
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
 
   // specifies that the content hash for the graph is based on the following merkle tree algorithm:
+  //
   // 1. the graph is canonicalized using the specified canonicalization algorithm
   // 2. the whole canonicalized graph is hashed using the specified digest algorithm and this
   //    hash is used as the salt
@@ -164,7 +165,17 @@ enum GraphMerkleTree {
   //    the graph hash
   //
   // This algorithm is allows for selectively disclosing any individual triples or parts of triples in the graph
-  // without disclosing the entire graph.
+  // without disclosing the entire graph. Because a unique salt is used, this algorithm is resistant to
+  // rainbow table attacks. However, it is not resistant to brute force attacks when the value space is
+  // small enough to be searched exhaustively. For example, if it was expected that there was a triple
+  // S P O where S and P are fixed and O is a boolean value or a small integer, then an attacker could
+  // simply hash all possible values of O and compare the resulting hashes to the graph hash to determine
+  // whether the triple is present in the graph. Therefore, users of this algorithm need to be aware of the
+  // value space of the data they are hashing and ensure that it is large enough
+  // to prevent brute force attacks in order to use this effectively to preserve privacy. This burden primarily
+  // falls on application developers who must make smart choices about which privacy options they present to users
+  // and how they choose to implement them. In many cases, it may be safer to not present proofs at all than to
+  // present proofs that make the data more vulnerable to brute force attacks.
   GRAPH_MERKLE_TREE_SIMPLE_PRIVACY_PRESERVING = 1;
 }
 
