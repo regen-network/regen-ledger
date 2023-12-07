@@ -23,6 +23,10 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // DigestAlgorithm is the hash digest algorithm
+//
+// With V2 of raw and graph hash, this enum is no longer validated on-chain.
+// However, this enum SHOULD still be used and updated as a registry of known digest
+// algorithms and all implementations should coordinate on these values.
 type DigestAlgorithm int32
 
 const (
@@ -144,6 +148,10 @@ func (RawMediaType) EnumDescriptor() ([]byte, []int) {
 }
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
+//
+// With V2 of the graph hash, this enum is no longer validated on-chain.
+// However, this enum SHOULD still be used and updated as a registry of known canonicalization
+// algorithms and all implementations should coordinate on these values.
 type GraphCanonicalizationAlgorithm int32
 
 const (
@@ -171,7 +179,11 @@ func (GraphCanonicalizationAlgorithm) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_a49a7c2bdb2b2846, []int{2}
 }
 
-// GraphMerkleTree is the graph merkle tree type used for hashing, if any
+// GraphMerkleTree is the graph merkle tree type used for hashing, if any.
+//
+// With V2 of the graph hash, this enum is no longer validated on-chain.
+// However, this enum SHOULD still be used and updated as a registry of known merkle tree
+// types and all implementations should coordinate on these values.
 type GraphMerkleTree int32
 
 const (
