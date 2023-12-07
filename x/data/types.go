@@ -121,13 +121,13 @@ func (gmt GraphMerkleTree) Validate() error {
 	return nil
 }
 
-func (m *ContentHash_RawV2) Validate() error {
-	err := validateHash(m.Hash, m.DigestAlgorithm)
+func (chr *ContentHash_RawV2) Validate() error {
+	err := validateHash(chr.Hash, chr.DigestAlgorithm)
 	if err != nil {
 		return err
 	}
 
-	ext := m.FileExtension
+	ext := chr.FileExtension
 	extLen := len(ext)
 	if extLen < 2 {
 		return sdkerrors.ErrInvalidRequest.Wrapf("file extension cannot be shorter than 2 characters")
@@ -147,13 +147,13 @@ func (m *ContentHash_RawV2) Validate() error {
 	return nil
 }
 
-func (m *ContentHash_GraphV2) Validate() error {
-	err := validateHash(m.Hash, m.DigestAlgorithm)
+func (chg *ContentHash_GraphV2) Validate() error {
+	err := validateHash(chg.Hash, chg.DigestAlgorithm)
 	if err != nil {
 		return err
 	}
 
-	if m.CanonicalizationAlgorithm == 0 {
+	if chg.CanonicalizationAlgorithm == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrapf("canonicalization algorithm cannot be empty")
 	}
 
