@@ -16,9 +16,25 @@ func (ch ContentHash) Validate() error {
 	hashRawV2 := ch.GetRawV2()
 	hashGraphV2 := ch.GetGraphV2()
 
+	// check that only one of the fields is set
+	nonNilCount := 0
+	if hashRaw != nil {
+		nonNilCount++
+	}
+	if hashGraph != nil {
+		nonNilCount++
+	}
+	if hashRawV2 != nil {
+		nonNilCount++
+	}
+	if hashGraphV2 != nil {
+		nonNilCount++
+	}
+	if nonNilCount != 1 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("exactly one of ContentHash's fields should be set")
+	}
+
 	switch {
-	case hashRaw != nil && hashGraph != nil && hashRawV2 != nil && hashGraphV2 != nil:
-		return sdkerrors.ErrInvalidRequest.Wrapf("content hash must be one of raw type or graph type")
 	case hashRaw != nil:
 		return hashRaw.Validate()
 	case hashGraph != nil:

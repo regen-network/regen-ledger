@@ -35,7 +35,7 @@ Feature: Types
     {}
     """
     When the content hash is validated
-    Then expect the error "content hash must be one of raw type or graph type: invalid request"
+    Then expect the error "exactly one of ContentHash's fields should be set: invalid request"
 
   Scenario: an error is returned if content hash includes both raw type and graph type
     Given the content hash
@@ -46,7 +46,7 @@ Feature: Types
     }
     """
     When the content hash is validated
-    Then expect the error "content hash must be one of raw type or graph type: invalid request"
+    Then expect the error "exactly one of ContentHash's fields should be set: invalid request"
 
   Scenario: an error is returned if raw content hash is empty
     Given the content hash

@@ -25,13 +25,14 @@ func (ch ContentHash) ToIRI() (string, error) {
 
 const (
 	iriVersion0 byte = 0
+	iriVersion1 byte = 1
 
 	IriPrefixRaw   byte = 0
 	IriPrefixGraph byte = 1
 )
 
 // ToIRI converts the ContentHash_Raw to an IRI (internationalized URI) based on the following
-// pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash))}.{media_type extension}
+// pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash), 0)}.{media_type extension}
 func (chr ContentHash_Raw) ToIRI() (string, error) {
 	err := chr.Validate()
 	if err != nil {
@@ -54,7 +55,7 @@ func (chr ContentHash_Raw) ToIRI() (string, error) {
 
 // ToIRI converts the ContentHash_Graph to an IRI (internationalized URI) based on the following
 // pattern: regen:{base58check(concat(byte(0x1), byte(canonicalization_algorithm),
-// byte(merkle_tree), byte(digest_algorithm), hash))}.rdf
+// byte(merkle_tree), byte(digest_algorithm), hash), 0)}.rdf
 func (chg ContentHash_Graph) ToIRI() (string, error) {
 	err := chg.Validate()
 	if err != nil {
@@ -68,6 +69,47 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 	bz[3] = byte(chg.DigestAlgorithm)
 	copy(bz[4:], chg.Hash)
 	hashStr := base58.CheckEncode(bz, iriVersion0)
+
+	return fmt.Sprintf("regen:%s.rdf", hashStr), nil
+}
+
+// ToIRI converts the ContentHash_RawV2 to an IRI (internationalized URI) based on the following
+// pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash), 1)}.{file_extension}
+// This is the same as ContentHash_Raw.ToIRI except that the media type is replaced with a file extension
+// and the base58check version byte is 1 instead of 0.
+func (chr ContentHash_RawV2) ToIRI() (string, error) {
+	err := chr.Validate()
+	if err != nil {
+		return "", err
+	}
+
+	bz := make([]byte, len(chr.Hash)+2)
+	bz[0] = IriPrefixRaw
+	bz[1] = byte(chr.DigestAlgorithm)
+	copy(bz[2:], chr.Hash)
+	hashStr := base58.CheckEncode(bz, iriVersion1)
+	ext := chr.FileExtension
+
+	return fmt.Sprintf("regen:%s.%s", hashStr, ext), nil
+}
+
+// ToIRI converts the ContentHash_GraphV2 to an IRI (internationalized URI) based on the following
+// pattern: regen:{base58check(concat(byte(0x1), byte(canonicalization_algorithm),
+// byte(merkle_tree), byte(digest_algorithm), hash), 1)}.rdf
+// This is the same as ContentHash_Graph.ToIRI except that the base58check version byte is 1 instead of 0.
+func (chg ContentHash_GraphV2) ToIRI() (string, error) {
+	err := chg.Validate()
+	if err != nil {
+		return "", err
+	}
+
+	bz := make([]byte, len(chg.Hash)+4)
+	bz[0] = IriPrefixGraph
+	bz[1] = byte(chg.CanonicalizationAlgorithm)
+	bz[2] = byte(chg.MerkleTree)
+	bz[3] = byte(chg.DigestAlgorithm)
+	copy(bz[4:], chg.Hash)
+	hashStr := base58.CheckEncode(bz, iriVersion1)
 
 	return fmt.Sprintf("regen:%s.rdf", hashStr), nil
 }
@@ -138,10 +180,6 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s", iri, err)
 	}
 
-	if version != iriVersion0 {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version", iri)
-	}
-
 	rdr := bytes.NewBuffer(res)
 
 	// read first byte
@@ -159,25 +197,36 @@ func ParseIRI(iri string) (*ContentHash, error) {
 			return nil, err
 		}
 
-		// look up extension as media type
-		mediaType, ok := stringToMediaExtensionType[ext]
-		if !ok {
-			return nil, ErrInvalidMediaExtension.Wrapf("failed to resolve media type for extension %s, expected %s", ext, mediaExtensionTypeToString[mediaType])
-		}
-
-		// interpret next byte as digest algorithm
-		digestAlg := DigestAlgorithm(b0)
 		hash := rdr.Bytes()
-		err = digestAlg.Validate(hash)
-		if err != nil {
-			return nil, err
-		}
 
-		return &ContentHash{Raw: &ContentHash_Raw{
-			Hash:            hash,
-			DigestAlgorithm: digestAlg,
-			MediaType:       mediaType,
-		}}, nil
+		if version == iriVersion0 {
+			// look up extension as media type
+			mediaType, ok := stringToMediaExtensionType[ext]
+			if !ok {
+				return nil, ErrInvalidMediaExtension.Wrapf("failed to resolve media type for extension %s, expected %s", ext, mediaExtensionTypeToString[mediaType])
+			}
+
+			// interpret next byte as digest algorithm
+			digestAlg := DigestAlgorithm(b0)
+			err = digestAlg.Validate(hash)
+			if err != nil {
+				return nil, err
+			}
+
+			return &ContentHash{Raw: &ContentHash_Raw{
+				Hash:            hash,
+				DigestAlgorithm: digestAlg,
+				MediaType:       mediaType,
+			}}, nil
+		} else if version == iriVersion1 {
+			return &ContentHash{RawV2: &ContentHash_RawV2{
+				Hash:            hash,
+				DigestAlgorithm: uint32(b0),
+				FileExtension:   ext,
+			}}, nil
+		} else {
+			return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version %d", iri, version)
+		}
 
 	case IriPrefixGraph:
 		// rdf extension is expected for graph data
@@ -185,52 +234,60 @@ func ParseIRI(iri string) (*ContentHash, error) {
 			return nil, ErrInvalidIRI.Wrapf("invalid extension .%s for graph data, expected .rdf", ext)
 		}
 
-		// read next byte
-		b0, err := rdr.ReadByte()
+		// read canonicalization algorithm
+		bC14NAlg, err := rdr.ReadByte()
 		if err != nil {
 			return nil, err
 		}
 
-		// interpret next byte as canonicalization algorithm
-		c14Alg := GraphCanonicalizationAlgorithm(b0)
-		err = c14Alg.Validate()
+		// read merkle tree algorithm
+		bMtAlg, err := rdr.ReadByte()
 		if err != nil {
 			return nil, err
 		}
 
-		// read next byte
-		b0, err = rdr.ReadByte()
+		// read digest algorithm
+		bDigestAlg, err := rdr.ReadByte()
 		if err != nil {
 			return nil, err
 		}
 
-		// interpret next byte as merklization algorithm
-		mtAlg := GraphMerkleTree(b0)
-		err = mtAlg.Validate()
-		if err != nil {
-			return nil, err
-		}
-
-		// read next byte
-		b0, err = rdr.ReadByte()
-		if err != nil {
-			return nil, err
-		}
-
-		// interpret next byte as digest algorithm
-		digestAlg := DigestAlgorithm(b0)
+		// read hash
 		hash := rdr.Bytes()
-		err = digestAlg.Validate(hash)
-		if err != nil {
-			return nil, err
-		}
 
-		return &ContentHash{Graph: &ContentHash_Graph{
-			Hash:                      hash,
-			DigestAlgorithm:           digestAlg,
-			CanonicalizationAlgorithm: c14Alg,
-			MerkleTree:                mtAlg,
-		}}, nil
+		if version == iriVersion0 {
+			c14Alg := GraphCanonicalizationAlgorithm(bC14NAlg)
+			err = c14Alg.Validate()
+			if err != nil {
+				return nil, err
+			}
+
+			mtAlg := GraphMerkleTree(bMtAlg)
+			err = mtAlg.Validate()
+			if err != nil {
+				return nil, err
+			}
+
+			digestAlg := DigestAlgorithm(bDigestAlg)
+			err = digestAlg.Validate(hash)
+			if err != nil {
+				return nil, err
+			}
+
+			return &ContentHash{Graph: &ContentHash_Graph{
+				Hash:                      hash,
+				DigestAlgorithm:           digestAlg,
+				CanonicalizationAlgorithm: c14Alg,
+				MerkleTree:                mtAlg,
+			}}, nil
+		} else if version == iriVersion1 {
+			return &ContentHash{GraphV2: &ContentHash_GraphV2{
+				Hash:                      hash,
+				DigestAlgorithm:           uint32(bC14NAlg),
+				CanonicalizationAlgorithm: uint32(bMtAlg),
+				MerkleTree:                uint32(bDigestAlg),
+			}}, nil
+		}
 	}
 
 	return nil, ErrInvalidIRI.Wrapf("unable to parse IRI %s", iri)

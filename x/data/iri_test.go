@@ -3,6 +3,7 @@ package data
 import (
 	"testing"
 
+	"github.com/btcsuite/btcutil/base58"
 	"gotest.tools/v3/assert"
 
 	"github.com/stretchr/testify/require"
@@ -32,6 +33,96 @@ func TestContentHash_Graph_ToIRI(t *testing.T) {
 			iri, err := tt.chg.ToIRI()
 			require.NoError(t, err)
 			assert.Equal(t, iri, tt.want)
+		})
+	}
+}
+
+func TestContentHash_GraphV2_ToIRI(t *testing.T) {
+	hash := []byte("abcdefghijklmnopqrstuvwxyz123456")
+
+	tests := []struct {
+		name    string
+		chg     ContentHash_GraphV2
+		wantErr bool
+		want    string
+	}{
+		{
+			"valid graph",
+			ContentHash_GraphV2{
+				Hash:                      hash,
+				DigestAlgorithm:           2,
+				CanonicalizationAlgorithm: 2,
+				MerkleTree:                1,
+			},
+			false,
+			"regen:DmfXHjEnP3uLFNcmtf9bpLSrFEycVCcVUnWeGAkf4nm8DUcSFmZVu1G.rdf",
+		},
+		{
+			"hash too short",
+			ContentHash_GraphV2{
+				Hash:                      []byte("abc"),
+				DigestAlgorithm:           2,
+				CanonicalizationAlgorithm: 2,
+				MerkleTree:                1,
+			},
+			true,
+			"",
+		},
+		{
+			"hash too long",
+			ContentHash_GraphV2{
+				Hash:                      []byte("abcdefghijklmnopqrstuvwxyz1234567abcdefghijklmnopqrstuvwxyz1234567"),
+				DigestAlgorithm:           2,
+				CanonicalizationAlgorithm: 2,
+				MerkleTree:                1,
+			},
+			true,
+			"",
+		},
+		{
+			"missing digest algorithm",
+			ContentHash_GraphV2{
+				Hash:                      hash,
+				DigestAlgorithm:           0,
+				CanonicalizationAlgorithm: 1,
+				MerkleTree:                0,
+			},
+			true,
+			"",
+		},
+		{
+			"missing canonicalization algorithm",
+			ContentHash_GraphV2{
+				Hash:                      hash,
+				DigestAlgorithm:           1,
+				CanonicalizationAlgorithm: 0,
+				MerkleTree:                0,
+			},
+			true,
+			"",
+		},
+
+		{
+			"no merkle tree",
+			ContentHash_GraphV2{
+				Hash:                      hash,
+				DigestAlgorithm:           1,
+				CanonicalizationAlgorithm: 1,
+				MerkleTree:                0,
+			},
+			false,
+			"regen:DmesGgF6jDGJtVc7mS9mSKKFZcCsuTMEHPqvwSBk5bk3F8ggh46e2kr.rdf",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			iri, err := tt.chg.ToIRI()
+			if tt.wantErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, iri, tt.want)
+			}
 		})
 	}
 }
@@ -216,6 +307,89 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 	}
 }
 
+func TestContentHash_RawV2_ToIRI(t *testing.T) {
+	hash := []byte("abcdefghijklmnopqrstuvwxyz123456")
+
+	tests := []struct {
+		name    string
+		chr     ContentHash_RawV2
+		wantErr bool
+		want    string
+	}{
+		{
+			"valid raw data",
+			ContentHash_RawV2{
+				Hash:            hash,
+				DigestAlgorithm: 2,
+				FileExtension:   "jpg",
+			},
+			false,
+			"regen:esX3kDj4ThAkgemoPDzMGQ8xqVdwnDrNLnEaXt3tFPsrDXdY5tKz.jpg",
+		},
+		{
+			"hash too short",
+			ContentHash_RawV2{
+				Hash:            []byte("abc"),
+				DigestAlgorithm: 2,
+				FileExtension:   "jpg",
+			},
+			true,
+			"",
+		},
+		{
+			"hash too long",
+			ContentHash_RawV2{
+				Hash:            []byte("abcdefghijklmnopqrstuvwxyz1234567abcdefghijklmnopqrstuvwxyz1234567"),
+				DigestAlgorithm: 2,
+				FileExtension:   "jpg",
+			},
+			true,
+			"",
+		},
+		{
+			"missing digest algorithm",
+			ContentHash_RawV2{
+				Hash:            hash,
+				DigestAlgorithm: 0,
+				FileExtension:   "jpg",
+			},
+			true,
+			"",
+		},
+		{
+			"ext too short",
+			ContentHash_RawV2{
+				Hash:            hash,
+				DigestAlgorithm: 2,
+				FileExtension:   "j",
+			},
+			true,
+			"",
+		},
+		{
+			"ext too long",
+			ContentHash_RawV2{
+				Hash:            hash,
+				DigestAlgorithm: 2,
+				FileExtension:   "abcdefg",
+			},
+			true,
+			"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			iri, err := tt.chr.ToIRI()
+			if tt.wantErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, iri, tt.want)
+			}
+		})
+	}
+}
+
 func TestMediaType_ToExtension(t *testing.T) {
 	// ensure every valid media type has an extension
 	for mt := range RawMediaType_name {
@@ -252,9 +426,9 @@ func TestParseIRI(t *testing.T) {
 			wantErr: "failed to parse IRI regen:23toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf: checksum error: invalid IRI",
 		},
 		{
-			name:    "invalid version",
-			iri:     "regen:esV713VcRqk5TWxDgKQjGSpN4aXL4a9XTzbWRduCMQDqq2zo3TtX.rdf",
-			wantErr: "failed to parse IRI regen:esV713VcRqk5TWxDgKQjGSpN4aXL4a9XTzbWRduCMQDqq2zo3TtX.rdf: invalid version: invalid IRI",
+			name:    "invalid version 2",
+			iri:     "regen:2JjvXNMjuFCHGuzLsFiTM5133moxKmhZd964sfvbS3uA3umsR8XFa.rdf",
+			wantErr: "failed to parse IRI regen:2JjvXNMjuFCHGuzLsFiTM5133moxKmhZd964sfvbS3uA3umsR8XFa.rdf: invalid version 2: invalid IRI",
 		},
 		{
 			name:    "invalid media extension",
@@ -433,6 +607,25 @@ func TestParseIRI(t *testing.T) {
 				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 			}},
 		},
+		{
+			name: "valid graph v2",
+			iri:  "regen:DmfXHjEnP3uLFNcmtf9bpLSrFEycVCcVUnWeGAkf4nm8DUcSFmZVu1G.rdf",
+			wantHash: &ContentHash{GraphV2: &ContentHash_GraphV2{
+				Hash:                      hash,
+				DigestAlgorithm:           2,
+				CanonicalizationAlgorithm: 1,
+				MerkleTree:                2,
+			}},
+		},
+		{
+			name: "valid raw v2",
+			iri:  "regen:esX3kDj4ThAkgemoPDzMGQ8xqVdwnDrNLnEaXt3tFPsrDXdY5tKz.jpg",
+			wantHash: &ContentHash{RawV2: &ContentHash_RawV2{
+				Hash:            hash,
+				DigestAlgorithm: 2,
+				FileExtension:   "jpg",
+			}},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -444,4 +637,13 @@ func TestParseIRI(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestName(t *testing.T) {
+	bz, ver, err := base58.CheckDecode("esV713VcRqk5TWxDgKQjGSpN4aXL4a9XTzbWRduCMQDqq2zo3TtX")
+	require.NoError(t, err)
+	t.Logf("version: %d", ver)
+	t.Logf("bz: %x", bz)
+	res := base58.CheckEncode(bz, 2)
+	t.Logf("res: %s", res)
 }

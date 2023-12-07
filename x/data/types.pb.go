@@ -196,6 +196,9 @@ func (GraphMerkleTree) EnumDescriptor() ([]byte, []int) {
 }
 
 // ContentHash specifies a hash-based content identifier for a piece of data.
+// Exactly one of its fields must be set so this message behaves like a oneof.
+// A protobuf oneof was not used because this caused compatibility issues with
+// amino signing.
 type ContentHash struct {
 	// Deprecated: use RawV2 instead.
 	// Raw specifies "raw" data which does not specify a deterministic, canonical
