@@ -13,14 +13,20 @@ var DigestAlgorithmLength = map[DigestAlgorithm]int{
 func (ch ContentHash) Validate() error {
 	hashRaw := ch.GetRaw()
 	hashGraph := ch.GetGraph()
+	hashRawV2 := ch.GetRawV2()
+	hashGraphV2 := ch.GetGraphV2()
 
 	switch {
-	case hashRaw != nil && hashGraph != nil:
+	case hashRaw != nil && hashGraph != nil && hashRawV2 != nil && hashGraphV2 != nil:
 		return sdkerrors.ErrInvalidRequest.Wrapf("content hash must be one of raw type or graph type")
 	case hashRaw != nil:
 		return hashRaw.Validate()
 	case hashGraph != nil:
 		return hashGraph.Validate()
+	case hashRawV2 != nil:
+		return hashRawV2.Validate()
+	case hashGraphV2 != nil:
+		return hashGraphV2.Validate()
 	}
 
 	return sdkerrors.ErrInvalidRequest.Wrapf("content hash must be one of raw type or graph type")
@@ -94,6 +100,62 @@ func (gca GraphCanonicalizationAlgorithm) Validate() error {
 func (gmt GraphMerkleTree) Validate() error {
 	if _, ok := GraphMerkleTree_name[int32(gmt)]; !ok {
 		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", gmt, gmt)
+	}
+
+	return nil
+}
+
+func (m *ContentHash_RawV2) Validate() error {
+	err := validateHash(m.Hash, m.DigestAlgorithm)
+	if err != nil {
+		return err
+	}
+
+	ext := m.FileExtension
+	extLen := len(ext)
+	if extLen < 2 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("file extension cannot be shorter than 2 characters")
+	}
+
+	if extLen > 6 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("file extension cannot be longer than 6 characters")
+	}
+
+	// check that ext is all lowercase or numeric
+	for _, c := range ext {
+		if c < '0' || c > '9' && c < 'a' || c > 'z' {
+			return sdkerrors.ErrInvalidRequest.Wrapf("file extension must be all lowercase or numeric")
+		}
+	}
+
+	return nil
+}
+
+func (m *ContentHash_GraphV2) Validate() error {
+	err := validateHash(m.Hash, m.DigestAlgorithm)
+	if err != nil {
+		return err
+	}
+
+	if m.CanonicalizationAlgorithm == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("canonicalization algorithm cannot be empty")
+	}
+
+	return nil
+}
+
+func validateHash(hash []byte, digestAlgorithm uint32) error {
+	hashLen := len(hash)
+	if hashLen < 20 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("hash cannot be shorter than 20 bytes")
+	}
+
+	if hashLen > 64 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("hash cannot be longer than 64 bytes")
+	}
+
+	if digestAlgorithm == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("digest algorithm cannot be empty")
 	}
 
 	return nil
