@@ -3,7 +3,6 @@ package data
 import (
 	"testing"
 
-	"github.com/btcsuite/btcutil/base58"
 	"gotest.tools/v3/assert"
 
 	"github.com/stretchr/testify/require"
@@ -637,13 +636,4 @@ func TestParseIRI(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestName(t *testing.T) {
-	bz, ver, err := base58.CheckDecode("esV713VcRqk5TWxDgKQjGSpN4aXL4a9XTzbWRduCMQDqq2zo3TtX")
-	require.NoError(t, err)
-	t.Logf("version: %d", ver)
-	t.Logf("bz: %x", bz)
-	res := base58.CheckEncode(bz, 2)
-	t.Logf("res: %s", res)
 }
