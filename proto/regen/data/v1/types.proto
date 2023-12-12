@@ -78,7 +78,7 @@ message ContentHash {
     // digest_algorithm represents the hash digest algorithm and should be a non-zero value from the DigestAlgorithm enum.
     uint32 digest_algorithm = 2;
 
-    // file_extension represents the file extension for raw data. It can be
+    // file_extension represents the file extension for raw data. It
     // must be between 2-6 characters long, must be all lower-case and should represent
     // the canonical extension for the media type.
     //
