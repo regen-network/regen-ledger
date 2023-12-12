@@ -13,115 +13,20 @@ var DigestAlgorithmLength = map[DigestAlgorithm]int{
 func (ch ContentHash) Validate() error {
 	hashRaw := ch.GetRaw()
 	hashGraph := ch.GetGraph()
-	hashRawV2 := ch.GetRawV2()
-	hashGraphV2 := ch.GetGraphV2()
-
-	// check that only one of the fields is set
-	nonNilCount := 0
-	if hashRaw != nil {
-		nonNilCount++
-	}
-	if hashGraph != nil {
-		nonNilCount++
-	}
-	if hashRawV2 != nil {
-		nonNilCount++
-	}
-	if hashGraphV2 != nil {
-		nonNilCount++
-	}
-	if nonNilCount != 1 {
-		return sdkerrors.ErrInvalidRequest.Wrapf("exactly one of ContentHash's fields should be set")
-	}
 
 	switch {
+	case hashRaw != nil && hashGraph != nil:
+		return sdkerrors.ErrInvalidRequest.Wrapf("content hash must be one of raw type or graph type")
 	case hashRaw != nil:
 		return hashRaw.Validate()
 	case hashGraph != nil:
 		return hashGraph.Validate()
-	case hashRawV2 != nil:
-		return hashRawV2.Validate()
-	case hashGraphV2 != nil:
-		return hashGraphV2.Validate()
 	}
 
 	return sdkerrors.ErrInvalidRequest.Wrapf("content hash must be one of raw type or graph type")
 }
 
-func (chr ContentHash_Raw) Validate() error {
-	err := chr.DigestAlgorithm.Validate(chr.Hash)
-	if err != nil {
-		return err
-	}
-
-	return chr.MediaType.Validate()
-}
-
-func (chg ContentHash_Graph) Validate() error {
-	err := chg.DigestAlgorithm.Validate(chg.Hash)
-	if err != nil {
-		return err
-	}
-
-	err = chg.CanonicalizationAlgorithm.Validate()
-	if err != nil {
-		return err
-	}
-
-	return chg.MerkleTree.Validate()
-}
-
-func (da DigestAlgorithm) Validate(hash []byte) error {
-	if reflect.DeepEqual(hash, []byte(nil)) {
-		return sdkerrors.ErrInvalidRequest.Wrapf("hash cannot be empty")
-	}
-
-	if da == DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED {
-		return sdkerrors.ErrInvalidRequest.Wrapf("invalid %T %s", da, da)
-	}
-
-	nBits, ok := DigestAlgorithmLength[da]
-	if !ok {
-		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %s", da, da)
-	}
-
-	nBytes := nBits / 8
-	if len(hash) != nBytes {
-		return sdkerrors.ErrInvalidRequest.Wrapf("expected %d bytes for %s, got %d", nBytes, da, len(hash))
-	}
-
-	return nil
-}
-
-func (rmt RawMediaType) Validate() error {
-	if _, ok := RawMediaType_name[int32(rmt)]; !ok {
-		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", rmt, rmt)
-	}
-
-	return nil
-}
-
-func (gca GraphCanonicalizationAlgorithm) Validate() error {
-	if _, ok := GraphCanonicalizationAlgorithm_name[int32(gca)]; !ok {
-		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", gca, gca)
-	}
-
-	if gca == GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED {
-		return sdkerrors.ErrInvalidRequest.Wrapf("invalid %T %s", gca, gca)
-	}
-
-	return nil
-}
-
-func (gmt GraphMerkleTree) Validate() error {
-	if _, ok := GraphMerkleTree_name[int32(gmt)]; !ok {
-		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", gmt, gmt)
-	}
-
-	return nil
-}
-
-func (chr *ContentHash_RawV2) Validate() error {
+func (chr *ContentHash_Raw) Validate() error {
 	err := validateHash(chr.Hash, chr.DigestAlgorithm)
 	if err != nil {
 		return err
@@ -147,7 +52,7 @@ func (chr *ContentHash_RawV2) Validate() error {
 	return nil
 }
 
-func (chg *ContentHash_GraphV2) Validate() error {
+func (chg *ContentHash_Graph) Validate() error {
 	err := validateHash(chg.Hash, chg.DigestAlgorithm)
 	if err != nil {
 		return err
@@ -155,6 +60,48 @@ func (chg *ContentHash_GraphV2) Validate() error {
 
 	if chg.CanonicalizationAlgorithm == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrapf("canonicalization algorithm cannot be empty")
+	}
+
+	return nil
+}
+
+func (da DigestAlgorithm) Validate(hash []byte) error {
+	if reflect.DeepEqual(hash, []byte(nil)) {
+		return sdkerrors.ErrInvalidRequest.Wrapf("hash cannot be empty")
+	}
+
+	if da == DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED {
+		return sdkerrors.ErrInvalidRequest.Wrapf("invalid %T %s", da, da)
+	}
+
+	nBits, ok := DigestAlgorithmLength[da]
+	if !ok {
+		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %s", da, da)
+	}
+
+	nBytes := nBits / 8
+	if len(hash) != nBytes {
+		return sdkerrors.ErrInvalidRequest.Wrapf("expected %d bytes for %s, got %d", nBytes, da, len(hash))
+	}
+
+	return nil
+}
+
+func (gca GraphCanonicalizationAlgorithm) Validate() error {
+	if _, ok := GraphCanonicalizationAlgorithm_name[int32(gca)]; !ok {
+		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", gca, gca)
+	}
+
+	if gca == GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED {
+		return sdkerrors.ErrInvalidRequest.Wrapf("invalid %T %s", gca, gca)
+	}
+
+	return nil
+}
+
+func (gmt GraphMerkleTree) Validate() error {
+	if _, ok := GraphMerkleTree_name[int32(gmt)]; !ok {
+		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", gmt, gmt)
 	}
 
 	return nil

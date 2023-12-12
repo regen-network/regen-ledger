@@ -3376,10 +3376,6 @@ const (
 )
 
 // DigestAlgorithm is the hash digest algorithm
-//
-// With V2 of raw and graph hash, this enum is no longer validated on-chain.
-// However, this enum SHOULD still be used and updated as a registry of known digest
-// algorithms and all implementations should coordinate on these values.
 type DigestAlgorithm int32
 
 const (
@@ -3543,10 +3539,6 @@ func (RawMediaType) EnumDescriptor() ([]byte, []int) {
 }
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
-//
-// With V2 of the graph hash, this enum is no longer validated on-chain.
-// However, this enum SHOULD still be used and updated as a registry of known canonicalization
-// algorithms and all implementations should coordinate on these values.
 type GraphCanonicalizationAlgorithm int32
 
 const (
@@ -3595,11 +3587,7 @@ func (GraphCanonicalizationAlgorithm) EnumDescriptor() ([]byte, []int) {
 	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{2}
 }
 
-// GraphMerkleTree is the graph merkle tree type used for hashing, if any.
-//
-// With V2 of the graph hash, this enum is no longer validated on-chain.
-// However, this enum SHOULD still be used and updated as a registry of known merkle tree
-// types and all implementations should coordinate on these values.
+// GraphMerkleTree is the graph merkle tree type used for hashing, if any
 type GraphMerkleTree int32
 
 const (
@@ -3645,9 +3633,6 @@ func (GraphMerkleTree) EnumDescriptor() ([]byte, []int) {
 }
 
 // ContentHash specifies a hash-based content identifier for a piece of data.
-// Exactly one of its fields must be set so this message behaves like a oneof.
-// A protobuf oneof was not used because this caused compatibility issues with
-// amino signing.
 type ContentHash struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3901,12 +3886,12 @@ type ContentHash_RawV2 struct {
 	unknownFields protoimpl.UnknownFields
 
 	// hash represents the hash of the data based on the specified
-	// digest_algorithm. It must be at least 20 bytes long and at most 64 bytes long.
+	// digest_algorithm.
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	// digest_algorithm represents the hash digest algorithm and should be a non-zero value from the DigestAlgorithm enum.
+	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm uint32 `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3" json:"digest_algorithm,omitempty"`
 	// file_extension represents the file extension for raw data. It can be
-	// must be between 2-6 characters long, must be all lower-case and should represent
+	// up to six characters long, must be all lower-case and should represent
 	// the canonical extension for the media type.
 	//
 	// A list of canonical extensions which should be used is provided here
@@ -3966,12 +3951,12 @@ type ContentHash_GraphV2 struct {
 	unknownFields protoimpl.UnknownFields
 
 	// hash represents the hash of the data based on the specified
-	// digest_algorithm. It must be at least 20 bytes long and at most 64 bytes long.
+	// digest_algorithm.
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	// digest_algorithm represents the hash digest algorithm and should be a non-zero value from the DigestAlgorithm enum.
+	// digest_algorithm represents the hash digest algorithm and should be a value from the DigestAlgorithm enum.
 	DigestAlgorithm uint32 `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3" json:"digest_algorithm,omitempty"`
 	// graph_canonicalization_algorithm represents the RDF graph
-	// canonicalization algorithm and should be a non-zero value from the GraphCanonicalizationAlgorithm enum.
+	// canonicalization algorithm and should be a value from the GraphCanonicalizationAlgorithm enum.
 	CanonicalizationAlgorithm uint32 `protobuf:"varint,3,opt,name=canonicalization_algorithm,json=canonicalizationAlgorithm,proto3" json:"canonicalization_algorithm,omitempty"`
 	// merkle_tree is the merkle tree type used for the graph hash, if any and should be a value from the GraphMerkleTree enum
 	// or left unspecified.
