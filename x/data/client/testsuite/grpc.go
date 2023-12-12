@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	dataRoute  = "regen/data/v1"
+	dataRoute  = "regen/data/v2"
 	pagination = "pagination.limit=1&pagination.countTotal=true"
 )
 
