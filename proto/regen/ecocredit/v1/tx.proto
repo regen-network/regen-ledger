@@ -171,6 +171,12 @@ service Msg {
   // Since Revision 2
   rpc RemoveAllowedBridgeChain(MsgRemoveAllowedBridgeChain)
       returns (MsgRemoveAllowedBridgeChainResponse);
+
+
+  // BurnRegen burns REGEN tokens to account for platform fees when creating or transferring credits.
+  //
+  // Since Revision 3
+  rpc BurnRegen(MsgBurnRegen) returns (MsgBurnRegenResponse);
 }
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
@@ -783,3 +789,26 @@ message MsgRemoveAllowedBridgeChain {
 //
 // Since Revision 2
 message MsgRemoveAllowedBridgeChainResponse {}
+
+// MsgBurnRegen is the Msg/BurnRegen request type.
+//
+// Since Revision 3
+message MsgBurnRegen {
+  option (cosmos.msg.v1.signer) = "from";
+
+  // from is the address of the account burning REGEN tokens.
+  string from = 1;
+
+  // amount is the integer amount of uregen tokens to burn.
+  string amount = 2;
+
+  // reason is any arbitrary string that specifies the reason for burning
+  // REGEN tokens. It may be at most 256 characters long.
+  string reason = 3;
+}
+
+// MsgBurnResponse is the Msg/Burn response type.
+//
+// Since Revision 3
+message MsgBurnRegenResponse {}
+
