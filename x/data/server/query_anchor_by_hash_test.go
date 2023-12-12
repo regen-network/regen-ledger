@@ -19,8 +19,8 @@ func TestQuery_AnchorByHash(t *testing.T) {
 	id := []byte{0}
 	ch := &data.ContentHash{Graph: &data.ContentHash_Graph{
 		Hash:                      bytes.Repeat([]byte{0}, 32),
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 	}}
 	iri, err := ch.ToIRI()
 	require.NoError(t, err)
@@ -65,8 +65,8 @@ func TestQuery_AnchorByHash(t *testing.T) {
 	_, err = s.server.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: &data.ContentHash{Graph: &data.ContentHash_Graph{
 			Hash:                      bytes.Repeat([]byte{1}, 32),
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+			DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+			CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 		}},
 	})
 	require.EqualError(t, err, "data record with IRI: regen:13toVfvdftodu8c1Jc4TXxCnq7XLRAe4p9MgDKF2VeFKMx9eZXMgGnB.rdf: not found")

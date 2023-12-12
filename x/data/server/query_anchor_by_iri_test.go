@@ -19,9 +19,9 @@ func TestQuery_AnchorByIRI(t *testing.T) {
 	id := []byte{0}
 	ch := &data.ContentHash{Graph: &data.ContentHash_Graph{
 		Hash:                      bytes.Repeat([]byte{0}, 32),
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-		MerkleTree:                data.GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+		DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
+		MerkleTree:                uint32(data.GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED),
 	}}
 	iri, err := ch.ToIRI()
 	require.NoError(t, err)

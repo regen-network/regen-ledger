@@ -231,7 +231,7 @@ func TestParseIRI(t *testing.T) {
 			wantHash: &ContentHash{Graph: &ContentHash_Graph{
 				Hash:                      hash,
 				DigestAlgorithm:           uint32(DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
-				CanonicalizationAlgorithm: uint32(GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015),
+				CanonicalizationAlgorithm: uint32(GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 			}},
 		},
 		{
