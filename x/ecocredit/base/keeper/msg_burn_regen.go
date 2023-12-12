@@ -12,7 +12,7 @@ import (
 )
 
 func (k Keeper) BurnRegen(ctx context.Context, regen *types.MsgBurnRegen) (*types.MsgBurnRegenResponse, error) {
-	from, err := sdk.AccAddressFromBech32(regen.From)
+	from, err := sdk.AccAddressFromBech32(regen.Burner)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (k Keeper) BurnRegen(ctx context.Context, regen *types.MsgBurnRegen) (*type
 	}
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&types.EventBurnRegen{
-		From:   regen.From,
+		Burner: regen.Burner,
 		Amount: regen.Amount,
 		Reason: regen.Reason,
 	})

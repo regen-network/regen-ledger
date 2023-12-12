@@ -250,8 +250,8 @@ message EventBridgeReceive {
 
 // EventBurnRegen is an event emitted when REGEN is burned to account for credit origination, transfer, etc.
 message EventBurnRegen {
-  // from is the address that burned REGEN.
-  string from = 1;
+  // burner is the address that burned REGEN.
+  string burner = 1;
 
   // amount is the integer amount of uregen burned.
   string amount = 2;

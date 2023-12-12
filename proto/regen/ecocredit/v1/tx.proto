@@ -794,10 +794,10 @@ message MsgRemoveAllowedBridgeChainResponse {}
 //
 // Since Revision 3
 message MsgBurnRegen {
-  option (cosmos.msg.v1.signer) = "from";
+  option (cosmos.msg.v1.signer) = "burner";
 
-  // from is the address of the account burning REGEN tokens.
-  string from = 1;
+  // burner is the address of the account burning REGEN tokens.
+  string burner = 1;
 
   // amount is the integer amount of uregen tokens to burn.
   string amount = 2;
