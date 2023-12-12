@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -34,7 +35,7 @@ func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {
 // ProtoCoinToCoin constructs a new gogoproto coin from protobuf coin.
 // This function will panic if the amount is negative or if the denomination is invalid.
 func ProtoCoinToCoin(coin *basev1beta1.Coin) (sdk.Coin, bool) {
-	amount, ok := sdk.NewIntFromString(coin.Amount)
+	amount, ok := math.NewIntFromString(coin.Amount)
 	if !ok {
 		return sdk.Coin{}, ok
 	}

@@ -3,7 +3,6 @@ package module
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -11,12 +10,12 @@ import (
 
 	tmtypes "github.com/tendermint/tendermint/abci/types"
 
+	storeTypes "cosmossdk.io/store/types"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
-	storeTypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -41,6 +40,12 @@ type Module struct {
 	keeper server.Keeper
 }
 
+func (a Module) RegisterStoreDecoder(registry simtypes.StoreDecoderRegistry) {}
+
+func (a Module) IsOnePerModuleType() {}
+
+func (a Module) IsAppModule() {}
+
 func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []tmtypes.ValidatorUpdate {
 	update, err := a.keeper.InitGenesis(s, jsonCodec, message)
 	if err != nil {
@@ -58,18 +63,6 @@ func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.Raw
 }
 
 func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
-
-func (a Module) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-func (a Module) QuerierRoute() string {
-	return data.ModuleName
-}
-
-func (a Module) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
 	impl := server.NewServer(a.sk, a.ak, a.bk)
@@ -173,15 +166,6 @@ func (Module) GenerateGenesisState(simState *module.SimulationState) {
 // simulate proposals.
 func (Module) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
 	return nil
-}
-
-// RandomizedParams creates randomized data param changes for the simulator.
-func (Module) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-	return nil
-}
-
-// RegisterStoreDecoder registers a decoder for data module's types
-func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
 }
 
 // WeightedOperations returns all the data module operations with their respective weights.

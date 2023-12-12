@@ -3,16 +3,16 @@ package ormstore
 import (
 	"testing"
 
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
+	"cosmossdk.io/store"
+	storetypes "cosmossdk.io/store/types"
 	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -20,7 +20,7 @@ import (
 
 func sdkContextForStoreKey(key *storetypes.KVStoreKey) sdk.Context {
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
+	cms := store.NewCommitMultiStore(db, log.NewNopLogger(), storetypes.NewMetricsStore(db))
 	cms.MountStoreWithDB(key, storetypes.StoreTypeIAVL, db)
 	err := cms.LoadLatestVersion()
 	if err != nil {
