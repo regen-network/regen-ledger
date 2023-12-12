@@ -3,11 +3,8 @@ syntax = "proto3";
 package regen.data.v1;
 
 // ContentHash specifies a hash-based content identifier for a piece of data.
-// Exactly one of its fields must be set so this message behaves like a oneof.
-// A protobuf oneof was not used because this caused compatibility issues with
-// amino signing.
 message ContentHash {
-  // Deprecated: use RawV2 instead.
+
   // Raw specifies "raw" data which does not specify a deterministic, canonical
   // encoding. Users of these hashes MUST maintain a copy of the hashed data
   // which is preserved bit by bit. All other content encodings specify a
@@ -15,27 +12,12 @@ message ContentHash {
   // variety of alternative formats for transport and encoding while maintaining
   // the guarantee that the canonical hash will not change. The media type for
   // "raw" data is defined by the MediaType enum.
-  Raw raw = 1 [deprecated = true];
+  Raw raw = 1;
 
-  // Deprecated: use GraphV2 instead.
   // Graph specifies graph data that conforms to the RDF data model.
   // The canonicalization algorithm used for an RDF graph is specified by
   // GraphCanonicalizationAlgorithm.
-  Graph graph = 2 [deprecated = true];
-
-  // raw_v2 specifies "raw" data which does not specify a deterministic, canonical
-  // encoding. Users of these hashes MUST maintain a copy of the hashed data
-  // which is preserved bit by bit. All other content encodings specify a
-  // deterministic, canonical encoding allowing implementations to choose from a
-  // variety of alternative formats for transport and encoding while maintaining
-  // the guarantee that the canonical hash will not change. The media type for
-  // "raw" data is defined by the MediaType enum.
-  RawV2 raw_v2 = 3;
-
-  // graph_v2 specifies graph data that conforms to the RDF data model.
-  // The canonicalization algorithm used for an RDF graph is specified by
-  // GraphCanonicalizationAlgorithm.
-  GraphV2 graph_v2 = 4;
+  Graph graph = 2;
 
   // Raw is the content hash type used for raw data.
   message Raw {
@@ -66,54 +48,11 @@ message ContentHash {
     // merkle_tree is the merkle tree type used for the graph hash, if any.
     GraphMerkleTree merkle_tree = 4;
   }
-
-  // RawV2 is the content hash type used for raw data.
-  message RawV2 {
-    // hash represents the hash of the data based on the specified
-    // digest_algorithm. It must be at least 20 bytes long and at most 64 bytes long.
-    bytes hash = 1;
-
-    // digest_algorithm represents the hash digest algorithm and should be a non-zero value from the DigestAlgorithm enum.
-    uint32 digest_algorithm = 2;
-
-    // file_extension represents the file extension for raw data. It can be
-    // must be between 2-6 characters long, must be all lower-case and should represent
-    // the canonical extension for the media type.
-    //
-    // A list of canonical extensions which should be used is provided here
-    // and SHOULD be used by implementations: txt, json, csv, xml, pdf, tiff,
-    // jpg, png, svg, webp, avif, gif, apng, mpeg, mp4, webm, ogg, heic, raw.
-    //
-    // The above list should be updated as new media types come into common usage
-    // especially when there are two or more possible extensions (i.e. jpg vs jpeg or tif vs tiff).
-    string file_extension = 3;
-  }
-
-  // GraphV2 is the content hash type used for RDF graph data.
-  message GraphV2 {
-    // hash represents the hash of the data based on the specified
-    // digest_algorithm. It must be at least 20 bytes long and at most 64 bytes long.
-    bytes hash = 1;
-
-    // digest_algorithm represents the hash digest algorithm and should be a non-zero value from the DigestAlgorithm enum.
-    uint32 digest_algorithm = 2;
-
-    // graph_canonicalization_algorithm represents the RDF graph
-    // canonicalization algorithm and should be a non-zero value from the GraphCanonicalizationAlgorithm enum.
-    uint32 canonicalization_algorithm = 3;
-
-    // merkle_tree is the merkle tree type used for the graph hash, if any and should be a value from the GraphMerkleTree enum
-    // or left unspecified.
-    uint32 merkle_tree = 4;
-  }
 }
 
 // DigestAlgorithm is the hash digest algorithm
-//
-// With V2 of raw and graph hash, this enum is no longer validated on-chain.
-// However, this enum SHOULD still be used and updated as a registry of known digest
-// algorithms and all implementations should coordinate on these values.
 enum DigestAlgorithm {
+
   // unspecified and invalid
   DIGEST_ALGORITHM_UNSPECIFIED = 0;
 
@@ -121,9 +60,9 @@ enum DigestAlgorithm {
   DIGEST_ALGORITHM_BLAKE2B_256 = 1;
 }
 
-// Deprecated: use RawV2 instead.
 // RawMediaType defines MIME media types to be used with a ContentHash.Raw hash.
 enum RawMediaType {
+
   // RAW_MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
   RAW_MEDIA_TYPE_UNSPECIFIED = 0;
 
@@ -186,11 +125,8 @@ enum RawMediaType {
 }
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
-//
-// With V2 of the graph hash, this enum is no longer validated on-chain.
-// However, this enum SHOULD still be used and updated as a registry of known canonicalization
-// algorithms and all implementations should coordinate on these values.
 enum GraphCanonicalizationAlgorithm {
+
   // unspecified and invalid
   GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
 
@@ -198,18 +134,16 @@ enum GraphCanonicalizationAlgorithm {
   GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015 = 1;
 }
 
-// GraphMerkleTree is the graph merkle tree type used for hashing, if any.
-//
-// With V2 of the graph hash, this enum is no longer validated on-chain.
-// However, this enum SHOULD still be used and updated as a registry of known merkle tree
-// types and all implementations should coordinate on these values.
+// GraphMerkleTree is the graph merkle tree type used for hashing, if any
 enum GraphMerkleTree {
+
   // unspecified and valid
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
 }
 
 // ContentHashes contains list of content ContentHash.
 message ContentHashes {
+
   // data is a list of content hashes which the resolver claims to serve.
   repeated ContentHash content_hashes = 1;
 }

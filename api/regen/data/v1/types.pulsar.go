@@ -13,11 +13,9 @@ import (
 )
 
 var (
-	md_ContentHash          protoreflect.MessageDescriptor
-	fd_ContentHash_raw      protoreflect.FieldDescriptor
-	fd_ContentHash_graph    protoreflect.FieldDescriptor
-	fd_ContentHash_raw_v2   protoreflect.FieldDescriptor
-	fd_ContentHash_graph_v2 protoreflect.FieldDescriptor
+	md_ContentHash       protoreflect.MessageDescriptor
+	fd_ContentHash_raw   protoreflect.FieldDescriptor
+	fd_ContentHash_graph protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -25,8 +23,6 @@ func init() {
 	md_ContentHash = File_regen_data_v1_types_proto.Messages().ByName("ContentHash")
 	fd_ContentHash_raw = md_ContentHash.Fields().ByName("raw")
 	fd_ContentHash_graph = md_ContentHash.Fields().ByName("graph")
-	fd_ContentHash_raw_v2 = md_ContentHash.Fields().ByName("raw_v2")
-	fd_ContentHash_graph_v2 = md_ContentHash.Fields().ByName("graph_v2")
 }
 
 var _ protoreflect.Message = (*fastReflection_ContentHash)(nil)
@@ -106,18 +102,6 @@ func (x *fastReflection_ContentHash) Range(f func(protoreflect.FieldDescriptor, 
 			return
 		}
 	}
-	if x.RawV2 != nil {
-		value := protoreflect.ValueOfMessage(x.RawV2.ProtoReflect())
-		if !f(fd_ContentHash_raw_v2, value) {
-			return
-		}
-	}
-	if x.GraphV2 != nil {
-		value := protoreflect.ValueOfMessage(x.GraphV2.ProtoReflect())
-		if !f(fd_ContentHash_graph_v2, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -137,10 +121,6 @@ func (x *fastReflection_ContentHash) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Raw != nil
 	case "regen.data.v1.ContentHash.graph":
 		return x.Graph != nil
-	case "regen.data.v1.ContentHash.raw_v2":
-		return x.RawV2 != nil
-	case "regen.data.v1.ContentHash.graph_v2":
-		return x.GraphV2 != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash"))
@@ -161,10 +141,6 @@ func (x *fastReflection_ContentHash) Clear(fd protoreflect.FieldDescriptor) {
 		x.Raw = nil
 	case "regen.data.v1.ContentHash.graph":
 		x.Graph = nil
-	case "regen.data.v1.ContentHash.raw_v2":
-		x.RawV2 = nil
-	case "regen.data.v1.ContentHash.graph_v2":
-		x.GraphV2 = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash"))
@@ -186,12 +162,6 @@ func (x *fastReflection_ContentHash) Get(descriptor protoreflect.FieldDescriptor
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "regen.data.v1.ContentHash.graph":
 		value := x.Graph
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.data.v1.ContentHash.raw_v2":
-		value := x.RawV2
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.data.v1.ContentHash.graph_v2":
-		value := x.GraphV2
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
@@ -217,10 +187,6 @@ func (x *fastReflection_ContentHash) Set(fd protoreflect.FieldDescriptor, value 
 		x.Raw = value.Message().Interface().(*ContentHash_Raw)
 	case "regen.data.v1.ContentHash.graph":
 		x.Graph = value.Message().Interface().(*ContentHash_Graph)
-	case "regen.data.v1.ContentHash.raw_v2":
-		x.RawV2 = value.Message().Interface().(*ContentHash_RawV2)
-	case "regen.data.v1.ContentHash.graph_v2":
-		x.GraphV2 = value.Message().Interface().(*ContentHash_GraphV2)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash"))
@@ -251,16 +217,6 @@ func (x *fastReflection_ContentHash) Mutable(fd protoreflect.FieldDescriptor) pr
 			x.Graph = new(ContentHash_Graph)
 		}
 		return protoreflect.ValueOfMessage(x.Graph.ProtoReflect())
-	case "regen.data.v1.ContentHash.raw_v2":
-		if x.RawV2 == nil {
-			x.RawV2 = new(ContentHash_RawV2)
-		}
-		return protoreflect.ValueOfMessage(x.RawV2.ProtoReflect())
-	case "regen.data.v1.ContentHash.graph_v2":
-		if x.GraphV2 == nil {
-			x.GraphV2 = new(ContentHash_GraphV2)
-		}
-		return protoreflect.ValueOfMessage(x.GraphV2.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash"))
@@ -279,12 +235,6 @@ func (x *fastReflection_ContentHash) NewField(fd protoreflect.FieldDescriptor) p
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "regen.data.v1.ContentHash.graph":
 		m := new(ContentHash_Graph)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.data.v1.ContentHash.raw_v2":
-		m := new(ContentHash_RawV2)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.data.v1.ContentHash.graph_v2":
-		m := new(ContentHash_GraphV2)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
@@ -363,14 +313,6 @@ func (x *fastReflection_ContentHash) ProtoMethods() *protoiface.Methods {
 			l = options.Size(x.Graph)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.RawV2 != nil {
-			l = options.Size(x.RawV2)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.GraphV2 != nil {
-			l = options.Size(x.GraphV2)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -399,34 +341,6 @@ func (x *fastReflection_ContentHash) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.GraphV2 != nil {
-			encoded, err := options.Marshal(x.GraphV2)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if x.RawV2 != nil {
-			encoded, err := options.Marshal(x.RawV2)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x1a
 		}
 		if x.Graph != nil {
 			encoded, err := options.Marshal(x.Graph)
@@ -574,78 +488,6 @@ func (x *fastReflection_ContentHash) ProtoMethods() *protoiface.Methods {
 					x.Graph = &ContentHash_Graph{}
 				}
 				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Graph); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RawV2", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.RawV2 == nil {
-					x.RawV2 = &ContentHash_RawV2{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.RawV2); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GraphV2", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.GraphV2 == nil {
-					x.GraphV2 = &ContentHash_GraphV2{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.GraphV2); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -1768,1106 +1610,6 @@ func (x *fastReflection_ContentHash_Graph) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var (
-	md_ContentHash_RawV2                  protoreflect.MessageDescriptor
-	fd_ContentHash_RawV2_hash             protoreflect.FieldDescriptor
-	fd_ContentHash_RawV2_digest_algorithm protoreflect.FieldDescriptor
-	fd_ContentHash_RawV2_file_extension   protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_regen_data_v1_types_proto_init()
-	md_ContentHash_RawV2 = File_regen_data_v1_types_proto.Messages().ByName("ContentHash").Messages().ByName("RawV2")
-	fd_ContentHash_RawV2_hash = md_ContentHash_RawV2.Fields().ByName("hash")
-	fd_ContentHash_RawV2_digest_algorithm = md_ContentHash_RawV2.Fields().ByName("digest_algorithm")
-	fd_ContentHash_RawV2_file_extension = md_ContentHash_RawV2.Fields().ByName("file_extension")
-}
-
-var _ protoreflect.Message = (*fastReflection_ContentHash_RawV2)(nil)
-
-type fastReflection_ContentHash_RawV2 ContentHash_RawV2
-
-func (x *ContentHash_RawV2) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_ContentHash_RawV2)(x)
-}
-
-func (x *ContentHash_RawV2) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_types_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_ContentHash_RawV2_messageType fastReflection_ContentHash_RawV2_messageType
-var _ protoreflect.MessageType = fastReflection_ContentHash_RawV2_messageType{}
-
-type fastReflection_ContentHash_RawV2_messageType struct{}
-
-func (x fastReflection_ContentHash_RawV2_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_ContentHash_RawV2)(nil)
-}
-func (x fastReflection_ContentHash_RawV2_messageType) New() protoreflect.Message {
-	return new(fastReflection_ContentHash_RawV2)
-}
-func (x fastReflection_ContentHash_RawV2_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_ContentHash_RawV2
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_ContentHash_RawV2) Descriptor() protoreflect.MessageDescriptor {
-	return md_ContentHash_RawV2
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_ContentHash_RawV2) Type() protoreflect.MessageType {
-	return _fastReflection_ContentHash_RawV2_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_ContentHash_RawV2) New() protoreflect.Message {
-	return new(fastReflection_ContentHash_RawV2)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_ContentHash_RawV2) Interface() protoreflect.ProtoMessage {
-	return (*ContentHash_RawV2)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_ContentHash_RawV2) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Hash) != 0 {
-		value := protoreflect.ValueOfBytes(x.Hash)
-		if !f(fd_ContentHash_RawV2_hash, value) {
-			return
-		}
-	}
-	if x.DigestAlgorithm != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.DigestAlgorithm)
-		if !f(fd_ContentHash_RawV2_digest_algorithm, value) {
-			return
-		}
-	}
-	if x.FileExtension != "" {
-		value := protoreflect.ValueOfString(x.FileExtension)
-		if !f(fd_ContentHash_RawV2_file_extension, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_ContentHash_RawV2) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.RawV2.hash":
-		return len(x.Hash) != 0
-	case "regen.data.v1.ContentHash.RawV2.digest_algorithm":
-		return x.DigestAlgorithm != uint32(0)
-	case "regen.data.v1.ContentHash.RawV2.file_extension":
-		return x.FileExtension != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.RawV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.RawV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_RawV2) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.RawV2.hash":
-		x.Hash = nil
-	case "regen.data.v1.ContentHash.RawV2.digest_algorithm":
-		x.DigestAlgorithm = uint32(0)
-	case "regen.data.v1.ContentHash.RawV2.file_extension":
-		x.FileExtension = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.RawV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.RawV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_ContentHash_RawV2) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "regen.data.v1.ContentHash.RawV2.hash":
-		value := x.Hash
-		return protoreflect.ValueOfBytes(value)
-	case "regen.data.v1.ContentHash.RawV2.digest_algorithm":
-		value := x.DigestAlgorithm
-		return protoreflect.ValueOfUint32(value)
-	case "regen.data.v1.ContentHash.RawV2.file_extension":
-		value := x.FileExtension
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.RawV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.RawV2 does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_RawV2) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.RawV2.hash":
-		x.Hash = value.Bytes()
-	case "regen.data.v1.ContentHash.RawV2.digest_algorithm":
-		x.DigestAlgorithm = uint32(value.Uint())
-	case "regen.data.v1.ContentHash.RawV2.file_extension":
-		x.FileExtension = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.RawV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.RawV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_RawV2) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.RawV2.hash":
-		panic(fmt.Errorf("field hash of message regen.data.v1.ContentHash.RawV2 is not mutable"))
-	case "regen.data.v1.ContentHash.RawV2.digest_algorithm":
-		panic(fmt.Errorf("field digest_algorithm of message regen.data.v1.ContentHash.RawV2 is not mutable"))
-	case "regen.data.v1.ContentHash.RawV2.file_extension":
-		panic(fmt.Errorf("field file_extension of message regen.data.v1.ContentHash.RawV2 is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.RawV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.RawV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_ContentHash_RawV2) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.RawV2.hash":
-		return protoreflect.ValueOfBytes(nil)
-	case "regen.data.v1.ContentHash.RawV2.digest_algorithm":
-		return protoreflect.ValueOfUint32(uint32(0))
-	case "regen.data.v1.ContentHash.RawV2.file_extension":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.RawV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.RawV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_ContentHash_RawV2) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ContentHash.RawV2", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_ContentHash_RawV2) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_RawV2) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_ContentHash_RawV2) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_ContentHash_RawV2) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*ContentHash_RawV2)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Hash)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.DigestAlgorithm != 0 {
-			n += 1 + runtime.Sov(uint64(x.DigestAlgorithm))
-		}
-		l = len(x.FileExtension)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*ContentHash_RawV2)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.FileExtension) > 0 {
-			i -= len(x.FileExtension)
-			copy(dAtA[i:], x.FileExtension)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.FileExtension)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if x.DigestAlgorithm != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.DigestAlgorithm))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.Hash) > 0 {
-			i -= len(x.Hash)
-			copy(dAtA[i:], x.Hash)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Hash)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*ContentHash_RawV2)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ContentHash_RawV2: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ContentHash_RawV2: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
-				}
-				var byteLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					byteLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if byteLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + byteLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Hash = append(x.Hash[:0], dAtA[iNdEx:postIndex]...)
-				if x.Hash == nil {
-					x.Hash = []byte{}
-				}
-				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DigestAlgorithm", wireType)
-				}
-				x.DigestAlgorithm = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.DigestAlgorithm |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field FileExtension", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.FileExtension = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_ContentHash_GraphV2                            protoreflect.MessageDescriptor
-	fd_ContentHash_GraphV2_hash                       protoreflect.FieldDescriptor
-	fd_ContentHash_GraphV2_digest_algorithm           protoreflect.FieldDescriptor
-	fd_ContentHash_GraphV2_canonicalization_algorithm protoreflect.FieldDescriptor
-	fd_ContentHash_GraphV2_merkle_tree                protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_regen_data_v1_types_proto_init()
-	md_ContentHash_GraphV2 = File_regen_data_v1_types_proto.Messages().ByName("ContentHash").Messages().ByName("GraphV2")
-	fd_ContentHash_GraphV2_hash = md_ContentHash_GraphV2.Fields().ByName("hash")
-	fd_ContentHash_GraphV2_digest_algorithm = md_ContentHash_GraphV2.Fields().ByName("digest_algorithm")
-	fd_ContentHash_GraphV2_canonicalization_algorithm = md_ContentHash_GraphV2.Fields().ByName("canonicalization_algorithm")
-	fd_ContentHash_GraphV2_merkle_tree = md_ContentHash_GraphV2.Fields().ByName("merkle_tree")
-}
-
-var _ protoreflect.Message = (*fastReflection_ContentHash_GraphV2)(nil)
-
-type fastReflection_ContentHash_GraphV2 ContentHash_GraphV2
-
-func (x *ContentHash_GraphV2) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_ContentHash_GraphV2)(x)
-}
-
-func (x *ContentHash_GraphV2) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_types_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_ContentHash_GraphV2_messageType fastReflection_ContentHash_GraphV2_messageType
-var _ protoreflect.MessageType = fastReflection_ContentHash_GraphV2_messageType{}
-
-type fastReflection_ContentHash_GraphV2_messageType struct{}
-
-func (x fastReflection_ContentHash_GraphV2_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_ContentHash_GraphV2)(nil)
-}
-func (x fastReflection_ContentHash_GraphV2_messageType) New() protoreflect.Message {
-	return new(fastReflection_ContentHash_GraphV2)
-}
-func (x fastReflection_ContentHash_GraphV2_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_ContentHash_GraphV2
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_ContentHash_GraphV2) Descriptor() protoreflect.MessageDescriptor {
-	return md_ContentHash_GraphV2
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_ContentHash_GraphV2) Type() protoreflect.MessageType {
-	return _fastReflection_ContentHash_GraphV2_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_ContentHash_GraphV2) New() protoreflect.Message {
-	return new(fastReflection_ContentHash_GraphV2)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_ContentHash_GraphV2) Interface() protoreflect.ProtoMessage {
-	return (*ContentHash_GraphV2)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_ContentHash_GraphV2) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Hash) != 0 {
-		value := protoreflect.ValueOfBytes(x.Hash)
-		if !f(fd_ContentHash_GraphV2_hash, value) {
-			return
-		}
-	}
-	if x.DigestAlgorithm != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.DigestAlgorithm)
-		if !f(fd_ContentHash_GraphV2_digest_algorithm, value) {
-			return
-		}
-	}
-	if x.CanonicalizationAlgorithm != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.CanonicalizationAlgorithm)
-		if !f(fd_ContentHash_GraphV2_canonicalization_algorithm, value) {
-			return
-		}
-	}
-	if x.MerkleTree != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.MerkleTree)
-		if !f(fd_ContentHash_GraphV2_merkle_tree, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_ContentHash_GraphV2) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.GraphV2.hash":
-		return len(x.Hash) != 0
-	case "regen.data.v1.ContentHash.GraphV2.digest_algorithm":
-		return x.DigestAlgorithm != uint32(0)
-	case "regen.data.v1.ContentHash.GraphV2.canonicalization_algorithm":
-		return x.CanonicalizationAlgorithm != uint32(0)
-	case "regen.data.v1.ContentHash.GraphV2.merkle_tree":
-		return x.MerkleTree != uint32(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.GraphV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.GraphV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_GraphV2) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.GraphV2.hash":
-		x.Hash = nil
-	case "regen.data.v1.ContentHash.GraphV2.digest_algorithm":
-		x.DigestAlgorithm = uint32(0)
-	case "regen.data.v1.ContentHash.GraphV2.canonicalization_algorithm":
-		x.CanonicalizationAlgorithm = uint32(0)
-	case "regen.data.v1.ContentHash.GraphV2.merkle_tree":
-		x.MerkleTree = uint32(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.GraphV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.GraphV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_ContentHash_GraphV2) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "regen.data.v1.ContentHash.GraphV2.hash":
-		value := x.Hash
-		return protoreflect.ValueOfBytes(value)
-	case "regen.data.v1.ContentHash.GraphV2.digest_algorithm":
-		value := x.DigestAlgorithm
-		return protoreflect.ValueOfUint32(value)
-	case "regen.data.v1.ContentHash.GraphV2.canonicalization_algorithm":
-		value := x.CanonicalizationAlgorithm
-		return protoreflect.ValueOfUint32(value)
-	case "regen.data.v1.ContentHash.GraphV2.merkle_tree":
-		value := x.MerkleTree
-		return protoreflect.ValueOfUint32(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.GraphV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.GraphV2 does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_GraphV2) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.GraphV2.hash":
-		x.Hash = value.Bytes()
-	case "regen.data.v1.ContentHash.GraphV2.digest_algorithm":
-		x.DigestAlgorithm = uint32(value.Uint())
-	case "regen.data.v1.ContentHash.GraphV2.canonicalization_algorithm":
-		x.CanonicalizationAlgorithm = uint32(value.Uint())
-	case "regen.data.v1.ContentHash.GraphV2.merkle_tree":
-		x.MerkleTree = uint32(value.Uint())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.GraphV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.GraphV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_GraphV2) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.GraphV2.hash":
-		panic(fmt.Errorf("field hash of message regen.data.v1.ContentHash.GraphV2 is not mutable"))
-	case "regen.data.v1.ContentHash.GraphV2.digest_algorithm":
-		panic(fmt.Errorf("field digest_algorithm of message regen.data.v1.ContentHash.GraphV2 is not mutable"))
-	case "regen.data.v1.ContentHash.GraphV2.canonicalization_algorithm":
-		panic(fmt.Errorf("field canonicalization_algorithm of message regen.data.v1.ContentHash.GraphV2 is not mutable"))
-	case "regen.data.v1.ContentHash.GraphV2.merkle_tree":
-		panic(fmt.Errorf("field merkle_tree of message regen.data.v1.ContentHash.GraphV2 is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.GraphV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.GraphV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_ContentHash_GraphV2) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.ContentHash.GraphV2.hash":
-		return protoreflect.ValueOfBytes(nil)
-	case "regen.data.v1.ContentHash.GraphV2.digest_algorithm":
-		return protoreflect.ValueOfUint32(uint32(0))
-	case "regen.data.v1.ContentHash.GraphV2.canonicalization_algorithm":
-		return protoreflect.ValueOfUint32(uint32(0))
-	case "regen.data.v1.ContentHash.GraphV2.merkle_tree":
-		return protoreflect.ValueOfUint32(uint32(0))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentHash.GraphV2"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.ContentHash.GraphV2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_ContentHash_GraphV2) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ContentHash.GraphV2", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_ContentHash_GraphV2) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ContentHash_GraphV2) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_ContentHash_GraphV2) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_ContentHash_GraphV2) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*ContentHash_GraphV2)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Hash)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.DigestAlgorithm != 0 {
-			n += 1 + runtime.Sov(uint64(x.DigestAlgorithm))
-		}
-		if x.CanonicalizationAlgorithm != 0 {
-			n += 1 + runtime.Sov(uint64(x.CanonicalizationAlgorithm))
-		}
-		if x.MerkleTree != 0 {
-			n += 1 + runtime.Sov(uint64(x.MerkleTree))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*ContentHash_GraphV2)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.MerkleTree != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MerkleTree))
-			i--
-			dAtA[i] = 0x20
-		}
-		if x.CanonicalizationAlgorithm != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CanonicalizationAlgorithm))
-			i--
-			dAtA[i] = 0x18
-		}
-		if x.DigestAlgorithm != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.DigestAlgorithm))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.Hash) > 0 {
-			i -= len(x.Hash)
-			copy(dAtA[i:], x.Hash)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Hash)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*ContentHash_GraphV2)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ContentHash_GraphV2: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ContentHash_GraphV2: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
-				}
-				var byteLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					byteLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if byteLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + byteLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Hash = append(x.Hash[:0], dAtA[iNdEx:postIndex]...)
-				if x.Hash == nil {
-					x.Hash = []byte{}
-				}
-				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DigestAlgorithm", wireType)
-				}
-				x.DigestAlgorithm = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.DigestAlgorithm |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CanonicalizationAlgorithm", wireType)
-				}
-				x.CanonicalizationAlgorithm = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.CanonicalizationAlgorithm |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MerkleTree", wireType)
-				}
-				x.MerkleTree = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.MerkleTree |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
 var _ protoreflect.List = (*_ContentHashes_1_list)(nil)
 
 type _ContentHashes_1_list struct {
@@ -3424,7 +2166,6 @@ func (DigestAlgorithm) EnumDescriptor() ([]byte, []int) {
 	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{0}
 }
 
-// Deprecated: use RawV2 instead.
 // RawMediaType defines MIME media types to be used with a ContentHash.Raw hash.
 type RawMediaType int32
 
@@ -3638,7 +2379,6 @@ type ContentHash struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Deprecated: use RawV2 instead.
 	// Raw specifies "raw" data which does not specify a deterministic, canonical
 	// encoding. Users of these hashes MUST maintain a copy of the hashed data
 	// which is preserved bit by bit. All other content encodings specify a
@@ -3646,28 +2386,11 @@ type ContentHash struct {
 	// variety of alternative formats for transport and encoding while maintaining
 	// the guarantee that the canonical hash will not change. The media type for
 	// "raw" data is defined by the MediaType enum.
-	//
-	// Deprecated: Do not use.
 	Raw *ContentHash_Raw `protobuf:"bytes,1,opt,name=raw,proto3" json:"raw,omitempty"`
-	// Deprecated: use GraphV2 instead.
 	// Graph specifies graph data that conforms to the RDF data model.
 	// The canonicalization algorithm used for an RDF graph is specified by
 	// GraphCanonicalizationAlgorithm.
-	//
-	// Deprecated: Do not use.
 	Graph *ContentHash_Graph `protobuf:"bytes,2,opt,name=graph,proto3" json:"graph,omitempty"`
-	// raw_v2 specifies "raw" data which does not specify a deterministic, canonical
-	// encoding. Users of these hashes MUST maintain a copy of the hashed data
-	// which is preserved bit by bit. All other content encodings specify a
-	// deterministic, canonical encoding allowing implementations to choose from a
-	// variety of alternative formats for transport and encoding while maintaining
-	// the guarantee that the canonical hash will not change. The media type for
-	// "raw" data is defined by the MediaType enum.
-	RawV2 *ContentHash_RawV2 `protobuf:"bytes,3,opt,name=raw_v2,json=rawV2,proto3" json:"raw_v2,omitempty"`
-	// graph_v2 specifies graph data that conforms to the RDF data model.
-	// The canonicalization algorithm used for an RDF graph is specified by
-	// GraphCanonicalizationAlgorithm.
-	GraphV2 *ContentHash_GraphV2 `protobuf:"bytes,4,opt,name=graph_v2,json=graphV2,proto3" json:"graph_v2,omitempty"`
 }
 
 func (x *ContentHash) Reset() {
@@ -3690,7 +2413,6 @@ func (*ContentHash) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{0}
 }
 
-// Deprecated: Do not use.
 func (x *ContentHash) GetRaw() *ContentHash_Raw {
 	if x != nil {
 		return x.Raw
@@ -3698,24 +2420,9 @@ func (x *ContentHash) GetRaw() *ContentHash_Raw {
 	return nil
 }
 
-// Deprecated: Do not use.
 func (x *ContentHash) GetGraph() *ContentHash_Graph {
 	if x != nil {
 		return x.Graph
-	}
-	return nil
-}
-
-func (x *ContentHash) GetRawV2() *ContentHash_RawV2 {
-	if x != nil {
-		return x.RawV2
-	}
-	return nil
-}
-
-func (x *ContentHash) GetGraphV2() *ContentHash_GraphV2 {
-	if x != nil {
-		return x.GraphV2
 	}
 	return nil
 }
@@ -3879,160 +2586,20 @@ func (x *ContentHash_Graph) GetMerkleTree() GraphMerkleTree {
 	return GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
 }
 
-// RawV2 is the content hash type used for raw data.
-type ContentHash_RawV2 struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// hash represents the hash of the data based on the specified
-	// digest_algorithm.
-	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	// digest_algorithm represents the hash digest algorithm.
-	DigestAlgorithm uint32 `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3" json:"digest_algorithm,omitempty"`
-	// file_extension represents the file extension for raw data. It can be
-	// up to six characters long, must be all lower-case and should represent
-	// the canonical extension for the media type.
-	//
-	// A list of canonical extensions which should be used is provided here
-	// and SHOULD be used by implementations: txt, json, csv, xml, pdf, tiff,
-	// jpg, png, svg, webp, avif, gif, apng, mpeg, mp4, webm, ogg, heic, raw.
-	//
-	// The above list should be updated as new media types come into common usage
-	// especially when there are two or more possible extensions (i.e. jpg vs jpeg or tif vs tiff).
-	FileExtension string `protobuf:"bytes,3,opt,name=file_extension,json=fileExtension,proto3" json:"file_extension,omitempty"`
-}
-
-func (x *ContentHash_RawV2) Reset() {
-	*x = ContentHash_RawV2{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_types_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ContentHash_RawV2) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ContentHash_RawV2) ProtoMessage() {}
-
-// Deprecated: Use ContentHash_RawV2.ProtoReflect.Descriptor instead.
-func (*ContentHash_RawV2) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{0, 2}
-}
-
-func (x *ContentHash_RawV2) GetHash() []byte {
-	if x != nil {
-		return x.Hash
-	}
-	return nil
-}
-
-func (x *ContentHash_RawV2) GetDigestAlgorithm() uint32 {
-	if x != nil {
-		return x.DigestAlgorithm
-	}
-	return 0
-}
-
-func (x *ContentHash_RawV2) GetFileExtension() string {
-	if x != nil {
-		return x.FileExtension
-	}
-	return ""
-}
-
-// GraphV2 is the content hash type used for RDF graph data.
-type ContentHash_GraphV2 struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// hash represents the hash of the data based on the specified
-	// digest_algorithm.
-	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	// digest_algorithm represents the hash digest algorithm and should be a value from the DigestAlgorithm enum.
-	DigestAlgorithm uint32 `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3" json:"digest_algorithm,omitempty"`
-	// graph_canonicalization_algorithm represents the RDF graph
-	// canonicalization algorithm and should be a value from the GraphCanonicalizationAlgorithm enum.
-	CanonicalizationAlgorithm uint32 `protobuf:"varint,3,opt,name=canonicalization_algorithm,json=canonicalizationAlgorithm,proto3" json:"canonicalization_algorithm,omitempty"`
-	// merkle_tree is the merkle tree type used for the graph hash, if any and should be a value from the GraphMerkleTree enum
-	// or left unspecified.
-	MerkleTree uint32 `protobuf:"varint,4,opt,name=merkle_tree,json=merkleTree,proto3" json:"merkle_tree,omitempty"`
-}
-
-func (x *ContentHash_GraphV2) Reset() {
-	*x = ContentHash_GraphV2{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_types_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ContentHash_GraphV2) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ContentHash_GraphV2) ProtoMessage() {}
-
-// Deprecated: Use ContentHash_GraphV2.ProtoReflect.Descriptor instead.
-func (*ContentHash_GraphV2) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{0, 3}
-}
-
-func (x *ContentHash_GraphV2) GetHash() []byte {
-	if x != nil {
-		return x.Hash
-	}
-	return nil
-}
-
-func (x *ContentHash_GraphV2) GetDigestAlgorithm() uint32 {
-	if x != nil {
-		return x.DigestAlgorithm
-	}
-	return 0
-}
-
-func (x *ContentHash_GraphV2) GetCanonicalizationAlgorithm() uint32 {
-	if x != nil {
-		return x.CanonicalizationAlgorithm
-	}
-	return 0
-}
-
-func (x *ContentHash_GraphV2) GetMerkleTree() uint32 {
-	if x != nil {
-		return x.MerkleTree
-	}
-	return 0
-}
-
 var File_regen_data_v1_types_proto protoreflect.FileDescriptor
 
 var file_regen_data_v1_types_proto_rawDesc = []byte{
 	0x0a, 0x19, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f,
 	0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x22, 0xcc, 0x07, 0x0a, 0x0b, 0x43,
-	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12, 0x34, 0x0a, 0x03, 0x72, 0x61,
+	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x22, 0xb2, 0x04, 0x0a, 0x0b, 0x43,
+	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x12, 0x30, 0x0a, 0x03, 0x72, 0x61,
 	0x77, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
 	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48,
-	0x61, 0x73, 0x68, 0x2e, 0x52, 0x61, 0x77, 0x42, 0x02, 0x18, 0x01, 0x52, 0x03, 0x72, 0x61, 0x77,
-	0x12, 0x3a, 0x0a, 0x05, 0x67, 0x72, 0x61, 0x70, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x20, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
-	0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x2e, 0x47, 0x72, 0x61, 0x70,
-	0x68, 0x42, 0x02, 0x18, 0x01, 0x52, 0x05, 0x67, 0x72, 0x61, 0x70, 0x68, 0x12, 0x37, 0x0a, 0x06,
-	0x72, 0x61, 0x77, 0x5f, 0x76, 0x32, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e,
-	0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x2e, 0x52, 0x61, 0x77, 0x56, 0x32, 0x52, 0x05,
-	0x72, 0x61, 0x77, 0x56, 0x32, 0x12, 0x3d, 0x0a, 0x08, 0x67, 0x72, 0x61, 0x70, 0x68, 0x5f, 0x76,
-	0x32, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48,
-	0x61, 0x73, 0x68, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x56, 0x32, 0x52, 0x07, 0x67, 0x72, 0x61,
-	0x70, 0x68, 0x56, 0x32, 0x1a, 0xa0, 0x01, 0x0a, 0x03, 0x52, 0x61, 0x77, 0x12, 0x12, 0x0a, 0x04,
+	0x61, 0x73, 0x68, 0x2e, 0x52, 0x61, 0x77, 0x52, 0x03, 0x72, 0x61, 0x77, 0x12, 0x36, 0x0a, 0x05,
+	0x67, 0x72, 0x61, 0x70, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74,
+	0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x52, 0x05, 0x67,
+	0x72, 0x61, 0x70, 0x68, 0x1a, 0xa0, 0x01, 0x0a, 0x03, 0x52, 0x61, 0x77, 0x12, 0x12, 0x0a, 0x04,
 	0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x68, 0x61, 0x73, 0x68,
 	0x12, 0x49, 0x0a, 0x10, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72,
 	0x69, 0x74, 0x68, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67,
@@ -4059,89 +2626,72 @@ var file_regen_data_v1_types_proto_rawDesc = []byte{
 	0x0a, 0x0b, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x5f, 0x74, 0x72, 0x65, 0x65, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
 	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54,
-	0x72, 0x65, 0x65, 0x52, 0x0a, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65, 0x65, 0x1a,
-	0x6d, 0x0a, 0x05, 0x52, 0x61, 0x77, 0x56, 0x32, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x61, 0x73, 0x68,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x68, 0x61, 0x73, 0x68, 0x12, 0x29, 0x0a, 0x10,
-	0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0f, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c,
-	0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x25, 0x0a, 0x0e, 0x66, 0x69, 0x6c, 0x65, 0x5f,
-	0x65, 0x78, 0x74, 0x65, 0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0d, 0x66, 0x69, 0x6c, 0x65, 0x45, 0x78, 0x74, 0x65, 0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x1a, 0xa8,
-	0x01, 0x0a, 0x07, 0x47, 0x72, 0x61, 0x70, 0x68, 0x56, 0x32, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x61,
-	0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x68, 0x61, 0x73, 0x68, 0x12, 0x29,
-	0x0a, 0x10, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x5f, 0x61, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74,
-	0x68, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0f, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74,
-	0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x3d, 0x0a, 0x1a, 0x63, 0x61, 0x6e,
-	0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x61, 0x6c,
-	0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x19, 0x63,
-	0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41,
-	0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x1f, 0x0a, 0x0b, 0x6d, 0x65, 0x72, 0x6b,
-	0x6c, 0x65, 0x5f, 0x74, 0x72, 0x65, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0a, 0x6d,
-	0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65, 0x65, 0x22, 0x52, 0x0a, 0x0d, 0x43, 0x6f, 0x6e,
-	0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x65, 0x73, 0x12, 0x41, 0x0a, 0x0e, 0x63, 0x6f,
-	0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
-	0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0d,
-	0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x65, 0x73, 0x2a, 0x55, 0x0a,
-	0x0f, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d,
-	0x12, 0x20, 0x0a, 0x1c, 0x44, 0x49, 0x47, 0x45, 0x53, 0x54, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52,
-	0x49, 0x54, 0x48, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44,
-	0x10, 0x00, 0x12, 0x20, 0x0a, 0x1c, 0x44, 0x49, 0x47, 0x45, 0x53, 0x54, 0x5f, 0x41, 0x4c, 0x47,
-	0x4f, 0x52, 0x49, 0x54, 0x48, 0x4d, 0x5f, 0x42, 0x4c, 0x41, 0x4b, 0x45, 0x32, 0x42, 0x5f, 0x32,
-	0x35, 0x36, 0x10, 0x01, 0x2a, 0xd4, 0x03, 0x0a, 0x0c, 0x52, 0x61, 0x77, 0x4d, 0x65, 0x64, 0x69,
-	0x61, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e, 0x0a, 0x1a, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44,
-	0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46,
-	0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1d, 0x0a, 0x19, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44,
-	0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x54, 0x45, 0x58, 0x54, 0x5f, 0x50, 0x4c, 0x41,
-	0x49, 0x4e, 0x10, 0x01, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49,
-	0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x10, 0x02, 0x12, 0x16, 0x0a,
-	0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
-	0x43, 0x53, 0x56, 0x10, 0x03, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44,
-	0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x58, 0x4d, 0x4c, 0x10, 0x04, 0x12, 0x16, 0x0a,
-	0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
-	0x50, 0x44, 0x46, 0x10, 0x05, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44,
-	0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x54, 0x49, 0x46, 0x46, 0x10, 0x10, 0x12, 0x16,
+	0x72, 0x65, 0x65, 0x52, 0x0a, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65, 0x65, 0x22,
+	0x52, 0x0a, 0x0d, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x65, 0x73,
+	0x12, 0x41, 0x0a, 0x0e, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73, 0x68,
+	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74,
+	0x48, 0x61, 0x73, 0x68, 0x52, 0x0d, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73,
+	0x68, 0x65, 0x73, 0x2a, 0x55, 0x0a, 0x0f, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67,
+	0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x20, 0x0a, 0x1c, 0x44, 0x49, 0x47, 0x45, 0x53, 0x54,
+	0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54, 0x48, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45,
+	0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x20, 0x0a, 0x1c, 0x44, 0x49, 0x47, 0x45,
+	0x53, 0x54, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54, 0x48, 0x4d, 0x5f, 0x42, 0x4c, 0x41,
+	0x4b, 0x45, 0x32, 0x42, 0x5f, 0x32, 0x35, 0x36, 0x10, 0x01, 0x2a, 0xd4, 0x03, 0x0a, 0x0c, 0x52,
+	0x61, 0x77, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e, 0x0a, 0x1a, 0x52,
+	0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e,
+	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1d, 0x0a, 0x19, 0x52,
+	0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x54, 0x45,
+	0x58, 0x54, 0x5f, 0x50, 0x4c, 0x41, 0x49, 0x4e, 0x10, 0x01, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41,
+	0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4a, 0x53, 0x4f,
+	0x4e, 0x10, 0x02, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x43, 0x53, 0x56, 0x10, 0x03, 0x12, 0x16, 0x0a, 0x12, 0x52,
+	0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x58, 0x4d,
+	0x4c, 0x10, 0x04, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x50, 0x44, 0x46, 0x10, 0x05, 0x12, 0x17, 0x0a, 0x13, 0x52,
+	0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x54, 0x49,
+	0x46, 0x46, 0x10, 0x10, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49,
+	0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4a, 0x50, 0x47, 0x10, 0x11, 0x12, 0x16, 0x0a, 0x12,
+	0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x50,
+	0x4e, 0x47, 0x10, 0x12, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49,
+	0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x53, 0x56, 0x47, 0x10, 0x13, 0x12, 0x17, 0x0a, 0x13,
+	0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x57,
+	0x45, 0x42, 0x50, 0x10, 0x14, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44,
+	0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x41, 0x56, 0x49, 0x46, 0x10, 0x15, 0x12, 0x16,
 	0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45,
-	0x5f, 0x4a, 0x50, 0x47, 0x10, 0x11, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45,
-	0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x50, 0x4e, 0x47, 0x10, 0x12, 0x12, 0x16,
-	0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45,
-	0x5f, 0x53, 0x56, 0x47, 0x10, 0x13, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45,
-	0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x57, 0x45, 0x42, 0x50, 0x10, 0x14, 0x12,
+	0x5f, 0x47, 0x49, 0x46, 0x10, 0x16, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45,
+	0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x41, 0x50, 0x4e, 0x47, 0x10, 0x17, 0x12,
 	0x17, 0x0a, 0x13, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50,
-	0x45, 0x5f, 0x41, 0x56, 0x49, 0x46, 0x10, 0x15, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f,
-	0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x47, 0x49, 0x46, 0x10, 0x16,
+	0x45, 0x5f, 0x4d, 0x50, 0x45, 0x47, 0x10, 0x20, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f,
+	0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x50, 0x34, 0x10, 0x21,
 	0x12, 0x17, 0x0a, 0x13, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59,
-	0x50, 0x45, 0x5f, 0x41, 0x50, 0x4e, 0x47, 0x10, 0x17, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41, 0x57,
-	0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x50, 0x45, 0x47,
-	0x10, 0x20, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f,
-	0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x50, 0x34, 0x10, 0x21, 0x12, 0x17, 0x0a, 0x13, 0x52, 0x41,
-	0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x57, 0x45, 0x42,
-	0x4d, 0x10, 0x22, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41,
-	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4f, 0x47, 0x47, 0x10, 0x23, 0x2a, 0x82, 0x01, 0x0a, 0x1e,
-	0x47, 0x72, 0x61, 0x70, 0x68, 0x43, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x30,
-	0x0a, 0x2c, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x43, 0x41, 0x4e, 0x4f, 0x4e, 0x49, 0x43, 0x41,
-	0x4c, 0x49, 0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54,
-	0x48, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00,
-	0x12, 0x2e, 0x0a, 0x2a, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x43, 0x41, 0x4e, 0x4f, 0x4e, 0x49,
-	0x43, 0x41, 0x4c, 0x49, 0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52,
-	0x49, 0x54, 0x48, 0x4d, 0x5f, 0x55, 0x52, 0x44, 0x4e, 0x41, 0x32, 0x30, 0x31, 0x35, 0x10, 0x01,
-	0x2a, 0x39, 0x0a, 0x0f, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54,
-	0x72, 0x65, 0x65, 0x12, 0x26, 0x0a, 0x22, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x4d, 0x45, 0x52,
-	0x4b, 0x4c, 0x45, 0x5f, 0x54, 0x52, 0x45, 0x45, 0x5f, 0x4e, 0x4f, 0x4e, 0x45, 0x5f, 0x55, 0x4e,
-	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x42, 0xb5, 0x01, 0x0a, 0x11,
-	0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
-	0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d,
-	0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2,
-	0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61,
-	0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61,
-	0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61,
-	0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a,
-	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x50, 0x45, 0x5f, 0x57, 0x45, 0x42, 0x4d, 0x10, 0x22, 0x12, 0x16, 0x0a, 0x12, 0x52, 0x41, 0x57,
+	0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4f, 0x47, 0x47, 0x10,
+	0x23, 0x2a, 0x82, 0x01, 0x0a, 0x1e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x43, 0x61, 0x6e, 0x6f, 0x6e,
+	0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x67, 0x6f, 0x72,
+	0x69, 0x74, 0x68, 0x6d, 0x12, 0x30, 0x0a, 0x2c, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x43, 0x41,
+	0x4e, 0x4f, 0x4e, 0x49, 0x43, 0x41, 0x4c, 0x49, 0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41,
+	0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54, 0x48, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49,
+	0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x2e, 0x0a, 0x2a, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f,
+	0x43, 0x41, 0x4e, 0x4f, 0x4e, 0x49, 0x43, 0x41, 0x4c, 0x49, 0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e,
+	0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54, 0x48, 0x4d, 0x5f, 0x55, 0x52, 0x44, 0x4e, 0x41,
+	0x32, 0x30, 0x31, 0x35, 0x10, 0x01, 0x2a, 0x39, 0x0a, 0x0f, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d,
+	0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65, 0x65, 0x12, 0x26, 0x0a, 0x22, 0x47, 0x52, 0x41,
+	0x50, 0x48, 0x5f, 0x4d, 0x45, 0x52, 0x4b, 0x4c, 0x45, 0x5f, 0x54, 0x52, 0x45, 0x45, 0x5f, 0x4e,
+	0x4f, 0x4e, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10,
+	0x00, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64,
+	0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a,
+	0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -4157,7 +2707,7 @@ func file_regen_data_v1_types_proto_rawDescGZIP() []byte {
 }
 
 var file_regen_data_v1_types_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_regen_data_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_regen_data_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_regen_data_v1_types_proto_goTypes = []interface{}{
 	(DigestAlgorithm)(0),                // 0: regen.data.v1.DigestAlgorithm
 	(RawMediaType)(0),                   // 1: regen.data.v1.RawMediaType
@@ -4167,25 +2717,21 @@ var file_regen_data_v1_types_proto_goTypes = []interface{}{
 	(*ContentHashes)(nil),               // 5: regen.data.v1.ContentHashes
 	(*ContentHash_Raw)(nil),             // 6: regen.data.v1.ContentHash.Raw
 	(*ContentHash_Graph)(nil),           // 7: regen.data.v1.ContentHash.Graph
-	(*ContentHash_RawV2)(nil),           // 8: regen.data.v1.ContentHash.RawV2
-	(*ContentHash_GraphV2)(nil),         // 9: regen.data.v1.ContentHash.GraphV2
 }
 var file_regen_data_v1_types_proto_depIdxs = []int32{
-	6,  // 0: regen.data.v1.ContentHash.raw:type_name -> regen.data.v1.ContentHash.Raw
-	7,  // 1: regen.data.v1.ContentHash.graph:type_name -> regen.data.v1.ContentHash.Graph
-	8,  // 2: regen.data.v1.ContentHash.raw_v2:type_name -> regen.data.v1.ContentHash.RawV2
-	9,  // 3: regen.data.v1.ContentHash.graph_v2:type_name -> regen.data.v1.ContentHash.GraphV2
-	4,  // 4: regen.data.v1.ContentHashes.content_hashes:type_name -> regen.data.v1.ContentHash
-	0,  // 5: regen.data.v1.ContentHash.Raw.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
-	1,  // 6: regen.data.v1.ContentHash.Raw.media_type:type_name -> regen.data.v1.RawMediaType
-	0,  // 7: regen.data.v1.ContentHash.Graph.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
-	2,  // 8: regen.data.v1.ContentHash.Graph.canonicalization_algorithm:type_name -> regen.data.v1.GraphCanonicalizationAlgorithm
-	3,  // 9: regen.data.v1.ContentHash.Graph.merkle_tree:type_name -> regen.data.v1.GraphMerkleTree
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	6, // 0: regen.data.v1.ContentHash.raw:type_name -> regen.data.v1.ContentHash.Raw
+	7, // 1: regen.data.v1.ContentHash.graph:type_name -> regen.data.v1.ContentHash.Graph
+	4, // 2: regen.data.v1.ContentHashes.content_hashes:type_name -> regen.data.v1.ContentHash
+	0, // 3: regen.data.v1.ContentHash.Raw.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
+	1, // 4: regen.data.v1.ContentHash.Raw.media_type:type_name -> regen.data.v1.RawMediaType
+	0, // 5: regen.data.v1.ContentHash.Graph.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
+	2, // 6: regen.data.v1.ContentHash.Graph.canonicalization_algorithm:type_name -> regen.data.v1.GraphCanonicalizationAlgorithm
+	3, // 7: regen.data.v1.ContentHash.Graph.merkle_tree:type_name -> regen.data.v1.GraphMerkleTree
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_regen_data_v1_types_proto_init() }
@@ -4242,30 +2788,6 @@ func file_regen_data_v1_types_proto_init() {
 				return nil
 			}
 		}
-		file_regen_data_v1_types_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ContentHash_RawV2); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_types_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ContentHash_GraphV2); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -4273,7 +2795,7 @@ func file_regen_data_v1_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_data_v1_types_proto_rawDesc,
 			NumEnums:      4,
-			NumMessages:   6,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
