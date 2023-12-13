@@ -50,7 +50,7 @@ func (chr ContentHash_Raw) ToIRI() (string, error) {
 	return fmt.Sprintf("regen:%s.%s", hashStr, ext), nil
 }
 
-// ToIRI converts the ContentHash_GraphV2 to an IRI (internationalized URI) based on the following
+// ToIRI converts the ContentHash_Graph to an IRI (internationalized URI) based on the following
 // pattern: regen:{base58check(concat(byte(0x1), byte(canonicalization_algorithm),
 // byte(merkle_tree), byte(digest_algorithm), hash), 1)}.rdf
 // This is the same as ContentHash_Graph.ToIRI except that the base58check version byte is 1 instead of 0.
