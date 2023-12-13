@@ -32,7 +32,7 @@ const (
 
 // ToIRI converts the ContentHash_Raw to an IRI (internationalized URI) based on the following
 // pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash), 1)}.{file_extension}
-// This is the same as ContentHash_Raw.ToIRI except that the media type is replaced with a file extension
+// This is the same as ContentHash_Raw.ToIRI from regen.data.v1 except that the media type is replaced with a file extension
 // and the base58check version byte is 1 instead of 0.
 func (chr ContentHash_Raw) ToIRI() (string, error) {
 	err := chr.Validate()
