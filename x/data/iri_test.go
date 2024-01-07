@@ -155,6 +155,16 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			true,
 			"",
 		},
+		{
+			"ext bad characters",
+			ContentHash_Raw{
+				Hash:            hash,
+				DigestAlgorithm: 2,
+				FileExtension:   "jpg!",
+			},
+			true,
+			"",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
