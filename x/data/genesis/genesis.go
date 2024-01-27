@@ -3,7 +3,7 @@ package genesis
 import (
 	"encoding/json"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"

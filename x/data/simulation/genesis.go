@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"

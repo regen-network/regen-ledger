@@ -5,7 +5,7 @@ package v1
 
 import (
 	fmt "fmt"
-	_ "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1"
+	_ "cosmossdk.io/api/cosmos/orm/v1"
 	types1 "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/proto"
 	types "github.com/gogo/protobuf/types"
