@@ -4,9 +4,8 @@
 ###                                Protobuf                                 ###
 ###############################################################################
 
-containerProtoVer=v0.14.0
+containerProtoVer=0.14.0
 containerProtoImage=ghcr.io/cosmos/proto-builder:$(containerProtoVer)
-containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
 containerProtoGen=regen-ledger-proto-gen-$(containerProtoVer)
 containerProtoFmt=regen-ledger-proto-fmt-$(containerProtoVer)
 containerProtoGenSwagger=regen-ledger-proto-gen-swagger-$(containerProtoVer)
