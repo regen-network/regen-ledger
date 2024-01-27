@@ -24,7 +24,7 @@ require (
 	pgregory.net/rapid v1.1.0
 	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.9.1
-
+	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // NOTE: v1.0.0-beta.2+ is not compatible with sdk v0.47
 )
 
 require (
