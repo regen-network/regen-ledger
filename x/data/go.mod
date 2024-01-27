@@ -3,28 +3,28 @@ module github.com/regen-network/regen-ledger/x/data/v2
 go 1.21
 
 require (
-	cosmossdk.io/errors v1.0.0
-	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
-	github.com/cosmos/cosmos-sdk v0.46.12
-	github.com/cosmos/cosmos-sdk/api v0.1.0
+	cosmossdk.io/api v0.3.1
+	cosmossdk.io/errors v1.0.1
+	github.com/btcsuite/btcutil v1.0.5
+	github.com/cosmos/cosmos-sdk v0.47.8
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v0.6.3
 	github.com/regen-network/regen-ledger/api/v2 v2.0.0
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
-	github.com/tendermint/tendermint v0.34.28
-	github.com/tendermint/tm-db v0.6.7
 	golang.org/x/crypto v0.14.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
-	google.golang.org/grpc v1.59.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20231212172506-995d672761c0
+	google.golang.org/grpc v1.61.0
+	google.golang.org/protobuf v1.32.0
 	gotest.tools/v3 v3.5.1
+	github.com/cometbft/cometbft v0.37.4
+	github.com/cometbft/cometbft-db v0.9.1
 )
 
 require (
@@ -33,7 +33,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.1 // indirect
 	cloud.google.com/go/storage v1.30.1 // indirect
-	cosmossdk.io/math v1.1.2 // indirect
+	cosmossdk.io/math v1.2.0 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
@@ -175,27 +175,15 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+replace (
+	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
+	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+)
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.13-regen-1
-
-replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
-// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.11
-replace github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.28
-
-// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.13
-replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/86
-replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.7
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/94
-replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/105
-replace golang.org/x/net => golang.org/x/net v0.7.0
-
-replace github.com/regen-network/regen-ledger/api/v2 => ../../api
-
-replace github.com/regen-network/regen-ledger/types/v2 => ../../types
+replace (
+	github.com/regen-network/regen-ledger/api/v2 => ../../api
+	github.com/regen-network/regen-ledger/types/v2 => ../../types
+)

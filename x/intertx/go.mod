@@ -3,10 +3,10 @@ module github.com/regen-network/regen-ledger/x/intertx
 go 1.21
 
 require (
-	cosmossdk.io/errors v1.0.0
-	github.com/cosmos/cosmos-sdk v0.46.12
+	cosmossdk.io/errors v1.0.1
+		github.com/cosmos/cosmos-sdk v0.47.8
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
-	github.com/cosmos/ibc-go/v5 v5.3.1
+	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
@@ -14,14 +14,14 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/regen-network/gocuke v0.6.3
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
-	github.com/tendermint/tendermint v0.34.28
-	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
-	google.golang.org/grpc v1.59.0
+	google.golang.org/grpc v1.61.0
 	gotest.tools/v3 v3.5.1
+		google.golang.org/genproto/googleapis/api v0.0.0-20231212172506-995d672761c0
+		github.com/cometbft/cometbft v0.37.4
+	github.com/cometbft/cometbft-db v0.9.1
 )
 
 require (
@@ -126,22 +126,14 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+replace (
+	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
+	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+)
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.46.13-regen-1
-
-replace github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
-// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.11
-replace github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.28
-
-// https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.13
-replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/94
-replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.0
-
-// https://github.com/regen-network/regen-ledger/security/dependabot/105
-replace golang.org/x/net => golang.org/x/net v0.7.0
-
-replace github.com/regen-network/regen-ledger/types/v2 => ../../types
+replace (
+	github.com/regen-network/regen-ledger/types/v2 => ../../types
+)
