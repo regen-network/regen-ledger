@@ -114,15 +114,15 @@ func ParseIRI(iri string) (*ContentHash, error) {
 
 		hash := rdr.Bytes()
 
-		if version == iriVersion0 {
-			return &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash,
-				DigestAlgorithm: uint32(b0),
-				FileExtension:   ext,
-			}}, nil
-		} else {
+		if version != iriVersion0 {
 			return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version %d", iri, version)
 		}
+
+		return &ContentHash{Raw: &ContentHash_Raw{
+			Hash:            hash,
+			DigestAlgorithm: uint32(b0),
+			FileExtension:   ext,
+		}}, nil
 
 	case IriPrefixGraph:
 		// rdf extension is expected for graph data
@@ -151,16 +151,16 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		// read hash
 		hash := rdr.Bytes()
 
-		if version == iriVersion0 {
-			return &ContentHash{Graph: &ContentHash_Graph{
-				Hash:                      hash,
-				DigestAlgorithm:           uint32(bDigestAlg),
-				CanonicalizationAlgorithm: uint32(bC14NAlg),
-				MerkleTree:                uint32(bMtAlg),
-			}}, nil
-		} else {
+		if version != iriVersion0 {
 			return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version %d", iri, version)
 		}
+
+		return &ContentHash{Graph: &ContentHash_Graph{
+			Hash:                      hash,
+			DigestAlgorithm:           uint32(bDigestAlg),
+			CanonicalizationAlgorithm: uint32(bC14NAlg),
+			MerkleTree:                uint32(bMtAlg),
+		}}, nil
 	}
 
 	return nil, ErrInvalidIRI.Wrapf("unable to parse IRI %s", iri)
