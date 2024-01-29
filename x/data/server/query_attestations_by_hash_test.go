@@ -24,7 +24,7 @@ func TestQuery_AttestationsByHash(t *testing.T) {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}}
-	iri1, err := ch1.ToIRI()
+	iri1, err := ch1.ToIRI(nil)
 	require.NoError(t, err)
 
 	id2 := []byte{1}
@@ -33,7 +33,7 @@ func TestQuery_AttestationsByHash(t *testing.T) {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}}
-	iri2, err := ch2.ToIRI()
+	iri2, err := ch2.ToIRI(nil)
 	require.NoError(t, err)
 
 	// insert data ids (one with attestations and one without)

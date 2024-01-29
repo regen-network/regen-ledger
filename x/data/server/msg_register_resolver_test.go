@@ -149,7 +149,7 @@ func (s *registerResolverSuite) ExpectEventWithProperties(a gocuke.DocString) {
 }
 
 func (s *registerResolverSuite) getDataID() []byte {
-	iri, err := s.ch.ToIRI()
+	iri, err := s.ch.ToIRI(nil)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 

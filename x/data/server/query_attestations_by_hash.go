@@ -19,7 +19,7 @@ func (s serverImpl) AttestationsByHash(ctx context.Context, request *data.QueryA
 		return nil, regenerrors.ErrInvalidArgument.Wrap("content hash cannot be empty")
 	}
 
-	iri, err := request.ContentHash.ToIRI()
+	iri, err := request.ContentHash.ToIRI(&data.IRIOptions{Prefix: s.iriPrefix})
 	if err != nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("failed to convert to IRI: %s", err.Error())
 	}

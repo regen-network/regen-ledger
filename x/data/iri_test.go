@@ -29,7 +29,7 @@ func TestContentHash_Graph_ToIRI(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			iri, err := tt.chg.ToIRI()
+			iri, err := tt.chg.ToIRI(nil)
 			require.NoError(t, err)
 			assert.Equal(t, iri, tt.want)
 		})
@@ -209,7 +209,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			iri, err := tt.chr.ToIRI()
+			iri, err := tt.chr.ToIRI(nil)
 			require.NoError(t, err)
 			assert.Equal(t, iri, tt.want)
 		})
@@ -237,14 +237,34 @@ func TestParseIRI(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:    "invalid prefix",
-			iri:     "cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-			wantErr: "failed to parse IRI cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf: regen: prefix required: invalid IRI",
+			name:    "missing prefix",
+			iri:     "13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+			wantErr: "failed to parse IRI 13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf: IRI without a prefix is not allowed: invalid IRI",
 		},
 		{
-			name:    "invalid extension",
+			name:    "empty prefix",
+			iri:     ":13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+			wantErr: "failed to parse IRI :13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf: IRI with empty prefix not allowed: invalid IRI",
+		},
+		{
+			name:    "multiple prefixes",
+			iri:     "regen:cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+			wantErr: "failed to parse IRI regen:cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf: IRI with multiple prefixes is not allowed: invalid IRI",
+		},
+		{
+			name:    "missing extension",
 			iri:     "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd",
-			wantErr: "failed to parse IRI regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd: extension required: invalid IRI",
+			wantErr: "failed to parse IRI regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd: IRI without an extension is not allowed: invalid IRI",
+		},
+		{
+			name:    "empty extension",
+			iri:     "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.",
+			wantErr: "failed to parse IRI regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.: IRI with empty extension not allowed: invalid IRI",
+		},
+		{
+			name:    "multiple extensions",
+			iri:     "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf.rdf",
+			wantErr: "failed to parse IRI regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf.rdf: IRI with multiple extensions is not allowed: invalid IRI",
 		},
 		{
 			name:    "invalid checksum",
@@ -261,7 +281,6 @@ func TestParseIRI(t *testing.T) {
 			iri:     "regen:114DDL1RtVwKpfqgaPfAG153ckiKfuPEgTT7tEGs1Hic5sC9dCta.abc",
 			wantErr: "failed to resolve media type for extension abc, expected bin: invalid media extension",
 		},
-
 		{
 			name: "valid media bin",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.bin",
@@ -425,8 +444,26 @@ func TestParseIRI(t *testing.T) {
 			}},
 		},
 		{
+			name: "valid media with non-default prefix",
+			iri:  "cosmos:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.bin",
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
+				Hash:            hash,
+				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
+			}},
+		},
+		{
 			name: "valid graph",
 			iri:  "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+			wantHash: &ContentHash{Graph: &ContentHash_Graph{
+				Hash:                      hash,
+				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+			}},
+		},
+		{
+			name: "valid graph with non-default prefix",
+			iri:  "cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
 			wantHash: &ContentHash{Graph: &ContentHash_Graph{
 				Hash:                      hash,
 				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,

@@ -13,7 +13,7 @@ func (s serverImpl) ConvertHashToIRI(_ context.Context, request *data.ConvertHas
 		return nil, regenerrors.ErrInvalidArgument.Wrap("content hash cannot be empty")
 	}
 
-	iri, err := request.ContentHash.ToIRI()
+	iri, err := request.ContentHash.ToIRI(&data.IRIOptions{Prefix: s.iriPrefix})
 	if err != nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("failed to parse IRI: %s", err.Error())
 	}

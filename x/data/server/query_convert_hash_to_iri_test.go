@@ -18,7 +18,7 @@ func TestQuery_ConvertHashToIRI(t *testing.T) {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}}
-	iri1, err := ch1.ToIRI()
+	iri1, err := ch1.ToIRI(nil)
 	require.NoError(t, err)
 
 	// convert hash to iri

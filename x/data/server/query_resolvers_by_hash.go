@@ -18,7 +18,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 		return nil, regenerrors.ErrInvalidArgument.Wrap("content hash cannot be empty")
 	}
 
-	iri, err := request.ContentHash.ToIRI()
+	iri, err := request.ContentHash.ToIRI(&data.IRIOptions{Prefix: s.iriPrefix})
 	if err != nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}

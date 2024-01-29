@@ -38,4 +38,4 @@ Feature: DataId
     }
     """
     When the data id is validated
-    Then expect the error "failed to parse IRI foo: regen: prefix required: invalid IRI: parse error"
+    Then expect the error "failed to parse IRI foo: IRI without a prefix is not allowed: invalid IRI: parse error"

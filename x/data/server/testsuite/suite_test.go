@@ -67,7 +67,8 @@ func setup(t *testing.T) fixture.Factory {
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper)
+	cfg := data.DefaultConfig()
+	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper, cfg)
 	ff.SetModules([]sdkmodules.AppModule{dataMod})
 
 	return ff

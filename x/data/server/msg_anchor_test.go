@@ -79,7 +79,7 @@ func (s *anchorSuite) TheAnchorEntryExistsWithTimestamp(a string) {
 	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
-	iri, err := s.ch.ToIRI()
+	iri, err := s.ch.ToIRI(nil)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 

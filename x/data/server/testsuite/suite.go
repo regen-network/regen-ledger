@@ -72,7 +72,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) TestGraphScenario() {
 	require := s.Require()
 
-	iri, err := s.graphHash.ToIRI()
+	iri, err := s.graphHash.ToIRI(nil)
 	require.NoError(err)
 
 	// set block time
@@ -143,7 +143,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require := s.Require()
 
-	iri, err := s.hash2.ToIRI()
+	iri, err := s.hash2.ToIRI(nil)
 	require.NoError(err)
 	require.NotEmpty(iri)
 

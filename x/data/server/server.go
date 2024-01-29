@@ -27,11 +27,12 @@ type Keeper interface {
 }
 
 type serverImpl struct {
-	iriHasher     hasher.Hasher
 	stateStore    api.StateStore
 	db            ormdb.ModuleDB
 	bankKeeper    data.BankKeeper
 	accountKeeper data.AccountKeeper
+	iriHasher     hasher.Hasher
+	iriPrefix     string
 }
 
 func (s serverImpl) QueryServer() data.QueryServer {
@@ -39,7 +40,7 @@ func (s serverImpl) QueryServer() data.QueryServer {
 }
 
 //nolint:revive
-func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
+func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper, config data.Config) serverImpl {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		panic(err)
@@ -55,11 +56,16 @@ func NewServer(storeKey storetypes.StoreKey, ak data.AccountKeeper, bk data.Bank
 		panic(err)
 	}
 
+	if config.IRIPrefix == "" {
+		config.IRIPrefix = data.DefaultConfig().IRIPrefix
+	}
+
 	return serverImpl{
-		iriHasher:     hasher,
 		stateStore:    stateStore,
 		db:            db,
 		bankKeeper:    bk,
 		accountKeeper: ak,
+		iriHasher:     hasher,
+		iriPrefix:     config.IRIPrefix,
 	}
 }

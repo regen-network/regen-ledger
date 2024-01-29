@@ -24,7 +24,7 @@ func TestQuery_AttestationsByIRI(t *testing.T) {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}}
-	iri1, err := ch1.ToIRI()
+	iri1, err := ch1.ToIRI(nil)
 	require.NoError(t, err)
 
 	id2 := []byte{1}
@@ -33,7 +33,7 @@ func TestQuery_AttestationsByIRI(t *testing.T) {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}}
-	iri2, err := ch2.ToIRI()
+	iri2, err := ch2.ToIRI(nil)
 	require.NoError(t, err)
 
 	// insert data ids (one with attestations and one without)
@@ -96,7 +96,7 @@ func TestQuery_AttestationsByIRI(t *testing.T) {
 	_, err = s.server.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
 		Iri: "foo",
 	})
-	require.EqualError(t, err, "failed to parse IRI: failed to parse IRI foo: regen: prefix required: invalid IRI: invalid argument")
+	require.EqualError(t, err, "failed to parse IRI foo: IRI without a prefix is not allowed: invalid IRI: invalid argument")
 
 	// query attestations with iri that has not been anchored
 	_, err = s.server.AttestationsByIRI(s.ctx, &data.QueryAttestationsByIRIRequest{
