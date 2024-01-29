@@ -42,6 +42,7 @@ const (
 	Msg_UpdateClassFee_FullMethodName           = "/regen.ecocredit.v1.Msg/UpdateClassFee"
 	Msg_AddAllowedBridgeChain_FullMethodName    = "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain"
 	Msg_RemoveAllowedBridgeChain_FullMethodName = "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain"
+	Msg_BurnRegen_FullMethodName                = "/regen.ecocredit.v1.Msg/BurnRegen"
 )
 
 // MsgClient is the client API for Msg service.
@@ -172,6 +173,10 @@ type MsgClient interface {
 	//
 	// Since Revision 2
 	RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveAllowedBridgeChain, opts ...grpc.CallOption) (*MsgRemoveAllowedBridgeChainResponse, error)
+	// BurnRegen burns REGEN tokens to account for platform fees when creating or transferring credits.
+	//
+	// Since Revision 3
+	BurnRegen(ctx context.Context, in *MsgBurnRegen, opts ...grpc.CallOption) (*MsgBurnRegenResponse, error)
 }
 
 type msgClient struct {
@@ -389,6 +394,15 @@ func (c *msgClient) RemoveAllowedBridgeChain(ctx context.Context, in *MsgRemoveA
 	return out, nil
 }
 
+func (c *msgClient) BurnRegen(ctx context.Context, in *MsgBurnRegen, opts ...grpc.CallOption) (*MsgBurnRegenResponse, error) {
+	out := new(MsgBurnRegenResponse)
+	err := c.cc.Invoke(ctx, Msg_BurnRegen_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -517,6 +531,10 @@ type MsgServer interface {
 	//
 	// Since Revision 2
 	RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error)
+	// BurnRegen burns REGEN tokens to account for platform fees when creating or transferring credits.
+	//
+	// Since Revision 3
+	BurnRegen(context.Context, *MsgBurnRegen) (*MsgBurnRegenResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -592,6 +610,9 @@ func (UnimplementedMsgServer) AddAllowedBridgeChain(context.Context, *MsgAddAllo
 }
 func (UnimplementedMsgServer) RemoveAllowedBridgeChain(context.Context, *MsgRemoveAllowedBridgeChain) (*MsgRemoveAllowedBridgeChainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveAllowedBridgeChain not implemented")
+}
+func (UnimplementedMsgServer) BurnRegen(context.Context, *MsgBurnRegen) (*MsgBurnRegenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BurnRegen not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -1020,6 +1041,24 @@ func _Msg_RemoveAllowedBridgeChain_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_BurnRegen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBurnRegen)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).BurnRegen(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_BurnRegen_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).BurnRegen(ctx, req.(*MsgBurnRegen))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1118,6 +1157,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveAllowedBridgeChain",
 			Handler:    _Msg_RemoveAllowedBridgeChain_Handler,
+		},
+		{
+			MethodName: "BurnRegen",
+			Handler:    _Msg_BurnRegen_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
