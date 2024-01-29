@@ -21,13 +21,13 @@ func (m *MsgBurnRegen) ValidateBasic() error {
 	if !amount.IsPositive() {
 		return sdkerrors.ErrInvalidRequest.Wrapf("amount must be positive: %s", m.Amount)
 	}
-	if len(m.Reason) > MAX_REASON_LEN {
+	if len(m.Reason) > MaxReasonLen {
 		return sdkerrors.ErrInvalidRequest.Wrapf("reason must at most 256 characters long")
 	}
 	return nil
 }
 
-const MAX_REASON_LEN = 256
+const MaxReasonLen = 256
 
 // GetSigners returns the expected signers for MsgBurnRegen.
 func (m *MsgBurnRegen) GetSigners() []sdk.AccAddress {
