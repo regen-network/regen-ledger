@@ -810,7 +810,8 @@ func (app *RegenApp) setUpgradeStoreLoaders() {
 		return
 	}
 
-	for _, u := range upgrades {
+	for i := range upgrades {
+		u := upgrades[i] // fix G601: Implicit memory aliasing in for loop. (gosec)
 		if upgradeInfo.Name == u.UpgradeName {
 			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &u.StoreUpgrades))
 		}
