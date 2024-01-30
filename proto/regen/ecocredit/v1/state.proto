@@ -122,6 +122,7 @@ message Batch {
     index : {id : 2 fields : "project_key"}
     index : {id : 3 fields : "start_date"}
     index : {id : 4 fields : "issuer"}
+    index : {id: 5 fields : "class_key"}
   };
 
   // key is the table row identifier of the credit batch used internally for
@@ -137,8 +138,9 @@ message Batch {
   uint64 project_key = 3;
 
   // denom is the unique identifier of the credit batch formed from the
-  // project id, the batch sequence number, and the start and end date of the
-  // credit batch.
+  // credit class ID (or just project ID for old project IDs which included the credit class),
+  // project id, the batch sequence number, and the start and
+  // end date of the credit batch.
   string denom = 4;
 
   // metadata is any arbitrary metadata attached to the credit batch.
@@ -158,6 +160,10 @@ message Batch {
   // open tells if it's possible to mint new credits in the future.
   // Once `open` is set to false, it can't be toggled any more.
   bool open = 9;
+
+  // class_key is the table row identifier of the credit class used internally
+  // for efficient lookups. This links a batch to a credit class.
+  uint64 class_key = 10;
 }
 
 // ClassSequence stores and increments the sequence number for credit classes
