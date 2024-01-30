@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 func TestQuery_AttestationsByHash(t *testing.T) {
@@ -21,8 +21,8 @@ func TestQuery_AttestationsByHash(t *testing.T) {
 	id1 := []byte{0}
 	ch1 := &data.ContentHash{Graph: &data.ContentHash_Graph{
 		Hash:                      bytes.Repeat([]byte{0}, 32),
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 	}}
 	iri1, err := ch1.ToIRI()
 	require.NoError(t, err)
@@ -30,8 +30,8 @@ func TestQuery_AttestationsByHash(t *testing.T) {
 	id2 := []byte{1}
 	ch2 := &data.ContentHash{Graph: &data.ContentHash_Graph{
 		Hash:                      bytes.Repeat([]byte{1}, 32),
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 	}}
 	iri2, err := ch2.ToIRI()
 	require.NoError(t, err)
@@ -102,8 +102,8 @@ func TestQuery_AttestationsByHash(t *testing.T) {
 	_, err = s.server.AttestationsByHash(s.ctx, &data.QueryAttestationsByHashRequest{
 		ContentHash: &data.ContentHash{Graph: &data.ContentHash_Graph{
 			Hash:                      bytes.Repeat([]byte{2}, 32),
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+			DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+			CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 		}},
 	})
 	require.EqualError(t, err, "data record with IRI: regen:13toVfw5KEeQwbmV733E3j9HwhVCQTxB7ojFPjGdmr7HX3kuSASGXxV.rdf: not found")
