@@ -407,4 +407,29 @@ message ClassApplication {
 
   // metadata is any arbitrary metadata attached to the application.
   string metadata = 5;
+
+  // status is the status of the application. Note that accepted and rejected
+  // applications are removed from the table.
+  ApplicationStatus status = 6;
+}
+
+// Application represents the evaluation status that a credit class issuer
+// assigns to a credit class application.
+enum ApplicationStatus {
+  // APPLICATION_STATUS_UNSPECIFIED indicates that the application status is
+  // unspecified and hasn't been evaluated yet.
+  APPLICATION_STATUS_UNSPECIFIED = 0;
+
+  // APPLICATION_STATUS_ACCEPTED indicates that the application has been
+  // accepted and that the project has been admitted into the credit class.
+  APPLICATION_STATUS_ACCEPTED = 1;
+
+  // APPLICATION_STATUS_CHANGES_REQUESTED indicates that the application has
+  // been reviewed and that changes are required before the application can be
+  // accepted.
+  APPLICATION_STATUS_CHANGES_REQUESTED = 2;
+
+  // APPLICATION_STATUS_REJECTED indicates that the application has been
+  // rejected and that the project will not be admitted into the credit class.
+  APPLICATION_STATUS_REJECTED = 3;
 }

@@ -421,7 +421,7 @@ message MsgEvaluateClassApplication {
   uint64 application_id = 2;
 
   // evaluation is the evaluation of the application.
-  ApplicationEvaluation evaluation = 3;
+  ApplicationStatus evaluation = 3;
 
   // reason is any arbitrary string with a maximum length of 256 characters
   // that includes or references the reason for the approving, requesting changes
