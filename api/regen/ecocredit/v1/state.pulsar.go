@@ -8819,6 +8819,682 @@ func (x *fastReflection_AllowedBridgeChain) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var (
+	md_ClassApplication             protoreflect.MessageDescriptor
+	fd_ClassApplication_id          protoreflect.FieldDescriptor
+	fd_ClassApplication_project_key protoreflect.FieldDescriptor
+	fd_ClassApplication_class_key   protoreflect.FieldDescriptor
+	fd_ClassApplication_issuer      protoreflect.FieldDescriptor
+	fd_ClassApplication_metadata    protoreflect.FieldDescriptor
+	fd_ClassApplication_status      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_state_proto_init()
+	md_ClassApplication = File_regen_ecocredit_v1_state_proto.Messages().ByName("ClassApplication")
+	fd_ClassApplication_id = md_ClassApplication.Fields().ByName("id")
+	fd_ClassApplication_project_key = md_ClassApplication.Fields().ByName("project_key")
+	fd_ClassApplication_class_key = md_ClassApplication.Fields().ByName("class_key")
+	fd_ClassApplication_issuer = md_ClassApplication.Fields().ByName("issuer")
+	fd_ClassApplication_metadata = md_ClassApplication.Fields().ByName("metadata")
+	fd_ClassApplication_status = md_ClassApplication.Fields().ByName("status")
+}
+
+var _ protoreflect.Message = (*fastReflection_ClassApplication)(nil)
+
+type fastReflection_ClassApplication ClassApplication
+
+func (x *ClassApplication) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ClassApplication)(x)
+}
+
+func (x *ClassApplication) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ClassApplication_messageType fastReflection_ClassApplication_messageType
+var _ protoreflect.MessageType = fastReflection_ClassApplication_messageType{}
+
+type fastReflection_ClassApplication_messageType struct{}
+
+func (x fastReflection_ClassApplication_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ClassApplication)(nil)
+}
+func (x fastReflection_ClassApplication_messageType) New() protoreflect.Message {
+	return new(fastReflection_ClassApplication)
+}
+func (x fastReflection_ClassApplication_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ClassApplication
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ClassApplication) Descriptor() protoreflect.MessageDescriptor {
+	return md_ClassApplication
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ClassApplication) Type() protoreflect.MessageType {
+	return _fastReflection_ClassApplication_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ClassApplication) New() protoreflect.Message {
+	return new(fastReflection_ClassApplication)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ClassApplication) Interface() protoreflect.ProtoMessage {
+	return (*ClassApplication)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ClassApplication) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Id != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Id)
+		if !f(fd_ClassApplication_id, value) {
+			return
+		}
+	}
+	if x.ProjectKey != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ProjectKey)
+		if !f(fd_ClassApplication_project_key, value) {
+			return
+		}
+	}
+	if x.ClassKey != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ClassKey)
+		if !f(fd_ClassApplication_class_key, value) {
+			return
+		}
+	}
+	if x.Issuer != "" {
+		value := protoreflect.ValueOfString(x.Issuer)
+		if !f(fd_ClassApplication_issuer, value) {
+			return
+		}
+	}
+	if x.Metadata != "" {
+		value := protoreflect.ValueOfString(x.Metadata)
+		if !f(fd_ClassApplication_metadata, value) {
+			return
+		}
+	}
+	if x.Status != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.Status))
+		if !f(fd_ClassApplication_status, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ClassApplication) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassApplication.id":
+		return x.Id != uint64(0)
+	case "regen.ecocredit.v1.ClassApplication.project_key":
+		return x.ProjectKey != uint64(0)
+	case "regen.ecocredit.v1.ClassApplication.class_key":
+		return x.ClassKey != uint64(0)
+	case "regen.ecocredit.v1.ClassApplication.issuer":
+		return x.Issuer != ""
+	case "regen.ecocredit.v1.ClassApplication.metadata":
+		return x.Metadata != ""
+	case "regen.ecocredit.v1.ClassApplication.status":
+		return x.Status != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassApplication"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassApplication does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassApplication) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassApplication.id":
+		x.Id = uint64(0)
+	case "regen.ecocredit.v1.ClassApplication.project_key":
+		x.ProjectKey = uint64(0)
+	case "regen.ecocredit.v1.ClassApplication.class_key":
+		x.ClassKey = uint64(0)
+	case "regen.ecocredit.v1.ClassApplication.issuer":
+		x.Issuer = ""
+	case "regen.ecocredit.v1.ClassApplication.metadata":
+		x.Metadata = ""
+	case "regen.ecocredit.v1.ClassApplication.status":
+		x.Status = 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassApplication"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassApplication does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ClassApplication) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.ClassApplication.id":
+		value := x.Id
+		return protoreflect.ValueOfUint64(value)
+	case "regen.ecocredit.v1.ClassApplication.project_key":
+		value := x.ProjectKey
+		return protoreflect.ValueOfUint64(value)
+	case "regen.ecocredit.v1.ClassApplication.class_key":
+		value := x.ClassKey
+		return protoreflect.ValueOfUint64(value)
+	case "regen.ecocredit.v1.ClassApplication.issuer":
+		value := x.Issuer
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.ClassApplication.metadata":
+		value := x.Metadata
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.ClassApplication.status":
+		value := x.Status
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassApplication"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassApplication does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassApplication) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassApplication.id":
+		x.Id = value.Uint()
+	case "regen.ecocredit.v1.ClassApplication.project_key":
+		x.ProjectKey = value.Uint()
+	case "regen.ecocredit.v1.ClassApplication.class_key":
+		x.ClassKey = value.Uint()
+	case "regen.ecocredit.v1.ClassApplication.issuer":
+		x.Issuer = value.Interface().(string)
+	case "regen.ecocredit.v1.ClassApplication.metadata":
+		x.Metadata = value.Interface().(string)
+	case "regen.ecocredit.v1.ClassApplication.status":
+		x.Status = (ApplicationStatus)(value.Enum())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassApplication"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassApplication does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassApplication) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassApplication.id":
+		panic(fmt.Errorf("field id of message regen.ecocredit.v1.ClassApplication is not mutable"))
+	case "regen.ecocredit.v1.ClassApplication.project_key":
+		panic(fmt.Errorf("field project_key of message regen.ecocredit.v1.ClassApplication is not mutable"))
+	case "regen.ecocredit.v1.ClassApplication.class_key":
+		panic(fmt.Errorf("field class_key of message regen.ecocredit.v1.ClassApplication is not mutable"))
+	case "regen.ecocredit.v1.ClassApplication.issuer":
+		panic(fmt.Errorf("field issuer of message regen.ecocredit.v1.ClassApplication is not mutable"))
+	case "regen.ecocredit.v1.ClassApplication.metadata":
+		panic(fmt.Errorf("field metadata of message regen.ecocredit.v1.ClassApplication is not mutable"))
+	case "regen.ecocredit.v1.ClassApplication.status":
+		panic(fmt.Errorf("field status of message regen.ecocredit.v1.ClassApplication is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassApplication"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassApplication does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ClassApplication) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.ClassApplication.id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "regen.ecocredit.v1.ClassApplication.project_key":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "regen.ecocredit.v1.ClassApplication.class_key":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "regen.ecocredit.v1.ClassApplication.issuer":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.ClassApplication.metadata":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.ClassApplication.status":
+		return protoreflect.ValueOfEnum(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ClassApplication"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.ClassApplication does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ClassApplication) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.ClassApplication", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ClassApplication) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ClassApplication) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ClassApplication) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ClassApplication) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ClassApplication)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Id != 0 {
+			n += 1 + runtime.Sov(uint64(x.Id))
+		}
+		if x.ProjectKey != 0 {
+			n += 1 + runtime.Sov(uint64(x.ProjectKey))
+		}
+		if x.ClassKey != 0 {
+			n += 1 + runtime.Sov(uint64(x.ClassKey))
+		}
+		l = len(x.Issuer)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Metadata)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Status != 0 {
+			n += 1 + runtime.Sov(uint64(x.Status))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ClassApplication)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Status != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Status))
+			i--
+			dAtA[i] = 0x30
+		}
+		if len(x.Metadata) > 0 {
+			i -= len(x.Metadata)
+			copy(dAtA[i:], x.Metadata)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Metadata)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.Issuer) > 0 {
+			i -= len(x.Issuer)
+			copy(dAtA[i:], x.Issuer)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Issuer)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if x.ClassKey != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ClassKey))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.ProjectKey != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ProjectKey))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.Id != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ClassApplication)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassApplication: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ClassApplication: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				}
+				x.Id = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Id |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProjectKey", wireType)
+				}
+				x.ProjectKey = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ProjectKey |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassKey", wireType)
+				}
+				x.ClassKey = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ClassKey |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Issuer = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Metadata = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+				}
+				x.Status = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Status |= ApplicationStatus(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -8831,6 +9507,69 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Application represents the evaluation status that a credit class issuer
+// assigns to a credit class application.
+type ApplicationStatus int32
+
+const (
+	// APPLICATION_STATUS_UNSPECIFIED indicates that the application status is
+	// unspecified and hasn't been evaluated yet.
+	ApplicationStatus_APPLICATION_STATUS_UNSPECIFIED ApplicationStatus = 0
+	// APPLICATION_STATUS_ACCEPTED indicates that the application has been
+	// accepted and that the project has been admitted into the credit class.
+	ApplicationStatus_APPLICATION_STATUS_ACCEPTED ApplicationStatus = 1
+	// APPLICATION_STATUS_CHANGES_REQUESTED indicates that the application has
+	// been reviewed and that changes are required before the application can be
+	// accepted.
+	ApplicationStatus_APPLICATION_STATUS_CHANGES_REQUESTED ApplicationStatus = 2
+	// APPLICATION_STATUS_REJECTED indicates that the application has been
+	// rejected and that the project will not be admitted into the credit class.
+	ApplicationStatus_APPLICATION_STATUS_REJECTED ApplicationStatus = 3
+)
+
+// Enum value maps for ApplicationStatus.
+var (
+	ApplicationStatus_name = map[int32]string{
+		0: "APPLICATION_STATUS_UNSPECIFIED",
+		1: "APPLICATION_STATUS_ACCEPTED",
+		2: "APPLICATION_STATUS_CHANGES_REQUESTED",
+		3: "APPLICATION_STATUS_REJECTED",
+	}
+	ApplicationStatus_value = map[string]int32{
+		"APPLICATION_STATUS_UNSPECIFIED":       0,
+		"APPLICATION_STATUS_ACCEPTED":          1,
+		"APPLICATION_STATUS_CHANGES_REQUESTED": 2,
+		"APPLICATION_STATUS_REJECTED":          3,
+	}
+)
+
+func (x ApplicationStatus) Enum() *ApplicationStatus {
+	p := new(ApplicationStatus)
+	*p = x
+	return p
+}
+
+func (x ApplicationStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ApplicationStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_regen_ecocredit_v1_state_proto_enumTypes[0].Descriptor()
+}
+
+func (ApplicationStatus) Type() protoreflect.EnumType {
+	return &file_regen_ecocredit_v1_state_proto_enumTypes[0]
+}
+
+func (x ApplicationStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ApplicationStatus.Descriptor instead.
+func (ApplicationStatus) EnumDescriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{0}
+}
 
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...)
@@ -9825,6 +10564,92 @@ func (x *AllowedBridgeChain) GetChainName() string {
 	return ""
 }
 
+// ClassApplication stores the data for a credit class application.
+type ClassApplication struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// id is the unique identifier of the application.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// project_key is the table row identifier of the project used internally for
+	// efficient lookups. This links an application to a project.
+	ProjectKey uint64 `protobuf:"varint,2,opt,name=project_key,json=projectKey,proto3" json:"project_key,omitempty"`
+	// class_key is the table row identifier of the credit class used internally
+	// for efficient lookups. This links a project to a credit class.
+	ClassKey uint64 `protobuf:"varint,3,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
+	// issuer is the issuer of the credit class which the application has been
+	// submitted to.
+	Issuer string `protobuf:"bytes,4,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// metadata is any arbitrary metadata attached to the application.
+	Metadata string `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// status is the status of the application. Note that accepted and rejected
+	// applications are removed from the table.
+	Status ApplicationStatus `protobuf:"varint,6,opt,name=status,proto3,enum=regen.ecocredit.v1.ApplicationStatus" json:"status,omitempty"`
+}
+
+func (x *ClassApplication) Reset() {
+	*x = ClassApplication{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ClassApplication) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClassApplication) ProtoMessage() {}
+
+// Deprecated: Use ClassApplication.ProtoReflect.Descriptor instead.
+func (*ClassApplication) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ClassApplication) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *ClassApplication) GetProjectKey() uint64 {
+	if x != nil {
+		return x.ProjectKey
+	}
+	return 0
+}
+
+func (x *ClassApplication) GetClassKey() uint64 {
+	if x != nil {
+		return x.ClassKey
+	}
+	return 0
+}
+
+func (x *ClassApplication) GetIssuer() string {
+	if x != nil {
+		return x.Issuer
+	}
+	return ""
+}
+
+func (x *ClassApplication) GetMetadata() string {
+	if x != nil {
+		return x.Metadata
+	}
+	return ""
+}
+
+func (x *ClassApplication) GetStatus() ApplicationStatus {
+	if x != nil {
+		return x.Status
+	}
+	return ApplicationStatus_APPLICATION_STATUS_UNSPECIFIED
+}
+
 var File_regen_ecocredit_v1_state_proto protoreflect.FileDescriptor
 
 var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
@@ -9993,22 +10818,48 @@ var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
 	0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e,
 	0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x68, 0x61,
 	0x69, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x3a, 0x16, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x10, 0x0a, 0x0c,
-	0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x10, 0x42, 0xd8,
-	0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
-	0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76,
-	0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52,
-	0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56,
-	0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x10, 0x22, 0xf8,
+	0x01, 0x0a, 0x10, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x02, 0x69, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6b,
+	0x65, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x4b, 0x65, 0x79, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65,
+	0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4b, 0x65,
+	0x79, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x3d, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18,
+	0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x6c, 0x69,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x3a, 0x23, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x1d, 0x0a, 0x06, 0x0a, 0x02,
+	0x69, 0x64, 0x10, 0x01, 0x12, 0x11, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f,
+	0x6b, 0x65, 0x79, 0x10, 0x01, 0x18, 0x01, 0x18, 0x11, 0x2a, 0xa3, 0x01, 0x0a, 0x11, 0x41, 0x70,
+	0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12,
+	0x22, 0x0a, 0x1e, 0x41, 0x50, 0x50, 0x4c, 0x49, 0x43, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x53,
+	0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
+	0x44, 0x10, 0x00, 0x12, 0x1f, 0x0a, 0x1b, 0x41, 0x50, 0x50, 0x4c, 0x49, 0x43, 0x41, 0x54, 0x49,
+	0x4f, 0x4e, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x41, 0x43, 0x43, 0x45, 0x50, 0x54,
+	0x45, 0x44, 0x10, 0x01, 0x12, 0x28, 0x0a, 0x24, 0x41, 0x50, 0x50, 0x4c, 0x49, 0x43, 0x41, 0x54,
+	0x49, 0x4f, 0x4e, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x43, 0x48, 0x41, 0x4e, 0x47,
+	0x45, 0x53, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x45, 0x44, 0x10, 0x02, 0x12, 0x1f,
+	0x0a, 0x1b, 0x41, 0x50, 0x50, 0x4c, 0x49, 0x43, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x53, 0x54,
+	0x41, 0x54, 0x55, 0x53, 0x5f, 0x52, 0x45, 0x4a, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x03, 0x42,
+	0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74,
+	0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f,
+	0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12,
+	0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c,
+	0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -10023,37 +10874,41 @@ func file_regen_ecocredit_v1_state_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_v1_state_proto_rawDescData
 }
 
-var file_regen_ecocredit_v1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_regen_ecocredit_v1_state_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_regen_ecocredit_v1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_regen_ecocredit_v1_state_proto_goTypes = []interface{}{
-	(*CreditType)(nil),            // 0: regen.ecocredit.v1.CreditType
-	(*Class)(nil),                 // 1: regen.ecocredit.v1.Class
-	(*ClassIssuer)(nil),           // 2: regen.ecocredit.v1.ClassIssuer
-	(*Project)(nil),               // 3: regen.ecocredit.v1.Project
-	(*Batch)(nil),                 // 4: regen.ecocredit.v1.Batch
-	(*ClassSequence)(nil),         // 5: regen.ecocredit.v1.ClassSequence
-	(*ProjectSequence)(nil),       // 6: regen.ecocredit.v1.ProjectSequence
-	(*BatchSequence)(nil),         // 7: regen.ecocredit.v1.BatchSequence
-	(*BatchBalance)(nil),          // 8: regen.ecocredit.v1.BatchBalance
-	(*BatchSupply)(nil),           // 9: regen.ecocredit.v1.BatchSupply
-	(*OriginTxIndex)(nil),         // 10: regen.ecocredit.v1.OriginTxIndex
-	(*BatchContract)(nil),         // 11: regen.ecocredit.v1.BatchContract
-	(*ClassCreatorAllowlist)(nil), // 12: regen.ecocredit.v1.ClassCreatorAllowlist
-	(*AllowedClassCreator)(nil),   // 13: regen.ecocredit.v1.AllowedClassCreator
-	(*ClassFee)(nil),              // 14: regen.ecocredit.v1.ClassFee
-	(*AllowedBridgeChain)(nil),    // 15: regen.ecocredit.v1.AllowedBridgeChain
-	(*timestamppb.Timestamp)(nil), // 16: google.protobuf.Timestamp
-	(*v1beta1.Coin)(nil),          // 17: cosmos.base.v1beta1.Coin
+	(ApplicationStatus)(0),        // 0: regen.ecocredit.v1.ApplicationStatus
+	(*CreditType)(nil),            // 1: regen.ecocredit.v1.CreditType
+	(*Class)(nil),                 // 2: regen.ecocredit.v1.Class
+	(*ClassIssuer)(nil),           // 3: regen.ecocredit.v1.ClassIssuer
+	(*Project)(nil),               // 4: regen.ecocredit.v1.Project
+	(*Batch)(nil),                 // 5: regen.ecocredit.v1.Batch
+	(*ClassSequence)(nil),         // 6: regen.ecocredit.v1.ClassSequence
+	(*ProjectSequence)(nil),       // 7: regen.ecocredit.v1.ProjectSequence
+	(*BatchSequence)(nil),         // 8: regen.ecocredit.v1.BatchSequence
+	(*BatchBalance)(nil),          // 9: regen.ecocredit.v1.BatchBalance
+	(*BatchSupply)(nil),           // 10: regen.ecocredit.v1.BatchSupply
+	(*OriginTxIndex)(nil),         // 11: regen.ecocredit.v1.OriginTxIndex
+	(*BatchContract)(nil),         // 12: regen.ecocredit.v1.BatchContract
+	(*ClassCreatorAllowlist)(nil), // 13: regen.ecocredit.v1.ClassCreatorAllowlist
+	(*AllowedClassCreator)(nil),   // 14: regen.ecocredit.v1.AllowedClassCreator
+	(*ClassFee)(nil),              // 15: regen.ecocredit.v1.ClassFee
+	(*AllowedBridgeChain)(nil),    // 16: regen.ecocredit.v1.AllowedBridgeChain
+	(*ClassApplication)(nil),      // 17: regen.ecocredit.v1.ClassApplication
+	(*timestamppb.Timestamp)(nil), // 18: google.protobuf.Timestamp
+	(*v1beta1.Coin)(nil),          // 19: cosmos.base.v1beta1.Coin
 }
 var file_regen_ecocredit_v1_state_proto_depIdxs = []int32{
-	16, // 0: regen.ecocredit.v1.Batch.start_date:type_name -> google.protobuf.Timestamp
-	16, // 1: regen.ecocredit.v1.Batch.end_date:type_name -> google.protobuf.Timestamp
-	16, // 2: regen.ecocredit.v1.Batch.issuance_date:type_name -> google.protobuf.Timestamp
-	17, // 3: regen.ecocredit.v1.ClassFee.fee:type_name -> cosmos.base.v1beta1.Coin
-	4,  // [4:4] is the sub-list for method output_type
-	4,  // [4:4] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	18, // 0: regen.ecocredit.v1.Batch.start_date:type_name -> google.protobuf.Timestamp
+	18, // 1: regen.ecocredit.v1.Batch.end_date:type_name -> google.protobuf.Timestamp
+	18, // 2: regen.ecocredit.v1.Batch.issuance_date:type_name -> google.protobuf.Timestamp
+	19, // 3: regen.ecocredit.v1.ClassFee.fee:type_name -> cosmos.base.v1beta1.Coin
+	0,  // 4: regen.ecocredit.v1.ClassApplication.status:type_name -> regen.ecocredit.v1.ApplicationStatus
+	5,  // [5:5] is the sub-list for method output_type
+	5,  // [5:5] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_v1_state_proto_init() }
@@ -10254,19 +11109,32 @@ func file_regen_ecocredit_v1_state_proto_init() {
 				return nil
 			}
 		}
+		file_regen_ecocredit_v1_state_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ClassApplication); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_v1_state_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   16,
+			NumEnums:      1,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_regen_ecocredit_v1_state_proto_goTypes,
 		DependencyIndexes: file_regen_ecocredit_v1_state_proto_depIdxs,
+		EnumInfos:         file_regen_ecocredit_v1_state_proto_enumTypes,
 		MessageInfos:      file_regen_ecocredit_v1_state_proto_msgTypes,
 	}.Build()
 	File_regen_ecocredit_v1_state_proto = out.File

@@ -386,7 +386,7 @@ message AllowedBridgeChain {
 message ClassApplication {
   option (cosmos.orm.v1.table) = {
     id : 17
-    primary_key : {fields : "key", auto_increment : true}
+    primary_key : {fields : "id", auto_increment : true}
     index : {id : 1, fields : "project_key", unique : true}
   };
 
