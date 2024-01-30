@@ -3,7 +3,7 @@ package testsuite
 import (
 	"crypto"
 
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 func (s *IntegrationTestSuite) createIRIAndGraphHash(content []byte) (string, *data.ContentHash) {
@@ -19,8 +19,8 @@ func (s *IntegrationTestSuite) createIRIAndGraphHash(content []byte) (string, *d
 	ch := data.ContentHash{
 		Graph: &data.ContentHash_Graph{
 			Hash:                      digest,
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+			DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+			CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 		},
 	}
 

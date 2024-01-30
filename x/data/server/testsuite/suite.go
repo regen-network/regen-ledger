@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 type IntegrationTestSuite struct {
@@ -52,15 +52,15 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.graphHash = &data.ContentHash_Graph{
 		Hash:                      bytes.Repeat([]byte{0}, 32),
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 	}
 	s.hash1 = &data.ContentHash{Graph: s.graphHash}
 
 	s.rawHash = &data.ContentHash_Raw{
 		Hash:            bytes.Repeat([]byte{0}, 32),
-		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
+		DigestAlgorithm: uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		FileExtension:   "bin",
 	}
 	s.hash2 = &data.ContentHash{Raw: s.rawHash}
 }

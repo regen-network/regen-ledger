@@ -6,7 +6,8 @@ Feature: Msg/Anchor
     {
       "raw": {
         "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-        "digest_algorithm": 1
+        "digest_algorithm": 1,
+        "file_extension": "bin"
       }
     }
     """
