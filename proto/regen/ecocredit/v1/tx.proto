@@ -44,6 +44,12 @@ service Msg {
   // native credit issuance.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
+  // CreateForwardBatch creates a new batch of forward contract credits for
+  // which the credits will be issued at a future date. Forward contracts
+  // are issued by the project admin and are not associated with any particular
+  // credit class and do not have any credit type.
+  rpc CreateForwardBatch(MsgCreateForwardBatch) returns (MsgCreateForwardBatchResponse);
+
   // MintBatchCredits dynamically mints credits to an "open" credit batch. This
   // feature is only meant to be used when bridging credits from another chain
   // or registry and is not intended for native credit issuance. When bridging
@@ -319,6 +325,38 @@ message MsgCreateBatch {
 message MsgCreateBatchResponse {
 
   // batch_denom is the unique identifier of the credit batch.
+  string batch_denom = 1;
+}
+
+// MsgCreateForwardBatch is the Msg/CreateForwardBatch request type.
+message MsgCreateForwardBatch {
+  option (cosmos.msg.v1.signer) = "project_admin";
+
+  // project_admin is the address of the account that is the admin of the
+  // project under which the forward contract batch will be created.
+  string project_admin = 1;
+
+  // project_id is the unique identifier of the project under which the credit
+  // batch will be created.
+  string project_id = 2;
+
+  // issuance specifies the amount of tradable and retired credits that will be
+  // issued to each recipient and the jurisdiction in which the credits will be
+  // retired if credits are to be retired upon receipt.
+  repeated BatchIssuance issuance = 3;
+
+  // metadata is any arbitrary string with a maximum length of 256 characters
+  // that includes or references metadata to attach to the credit batch.
+  string metadata = 4;
+
+  // open determines whether or not new credits can be added to the forward
+  // contract batch.
+  bool open = 5;
+}
+
+// MsgCreateForwardBatchResponse is the Msg/CreateForwardBatch response type.
+message MsgCreateForwardBatchResponse {
+  // batch_denom is the unique identifier of the batch.
   string batch_denom = 1;
 }
 

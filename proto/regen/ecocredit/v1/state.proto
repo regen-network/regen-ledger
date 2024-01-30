@@ -138,7 +138,8 @@ message Batch {
 
   // denom is the unique identifier of the credit batch formed from the
   // project id, the batch sequence number, and the start and end date of the
-  // credit batch.
+  // credit batch, except in the case of forward contract credits in which case
+  // the denom is the project id, the batch sequence number, and the suffix F.
   string denom = 4;
 
   // metadata is any arbitrary metadata attached to the credit batch.
@@ -158,6 +159,9 @@ message Batch {
   // open tells if it's possible to mint new credits in the future.
   // Once `open` is set to false, it can't be toggled any more.
   bool open = 9;
+
+  // forward tells if the batch is a forward contract.
+  bool forward = 10;
 }
 
 // ClassSequence stores and increments the sequence number for credit classes
