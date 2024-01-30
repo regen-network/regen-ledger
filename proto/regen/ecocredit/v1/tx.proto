@@ -47,7 +47,9 @@ service Msg {
   // CreateForwardBatch creates a new batch of forward contract credits for
   // which the credits will be issued at a future date. Forward contracts
   // are issued by the project admin and are not associated with any particular
-  // credit class and do not have any credit type.
+  // credit class and do not have any credit type, nor start and end dates.
+  // Retirement in the context of forward contracts is used to prevent
+  // resale or transfer of forward contracts.
   rpc CreateForwardBatch(MsgCreateForwardBatch) returns (MsgCreateForwardBatchResponse);
 
   // MintBatchCredits dynamically mints credits to an "open" credit batch. This
