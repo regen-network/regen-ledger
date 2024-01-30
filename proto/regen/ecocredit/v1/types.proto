@@ -157,3 +157,23 @@ message AllowedDenom {
   // informational
   uint32 exponent = 3;
 }
+
+// Application represents the evaluation status that a credit class issuer
+// assigns to a credit class application.
+enum ApplicationEvaluation {
+  // APPLICATION_EVALUATION_UNSPECIFIED defines the default evaluation status
+  // and is an invalid state.
+  APPLICATION_EVALUATION_UNSPECIFIED = 0;
+
+  // APPLICATION_EVALUATION_ACCEPTED indicates that the application has been
+  // accepted.
+  APPLICATION_EVALUATION_ACCEPTED = 1;
+
+  // APPLICATION_EVALUATION_CHANGE_REQUESTED indicates that issuer has requested
+  // changes to the application but is not rejecting it outright.
+  APPLICATION_EVALUATION_CHANGE_REQUESTED = 2;
+
+  // APPLICATION_EVALUATION_REJECTED indicates that the application has been
+  // rejected and that it will be closed without further consideration.
+  APPLICATION_EVALUATION_REJECTED = 3;
+}

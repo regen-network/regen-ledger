@@ -381,3 +381,30 @@ message AllowedBridgeChain {
   // chain_name is the name of the chain allowed to bridge ecocredits to.
   string chain_name = 1;
 }
+
+// ClassApplication stores the data for a credit class application.
+message ClassApplication {
+  option (cosmos.orm.v1.table) = {
+    id : 17
+    primary_key : {fields : "key", auto_increment : true}
+    index : {id : 1, fields : "project_key", unique : true}
+  };
+
+  // id is the unique identifier of the application.
+  uint64 id = 1;
+
+  // project_key is the table row identifier of the project used internally for
+  // efficient lookups. This links an application to a project.
+  uint64 project_key = 2;
+
+  // class_key is the table row identifier of the credit class used internally
+  // for efficient lookups. This links a project to a credit class.
+  uint64 class_key = 3;
+
+  // issuer is the issuer of the credit class which the application has been
+  // submitted to.
+  string issuer = 4;
+
+  // metadata is any arbitrary metadata attached to the application.
+  string metadata = 5;
+}
