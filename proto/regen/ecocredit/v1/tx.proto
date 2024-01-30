@@ -39,7 +39,8 @@ service Msg {
   // a credit class. The project admin must submit an application to a specific
   // issuer of a specific credit class for it to be considered. Currently,
   // a project can only apply to one credit class at a time via a single
-  // issuer.
+  // issuer. A project in an existing credit class can apply to another credit
+  // class by submitting another application to a different issuer.
   //
   // Since Revision 3
   rpc SubmitClassApplication(MsgSubmitClassApplication)
