@@ -9,7 +9,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 // Attest allows for digital signing of an arbitrary piece of data on the blockchain.
