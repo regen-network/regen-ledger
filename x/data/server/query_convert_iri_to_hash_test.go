@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 func TestQuery_ConvertIRIToHash(t *testing.T) {
@@ -15,8 +15,8 @@ func TestQuery_ConvertIRIToHash(t *testing.T) {
 
 	ch1 := &data.ContentHash{Graph: &data.ContentHash_Graph{
 		Hash:                      bytes.Repeat([]byte{0}, 32),
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 	}}
 	iri1, err := ch1.ToIRI()
 	require.NoError(t, err)
