@@ -115,8 +115,8 @@ import (
 	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
 	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
 	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_1"
-	"github.com/regen-network/regen-ledger/x/data/v2"
-	datamodule "github.com/regen-network/regen-ledger/x/data/v2/module"
+	"github.com/regen-network/regen-ledger/x/data/v3"
+	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
@@ -810,7 +810,8 @@ func (app *RegenApp) setUpgradeStoreLoaders() {
 		return
 	}
 
-	for _, u := range upgrades {
+	for i := range upgrades {
+		u := upgrades[i] // fix G601: Implicit memory aliasing in for loop. (gosec)
 		if upgradeInfo.Name == u.UpgradeName {
 			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &u.StoreUpgrades))
 		}

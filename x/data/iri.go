@@ -31,7 +31,7 @@ const (
 )
 
 // ToIRI converts the ContentHash_Raw to an IRI (internationalized URI) based on the following
-// pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash))}.{media_type extension}
+// pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash), 0)}.{file_extension}
 func (chr ContentHash_Raw) ToIRI() (string, error) {
 	err := chr.Validate()
 	if err != nil {
@@ -43,18 +43,14 @@ func (chr ContentHash_Raw) ToIRI() (string, error) {
 	bz[1] = byte(chr.DigestAlgorithm)
 	copy(bz[2:], chr.Hash)
 	hashStr := base58.CheckEncode(bz, iriVersion0)
-
-	ext, err := chr.MediaType.ToExtension()
-	if err != nil {
-		return "", err
-	}
+	ext := chr.FileExtension
 
 	return fmt.Sprintf("regen:%s.%s", hashStr, ext), nil
 }
 
 // ToIRI converts the ContentHash_Graph to an IRI (internationalized URI) based on the following
 // pattern: regen:{base58check(concat(byte(0x1), byte(canonicalization_algorithm),
-// byte(merkle_tree), byte(digest_algorithm), hash))}.rdf
+// byte(merkle_tree), byte(digest_algorithm), hash), 0)}.rdf
 func (chg ContentHash_Graph) ToIRI() (string, error) {
 	err := chg.Validate()
 	if err != nil {
@@ -70,45 +66,6 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 	hashStr := base58.CheckEncode(bz, iriVersion0)
 
 	return fmt.Sprintf("regen:%s.rdf", hashStr), nil
-}
-
-// ToExtension converts the media type to a file extension based on the mediaTypeExtensions map.
-func (rmt RawMediaType) ToExtension() (string, error) {
-	ext, ok := mediaExtensionTypeToString[rmt]
-	if !ok {
-		return "", sdkerrors.ErrInvalidRequest.Wrapf("missing extension for %T %s", rmt, rmt)
-	}
-
-	return ext, nil
-}
-
-var mediaExtensionTypeToString = map[RawMediaType]string{
-	RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED: "bin",
-	RawMediaType_RAW_MEDIA_TYPE_TEXT_PLAIN:  "txt",
-	RawMediaType_RAW_MEDIA_TYPE_CSV:         "csv",
-	RawMediaType_RAW_MEDIA_TYPE_JSON:        "json",
-	RawMediaType_RAW_MEDIA_TYPE_XML:         "xml",
-	RawMediaType_RAW_MEDIA_TYPE_PDF:         "pdf",
-	RawMediaType_RAW_MEDIA_TYPE_TIFF:        "tiff",
-	RawMediaType_RAW_MEDIA_TYPE_JPG:         "jpg",
-	RawMediaType_RAW_MEDIA_TYPE_PNG:         "png",
-	RawMediaType_RAW_MEDIA_TYPE_SVG:         "svg",
-	RawMediaType_RAW_MEDIA_TYPE_WEBP:        "webp",
-	RawMediaType_RAW_MEDIA_TYPE_AVIF:        "avif",
-	RawMediaType_RAW_MEDIA_TYPE_GIF:         "gif",
-	RawMediaType_RAW_MEDIA_TYPE_APNG:        "apng",
-	RawMediaType_RAW_MEDIA_TYPE_MPEG:        "mpeg",
-	RawMediaType_RAW_MEDIA_TYPE_MP4:         "mp4",
-	RawMediaType_RAW_MEDIA_TYPE_WEBM:        "webm",
-	RawMediaType_RAW_MEDIA_TYPE_OGG:         "ogg",
-}
-
-var stringToMediaExtensionType = map[string]RawMediaType{}
-
-func init() {
-	for mt, ext := range mediaExtensionTypeToString {
-		stringToMediaExtensionType[ext] = mt
-	}
 }
 
 // ParseIRI parses an IRI string representation of a ContentHash into a ContentHash struct
@@ -138,10 +95,6 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s", iri, err)
 	}
 
-	if version != iriVersion0 {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version", iri)
-	}
-
 	rdr := bytes.NewBuffer(res)
 
 	// read first byte
@@ -159,24 +112,16 @@ func ParseIRI(iri string) (*ContentHash, error) {
 			return nil, err
 		}
 
-		// look up extension as media type
-		mediaType, ok := stringToMediaExtensionType[ext]
-		if !ok {
-			return nil, ErrInvalidMediaExtension.Wrapf("failed to resolve media type for extension %s, expected %s", ext, mediaExtensionTypeToString[mediaType])
-		}
-
-		// interpret next byte as digest algorithm
-		digestAlg := DigestAlgorithm(b0)
 		hash := rdr.Bytes()
-		err = digestAlg.Validate(hash)
-		if err != nil {
-			return nil, err
+
+		if version != iriVersion0 {
+			return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version %d", iri, version)
 		}
 
 		return &ContentHash{Raw: &ContentHash_Raw{
 			Hash:            hash,
-			DigestAlgorithm: digestAlg,
-			MediaType:       mediaType,
+			DigestAlgorithm: uint32(b0),
+			FileExtension:   ext,
 		}}, nil
 
 	case IriPrefixGraph:
@@ -185,51 +130,36 @@ func ParseIRI(iri string) (*ContentHash, error) {
 			return nil, ErrInvalidIRI.Wrapf("invalid extension .%s for graph data, expected .rdf", ext)
 		}
 
-		// read next byte
-		b0, err := rdr.ReadByte()
+		// read canonicalization algorithm
+		bC14NAlg, err := rdr.ReadByte()
 		if err != nil {
 			return nil, err
 		}
 
-		// interpret next byte as canonicalization algorithm
-		c14Alg := GraphCanonicalizationAlgorithm(b0)
-		err = c14Alg.Validate()
+		// read merkle tree algorithm
+		bMtAlg, err := rdr.ReadByte()
 		if err != nil {
 			return nil, err
 		}
 
-		// read next byte
-		b0, err = rdr.ReadByte()
+		// read digest algorithm
+		bDigestAlg, err := rdr.ReadByte()
 		if err != nil {
 			return nil, err
 		}
 
-		// interpret next byte as merklization algorithm
-		mtAlg := GraphMerkleTree(b0)
-		err = mtAlg.Validate()
-		if err != nil {
-			return nil, err
-		}
-
-		// read next byte
-		b0, err = rdr.ReadByte()
-		if err != nil {
-			return nil, err
-		}
-
-		// interpret next byte as digest algorithm
-		digestAlg := DigestAlgorithm(b0)
+		// read hash
 		hash := rdr.Bytes()
-		err = digestAlg.Validate(hash)
-		if err != nil {
-			return nil, err
+
+		if version != iriVersion0 {
+			return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version %d", iri, version)
 		}
 
 		return &ContentHash{Graph: &ContentHash_Graph{
 			Hash:                      hash,
-			DigestAlgorithm:           digestAlg,
-			CanonicalizationAlgorithm: c14Alg,
-			MerkleTree:                mtAlg,
+			DigestAlgorithm:           uint32(bDigestAlg),
+			CanonicalizationAlgorithm: uint32(bC14NAlg),
+			MerkleTree:                uint32(bMtAlg),
 		}}, nil
 	}
 

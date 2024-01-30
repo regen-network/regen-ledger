@@ -247,3 +247,15 @@ message EventBridgeReceive {
   // Since Revision 3
   OriginTx origin_tx = 4;
 }
+
+// EventBurnRegen is an event emitted when REGEN is burned to account for credit origination, transfer, etc.
+message EventBurnRegen {
+  // burner is the address that burned REGEN.
+  string burner = 1;
+
+  // amount is the integer amount of uregen burned.
+  string amount = 2;
+
+  // reason is the reason for the burn.
+  string reason = 3;
+}
