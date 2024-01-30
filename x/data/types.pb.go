@@ -125,8 +125,7 @@ type ContentHash struct {
 	// which is preserved bit by bit. All other content encodings specify a
 	// deterministic, canonical encoding allowing implementations to choose from a
 	// variety of alternative formats for transport and encoding while maintaining
-	// the guarantee that the canonical hash will not change. The media type for
-	// "raw" data is defined by the MediaType enum.
+	// the guarantee that the canonical hash will not change.
 	Raw *ContentHash_Raw `protobuf:"bytes,1,opt,name=raw,proto3" json:"raw,omitempty"`
 	// graph specifies graph data that conforms to the RDF data model.
 	// The canonicalization algorithm used for an RDF graph is specified by

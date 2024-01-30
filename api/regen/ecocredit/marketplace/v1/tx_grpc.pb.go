@@ -25,6 +25,7 @@ const (
 	Msg_BuyDirect_FullMethodName          = "/regen.ecocredit.marketplace.v1.Msg/BuyDirect"
 	Msg_AddAllowedDenom_FullMethodName    = "/regen.ecocredit.marketplace.v1.Msg/AddAllowedDenom"
 	Msg_RemoveAllowedDenom_FullMethodName = "/regen.ecocredit.marketplace.v1.Msg/RemoveAllowedDenom"
+	Msg_SetMarketplaceFees_FullMethodName = "/regen.ecocredit.marketplace.v1.Msg/SetMarketplaceFees"
 )
 
 // MsgClient is the client API for Msg service.
@@ -48,6 +49,10 @@ type MsgClient interface {
 	//
 	// Since Revision 1
 	RemoveAllowedDenom(ctx context.Context, in *MsgRemoveAllowedDenom, opts ...grpc.CallOption) (*MsgRemoveAllowedDenomResponse, error)
+	// SetMarketplaceFees is a governance method that sets the marketplace fees.
+	//
+	// Since Revision 3
+	SetMarketplaceFees(ctx context.Context, in *MsgSetMarketplaceFees, opts ...grpc.CallOption) (*MsgSetMarketplaceFeesResponse, error)
 }
 
 type msgClient struct {
@@ -112,6 +117,15 @@ func (c *msgClient) RemoveAllowedDenom(ctx context.Context, in *MsgRemoveAllowed
 	return out, nil
 }
 
+func (c *msgClient) SetMarketplaceFees(ctx context.Context, in *MsgSetMarketplaceFees, opts ...grpc.CallOption) (*MsgSetMarketplaceFeesResponse, error) {
+	out := new(MsgSetMarketplaceFeesResponse)
+	err := c.cc.Invoke(ctx, Msg_SetMarketplaceFees_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -133,6 +147,10 @@ type MsgServer interface {
 	//
 	// Since Revision 1
 	RemoveAllowedDenom(context.Context, *MsgRemoveAllowedDenom) (*MsgRemoveAllowedDenomResponse, error)
+	// SetMarketplaceFees is a governance method that sets the marketplace fees.
+	//
+	// Since Revision 3
+	SetMarketplaceFees(context.Context, *MsgSetMarketplaceFees) (*MsgSetMarketplaceFeesResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -157,6 +175,9 @@ func (UnimplementedMsgServer) AddAllowedDenom(context.Context, *MsgAddAllowedDen
 }
 func (UnimplementedMsgServer) RemoveAllowedDenom(context.Context, *MsgRemoveAllowedDenom) (*MsgRemoveAllowedDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveAllowedDenom not implemented")
+}
+func (UnimplementedMsgServer) SetMarketplaceFees(context.Context, *MsgSetMarketplaceFees) (*MsgSetMarketplaceFeesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetMarketplaceFees not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -279,6 +300,24 @@ func _Msg_RemoveAllowedDenom_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_SetMarketplaceFees_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSetMarketplaceFees)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SetMarketplaceFees(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_SetMarketplaceFees_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SetMarketplaceFees(ctx, req.(*MsgSetMarketplaceFees))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -309,6 +348,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveAllowedDenom",
 			Handler:    _Msg_RemoveAllowedDenom_Handler,
+		},
+		{
+			MethodName: "SetMarketplaceFees",
+			Handler:    _Msg_SetMarketplaceFees_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
