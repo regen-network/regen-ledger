@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
       - run: NUM_BLOCKS=100 make sim-app-multi-seed
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
       - run: NUM_BLOCKS=100 make sim-import-export-multi-seed
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
       - run: NUM_BLOCKS=100 make sim-after-import-multi-seed
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
       - run: NUM_BLOCKS=20 make sim-determinism-multi-seed
