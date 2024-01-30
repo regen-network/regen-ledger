@@ -26,27 +26,43 @@ func (ch ContentHash) Validate() error {
 	return sdkerrors.ErrInvalidRequest.Wrapf("content hash must be one of raw type or graph type")
 }
 
-func (chr ContentHash_Raw) Validate() error {
-	err := chr.DigestAlgorithm.Validate(chr.Hash)
+func (chr *ContentHash_Raw) Validate() error {
+	err := validateHash(chr.Hash, chr.DigestAlgorithm)
 	if err != nil {
 		return err
 	}
 
-	return chr.MediaType.Validate()
+	ext := chr.FileExtension
+	extLen := len(ext)
+	if extLen < 2 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("file extension cannot be shorter than 2 characters")
+	}
+
+	if extLen > 6 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("file extension cannot be longer than 6 characters")
+	}
+
+	// check that ext is all lowercase or numeric
+	for _, c := range ext {
+		if c < '0' || c > '9' && c < 'a' || c > 'z' {
+			return sdkerrors.ErrInvalidRequest.Wrapf("file extension must be all lowercase or numeric")
+		}
+	}
+
+	return nil
 }
 
-func (chg ContentHash_Graph) Validate() error {
-	err := chg.DigestAlgorithm.Validate(chg.Hash)
+func (chg *ContentHash_Graph) Validate() error {
+	err := validateHash(chg.Hash, chg.DigestAlgorithm)
 	if err != nil {
 		return err
 	}
 
-	err = chg.CanonicalizationAlgorithm.Validate()
-	if err != nil {
-		return err
+	if chg.CanonicalizationAlgorithm == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("canonicalization algorithm cannot be empty")
 	}
 
-	return chg.MerkleTree.Validate()
+	return nil
 }
 
 func (da DigestAlgorithm) Validate(hash []byte) error {
@@ -71,14 +87,6 @@ func (da DigestAlgorithm) Validate(hash []byte) error {
 	return nil
 }
 
-func (rmt RawMediaType) Validate() error {
-	if _, ok := RawMediaType_name[int32(rmt)]; !ok {
-		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", rmt, rmt)
-	}
-
-	return nil
-}
-
 func (gca GraphCanonicalizationAlgorithm) Validate() error {
 	if _, ok := GraphCanonicalizationAlgorithm_name[int32(gca)]; !ok {
 		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", gca, gca)
@@ -94,6 +102,23 @@ func (gca GraphCanonicalizationAlgorithm) Validate() error {
 func (gmt GraphMerkleTree) Validate() error {
 	if _, ok := GraphMerkleTree_name[int32(gmt)]; !ok {
 		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %d", gmt, gmt)
+	}
+
+	return nil
+}
+
+func validateHash(hash []byte, digestAlgorithm uint32) error {
+	hashLen := len(hash)
+	if hashLen < 20 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("hash cannot be shorter than 20 bytes")
+	}
+
+	if hashLen > 64 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("hash cannot be longer than 64 bytes")
+	}
+
+	if digestAlgorithm == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("digest algorithm cannot be empty")
 	}
 
 	return nil

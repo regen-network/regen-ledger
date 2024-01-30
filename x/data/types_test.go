@@ -38,6 +38,10 @@ func (s *contentHash) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
+func (s *contentHash) ExpectAnError() {
+	require.Error(s.t, s.err)
+}
+
 func (s *contentHash) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }

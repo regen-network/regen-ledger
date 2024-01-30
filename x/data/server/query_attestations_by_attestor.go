@@ -10,7 +10,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/v2"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 // AttestationsByAttestor queries data attestations by an attestor.
