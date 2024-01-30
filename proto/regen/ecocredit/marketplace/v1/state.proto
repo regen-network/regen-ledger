@@ -127,3 +127,22 @@ message Market {
   // exchange for less precision at the lower end.
   uint32 precision_modifier = 4;
 }
+
+// FeeParams represents the marketplace fee parameters.
+message FeeParams {
+  option (cosmos.orm.v1.singleton) = {
+    id : 4
+  };
+
+  // buyer_percentage_fee is the decimal percentage fee charged to the buyer.
+  // The string 3.0 means a 3.0% fee.
+  // This fee will be added to the total price of a buy order and is denominated
+  // in the same denom as the buy order's bid denom.
+  string buyer_percentage_fee = 1;
+
+  // seller_percentage_fee is the decimal percentage fee charged to the seller.
+  // The string 3.0 means a 3.0% fee.
+  // This fee will be subtracted from the total proceeds of a sell order distributed to the seller
+  // and is denominated in the same denom as the sell order's ask denom.
+  string seller_percentage_fee = 2;
+}

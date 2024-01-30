@@ -6,6 +6,7 @@ import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/marketplace/v1/state.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
@@ -36,6 +37,12 @@ service Msg {
   // Since Revision 1
   rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
       returns (MsgRemoveAllowedDenomResponse);
+
+  // SetMarketplaceFees is a governance method that sets the marketplace fees.
+  //
+  // Since Revision 3
+  rpc SetMarketplaceFees(MsgSetMarketplaceFees)
+      returns (MsgSetMarketplaceFeesResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -174,6 +181,15 @@ message MsgBuyDirect {
     //
     // Since Revision 1
     string retirement_reason = 7;
+
+    // max_fee_amount is the maximum amount of buyer side fees being paid to the marketplace.
+    // If the marketplace fees end up being greater than this amount, the transaction will fail.
+    // If this field is left empty, the marketplace fees will be calculated based on the bid price
+    // and quantity and automatically deducted from the buyer's account.
+    // Fees are always paid in the same denomination as the bid price.
+    //
+    // Since Revision 3
+    string max_fee_amount = 8;
   }
 }
 
@@ -223,3 +239,17 @@ message MsgRemoveAllowedDenom {
 //
 // Since Revision 1
 message MsgRemoveAllowedDenomResponse {}
+
+// MsgSetMarketplaceFees is the Msg/SetMarketplaceFees request type.
+message MsgSetMarketplaceFees {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // fees are the marketplace fees being set.
+  FeeParams fees = 2;
+}
+
+// MsgSetMarketplaceFeesResponse is the Msg/SetMarketplaceFees response type.
+message MsgSetMarketplaceFeesResponse {}
