@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0
-	github.com/regen-network/regen-ledger/x/data/v2 v2.0.0
+	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
 	github.com/regen-network/regen-ledger/x/intertx v1.0.0
 	github.com/rs/zerolog v1.31.0
@@ -180,7 +180,7 @@ replace github.com/regen-network/regen-ledger/api/v2 => ./api
 
 replace github.com/regen-network/regen-ledger/types/v2 => ./types
 
-replace github.com/regen-network/regen-ledger/x/data/v2 => ./x/data
+replace github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
 
 replace github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
 

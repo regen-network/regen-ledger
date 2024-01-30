@@ -14,7 +14,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 // Simulation operation weights constants
@@ -351,15 +351,15 @@ func getContentHash(r *rand.Rand) (*data.ContentHash, error) {
 func getGraph(digest []byte) *data.ContentHash_Graph {
 	return &data.ContentHash_Graph{
 		Hash:                      digest,
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		DigestAlgorithm:           uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		CanonicalizationAlgorithm: uint32(data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_RDFC_1_0),
 	}
 }
 
 func getRaw(digest []byte) *data.ContentHash_Raw {
 	return &data.ContentHash_Raw{
 		Hash:            digest,
-		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
+		DigestAlgorithm: uint32(data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256),
+		FileExtension:   "bin",
 	}
 }
