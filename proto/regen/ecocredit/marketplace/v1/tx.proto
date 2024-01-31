@@ -38,11 +38,11 @@ service Msg {
   rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
       returns (MsgRemoveAllowedDenomResponse);
 
-  // SetMarketplaceFees is a governance method that sets the marketplace fees.
+  // SetFeeParams is a governance method that sets the marketplace fees.
   //
   // Since Revision 3
-  rpc SetMarketplaceFees(MsgSetMarketplaceFees)
-      returns (MsgSetMarketplaceFeesResponse);
+  rpc SetFeeParams(MsgSetFeeParams)
+      returns (MsgSetFeeParamsResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -240,8 +240,8 @@ message MsgRemoveAllowedDenom {
 // Since Revision 1
 message MsgRemoveAllowedDenomResponse {}
 
-// MsgSetMarketplaceFees is the Msg/SetMarketplaceFees request type.
-message MsgSetMarketplaceFees {
+// MsgSetFeeParams is the Msg/SetFeeParams request type.
+message MsgSetFeeParams {
   option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
@@ -251,5 +251,5 @@ message MsgSetMarketplaceFees {
   FeeParams fees = 2;
 }
 
-// MsgSetMarketplaceFeesResponse is the Msg/SetMarketplaceFees response type.
-message MsgSetMarketplaceFeesResponse {}
+// MsgSetFeeParamsResponse is the Msg/SetFeeParams response type.
+message MsgSetFeeParamsResponse {}

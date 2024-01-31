@@ -7724,27 +7724,27 @@ func (x *fastReflection_MsgRemoveAllowedDenomResponse) ProtoMethods() *protoifac
 }
 
 var (
-	md_MsgSetMarketplaceFees           protoreflect.MessageDescriptor
-	fd_MsgSetMarketplaceFees_authority protoreflect.FieldDescriptor
-	fd_MsgSetMarketplaceFees_fees      protoreflect.FieldDescriptor
+	md_MsgSetFeeParams           protoreflect.MessageDescriptor
+	fd_MsgSetFeeParams_authority protoreflect.FieldDescriptor
+	fd_MsgSetFeeParams_fees      protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_tx_proto_init()
-	md_MsgSetMarketplaceFees = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgSetMarketplaceFees")
-	fd_MsgSetMarketplaceFees_authority = md_MsgSetMarketplaceFees.Fields().ByName("authority")
-	fd_MsgSetMarketplaceFees_fees = md_MsgSetMarketplaceFees.Fields().ByName("fees")
+	md_MsgSetFeeParams = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgSetFeeParams")
+	fd_MsgSetFeeParams_authority = md_MsgSetFeeParams.Fields().ByName("authority")
+	fd_MsgSetFeeParams_fees = md_MsgSetFeeParams.Fields().ByName("fees")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgSetMarketplaceFees)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgSetFeeParams)(nil)
 
-type fastReflection_MsgSetMarketplaceFees MsgSetMarketplaceFees
+type fastReflection_MsgSetFeeParams MsgSetFeeParams
 
-func (x *MsgSetMarketplaceFees) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgSetMarketplaceFees)(x)
+func (x *MsgSetFeeParams) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgSetFeeParams)(x)
 }
 
-func (x *MsgSetMarketplaceFees) slowProtoReflect() protoreflect.Message {
+func (x *MsgSetFeeParams) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -7756,43 +7756,43 @@ func (x *MsgSetMarketplaceFees) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgSetMarketplaceFees_messageType fastReflection_MsgSetMarketplaceFees_messageType
-var _ protoreflect.MessageType = fastReflection_MsgSetMarketplaceFees_messageType{}
+var _fastReflection_MsgSetFeeParams_messageType fastReflection_MsgSetFeeParams_messageType
+var _ protoreflect.MessageType = fastReflection_MsgSetFeeParams_messageType{}
 
-type fastReflection_MsgSetMarketplaceFees_messageType struct{}
+type fastReflection_MsgSetFeeParams_messageType struct{}
 
-func (x fastReflection_MsgSetMarketplaceFees_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgSetMarketplaceFees)(nil)
+func (x fastReflection_MsgSetFeeParams_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgSetFeeParams)(nil)
 }
-func (x fastReflection_MsgSetMarketplaceFees_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgSetMarketplaceFees)
+func (x fastReflection_MsgSetFeeParams_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgSetFeeParams)
 }
-func (x fastReflection_MsgSetMarketplaceFees_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSetMarketplaceFees
+func (x fastReflection_MsgSetFeeParams_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSetFeeParams
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgSetMarketplaceFees) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSetMarketplaceFees
+func (x *fastReflection_MsgSetFeeParams) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSetFeeParams
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgSetMarketplaceFees) Type() protoreflect.MessageType {
-	return _fastReflection_MsgSetMarketplaceFees_messageType
+func (x *fastReflection_MsgSetFeeParams) Type() protoreflect.MessageType {
+	return _fastReflection_MsgSetFeeParams_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgSetMarketplaceFees) New() protoreflect.Message {
-	return new(fastReflection_MsgSetMarketplaceFees)
+func (x *fastReflection_MsgSetFeeParams) New() protoreflect.Message {
+	return new(fastReflection_MsgSetFeeParams)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgSetMarketplaceFees) Interface() protoreflect.ProtoMessage {
-	return (*MsgSetMarketplaceFees)(x)
+func (x *fastReflection_MsgSetFeeParams) Interface() protoreflect.ProtoMessage {
+	return (*MsgSetFeeParams)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -7800,16 +7800,16 @@ func (x *fastReflection_MsgSetMarketplaceFees) Interface() protoreflect.ProtoMes
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgSetMarketplaceFees) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgSetFeeParams) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Authority != "" {
 		value := protoreflect.ValueOfString(x.Authority)
-		if !f(fd_MsgSetMarketplaceFees_authority, value) {
+		if !f(fd_MsgSetFeeParams_authority, value) {
 			return
 		}
 	}
 	if x.Fees != nil {
 		value := protoreflect.ValueOfMessage(x.Fees.ProtoReflect())
-		if !f(fd_MsgSetMarketplaceFees_fees, value) {
+		if !f(fd_MsgSetFeeParams_fees, value) {
 			return
 		}
 	}
@@ -7826,17 +7826,17 @@ func (x *fastReflection_MsgSetMarketplaceFees) Range(f func(protoreflect.FieldDe
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgSetMarketplaceFees) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgSetFeeParams) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.authority":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.authority":
 		return x.Authority != ""
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.fees":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.fees":
 		return x.Fees != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParams"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7846,17 +7846,17 @@ func (x *fastReflection_MsgSetMarketplaceFees) Has(fd protoreflect.FieldDescript
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFees) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgSetFeeParams) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.authority":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.authority":
 		x.Authority = ""
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.fees":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.fees":
 		x.Fees = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParams"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7866,19 +7866,19 @@ func (x *fastReflection_MsgSetMarketplaceFees) Clear(fd protoreflect.FieldDescri
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgSetMarketplaceFees) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSetFeeParams) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.authority":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.authority":
 		value := x.Authority
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.fees":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.fees":
 		value := x.Fees
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParams"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParams does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -7892,17 +7892,17 @@ func (x *fastReflection_MsgSetMarketplaceFees) Get(descriptor protoreflect.Field
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFees) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgSetFeeParams) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.authority":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.authority":
 		x.Authority = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.fees":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.fees":
 		x.Fees = value.Message().Interface().(*FeeParams)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParams"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7916,48 +7916,48 @@ func (x *fastReflection_MsgSetMarketplaceFees) Set(fd protoreflect.FieldDescript
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFees) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSetFeeParams) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.fees":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.fees":
 		if x.Fees == nil {
 			x.Fees = new(FeeParams)
 		}
 		return protoreflect.ValueOfMessage(x.Fees.ProtoReflect())
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.authority":
-		panic(fmt.Errorf("field authority of message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees is not mutable"))
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.authority":
+		panic(fmt.Errorf("field authority of message regen.ecocredit.marketplace.v1.MsgSetFeeParams is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParams"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParams does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgSetMarketplaceFees) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSetFeeParams) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.authority":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.authority":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.fees":
+	case "regen.ecocredit.marketplace.v1.MsgSetFeeParams.fees":
 		m := new(FeeParams)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParams"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParams does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgSetMarketplaceFees) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgSetFeeParams) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgSetFeeParams", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -7965,7 +7965,7 @@ func (x *fastReflection_MsgSetMarketplaceFees) WhichOneof(d protoreflect.OneofDe
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgSetMarketplaceFees) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgSetFeeParams) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -7976,7 +7976,7 @@ func (x *fastReflection_MsgSetMarketplaceFees) GetUnknown() protoreflect.RawFiel
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFees) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgSetFeeParams) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -7988,7 +7988,7 @@ func (x *fastReflection_MsgSetMarketplaceFees) SetUnknown(fields protoreflect.Ra
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgSetMarketplaceFees) IsValid() bool {
+func (x *fastReflection_MsgSetFeeParams) IsValid() bool {
 	return x != nil
 }
 
@@ -7998,9 +7998,9 @@ func (x *fastReflection_MsgSetMarketplaceFees) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgSetMarketplaceFees) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgSetFeeParams) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgSetMarketplaceFees)
+		x := input.Message.Interface().(*MsgSetFeeParams)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8030,7 +8030,7 @@ func (x *fastReflection_MsgSetMarketplaceFees) ProtoMethods() *protoiface.Method
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSetMarketplaceFees)
+		x := input.Message.Interface().(*MsgSetFeeParams)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8081,7 +8081,7 @@ func (x *fastReflection_MsgSetMarketplaceFees) ProtoMethods() *protoiface.Method
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSetMarketplaceFees)
+		x := input.Message.Interface().(*MsgSetFeeParams)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8113,10 +8113,10 @@ func (x *fastReflection_MsgSetMarketplaceFees) ProtoMethods() *protoiface.Method
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetMarketplaceFees: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetFeeParams: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetMarketplaceFees: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetFeeParams: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -8223,23 +8223,23 @@ func (x *fastReflection_MsgSetMarketplaceFees) ProtoMethods() *protoiface.Method
 }
 
 var (
-	md_MsgSetMarketplaceFeesResponse protoreflect.MessageDescriptor
+	md_MsgSetFeeParamsResponse protoreflect.MessageDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_tx_proto_init()
-	md_MsgSetMarketplaceFeesResponse = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgSetMarketplaceFeesResponse")
+	md_MsgSetFeeParamsResponse = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgSetFeeParamsResponse")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgSetMarketplaceFeesResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgSetFeeParamsResponse)(nil)
 
-type fastReflection_MsgSetMarketplaceFeesResponse MsgSetMarketplaceFeesResponse
+type fastReflection_MsgSetFeeParamsResponse MsgSetFeeParamsResponse
 
-func (x *MsgSetMarketplaceFeesResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgSetMarketplaceFeesResponse)(x)
+func (x *MsgSetFeeParamsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgSetFeeParamsResponse)(x)
 }
 
-func (x *MsgSetMarketplaceFeesResponse) slowProtoReflect() protoreflect.Message {
+func (x *MsgSetFeeParamsResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -8251,43 +8251,43 @@ func (x *MsgSetMarketplaceFeesResponse) slowProtoReflect() protoreflect.Message 
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgSetMarketplaceFeesResponse_messageType fastReflection_MsgSetMarketplaceFeesResponse_messageType
-var _ protoreflect.MessageType = fastReflection_MsgSetMarketplaceFeesResponse_messageType{}
+var _fastReflection_MsgSetFeeParamsResponse_messageType fastReflection_MsgSetFeeParamsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgSetFeeParamsResponse_messageType{}
 
-type fastReflection_MsgSetMarketplaceFeesResponse_messageType struct{}
+type fastReflection_MsgSetFeeParamsResponse_messageType struct{}
 
-func (x fastReflection_MsgSetMarketplaceFeesResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgSetMarketplaceFeesResponse)(nil)
+func (x fastReflection_MsgSetFeeParamsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgSetFeeParamsResponse)(nil)
 }
-func (x fastReflection_MsgSetMarketplaceFeesResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgSetMarketplaceFeesResponse)
+func (x fastReflection_MsgSetFeeParamsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgSetFeeParamsResponse)
 }
-func (x fastReflection_MsgSetMarketplaceFeesResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSetMarketplaceFeesResponse
+func (x fastReflection_MsgSetFeeParamsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSetFeeParamsResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSetMarketplaceFeesResponse
+func (x *fastReflection_MsgSetFeeParamsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSetFeeParamsResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Type() protoreflect.MessageType {
-	return _fastReflection_MsgSetMarketplaceFeesResponse_messageType
+func (x *fastReflection_MsgSetFeeParamsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgSetFeeParamsResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) New() protoreflect.Message {
-	return new(fastReflection_MsgSetMarketplaceFeesResponse)
+func (x *fastReflection_MsgSetFeeParamsResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgSetFeeParamsResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Interface() protoreflect.ProtoMessage {
-	return (*MsgSetMarketplaceFeesResponse)(x)
+func (x *fastReflection_MsgSetFeeParamsResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgSetFeeParamsResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -8295,7 +8295,7 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) Interface() protoreflect.
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgSetFeeParamsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 }
 
 // Has reports whether a field is populated.
@@ -8309,13 +8309,13 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) Range(f func(protoreflect
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgSetFeeParamsResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8325,13 +8325,13 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) Has(fd protoreflect.Field
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgSetFeeParamsResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8341,13 +8341,13 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) Clear(fd protoreflect.Fie
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSetFeeParamsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -8361,13 +8361,13 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) Get(descriptor protorefle
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgSetFeeParamsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8381,36 +8381,36 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) Set(fd protoreflect.Field
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSetFeeParamsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSetFeeParamsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgSetFeeParamsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -8418,7 +8418,7 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) WhichOneof(d protoreflect
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgSetFeeParamsResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -8429,7 +8429,7 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) GetUnknown() protoreflect
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgSetFeeParamsResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -8441,7 +8441,7 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) SetUnknown(fields protore
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) IsValid() bool {
+func (x *fastReflection_MsgSetFeeParamsResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -8451,9 +8451,9 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgSetMarketplaceFeesResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgSetFeeParamsResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgSetMarketplaceFeesResponse)
+		x := input.Message.Interface().(*MsgSetFeeParamsResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8475,7 +8475,7 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) ProtoMethods() *protoifac
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSetMarketplaceFeesResponse)
+		x := input.Message.Interface().(*MsgSetFeeParamsResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8505,7 +8505,7 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) ProtoMethods() *protoifac
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSetMarketplaceFeesResponse)
+		x := input.Message.Interface().(*MsgSetFeeParamsResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -8537,10 +8537,10 @@ func (x *fastReflection_MsgSetMarketplaceFeesResponse) ProtoMethods() *protoifac
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetMarketplaceFeesResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetFeeParamsResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetMarketplaceFeesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSetFeeParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			default:
@@ -9069,8 +9069,8 @@ func (*MsgRemoveAllowedDenomResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{11}
 }
 
-// MsgSetMarketplaceFees is the Msg/SetMarketplaceFees request type.
-type MsgSetMarketplaceFees struct {
+// MsgSetFeeParams is the Msg/SetFeeParams request type.
+type MsgSetFeeParams struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -9081,8 +9081,8 @@ type MsgSetMarketplaceFees struct {
 	Fees *FeeParams `protobuf:"bytes,2,opt,name=fees,proto3" json:"fees,omitempty"`
 }
 
-func (x *MsgSetMarketplaceFees) Reset() {
-	*x = MsgSetMarketplaceFees{}
+func (x *MsgSetFeeParams) Reset() {
+	*x = MsgSetFeeParams{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -9090,40 +9090,40 @@ func (x *MsgSetMarketplaceFees) Reset() {
 	}
 }
 
-func (x *MsgSetMarketplaceFees) String() string {
+func (x *MsgSetFeeParams) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgSetMarketplaceFees) ProtoMessage() {}
+func (*MsgSetFeeParams) ProtoMessage() {}
 
-// Deprecated: Use MsgSetMarketplaceFees.ProtoReflect.Descriptor instead.
-func (*MsgSetMarketplaceFees) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgSetFeeParams.ProtoReflect.Descriptor instead.
+func (*MsgSetFeeParams) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *MsgSetMarketplaceFees) GetAuthority() string {
+func (x *MsgSetFeeParams) GetAuthority() string {
 	if x != nil {
 		return x.Authority
 	}
 	return ""
 }
 
-func (x *MsgSetMarketplaceFees) GetFees() *FeeParams {
+func (x *MsgSetFeeParams) GetFees() *FeeParams {
 	if x != nil {
 		return x.Fees
 	}
 	return nil
 }
 
-// MsgSetMarketplaceFeesResponse is the Msg/SetMarketplaceFees response type.
-type MsgSetMarketplaceFeesResponse struct {
+// MsgSetFeeParamsResponse is the Msg/SetFeeParams response type.
+type MsgSetFeeParamsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *MsgSetMarketplaceFeesResponse) Reset() {
-	*x = MsgSetMarketplaceFeesResponse{}
+func (x *MsgSetFeeParamsResponse) Reset() {
+	*x = MsgSetFeeParamsResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -9131,14 +9131,14 @@ func (x *MsgSetMarketplaceFeesResponse) Reset() {
 	}
 }
 
-func (x *MsgSetMarketplaceFeesResponse) String() string {
+func (x *MsgSetFeeParamsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgSetMarketplaceFeesResponse) ProtoMessage() {}
+func (*MsgSetFeeParamsResponse) ProtoMessage() {}
 
-// Deprecated: Use MsgSetMarketplaceFeesResponse.ProtoReflect.Descriptor instead.
-func (*MsgSetMarketplaceFeesResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgSetFeeParamsResponse.ProtoReflect.Descriptor instead.
+func (*MsgSetFeeParamsResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{13}
 }
 
@@ -9533,73 +9533,71 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
 	0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
 	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x1f, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f,
 	0x76, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x84, 0x01, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x53, 0x65,
-	0x74, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x46, 0x65, 0x65, 0x73,
-	0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x3d,
-	0x0a, 0x04, 0x66, 0x65, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65,
-	0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x04, 0x66, 0x65, 0x65, 0x73, 0x3a, 0x0e, 0x82,
-	0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x1f, 0x0a,
-	0x1d, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x74, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
-	0x63, 0x65, 0x46, 0x65, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x81,
-	0x07, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x60, 0x0a, 0x04, 0x53, 0x65, 0x6c, 0x6c, 0x12, 0x27,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x10, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x12, 0x33, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65,
-	0x72, 0x73, 0x1a, 0x3b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
-	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c,
-	0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x81, 0x01, 0x0a, 0x0f, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72,
-	0x64, 0x65, 0x72, 0x12, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65,
-	0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x1a, 0x3a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63,
-	0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x09, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74,
-	0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x7e, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x74,
+	0x46, 0x65, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x75, 0x74,
+	0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x75,
+	0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x3d, 0x0a, 0x04, 0x66, 0x65, 0x65, 0x73, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x52, 0x04, 0x66, 0x65, 0x65, 0x73, 0x3a, 0x0e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74,
+	0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x22, 0x19, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x74,
+	0x46, 0x65, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x32, 0xee, 0x06, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x60, 0x0a, 0x04, 0x53, 0x65, 0x6c,
+	0x6c, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x65, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x10,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73,
+	0x12, 0x33, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
 	0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x1a, 0x34,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x0f, 0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c, 0x6f,
-	0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64,
-	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x3a, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x8a, 0x01, 0x0a, 0x12, 0x52, 0x65, 0x6d,
-	0x6f, 0x76, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12,
-	0x35, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65,
-	0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x3d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f,
+	0x72, 0x64, 0x65, 0x72, 0x73, 0x1a, 0x3b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x0f, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c,
+	0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
 	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76,
-	0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x8a, 0x01, 0x0a, 0x12, 0x53, 0x65, 0x74, 0x4d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x46, 0x65, 0x65, 0x73, 0x12, 0x35, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x53, 0x65, 0x74, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x46,
-	0x65, 0x65, 0x73, 0x1a, 0x3d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65,
+	0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x1a, 0x3a, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43,
+	0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x09, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72,
+	0x65, 0x63, 0x74, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
 	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x74, 0x4d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x46, 0x65, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63,
+	0x74, 0x1a, 0x34, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x0f, 0x41, 0x64, 0x64, 0x41,
+	0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x32, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
+	0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a,
+	0x3a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31,
+	0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65,
+	0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x8a, 0x01, 0x0a, 0x12,
+	0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e,
+	0x6f, 0x6d, 0x12, 0x35, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
+	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x41, 0x6c, 0x6c,
+	0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x3d, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65,
+	0x6d, 0x6f, 0x76, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x0c, 0x53, 0x65, 0x74, 0x46,
+	0x65, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
+	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x74,
+	0x46, 0x65, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a, 0x37, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65,
+	0x74, 0x46, 0x65, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x42, 0xa0, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
 	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
 	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f,
@@ -9647,8 +9645,8 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_goTypes = []interface{}{
 	(*MsgAddAllowedDenomResponse)(nil),    // 9: regen.ecocredit.marketplace.v1.MsgAddAllowedDenomResponse
 	(*MsgRemoveAllowedDenom)(nil),         // 10: regen.ecocredit.marketplace.v1.MsgRemoveAllowedDenom
 	(*MsgRemoveAllowedDenomResponse)(nil), // 11: regen.ecocredit.marketplace.v1.MsgRemoveAllowedDenomResponse
-	(*MsgSetMarketplaceFees)(nil),         // 12: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees
-	(*MsgSetMarketplaceFeesResponse)(nil), // 13: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse
+	(*MsgSetFeeParams)(nil),               // 12: regen.ecocredit.marketplace.v1.MsgSetFeeParams
+	(*MsgSetFeeParamsResponse)(nil),       // 13: regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse
 	(*MsgSell_Order)(nil),                 // 14: regen.ecocredit.marketplace.v1.MsgSell.Order
 	(*MsgUpdateSellOrders_Update)(nil),    // 15: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
 	(*MsgBuyDirect_Order)(nil),            // 16: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order
@@ -9660,7 +9658,7 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_depIdxs = []int32{
 	14, // 0: regen.ecocredit.marketplace.v1.MsgSell.orders:type_name -> regen.ecocredit.marketplace.v1.MsgSell.Order
 	15, // 1: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.updates:type_name -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
 	16, // 2: regen.ecocredit.marketplace.v1.MsgBuyDirect.orders:type_name -> regen.ecocredit.marketplace.v1.MsgBuyDirect.Order
-	17, // 3: regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees.fees:type_name -> regen.ecocredit.marketplace.v1.FeeParams
+	17, // 3: regen.ecocredit.marketplace.v1.MsgSetFeeParams.fees:type_name -> regen.ecocredit.marketplace.v1.FeeParams
 	18, // 4: regen.ecocredit.marketplace.v1.MsgSell.Order.ask_price:type_name -> cosmos.base.v1beta1.Coin
 	19, // 5: regen.ecocredit.marketplace.v1.MsgSell.Order.expiration:type_name -> google.protobuf.Timestamp
 	18, // 6: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
@@ -9672,14 +9670,14 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_depIdxs = []int32{
 	6,  // 12: regen.ecocredit.marketplace.v1.Msg.BuyDirect:input_type -> regen.ecocredit.marketplace.v1.MsgBuyDirect
 	8,  // 13: regen.ecocredit.marketplace.v1.Msg.AddAllowedDenom:input_type -> regen.ecocredit.marketplace.v1.MsgAddAllowedDenom
 	10, // 14: regen.ecocredit.marketplace.v1.Msg.RemoveAllowedDenom:input_type -> regen.ecocredit.marketplace.v1.MsgRemoveAllowedDenom
-	12, // 15: regen.ecocredit.marketplace.v1.Msg.SetMarketplaceFees:input_type -> regen.ecocredit.marketplace.v1.MsgSetMarketplaceFees
+	12, // 15: regen.ecocredit.marketplace.v1.Msg.SetFeeParams:input_type -> regen.ecocredit.marketplace.v1.MsgSetFeeParams
 	1,  // 16: regen.ecocredit.marketplace.v1.Msg.Sell:output_type -> regen.ecocredit.marketplace.v1.MsgSellResponse
 	3,  // 17: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:output_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
 	5,  // 18: regen.ecocredit.marketplace.v1.Msg.CancelSellOrder:output_type -> regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse
 	7,  // 19: regen.ecocredit.marketplace.v1.Msg.BuyDirect:output_type -> regen.ecocredit.marketplace.v1.MsgBuyDirectResponse
 	9,  // 20: regen.ecocredit.marketplace.v1.Msg.AddAllowedDenom:output_type -> regen.ecocredit.marketplace.v1.MsgAddAllowedDenomResponse
 	11, // 21: regen.ecocredit.marketplace.v1.Msg.RemoveAllowedDenom:output_type -> regen.ecocredit.marketplace.v1.MsgRemoveAllowedDenomResponse
-	13, // 22: regen.ecocredit.marketplace.v1.Msg.SetMarketplaceFees:output_type -> regen.ecocredit.marketplace.v1.MsgSetMarketplaceFeesResponse
+	13, // 22: regen.ecocredit.marketplace.v1.Msg.SetFeeParams:output_type -> regen.ecocredit.marketplace.v1.MsgSetFeeParamsResponse
 	16, // [16:23] is the sub-list for method output_type
 	9,  // [9:16] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
@@ -9839,7 +9837,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSetMarketplaceFees); i {
+			switch v := v.(*MsgSetFeeParams); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -9851,7 +9849,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSetMarketplaceFeesResponse); i {
+			switch v := v.(*MsgSetFeeParamsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
