@@ -15,18 +15,20 @@ var (
 )
 
 type Keeper struct {
-	stateStore marketapi.StateStore
-	baseStore  baseapi.StateStore
-	bankKeeper ecocredit.BankKeeper
-	authority  sdk.AccAddress
+	stateStore  marketapi.StateStore
+	baseStore   baseapi.StateStore
+	bankKeeper  ecocredit.BankKeeper
+	authority   sdk.AccAddress
+	feePoolName string
 }
 
 func NewKeeper(ss marketapi.StateStore, cs baseapi.StateStore, bk ecocredit.BankKeeper,
-	authority sdk.AccAddress) Keeper {
+	authority sdk.AccAddress, feePoolName string) Keeper {
 	return Keeper{
-		baseStore:  cs,
-		stateStore: ss,
-		bankKeeper: bk,
-		authority:  authority,
+		baseStore:   cs,
+		stateStore:  ss,
+		bankKeeper:  bk,
+		authority:   authority,
+		feePoolName: feePoolName,
 	}
 }

@@ -67,7 +67,7 @@ func NewServer(storeKey storetypes.StoreKey,
 	s.marketplaceStore = marketStore
 	s.BaseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
 	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority)
-	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority)
+	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority, ecocredit.ModuleName)
 
 	return s
 }

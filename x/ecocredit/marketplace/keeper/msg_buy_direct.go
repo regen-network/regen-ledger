@@ -92,13 +92,22 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 			)
 		}
 
-		// check address has the total cost (price per * order quantity)
-		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
-		cost, err := getTotalCost(sellOrderAskAmount, buyQuantity)
+		// calc sub-total (price per * order quantity)
+		subtotal, err := getSubTotalCost(sellOrderAskAmount, buyQuantity)
 		if err != nil {
 			return nil, err
 		}
-		totalCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
+
+		// add buyer fees
+		feeParams, err := k.stateStore.FeeParamsTable().Get(ctx)
+		if err != nil {
+			return nil, err
+		}
+		total, buyerFee, err := getTotalCostAndBuyerFee(subtotal, feeParams)
+		totalCost := sdk.Coin{Amount: total.SdkIntTrim(), Denom: market.BankDenom}
+
+		// check address has the total cost
+		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
 		if buyerBalance.IsLT(totalCost) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
 				"%s: quantity: %s, ask price: %s%s, total price: %v, bank balance: %v",
@@ -113,11 +122,15 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 			sellOrder:    sellOrder,
 			buyerAcc:     buyerAcc,
 			buyQuantity:  buyQuantity,
-			totalCost:    totalCost,
+			totalCost:    total,
+			subTotalCost: subtotal,
+			buyerFee:     buyerFee,
 			autoRetire:   !order.DisableAutoRetire,
 			batchDenom:   batch.Denom,
+			bankDenom:    market.BankDenom,
 			jurisdiction: order.RetirementJurisdiction,
 			reason:       order.RetirementReason,
+			feeParams:    feeParams,
 		}); err != nil {
 			return nil, err
 		}
