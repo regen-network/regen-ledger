@@ -1,6 +1,6 @@
 module github.com/regen-network/regen-ledger/types/v2
 
-go 1.19
+go 1.21
 
 require (
 	cosmossdk.io/errors v1.0.0

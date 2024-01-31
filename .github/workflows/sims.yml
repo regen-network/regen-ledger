@@ -35,7 +35,7 @@ jobs:
             **/**.go
             **/go.mod
             **/go.sum
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
@@ -54,7 +54,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
@@ -73,7 +73,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
@@ -92,7 +92,7 @@ jobs:
             **/**.go
             **/go.mod
             **/go.sum
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
