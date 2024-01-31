@@ -3,20 +3,13 @@ package v1
 import (
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
-
-	"github.com/regen-network/regen-ledger/types/v2/math"
 )
 
 var _ legacytx.LegacyMsg = &MsgSetMarketplaceFees{}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSetMarketplaceFees) ValidateBasic() error {
-	_, err := math.NewPositiveDecFromString(m.Fees.BuyerPercentageFee)
-	if err != nil {
-		return err
-	}
-
-	_, err = math.NewPositiveDecFromString(m.Fees.SellerPercentageFee)
+	err := m.Fees.Validate()
 	if err != nil {
 		return err
 	}
