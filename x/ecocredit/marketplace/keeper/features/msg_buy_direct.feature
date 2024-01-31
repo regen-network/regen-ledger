@@ -51,7 +51,7 @@ Feature: Msg/BuyDirect
     Background:
       Given a credit type
       And alice created a sell order with ask denom "regen"
-      And bob has a bank balance with denom "regen"
+      And bob has bank balance "100regen"
 
     Scenario: bid denom matches sell denom
       When bob attempts to buy credits with bid denom "regen"
@@ -68,35 +68,35 @@ Feature: Msg/BuyDirect
 
     Scenario Outline: buyer bank balance is greater than or equal to total cost (single buy order)
       Given alice created a sell order with quantity "10" and ask amount "10"
-      And bob has a bank balance with amount "<balance-amount>"
+      And bob has bank balance "<balance-amount>"
       When bob attempts to buy credits with quantity "10" and bid amount "10"
       Then expect no error
 
       Examples:
         | description  | balance-amount |
-        | greater than | 200            |
-        | equal to     | 100            |
+        | greater than | 200regen       |
+        | equal to     | 100regen       |
 
     Scenario Outline: buyer bank balance is greater than or equal to total cost (multiple buy orders)
       Given alice created two sell orders each with quantity "10" and ask amount "10"
-      And bob has a bank balance with amount "<balance-amount>"
+      And bob has bank balance "<balance-amount>"
       When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10"
       Then expect no error
 
       Examples:
         | description  | balance-amount |
-        | greater than | 400            |
-        | equal to     | 200            |
+        | greater than | 400regen       |
+        | equal to     | 200regen       |
 
     Scenario: buyer bank balance is less than total cost (single buy order)
       Given alice created a sell order with quantity "10" and ask amount "10"
-      And bob has a bank balance with amount "50"
+      And bob has bank balance "50regen"
       When bob attempts to buy credits with quantity "10" and bid amount "10"
       Then expect the error "orders[0]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
 
     Scenario: buyer bank balance is less than total cost (multiple buy orders)
       Given alice created two sell orders each with quantity "10" and ask amount "10"
-      And bob has a bank balance with amount "150"
+      And bob has bank balance "150regen"
       When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10"
       Then expect the error "orders[1]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
 
@@ -105,7 +105,7 @@ Feature: Msg/BuyDirect
     Background:
       Given a credit type
       And alice created a sell order with ask amount "10"
-      And bob has a bank balance with amount "100"
+      And bob has bank balance "100regen"
 
     Scenario Outline: bid price greater than or equal to ask price
       When bob attempts to buy credits with quantity "10" and bid amount "<bid-amount>"
@@ -344,12 +344,15 @@ Feature: Msg/BuyDirect
     Background:
       Given a credit type
       And alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+      And alice has bank balance "100regen"
       And bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      And bob has bank balance "100regen"
 
     Scenario: EventTransfer is emitted
       Given alice created a sell order with id "1"
       When bob attempts to buy credits with quantity "10"
-      Then expect event transfer with properties
+      Then expect no error
+      And expect event transfer with properties
       """
       {
         "sender": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
@@ -363,7 +366,8 @@ Feature: Msg/BuyDirect
     Scenario: EventRetire is emitted
       Given alice created a sell order with id "1"
       When bob attempts to buy credits with sell order id "1" and retirement reason "offsetting electricity consumption"
-      Then expect event retire with properties
+      Then expect no error
+      And expect event retire with properties
       """
       {
         "owner": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -376,20 +380,36 @@ Feature: Msg/BuyDirect
     Scenario: EventBuyDirect is emitted
       Given alice created a sell order with id "1"
       When bob attempts to buy credits with sell order id "1"
-      Then expect event buy direct with properties
+      Then expect no error
+      And expect event buy direct with properties
       """
       {
         "sell_order_id": 1
       }
       """
 
-  Rule: Buyer fees are deducted from buyer, seller fees are deducted from seller, and both go to fee pool
-    Scenario:
-      Given alice created a sell order with quantity "10" and ask amount "10"
-      * bob has bank balance "110regen"
-      * alice has bank balance "0regen"
+  Rule: buyer fees are deducted from buyer, seller fees are deducted from seller, and both go to fee pool
+    Background:
+      Given a credit type
+
+    Scenario: fees go to fee pool
+      Given alice created a sell order with quantity "10" and ask price "10foo"
+      * bob has bank balance "110foo"
+      * alice has bank balance "0foo"
       * buyer fees are 0.1 and seller fees are 0.05
-      When bob attempts to buy credits with quantity "10" and bid amount "10"
-      Then expect alice bank balance "95regen"
-      * expect bob bank balance "0regen"
-      * expect no error
+      When bob attempts to buy credits with quantity "10" and bid price "10foo"
+      Then expect no error
+      * expect alice bank balance "95foo"
+      * expect bob bank balance "0foo"
+      * expect fee pool balance "15foo"
+
+    Scenario: fees get burned
+      Given alice created a sell order with quantity "10" and ask price "20uregen"
+      * bob has bank balance "240uregen"
+      * alice has bank balance "0regen"
+      * buyer fees are 0.2 and seller fees are 0.1
+      When bob attempts to buy credits with quantity "10" and bid price "20uregen"
+      Then expect no error
+      * expect alice bank balance "180uregen"
+      * expect bob bank balance "0uregen"
+      * expect fee pool balance "0uregen"

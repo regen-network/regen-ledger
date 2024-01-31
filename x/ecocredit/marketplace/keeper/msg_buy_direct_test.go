@@ -9,6 +9,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cockroachdb/apd/v3"
 	"github.com/gogo/protobuf/jsonpb"
+	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -19,6 +20,7 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
@@ -26,9 +28,9 @@ import (
 type buyDirectSuite struct {
 	*baseSuite
 	alice             sdk.AccAddress
-	aliceBankBalance  sdk.Coin
 	bob               sdk.AccAddress
-	bobBankBalance    sdk.Coin
+	balances          map[string]sdk.Coins
+	moduleBalances    map[string]sdk.Coins
 	creditTypeAbbrev  string
 	classID           string
 	batchDenom        string
@@ -49,14 +51,16 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t, 2)
 	s.alice = s.addrs[0]
 	s.bob = s.addrs[1]
-	s.aliceBankBalance = sdk.Coin{
+	s.balances = map[string]sdk.Coins{}
+	s.balances[s.alice.String()] = sdk.Coins{sdk.Coin{
 		Denom:  "regen",
 		Amount: sdk.NewInt(100),
-	}
-	s.bobBankBalance = sdk.Coin{
+	}}
+	s.balances[s.bob.String()] = sdk.Coins{sdk.Coin{
 		Denom:  "regen",
 		Amount: sdk.NewInt(100),
-	}
+	}}
+	s.moduleBalances = map[string]sdk.Coins{}
 	s.creditTypeAbbrev = "C"
 	s.classID = testClassID
 	s.batchDenom = testBatchDenom
@@ -70,6 +74,8 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 		Denom:  "regen",
 		Amount: sdk.NewInt(10),
 	}
+
+	s.buyOrderExpectCalls()
 }
 
 func (s *buyDirectSuite) ACreditType() {
@@ -94,25 +100,14 @@ func (s *buyDirectSuite) AliceHasBankBalance(a string) {
 	coin, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	s.aliceBankBalance = coin
+	s.balances[s.alice.String()] = sdk.Coins{coin}
 }
 
 func (s *buyDirectSuite) BobHasBankBalance(a string) {
 	coin, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
-	s.bobBankBalance = coin
-}
-
-func (s *buyDirectSuite) BobHasABankBalanceWithDenom(a string) {
-	s.bobBankBalance = sdk.NewCoin(a, s.bobBankBalance.Amount)
-}
-
-func (s *buyDirectSuite) BobHasABankBalanceWithAmount(a string) {
-	amount, ok := sdk.NewIntFromString(a)
-	require.True(s.t, ok)
-
-	s.bobBankBalance = sdk.NewCoin(s.bidPrice.Denom, amount)
+	s.balances[s.bob.String()] = sdk.Coins{coin}
 }
 
 func (s *buyDirectSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
@@ -256,8 +251,6 @@ func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.singleBuyOrderExpectCalls()
-
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.alice.String(),
 		Orders: []*types.MsgBuyDirect_Order{
@@ -273,8 +266,6 @@ func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
-
-	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -292,7 +283,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementReas
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.singleBuyOrderExpectCalls()
+	s.buyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -308,8 +299,6 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementReas
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
-	s.singleBuyOrderExpectCalls()
-
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
@@ -329,8 +318,6 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 	disableAutoRetire, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	s.singleBuyOrderExpectCalls()
-
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
@@ -347,8 +334,6 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 	s.quantity = a
 
-	s.singleBuyOrderExpectCalls()
-
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
@@ -364,8 +349,6 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a string, b string) {
 	bidAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
-
-	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -386,8 +369,6 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 	bidPrice, err := sdk.ParseCoinNormalized(b)
 	require.NoError(s.t, err)
 
-	s.singleBuyOrderExpectCalls()
-
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
@@ -403,8 +384,6 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire(a string, b string) {
 	disableAutoRetire, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
-
-	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -424,8 +403,6 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBi
 
 	bidAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
-
-	s.multipleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -491,19 +468,22 @@ func (s *buyDirectSuite) ExpectNoSellOrderWithId(a string) {
 }
 
 func (s *buyDirectSuite) ExpectAliceBankBalance(a string) {
-	bankBalance, err := sdk.ParseCoinNormalized(a)
-	require.NoError(s.t, err)
-
-	require.Equal(s.t, bankBalance.Denom, s.aliceBankBalance.Denom)
-	require.Equal(s.t, bankBalance.Amount.String(), s.aliceBankBalance.Amount.String())
+	s.expectBalance(s.alice, a)
 }
 
 func (s *buyDirectSuite) ExpectBobBankBalance(a string) {
-	bankBalance, err := sdk.ParseCoinNormalized(a)
+	s.expectBalance(s.bob, a)
+}
+
+func (s *buyDirectSuite) expectBalance(address sdk.Address, a string) {
+	expected, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, bankBalance.Denom, s.bobBankBalance.Denom)
-	require.Equal(s.t, bankBalance.Amount.String(), s.bobBankBalance.Amount.String())
+	actual := s.balances[address.String()]
+
+	if !actual.IsEqual(expected) {
+		s.t.Fatalf("expected: %s, actual: %s", a, actual.String())
+	}
 }
 
 func (s *buyDirectSuite) ExpectAliceBatchBalance(a gocuke.DocString) {
@@ -589,6 +569,17 @@ func (s *buyDirectSuite) ExpectEventRetireWithProperties(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *buyDirectSuite) ExpectFeePoolBalance(a string) {
+	expected, err := sdk.ParseCoinsNormalized(a)
+	require.NoError(s.t, err)
+
+	actual := s.moduleBalances[ecocredittypes.ModuleName]
+
+	if !actual.IsEqual(expected) {
+		s.t.Fatalf("expected: %s, actual: %s", a, actual.String())
+	}
+}
+
 // count is the number of sell orders created
 func (s *buyDirectSuite) createSellOrders(count int) {
 	totalQuantity := s.quantity
@@ -652,47 +643,43 @@ func (s *buyDirectSuite) createSellOrders(count int) {
 	}
 }
 
-func (s *buyDirectSuite) singleBuyOrderExpectCalls() {
-	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
-
+func (s *buyDirectSuite) buyOrderExpectCalls() {
 	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
+		GetBalance(gomock.Any(), gomock.Any(), gomock.Any()).
+		DoAndReturn(func(_ sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin {
+			return sdk.Coin{Denom: denom, Amount: s.balances[addr.String()].AmountOf(denom)}
 		}).
 		AnyTimes() // not expected on failed attempt
-}
-
-func (s *buyDirectSuite) multipleBuyOrderExpectCalls() {
-	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
 
 	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		Times(1)
-
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance.Sub(sendCoin)).
-		Times(1)
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
+		SendCoins(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Do(func(_ sdk.Context, from, to sdk.AccAddress, amt sdk.Coins) {
+			s.balances[from.String()] = s.balances[from.String()].Sub(amt...)
+			s.balances[to.String()] = s.balances[to.String()].Add(amt...)
 		}).
 		AnyTimes() // not expected on failed attempt
+
+	s.bankKeeper.EXPECT().
+		SendCoinsFromAccountToModule(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Do(func(_ sdk.Context, from sdk.AccAddress, mod string, amt sdk.Coins) {
+			s.balances[from.String()] = s.balances[from.String()].Sub(amt...)
+			s.moduleBalances[mod] = s.moduleBalances[mod].Add(amt...)
+		}).
+		AnyTimes()
+
+	s.bankKeeper.EXPECT().
+		SendCoinsFromModuleToAccount(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Do(func(_ sdk.Context, mod string, to sdk.AccAddress, amt sdk.Coins) {
+			s.moduleBalances[mod] = s.moduleBalances[mod].Sub(amt...)
+			s.balances[to.String()] = s.balances[to.String()].Add(amt...)
+		}).
+		AnyTimes()
+
+	s.bankKeeper.EXPECT().
+		BurnCoins(gomock.Any(), gomock.Any(), gomock.Any()).
+		Do(func(_ sdk.Context, mod string, amt sdk.Coins) {
+			s.moduleBalances[mod] = s.moduleBalances[mod].Sub(amt...)
+		}).AnyTimes()
 }
 
 func (s *buyDirectSuite) calculateAskTotal(quantity string, amount string) sdkmath.Int {
