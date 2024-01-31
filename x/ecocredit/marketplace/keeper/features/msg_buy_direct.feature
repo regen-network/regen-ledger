@@ -125,7 +125,7 @@ Feature: Msg/BuyDirect
     Background:
       Given a credit type
       And alice created a sell order with quantity "10"
-      And bob has a bank balance with amount "150"
+      And bob has bank balance "150regen"
 
     Scenario Outline: quantity less than or equal to sell order quantity
       When bob attempts to buy credits with quantity "<quantity>"
@@ -220,7 +220,7 @@ Feature: Msg/BuyDirect
 
     Scenario: buyer bank balance updated
       Given alice created a sell order with quantity "10" and ask price "10regen"
-      And bob has the bank balance "100regen"
+      And bob has bank balance "100regen"
       When bob attempts to buy credits with quantity "10" and bid price "10regen"
       Then expect bob bank balance "0regen"
 
@@ -383,10 +383,13 @@ Feature: Msg/BuyDirect
       }
       """
 
-  Rule: Buyer fees are added to order cost
-
-  Rule: Seller fees are deducted from order cost
-
-  Rule: uregen is burned
-
-  Rule: non-uregen denoms are kept
+  Rule: Buyer fees are deducted from buyer, seller fees are deducted from seller, and both go to fee pool
+    Scenario:
+      Given alice created a sell order with quantity "10" and ask amount "10"
+      * bob has bank balance "110regen"
+      * alice has bank balance "0regen"
+      * buyer fees are 0.1 and seller fees are 0.05
+      When bob attempts to buy credits with quantity "10" and bid amount "10"
+      Then expect alice bank balance "95regen"
+      * expect bob bank balance "0regen"
+      * expect no error

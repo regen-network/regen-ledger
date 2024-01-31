@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
+	"github.com/cockroachdb/apd/v3"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
@@ -96,7 +97,7 @@ func (s *buyDirectSuite) AliceHasBankBalance(a string) {
 	s.aliceBankBalance = coin
 }
 
-func (s *buyDirectSuite) BobHasTheBankBalance(a string) {
+func (s *buyDirectSuite) BobHasBankBalance(a string) {
 	coin, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
@@ -447,6 +448,13 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBi
 			},
 		},
 	})
+}
+func (s *buyDirectSuite) BuyerFeesAreAndSellerFeesAre(buyerFee *apd.Decimal, sellerFee *apd.Decimal) {
+	err := s.k.stateStore.FeeParamsTable().Save(s.ctx, &api.FeeParams{
+		BuyerPercentageFee:  buyerFee.String(),
+		SellerPercentageFee: sellerFee.String(),
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *buyDirectSuite) ExpectNoError() {
