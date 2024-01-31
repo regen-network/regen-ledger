@@ -382,3 +382,11 @@ Feature: Msg/BuyDirect
         "sell_order_id": 1
       }
       """
+
+  Rule: Buyer fees are added to order cost
+
+  Rule: Seller fees are deducted from order cost
+
+  Rule: uregen is burned
+
+  Rule: non-uregen denoms are kept

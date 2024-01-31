@@ -135,7 +135,7 @@ message Market {
 // process unless governance agrees to a different approach.
 message FeeParams {
   option (cosmos.orm.v1.singleton) = {
-    id : 4
+    id : 5
   };
 
   // buyer_percentage_fee is the decimal percentage fee charged to the buyer.

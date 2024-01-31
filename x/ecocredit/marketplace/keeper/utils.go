@@ -204,31 +204,30 @@ func (k Keeper) fillOrder(ctx context.Context, params fillOrderParams) error {
 	}
 
 	// calculate seller fee = subtotal * seller percentage fee
-	sellerPercentageFee, err := math.NewPositiveDecFromString(params.feeParams.SellerPercentageFee)
-	if err != nil {
-		return err
-	}
-	sellerFee, err := params.subTotalCost.Mul(sellerPercentageFee)
+	sellerFee, err := getSellerFee(params.subTotalCost, params.feeParams)
 
 	// calculate total fee = buyer fee + seller fee
 	totalFee, err := params.buyerFee.Add(sellerFee)
-	feeCoins := sdk.NewCoins(sdk.NewCoin(params.bankDenom, totalFee.SdkIntTrim()))
 
-	// transfer total fee from buyer account to fee pool
-	err = k.bankKeeper.SendCoinsFromAccountToModule(
-		sdkCtx,
-		params.buyerAcc,
-		k.feePoolName,
-		feeCoins)
-	if err != nil {
-		return err
-	}
+	// if total fee > 0, then transfer total fee from buyer account to fee pool
+	if totalFee.IsPositive() {
+		feeCoins := sdk.NewCoins(sdk.NewCoin(params.bankDenom, totalFee.SdkIntTrim()))
 
-	// if bank denom == uregen, then burn the total fee from the fee pool
-	if params.bankDenom == "uregen" {
-		err = k.bankKeeper.BurnCoins(sdkCtx, k.feePoolName, feeCoins)
+		err = k.bankKeeper.SendCoinsFromAccountToModule(
+			sdkCtx,
+			params.buyerAcc,
+			k.feePoolName,
+			feeCoins)
 		if err != nil {
 			return err
+		}
+
+		// if bank denom == uregen, then burn the total fee from the fee pool
+		if params.bankDenom == "uregen" {
+			err = k.bankKeeper.BurnCoins(sdkCtx, k.feePoolName, feeCoins)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -261,9 +260,12 @@ func getSubTotalCost(askAmount sdkmath.Int, buyQuantity math.Dec) (math.Dec, err
 
 // getTotalCostAndBuyerFee calculates the total cost of the buy order by multiplying the subtotal by the buyer percentage fee.
 func getTotalCostAndBuyerFee(subtotal math.Dec, feeParams *api.FeeParams) (total math.Dec, buyerFee math.Dec, err error) {
-	buyerPercentageFee, err := math.NewPositiveDecFromString(feeParams.BuyerPercentageFee)
-	if err != nil {
-		return math.Dec{}, math.Dec{}, err
+	buyerPercentageFee := math.NewDecFromInt64(0)
+	if feeParams != nil && feeParams.BuyerPercentageFee != "" {
+		buyerPercentageFee, err = math.NewPositiveDecFromString(feeParams.BuyerPercentageFee)
+		if err != nil {
+			return
+		}
 	}
 
 	buyerFee, err = subtotal.Mul(buyerPercentageFee)
@@ -273,6 +275,19 @@ func getTotalCostAndBuyerFee(subtotal math.Dec, feeParams *api.FeeParams) (total
 
 	total, err = subtotal.Add(buyerFee)
 	return
+}
+
+func getSellerFee(subtotal math.Dec, feeParams *api.FeeParams) (math.Dec, error) {
+	sellerPercentageFee := math.NewDecFromInt64(0)
+	if feeParams != nil && feeParams.SellerPercentageFee != "" {
+		var err error
+		sellerPercentageFee, err = math.NewPositiveDecFromString(feeParams.SellerPercentageFee)
+		if err != nil {
+			return math.Dec{}, err
+		}
+	}
+
+	return subtotal.Mul(sellerPercentageFee)
 }
 
 func gogoToProtoReflect(from gogoproto.Message, to protov2.Message) error {
