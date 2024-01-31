@@ -2,8 +2,6 @@ module github.com/regen-network/regen-ledger/v5
 
 go 1.21
 
-toolchain go1.21.4
-
 require (
 	cosmossdk.io/math v1.1.2
 	github.com/cosmos/cosmos-sdk v0.46.12
