@@ -388,7 +388,7 @@ Feature: Msg/BuyDirect
       }
       """
 
-  Rule: buyer fees are deducted from buyer, seller fees are deducted from seller, and both go to fee pool
+  Rule: buyer fees are deducted from buyer, seller fees are deducted from seller, and both go to fee pool or get burned
     Background:
       Given a credit type
 
