@@ -7,27 +7,29 @@ import (
 
 var _ legacytx.LegacyMsg = &MsgGovSetFeeParams{}
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgGovSetFeeParams) ValidateBasic() error {
-	// TODO implement me
-	panic("implement me")
+	err := m.Fees.Validate()
+	if err != nil {
+		return err
+	}
+
+	_, err = types.AccAddressFromBech32(m.Authority)
+	return err
 }
 
+// GetSigners implements the LegacyMsg interface.
 func (m *MsgGovSetFeeParams) GetSigners() []types.AccAddress {
-	// TODO implement me
-	panic("implement me")
+	return []types.AccAddress{types.MustAccAddressFromBech32(m.Authority)}
 }
 
+// Route implements the LegacyMsg interface.
+func (m *MsgGovSetFeeParams) Route() string { return types.MsgTypeURL(m) }
+
+// Type implements the LegacyMsg interface.
+func (m *MsgGovSetFeeParams) Type() string { return types.MsgTypeURL(m) }
+
+// GetSignBytes implements the LegacyMsg interface.
 func (m *MsgGovSetFeeParams) GetSignBytes() []byte {
-	// TODO implement me
-	panic("implement me")
-}
-
-func (m *MsgGovSetFeeParams) Route() string {
-	// TODO implement me
-	panic("implement me")
-}
-
-func (m *MsgGovSetFeeParams) Type() string {
-	// TODO implement me
-	panic("implement me")
+	return types.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }

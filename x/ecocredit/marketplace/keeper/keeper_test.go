@@ -76,7 +76,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 
 	authority, err := sdk.AccAddressFromBech32("regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68")
 	assert.NilError(s.t, err)
-	s.k = NewKeeper(s.marketStore, s.baseStore, s.bankKeeper, authority, "ecocredit-marketplace")
+	s.k = NewKeeper(s.marketStore, s.baseStore, s.bankKeeper, authority, ecocredit.ModuleName)
 
 	// set test accounts
 	for i := 0; i < numAddresses; i++ {
