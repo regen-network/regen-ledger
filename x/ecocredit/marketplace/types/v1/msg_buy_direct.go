@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -75,6 +76,13 @@ func (m MsgBuyDirect) ValidateBasic() error {
 
 			if len(order.RetirementReason) > base.MaxNoteLength {
 				return ecocredit.ErrMaxLimit.Wrapf("%s: retirement reason: max length %d", orderIndex, base.MaxNoteLength)
+			}
+		}
+
+		if order.MaxFeeAmount != "" {
+			maxFeeAmount, ok := sdkmath.NewIntFromString(order.MaxFeeAmount)
+			if !ok || maxFeeAmount.IsNegative() {
+				return sdkerrors.ErrInvalidRequest.Wrapf("%s: max fee amount must be a non-negative integer", orderIndex)
 			}
 		}
 	}

@@ -419,14 +419,15 @@ Feature: Msg/BuyDirect
       Given a credit type
       * alice created a sell order with quantity "10" and ask price "10foo"
       * buyer fees are 0.2 and seller fees are 0.1
-      * bob has a max_fee_amount of <max_fee_amount>
-      When bob attempts to buy credits with quantity "10" and bid price "20uregen"
-      Then expect the error <error>
+      * bob has bank balance "200foo"
+      * bob sets a max fee of <max_fee_amount>
+      When bob attempts to buy credits with quantity "10" and bid price "20foo"
+      Then expect error contains "<error>"
 
       Examples:
-        | max_fee_amount | error |
-        | 10             | true  |
-        | 20             | false |
-        | 30             | false |
+        | max_fee_amount | error   |
+        | 10             | max fee |
+        | 20             |         |
+        | 30             |         |
 
 

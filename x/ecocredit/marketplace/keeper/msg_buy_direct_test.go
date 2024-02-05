@@ -41,6 +41,7 @@ type buyDirectSuite struct {
 	bidPrice          sdk.Coin
 	res               *types.MsgBuyDirectResponse
 	err               error
+	maxFee            string
 }
 
 func TestBuyDirect(t *testing.T) {
@@ -166,6 +167,9 @@ func (s *buyDirectSuite) BobsAddress(a string) {
 	addr, err := sdk.AccAddressFromBech32(a)
 	require.NoError(s.t, err)
 	s.bob = addr
+}
+func (s *buyDirectSuite) BobSetsAMaxFeeOf(a string) {
+	s.maxFee = a
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
@@ -373,9 +377,10 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId: s.sellOrderID,
-				Quantity:    a,
-				BidPrice:    &bidPrice,
+				SellOrderId:  s.sellOrderID,
+				Quantity:     a,
+				BidPrice:     &bidPrice,
+				MaxFeeAmount: s.maxFee,
 			},
 		},
 	})
@@ -440,6 +445,14 @@ func (s *buyDirectSuite) ExpectNoError() {
 
 func (s *buyDirectSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
+}
+
+func (s *buyDirectSuite) ExpectErrorContains(a string) {
+	if a == "" {
+		require.NoError(s.t, s.err)
+	} else {
+		require.ErrorContains(s.t, s.err, a)
+	}
 }
 
 func (s *buyDirectSuite) ExpectSellOrderWithId(a string) {

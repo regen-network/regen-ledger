@@ -106,6 +106,20 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		total, buyerFee, err := getTotalCostAndBuyerFee(subtotal, feeParams)
 		totalCost := sdk.Coin{Amount: total.SdkIntTrim(), Denom: market.BankDenom}
 
+		// check max fee
+		if maxFee := order.MaxFeeAmount; maxFee != "" {
+			maxFeeInt, ok := sdk.NewIntFromString(maxFee)
+			if !ok {
+				return nil, sdkerrors.ErrInvalidType.Wrapf("could not convert %s to %T", maxFee, sdkmath.Int{})
+			}
+			if maxFeeInt.LT(buyerFee.SdkIntTrim()) {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+					"%s: max fee: %s, required fee: %s",
+					orderIndex, maxFee, buyerFee,
+				)
+			}
+		}
+
 		// check address has the total cost
 		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
 		if buyerBalance.IsLT(totalCost) {
