@@ -25,7 +25,7 @@ const (
 	Msg_BuyDirect_FullMethodName          = "/regen.ecocredit.marketplace.v1.Msg/BuyDirect"
 	Msg_AddAllowedDenom_FullMethodName    = "/regen.ecocredit.marketplace.v1.Msg/AddAllowedDenom"
 	Msg_RemoveAllowedDenom_FullMethodName = "/regen.ecocredit.marketplace.v1.Msg/RemoveAllowedDenom"
-	Msg_SetFeeParams_FullMethodName       = "/regen.ecocredit.marketplace.v1.Msg/SetFeeParams"
+	Msg_GovSetFeeParams_FullMethodName    = "/regen.ecocredit.marketplace.v1.Msg/GovSetFeeParams"
 )
 
 // MsgClient is the client API for Msg service.
@@ -52,7 +52,7 @@ type MsgClient interface {
 	// SetFeeParams is a governance method that sets the marketplace fees.
 	//
 	// Since Revision 3
-	SetFeeParams(ctx context.Context, in *MsgSetFeeParams, opts ...grpc.CallOption) (*MsgSetFeeParamsResponse, error)
+	GovSetFeeParams(ctx context.Context, in *MsgGovSetFeeParams, opts ...grpc.CallOption) (*MsgGovSetFeeParamsResponse, error)
 }
 
 type msgClient struct {
@@ -117,9 +117,9 @@ func (c *msgClient) RemoveAllowedDenom(ctx context.Context, in *MsgRemoveAllowed
 	return out, nil
 }
 
-func (c *msgClient) SetFeeParams(ctx context.Context, in *MsgSetFeeParams, opts ...grpc.CallOption) (*MsgSetFeeParamsResponse, error) {
-	out := new(MsgSetFeeParamsResponse)
-	err := c.cc.Invoke(ctx, Msg_SetFeeParams_FullMethodName, in, out, opts...)
+func (c *msgClient) GovSetFeeParams(ctx context.Context, in *MsgGovSetFeeParams, opts ...grpc.CallOption) (*MsgGovSetFeeParamsResponse, error) {
+	out := new(MsgGovSetFeeParamsResponse)
+	err := c.cc.Invoke(ctx, Msg_GovSetFeeParams_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ type MsgServer interface {
 	// SetFeeParams is a governance method that sets the marketplace fees.
 	//
 	// Since Revision 3
-	SetFeeParams(context.Context, *MsgSetFeeParams) (*MsgSetFeeParamsResponse, error)
+	GovSetFeeParams(context.Context, *MsgGovSetFeeParams) (*MsgGovSetFeeParamsResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -176,8 +176,8 @@ func (UnimplementedMsgServer) AddAllowedDenom(context.Context, *MsgAddAllowedDen
 func (UnimplementedMsgServer) RemoveAllowedDenom(context.Context, *MsgRemoveAllowedDenom) (*MsgRemoveAllowedDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveAllowedDenom not implemented")
 }
-func (UnimplementedMsgServer) SetFeeParams(context.Context, *MsgSetFeeParams) (*MsgSetFeeParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetFeeParams not implemented")
+func (UnimplementedMsgServer) GovSetFeeParams(context.Context, *MsgGovSetFeeParams) (*MsgGovSetFeeParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GovSetFeeParams not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -300,20 +300,20 @@ func _Msg_RemoveAllowedDenom_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_SetFeeParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetFeeParams)
+func _Msg_GovSetFeeParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGovSetFeeParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).SetFeeParams(ctx, in)
+		return srv.(MsgServer).GovSetFeeParams(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_SetFeeParams_FullMethodName,
+		FullMethod: Msg_GovSetFeeParams_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SetFeeParams(ctx, req.(*MsgSetFeeParams))
+		return srv.(MsgServer).GovSetFeeParams(ctx, req.(*MsgGovSetFeeParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -350,8 +350,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_RemoveAllowedDenom_Handler,
 		},
 		{
-			MethodName: "SetFeeParams",
-			Handler:    _Msg_SetFeeParams_Handler,
+			MethodName: "GovSetFeeParams",
+			Handler:    _Msg_GovSetFeeParams_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

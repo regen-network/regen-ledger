@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
+import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
@@ -41,8 +42,8 @@ service Msg {
   // SetFeeParams is a governance method that sets the marketplace fees.
   //
   // Since Revision 3
-  rpc SetFeeParams(MsgSetFeeParams)
-      returns (MsgSetFeeParamsResponse);
+  rpc GovSetFeeParams(MsgGovSetFeeParams)
+      returns (MsgGovSetFeeParamsResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -186,10 +187,11 @@ message MsgBuyDirect {
     // If the marketplace fees end up being greater than this amount, the transaction will fail.
     // If this field is left empty, the marketplace fees will be calculated based on the bid price
     // and quantity and automatically deducted from the buyer's account.
-    // Fees are always paid in the same denomination as the bid price.
+    // Fees are always paid in the same denomination as the bid price and max fee amount should
+    // be an integer value of that denom.
     //
     // Since Revision 3
-    string max_fee_amount = 8;
+    string max_fee_amount = 8 [(cosmos_proto.scalar) = "cosmos.Int"];
   }
 }
 
@@ -241,7 +243,7 @@ message MsgRemoveAllowedDenom {
 message MsgRemoveAllowedDenomResponse {}
 
 // MsgSetFeeParams is the Msg/SetFeeParams request type.
-message MsgSetFeeParams {
+message MsgGovSetFeeParams {
   option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
@@ -252,4 +254,4 @@ message MsgSetFeeParams {
 }
 
 // MsgSetFeeParamsResponse is the Msg/SetFeeParams response type.
-message MsgSetFeeParamsResponse {}
+message MsgGovSetFeeParamsResponse {}

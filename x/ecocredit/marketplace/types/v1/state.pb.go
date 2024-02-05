@@ -330,12 +330,12 @@ func (m *Market) GetPrecisionModifier() uint32 {
 // process unless governance agrees to a different approach.
 type FeeParams struct {
 	// buyer_percentage_fee is the decimal percentage fee charged to the buyer.
-	// The string 3.0 means a 3.0% fee.
+	// The string 0.03 means a 3.0% fee.
 	// This fee will be added to the total price of a buy order and is denominated
 	// in the same denom as the buy order's bid denom.
 	BuyerPercentageFee string `protobuf:"bytes,1,opt,name=buyer_percentage_fee,json=buyerPercentageFee,proto3" json:"buyer_percentage_fee,omitempty"`
 	// seller_percentage_fee is the decimal percentage fee charged to the seller.
-	// The string 3.0 means a 3.0% fee.
+	// The string 0.03 means a 3.0% fee.
 	// This fee will be subtracted from the total proceeds of a sell order distributed to the seller
 	// and is denominated in the same denom as the sell order's ask denom.
 	SellerPercentageFee string `protobuf:"bytes,2,opt,name=seller_percentage_fee,json=sellerPercentageFee,proto3" json:"seller_percentage_fee,omitempty"`
