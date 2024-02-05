@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"testing"
 
-	sdkmath "cosmossdk.io/math"
 	"github.com/cockroachdb/apd/v3"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/golang/mock/gomock"
@@ -693,17 +692,4 @@ func (s *buyDirectSuite) buyOrderExpectCalls() {
 		Do(func(_ sdk.Context, mod string, amt sdk.Coins) {
 			s.moduleBalances[mod] = s.moduleBalances[mod].Sub(amt...)
 		}).AnyTimes()
-}
-
-func (s *buyDirectSuite) calculateAskTotal(quantity string, amount string) sdkmath.Int {
-	q, err := math.NewDecFromString(quantity)
-	require.NoError(s.t, err)
-
-	a, err := math.NewDecFromString(amount)
-	require.NoError(s.t, err)
-
-	t, err := a.Mul(q)
-	require.NoError(s.t, err)
-
-	return t.SdkIntTrim()
 }

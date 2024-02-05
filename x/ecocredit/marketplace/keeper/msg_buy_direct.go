@@ -104,6 +104,9 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 			return nil, err
 		}
 		total, buyerFee, err := getTotalCostAndBuyerFee(subtotal, feeParams)
+		if err != nil {
+			return nil, err
+		}
 		totalCost := sdk.Coin{Amount: total.SdkIntTrim(), Denom: market.BankDenom}
 
 		// check max fee

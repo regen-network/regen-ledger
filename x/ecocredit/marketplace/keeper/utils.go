@@ -205,9 +205,15 @@ func (k Keeper) fillOrder(ctx context.Context, params fillOrderParams) error {
 
 	// calculate seller fee = subtotal * seller percentage fee
 	sellerFee, err := getSellerFee(params.subTotalCost, params.feeParams)
+	if err != nil {
+		return err
+	}
 
 	// calculate total fee = buyer fee + seller fee
 	totalFee, err := params.buyerFee.Add(sellerFee)
+	if err != nil {
+		return err
+	}
 
 	// if total fee > 0, then transfer total fee from buyer account to fee pool
 	if totalFee.IsPositive() {
