@@ -413,3 +413,20 @@ Feature: Msg/BuyDirect
       * expect alice bank balance "180uregen"
       * expect bob bank balance "0uregen"
       * expect fee pool balance "0uregen"
+
+  Rule: max_fee_amount is enforced
+    Scenario Outline: max_fee_amount is enforced
+      Given a credit type
+      * alice created a sell order with quantity "10" and ask price "10foo"
+      * buyer fees are 0.2 and seller fees are 0.1
+      * bob has a max_fee_amount of <max_fee_amount>
+      When bob attempts to buy credits with quantity "10" and bid price "20uregen"
+      Then expect the error <error>
+
+      Examples:
+        | max_fee_amount | error |
+        | 10             | true  |
+        | 20             | false |
+        | 30             | false |
+
+
