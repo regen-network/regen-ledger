@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 )
 
@@ -9,6 +10,10 @@ var _ legacytx.LegacyMsg = &MsgGovSetFeeParams{}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgGovSetFeeParams) ValidateBasic() error {
+	if m.Fees == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("fees cannot be nil")
+	}
+
 	err := m.Fees.Validate()
 	if err != nil {
 		return err

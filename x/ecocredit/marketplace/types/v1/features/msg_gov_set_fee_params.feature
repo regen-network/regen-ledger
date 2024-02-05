@@ -1,41 +1,15 @@
-Feature: MsgSetMarketplaceFees
+Feature: MsgGovSetFeeParams
 
-  Scenario: a valid message
-    Given the message
-    """
-    {
-      "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "buyer_percentage_fee": "0.01",
-      "seller_percentage_fee": "0.01",
-    }
-    """
+  Scenario Outline: validate fee params
+    Given authority "<authority>"
+    And fee params `<fee_params>`
     When the message is validated
-    Then expect no error
+    Then expect error <error>
 
-  Scenario: an error is returned if authority is empty
-    Given the message
-    """
-    {}
-    """
-    When the message is validated
-    Then expect the error "invalid authority address: empty address string is not allowed"
+    Examples:
+      | authority                                    | fee_params                      | error |
+      |                                              | {}                              | true  |
+      | regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw | {}                              | false |
+      | regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw | {"buyer_percentage_fee":"-0.1"} | true  |
+      | regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw | {"buyer_percentage_fee":"0.1"}  | false |
 
-  Scenario: an error is returned if authority is not a valid bech32 address
-    Given the message
-    """
-    {
-      "authority": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "invalid authority address: decoding bech32 failed: invalid bech32 string length 3"
-
-  Scenario: an error is returned if fee params is empty
-    Given the message
-    """
-    {
-      "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw"
-    }
-    """
-    When the message is validated
-    Then expect the error "buyer_percentage_fee: non-empty value required"
