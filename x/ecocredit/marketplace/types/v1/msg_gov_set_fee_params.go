@@ -8,26 +8,26 @@ import (
 var _ legacytx.LegacyMsg = &MsgGovSetFeeParams{}
 
 func (m *MsgGovSetFeeParams) ValidateBasic() error {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (m *MsgGovSetFeeParams) GetSigners() []types.AccAddress {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (m *MsgGovSetFeeParams) GetSignBytes() []byte {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (m *MsgGovSetFeeParams) Route() string {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (m *MsgGovSetFeeParams) Type() string {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }

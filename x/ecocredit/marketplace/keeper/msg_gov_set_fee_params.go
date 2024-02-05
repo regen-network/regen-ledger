@@ -7,6 +7,6 @@ import (
 )
 
 func (k Keeper) GovSetFeeParams(context.Context, *types.MsgGovSetFeeParams) (*types.MsgGovSetFeeParamsResponse, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
