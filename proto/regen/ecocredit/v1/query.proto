@@ -259,6 +259,22 @@ service Query {
       returns (QueryAllowedBridgeChainsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-bridge-chains";
   }
+
+  // ProjectClass queries information about a project credit class relationship.
+  //
+  // Since Revision 3
+  rpc ProjectClass(QueryProjectClassRequest) returns (QueryProjectClassResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/project/{project_id}/class/{project_id}"
+    };
+  }
+
+  // ProjectClasses queries all credit classes associated with a project.
+  rpc ProjectClasses(QueryProjectClassesRequest) returns (QueryProjectClassesResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/project/{project_id}/class"
+    };
+  }
 }
 
 // QueryClassesRequest is the Query/Classes request type.
@@ -825,4 +841,48 @@ message QueryAllowedBridgeChainsResponse {
   // allowed_bridge_chains is a list of chains that are allowed to be used in
   // bridge operations.
   repeated string allowed_bridge_chains = 1;
+}
+
+// QueryProjectClassRequest is the Query/ProjectClass request type.
+//
+// Since Revision 3
+message QueryProjectClassRequest {
+
+  // project_id is the unique identifier of the project to query.
+  string project_id = 1;
+
+  // class_id is the unique identifier of the credit class to query.
+  string class_id = 2;
+}
+
+// QueryProjectClassResponse is the Query/ProjectClass response type.
+//
+// Since Revision 3
+message QueryProjectClassResponse {
+
+  // project_class is the fetched project class relationship.
+  ProjectClass project_class = 1;
+}
+
+// QueryProjectClassesRequest is the Query/ProjectClasses request type.
+//
+// Since Revision 3
+message QueryProjectClassesRequest {
+  // project_id is the unique identifier of the project to query.
+  string project_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectClassesResponse is the Query/ProjectClasses response type.
+//
+// Since Revision 3
+message QueryProjectClassesResponse {
+
+  // classes are the fetched credit classes.
+  repeated ClassInfo classes = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

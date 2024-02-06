@@ -98,9 +98,9 @@ message Project {
   // admin is the admin of the project.
   bytes admin = 3;
 
-  // class_key is the table row identifier of the credit class used internally
+  // Deprecated: class_key is the table row identifier of the credit class used internally
   // for efficient lookups. This links a project to a credit class.
-  uint64 class_key = 4;
+  uint64 class_key = 4 [deprecated = true];
 
   // jurisdiction is the jurisdiction of the project.
   // Full documentation can be found in MsgCreateProject.jurisdiction.
@@ -393,6 +393,7 @@ message ProjectClass {
   option (cosmos.orm.v1.table) = {
     id : 17
     primary_key : {fields : "project_key,class_key"}
+    index: {id: 1, fields: "class_key"}
   };
 
   // project_key is the table row identifier of the project used internally for
