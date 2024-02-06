@@ -806,6 +806,19 @@ func (this BatchIssuerIndexKey) WithIssuer(issuer []byte) BatchIssuerIndexKey {
 	return this
 }
 
+type BatchClassKeyIndexKey struct {
+	vs []interface{}
+}
+
+func (x BatchClassKeyIndexKey) id() uint32            { return 5 }
+func (x BatchClassKeyIndexKey) values() []interface{} { return x.vs }
+func (x BatchClassKeyIndexKey) batchIndexKey()        {}
+
+func (this BatchClassKeyIndexKey) WithClassKey(class_key uint64) BatchClassKeyIndexKey {
+	this.vs = []interface{}{class_key}
+	return this
+}
+
 type batchTable struct {
 	table ormtable.AutoIncrementTable
 }
@@ -2058,159 +2071,123 @@ func NewAllowedBridgeChainTable(db ormtable.Schema) (AllowedBridgeChainTable, er
 	return allowedBridgeChainTable{table}, nil
 }
 
-type ClassApplicationTable interface {
-	Insert(ctx context.Context, classApplication *ClassApplication) error
-	InsertReturningID(ctx context.Context, classApplication *ClassApplication) (uint64, error)
-	Update(ctx context.Context, classApplication *ClassApplication) error
-	Save(ctx context.Context, classApplication *ClassApplication) error
-	Delete(ctx context.Context, classApplication *ClassApplication) error
-	Has(ctx context.Context, id uint64) (found bool, err error)
+type ProjectClassTable interface {
+	Insert(ctx context.Context, projectClass *ProjectClass) error
+	Update(ctx context.Context, projectClass *ProjectClass) error
+	Save(ctx context.Context, projectClass *ProjectClass) error
+	Delete(ctx context.Context, projectClass *ProjectClass) error
+	Has(ctx context.Context, project_key uint64, class_key uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, id uint64) (*ClassApplication, error)
-	HasByProjectKey(ctx context.Context, project_key uint64) (found bool, err error)
-	// GetByProjectKey returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByProjectKey(ctx context.Context, project_key uint64) (*ClassApplication, error)
-	List(ctx context.Context, prefixKey ClassApplicationIndexKey, opts ...ormlist.Option) (ClassApplicationIterator, error)
-	ListRange(ctx context.Context, from, to ClassApplicationIndexKey, opts ...ormlist.Option) (ClassApplicationIterator, error)
-	DeleteBy(ctx context.Context, prefixKey ClassApplicationIndexKey) error
-	DeleteRange(ctx context.Context, from, to ClassApplicationIndexKey) error
+	Get(ctx context.Context, project_key uint64, class_key uint64) (*ProjectClass, error)
+	List(ctx context.Context, prefixKey ProjectClassIndexKey, opts ...ormlist.Option) (ProjectClassIterator, error)
+	ListRange(ctx context.Context, from, to ProjectClassIndexKey, opts ...ormlist.Option) (ProjectClassIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ProjectClassIndexKey) error
+	DeleteRange(ctx context.Context, from, to ProjectClassIndexKey) error
 
 	doNotImplement()
 }
 
-type ClassApplicationIterator struct {
+type ProjectClassIterator struct {
 	ormtable.Iterator
 }
 
-func (i ClassApplicationIterator) Value() (*ClassApplication, error) {
-	var classApplication ClassApplication
-	err := i.UnmarshalMessage(&classApplication)
-	return &classApplication, err
+func (i ProjectClassIterator) Value() (*ProjectClass, error) {
+	var projectClass ProjectClass
+	err := i.UnmarshalMessage(&projectClass)
+	return &projectClass, err
 }
 
-type ClassApplicationIndexKey interface {
+type ProjectClassIndexKey interface {
 	id() uint32
 	values() []interface{}
-	classApplicationIndexKey()
+	projectClassIndexKey()
 }
 
 // primary key starting index..
-type ClassApplicationPrimaryKey = ClassApplicationIdIndexKey
+type ProjectClassPrimaryKey = ProjectClassProjectKeyClassKeyIndexKey
 
-type ClassApplicationIdIndexKey struct {
+type ProjectClassProjectKeyClassKeyIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassApplicationIdIndexKey) id() uint32                { return 0 }
-func (x ClassApplicationIdIndexKey) values() []interface{}     { return x.vs }
-func (x ClassApplicationIdIndexKey) classApplicationIndexKey() {}
+func (x ProjectClassProjectKeyClassKeyIndexKey) id() uint32            { return 0 }
+func (x ProjectClassProjectKeyClassKeyIndexKey) values() []interface{} { return x.vs }
+func (x ProjectClassProjectKeyClassKeyIndexKey) projectClassIndexKey() {}
 
-func (this ClassApplicationIdIndexKey) WithId(id uint64) ClassApplicationIdIndexKey {
-	this.vs = []interface{}{id}
-	return this
-}
-
-type ClassApplicationProjectKeyIndexKey struct {
-	vs []interface{}
-}
-
-func (x ClassApplicationProjectKeyIndexKey) id() uint32                { return 1 }
-func (x ClassApplicationProjectKeyIndexKey) values() []interface{}     { return x.vs }
-func (x ClassApplicationProjectKeyIndexKey) classApplicationIndexKey() {}
-
-func (this ClassApplicationProjectKeyIndexKey) WithProjectKey(project_key uint64) ClassApplicationProjectKeyIndexKey {
+func (this ProjectClassProjectKeyClassKeyIndexKey) WithProjectKey(project_key uint64) ProjectClassProjectKeyClassKeyIndexKey {
 	this.vs = []interface{}{project_key}
 	return this
 }
 
-type classApplicationTable struct {
-	table ormtable.AutoIncrementTable
+func (this ProjectClassProjectKeyClassKeyIndexKey) WithProjectKeyClassKey(project_key uint64, class_key uint64) ProjectClassProjectKeyClassKeyIndexKey {
+	this.vs = []interface{}{project_key, class_key}
+	return this
 }
 
-func (this classApplicationTable) Insert(ctx context.Context, classApplication *ClassApplication) error {
-	return this.table.Insert(ctx, classApplication)
+type projectClassTable struct {
+	table ormtable.Table
 }
 
-func (this classApplicationTable) Update(ctx context.Context, classApplication *ClassApplication) error {
-	return this.table.Update(ctx, classApplication)
+func (this projectClassTable) Insert(ctx context.Context, projectClass *ProjectClass) error {
+	return this.table.Insert(ctx, projectClass)
 }
 
-func (this classApplicationTable) Save(ctx context.Context, classApplication *ClassApplication) error {
-	return this.table.Save(ctx, classApplication)
+func (this projectClassTable) Update(ctx context.Context, projectClass *ProjectClass) error {
+	return this.table.Update(ctx, projectClass)
 }
 
-func (this classApplicationTable) Delete(ctx context.Context, classApplication *ClassApplication) error {
-	return this.table.Delete(ctx, classApplication)
+func (this projectClassTable) Save(ctx context.Context, projectClass *ProjectClass) error {
+	return this.table.Save(ctx, projectClass)
 }
 
-func (this classApplicationTable) InsertReturningID(ctx context.Context, classApplication *ClassApplication) (uint64, error) {
-	return this.table.InsertReturningID(ctx, classApplication)
+func (this projectClassTable) Delete(ctx context.Context, projectClass *ProjectClass) error {
+	return this.table.Delete(ctx, projectClass)
 }
 
-func (this classApplicationTable) Has(ctx context.Context, id uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, id)
+func (this projectClassTable) Has(ctx context.Context, project_key uint64, class_key uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, project_key, class_key)
 }
 
-func (this classApplicationTable) Get(ctx context.Context, id uint64) (*ClassApplication, error) {
-	var classApplication ClassApplication
-	found, err := this.table.PrimaryKey().Get(ctx, &classApplication, id)
+func (this projectClassTable) Get(ctx context.Context, project_key uint64, class_key uint64) (*ProjectClass, error) {
+	var projectClass ProjectClass
+	found, err := this.table.PrimaryKey().Get(ctx, &projectClass, project_key, class_key)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &classApplication, nil
+	return &projectClass, nil
 }
 
-func (this classApplicationTable) HasByProjectKey(ctx context.Context, project_key uint64) (found bool, err error) {
-	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
-		project_key,
-	)
-}
-
-func (this classApplicationTable) GetByProjectKey(ctx context.Context, project_key uint64) (*ClassApplication, error) {
-	var classApplication ClassApplication
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &classApplication,
-		project_key,
-	)
-	if err != nil {
-		return nil, err
-	}
-	if !found {
-		return nil, ormerrors.NotFound
-	}
-	return &classApplication, nil
-}
-
-func (this classApplicationTable) List(ctx context.Context, prefixKey ClassApplicationIndexKey, opts ...ormlist.Option) (ClassApplicationIterator, error) {
+func (this projectClassTable) List(ctx context.Context, prefixKey ProjectClassIndexKey, opts ...ormlist.Option) (ProjectClassIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return ClassApplicationIterator{it}, err
+	return ProjectClassIterator{it}, err
 }
 
-func (this classApplicationTable) ListRange(ctx context.Context, from, to ClassApplicationIndexKey, opts ...ormlist.Option) (ClassApplicationIterator, error) {
+func (this projectClassTable) ListRange(ctx context.Context, from, to ProjectClassIndexKey, opts ...ormlist.Option) (ProjectClassIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return ClassApplicationIterator{it}, err
+	return ProjectClassIterator{it}, err
 }
 
-func (this classApplicationTable) DeleteBy(ctx context.Context, prefixKey ClassApplicationIndexKey) error {
+func (this projectClassTable) DeleteBy(ctx context.Context, prefixKey ProjectClassIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this classApplicationTable) DeleteRange(ctx context.Context, from, to ClassApplicationIndexKey) error {
+func (this projectClassTable) DeleteRange(ctx context.Context, from, to ProjectClassIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this classApplicationTable) doNotImplement() {}
+func (this projectClassTable) doNotImplement() {}
 
-var _ ClassApplicationTable = classApplicationTable{}
+var _ ProjectClassTable = projectClassTable{}
 
-func NewClassApplicationTable(db ormtable.Schema) (ClassApplicationTable, error) {
-	table := db.GetTable(&ClassApplication{})
+func NewProjectClassTable(db ormtable.Schema) (ProjectClassTable, error) {
+	table := db.GetTable(&ProjectClass{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ClassApplication{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectClass{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return classApplicationTable{table.(ormtable.AutoIncrementTable)}, nil
+	return projectClassTable{table}, nil
 }
 
 type StateStore interface {
@@ -2230,7 +2207,7 @@ type StateStore interface {
 	AllowedClassCreatorTable() AllowedClassCreatorTable
 	ClassFeeTable() ClassFeeTable
 	AllowedBridgeChainTable() AllowedBridgeChainTable
-	ClassApplicationTable() ClassApplicationTable
+	ProjectClassTable() ProjectClassTable
 
 	doNotImplement()
 }
@@ -2252,7 +2229,7 @@ type stateStore struct {
 	allowedClassCreator   AllowedClassCreatorTable
 	classFee              ClassFeeTable
 	allowedBridgeChain    AllowedBridgeChainTable
-	classApplication      ClassApplicationTable
+	projectClass          ProjectClassTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -2319,8 +2296,8 @@ func (x stateStore) AllowedBridgeChainTable() AllowedBridgeChainTable {
 	return x.allowedBridgeChain
 }
 
-func (x stateStore) ClassApplicationTable() ClassApplicationTable {
-	return x.classApplication
+func (x stateStore) ProjectClassTable() ProjectClassTable {
+	return x.projectClass
 }
 
 func (stateStore) doNotImplement() {}
@@ -2408,7 +2385,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	classApplicationTable, err := NewClassApplicationTable(db)
+	projectClassTable, err := NewProjectClassTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -2430,6 +2407,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		allowedClassCreatorTable,
 		classFeeTable,
 		allowedBridgeChainTable,
-		classApplicationTable,
+		projectClassTable,
 	}, nil
 }

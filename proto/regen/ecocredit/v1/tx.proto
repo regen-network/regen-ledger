@@ -61,7 +61,10 @@ service Msg {
   // rejecting it. Any issuer in the credit class may update the project credit
   // class status using this method. If more sophisticated rules are required to coordinate
   // between different issuers, the credit class admin should set up an on or off-chain
-  // governance process to coordinate this.
+  // governance process to coordinate this. Issuers may not admit projects into
+  // credit classes using this method without the project first creating an
+  // application. For an issuer to admit a project into a credit class without an
+  // application the CreateProject method should be used instead.
   //
   // Since Revision 3
   rpc EvaluateProjectClass(MsgEvaluateProjectClass)
@@ -314,11 +317,11 @@ message MsgCreateProjectResponse {
 
 // MsgCreateUnregisteredProject is the Msg/CreateUnregisteredProject request type.
 message MsgCreateUnregisteredProject {
-  option (cosmos.msg.v1.signer) = "creator";
+  option (cosmos.msg.v1.signer) = "admin";
 
-  // creator is the address of the account creating the project that will become
+  // admin is the address of the account creating the project that will become
   // the admin of the project upon creation.
-  string creator = 1;
+  string admin = 1;
 
   // metadata is any arbitrary string with a maximum length of 256 characters
   // that includes or references metadata to attach to the project.

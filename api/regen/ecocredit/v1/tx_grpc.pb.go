@@ -22,10 +22,9 @@ const (
 	Msg_CreateClass_FullMethodName               = "/regen.ecocredit.v1.Msg/CreateClass"
 	Msg_CreateProject_FullMethodName             = "/regen.ecocredit.v1.Msg/CreateProject"
 	Msg_CreateUnregisteredProject_FullMethodName = "/regen.ecocredit.v1.Msg/CreateUnregisteredProject"
-	Msg_SubmitClassApplication_FullMethodName    = "/regen.ecocredit.v1.Msg/SubmitClassApplication"
-	Msg_UpdateClassApplication_FullMethodName    = "/regen.ecocredit.v1.Msg/UpdateClassApplication"
-	Msg_WithdrawClassApplication_FullMethodName  = "/regen.ecocredit.v1.Msg/WithdrawClassApplication"
-	Msg_EvaluateClassApplication_FullMethodName  = "/regen.ecocredit.v1.Msg/EvaluateClassApplication"
+	Msg_UpdateProjectClass_FullMethodName        = "/regen.ecocredit.v1.Msg/UpdateProjectClass"
+	Msg_WithdrawProjectClass_FullMethodName      = "/regen.ecocredit.v1.Msg/WithdrawProjectClass"
+	Msg_EvaluateProjectClass_FullMethodName      = "/regen.ecocredit.v1.Msg/EvaluateProjectClass"
 	Msg_CreateBatch_FullMethodName               = "/regen.ecocredit.v1.Msg/CreateBatch"
 	Msg_MintBatchCredits_FullMethodName          = "/regen.ecocredit.v1.Msg/MintBatchCredits"
 	Msg_SealBatch_FullMethodName                 = "/regen.ecocredit.v1.Msg/SealBatch"
@@ -71,28 +70,35 @@ type MsgClient interface {
 	// who are not yet ready to register their project under a credit class, but who
 	// want to create a project and receive a project ID.
 	CreateUnregisteredProject(ctx context.Context, in *MsgCreateUnregisteredProject, opts ...grpc.CallOption) (*MsgCreateUnregisteredProjectResponse, error)
-	// SubmitClassApplication submits an application for a project to be added to
-	// a credit class. The project admin must submit an application to a specific
-	// issuer of a specific credit class for it to be considered. Currently,
-	// a project can only apply to one credit class at a time via a single
-	// issuer.
+	// UpdateProjectClass creates a new project credit class application, updates
+	// an existing one or updates an existing relationship when changes are requested.
+	// A project may have a relationship with at most one credit class per credit type
+	// but can have relationships with multiple credit classes across different credit
+	// types. This can be useful, for example for issuing pre-financing forward contracts
+	// while making progress towards issuing credits in an outcome based program.
+	// Projects that are already accepted into a credit class can only update
+	// their metadata when an issuer has changed the status of the relations
+	// to "changes requested".
 	//
 	// Since Revision 3
-	SubmitClassApplication(ctx context.Context, in *MsgSubmitClassApplication, opts ...grpc.CallOption) (*MsgSubmitClassApplicationResponse, error)
-	// UpdateClassApplication updates the metadata of a submitted application.
+	UpdateProjectClass(ctx context.Context, in *MsgUpdateProjectClass, opts ...grpc.CallOption) (*MsgUpdateProjectClassResponse, error)
+	// WithdrawProjectClass withdraws a project from a credit class application
+	// or relationship unilaterally on the part of a project admin.
 	//
 	// Since Revision 3
-	UpdateClassApplication(ctx context.Context, in *MsgUpdateClassApplication, opts ...grpc.CallOption) (*MsgUpdateClassApplicationResponse, error)
-	// WithdrawClassApplication withdraws a submitted application.
+	WithdrawProjectClass(ctx context.Context, in *MsgWithdrawProjectClass, opts ...grpc.CallOption) (*MsgWithdrawProjectClassResponse, error)
+	// EvaluateProjectClass allows a credit class issuer to evaluate a project
+	// application or existing relationship, either approving, requesting changes to, or
+	// rejecting it. Any issuer in the credit class may update the project credit
+	// class status using this method. If more sophisticated rules are required to coordinate
+	// between different issuers, the credit class admin should set up an on or off-chain
+	// governance process to coordinate this. Issuers may not admit projects into
+	// credit classes using this method without the project first creating an
+	// application. For an issuer to admit a project into a credit class without an
+	// application the CreateProject method should be used instead.
 	//
 	// Since Revision 3
-	WithdrawClassApplication(ctx context.Context, in *MsgWithdrawClassApplication, opts ...grpc.CallOption) (*MsgWithdrawClassApplicationResponse, error)
-	// EvaluateClassApplication evaluates a submitted application. Only the issuer
-	// of the credit class can evaluate an application. The issuer can either
-	// approve, request changes to, or reject the application.
-	//
-	// Since Revision 3
-	EvaluateClassApplication(ctx context.Context, in *MsgEvaluateClassApplication, opts ...grpc.CallOption) (*MsgEvaluateClassApplicationResponse, error)
+	EvaluateProjectClass(ctx context.Context, in *MsgEvaluateProjectClass, opts ...grpc.CallOption) (*MsgEvaluateProjectClassResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
 	// be issued with each issuance specifying a recipient, the amount of tradable
@@ -246,36 +252,27 @@ func (c *msgClient) CreateUnregisteredProject(ctx context.Context, in *MsgCreate
 	return out, nil
 }
 
-func (c *msgClient) SubmitClassApplication(ctx context.Context, in *MsgSubmitClassApplication, opts ...grpc.CallOption) (*MsgSubmitClassApplicationResponse, error) {
-	out := new(MsgSubmitClassApplicationResponse)
-	err := c.cc.Invoke(ctx, Msg_SubmitClassApplication_FullMethodName, in, out, opts...)
+func (c *msgClient) UpdateProjectClass(ctx context.Context, in *MsgUpdateProjectClass, opts ...grpc.CallOption) (*MsgUpdateProjectClassResponse, error) {
+	out := new(MsgUpdateProjectClassResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateProjectClass_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateClassApplication(ctx context.Context, in *MsgUpdateClassApplication, opts ...grpc.CallOption) (*MsgUpdateClassApplicationResponse, error) {
-	out := new(MsgUpdateClassApplicationResponse)
-	err := c.cc.Invoke(ctx, Msg_UpdateClassApplication_FullMethodName, in, out, opts...)
+func (c *msgClient) WithdrawProjectClass(ctx context.Context, in *MsgWithdrawProjectClass, opts ...grpc.CallOption) (*MsgWithdrawProjectClassResponse, error) {
+	out := new(MsgWithdrawProjectClassResponse)
+	err := c.cc.Invoke(ctx, Msg_WithdrawProjectClass_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) WithdrawClassApplication(ctx context.Context, in *MsgWithdrawClassApplication, opts ...grpc.CallOption) (*MsgWithdrawClassApplicationResponse, error) {
-	out := new(MsgWithdrawClassApplicationResponse)
-	err := c.cc.Invoke(ctx, Msg_WithdrawClassApplication_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) EvaluateClassApplication(ctx context.Context, in *MsgEvaluateClassApplication, opts ...grpc.CallOption) (*MsgEvaluateClassApplicationResponse, error) {
-	out := new(MsgEvaluateClassApplicationResponse)
-	err := c.cc.Invoke(ctx, Msg_EvaluateClassApplication_FullMethodName, in, out, opts...)
+func (c *msgClient) EvaluateProjectClass(ctx context.Context, in *MsgEvaluateProjectClass, opts ...grpc.CallOption) (*MsgEvaluateProjectClassResponse, error) {
+	out := new(MsgEvaluateProjectClassResponse)
+	err := c.cc.Invoke(ctx, Msg_EvaluateProjectClass_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -501,28 +498,35 @@ type MsgServer interface {
 	// who are not yet ready to register their project under a credit class, but who
 	// want to create a project and receive a project ID.
 	CreateUnregisteredProject(context.Context, *MsgCreateUnregisteredProject) (*MsgCreateUnregisteredProjectResponse, error)
-	// SubmitClassApplication submits an application for a project to be added to
-	// a credit class. The project admin must submit an application to a specific
-	// issuer of a specific credit class for it to be considered. Currently,
-	// a project can only apply to one credit class at a time via a single
-	// issuer.
+	// UpdateProjectClass creates a new project credit class application, updates
+	// an existing one or updates an existing relationship when changes are requested.
+	// A project may have a relationship with at most one credit class per credit type
+	// but can have relationships with multiple credit classes across different credit
+	// types. This can be useful, for example for issuing pre-financing forward contracts
+	// while making progress towards issuing credits in an outcome based program.
+	// Projects that are already accepted into a credit class can only update
+	// their metadata when an issuer has changed the status of the relations
+	// to "changes requested".
 	//
 	// Since Revision 3
-	SubmitClassApplication(context.Context, *MsgSubmitClassApplication) (*MsgSubmitClassApplicationResponse, error)
-	// UpdateClassApplication updates the metadata of a submitted application.
+	UpdateProjectClass(context.Context, *MsgUpdateProjectClass) (*MsgUpdateProjectClassResponse, error)
+	// WithdrawProjectClass withdraws a project from a credit class application
+	// or relationship unilaterally on the part of a project admin.
 	//
 	// Since Revision 3
-	UpdateClassApplication(context.Context, *MsgUpdateClassApplication) (*MsgUpdateClassApplicationResponse, error)
-	// WithdrawClassApplication withdraws a submitted application.
+	WithdrawProjectClass(context.Context, *MsgWithdrawProjectClass) (*MsgWithdrawProjectClassResponse, error)
+	// EvaluateProjectClass allows a credit class issuer to evaluate a project
+	// application or existing relationship, either approving, requesting changes to, or
+	// rejecting it. Any issuer in the credit class may update the project credit
+	// class status using this method. If more sophisticated rules are required to coordinate
+	// between different issuers, the credit class admin should set up an on or off-chain
+	// governance process to coordinate this. Issuers may not admit projects into
+	// credit classes using this method without the project first creating an
+	// application. For an issuer to admit a project into a credit class without an
+	// application the CreateProject method should be used instead.
 	//
 	// Since Revision 3
-	WithdrawClassApplication(context.Context, *MsgWithdrawClassApplication) (*MsgWithdrawClassApplicationResponse, error)
-	// EvaluateClassApplication evaluates a submitted application. Only the issuer
-	// of the credit class can evaluate an application. The issuer can either
-	// approve, request changes to, or reject the application.
-	//
-	// Since Revision 3
-	EvaluateClassApplication(context.Context, *MsgEvaluateClassApplication) (*MsgEvaluateClassApplicationResponse, error)
+	EvaluateProjectClass(context.Context, *MsgEvaluateProjectClass) (*MsgEvaluateProjectClassResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
 	// be issued with each issuance specifying a recipient, the amount of tradable
@@ -655,17 +659,14 @@ func (UnimplementedMsgServer) CreateProject(context.Context, *MsgCreateProject) 
 func (UnimplementedMsgServer) CreateUnregisteredProject(context.Context, *MsgCreateUnregisteredProject) (*MsgCreateUnregisteredProjectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUnregisteredProject not implemented")
 }
-func (UnimplementedMsgServer) SubmitClassApplication(context.Context, *MsgSubmitClassApplication) (*MsgSubmitClassApplicationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitClassApplication not implemented")
+func (UnimplementedMsgServer) UpdateProjectClass(context.Context, *MsgUpdateProjectClass) (*MsgUpdateProjectClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectClass not implemented")
 }
-func (UnimplementedMsgServer) UpdateClassApplication(context.Context, *MsgUpdateClassApplication) (*MsgUpdateClassApplicationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassApplication not implemented")
+func (UnimplementedMsgServer) WithdrawProjectClass(context.Context, *MsgWithdrawProjectClass) (*MsgWithdrawProjectClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WithdrawProjectClass not implemented")
 }
-func (UnimplementedMsgServer) WithdrawClassApplication(context.Context, *MsgWithdrawClassApplication) (*MsgWithdrawClassApplicationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method WithdrawClassApplication not implemented")
-}
-func (UnimplementedMsgServer) EvaluateClassApplication(context.Context, *MsgEvaluateClassApplication) (*MsgEvaluateClassApplicationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EvaluateClassApplication not implemented")
+func (UnimplementedMsgServer) EvaluateProjectClass(context.Context, *MsgEvaluateProjectClass) (*MsgEvaluateProjectClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EvaluateProjectClass not implemented")
 }
 func (UnimplementedMsgServer) CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
@@ -800,74 +801,56 @@ func _Msg_CreateUnregisteredProject_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_SubmitClassApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubmitClassApplication)
+func _Msg_UpdateProjectClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateProjectClass)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).SubmitClassApplication(ctx, in)
+		return srv.(MsgServer).UpdateProjectClass(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_SubmitClassApplication_FullMethodName,
+		FullMethod: Msg_UpdateProjectClass_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubmitClassApplication(ctx, req.(*MsgSubmitClassApplication))
+		return srv.(MsgServer).UpdateProjectClass(ctx, req.(*MsgUpdateProjectClass))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateClassApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateClassApplication)
+func _Msg_WithdrawProjectClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgWithdrawProjectClass)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateClassApplication(ctx, in)
+		return srv.(MsgServer).WithdrawProjectClass(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_UpdateClassApplication_FullMethodName,
+		FullMethod: Msg_WithdrawProjectClass_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateClassApplication(ctx, req.(*MsgUpdateClassApplication))
+		return srv.(MsgServer).WithdrawProjectClass(ctx, req.(*MsgWithdrawProjectClass))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_WithdrawClassApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgWithdrawClassApplication)
+func _Msg_EvaluateProjectClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgEvaluateProjectClass)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).WithdrawClassApplication(ctx, in)
+		return srv.(MsgServer).EvaluateProjectClass(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_WithdrawClassApplication_FullMethodName,
+		FullMethod: Msg_EvaluateProjectClass_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).WithdrawClassApplication(ctx, req.(*MsgWithdrawClassApplication))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_EvaluateClassApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgEvaluateClassApplication)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).EvaluateClassApplication(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_EvaluateClassApplication_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).EvaluateClassApplication(ctx, req.(*MsgEvaluateClassApplication))
+		return srv.(MsgServer).EvaluateProjectClass(ctx, req.(*MsgEvaluateProjectClass))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1288,20 +1271,16 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_CreateUnregisteredProject_Handler,
 		},
 		{
-			MethodName: "SubmitClassApplication",
-			Handler:    _Msg_SubmitClassApplication_Handler,
+			MethodName: "UpdateProjectClass",
+			Handler:    _Msg_UpdateProjectClass_Handler,
 		},
 		{
-			MethodName: "UpdateClassApplication",
-			Handler:    _Msg_UpdateClassApplication_Handler,
+			MethodName: "WithdrawProjectClass",
+			Handler:    _Msg_WithdrawProjectClass_Handler,
 		},
 		{
-			MethodName: "WithdrawClassApplication",
-			Handler:    _Msg_WithdrawClassApplication_Handler,
-		},
-		{
-			MethodName: "EvaluateClassApplication",
-			Handler:    _Msg_EvaluateClassApplication_Handler,
+			MethodName: "EvaluateProjectClass",
+			Handler:    _Msg_EvaluateProjectClass_Handler,
 		},
 		{
 			MethodName: "CreateBatch",
