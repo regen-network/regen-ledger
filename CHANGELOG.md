@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### x/data
+
+#### Changed
+- [#2102](https://github.com/regen-network/regen-ledger/pull/2102) Deprecate `regen.data.v1` and migrate to the `regen.data.v2` protobuf API which enables off-chain coordination of supported algorithms and file types.
+
+### x/ecocredit
+
+#### Added
+- [#2107](https://github.com/regen-network/regen-ledger/pull/2107) Add `BurnRegen` method.
+
 ## [v5.1.2](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.2) - 2023-06-28
 
 ### General

@@ -480,10 +480,41 @@ func NewMarketTable(db ormtable.Schema) (MarketTable, error) {
 	return marketTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
+// singleton store
+type FeeParamsTable interface {
+	Get(ctx context.Context) (*FeeParams, error)
+	Save(ctx context.Context, feeParams *FeeParams) error
+}
+
+type feeParamsTable struct {
+	table ormtable.Table
+}
+
+var _ FeeParamsTable = feeParamsTable{}
+
+func (x feeParamsTable) Get(ctx context.Context) (*FeeParams, error) {
+	feeParams := &FeeParams{}
+	_, err := x.table.Get(ctx, feeParams)
+	return feeParams, err
+}
+
+func (x feeParamsTable) Save(ctx context.Context, feeParams *FeeParams) error {
+	return x.table.Save(ctx, feeParams)
+}
+
+func NewFeeParamsTable(db ormtable.Schema) (FeeParamsTable, error) {
+	table := db.GetTable(&FeeParams{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&FeeParams{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return &feeParamsTable{table}, nil
+}
+
 type StateStore interface {
 	SellOrderTable() SellOrderTable
 	AllowedDenomTable() AllowedDenomTable
 	MarketTable() MarketTable
+	FeeParamsTable() FeeParamsTable
 
 	doNotImplement()
 }
@@ -492,6 +523,7 @@ type stateStore struct {
 	sellOrder    SellOrderTable
 	allowedDenom AllowedDenomTable
 	market       MarketTable
+	feeParams    FeeParamsTable
 }
 
 func (x stateStore) SellOrderTable() SellOrderTable {
@@ -504,6 +536,10 @@ func (x stateStore) AllowedDenomTable() AllowedDenomTable {
 
 func (x stateStore) MarketTable() MarketTable {
 	return x.market
+}
+
+func (x stateStore) FeeParamsTable() FeeParamsTable {
+	return x.feeParams
 }
 
 func (stateStore) doNotImplement() {}
@@ -526,9 +562,15 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	feeParamsTable, err := NewFeeParamsTable(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return stateStore{
 		sellOrderTable,
 		allowedDenomTable,
 		marketTable,
+		feeParamsTable,
 	}, nil
 }
