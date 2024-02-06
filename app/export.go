@@ -18,7 +18,9 @@ import (
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
 func (app *RegenApp) ExportAppStateAndValidators(
-	forZeroHeight bool, jailAllowedAddrs []string,
+	forZeroHeight bool,
+	jailAllowedAddrs []string,
+	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 
 	// as if they could withdraw from the start of the next block
@@ -32,27 +34,19 @@ func (app *RegenApp) ExportAppStateAndValidators(
 		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := map[string]json.RawMessage{}
-	for name, v := range app.ModuleManager.ExportGenesis(ctx, app.appCodec) {
-		genState[name] = v
-	}
-
+	genState := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
 
 	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
-	if err != nil {
-		return servertypes.ExportedApp{}, err
-	}
-
 	return servertypes.ExportedApp{
 		AppState:        appState,
 		Validators:      validators,
 		Height:          height,
 		ConsensusParams: app.BaseApp.GetConsensusParams(ctx),
-	}, nil
+	}, err
 }
 
 // prepare for fresh start at zero height
@@ -83,20 +77,21 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 
 	// withdraw all validator commission
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		_, _ = app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+		_, err := app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+		if err != nil {
+			log.Fatalf("failed to withdraw validator commission: %s", err)
+		}
 		return false
 	})
 
 	// withdraw all delegator rewards
 	dels := app.StakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range dels {
-		valAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
+		_, err := app.DistrKeeper.WithdrawDelegationRewards(ctx,
+			delegation.GetDelegatorAddr(), delegation.GetValidatorAddr())
 		if err != nil {
-			panic(err)
+			panic(fmt.Sprintf("failed to withdraw delegation rewards: %s", err))
 		}
-
-		delAddr := sdk.MustAccAddressFromBech32(delegation.DelegatorAddress)
-		_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	}
 
 	// clear validator slash events
@@ -116,27 +111,20 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		feePool := app.DistrKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
 		app.DistrKeeper.SetFeePool(ctx, feePool)
-
 		if err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator()); err != nil {
 			panic(err)
 		}
-
 		return false
 	})
 
 	// reinitialize all delegations
 	for _, del := range dels {
-		valAddr, err := sdk.ValAddressFromBech32(del.ValidatorAddress)
-		if err != nil {
-			panic(err)
-		}
-		delAddr := sdk.MustAccAddressFromBech32(del.DelegatorAddress)
-
+		delAddr := del.GetDelegatorAddr()
+		valAddr := del.GetValidatorAddr()
 		if err := app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr); err != nil {
 			// never called as BeforeDelegationCreated always returns nil
 			panic(fmt.Errorf("error while incrementing period: %w", err))
 		}
-
 		if err := app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr); err != nil {
 			// never called as AfterDelegationModified always returns nil
 			panic(fmt.Errorf("error while creating a new delegation period record: %w", err))
@@ -176,7 +164,7 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		addr := sdk.ValAddress(stakingtypes.AddressFromValidatorsKey(iter.Key()))
 		validator, found := app.StakingKeeper.GetValidator(ctx, addr)
 		if !found {
-			panic("expected validator, not found")
+			panic(fmt.Sprintf("expected validator (%s) not found", addr))
 		}
 
 		validator.UnbondingHeight = 0
@@ -188,11 +176,14 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		counter++
 	}
 
-	iter.Close()
+	if err := iter.Close(); err != nil {
+		app.Logger().Error("error while closing the key-value store reverse prefix iterator: ", err)
+		return
+	}
 
 	_, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	/* Handle slashing state. */
