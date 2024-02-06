@@ -412,10 +412,10 @@ message ProjectClass {
   // application to the credit class.
   string project_metadata = 5;
 
-  // credit_class_metadata is any arbitrary metadata set by a credit
+  // class_metadata is any arbitrary metadata set by a credit
   // class issuer. This should primarily be used to store metadata regarding the
   // project's application to the credit class.
-  string credit_class_metadata = 6;
+  string class_metadata = 6;
 }
 
 // Application represents the evaluation status that a credit class issuer

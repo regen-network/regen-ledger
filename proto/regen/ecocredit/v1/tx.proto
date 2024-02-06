@@ -363,7 +363,7 @@ message MsgUpdateProjectClass {
   // applying to.
   string class_id = 3;
 
-  // metadata is any arbitrary string with a maximum length of 256 characters
+  // metadata is any optional arbitrary string with a maximum length of 256 characters
   // that includes or references any metadata relevant to the application.
   // This could be used as a digital reference to the actual contents of the application.
   string metadata = 4;
@@ -382,6 +382,11 @@ message MsgWithdrawProjectClass {
 
   // application_id is the identifier of the application to withdraw.
   uint64 application_id = 2;
+
+  // metadata is any optional arbitrary string with a maximum length of 256 characters
+  // that includes or references any metadata relevant to the withdrawal. This
+  // will only be included in events.
+  string metadata = 3;
 }
 
 // MsgWithdrawProjectClassResponse is the Msg/WithdrawProjectClass response type.
@@ -401,7 +406,7 @@ message MsgEvaluateProjectClass {
   // evaluation is the evaluation of the application.
   ProjectClassStatus evaluation = 3;
 
-  // metadata is any arbitrary string with a maximum length of 256 characters
+  // metadata is any optiopnal arbitrary string with a maximum length of 256 characters
   // that includes or references the reason for the approving, requesting changes
   // to, or rejecting the application.
   string metadata = 4;

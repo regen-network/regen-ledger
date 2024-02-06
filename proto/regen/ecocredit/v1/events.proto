@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "regen/ecocredit/v1/types.proto";
+import "regen/ecocredit/v1/state.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1";
 
@@ -258,4 +259,53 @@ message EventBurnRegen {
 
   // reason is the reason for the burn.
   string reason = 3;
+}
+
+// EventUpdateProjectClass is emitted when a project admin submits or updates
+// a project class relationship's metadata, usually relating to credit class
+// application.
+message EventUpdateProjectClass {
+  // project_id is the unique identifier of the project that was updated.
+  string project_id = 1;
+
+  // class_id is the unique identifier of the class that was updated.
+  string class_id = 2;
+
+  // new_project_metadata is the new project metadata.
+  string new_project_metadata = 3;
+}
+
+// EventWithdrawProjectClass is emitted when a project admin withdraws a project
+// from a credit class.
+message EventWithdrawProjectClass {
+  // project_id is the unique identifier of the project which withdrew from the
+  // class.
+  string project_id = 1;
+
+  // class_id is the unique identifier of the class that was withdrawn from.
+  string class_id = 2;
+}
+
+// EventEvaluateProjectClass is emitted when a project class relationship is
+// evaluated by a credit class issuer.
+message EventEvaluateProjectClass {
+  // issuer is the address of the credit class issuer which evaluated the
+  // project.
+  string issuer = 1;
+
+  // project_id is the unique identifier of the project that was evaluated.
+  string project_id = 2;
+
+  // class_id is the unique identifier of the class in which the project was
+  // evaluated.
+  string class_id = 3;
+
+  // old_status is the old status of the project class relationship.
+  ProjectClassStatus old_status = 4;
+
+  // new_status is the new status of the project class relationship.
+  ProjectClassStatus new_status = 5;
+
+  // new_class_metadata is any new class metadata.
+  string new_class_metadata = 6;
 }
