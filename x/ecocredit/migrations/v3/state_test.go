@@ -3,8 +3,8 @@ package v3_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	dbm "github.com/cometbft/cometbft-db"
+	"github.com/stretchr/testify/require"
 
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -12,10 +12,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -135,7 +135,7 @@ func TestBatchBalanceMigration(t *testing.T) {
 func setup(t *testing.T) (paramtypes.Subspace, sdk.Context) {
 	ecocreditKey := sdk.NewKVStoreKey("ecocredit")
 	tecocreditKey := sdk.NewTransientStoreKey("transient_test")
-	encCfg := simapp.MakeTestEncodingConfig()
+	encCfg := moduletestutil.MakeTestEncodingConfig()
 	paramStore := paramtypes.NewSubspace(encCfg.Codec, encCfg.Amino, ecocreditKey, tecocreditKey, ecocredit.ModuleName)
 
 	db := dbm.NewMemDB()
