@@ -45,6 +45,8 @@ const (
 	Query_AllowedClassCreators_FullMethodName  = "/regen.ecocredit.v1.Query/AllowedClassCreators"
 	Query_ClassFee_FullMethodName              = "/regen.ecocredit.v1.Query/ClassFee"
 	Query_AllowedBridgeChains_FullMethodName   = "/regen.ecocredit.v1.Query/AllowedBridgeChains"
+	Query_ProjectClass_FullMethodName          = "/regen.ecocredit.v1.Query/ProjectClass"
+	Query_ProjectClasses_FullMethodName        = "/regen.ecocredit.v1.Query/ProjectClasses"
 )
 
 // QueryClient is the client API for Query service.
@@ -128,6 +130,12 @@ type QueryClient interface {
 	//
 	// Since Revision 2
 	AllowedBridgeChains(ctx context.Context, in *QueryAllowedBridgeChainsRequest, opts ...grpc.CallOption) (*QueryAllowedBridgeChainsResponse, error)
+	// ProjectClass queries information about a project credit class relationship.
+	//
+	// Since Revision 3
+	ProjectClass(ctx context.Context, in *QueryProjectClassRequest, opts ...grpc.CallOption) (*QueryProjectClassResponse, error)
+	// ProjectClasses queries all credit classes associated with a project.
+	ProjectClasses(ctx context.Context, in *QueryProjectClassesRequest, opts ...grpc.CallOption) (*QueryProjectClassesResponse, error)
 }
 
 type queryClient struct {
@@ -373,6 +381,24 @@ func (c *queryClient) AllowedBridgeChains(ctx context.Context, in *QueryAllowedB
 	return out, nil
 }
 
+func (c *queryClient) ProjectClass(ctx context.Context, in *QueryProjectClassRequest, opts ...grpc.CallOption) (*QueryProjectClassResponse, error) {
+	out := new(QueryProjectClassResponse)
+	err := c.cc.Invoke(ctx, Query_ProjectClass_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProjectClasses(ctx context.Context, in *QueryProjectClassesRequest, opts ...grpc.CallOption) (*QueryProjectClassesResponse, error) {
+	out := new(QueryProjectClassesResponse)
+	err := c.cc.Invoke(ctx, Query_ProjectClasses_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -454,6 +480,12 @@ type QueryServer interface {
 	//
 	// Since Revision 2
 	AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error)
+	// ProjectClass queries information about a project credit class relationship.
+	//
+	// Since Revision 3
+	ProjectClass(context.Context, *QueryProjectClassRequest) (*QueryProjectClassResponse, error)
+	// ProjectClasses queries all credit classes associated with a project.
+	ProjectClasses(context.Context, *QueryProjectClassesRequest) (*QueryProjectClassesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -538,6 +570,12 @@ func (UnimplementedQueryServer) ClassFee(context.Context, *QueryClassFeeRequest)
 }
 func (UnimplementedQueryServer) AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowedBridgeChains not implemented")
+}
+func (UnimplementedQueryServer) ProjectClass(context.Context, *QueryProjectClassRequest) (*QueryProjectClassResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectClass not implemented")
+}
+func (UnimplementedQueryServer) ProjectClasses(context.Context, *QueryProjectClassesRequest) (*QueryProjectClassesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectClasses not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -1020,6 +1058,42 @@ func _Query_AllowedBridgeChains_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ProjectClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectClassRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProjectClass(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProjectClass_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProjectClass(ctx, req.(*QueryProjectClassRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProjectClasses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectClassesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProjectClasses(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProjectClasses_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProjectClasses(ctx, req.(*QueryProjectClassesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1130,6 +1204,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AllowedBridgeChains",
 			Handler:    _Query_AllowedBridgeChains_Handler,
+		},
+		{
+			MethodName: "ProjectClass",
+			Handler:    _Query_ProjectClass_Handler,
+		},
+		{
+			MethodName: "ProjectClasses",
+			Handler:    _Query_ProjectClasses_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

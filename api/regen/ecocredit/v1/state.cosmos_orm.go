@@ -2124,6 +2124,19 @@ func (this ProjectClassProjectKeyClassKeyIndexKey) WithProjectKeyClassKey(projec
 	return this
 }
 
+type ProjectClassClassKeyIndexKey struct {
+	vs []interface{}
+}
+
+func (x ProjectClassClassKeyIndexKey) id() uint32            { return 1 }
+func (x ProjectClassClassKeyIndexKey) values() []interface{} { return x.vs }
+func (x ProjectClassClassKeyIndexKey) projectClassIndexKey() {}
+
+func (this ProjectClassClassKeyIndexKey) WithClassKey(class_key uint64) ProjectClassClassKeyIndexKey {
+	this.vs = []interface{}{class_key}
+	return this
+}
+
 type projectClassTable struct {
 	table ormtable.Table
 }
