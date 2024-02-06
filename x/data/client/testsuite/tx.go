@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/v2/testutil/network"

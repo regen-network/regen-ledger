@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorByIRI() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -73,7 +73,7 @@ func (s *IntegrationTestSuite) TestQueryAnchorByHash() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -124,7 +124,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByAttestor() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -181,7 +181,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByIRI() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -235,7 +235,7 @@ func (s *IntegrationTestSuite) TestQueryAttestationsByHash() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -272,7 +272,7 @@ func (s *IntegrationTestSuite) TestQueryResolver() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -307,7 +307,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByIRI() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -361,7 +361,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByHash() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -412,7 +412,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByURL() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -445,7 +445,7 @@ func (s *IntegrationTestSuite) TestConvertIRIToHash() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -477,7 +477,7 @@ func (s *IntegrationTestSuite) TestConvertHashToIRI() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.PostRequest(tc.url, "text/JSON", tc.body)
+			bz, err := testutil.PostRequest(tc.url, "text/JSON", tc.body)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
