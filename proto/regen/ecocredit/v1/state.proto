@@ -388,54 +388,55 @@ message AllowedBridgeChain {
   string chain_name = 1;
 }
 
-// ClassApplication stores the data for a credit class application.
-message ClassApplication {
+// ProjectClass stores the data a project - credit class relation.
+message ProjectClass {
   option (cosmos.orm.v1.table) = {
     id : 17
-    primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1, fields : "project_key", unique : true}
+    primary_key : {fields : "project_key,class_key"}
   };
 
-  // id is the unique identifier of the application.
-  uint64 id = 1;
-
   // project_key is the table row identifier of the project used internally for
-  // efficient lookups. This links an application to a project.
-  uint64 project_key = 2;
+  // efficient lookups.
+  uint64 project_key = 1;
 
   // class_key is the table row identifier of the credit class used internally
-  // for efficient lookups. This links a project to a credit class.
+  // for efficient lookups.
   uint64 class_key = 3;
 
-  // issuer is the issuer of the credit class which the application has been
-  // submitted to.
-  string issuer = 4;
+  // status is the status of the relation.
+  ProjectClassStatus status = 4;
 
-  // metadata is any arbitrary metadata attached to the application.
-  string metadata = 5;
+  // project_metadata is any arbitrary metadata set by the project
+  // admin. This should primarily be used to store metadata regarding the project's
+  // application to the credit class.
+  string project_metadata = 5;
 
-  // status is the status of the application. Note that accepted and rejected
-  // applications are removed from the table.
-  ApplicationStatus status = 6;
+  // credit_class_metadata is any arbitrary metadata set by a credit
+  // class issuer. This should primarily be used to store metadata regarding the
+  // project's application to the credit class.
+  string credit_class_metadata = 6;
 }
 
 // Application represents the evaluation status that a credit class issuer
 // assigns to a credit class application.
-enum ApplicationStatus {
-  // APPLICATION_STATUS_UNSPECIFIED indicates that the application status is
-  // unspecified and hasn't been evaluated yet.
-  APPLICATION_STATUS_UNSPECIFIED = 0;
+enum ProjectClassStatus {
+  // PROJECT_CLASS_STATUS_UNSPECIFIED indicates that a credit class application
+  // has been submitted but not evaluated.
+  PROJECT_CLASS_STATUS_UNSPECIFIED = 0;
 
-  // APPLICATION_STATUS_ACCEPTED indicates that the application has been
-  // accepted and that the project has been admitted into the credit class.
-  APPLICATION_STATUS_ACCEPTED = 1;
+  // PROJECT_CLASS_STATUS_ACCEPTED indicates that the project has been
+  // accepted into the credit class.
+  PROJECT_CLASS_STATUS_ACCEPTED = 1;
 
-  // APPLICATION_STATUS_CHANGES_REQUESTED indicates that the application has
-  // been reviewed and that changes are required before the application can be
-  // accepted.
-  APPLICATION_STATUS_CHANGES_REQUESTED = 2;
+  // PROJECT_CLASS_STATUS_CHANGES_REQUESTED indicates that an application to
+  // a credit class has been reviewed and that changes to the application have
+  // been requested. It can also be used to indicate that a project within a credit
+  // class has had its status reassessed and that changes to the project are
+  // requested in order to continue in the credit class.
+  PROJECT_CLASS_STATUS_CHANGES_REQUESTED = 2;
 
-  // APPLICATION_STATUS_REJECTED indicates that the application has been
-  // rejected and that the project will not be admitted into the credit class.
-  APPLICATION_STATUS_REJECTED = 3;
+  // PROJECT_CLASS_STATUS_REJECTED indicates that the application has been
+  // rejected and that the project will not be accepted into the credit class
+  // or that a project previously accepted has been removed from the credit class.
+  PROJECT_CLASS_STATUS_REJECTED = 3;
 }

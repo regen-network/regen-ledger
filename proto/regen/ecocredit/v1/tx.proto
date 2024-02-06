@@ -35,36 +35,37 @@ service Msg {
   rpc CreateUnregisteredProject(MsgCreateUnregisteredProject)
       returns (MsgCreateUnregisteredProjectResponse);
 
-  // SubmitClassApplication submits an application for a project to be added to
-  // a credit class. The project admin must submit an application to a specific
-  // issuer of a specific credit class for it to be considered. Currently,
-  // a project can only apply to one credit class at a time via a single
-  // issuer. A project in an existing credit class can apply to another credit
-  // class by submitting another application to a different issuer.
+  // UpdateProjectClass creates a new project credit class application, updates
+  // an existing one or updates an existing relationship when changes are requested.
+  // A project may have a relationship with at most one credit class per credit type
+  // but can have relationships with multiple credit classes across different credit
+  // types. This can be useful, for example for issuing pre-financing forward contracts
+  // while making progress towards issuing credits in an outcome based program.
+  // Projects that are already accepted into a credit class can only update
+  // their metadata when an issuer has changed the status of the relations
+  // to "changes requested".
   //
   // Since Revision 3
-  rpc SubmitClassApplication(MsgSubmitClassApplication)
-      returns (MsgSubmitClassApplicationResponse);
+  rpc UpdateProjectClass(MsgUpdateProjectClass)
+      returns (MsgUpdateProjectClassResponse);
 
-  // UpdateClassApplication updates the metadata of a submitted application.
+  // WithdrawProjectClass withdraws a project from a credit class application
+  // or relationship unilaterally on the part of a project admin.
   //
   // Since Revision 3
-  rpc UpdateClassApplication(MsgUpdateClassApplication)
-      returns (MsgUpdateClassApplicationResponse);
+  rpc WithdrawProjectClass(MsgWithdrawProjectClass)
+      returns (MsgWithdrawProjectClassResponse);
 
-  // WithdrawClassApplication withdraws a submitted application.
+  // EvaluateProjectClass allows a credit class issuer to evaluate a project
+  // application or existing relationship, either approving, requesting changes to, or
+  // rejecting it. Any issuer in the credit class may update the project credit
+  // class status using this method. If more sophisticated rules are required to coordinate
+  // between different issuers, the credit class admin should set up an on or off-chain
+  // governance process to coordinate this.
   //
   // Since Revision 3
-  rpc WithdrawClassApplication(MsgWithdrawClassApplication)
-      returns (MsgWithdrawClassApplicationResponse);
-
-  // EvaluateClassApplication evaluates a submitted application. Only the issuer
-  // of the credit class can evaluate an application. The issuer can either
-  // approve, request changes to, or reject the application.
-  //
-  // Since Revision 3
-  rpc EvaluateClassApplication(MsgEvaluateClassApplication)
-      returns (MsgEvaluateClassApplicationResponse);
+  rpc EvaluateProjectClass(MsgEvaluateProjectClass)
+      returns (MsgEvaluateProjectClassResponse);
 
   // CreateBatch creates a new batch of credits under the given project with a
   // start and end date representing the monitoring period, a list of credits to
@@ -343,8 +344,8 @@ message MsgCreateUnregisteredProjectResponse {
   string project_id = 1;
 }
 
-// MsgSubmitClassApplication is the Msg/SubmitClassApplication request type.
-message MsgSubmitClassApplication {
+// MsgUpdateProjectClass is the Msg/UpdateProjectClass request type.
+message MsgUpdateProjectClass {
   option (cosmos.msg.v1.signer) = "project_admin";
 
   // project_admin is the address of the account that is the admin of the
@@ -359,44 +360,17 @@ message MsgSubmitClassApplication {
   // applying to.
   string class_id = 3;
 
-  // issuer is the address of the account that is an issuer of the credit class
-  // to whom the project is applying to for approval.
-  string issuer = 4;
-
   // metadata is any arbitrary string with a maximum length of 256 characters
   // that includes or references any metadata relevant to the application.
   // This could be used as a digital reference to the actual contents of the application.
-  string metadata = 5;
+  string metadata = 4;
 }
 
-// MsgSubmitClassApplicationResponse is the Msg/SubmitClassApplication response type.
-message MsgSubmitClassApplicationResponse {
-  // application_id is the identifier assigned to the application.
-  uint64 application_id = 1;
-}
+// MsgUpdateProjectClassResponse is the Msg/UpdateProjectClass response type.
+message MsgUpdateProjectClassResponse {}
 
-// MsgUpdateClassApplication is the Msg/UpdateClassApplication request type.
-message MsgUpdateClassApplication {
-  option (cosmos.msg.v1.signer) = "project_admin";
-
-  // project_admin is the address of the account that is the admin of the
-  // project which is updating its application to the credit class.
-  string project_admin = 1;
-
-  // application_id is the identifier of the application to update.
-  uint64 application_id = 2;
-
-  // metadata is any arbitrary string with a maximum length of 256 characters
-  // that includes or references metadata relevant to the application. If it
-  // is left empty, the existing metadata will be deleted.
-  string metadata = 3;
-}
-
-// MsgUpdateClassApplicationResponse is the Msg/UpdateClassApplication response type.
-message MsgUpdateClassApplicationResponse {}
-
-// MsgWithdrawClassApplication is the Msg/WithdrawClassApplication request type.
-message MsgWithdrawClassApplication {
+// MsgWithdrawProjectClass is the Msg/WithdrawProjectClass request type.
+message MsgWithdrawProjectClass {
   option (cosmos.msg.v1.signer) = "project_admin";
 
   // project_admin is the address of the account that is the admin of the
@@ -407,11 +381,11 @@ message MsgWithdrawClassApplication {
   uint64 application_id = 2;
 }
 
-// MsgWithdrawClassApplicationResponse is the Msg/WithdrawClassApplication response type.
-message MsgWithdrawClassApplicationResponse {}
+// MsgWithdrawProjectClassResponse is the Msg/WithdrawProjectClass response type.
+message MsgWithdrawProjectClassResponse {}
 
-// MsgEvaluateClassApplication is the Msg/EvaluateClassApplication request type.
-message MsgEvaluateClassApplication {
+// MsgEvaluateProjectClass is the Msg/EvaluateProjectClass request type.
+message MsgEvaluateProjectClass {
   option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account that is the issuer of the credit class
@@ -422,16 +396,16 @@ message MsgEvaluateClassApplication {
   uint64 application_id = 2;
 
   // evaluation is the evaluation of the application.
-  ApplicationStatus evaluation = 3;
+  ProjectClassStatus evaluation = 3;
 
-  // reason is any arbitrary string with a maximum length of 256 characters
+  // metadata is any arbitrary string with a maximum length of 256 characters
   // that includes or references the reason for the approving, requesting changes
   // to, or rejecting the application.
-  string reason = 4;
+  string metadata = 4;
 }
 
-// MsgEvaluateClassApplicationResponse is the Msg/EvaluateClassApplication response type.
-message MsgEvaluateClassApplicationResponse {}
+// MsgEvaluateProjectClassResponse is the Msg/EvaluateProjectClass response type.
+message MsgEvaluateProjectClassResponse {}
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
