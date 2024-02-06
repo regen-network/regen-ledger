@@ -4,10 +4,10 @@
 package v1
 
 import (
+	_ "cosmos/orm/v1"
 	fmt "fmt"
-	_ "cosmossdk.io/api/cosmos/orm/v1"
-	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -49,7 +49,7 @@ type SellOrder struct {
 	DisableAutoRetire bool `protobuf:"varint,7,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
 	// expiration is an optional timestamp when the sell order expires. When the
 	// expiration time is reached, the sell order is removed from state.
-	Expiration *types.Timestamp `protobuf:"bytes,9,opt,name=expiration,proto3" json:"expiration,omitempty"`
+	Expiration *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expiration,proto3" json:"expiration,omitempty"`
 	// maker indicates that this is a maker order, meaning that when it hit
 	// the order book, there were no matching buy orders.
 	Maker bool `protobuf:"varint,10,opt,name=maker,proto3" json:"maker,omitempty"`
@@ -137,7 +137,7 @@ func (m *SellOrder) GetDisableAutoRetire() bool {
 	return false
 }
 
-func (m *SellOrder) GetExpiration() *types.Timestamp {
+func (m *SellOrder) GetExpiration() *timestamppb.Timestamp {
 	if m != nil {
 		return m.Expiration
 	}
@@ -1012,7 +1012,7 @@ func (m *SellOrder) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Expiration == nil {
-				m.Expiration = &types.Timestamp{}
+				m.Expiration = &timestamppb.Timestamp{}
 			}
 			if err := m.Expiration.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

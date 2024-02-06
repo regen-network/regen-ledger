@@ -6,11 +6,11 @@ package v1alpha1
 import (
 	fmt "fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types1 "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/gogo/protobuf/types"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -627,7 +627,7 @@ func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x4a
 	}
 	if m.EndDate != nil {
-		n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate):])
+		n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.EndDate):])
 		if err2 != nil {
 			return 0, err2
 		}
@@ -637,7 +637,7 @@ func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x42
 	}
 	if m.StartDate != nil {
-		n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate):])
+		n3, err3 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.StartDate):])
 		if err3 != nil {
 			return 0, err3
 		}
@@ -935,11 +935,11 @@ func (m *BatchInfo) Size() (n int) {
 		n += 1 + l + sovTypes(uint64(l))
 	}
 	if m.StartDate != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.StartDate)
 		n += 1 + l + sovTypes(uint64(l))
 	}
 	if m.EndDate != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.EndDate)
 		n += 1 + l + sovTypes(uint64(l))
 	}
 	l = len(m.ProjectLocation)
@@ -1521,7 +1521,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			if m.StartDate == nil {
 				m.StartDate = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1557,7 +1557,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			if m.EndDate == nil {
 				m.EndDate = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1672,7 +1672,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreditClassFee = append(m.CreditClassFee, types1.Coin{})
+			m.CreditClassFee = append(m.CreditClassFee, types.Coin{})
 			if err := m.CreditClassFee[len(m.CreditClassFee)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1792,7 +1792,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.BasketCreationFee = append(m.BasketCreationFee, types1.Coin{})
+			m.BasketCreationFee = append(m.BasketCreationFee, types.Coin{})
 			if err := m.BasketCreationFee[len(m.BasketCreationFee)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}

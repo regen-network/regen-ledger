@@ -4,11 +4,11 @@
 package v1
 
 import (
+	_ "cosmos/orm/v1"
 	fmt "fmt"
-	_ "cosmossdk.io/api/cosmos/orm/v1"
-	types1 "github.com/cosmos/cosmos-sdk/types"
-	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	types "github.com/cosmos/cosmos-sdk/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -226,7 +226,7 @@ type BasketBalance struct {
 	Balance string `protobuf:"bytes,3,opt,name=balance,proto3" json:"balance,omitempty"`
 	// batch_start_date is the start date of the batch. This field is used
 	// to create an index which is used to remove the oldest credits first.
-	BatchStartDate *types.Timestamp `protobuf:"bytes,4,opt,name=batch_start_date,json=batchStartDate,proto3" json:"batch_start_date,omitempty"`
+	BatchStartDate *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=batch_start_date,json=batchStartDate,proto3" json:"batch_start_date,omitempty"`
 }
 
 func (m *BasketBalance) Reset()         { *m = BasketBalance{} }
@@ -283,7 +283,7 @@ func (m *BasketBalance) GetBalance() string {
 	return ""
 }
 
-func (m *BasketBalance) GetBatchStartDate() *types.Timestamp {
+func (m *BasketBalance) GetBatchStartDate() *timestamppb.Timestamp {
 	if m != nil {
 		return m.BatchStartDate
 	}
@@ -297,7 +297,7 @@ func (m *BasketBalance) GetBatchStartDate() *types.Timestamp {
 type BasketFee struct {
 	// fee is the basket creation fee. If not set, a basket creation fee is not
 	// required.
-	Fee *types1.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
+	Fee *types.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
 func (m *BasketFee) Reset()         { *m = BasketFee{} }
@@ -333,7 +333,7 @@ func (m *BasketFee) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BasketFee proto.InternalMessageInfo
 
-func (m *BasketFee) GetFee() *types1.Coin {
+func (m *BasketFee) GetFee() *types.Coin {
 	if m != nil {
 		return m.Fee
 	}
@@ -1226,7 +1226,7 @@ func (m *BasketBalance) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.BatchStartDate == nil {
-				m.BatchStartDate = &types.Timestamp{}
+				m.BatchStartDate = &timestamppb.Timestamp{}
 			}
 			if err := m.BatchStartDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1312,7 +1312,7 @@ func (m *BasketFee) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Fee == nil {
-				m.Fee = &types1.Coin{}
+				m.Fee = &types.Coin{}
 			}
 			if err := m.Fee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

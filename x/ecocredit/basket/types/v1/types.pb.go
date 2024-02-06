@@ -5,8 +5,9 @@ package v1
 
 import (
 	fmt "fmt"
-	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -86,14 +87,14 @@ type DateCriteria struct {
 	// min_start_date (optional) is the earliest start date for batches of credits
 	// allowed into the basket. At most only one of `start_date_window`,
 	// `min_start_date`, and `years_in_the_past` can be set for a basket.
-	MinStartDate *types.Timestamp `protobuf:"bytes,1,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
+	MinStartDate *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
 	// start_date_window (optional) is a duration of time measured into the past
 	// which sets a cutoff for batch start dates when adding new credits to the
 	// basket. Based on the current block timestamp, credits whose start date is
 	// before `block_timestamp - start_date_window` will not be allowed into the
 	// basket. At most only one of `start_date_window`, `min_start_date`, and
 	// `years_in_the_past` can be set for a basket.
-	StartDateWindow *types.Duration `protobuf:"bytes,2,opt,name=start_date_window,json=startDateWindow,proto3" json:"start_date_window,omitempty"`
+	StartDateWindow *durationpb.Duration `protobuf:"bytes,2,opt,name=start_date_window,json=startDateWindow,proto3" json:"start_date_window,omitempty"`
 	// years_in_the_past (optional) is the number of years into the past which
 	// sets a cutoff for the batch start dates when adding new credits to the
 	// basket. Based on the current block timestamp, credits whose start date year
@@ -138,14 +139,14 @@ func (m *DateCriteria) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DateCriteria proto.InternalMessageInfo
 
-func (m *DateCriteria) GetMinStartDate() *types.Timestamp {
+func (m *DateCriteria) GetMinStartDate() *timestamppb.Timestamp {
 	if m != nil {
 		return m.MinStartDate
 	}
 	return nil
 }
 
-func (m *DateCriteria) GetStartDateWindow() *types.Duration {
+func (m *DateCriteria) GetStartDateWindow() *durationpb.Duration {
 	if m != nil {
 		return m.StartDateWindow
 	}
@@ -511,7 +512,7 @@ func (m *DateCriteria) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.MinStartDate == nil {
-				m.MinStartDate = &types.Timestamp{}
+				m.MinStartDate = &timestamppb.Timestamp{}
 			}
 			if err := m.MinStartDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -547,7 +548,7 @@ func (m *DateCriteria) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.StartDateWindow == nil {
-				m.StartDateWindow = &types.Duration{}
+				m.StartDateWindow = &durationpb.Duration{}
 			}
 			if err := m.StartDateWindow.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

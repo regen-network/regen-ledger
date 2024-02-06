@@ -2,10 +2,10 @@
 package orderbookv1alpha1
 
 import (
+	_ "cosmossdk.io/api/cosmos/orm/v1"
 	binary "encoding/binary"
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
-	_ "cosmossdk.io/api/cosmos/orm/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"

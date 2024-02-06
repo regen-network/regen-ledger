@@ -2562,7 +2562,7 @@ type EventUpdateSellOrder struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	//  sell_order_id is the unique identifier of the sell order that was updated.
+	// sell_order_id is the unique identifier of the sell order that was updated.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 }
 

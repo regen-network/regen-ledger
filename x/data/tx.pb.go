@@ -7,12 +7,12 @@ import (
 	context "context"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -91,7 +91,7 @@ type MsgAnchorResponse struct {
 	// iri is the IRI of the data that was anchored.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 	// timestamp is the time at which the data was anchored.
-	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *MsgAnchorResponse) Reset()         { *m = MsgAnchorResponse{} }
@@ -134,7 +134,7 @@ func (m *MsgAnchorResponse) GetIri() string {
 	return ""
 }
 
-func (m *MsgAnchorResponse) GetTimestamp() *types.Timestamp {
+func (m *MsgAnchorResponse) GetTimestamp() *timestamppb.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -208,7 +208,7 @@ type MsgAttestResponse struct {
 	// the IRI will not be included in this list.
 	Iris []string `protobuf:"bytes,1,rep,name=iris,proto3" json:"iris,omitempty"`
 	// timestamp is the time at which any new attestations were made.
-	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *MsgAttestResponse) Reset()         { *m = MsgAttestResponse{} }
@@ -251,7 +251,7 @@ func (m *MsgAttestResponse) GetIris() []string {
 	return nil
 }
 
-func (m *MsgAttestResponse) GetTimestamp() *types.Timestamp {
+func (m *MsgAttestResponse) GetTimestamp() *timestamppb.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -551,12 +551,12 @@ type MsgClient interface {
 	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
+	//   - on-chain identities can be managed using different cryptographic keys
+	//     that change over time through key rotation practices
+	//   - an on-chain identity may represent an organization and through delegation
+	//     individual members may sign on behalf of the group
+	//   - the blockchain transaction envelope provides built-in replay protection
+	//     and timestamping
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
@@ -635,12 +635,12 @@ type MsgServer interface {
 	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
+	//   - on-chain identities can be managed using different cryptographic keys
+	//     that change over time through key rotation practices
+	//   - an on-chain identity may represent an organization and through delegation
+	//     individual members may sign on behalf of the group
+	//   - the blockchain transaction envelope provides built-in replay protection
+	//     and timestamping
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
@@ -1442,7 +1442,7 @@ func (m *MsgAnchorResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &types.Timestamp{}
+				m.Timestamp = &timestamppb.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1676,7 +1676,7 @@ func (m *MsgAttestResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &types.Timestamp{}
+				m.Timestamp = &timestamppb.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
