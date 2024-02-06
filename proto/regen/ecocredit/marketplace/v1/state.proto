@@ -127,3 +127,26 @@ message Market {
   // exchange for less precision at the lower end.
   uint32 precision_modifier = 4;
 }
+
+// FeeParams represents the marketplace fee parameters. Fees will be charged in the
+// same denom that the order is denominated in and deposited into the marketplace
+// fee pool, except when the denom is regen, in which case the fees will be
+// burned. Fees in the fee pool are expected to burned by governance in a manual
+// process unless governance agrees to a different approach.
+message FeeParams {
+  option (cosmos.orm.v1.singleton) = {
+    id : 5
+  };
+
+  // buyer_percentage_fee is the decimal percentage fee charged to the buyer.
+  // The string 0.03 means a 3.0% fee.
+  // This fee will be added to the total price of a buy order and is denominated
+  // in the same denom as the buy order's bid denom.
+  string buyer_percentage_fee = 1;
+
+  // seller_percentage_fee is the decimal percentage fee charged to the seller.
+  // The string 0.03 means a 3.0% fee.
+  // This fee will be subtracted from the total proceeds of a sell order distributed to the seller
+  // and is denominated in the same denom as the sell order's ask denom.
+  string seller_percentage_fee = 2;
+}

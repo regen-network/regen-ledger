@@ -5,8 +5,6 @@ package regen.data.v1;
 import "cosmos/orm/v1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/data";
-
 // DataID stores a compact data ID and its full IRI.
 message DataID {
   option (cosmos.orm.v1.table) = {

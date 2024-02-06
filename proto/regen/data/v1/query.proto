@@ -7,8 +7,6 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/data";
-
 // Query is the regen.data.v1 Query service
 service Query {
 
