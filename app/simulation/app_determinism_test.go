@@ -8,28 +8,27 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	dbm "github.com/cometbft/cometbft-db"
-
 	"github.com/cometbft/cometbft/libs/log"
+	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
 )
 
 func TestAppDeterminism(t *testing.T) {
-	if !simapp.FlagEnabledValue {
+	if !simcli.FlagEnabledValue {
 		t.Skip("skipping app-determinism simulation")
 	}
 
-	config := simapp.NewConfigFromFlags()
+	config := simcli.NewConfigFromFlags()
 	config.InitialBlockHeight = 1
 	config.ExportParamsPath = ""
 	config.OnOperation = false
 	config.AllInvariants = false
-	config.ChainID = helpers.SimAppChainID
+	config.ChainID = SimAppChainID
 
 	numSeeds := 3
 	numTimesToRunPerSeed := 3
@@ -40,7 +39,7 @@ func TestAppDeterminism(t *testing.T) {
 
 		for j := 0; j < numTimesToRunPerSeed; j++ {
 			var logger log.Logger
-			if simapp.FlagVerboseValue {
+			if simcli.FlagVerboseValue {
 				logger = log.TestingLogger()
 			} else {
 				logger = log.NewNopLogger()
@@ -54,9 +53,8 @@ func TestAppDeterminism(t *testing.T) {
 				true,
 				map[int64]bool{},
 				regen.DefaultNodeHome,
-				simapp.FlagPeriodValue,
-				regen.MakeEncodingConfig(),
-				simapp.EmptyAppOptions{},
+				simcli.FlagPeriodValue,
+				simtestutil.EmptyAppOptions{},
 				interBlockCacheOpt(),
 			)
 			require.Equal(t, regen.AppName, app.Name())
@@ -71,7 +69,7 @@ func TestAppDeterminism(t *testing.T) {
 			require.NoError(t, err)
 
 			if config.Commit {
-				simapp.PrintStats(db)
+				simtestutil.PrintStats(db)
 			}
 
 			appHash := app.LastCommitID().Hash
