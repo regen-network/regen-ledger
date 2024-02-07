@@ -8868,33 +8868,33 @@ func (x *fastReflection_AllowedBridgeChain) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_ProjectClass                  protoreflect.MessageDescriptor
-	fd_ProjectClass_project_key      protoreflect.FieldDescriptor
-	fd_ProjectClass_class_key        protoreflect.FieldDescriptor
-	fd_ProjectClass_status           protoreflect.FieldDescriptor
-	fd_ProjectClass_project_metadata protoreflect.FieldDescriptor
-	fd_ProjectClass_class_metadata   protoreflect.FieldDescriptor
+	md_ProjectEnrollment                  protoreflect.MessageDescriptor
+	fd_ProjectEnrollment_project_key      protoreflect.FieldDescriptor
+	fd_ProjectEnrollment_class_key        protoreflect.FieldDescriptor
+	fd_ProjectEnrollment_status           protoreflect.FieldDescriptor
+	fd_ProjectEnrollment_project_metadata protoreflect.FieldDescriptor
+	fd_ProjectEnrollment_class_metadata   protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_state_proto_init()
-	md_ProjectClass = File_regen_ecocredit_v1_state_proto.Messages().ByName("ProjectClass")
-	fd_ProjectClass_project_key = md_ProjectClass.Fields().ByName("project_key")
-	fd_ProjectClass_class_key = md_ProjectClass.Fields().ByName("class_key")
-	fd_ProjectClass_status = md_ProjectClass.Fields().ByName("status")
-	fd_ProjectClass_project_metadata = md_ProjectClass.Fields().ByName("project_metadata")
-	fd_ProjectClass_class_metadata = md_ProjectClass.Fields().ByName("class_metadata")
+	md_ProjectEnrollment = File_regen_ecocredit_v1_state_proto.Messages().ByName("ProjectEnrollment")
+	fd_ProjectEnrollment_project_key = md_ProjectEnrollment.Fields().ByName("project_key")
+	fd_ProjectEnrollment_class_key = md_ProjectEnrollment.Fields().ByName("class_key")
+	fd_ProjectEnrollment_status = md_ProjectEnrollment.Fields().ByName("status")
+	fd_ProjectEnrollment_project_metadata = md_ProjectEnrollment.Fields().ByName("project_metadata")
+	fd_ProjectEnrollment_class_metadata = md_ProjectEnrollment.Fields().ByName("class_metadata")
 }
 
-var _ protoreflect.Message = (*fastReflection_ProjectClass)(nil)
+var _ protoreflect.Message = (*fastReflection_ProjectEnrollment)(nil)
 
-type fastReflection_ProjectClass ProjectClass
+type fastReflection_ProjectEnrollment ProjectEnrollment
 
-func (x *ProjectClass) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_ProjectClass)(x)
+func (x *ProjectEnrollment) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ProjectEnrollment)(x)
 }
 
-func (x *ProjectClass) slowProtoReflect() protoreflect.Message {
+func (x *ProjectEnrollment) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -8906,43 +8906,43 @@ func (x *ProjectClass) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_ProjectClass_messageType fastReflection_ProjectClass_messageType
-var _ protoreflect.MessageType = fastReflection_ProjectClass_messageType{}
+var _fastReflection_ProjectEnrollment_messageType fastReflection_ProjectEnrollment_messageType
+var _ protoreflect.MessageType = fastReflection_ProjectEnrollment_messageType{}
 
-type fastReflection_ProjectClass_messageType struct{}
+type fastReflection_ProjectEnrollment_messageType struct{}
 
-func (x fastReflection_ProjectClass_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_ProjectClass)(nil)
+func (x fastReflection_ProjectEnrollment_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ProjectEnrollment)(nil)
 }
-func (x fastReflection_ProjectClass_messageType) New() protoreflect.Message {
-	return new(fastReflection_ProjectClass)
+func (x fastReflection_ProjectEnrollment_messageType) New() protoreflect.Message {
+	return new(fastReflection_ProjectEnrollment)
 }
-func (x fastReflection_ProjectClass_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_ProjectClass
+func (x fastReflection_ProjectEnrollment_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ProjectEnrollment
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_ProjectClass) Descriptor() protoreflect.MessageDescriptor {
-	return md_ProjectClass
+func (x *fastReflection_ProjectEnrollment) Descriptor() protoreflect.MessageDescriptor {
+	return md_ProjectEnrollment
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_ProjectClass) Type() protoreflect.MessageType {
-	return _fastReflection_ProjectClass_messageType
+func (x *fastReflection_ProjectEnrollment) Type() protoreflect.MessageType {
+	return _fastReflection_ProjectEnrollment_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_ProjectClass) New() protoreflect.Message {
-	return new(fastReflection_ProjectClass)
+func (x *fastReflection_ProjectEnrollment) New() protoreflect.Message {
+	return new(fastReflection_ProjectEnrollment)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_ProjectClass) Interface() protoreflect.ProtoMessage {
-	return (*ProjectClass)(x)
+func (x *fastReflection_ProjectEnrollment) Interface() protoreflect.ProtoMessage {
+	return (*ProjectEnrollment)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -8950,34 +8950,34 @@ func (x *fastReflection_ProjectClass) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_ProjectClass) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_ProjectEnrollment) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.ProjectKey != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.ProjectKey)
-		if !f(fd_ProjectClass_project_key, value) {
+		if !f(fd_ProjectEnrollment_project_key, value) {
 			return
 		}
 	}
 	if x.ClassKey != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.ClassKey)
-		if !f(fd_ProjectClass_class_key, value) {
+		if !f(fd_ProjectEnrollment_class_key, value) {
 			return
 		}
 	}
 	if x.Status != 0 {
 		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.Status))
-		if !f(fd_ProjectClass_status, value) {
+		if !f(fd_ProjectEnrollment_status, value) {
 			return
 		}
 	}
 	if x.ProjectMetadata != "" {
 		value := protoreflect.ValueOfString(x.ProjectMetadata)
-		if !f(fd_ProjectClass_project_metadata, value) {
+		if !f(fd_ProjectEnrollment_project_metadata, value) {
 			return
 		}
 	}
 	if x.ClassMetadata != "" {
 		value := protoreflect.ValueOfString(x.ClassMetadata)
-		if !f(fd_ProjectClass_class_metadata, value) {
+		if !f(fd_ProjectEnrollment_class_metadata, value) {
 			return
 		}
 	}
@@ -8994,23 +8994,23 @@ func (x *fastReflection_ProjectClass) Range(f func(protoreflect.FieldDescriptor,
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_ProjectClass) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_ProjectEnrollment) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ProjectClass.project_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_key":
 		return x.ProjectKey != uint64(0)
-	case "regen.ecocredit.v1.ProjectClass.class_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_key":
 		return x.ClassKey != uint64(0)
-	case "regen.ecocredit.v1.ProjectClass.status":
+	case "regen.ecocredit.v1.ProjectEnrollment.status":
 		return x.Status != 0
-	case "regen.ecocredit.v1.ProjectClass.project_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_metadata":
 		return x.ProjectMetadata != ""
-	case "regen.ecocredit.v1.ProjectClass.class_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_metadata":
 		return x.ClassMetadata != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectClass"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectEnrollment"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectClass does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectEnrollment does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9020,23 +9020,23 @@ func (x *fastReflection_ProjectClass) Has(fd protoreflect.FieldDescriptor) bool 
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ProjectClass) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_ProjectEnrollment) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ProjectClass.project_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_key":
 		x.ProjectKey = uint64(0)
-	case "regen.ecocredit.v1.ProjectClass.class_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_key":
 		x.ClassKey = uint64(0)
-	case "regen.ecocredit.v1.ProjectClass.status":
+	case "regen.ecocredit.v1.ProjectEnrollment.status":
 		x.Status = 0
-	case "regen.ecocredit.v1.ProjectClass.project_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_metadata":
 		x.ProjectMetadata = ""
-	case "regen.ecocredit.v1.ProjectClass.class_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_metadata":
 		x.ClassMetadata = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectClass"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectEnrollment"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectClass does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectEnrollment does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9046,28 +9046,28 @@ func (x *fastReflection_ProjectClass) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_ProjectClass) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_ProjectEnrollment) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.ProjectClass.project_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_key":
 		value := x.ProjectKey
 		return protoreflect.ValueOfUint64(value)
-	case "regen.ecocredit.v1.ProjectClass.class_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_key":
 		value := x.ClassKey
 		return protoreflect.ValueOfUint64(value)
-	case "regen.ecocredit.v1.ProjectClass.status":
+	case "regen.ecocredit.v1.ProjectEnrollment.status":
 		value := x.Status
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "regen.ecocredit.v1.ProjectClass.project_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_metadata":
 		value := x.ProjectMetadata
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.ProjectClass.class_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_metadata":
 		value := x.ClassMetadata
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectClass"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectEnrollment"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectClass does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectEnrollment does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -9081,23 +9081,23 @@ func (x *fastReflection_ProjectClass) Get(descriptor protoreflect.FieldDescripto
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ProjectClass) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_ProjectEnrollment) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ProjectClass.project_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_key":
 		x.ProjectKey = value.Uint()
-	case "regen.ecocredit.v1.ProjectClass.class_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_key":
 		x.ClassKey = value.Uint()
-	case "regen.ecocredit.v1.ProjectClass.status":
-		x.Status = (ProjectClassStatus)(value.Enum())
-	case "regen.ecocredit.v1.ProjectClass.project_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.status":
+		x.Status = (ProjectEnrollmentStatus)(value.Enum())
+	case "regen.ecocredit.v1.ProjectEnrollment.project_metadata":
 		x.ProjectMetadata = value.Interface().(string)
-	case "regen.ecocredit.v1.ProjectClass.class_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_metadata":
 		x.ClassMetadata = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectClass"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectEnrollment"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectClass does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectEnrollment does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9111,56 +9111,56 @@ func (x *fastReflection_ProjectClass) Set(fd protoreflect.FieldDescriptor, value
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ProjectClass) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_ProjectEnrollment) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ProjectClass.project_key":
-		panic(fmt.Errorf("field project_key of message regen.ecocredit.v1.ProjectClass is not mutable"))
-	case "regen.ecocredit.v1.ProjectClass.class_key":
-		panic(fmt.Errorf("field class_key of message regen.ecocredit.v1.ProjectClass is not mutable"))
-	case "regen.ecocredit.v1.ProjectClass.status":
-		panic(fmt.Errorf("field status of message regen.ecocredit.v1.ProjectClass is not mutable"))
-	case "regen.ecocredit.v1.ProjectClass.project_metadata":
-		panic(fmt.Errorf("field project_metadata of message regen.ecocredit.v1.ProjectClass is not mutable"))
-	case "regen.ecocredit.v1.ProjectClass.class_metadata":
-		panic(fmt.Errorf("field class_metadata of message regen.ecocredit.v1.ProjectClass is not mutable"))
+	case "regen.ecocredit.v1.ProjectEnrollment.project_key":
+		panic(fmt.Errorf("field project_key of message regen.ecocredit.v1.ProjectEnrollment is not mutable"))
+	case "regen.ecocredit.v1.ProjectEnrollment.class_key":
+		panic(fmt.Errorf("field class_key of message regen.ecocredit.v1.ProjectEnrollment is not mutable"))
+	case "regen.ecocredit.v1.ProjectEnrollment.status":
+		panic(fmt.Errorf("field status of message regen.ecocredit.v1.ProjectEnrollment is not mutable"))
+	case "regen.ecocredit.v1.ProjectEnrollment.project_metadata":
+		panic(fmt.Errorf("field project_metadata of message regen.ecocredit.v1.ProjectEnrollment is not mutable"))
+	case "regen.ecocredit.v1.ProjectEnrollment.class_metadata":
+		panic(fmt.Errorf("field class_metadata of message regen.ecocredit.v1.ProjectEnrollment is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectClass"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectEnrollment"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectClass does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectEnrollment does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_ProjectClass) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_ProjectEnrollment) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.ProjectClass.project_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_key":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "regen.ecocredit.v1.ProjectClass.class_key":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_key":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "regen.ecocredit.v1.ProjectClass.status":
+	case "regen.ecocredit.v1.ProjectEnrollment.status":
 		return protoreflect.ValueOfEnum(0)
-	case "regen.ecocredit.v1.ProjectClass.project_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.project_metadata":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.ProjectClass.class_metadata":
+	case "regen.ecocredit.v1.ProjectEnrollment.class_metadata":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectClass"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.ProjectEnrollment"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectClass does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.ProjectEnrollment does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_ProjectClass) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_ProjectEnrollment) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.ProjectClass", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.ProjectEnrollment", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -9168,7 +9168,7 @@ func (x *fastReflection_ProjectClass) WhichOneof(d protoreflect.OneofDescriptor)
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_ProjectClass) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_ProjectEnrollment) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -9179,7 +9179,7 @@ func (x *fastReflection_ProjectClass) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ProjectClass) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_ProjectEnrollment) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -9191,7 +9191,7 @@ func (x *fastReflection_ProjectClass) SetUnknown(fields protoreflect.RawFields) 
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_ProjectClass) IsValid() bool {
+func (x *fastReflection_ProjectEnrollment) IsValid() bool {
 	return x != nil
 }
 
@@ -9201,9 +9201,9 @@ func (x *fastReflection_ProjectClass) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_ProjectClass) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_ProjectEnrollment) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*ProjectClass)
+		x := input.Message.Interface().(*ProjectEnrollment)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -9242,7 +9242,7 @@ func (x *fastReflection_ProjectClass) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*ProjectClass)
+		x := input.Message.Interface().(*ProjectEnrollment)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -9301,7 +9301,7 @@ func (x *fastReflection_ProjectClass) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*ProjectClass)
+		x := input.Message.Interface().(*ProjectEnrollment)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -9333,10 +9333,10 @@ func (x *fastReflection_ProjectClass) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ProjectClass: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ProjectEnrollment: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ProjectClass: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ProjectEnrollment: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -9391,7 +9391,7 @@ func (x *fastReflection_ProjectClass) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Status |= ProjectClassStatus(b&0x7F) << shift
+					x.Status |= ProjectEnrollmentStatus(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -9510,67 +9510,72 @@ const (
 
 // Application represents the evaluation status that a credit class issuer
 // assigns to a credit class application.
-type ProjectClassStatus int32
+type ProjectEnrollmentStatus int32
 
 const (
-	// PROJECT_CLASS_STATUS_UNSPECIFIED indicates that a credit class application
+	// PROJECT_ENROLLMENT_STATUS_UNSPECIFIED indicates that a credit class application
 	// has been submitted but not evaluated.
-	ProjectClassStatus_PROJECT_CLASS_STATUS_UNSPECIFIED ProjectClassStatus = 0
-	// PROJECT_CLASS_STATUS_ACCEPTED indicates that the project has been
+	ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED ProjectEnrollmentStatus = 0
+	// PROJECT_ENROLLMENT_STATUS_ACCEPTED indicates that the project has been
 	// accepted into the credit class.
-	ProjectClassStatus_PROJECT_CLASS_STATUS_ACCEPTED ProjectClassStatus = 1
-	// PROJECT_CLASS_STATUS_CHANGES_REQUESTED indicates that an application to
+	ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED ProjectEnrollmentStatus = 1
+	// PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED indicates that an application to
 	// a credit class has been reviewed and that changes to the application have
 	// been requested. It can also be used to indicate that a project within a credit
 	// class has had its status reassessed and that changes to the project are
 	// requested in order to continue in the credit class.
-	ProjectClassStatus_PROJECT_CLASS_STATUS_CHANGES_REQUESTED ProjectClassStatus = 2
-	// PROJECT_CLASS_STATUS_REJECTED indicates that the application has been
-	// rejected and that the project will not be accepted into the credit class
-	// or that a project previously accepted has been removed from the credit class.
-	ProjectClassStatus_PROJECT_CLASS_STATUS_REJECTED ProjectClassStatus = 3
+	ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED ProjectEnrollmentStatus = 2
+	// PROJECT_ENROLLMENT_STATUS_REJECTED indicates that the application has been
+	// rejected and that the project will not be accepted into the credit class.
+	ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_REJECTED ProjectEnrollmentStatus = 3
+	// PROJECT_ENROLLMENT_STATUS_TERMINATED indicates that the project has been
+	// terminated from the credit class. This status is used when a project was
+	// in the credit class but has been removed or completed.
+	ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_TERMINATED ProjectEnrollmentStatus = 4
 )
 
-// Enum value maps for ProjectClassStatus.
+// Enum value maps for ProjectEnrollmentStatus.
 var (
-	ProjectClassStatus_name = map[int32]string{
-		0: "PROJECT_CLASS_STATUS_UNSPECIFIED",
-		1: "PROJECT_CLASS_STATUS_ACCEPTED",
-		2: "PROJECT_CLASS_STATUS_CHANGES_REQUESTED",
-		3: "PROJECT_CLASS_STATUS_REJECTED",
+	ProjectEnrollmentStatus_name = map[int32]string{
+		0: "PROJECT_ENROLLMENT_STATUS_UNSPECIFIED",
+		1: "PROJECT_ENROLLMENT_STATUS_ACCEPTED",
+		2: "PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED",
+		3: "PROJECT_ENROLLMENT_STATUS_REJECTED",
+		4: "PROJECT_ENROLLMENT_STATUS_TERMINATED",
 	}
-	ProjectClassStatus_value = map[string]int32{
-		"PROJECT_CLASS_STATUS_UNSPECIFIED":       0,
-		"PROJECT_CLASS_STATUS_ACCEPTED":          1,
-		"PROJECT_CLASS_STATUS_CHANGES_REQUESTED": 2,
-		"PROJECT_CLASS_STATUS_REJECTED":          3,
+	ProjectEnrollmentStatus_value = map[string]int32{
+		"PROJECT_ENROLLMENT_STATUS_UNSPECIFIED":       0,
+		"PROJECT_ENROLLMENT_STATUS_ACCEPTED":          1,
+		"PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED": 2,
+		"PROJECT_ENROLLMENT_STATUS_REJECTED":          3,
+		"PROJECT_ENROLLMENT_STATUS_TERMINATED":        4,
 	}
 )
 
-func (x ProjectClassStatus) Enum() *ProjectClassStatus {
-	p := new(ProjectClassStatus)
+func (x ProjectEnrollmentStatus) Enum() *ProjectEnrollmentStatus {
+	p := new(ProjectEnrollmentStatus)
 	*p = x
 	return p
 }
 
-func (x ProjectClassStatus) String() string {
+func (x ProjectEnrollmentStatus) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (ProjectClassStatus) Descriptor() protoreflect.EnumDescriptor {
+func (ProjectEnrollmentStatus) Descriptor() protoreflect.EnumDescriptor {
 	return file_regen_ecocredit_v1_state_proto_enumTypes[0].Descriptor()
 }
 
-func (ProjectClassStatus) Type() protoreflect.EnumType {
+func (ProjectEnrollmentStatus) Type() protoreflect.EnumType {
 	return &file_regen_ecocredit_v1_state_proto_enumTypes[0]
 }
 
-func (x ProjectClassStatus) Number() protoreflect.EnumNumber {
+func (x ProjectEnrollmentStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use ProjectClassStatus.Descriptor instead.
-func (ProjectClassStatus) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use ProjectEnrollmentStatus.Descriptor instead.
+func (ProjectEnrollmentStatus) EnumDescriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{0}
 }
 
@@ -10581,8 +10586,8 @@ func (x *AllowedBridgeChain) GetChainName() string {
 	return ""
 }
 
-// ProjectClass stores the data a project - credit class relation.
-type ProjectClass struct {
+// ProjectEnrollment stores the data a project's enrollment in a credit class.
+type ProjectEnrollment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -10593,8 +10598,8 @@ type ProjectClass struct {
 	// class_key is the table row identifier of the credit class used internally
 	// for efficient lookups.
 	ClassKey uint64 `protobuf:"varint,3,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
-	// status is the status of the relation.
-	Status ProjectClassStatus `protobuf:"varint,4,opt,name=status,proto3,enum=regen.ecocredit.v1.ProjectClassStatus" json:"status,omitempty"`
+	// status is the status of the enrollment.
+	Status ProjectEnrollmentStatus `protobuf:"varint,4,opt,name=status,proto3,enum=regen.ecocredit.v1.ProjectEnrollmentStatus" json:"status,omitempty"`
 	// project_metadata is any arbitrary metadata set by the project
 	// admin. This should primarily be used to store metadata regarding the project's
 	// application to the credit class.
@@ -10605,8 +10610,8 @@ type ProjectClass struct {
 	ClassMetadata string `protobuf:"bytes,6,opt,name=class_metadata,json=classMetadata,proto3" json:"class_metadata,omitempty"`
 }
 
-func (x *ProjectClass) Reset() {
-	*x = ProjectClass{}
+func (x *ProjectEnrollment) Reset() {
+	*x = ProjectEnrollment{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -10614,46 +10619,46 @@ func (x *ProjectClass) Reset() {
 	}
 }
 
-func (x *ProjectClass) String() string {
+func (x *ProjectEnrollment) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ProjectClass) ProtoMessage() {}
+func (*ProjectEnrollment) ProtoMessage() {}
 
-// Deprecated: Use ProjectClass.ProtoReflect.Descriptor instead.
-func (*ProjectClass) Descriptor() ([]byte, []int) {
+// Deprecated: Use ProjectEnrollment.ProtoReflect.Descriptor instead.
+func (*ProjectEnrollment) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{16}
 }
 
-func (x *ProjectClass) GetProjectKey() uint64 {
+func (x *ProjectEnrollment) GetProjectKey() uint64 {
 	if x != nil {
 		return x.ProjectKey
 	}
 	return 0
 }
 
-func (x *ProjectClass) GetClassKey() uint64 {
+func (x *ProjectEnrollment) GetClassKey() uint64 {
 	if x != nil {
 		return x.ClassKey
 	}
 	return 0
 }
 
-func (x *ProjectClass) GetStatus() ProjectClassStatus {
+func (x *ProjectEnrollment) GetStatus() ProjectEnrollmentStatus {
 	if x != nil {
 		return x.Status
 	}
-	return ProjectClassStatus_PROJECT_CLASS_STATUS_UNSPECIFIED
+	return ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED
 }
 
-func (x *ProjectClass) GetProjectMetadata() string {
+func (x *ProjectEnrollment) GetProjectMetadata() string {
 	if x != nil {
 		return x.ProjectMetadata
 	}
 	return ""
 }
 
-func (x *ProjectClass) GetClassMetadata() string {
+func (x *ProjectEnrollment) GetClassMetadata() string {
 	if x != nil {
 		return x.ClassMetadata
 	}
@@ -10831,50 +10836,54 @@ var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
 	0x67, 0x65, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e,
 	0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x68, 0x61,
 	0x69, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x3a, 0x16, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x10, 0x0a, 0x0c,
-	0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x10, 0x22, 0x90,
-	0x02, 0x0a, 0x0c, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12,
-	0x1f, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4b, 0x65, 0x79,
-	0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4b, 0x65, 0x79, 0x12, 0x3e, 0x0a,
-	0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x29, 0x0a,
-	0x10, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6c, 0x61, 0x73,
-	0x73, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0d, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x3a,
-	0x30, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x2a, 0x0a, 0x17, 0x0a, 0x15, 0x70, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x5f, 0x6b, 0x65, 0x79, 0x2c, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65, 0x79,
-	0x12, 0x0d, 0x0a, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65, 0x79, 0x10, 0x01, 0x18,
-	0x11, 0x2a, 0xac, 0x01, 0x0a, 0x12, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x43, 0x6c, 0x61,
-	0x73, 0x73, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x24, 0x0a, 0x20, 0x50, 0x52, 0x4f, 0x4a,
-	0x45, 0x43, 0x54, 0x5f, 0x43, 0x4c, 0x41, 0x53, 0x53, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53,
-	0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x21,
-	0x0a, 0x1d, 0x50, 0x52, 0x4f, 0x4a, 0x45, 0x43, 0x54, 0x5f, 0x43, 0x4c, 0x41, 0x53, 0x53, 0x5f,
-	0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x41, 0x43, 0x43, 0x45, 0x50, 0x54, 0x45, 0x44, 0x10,
-	0x01, 0x12, 0x2a, 0x0a, 0x26, 0x50, 0x52, 0x4f, 0x4a, 0x45, 0x43, 0x54, 0x5f, 0x43, 0x4c, 0x41,
-	0x53, 0x53, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x43, 0x48, 0x41, 0x4e, 0x47, 0x45,
-	0x53, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x45, 0x44, 0x10, 0x02, 0x12, 0x21, 0x0a,
-	0x1d, 0x50, 0x52, 0x4f, 0x4a, 0x45, 0x43, 0x54, 0x5f, 0x43, 0x4c, 0x41, 0x53, 0x53, 0x5f, 0x53,
-	0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x52, 0x45, 0x4a, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x03,
-	0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61,
-	0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75,
-	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77,
-	0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02,
-	0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x0a, 0x0a, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x10, 0x22, 0x9a,
+	0x02, 0x0a, 0x11, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c,
+	0x6d, 0x65, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f,
+	0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x4b, 0x65, 0x79, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b,
+	0x65, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4b,
+	0x65, 0x79, 0x12, 0x43, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x45,
+	0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52,
+	0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x29, 0x0a, 0x10, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x6c, 0x61, 0x73,
+	0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x3a, 0x30, 0xf2, 0x9e, 0xd3, 0x8e, 0x03,
+	0x2a, 0x0a, 0x17, 0x0a, 0x15, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6b, 0x65, 0x79,
+	0x2c, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65, 0x79, 0x12, 0x0d, 0x0a, 0x09, 0x63, 0x6c,
+	0x61, 0x73, 0x73, 0x5f, 0x6b, 0x65, 0x79, 0x10, 0x01, 0x18, 0x11, 0x2a, 0xef, 0x01, 0x0a, 0x17,
+	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x45, 0x6e, 0x72, 0x6f, 0x6c, 0x6c, 0x6d, 0x65, 0x6e,
+	0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x29, 0x0a, 0x25, 0x50, 0x52, 0x4f, 0x4a, 0x45,
+	0x43, 0x54, 0x5f, 0x45, 0x4e, 0x52, 0x4f, 0x4c, 0x4c, 0x4d, 0x45, 0x4e, 0x54, 0x5f, 0x53, 0x54,
+	0x41, 0x54, 0x55, 0x53, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44,
+	0x10, 0x00, 0x12, 0x26, 0x0a, 0x22, 0x50, 0x52, 0x4f, 0x4a, 0x45, 0x43, 0x54, 0x5f, 0x45, 0x4e,
+	0x52, 0x4f, 0x4c, 0x4c, 0x4d, 0x45, 0x4e, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f,
+	0x41, 0x43, 0x43, 0x45, 0x50, 0x54, 0x45, 0x44, 0x10, 0x01, 0x12, 0x2f, 0x0a, 0x2b, 0x50, 0x52,
+	0x4f, 0x4a, 0x45, 0x43, 0x54, 0x5f, 0x45, 0x4e, 0x52, 0x4f, 0x4c, 0x4c, 0x4d, 0x45, 0x4e, 0x54,
+	0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x43, 0x48, 0x41, 0x4e, 0x47, 0x45, 0x53, 0x5f,
+	0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x45, 0x44, 0x10, 0x02, 0x12, 0x26, 0x0a, 0x22, 0x50,
+	0x52, 0x4f, 0x4a, 0x45, 0x43, 0x54, 0x5f, 0x45, 0x4e, 0x52, 0x4f, 0x4c, 0x4c, 0x4d, 0x45, 0x4e,
+	0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x52, 0x45, 0x4a, 0x45, 0x43, 0x54, 0x45,
+	0x44, 0x10, 0x03, 0x12, 0x28, 0x0a, 0x24, 0x50, 0x52, 0x4f, 0x4a, 0x45, 0x43, 0x54, 0x5f, 0x45,
+	0x4e, 0x52, 0x4f, 0x4c, 0x4c, 0x4d, 0x45, 0x4e, 0x54, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53,
+	0x5f, 0x54, 0x45, 0x52, 0x4d, 0x49, 0x4e, 0x41, 0x54, 0x45, 0x44, 0x10, 0x04, 0x42, 0xd8, 0x01,
+	0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31,
+	0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31,
+	0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -10892,7 +10901,7 @@ func file_regen_ecocredit_v1_state_proto_rawDescGZIP() []byte {
 var file_regen_ecocredit_v1_state_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_regen_ecocredit_v1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_regen_ecocredit_v1_state_proto_goTypes = []interface{}{
-	(ProjectClassStatus)(0),       // 0: regen.ecocredit.v1.ProjectClassStatus
+	(ProjectEnrollmentStatus)(0),  // 0: regen.ecocredit.v1.ProjectEnrollmentStatus
 	(*CreditType)(nil),            // 1: regen.ecocredit.v1.CreditType
 	(*Class)(nil),                 // 2: regen.ecocredit.v1.Class
 	(*ClassIssuer)(nil),           // 3: regen.ecocredit.v1.ClassIssuer
@@ -10909,7 +10918,7 @@ var file_regen_ecocredit_v1_state_proto_goTypes = []interface{}{
 	(*AllowedClassCreator)(nil),   // 14: regen.ecocredit.v1.AllowedClassCreator
 	(*ClassFee)(nil),              // 15: regen.ecocredit.v1.ClassFee
 	(*AllowedBridgeChain)(nil),    // 16: regen.ecocredit.v1.AllowedBridgeChain
-	(*ProjectClass)(nil),          // 17: regen.ecocredit.v1.ProjectClass
+	(*ProjectEnrollment)(nil),     // 17: regen.ecocredit.v1.ProjectEnrollment
 	(*timestamppb.Timestamp)(nil), // 18: google.protobuf.Timestamp
 	(*v1beta1.Coin)(nil),          // 19: cosmos.base.v1beta1.Coin
 }
@@ -10918,7 +10927,7 @@ var file_regen_ecocredit_v1_state_proto_depIdxs = []int32{
 	18, // 1: regen.ecocredit.v1.Batch.end_date:type_name -> google.protobuf.Timestamp
 	18, // 2: regen.ecocredit.v1.Batch.issuance_date:type_name -> google.protobuf.Timestamp
 	19, // 3: regen.ecocredit.v1.ClassFee.fee:type_name -> cosmos.base.v1beta1.Coin
-	0,  // 4: regen.ecocredit.v1.ProjectClass.status:type_name -> regen.ecocredit.v1.ProjectClassStatus
+	0,  // 4: regen.ecocredit.v1.ProjectEnrollment.status:type_name -> regen.ecocredit.v1.ProjectEnrollmentStatus
 	5,  // [5:5] is the sub-list for method output_type
 	5,  // [5:5] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
@@ -11125,7 +11134,7 @@ func file_regen_ecocredit_v1_state_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_state_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ProjectClass); i {
+			switch v := v.(*ProjectEnrollment); i {
 			case 0:
 				return &v.state
 			case 1:
