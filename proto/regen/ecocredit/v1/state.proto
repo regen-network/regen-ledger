@@ -388,8 +388,8 @@ message AllowedBridgeChain {
   string chain_name = 1;
 }
 
-// ProjectClass stores the data a project - credit class relation.
-message ProjectClass {
+// ProjectEnrollment stores the data a project's enrollment in a credit class.
+message ProjectEnrollment {
   option (cosmos.orm.v1.table) = {
     id : 17
     primary_key : {fields : "project_key,class_key"}
@@ -404,8 +404,8 @@ message ProjectClass {
   // for efficient lookups.
   uint64 class_key = 3;
 
-  // status is the status of the relation.
-  ProjectClassStatus status = 4;
+  // status is the status of the enrollment.
+  ProjectEnrollmentStatus status = 4;
 
   // project_metadata is any arbitrary metadata set by the project
   // admin. This should primarily be used to store metadata regarding the project's
@@ -420,24 +420,28 @@ message ProjectClass {
 
 // Application represents the evaluation status that a credit class issuer
 // assigns to a credit class application.
-enum ProjectClassStatus {
-  // PROJECT_CLASS_STATUS_UNSPECIFIED indicates that a credit class application
+enum ProjectEnrollmentStatus {
+  // PROJECT_ENROLLMENT_STATUS_UNSPECIFIED indicates that a credit class application
   // has been submitted but not evaluated.
-  PROJECT_CLASS_STATUS_UNSPECIFIED = 0;
+  PROJECT_ENROLLMENT_STATUS_UNSPECIFIED = 0;
 
-  // PROJECT_CLASS_STATUS_ACCEPTED indicates that the project has been
+  // PROJECT_ENROLLMENT_STATUS_ACCEPTED indicates that the project has been
   // accepted into the credit class.
-  PROJECT_CLASS_STATUS_ACCEPTED = 1;
+  PROJECT_ENROLLMENT_STATUS_ACCEPTED = 1;
 
-  // PROJECT_CLASS_STATUS_CHANGES_REQUESTED indicates that an application to
+  // PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED indicates that an application to
   // a credit class has been reviewed and that changes to the application have
   // been requested. It can also be used to indicate that a project within a credit
   // class has had its status reassessed and that changes to the project are
   // requested in order to continue in the credit class.
-  PROJECT_CLASS_STATUS_CHANGES_REQUESTED = 2;
+  PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED = 2;
 
-  // PROJECT_CLASS_STATUS_REJECTED indicates that the application has been
-  // rejected and that the project will not be accepted into the credit class
-  // or that a project previously accepted has been removed from the credit class.
-  PROJECT_CLASS_STATUS_REJECTED = 3;
+  // PROJECT_ENROLLMENT_STATUS_REJECTED indicates that the application has been
+  // rejected and that the project will not be accepted into the credit class.
+  PROJECT_ENROLLMENT_STATUS_REJECTED = 3;
+
+  // PROJECT_ENROLLMENT_STATUS_TERMINATED indicates that the project has been
+  // terminated from the credit class. This status is used when a project was
+  // in the credit class but has been removed or completed.
+  PROJECT_ENROLLMENT_STATUS_TERMINATED = 4;
 }

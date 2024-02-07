@@ -260,19 +260,21 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-bridge-chains";
   }
 
-  // ProjectClass queries information about a project credit class relationship.
+  // ProjectEnrollment queries information about a project's enrollment in a
+  // credit class.
   //
   // Since Revision 3
-  rpc ProjectClass(QueryProjectClassRequest) returns (QueryProjectClassResponse) {
+  rpc ProjectEnrollment(QueryProjectEnrollmentRequest) returns (QueryProjectEnrollmentResponse) {
     option (google.api.http) = {
-      get : "/regen/ecocredit/v1/project/{project_id}/class/{project_id}"
+      get : "/regen/ecocredit/v1/project/{project_id}/enrollment/{class_id}"
     };
   }
 
-  // ProjectClasses queries all credit classes associated with a project.
-  rpc ProjectClasses(QueryProjectClassesRequest) returns (QueryProjectClassesResponse) {
+  // ProjectEnrollments queries all credit class enrollments associated with a
+  // project.
+  rpc ProjectEnrollments(QueryProjectEnrollmentsRequest) returns (QueryProjectEnrollmentsResponse) {
     option (google.api.http) = {
-      get : "/regen/ecocredit/v1/project/{project_id}/class"
+      get : "/regen/ecocredit/v1/project/{project_id}/enrollment"
     };
   }
 }
@@ -843,10 +845,10 @@ message QueryAllowedBridgeChainsResponse {
   repeated string allowed_bridge_chains = 1;
 }
 
-// QueryProjectClassRequest is the Query/ProjectClass request type.
+// QueryProjectEnrollmentRequest is the Query/ProjectEnrollment request type.
 //
 // Since Revision 3
-message QueryProjectClassRequest {
+message QueryProjectEnrollmentRequest {
 
   // project_id is the unique identifier of the project to query.
   string project_id = 1;
@@ -855,19 +857,19 @@ message QueryProjectClassRequest {
   string class_id = 2;
 }
 
-// QueryProjectClassResponse is the Query/ProjectClass response type.
+// QueryProjectEnrollmentResponse is the Query/ProjectEnrollment response type.
 //
 // Since Revision 3
-message QueryProjectClassResponse {
+message QueryProjectEnrollmentResponse {
 
   // project_class is the fetched project class relationship.
-  ProjectClass project_class = 1;
+  ProjectEnrollment project_class = 1;
 }
 
-// QueryProjectClassesRequest is the Query/ProjectClasses request type.
+// QueryProjectEnrollmentsRequest is the Query/ProjectEnrollments request type.
 //
 // Since Revision 3
-message QueryProjectClassesRequest {
+message QueryProjectEnrollmentsRequest {
   // project_id is the unique identifier of the project to query.
   string project_id = 1;
 
@@ -875,13 +877,13 @@ message QueryProjectClassesRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryProjectClassesResponse is the Query/ProjectClasses response type.
+// QueryProjectEnrollmentsResponse is the Query/ProjectEnrollments response type.
 //
 // Since Revision 3
-message QueryProjectClassesResponse {
+message QueryProjectEnrollmentsResponse {
 
-  // classes are the fetched credit classes.
-  repeated ClassInfo classes = 1;
+  // enrollments are the fetched project credit class enrollments.
+  repeated ProjectEnrollment enrollments = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;

@@ -35,7 +35,7 @@ service Msg {
   rpc CreateUnregisteredProject(MsgCreateUnregisteredProject)
       returns (MsgCreateUnregisteredProjectResponse);
 
-  // UpdateProjectClass creates a new project credit class application, updates
+  // UpdateProjectEnrollment creates a new project credit class application, updates
   // an existing one or updates an existing relationship when changes are requested.
   // A project may be enrolled in at most one credit class per credit type
   // but can be enrolled in multiple credit classes across different credit
@@ -46,15 +46,15 @@ service Msg {
   // to "changes requested".
   //
   // Since Revision 3
-  rpc UpdateProjectClass(MsgUpdateProjectClass)
-      returns (MsgUpdateProjectClassResponse);
+  rpc UpdateProjectEnrollment(MsgUpdateProjectEnrollment)
+      returns (MsgUpdateProjectEnrollmentResponse);
 
-  // WithdrawProjectClass withdraws a project from a credit class application
+  // WithdrawProjectEnrollment withdraws a project from a credit class application
   // or enrollment unilaterally on the part of a project admin.
   //
   // Since Revision 3
-  rpc WithdrawProjectClass(MsgWithdrawProjectClass)
-      returns (MsgWithdrawProjectClassResponse);
+  rpc WithdrawProjectEnrollment(MsgWithdrawProjectEnrollment)
+      returns (MsgWithdrawProjectEnrollmentResponse);
 
   // EvaluateProjectClass allows a credit class issuer to evaluate a project
   // application or existing relationship, either approving, requesting changes to, or
@@ -67,8 +67,8 @@ service Msg {
   // application the CreateProject method should be used instead.
   //
   // Since Revision 3
-  rpc EvaluateProjectClass(MsgEvaluateProjectClass)
-      returns (MsgEvaluateProjectClassResponse);
+  rpc EvaluateProjectEnrollment(MsgEvaluateProjectEnrollment)
+      returns (MsgEvaluateProjectEnrollmentResponse);
 
   // CreateBatch creates a new batch of credits under the given project with a
   // start and end date representing the monitoring period, a list of credits to
@@ -347,8 +347,8 @@ message MsgCreateUnregisteredProjectResponse {
   string project_id = 1;
 }
 
-// MsgUpdateProjectClass is the Msg/UpdateProjectClass request type.
-message MsgUpdateProjectClass {
+// MsgUpdateProjectEnrollment is the Msg/UpdateProjectEnrollment request type.
+message MsgUpdateProjectEnrollment {
   option (cosmos.msg.v1.signer) = "project_admin";
 
   // project_admin is the address of the account that is the admin of the
@@ -369,11 +369,11 @@ message MsgUpdateProjectClass {
   string metadata = 4;
 }
 
-// MsgUpdateProjectClassResponse is the Msg/UpdateProjectClass response type.
-message MsgUpdateProjectClassResponse {}
+// MsgUpdateProjectEnrollmentResponse is the Msg/UpdateProjectEnrollment response type.
+message MsgUpdateProjectEnrollmentResponse {}
 
-// MsgWithdrawProjectClass is the Msg/WithdrawProjectClass request type.
-message MsgWithdrawProjectClass {
+// MsgWithdrawProjectEnrollment is the Msg/WithdrawProjectEnrollment request type.
+message MsgWithdrawProjectEnrollment {
   option (cosmos.msg.v1.signer) = "project_admin";
 
   // project_admin is the address of the account that is the admin of the
@@ -389,11 +389,11 @@ message MsgWithdrawProjectClass {
   string metadata = 3;
 }
 
-// MsgWithdrawProjectClassResponse is the Msg/WithdrawProjectClass response type.
-message MsgWithdrawProjectClassResponse {}
+// MsgWithdrawProjectEnrollmentResponse is the Msg/WithdrawProjectEnrollment response type.
+message MsgWithdrawProjectEnrollmentResponse {}
 
-// MsgEvaluateProjectClass is the Msg/EvaluateProjectClass request type.
-message MsgEvaluateProjectClass {
+// MsgEvaluateProjectEnrollment is the Msg/EvaluateProjectEnrollment request type.
+message MsgEvaluateProjectEnrollment {
   option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account that is the issuer of the credit class
@@ -404,7 +404,7 @@ message MsgEvaluateProjectClass {
   uint64 application_id = 2;
 
   // evaluation is the evaluation of the application.
-  ProjectClassStatus evaluation = 3;
+  ProjectEnrollmentStatus evaluation = 3;
 
   // metadata is any optiopnal arbitrary string with a maximum length of 256 characters
   // that includes or references the reason for the approving, requesting changes
@@ -412,8 +412,8 @@ message MsgEvaluateProjectClass {
   string metadata = 4;
 }
 
-// MsgEvaluateProjectClassResponse is the Msg/EvaluateProjectClass response type.
-message MsgEvaluateProjectClassResponse {}
+// MsgEvaluateProjectEnrollmentResponse is the Msg/EvaluateProjectEnrollment response type.
+message MsgEvaluateProjectEnrollmentResponse {}
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {

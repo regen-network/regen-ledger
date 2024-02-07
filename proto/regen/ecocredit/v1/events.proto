@@ -284,6 +284,9 @@ message EventWithdrawProjectClass {
 
   // class_id is the unique identifier of the class that was withdrawn from.
   string class_id = 2;
+
+  // old_status is the old status of the project class relationship before withdrawal.
+  ProjectEnrollmentStatus old_status = 3;
 }
 
 // EventEvaluateProjectClass is emitted when a project class relationship is
@@ -301,10 +304,10 @@ message EventEvaluateProjectClass {
   string class_id = 3;
 
   // old_status is the old status of the project class relationship.
-  ProjectClassStatus old_status = 4;
+  ProjectEnrollmentStatus old_status = 4;
 
   // new_status is the new status of the project class relationship.
-  ProjectClassStatus new_status = 5;
+  ProjectEnrollmentStatus new_status = 5;
 
   // new_class_metadata is any new class metadata.
   string new_class_metadata = 6;
