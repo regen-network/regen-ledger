@@ -50,7 +50,7 @@ service Msg {
       returns (MsgUpdateProjectClassResponse);
 
   // WithdrawProjectClass withdraws a project from a credit class application
-  // or relationship unilaterally on the part of a project admin.
+  // or enrollment unilaterally on the part of a project admin.
   //
   // Since Revision 3
   rpc WithdrawProjectClass(MsgWithdrawProjectClass)
