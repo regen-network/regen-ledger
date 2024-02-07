@@ -37,8 +37,8 @@ service Msg {
 
   // UpdateProjectClass creates a new project credit class application, updates
   // an existing one or updates an existing relationship when changes are requested.
-  // A project may have a relationship with at most one credit class per credit type
-  // but can have relationships with multiple credit classes across different credit
+  // A project may be enrolled in at most one credit class per credit type
+  // but can be enrolled in multiple credit classes across different credit
   // types. This can be useful, for example for issuing pre-financing forward contracts
   // while making progress towards issuing credits in an outcome based program.
   // Projects that are already accepted into a credit class can only update
