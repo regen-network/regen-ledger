@@ -2,11 +2,9 @@
 package math
 
 import (
-	"fmt"
-
 	"cosmossdk.io/errors"
+	"fmt"
 	"github.com/cockroachdb/apd/v2"
-
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -16,6 +14,10 @@ var exactContext = apd.Context{
 	MinExponent: apd.MinExponent,
 	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
 }
+
+var (
+	errNegativeSub = fmt.Errorf("result negative during non-negative subtraction")
+)
 
 // Add adds x and y
 func Add(x Dec, y Dec) (Dec, error) {
@@ -31,7 +33,7 @@ func SubNonNegative(x Dec, y Dec) (Dec, error) {
 	}
 
 	if z.IsNegative() {
-		return z, fmt.Errorf("result negative during non-negative subtraction")
+		return z, errNegativeSub
 	}
 
 	return z, nil
@@ -59,15 +61,12 @@ func SafeAddBalance(x Dec, y Dec) (Dec, error) {
 	var z Dec
 
 	if x.IsNegative() || y.IsNegative() {
-		return z, errors.Wrap(
-			sdkerrors.ErrInvalidRequest,
-			fmt.Sprintf("AddBalance() requires two non-negative Dec parameters, but received %s and %s", x, y))
+		return z, sdkerrors.ErrInvalidRequest.Wrap(fmt.Sprintf("AddBalance() requires two non-negative Dec parameters, but received %s and %s", x, y))
+
 	}
 
-	_, err := exactContext.Add(&z.dec, &x.dec, &y.dec)
-	if err != nil {
+	if _, err := exactContext.Add(&z.dec, &x.dec, &y.dec); err != nil {
 		return z, errors.Wrap(err, "decimal subtraction error")
 	}
-
 	return z, nil
 }
