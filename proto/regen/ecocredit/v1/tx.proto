@@ -35,40 +35,33 @@ service Msg {
   rpc CreateUnregisteredProject(MsgCreateUnregisteredProject)
       returns (MsgCreateUnregisteredProjectResponse);
 
-  // UpdateProjectEnrollment creates a new project credit class application, updates
-  // an existing one or updates an existing relationship when changes are requested.
-  // A project may be enrolled in at most one credit class per credit type
-  // but can be enrolled in multiple credit classes across different credit
-  // types. This can be useful, for example for issuing pre-financing forward contracts
-  // while making progress towards issuing credits in an outcome based program.
-  // Projects that are already accepted into a credit class can only update
-  // their metadata when an issuer has changed the status of the relations
-  // to "changes requested".
+  // CreateOrUpdateApplicaton creates a new project credit class application, updates
+  // the metadata for an existing one when changes have been requested, or withdraws
+  // the application.
+  //
+  // Since Revision 3
+  rpc CreateOrUpdateApplication(MsgCreateOrUpdateApplication)
+      returns (MsgCreateOrUpdateApplicationResponse);
+
+  // UpdateProjectEnrollment allows a credit class issuer to evaluate a project
+  // application - either approving, requesting changes to, or
+  // rejecting it, or to terminate an existing enrollment.
+  // Any issuer in the credit class may update the project credit
+  // class enrollment status using this method. If more sophisticated rules are
+  // required to coordinate between different issuers, the credit class admin
+  // should set up an on or off-chain governance process to coordinate this.
+  // Issuers may not admit projects into credit classes using this method
+  // without the project first creating an application. For an issuer to
+  // admit a project into a credit class without an
+  // application the CreateProject method should be used instead.
+  //
+  // If a project has not yet been accepted then the issuer may change the
+  // status to either changes requested, accepted or rejected. If the status
+  // is already accepted, the issuer may only change the status to terminated.
   //
   // Since Revision 3
   rpc UpdateProjectEnrollment(MsgUpdateProjectEnrollment)
       returns (MsgUpdateProjectEnrollmentResponse);
-
-  // WithdrawProjectEnrollment withdraws a project from a credit class application
-  // or enrollment unilaterally on the part of a project admin.
-  //
-  // Since Revision 3
-  rpc WithdrawProjectEnrollment(MsgWithdrawProjectEnrollment)
-      returns (MsgWithdrawProjectEnrollmentResponse);
-
-  // EvaluateProjectClass allows a credit class issuer to evaluate a project
-  // application or existing relationship, either approving, requesting changes to, or
-  // rejecting it. Any issuer in the credit class may update the project credit
-  // class status using this method. If more sophisticated rules are required to coordinate
-  // between different issuers, the credit class admin should set up an on or off-chain
-  // governance process to coordinate this. Issuers may not admit projects into
-  // credit classes using this method without the project first creating an
-  // application. For an issuer to admit a project into a credit class without an
-  // application the CreateProject method should be used instead.
-  //
-  // Since Revision 3
-  rpc EvaluateProjectEnrollment(MsgEvaluateProjectEnrollment)
-      returns (MsgEvaluateProjectEnrollmentResponse);
 
   // CreateBatch creates a new batch of credits under the given project with a
   // start and end date representing the monitoring period, a list of credits to
@@ -347,8 +340,8 @@ message MsgCreateUnregisteredProjectResponse {
   string project_id = 1;
 }
 
-// MsgUpdateProjectEnrollment is the Msg/UpdateProjectEnrollment request type.
-message MsgUpdateProjectEnrollment {
+// MsgCreateOrUpdateApplication is the Msg/CreateOrUpdateApplication request type.
+message MsgCreateOrUpdateApplication {
   option (cosmos.msg.v1.signer) = "project_admin";
 
   // project_admin is the address of the account that is the admin of the
@@ -367,53 +360,40 @@ message MsgUpdateProjectEnrollment {
   // that includes or references any metadata relevant to the application.
   // This could be used as a digital reference to the actual contents of the application.
   string metadata = 4;
+
+  // withdraw is a boolean that indicates whether the application is being
+  // withdrawn rather than updated.
+  bool withdraw = 5;
 }
 
-// MsgUpdateProjectEnrollmentResponse is the Msg/UpdateProjectEnrollment response type.
-message MsgUpdateProjectEnrollmentResponse {}
+// MsgCreateOrUpdateApplicationResponse is the Msg/CreateOrUpdateApplication response type.
+message MsgCreateOrUpdateApplicationResponse {}
 
-// MsgWithdrawProjectEnrollment is the Msg/WithdrawProjectEnrollment request type.
-message MsgWithdrawProjectEnrollment {
-  option (cosmos.msg.v1.signer) = "project_admin";
-
-  // project_admin is the address of the account that is the admin of the
-  // project which is withdrawing its application to the credit class.
-  string project_admin = 1;
-
-  // application_id is the identifier of the application to withdraw.
-  uint64 application_id = 2;
-
-  // metadata is any optional arbitrary string with a maximum length of 256 characters
-  // that includes or references any metadata relevant to the withdrawal. This
-  // will only be included in events.
-  string metadata = 3;
-}
-
-// MsgWithdrawProjectEnrollmentResponse is the Msg/WithdrawProjectEnrollment response type.
-message MsgWithdrawProjectEnrollmentResponse {}
-
-// MsgEvaluateProjectEnrollment is the Msg/EvaluateProjectEnrollment request type.
-message MsgEvaluateProjectEnrollment {
+// MsgUpdateProjectEnrollment is the Msg/UpdateProjectEnrollment request type.
+message MsgUpdateProjectEnrollment {
   option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account that is the issuer of the credit class
-  // which is evaluating the application.
+  // which is updating the project enrollment status.
   string issuer = 1;
 
-  // application_id is the identifier of the application to evaluate.
-  uint64 application_id = 2;
+  // project_id is the identifier of the project.
+  string project_id = 2;
 
-  // evaluation is the evaluation of the application.
-  ProjectEnrollmentStatus evaluation = 3;
+  // class_id is the identifier of the credit class.
+  string class_id = 3;
+
+  // new_status is the new status of the project enrollment.
+  ProjectEnrollmentStatus new_status = 4;
 
   // metadata is any optiopnal arbitrary string with a maximum length of 256 characters
   // that includes or references the reason for the approving, requesting changes
-  // to, or rejecting the application.
-  string metadata = 4;
+  // to, or rejecting the application, or terminating the project.
+  string metadata = 5;
 }
 
 // MsgEvaluateProjectEnrollmentResponse is the Msg/EvaluateProjectEnrollment response type.
-message MsgEvaluateProjectEnrollmentResponse {}
+message MsgUpdateProjectEnrollmentResponse {}
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
