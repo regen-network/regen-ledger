@@ -46,8 +46,9 @@ const (
 	// rejected and that the project will not be accepted into the credit class.
 	ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_REJECTED ProjectEnrollmentStatus = 3
 	// PROJECT_ENROLLMENT_STATUS_TERMINATED indicates that the project has been
-	// terminated from the credit class. This status is used when a project was
-	// in the credit class but has been removed or completed.
+	// terminated from the credit class. This status is used when a project the
+	// was previously accepted into the credit class but has been removed or
+	// completed.
 	ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_TERMINATED ProjectEnrollmentStatus = 4
 )
 

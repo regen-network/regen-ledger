@@ -25,5 +25,5 @@ func (m *MsgUpdateProjectEnrollment) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgUpdateProjectEnrollment.
 func (m *MsgUpdateProjectEnrollment) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{sdk.MustAccAddressFromBech32(m.ProjectAdmin)}
+	return []sdk.AccAddress{sdk.MustAccAddressFromBech32(m.Issuer)}
 }
