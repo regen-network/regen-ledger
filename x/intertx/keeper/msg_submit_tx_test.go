@@ -11,6 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	"github.com/cosmos/gogoproto/proto"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 
@@ -43,7 +44,7 @@ func TestSubmitTx(t *testing.T) {
 	portID, err := icatypes.NewControllerPortID(msg.Owner)
 	assert.NilError(t, err)
 	channelID := "ch-1"
-	serializedTx, err := icatypes.SerializeCosmosTx(s.cdc, []sdk.Msg{&msgSend})
+	serializedTx, err := icatypes.SerializeCosmosTx(s.cdc, []proto.Message{&msgSend})
 	assert.NilError(t, err)
 	packetData := icatypes.InterchainAccountPacketData{
 		Type: icatypes.EXECUTE_TX,

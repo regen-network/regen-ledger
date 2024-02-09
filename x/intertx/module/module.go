@@ -7,12 +7,12 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
+	"github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cometbft/cometbft/abci/types"
 
 	"github.com/regen-network/regen-ledger/x/intertx"
 	intertxClient "github.com/regen-network/regen-ledger/x/intertx/client"
@@ -89,21 +89,6 @@ func (a AppModule) ExportGenesis(_ sdk.Context, _ codec.JSONCodec) json.RawMessa
 
 // RegisterInvariants implements AppModule/RegisterInvariants.
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
-
-// Route implements AppModule/Route.
-func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(intertx.RouterKey, nil)
-}
-
-// QuerierRoute implements AppModule/QuerierRoute.
-func (a AppModule) QuerierRoute() string {
-	return intertx.QuerierRoute
-}
-
-// LegacyQuerierHandler implements AppModule/LegacyQuerierHandler.
-func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
 
 // RegisterServices implements AppModule/RegisterServices.
 func (a AppModule) RegisterServices(cfg module.Configurator) {
