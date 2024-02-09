@@ -5,25 +5,20 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/regen-network/gocuke"
-	"github.com/stretchr/testify/require"
 	dbm "github.com/cometbft/cometbft-db"
-	"google.golang.org/grpc"
-
-	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
-
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
 )
-
-var _ Factory = &factoryImpl{}
 
 type factoryImpl struct {
 	t       gocuke.TestingT
@@ -83,9 +78,10 @@ func (ff factoryImpl) Setup() Fixture {
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 	mm := sdkmodules.NewManager(ff.modules...)
 	cfg := sdkmodules.NewConfigurator(cdc, baseApp.MsgServiceRouter(), baseApp.GRPCQueryRouter())
-	for _, module := range mm.Modules {
-		module.RegisterInterfaces(ff.cdc.InterfaceRegistry())
-		module.RegisterServices(cfg)
+	mm.RegisterServices(cfg)
+	ir := ff.cdc.InterfaceRegistry()
+	for _, m := range mm.Modules {
+		m.(sdkmodules.AppModule).RegisterInterfaces(ir)
 	}
 
 	err := baseApp.LoadLatestVersion()

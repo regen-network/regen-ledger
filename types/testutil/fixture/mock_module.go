@@ -61,18 +61,6 @@ func (m MockModule) ExportGenesis(_ sdk.Context, _ codec.JSONCodec) json.RawMess
 
 func (m MockModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-func (m MockModule) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-func (m MockModule) QuerierRoute() string {
-	return ""
-}
-
-func (m MockModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
-
 func (m MockModule) RegisterServices(_ module.Configurator) {}
 
 func (m MockModule) ConsensusVersion() uint64 {
