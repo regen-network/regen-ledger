@@ -36,13 +36,10 @@ func (m *MsgAttest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-// Route implements the LegacyMsg interface.
-func (m MsgAttest) Route() string { return sdk.MsgTypeURL(&m) }
-
-// Type implements the LegacyMsg interface.
-func (m MsgAttest) Type() string { return sdk.MsgTypeURL(&m) }
-
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgAttest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+// LegacyMsg.Type implementations
+func (msg MsgAttest) Route() string { return "" }
+func (msg MsgAttest) Type() string  { return sdk.MsgTypeURL(&msg) }
+func (msg *MsgAttest) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
 }
