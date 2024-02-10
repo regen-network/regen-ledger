@@ -9,11 +9,11 @@ import (
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/gogo/protobuf/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1160,7 +1160,7 @@ type AnchorInfo struct {
 	// content_hash is the ContentHash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,2,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// timestamp is the time at which the data was anchored.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *types.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *AnchorInfo) Reset()         { *m = AnchorInfo{} }
@@ -1210,7 +1210,7 @@ func (m *AnchorInfo) GetContentHash() *ContentHash {
 	return nil
 }
 
-func (m *AnchorInfo) GetTimestamp() *timestamppb.Timestamp {
+func (m *AnchorInfo) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -1224,7 +1224,7 @@ type AttestationInfo struct {
 	// attestor is the address of the account that attested to the anchored data.
 	Attestor string `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
 	// timestamp is the time at which the data was attested to.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *types.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *AttestationInfo) Reset()         { *m = AttestationInfo{} }
@@ -1274,7 +1274,7 @@ func (m *AttestationInfo) GetAttestor() string {
 	return ""
 }
 
-func (m *AttestationInfo) GetTimestamp() *timestamppb.Timestamp {
+func (m *AttestationInfo) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -5768,7 +5768,7 @@ func (m *AnchorInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &timestamppb.Timestamp{}
+				m.Timestamp = &types.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -5918,7 +5918,7 @@ func (m *AttestationInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &timestamppb.Timestamp{}
+				m.Timestamp = &types.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

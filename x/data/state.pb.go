@@ -4,10 +4,10 @@
 package data
 
 import (
-	_ "cosmos/orm/v1"
+	_ "cosmossdk.io/api/cosmos/orm/v1"
 	fmt "fmt"
 	proto "github.com/cosmos/gogoproto/proto"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -85,7 +85,7 @@ type DataAnchor struct {
 	Id []byte `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// timestamp is the anchor timestamp for this object - the time at which
 	// it was first known to the blockchain.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *DataAnchor) Reset()         { *m = DataAnchor{} }
@@ -128,7 +128,7 @@ func (m *DataAnchor) GetId() []byte {
 	return nil
 }
 
-func (m *DataAnchor) GetTimestamp() *timestamppb.Timestamp {
+func (m *DataAnchor) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -142,7 +142,7 @@ type DataAttestor struct {
 	// attestor is the account address of the attestor.
 	Attestor []byte `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
 	// timestamp is the time at which the attestor signed this data object.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *types.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *DataAttestor) Reset()         { *m = DataAttestor{} }
@@ -192,7 +192,7 @@ func (m *DataAttestor) GetAttestor() []byte {
 	return nil
 }
 
-func (m *DataAttestor) GetTimestamp() *timestamppb.Timestamp {
+func (m *DataAttestor) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -884,7 +884,7 @@ func (m *DataAnchor) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &timestamppb.Timestamp{}
+				m.Timestamp = &types.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1038,7 +1038,7 @@ func (m *DataAttestor) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &timestamppb.Timestamp{}
+				m.Timestamp = &types.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

@@ -9,10 +9,10 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -91,7 +91,7 @@ type MsgAnchorResponse struct {
 	// iri is the IRI of the data that was anchored.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 	// timestamp is the time at which the data was anchored.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *MsgAnchorResponse) Reset()         { *m = MsgAnchorResponse{} }
@@ -134,7 +134,7 @@ func (m *MsgAnchorResponse) GetIri() string {
 	return ""
 }
 
-func (m *MsgAnchorResponse) GetTimestamp() *timestamppb.Timestamp {
+func (m *MsgAnchorResponse) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -208,7 +208,7 @@ type MsgAttestResponse struct {
 	// the IRI will not be included in this list.
 	Iris []string `protobuf:"bytes,1,rep,name=iris,proto3" json:"iris,omitempty"`
 	// timestamp is the time at which any new attestations were made.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *MsgAttestResponse) Reset()         { *m = MsgAttestResponse{} }
@@ -251,7 +251,7 @@ func (m *MsgAttestResponse) GetIris() []string {
 	return nil
 }
 
-func (m *MsgAttestResponse) GetTimestamp() *timestamppb.Timestamp {
+func (m *MsgAttestResponse) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -1442,7 +1442,7 @@ func (m *MsgAnchorResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &timestamppb.Timestamp{}
+				m.Timestamp = &types.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1676,7 +1676,7 @@ func (m *MsgAttestResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &timestamppb.Timestamp{}
+				m.Timestamp = &types.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

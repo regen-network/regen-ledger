@@ -9,11 +9,11 @@ import (
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/gogo/protobuf/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -571,7 +571,7 @@ type SellOrderInfo struct {
 	DisableAutoRetire bool `protobuf:"varint,7,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
 	// expiration is an optional timestamp when the sell order expires. When the
 	// expiration time is reached, the sell order is removed from state.
-	Expiration *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expiration,proto3" json:"expiration,omitempty"`
+	Expiration *types.Timestamp `protobuf:"bytes,9,opt,name=expiration,proto3" json:"expiration,omitempty"`
 }
 
 func (m *SellOrderInfo) Reset()         { *m = SellOrderInfo{} }
@@ -656,7 +656,7 @@ func (m *SellOrderInfo) GetDisableAutoRetire() bool {
 	return false
 }
 
-func (m *SellOrderInfo) GetExpiration() *timestamppb.Timestamp {
+func (m *SellOrderInfo) GetExpiration() *types.Timestamp {
 	if m != nil {
 		return m.Expiration
 	}
@@ -2997,7 +2997,7 @@ func (m *SellOrderInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Expiration == nil {
-				m.Expiration = &timestamppb.Timestamp{}
+				m.Expiration = &types.Timestamp{}
 			}
 			if err := m.Expiration.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
