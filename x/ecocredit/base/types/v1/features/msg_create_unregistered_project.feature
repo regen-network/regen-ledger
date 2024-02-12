@@ -42,10 +42,10 @@ Feature: MsgCreateUnregisteredProject
       Then expect error contains "<error>"
 
       Examples:
-        | metadata                                                                                                                                                                                                                                                                               | error                  |
-        |                                                                                                                                                                                                                                                                                        |                        |
-        | a                                                                                                                                                                                                                                                                                      |                        |
-        | This is a string with 256 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac facilisis arcu. Nullam nec dui ac nunc dapibus cursus. Sed sit amet massa rutrum, auctor sapien ut, euismod dolor. Nullam vehicula tellus laoreet tincidun  |                        |
+        | metadata                                                                                                                                                                                                                                                          | error    |
+        |                                                                                                                                                                                                                                                                   |          |
+        | a                                                                                                                                                                                                                                                                 |          |
+        | This is a string with 256 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac facilisis arcu. Nullam nec dui ac nunc dapibus cursus. Sed sit amet massa rutrum, auctor sapien ut, euismod dolor. Nullam vehicula tellus laoreet tincidun  |          |
         | This is a string with 256 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac facilisis arcu. Nullam nec dui ac nunc dapibus cursus. Sed sit amet massa rutrum, auctor sapien ut, euismod dolor. Nullam vehicula tellus laoreet tincidunt | metadata |
 
   Rule: reference is optional and at most 32 characters
@@ -57,8 +57,8 @@ Feature: MsgCreateUnregisteredProject
       Then expect error contains "<error>"
 
       Examples:
-        | reference                        | error     |
-        |                                  |           |
-        | a                                |           |
+        | reference                         | error     |
+        |                                   |           |
+        | a                                 |           |
         | This is a string with 32 chars..  |           |
         | This is a string with 33 chars..! | reference |

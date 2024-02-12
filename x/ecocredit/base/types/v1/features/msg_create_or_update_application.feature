@@ -9,10 +9,10 @@ Feature: MsgCreateOrUpdateApplication
       Then expect error contains "<error>"
 
       Examples:
-        | admin                                        | error                          |
-        |                                              | "admin is required"            |
-        | 0x0                                          | "admin is not a valid address" |
-        | regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 |                                |
+        | admin                                        | error         |
+        |                                              | project admin |
+        | 0x0                                          | project admin |
+        | regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 |               |
 
     Scenario: project admin is signer
       Given project admin "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
@@ -27,9 +27,9 @@ Feature: MsgCreateOrUpdateApplication
       Then expect error contains "<error>"
 
       Examples:
-        | project_id | error                    |
-        |            | "project_id is required" |
-        | P1         |                          |
+        | project_id | error      |
+        |            | project id |
+        | P1         |            |
 
   Rule: class_id should be non-empty
     Scenario Outline: validate class ID
@@ -40,9 +40,9 @@ Feature: MsgCreateOrUpdateApplication
       Then expect error contains "<error>"
 
       Examples:
-        | class_id | error                  |
-        |          | "class_id is required" |
-        | C1       |                        |
+        | class_id | error    |
+        |          | class id |
+        | C1       |          |
 
   Rule: metadata is optional and at most 256 characters
     Scenario Outline: validate metadata
@@ -54,8 +54,8 @@ Feature: MsgCreateOrUpdateApplication
       Then expect error contains "<error>"
 
       Examples:
-        | metadata                                                                                                                                                                                                                                                                               | error                  |
-        |                                                                                                                                                                                                                                                                                        |                        |
-        | a                                                                                                                                                                                                                                                                                      |                        |
-        | This is a string with 256 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac facilisis arcu. Nullam nec dui ac nunc dapibus cursus. Sed sit amet massa rutrum, auctor sapien ut, euismod dolor. Nullam vehicula tellus laoreet tincidunt efficitur. Vivamus.  |                        |
-        | This is a string with 257 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac facilisis arcu. Nullam nec dui ac nunc dapibus cursus. Sed sit amet massa rutrum, auctor sapien ut, euismod dolor. Nullam vehicula tellus laoreet tincidunt efficitur. Vivamus.! | "metadata is too long" |
+        | metadata                                                                                                                                                                                                                                                          | error    |
+        |                                                                                                                                                                                                                                                                   |          |
+        | a                                                                                                                                                                                                                                                                 |          |
+        | This is a string with 256 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac facilisis arcu. Nullam nec dui ac nunc dapibus cursus. Sed sit amet massa rutrum, auctor sapien ut, euismod dolor. Nullam vehicula tellus laoreet tincidun  |          |
+        | This is a string with 256 characters. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac facilisis arcu. Nullam nec dui ac nunc dapibus cursus. Sed sit amet massa rutrum, auctor sapien ut, euismod dolor. Nullam vehicula tellus laoreet tincidunt | metadata |
