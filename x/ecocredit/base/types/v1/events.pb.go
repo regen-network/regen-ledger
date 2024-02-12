@@ -22,6 +22,45 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Action describes an action taken on an application.
+type EventUpdateApplication_Action int32
+
+const (
+	// ACTION_UNSPECIFIED is the default value for the action and is invalid.
+	EventUpdateApplication_ACTION_UNSPECIFIED EventUpdateApplication_Action = 0
+	// ACTION_CREATE is the action taken when a project admin creates an
+	// application to a credit class.
+	EventUpdateApplication_ACTION_CREATE EventUpdateApplication_Action = 1
+	// ACTION_UPDATE is the action taken when a project admin updates an
+	// application to a credit class.
+	EventUpdateApplication_ACTION_UPDATE EventUpdateApplication_Action = 2
+	// ACTION_WITHDRAW is the action taken when a project admin withdraws an
+	// application to a credit class.
+	EventUpdateApplication_ACTION_WITHDRAW EventUpdateApplication_Action = 3
+)
+
+var EventUpdateApplication_Action_name = map[int32]string{
+	0: "ACTION_UNSPECIFIED",
+	1: "ACTION_CREATE",
+	2: "ACTION_UPDATE",
+	3: "ACTION_WITHDRAW",
+}
+
+var EventUpdateApplication_Action_value = map[string]int32{
+	"ACTION_UNSPECIFIED": 0,
+	"ACTION_CREATE":      1,
+	"ACTION_UPDATE":      2,
+	"ACTION_WITHDRAW":    3,
+}
+
+func (x EventUpdateApplication_Action) String() string {
+	return proto.EnumName(EventUpdateApplication_Action_name, int32(x))
+}
+
+func (EventUpdateApplication_Action) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_e32415575ff8b4b2, []int{19, 0}
+}
+
 // EventCreateClass is an event emitted when a credit class is created.
 type EventCreateClass struct {
 	// class_id is the unique identifier of the credit class.
@@ -1168,30 +1207,31 @@ func (m *EventBurnRegen) GetReason() string {
 	return ""
 }
 
-// EventUpdateProjectClass is emitted when a project admin submits or updates
-// a project class relationship's metadata, usually relating to credit class
-// application.
-type EventUpdateProjectClass struct {
+// EventUpdateApplication is emitted when a project admin creates, updates
+// or withdraws a project's application to a credit class.
+type EventUpdateApplication struct {
 	// project_id is the unique identifier of the project that was updated.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// class_id is the unique identifier of the class that was updated.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// new_project_metadata is the new project metadata.
-	NewProjectMetadata string `protobuf:"bytes,3,opt,name=new_project_metadata,json=newProjectMetadata,proto3" json:"new_project_metadata,omitempty"`
+	// action is the action that was taken on the application.
+	Action EventUpdateApplication_Action `protobuf:"varint,3,opt,name=action,proto3,enum=regen.ecocredit.v1.EventUpdateApplication_Action" json:"action,omitempty"`
+	// new_application_metadata is any new application metadata.
+	NewApplicationMetadata string `protobuf:"bytes,4,opt,name=new_application_metadata,json=newApplicationMetadata,proto3" json:"new_application_metadata,omitempty"`
 }
 
-func (m *EventUpdateProjectClass) Reset()         { *m = EventUpdateProjectClass{} }
-func (m *EventUpdateProjectClass) String() string { return proto.CompactTextString(m) }
-func (*EventUpdateProjectClass) ProtoMessage()    {}
-func (*EventUpdateProjectClass) Descriptor() ([]byte, []int) {
+func (m *EventUpdateApplication) Reset()         { *m = EventUpdateApplication{} }
+func (m *EventUpdateApplication) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateApplication) ProtoMessage()    {}
+func (*EventUpdateApplication) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e32415575ff8b4b2, []int{19}
 }
-func (m *EventUpdateProjectClass) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateApplication) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventUpdateProjectClass) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateApplication) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventUpdateProjectClass.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateApplication.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1201,108 +1241,49 @@ func (m *EventUpdateProjectClass) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *EventUpdateProjectClass) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventUpdateProjectClass.Merge(m, src)
+func (m *EventUpdateApplication) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateApplication.Merge(m, src)
 }
-func (m *EventUpdateProjectClass) XXX_Size() int {
+func (m *EventUpdateApplication) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventUpdateProjectClass) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventUpdateProjectClass.DiscardUnknown(m)
+func (m *EventUpdateApplication) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateApplication.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventUpdateProjectClass proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateApplication proto.InternalMessageInfo
 
-func (m *EventUpdateProjectClass) GetProjectId() string {
+func (m *EventUpdateApplication) GetProjectId() string {
 	if m != nil {
 		return m.ProjectId
 	}
 	return ""
 }
 
-func (m *EventUpdateProjectClass) GetClassId() string {
+func (m *EventUpdateApplication) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *EventUpdateProjectClass) GetNewProjectMetadata() string {
+func (m *EventUpdateApplication) GetAction() EventUpdateApplication_Action {
 	if m != nil {
-		return m.NewProjectMetadata
+		return m.Action
+	}
+	return EventUpdateApplication_ACTION_UNSPECIFIED
+}
+
+func (m *EventUpdateApplication) GetNewApplicationMetadata() string {
+	if m != nil {
+		return m.NewApplicationMetadata
 	}
 	return ""
 }
 
-// EventWithdrawProjectClass is emitted when a project admin withdraws a project
-// from a credit class.
-type EventWithdrawProjectClass struct {
-	// project_id is the unique identifier of the project which withdrew from the
-	// class.
-	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	// class_id is the unique identifier of the class that was withdrawn from.
-	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// old_status is the old status of the project class relationship before withdrawal.
-	OldStatus ProjectEnrollmentStatus `protobuf:"varint,3,opt,name=old_status,json=oldStatus,proto3,enum=regen.ecocredit.v1.ProjectEnrollmentStatus" json:"old_status,omitempty"`
-}
-
-func (m *EventWithdrawProjectClass) Reset()         { *m = EventWithdrawProjectClass{} }
-func (m *EventWithdrawProjectClass) String() string { return proto.CompactTextString(m) }
-func (*EventWithdrawProjectClass) ProtoMessage()    {}
-func (*EventWithdrawProjectClass) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{20}
-}
-func (m *EventWithdrawProjectClass) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *EventWithdrawProjectClass) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_EventWithdrawProjectClass.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *EventWithdrawProjectClass) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventWithdrawProjectClass.Merge(m, src)
-}
-func (m *EventWithdrawProjectClass) XXX_Size() int {
-	return m.Size()
-}
-func (m *EventWithdrawProjectClass) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventWithdrawProjectClass.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EventWithdrawProjectClass proto.InternalMessageInfo
-
-func (m *EventWithdrawProjectClass) GetProjectId() string {
-	if m != nil {
-		return m.ProjectId
-	}
-	return ""
-}
-
-func (m *EventWithdrawProjectClass) GetClassId() string {
-	if m != nil {
-		return m.ClassId
-	}
-	return ""
-}
-
-func (m *EventWithdrawProjectClass) GetOldStatus() ProjectEnrollmentStatus {
-	if m != nil {
-		return m.OldStatus
-	}
-	return ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED
-}
-
-// EventEvaluateProjectClass is emitted when a project class relationship is
-// evaluated by a credit class issuer.
-type EventEvaluateProjectClass struct {
+// EventUpdateProjectEnrollment is emitted when a credit class issuer updates
+// the enrollment status of a project.
+type EventUpdateProjectEnrollment struct {
 	// issuer is the address of the credit class issuer which evaluated the
 	// project.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
@@ -1315,22 +1296,22 @@ type EventEvaluateProjectClass struct {
 	OldStatus ProjectEnrollmentStatus `protobuf:"varint,4,opt,name=old_status,json=oldStatus,proto3,enum=regen.ecocredit.v1.ProjectEnrollmentStatus" json:"old_status,omitempty"`
 	// new_status is the new status of the project class relationship.
 	NewStatus ProjectEnrollmentStatus `protobuf:"varint,5,opt,name=new_status,json=newStatus,proto3,enum=regen.ecocredit.v1.ProjectEnrollmentStatus" json:"new_status,omitempty"`
-	// new_class_metadata is any new class metadata.
-	NewClassMetadata string `protobuf:"bytes,6,opt,name=new_class_metadata,json=newClassMetadata,proto3" json:"new_class_metadata,omitempty"`
+	// new_enrollment_metadata is any new enrollment metadata.
+	NewEnrollmentMetadata string `protobuf:"bytes,6,opt,name=new_enrollment_metadata,json=newEnrollmentMetadata,proto3" json:"new_enrollment_metadata,omitempty"`
 }
 
-func (m *EventEvaluateProjectClass) Reset()         { *m = EventEvaluateProjectClass{} }
-func (m *EventEvaluateProjectClass) String() string { return proto.CompactTextString(m) }
-func (*EventEvaluateProjectClass) ProtoMessage()    {}
-func (*EventEvaluateProjectClass) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{21}
+func (m *EventUpdateProjectEnrollment) Reset()         { *m = EventUpdateProjectEnrollment{} }
+func (m *EventUpdateProjectEnrollment) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateProjectEnrollment) ProtoMessage()    {}
+func (*EventUpdateProjectEnrollment) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e32415575ff8b4b2, []int{20}
 }
-func (m *EventEvaluateProjectClass) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateProjectEnrollment) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventEvaluateProjectClass) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateProjectEnrollment) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventEvaluateProjectClass.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateProjectEnrollment.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1340,61 +1321,62 @@ func (m *EventEvaluateProjectClass) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *EventEvaluateProjectClass) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventEvaluateProjectClass.Merge(m, src)
+func (m *EventUpdateProjectEnrollment) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateProjectEnrollment.Merge(m, src)
 }
-func (m *EventEvaluateProjectClass) XXX_Size() int {
+func (m *EventUpdateProjectEnrollment) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventEvaluateProjectClass) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventEvaluateProjectClass.DiscardUnknown(m)
+func (m *EventUpdateProjectEnrollment) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateProjectEnrollment.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventEvaluateProjectClass proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateProjectEnrollment proto.InternalMessageInfo
 
-func (m *EventEvaluateProjectClass) GetIssuer() string {
+func (m *EventUpdateProjectEnrollment) GetIssuer() string {
 	if m != nil {
 		return m.Issuer
 	}
 	return ""
 }
 
-func (m *EventEvaluateProjectClass) GetProjectId() string {
+func (m *EventUpdateProjectEnrollment) GetProjectId() string {
 	if m != nil {
 		return m.ProjectId
 	}
 	return ""
 }
 
-func (m *EventEvaluateProjectClass) GetClassId() string {
+func (m *EventUpdateProjectEnrollment) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *EventEvaluateProjectClass) GetOldStatus() ProjectEnrollmentStatus {
+func (m *EventUpdateProjectEnrollment) GetOldStatus() ProjectEnrollmentStatus {
 	if m != nil {
 		return m.OldStatus
 	}
 	return ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED
 }
 
-func (m *EventEvaluateProjectClass) GetNewStatus() ProjectEnrollmentStatus {
+func (m *EventUpdateProjectEnrollment) GetNewStatus() ProjectEnrollmentStatus {
 	if m != nil {
 		return m.NewStatus
 	}
 	return ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED
 }
 
-func (m *EventEvaluateProjectClass) GetNewClassMetadata() string {
+func (m *EventUpdateProjectEnrollment) GetNewEnrollmentMetadata() string {
 	if m != nil {
-		return m.NewClassMetadata
+		return m.NewEnrollmentMetadata
 	}
 	return ""
 }
 
 func init() {
+	proto.RegisterEnum("regen.ecocredit.v1.EventUpdateApplication_Action", EventUpdateApplication_Action_name, EventUpdateApplication_Action_value)
 	proto.RegisterType((*EventCreateClass)(nil), "regen.ecocredit.v1.EventCreateClass")
 	proto.RegisterType((*EventCreateProject)(nil), "regen.ecocredit.v1.EventCreateProject")
 	proto.RegisterType((*EventCreateBatch)(nil), "regen.ecocredit.v1.EventCreateBatch")
@@ -1414,68 +1396,72 @@ func init() {
 	proto.RegisterType((*EventBridge)(nil), "regen.ecocredit.v1.EventBridge")
 	proto.RegisterType((*EventBridgeReceive)(nil), "regen.ecocredit.v1.EventBridgeReceive")
 	proto.RegisterType((*EventBurnRegen)(nil), "regen.ecocredit.v1.EventBurnRegen")
-	proto.RegisterType((*EventUpdateProjectClass)(nil), "regen.ecocredit.v1.EventUpdateProjectClass")
-	proto.RegisterType((*EventWithdrawProjectClass)(nil), "regen.ecocredit.v1.EventWithdrawProjectClass")
-	proto.RegisterType((*EventEvaluateProjectClass)(nil), "regen.ecocredit.v1.EventEvaluateProjectClass")
+	proto.RegisterType((*EventUpdateApplication)(nil), "regen.ecocredit.v1.EventUpdateApplication")
+	proto.RegisterType((*EventUpdateProjectEnrollment)(nil), "regen.ecocredit.v1.EventUpdateProjectEnrollment")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/events.proto", fileDescriptor_e32415575ff8b4b2) }
 
 var fileDescriptor_e32415575ff8b4b2 = []byte{
-	// 842 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0x4d, 0x6f, 0x13, 0x3b,
-	0x14, 0xed, 0xe4, 0xeb, 0x35, 0xee, 0x6b, 0x5e, 0x35, 0xea, 0xeb, 0x6b, 0xab, 0xbe, 0xb4, 0x1a,
-	0x09, 0x51, 0x09, 0x9a, 0x90, 0x16, 0xa4, 0x22, 0x16, 0xa8, 0x09, 0x5d, 0x14, 0xa9, 0x02, 0x85,
-	0x22, 0x3e, 0x36, 0x91, 0x67, 0x7c, 0x49, 0x5d, 0x26, 0x76, 0xe4, 0xf1, 0x24, 0xad, 0xc4, 0x96,
-	0x3d, 0x4b, 0xb6, 0xac, 0xd8, 0xb1, 0x41, 0xe2, 0x37, 0xb0, 0xec, 0x92, 0x25, 0x6a, 0xff, 0x08,
-	0x1a, 0x8f, 0x67, 0x92, 0x49, 0x42, 0x52, 0x4a, 0xd9, 0xf9, 0xde, 0xf8, 0xf8, 0x1c, 0xfb, 0xde,
-	0x73, 0x33, 0x68, 0x55, 0x40, 0x13, 0x58, 0x19, 0x1c, 0xee, 0x08, 0x20, 0x54, 0x96, 0x3b, 0x95,
-	0x32, 0x74, 0x80, 0x49, 0xaf, 0xd4, 0x16, 0x5c, 0x72, 0xd3, 0x54, 0x1b, 0x4a, 0xf1, 0x86, 0x52,
-	0xa7, 0xb2, 0x5c, 0x1c, 0x01, 0x92, 0x27, 0x6d, 0xd0, 0x98, 0x91, 0xbf, 0x7b, 0x12, 0x4b, 0x08,
-	0x7f, 0xb7, 0x36, 0xd0, 0xdc, 0x6e, 0xc0, 0x51, 0x13, 0x80, 0x25, 0xd4, 0x5c, 0xec, 0x79, 0xe6,
-	0x12, 0x9a, 0x76, 0x82, 0x45, 0x83, 0x92, 0x45, 0x63, 0xcd, 0x58, 0xcf, 0xd7, 0xff, 0x52, 0xf1,
-	0x1e, 0xb1, 0xb6, 0x90, 0xd9, 0xb7, 0xfd, 0xb1, 0xe0, 0x47, 0xe0, 0x48, 0xf3, 0x7f, 0x84, 0xda,
-	0xe1, 0xb2, 0x07, 0xc9, 0xeb, 0xcc, 0x1e, 0xb1, 0x58, 0x82, 0xa3, 0x8a, 0xa5, 0x73, 0x68, 0xae,
-	0xa2, 0x19, 0x3b, 0x58, 0x34, 0x08, 0x30, 0xde, 0xd2, 0x18, 0xa4, 0x52, 0x0f, 0x82, 0x8c, 0x79,
-	0x17, 0xe5, 0xb9, 0xa0, 0x4d, 0xca, 0x1a, 0xf2, 0x78, 0x31, 0xb5, 0x66, 0xac, 0xcf, 0x6c, 0xae,
-	0x94, 0x86, 0x1f, 0xa0, 0xf4, 0x48, 0x6d, 0x3a, 0x38, 0xae, 0x4f, 0x73, 0xbd, 0xb2, 0xde, 0xa0,
-	0xbc, 0xe2, 0xdb, 0xa7, 0x4c, 0x4e, 0x26, 0xba, 0x8e, 0xfe, 0x91, 0x02, 0x13, 0x6c, 0xbb, 0xd0,
-	0xc0, 0x2d, 0xee, 0x33, 0xa9, 0xe8, 0xf2, 0xf5, 0x42, 0x94, 0xde, 0x51, 0x59, 0xf3, 0x1a, 0x2a,
-	0x08, 0x90, 0x54, 0x00, 0x89, 0xf6, 0xa5, 0xd5, 0xbe, 0x59, 0x9d, 0x0d, 0xb7, 0x59, 0x1e, 0xfa,
-	0x37, 0x66, 0x57, 0x77, 0xad, 0x29, 0xad, 0xde, 0x1f, 0xbd, 0xf2, 0x17, 0x03, 0xcd, 0x2a, 0xd6,
-	0x03, 0x81, 0x99, 0xf7, 0x0a, 0x84, 0xb9, 0x80, 0x72, 0x1e, 0x30, 0x02, 0x42, 0x13, 0xe9, 0xc8,
-	0x5c, 0x41, 0x79, 0x01, 0x0e, 0x6d, 0x53, 0x88, 0x2f, 0xda, 0x4b, 0x0c, 0x6a, 0x4c, 0x5f, 0xe4,
-	0xb5, 0x32, 0x17, 0x7c, 0xad, 0xec, 0xa8, 0xd7, 0x7a, 0x6f, 0xa0, 0x19, 0x25, 0xbc, 0xae, 0xd2,
-	0xe6, 0x3c, 0xca, 0xf2, 0x2e, 0x8b, 0x55, 0x87, 0xc1, 0xa0, 0xac, 0xd4, 0x90, 0xac, 0x05, 0x94,
-	0x4b, 0xd4, 0x44, 0x47, 0xa6, 0x85, 0xfe, 0x3e, 0xf2, 0x05, 0xf5, 0x08, 0x75, 0x24, 0xe5, 0x4c,
-	0x6b, 0x4d, 0xe4, 0x02, 0xac, 0x00, 0xec, 0x71, 0xa6, 0x15, 0xea, 0xc8, 0x92, 0x5a, 0x59, 0x0d,
-	0x33, 0x07, 0xdc, 0xab, 0x56, 0xd6, 0x63, 0xcd, 0x24, 0x58, 0x37, 0x75, 0xfb, 0x3c, 0x6d, 0x93,
-	0xc8, 0x90, 0x3b, 0xa4, 0x45, 0xd9, 0x38, 0x57, 0xde, 0x46, 0xff, 0x0d, 0x62, 0xf6, 0x3c, 0xcf,
-	0x07, 0x31, 0xd6, 0xcb, 0x77, 0xd0, 0xe2, 0x20, 0x6a, 0x1f, 0x24, 0x26, 0x58, 0xe2, 0x71, 0xb0,
-	0xed, 0x04, 0x99, 0x1e, 0x01, 0xa1, 0xc4, 0x09, 0x73, 0xe0, 0x1e, 0x5a, 0x1e, 0x46, 0xc6, 0x94,
-	0x13, 0xc1, 0xfd, 0x6a, 0x95, 0xb1, 0x62, 0xe8, 0x24, 0x67, 0x59, 0x15, 0x54, 0x50, 0xe0, 0x27,
-	0x80, 0xdd, 0x8b, 0xcd, 0x1f, 0x6b, 0x5b, 0x4f, 0xba, 0x1d, 0x42, 0x42, 0x03, 0x1f, 0x9c, 0xb4,
-	0x21, 0xe8, 0x27, 0x6c, 0xdb, 0x02, 0x3a, 0x14, 0xab, 0x7e, 0x0a, 0x71, 0x89, 0x9c, 0xf5, 0x29,
-	0x6a, 0xe9, 0xaa, 0xa0, 0xa4, 0x09, 0x41, 0xa5, 0x25, 0x16, 0x4d, 0x90, 0x91, 0x13, 0xc3, 0x68,
-	0x82, 0x13, 0x97, 0xd1, 0xb4, 0xc3, 0x99, 0x14, 0xd8, 0x89, 0x3a, 0x27, 0x8e, 0xfb, 0x7a, 0x2a,
-	0x93, 0xe8, 0xa9, 0xb8, 0x45, 0xb3, 0x63, 0x5a, 0x34, 0x37, 0x74, 0xd5, 0x8f, 0x86, 0xbe, 0x6b,
-	0x28, 0xb8, 0x0e, 0x0e, 0xd0, 0x0e, 0x4c, 0x28, 0xc8, 0xe5, 0x3b, 0x3f, 0x31, 0xe6, 0x32, 0xbf,
-	0x34, 0xe6, 0x9e, 0xeb, 0x3a, 0x56, 0x7d, 0xc1, 0xea, 0x01, 0x22, 0x20, 0xb1, 0x7d, 0xd1, 0xb3,
-	0xa5, 0x8e, 0xfa, 0xc8, 0x53, 0x3f, 0xb1, 0x5d, 0x3a, 0x61, 0xbb, 0xb7, 0xc6, 0xa8, 0xb6, 0x0e,
-	0xff, 0x0f, 0x27, 0x3c, 0x44, 0xbf, 0x57, 0x52, 0x09, 0xaf, 0x98, 0xb7, 0xd0, 0x3c, 0x83, 0x6e,
-	0x23, 0x42, 0xb7, 0x74, 0xc3, 0x6a, 0x6e, 0x93, 0x41, 0x77, 0xc0, 0x05, 0xd6, 0x07, 0x03, 0x2d,
-	0x29, 0x1d, 0xcf, 0xa8, 0x3c, 0x24, 0x02, 0x77, 0xaf, 0x48, 0xc9, 0x43, 0x84, 0xb8, 0x4b, 0x1a,
-	0xc1, 0x5f, 0xbf, 0xef, 0x29, 0xfe, 0xc2, 0xe6, 0x8d, 0x51, 0xaf, 0xae, 0xf9, 0x76, 0x99, 0xe0,
-	0xae, 0xdb, 0x0a, 0x3c, 0xa3, 0x20, 0xf5, 0x3c, 0x77, 0x49, 0xb8, 0xb4, 0x3e, 0xa7, 0xb4, 0xc6,
-	0xdd, 0x0e, 0x76, 0xfd, 0xc1, 0xd7, 0x5a, 0x40, 0x39, 0xaa, 0x86, 0x4f, 0x54, 0x91, 0x30, 0x1a,
-	0xd0, 0x9e, 0x1a, 0xa7, 0x3d, 0x3d, 0x4e, 0x7b, 0xe6, 0x77, 0xb4, 0x07, 0x67, 0x05, 0x15, 0xd1,
-	0x67, 0x65, 0x2f, 0x71, 0x16, 0x83, 0xae, 0x3e, 0xeb, 0x26, 0x0a, 0x2a, 0xd8, 0x08, 0x65, 0xc7,
-	0xb5, 0x0d, 0xfd, 0x35, 0xc7, 0xa0, 0x9b, 0x18, 0xa9, 0xd5, 0x17, 0x5f, 0xcf, 0x8a, 0xc6, 0xe9,
-	0x59, 0xd1, 0xf8, 0x7e, 0x56, 0x34, 0xde, 0x9d, 0x17, 0xa7, 0x4e, 0xcf, 0x8b, 0x53, 0xdf, 0xce,
-	0x8b, 0x53, 0x2f, 0xef, 0x37, 0xa9, 0x3c, 0xf4, 0xed, 0x92, 0xc3, 0x5b, 0x65, 0xa5, 0x64, 0x83,
-	0x81, 0xec, 0x72, 0xf1, 0x5a, 0x47, 0x2e, 0x90, 0x26, 0x88, 0xf2, 0x71, 0xdf, 0x57, 0x9c, 0x8d,
-	0x3d, 0x08, 0xbf, 0xf3, 0xca, 0x9d, 0x8a, 0x9d, 0x53, 0xdf, 0x72, 0x5b, 0x3f, 0x02, 0x00, 0x00,
-	0xff, 0xff, 0x3b, 0x43, 0x5f, 0xb0, 0x42, 0x0a, 0x00, 0x00,
+	// 917 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0x4f, 0x6f, 0x1b, 0x45,
+	0x14, 0xcf, 0xda, 0x89, 0x89, 0x5f, 0x88, 0x1b, 0x16, 0x9a, 0x86, 0x28, 0xb8, 0xd5, 0x4a, 0x88,
+	0x4a, 0xa8, 0xb6, 0x9c, 0x02, 0x0a, 0xe2, 0x80, 0x36, 0xb6, 0x11, 0x46, 0x6a, 0x1b, 0x6d, 0x1c,
+	0x95, 0x3f, 0x07, 0x6b, 0xbc, 0xf3, 0x70, 0xa7, 0xac, 0x67, 0xac, 0xd9, 0xb1, 0x9d, 0x4a, 0x7c,
+	0x08, 0x8e, 0x7c, 0x03, 0x6e, 0x9c, 0x10, 0x67, 0x8e, 0x1c, 0x7b, 0xe4, 0x88, 0x92, 0x2f, 0x82,
+	0x76, 0x76, 0x76, 0xbd, 0x6b, 0x1b, 0x3b, 0x54, 0xf4, 0x36, 0xef, 0xed, 0xfb, 0xcd, 0xef, 0xcd,
+	0x7b, 0xef, 0xf7, 0xb4, 0x70, 0x57, 0xe2, 0x00, 0x79, 0x1d, 0x7d, 0xe1, 0x4b, 0xa4, 0x4c, 0xd5,
+	0x27, 0x8d, 0x3a, 0x4e, 0x90, 0xab, 0xb0, 0x36, 0x92, 0x42, 0x09, 0xdb, 0xd6, 0x01, 0xb5, 0x34,
+	0xa0, 0x36, 0x69, 0x1c, 0x56, 0x97, 0x80, 0xd4, 0x8b, 0x11, 0x1a, 0xcc, 0xd2, 0xef, 0xa1, 0x22,
+	0x0a, 0xe3, 0xef, 0xce, 0x03, 0xd8, 0x6b, 0x47, 0x1c, 0x4d, 0x89, 0x44, 0x61, 0x33, 0x20, 0x61,
+	0x68, 0xbf, 0x0b, 0xdb, 0x7e, 0x74, 0xe8, 0x31, 0x7a, 0x60, 0xdd, 0xb3, 0xee, 0x97, 0xbd, 0x37,
+	0xb4, 0xdd, 0xa1, 0xce, 0x43, 0xb0, 0x33, 0xe1, 0x67, 0x52, 0x3c, 0x47, 0x5f, 0xd9, 0xef, 0x01,
+	0x8c, 0xe2, 0xe3, 0x0c, 0x52, 0x36, 0x9e, 0x0e, 0x75, 0x78, 0x8e, 0xe3, 0x94, 0x28, 0xff, 0x99,
+	0x7d, 0x17, 0x76, 0xfa, 0xd1, 0xa1, 0x47, 0x91, 0x8b, 0xa1, 0xc1, 0x80, 0x76, 0xb5, 0x22, 0x8f,
+	0xfd, 0x29, 0x94, 0x85, 0x64, 0x03, 0xc6, 0x7b, 0xea, 0xf2, 0xa0, 0x70, 0xcf, 0xba, 0xbf, 0x73,
+	0x7c, 0x54, 0x5b, 0x2c, 0x40, 0xed, 0x89, 0x0e, 0xea, 0x5e, 0x7a, 0xdb, 0xc2, 0x9c, 0x9c, 0x1f,
+	0xa1, 0xac, 0xf9, 0x1e, 0x31, 0xae, 0xd6, 0x13, 0x7d, 0x00, 0xb7, 0x94, 0x24, 0x94, 0xf4, 0x03,
+	0xec, 0x91, 0xa1, 0x18, 0x73, 0xa5, 0xe9, 0xca, 0x5e, 0x25, 0x71, 0xbb, 0xda, 0x6b, 0xbf, 0x0f,
+	0x15, 0x89, 0x8a, 0x49, 0xa4, 0x49, 0x5c, 0x51, 0xc7, 0xed, 0x1a, 0x6f, 0x1c, 0xe6, 0x84, 0x70,
+	0x3b, 0x65, 0xd7, 0x6f, 0x6d, 0xea, 0x5c, 0xc3, 0xd7, 0xfa, 0xe4, 0xdf, 0x2d, 0xd8, 0xd5, 0xac,
+	0x5d, 0x49, 0x78, 0xf8, 0x3d, 0x4a, 0x7b, 0x1f, 0x4a, 0x21, 0x72, 0x8a, 0xd2, 0x10, 0x19, 0xcb,
+	0x3e, 0x82, 0xb2, 0x44, 0x9f, 0x8d, 0x18, 0xa6, 0x0f, 0x9d, 0x39, 0xe6, 0x73, 0x2c, 0xde, 0xa4,
+	0x5a, 0x9b, 0x37, 0xac, 0xd6, 0xd6, 0xb2, 0x6a, 0xfd, 0x6c, 0xc1, 0x8e, 0x4e, 0xdc, 0xd3, 0x6e,
+	0xfb, 0x1d, 0xd8, 0x12, 0x53, 0x9e, 0x66, 0x1d, 0x1b, 0xf3, 0x69, 0x15, 0x16, 0xd2, 0xda, 0x87,
+	0x52, 0xae, 0x27, 0xc6, 0xb2, 0x1d, 0x78, 0xf3, 0xf9, 0x58, 0xb2, 0x90, 0x32, 0x5f, 0x31, 0xc1,
+	0x4d, 0xae, 0x39, 0x5f, 0x84, 0x95, 0x48, 0x42, 0xc1, 0x4d, 0x86, 0xc6, 0x72, 0x94, 0xc9, 0xac,
+	0x49, 0xb8, 0x8f, 0xc1, 0xff, 0x9d, 0xd9, 0x8c, 0x75, 0x33, 0xc7, 0x7a, 0x6c, 0xc6, 0xe7, 0x62,
+	0x44, 0x13, 0x41, 0xba, 0x74, 0xc8, 0xf8, 0x2a, 0x55, 0x7e, 0x04, 0x77, 0xe6, 0x31, 0x9d, 0x30,
+	0x1c, 0xa3, 0x5c, 0xa9, 0xe5, 0x8f, 0xe1, 0x60, 0x1e, 0xf5, 0x08, 0x15, 0xa1, 0x44, 0x91, 0x55,
+	0xb0, 0x93, 0x1c, 0x99, 0x59, 0x01, 0x71, 0x8a, 0x6b, 0xf6, 0xc0, 0x67, 0x70, 0xb8, 0x88, 0x4c,
+	0x29, 0xd7, 0x82, 0xb3, 0xd9, 0x6a, 0x61, 0xa5, 0xd0, 0x75, 0xca, 0x72, 0x1a, 0x50, 0xd1, 0xe0,
+	0x73, 0x24, 0xc1, 0xcd, 0xf6, 0x8f, 0x73, 0x62, 0x36, 0x9d, 0x4b, 0x69, 0x2c, 0xe0, 0xee, 0x8b,
+	0x11, 0x46, 0xf3, 0x44, 0xfa, 0x7d, 0x89, 0x13, 0x46, 0xf4, 0x3c, 0xc5, 0xb8, 0x9c, 0xcf, 0xf9,
+	0x35, 0x19, 0xe9, 0x53, 0xc9, 0xe8, 0x00, 0xa3, 0x4e, 0x2b, 0x22, 0x07, 0xa8, 0x12, 0x25, 0xc6,
+	0xd6, 0x1a, 0x25, 0x1e, 0xc2, 0xb6, 0x2f, 0xb8, 0x92, 0xc4, 0x4f, 0x26, 0x27, 0xb5, 0x33, 0x33,
+	0xb5, 0x99, 0x9b, 0xa9, 0x74, 0x44, 0xb7, 0x56, 0x8c, 0x68, 0x69, 0xe1, 0xa9, 0xbf, 0x58, 0xe6,
+	0xad, 0x71, 0xc2, 0x1e, 0xfa, 0xc8, 0x26, 0xb8, 0xa6, 0x21, 0xaf, 0x3e, 0xf9, 0xb9, 0x35, 0xb7,
+	0xf9, 0x9f, 0xd6, 0xdc, 0xd7, 0xa6, 0x8f, 0xa7, 0x63, 0xc9, 0xbd, 0x08, 0x11, 0x91, 0xf4, 0xc7,
+	0x72, 0x26, 0x4b, 0x63, 0x65, 0xc8, 0x0b, 0xff, 0x22, 0xbb, 0x62, 0x4e, 0x76, 0xbf, 0x15, 0x60,
+	0x3f, 0x33, 0x5f, 0xee, 0x68, 0x14, 0x30, 0x5f, 0xf7, 0x73, 0x5d, 0x1d, 0xb2, 0x52, 0x29, 0xe4,
+	0xa4, 0x62, 0x77, 0xa0, 0x44, 0xe2, 0xbd, 0x13, 0x91, 0x55, 0x8e, 0x1b, 0xcb, 0x9e, 0xb9, 0x9c,
+	0xb5, 0xe6, 0x6a, 0xa0, 0x67, 0x2e, 0xb0, 0x4f, 0xe0, 0x80, 0xe3, 0xb4, 0x47, 0x66, 0x11, 0xbd,
+	0xa1, 0x19, 0x7f, 0x33, 0x04, 0xfb, 0x1c, 0xa7, 0x99, 0x0b, 0x12, 0x71, 0x38, 0xdf, 0x41, 0xc9,
+	0x4d, 0x16, 0x9d, 0xed, 0x36, 0xbb, 0x9d, 0x27, 0x8f, 0x7b, 0x17, 0x8f, 0xcf, 0xcf, 0xda, 0xcd,
+	0xce, 0x17, 0x9d, 0x76, 0x6b, 0x6f, 0xc3, 0x7e, 0x0b, 0x76, 0x8d, 0xbf, 0xe9, 0xb5, 0xdd, 0x6e,
+	0x7b, 0xcf, 0xca, 0xb8, 0x2e, 0xce, 0x5a, 0x91, 0xab, 0x60, 0xbf, 0x0d, 0xb7, 0x8c, 0xeb, 0x69,
+	0xa7, 0xfb, 0x65, 0xcb, 0x73, 0x9f, 0xee, 0x15, 0x9d, 0x3f, 0x0a, 0x70, 0xb4, 0xa8, 0xe9, 0x36,
+	0x97, 0x22, 0x08, 0x86, 0x18, 0xd7, 0x9b, 0xe9, 0x55, 0x94, 0xf4, 0x27, 0xb6, 0xe6, 0x8a, 0x5a,
+	0x58, 0x55, 0xd4, 0x62, 0xbe, 0xa8, 0x5f, 0x01, 0x88, 0x80, 0xf6, 0xa2, 0x9f, 0x98, 0x71, 0xa8,
+	0xdf, 0x5e, 0x39, 0xfe, 0x70, 0x59, 0x61, 0x17, 0x92, 0x39, 0xd7, 0x10, 0xaf, 0x2c, 0x02, 0x1a,
+	0x1f, 0xa3, 0xbb, 0xa2, 0xaa, 0x9a, 0xbb, 0xb6, 0x5e, 0xe1, 0x2e, 0x8e, 0x53, 0x73, 0xd7, 0x27,
+	0x70, 0x27, 0xba, 0x0b, 0xd3, 0x90, 0x59, 0x83, 0x62, 0xc9, 0xdd, 0xe6, 0x38, 0x9d, 0x5d, 0x90,
+	0xf4, 0xe7, 0xf4, 0x9b, 0x3f, 0xaf, 0xaa, 0xd6, 0xcb, 0xab, 0xaa, 0xf5, 0xf7, 0x55, 0xd5, 0xfa,
+	0xe9, 0xba, 0xba, 0xf1, 0xf2, 0xba, 0xba, 0xf1, 0xd7, 0x75, 0x75, 0xe3, 0xdb, 0xcf, 0x07, 0x4c,
+	0x3d, 0x1b, 0xf7, 0x6b, 0xbe, 0x18, 0xd6, 0x75, 0x4e, 0x0f, 0x38, 0xaa, 0xa9, 0x90, 0x3f, 0x18,
+	0x2b, 0x40, 0x3a, 0x40, 0x59, 0xbf, 0xcc, 0xfc, 0xdd, 0xf5, 0x49, 0x88, 0xf1, 0xff, 0x5f, 0x7d,
+	0xd2, 0xe8, 0x97, 0xf4, 0x3f, 0xde, 0xc3, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x04, 0x08, 0x0a,
+	0x2c, 0x5a, 0x0a, 0x00, 0x00,
 }
 
 func (m *EventCreateClass) Marshal() (dAtA []byte, err error) {
@@ -2238,7 +2224,7 @@ func (m *EventBurnRegen) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventUpdateProjectClass) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateApplication) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2248,62 +2234,25 @@ func (m *EventUpdateProjectClass) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventUpdateProjectClass) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateApplication) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventUpdateProjectClass) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateApplication) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.NewProjectMetadata) > 0 {
-		i -= len(m.NewProjectMetadata)
-		copy(dAtA[i:], m.NewProjectMetadata)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.NewProjectMetadata)))
+	if len(m.NewApplicationMetadata) > 0 {
+		i -= len(m.NewApplicationMetadata)
+		copy(dAtA[i:], m.NewApplicationMetadata)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.NewApplicationMetadata)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
 	}
-	if len(m.ClassId) > 0 {
-		i -= len(m.ClassId)
-		copy(dAtA[i:], m.ClassId)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.ClassId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.ProjectId) > 0 {
-		i -= len(m.ProjectId)
-		copy(dAtA[i:], m.ProjectId)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.ProjectId)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *EventWithdrawProjectClass) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *EventWithdrawProjectClass) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *EventWithdrawProjectClass) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.OldStatus != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.OldStatus))
+	if m.Action != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.Action))
 		i--
 		dAtA[i] = 0x18
 	}
@@ -2324,7 +2273,7 @@ func (m *EventWithdrawProjectClass) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *EventEvaluateProjectClass) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateProjectEnrollment) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2334,20 +2283,20 @@ func (m *EventEvaluateProjectClass) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventEvaluateProjectClass) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateProjectEnrollment) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventEvaluateProjectClass) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateProjectEnrollment) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.NewClassMetadata) > 0 {
-		i -= len(m.NewClassMetadata)
-		copy(dAtA[i:], m.NewClassMetadata)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.NewClassMetadata)))
+	if len(m.NewEnrollmentMetadata) > 0 {
+		i -= len(m.NewEnrollmentMetadata)
+		copy(dAtA[i:], m.NewEnrollmentMetadata)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.NewEnrollmentMetadata)))
 		i--
 		dAtA[i] = 0x32
 	}
@@ -2743,7 +2692,7 @@ func (m *EventBurnRegen) Size() (n int) {
 	return n
 }
 
-func (m *EventUpdateProjectClass) Size() (n int) {
+func (m *EventUpdateApplication) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2757,34 +2706,17 @@ func (m *EventUpdateProjectClass) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.NewProjectMetadata)
+	if m.Action != 0 {
+		n += 1 + sovEvents(uint64(m.Action))
+	}
+	l = len(m.NewApplicationMetadata)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
 	return n
 }
 
-func (m *EventWithdrawProjectClass) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.ProjectId)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	l = len(m.ClassId)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.OldStatus != 0 {
-		n += 1 + sovEvents(uint64(m.OldStatus))
-	}
-	return n
-}
-
-func (m *EventEvaluateProjectClass) Size() (n int) {
+func (m *EventUpdateProjectEnrollment) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2808,7 +2740,7 @@ func (m *EventEvaluateProjectClass) Size() (n int) {
 	if m.NewStatus != 0 {
 		n += 1 + sovEvents(uint64(m.NewStatus))
 	}
-	l = len(m.NewClassMetadata)
+	l = len(m.NewEnrollmentMetadata)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -5191,7 +5123,7 @@ func (m *EventBurnRegen) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventUpdateProjectClass) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateApplication) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5214,156 +5146,10 @@ func (m *EventUpdateProjectClass) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventUpdateProjectClass: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateApplication: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventUpdateProjectClass: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProjectId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ClassId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewProjectMetadata", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.NewProjectMetadata = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipEvents(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *EventWithdrawProjectClass) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowEvents
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: EventWithdrawProjectClass: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventWithdrawProjectClass: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateApplication: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5432,9 +5218,9 @@ func (m *EventWithdrawProjectClass) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OldStatus", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Action", wireType)
 			}
-			m.OldStatus = 0
+			m.Action = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvents
@@ -5444,11 +5230,43 @@ func (m *EventWithdrawProjectClass) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.OldStatus |= ProjectEnrollmentStatus(b&0x7F) << shift
+				m.Action |= EventUpdateApplication_Action(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewApplicationMetadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewApplicationMetadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -5470,7 +5288,7 @@ func (m *EventWithdrawProjectClass) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventEvaluateProjectClass) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateProjectEnrollment) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5493,10 +5311,10 @@ func (m *EventEvaluateProjectClass) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventEvaluateProjectClass: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateProjectEnrollment: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventEvaluateProjectClass: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateProjectEnrollment: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5635,7 +5453,7 @@ func (m *EventEvaluateProjectClass) Unmarshal(dAtA []byte) error {
 			}
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewClassMetadata", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NewEnrollmentMetadata", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -5663,7 +5481,7 @@ func (m *EventEvaluateProjectClass) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.NewClassMetadata = string(dAtA[iNdEx:postIndex])
+			m.NewEnrollmentMetadata = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

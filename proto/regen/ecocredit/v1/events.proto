@@ -261,37 +261,43 @@ message EventBurnRegen {
   string reason = 3;
 }
 
-// EventUpdateProjectClass is emitted when a project admin submits or updates
-// a project class relationship's metadata, usually relating to credit class
-// application.
-message EventUpdateProjectClass {
+// EventUpdateApplication is emitted when a project admin creates, updates
+// or withdraws a project's application to a credit class.
+message EventUpdateApplication {
   // project_id is the unique identifier of the project that was updated.
   string project_id = 1;
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 2;
 
-  // new_project_metadata is the new project metadata.
-  string new_project_metadata = 3;
+  // Action describes an action taken on an application.
+  enum Action {
+    // ACTION_UNSPECIFIED is the default value for the action and is invalid.
+    ACTION_UNSPECIFIED = 0;
+
+    // ACTION_CREATE is the action taken when a project admin creates an
+    // application to a credit class.
+    ACTION_CREATE = 1;
+
+    // ACTION_UPDATE is the action taken when a project admin updates an
+    // application to a credit class.
+    ACTION_UPDATE = 2;
+
+    // ACTION_WITHDRAW is the action taken when a project admin withdraws an
+    // application to a credit class.
+    ACTION_WITHDRAW = 3;
+  }
+
+  // action is the action that was taken on the application.
+  Action action = 3;
+
+  // new_application_metadata is any new application metadata.
+  string new_application_metadata = 4;
 }
 
-// EventWithdrawProjectClass is emitted when a project admin withdraws a project
-// from a credit class.
-message EventWithdrawProjectClass {
-  // project_id is the unique identifier of the project which withdrew from the
-  // class.
-  string project_id = 1;
-
-  // class_id is the unique identifier of the class that was withdrawn from.
-  string class_id = 2;
-
-  // old_status is the old status of the project class relationship before withdrawal.
-  ProjectEnrollmentStatus old_status = 3;
-}
-
-// EventEvaluateProjectClass is emitted when a project class relationship is
-// evaluated by a credit class issuer.
-message EventEvaluateProjectClass {
+// EventUpdateProjectEnrollment is emitted when a credit class issuer updates
+// the enrollment status of a project.
+message EventUpdateProjectEnrollment {
   // issuer is the address of the credit class issuer which evaluated the
   // project.
   string issuer = 1;
@@ -309,6 +315,6 @@ message EventEvaluateProjectClass {
   // new_status is the new status of the project class relationship.
   ProjectEnrollmentStatus new_status = 5;
 
-  // new_class_metadata is any new class metadata.
-  string new_class_metadata = 6;
+  // new_enrollment_metadata is any new enrollment metadata.
+  string new_enrollment_metadata = 6;
 }

@@ -407,15 +407,13 @@ message ProjectEnrollment {
   // status is the status of the enrollment.
   ProjectEnrollmentStatus status = 4;
 
-  // project_metadata is any arbitrary metadata set by the project
-  // admin. This should primarily be used to store metadata regarding the project's
-  // application to the credit class.
-  string project_metadata = 5;
+  // application_metadata is any arbitrary metadata set by the project
+  // admin related to its application to the credit class.
+  string application_metadata = 5;
 
-  // class_metadata is any arbitrary metadata set by a credit
-  // class issuer. This should primarily be used to store metadata regarding the
-  // project's application to the credit class.
-  string class_metadata = 6;
+  // enrollment_metadata is any arbitrary metadata set by the credit class
+  // admin evaluating the project's application to the credit class.
+  string enrollment_metadata = 6;
 }
 
 // Application represents the evaluation status that a credit class issuer
@@ -441,7 +439,8 @@ enum ProjectEnrollmentStatus {
   PROJECT_ENROLLMENT_STATUS_REJECTED = 3;
 
   // PROJECT_ENROLLMENT_STATUS_TERMINATED indicates that the project has been
-  // terminated from the credit class. This status is used when a project was
-  // in the credit class but has been removed or completed.
+  // terminated from the credit class. This status is used when a project the
+  // was previously accepted into the credit class but has been removed or
+  // completed.
   PROJECT_ENROLLMENT_STATUS_TERMINATED = 4;
 }
