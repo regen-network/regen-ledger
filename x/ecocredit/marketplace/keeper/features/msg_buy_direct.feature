@@ -420,14 +420,14 @@ Feature: Msg/BuyDirect
       * alice created a sell order with quantity "10" and ask price "10foo"
       * buyer fees are 0.2 and seller fees are 0.1
       * bob has bank balance "200foo"
-      * bob sets a max fee of <max_fee_amount>
+      * bob sets a max fee of "<max_fee_amount>"
       When bob attempts to buy credits with quantity "10" and bid price "20foo"
       Then expect error contains "<error>"
 
       Examples:
         | max_fee_amount | error   |
-        | 10             | max fee |
-        | 20             |         |
-        | 30             |         |
+        | 10foo          | max fee |
+        | 20foo          |         |
+        | 30foo          |         |
 
 

@@ -110,15 +110,12 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		totalCost := sdk.Coin{Amount: total.SdkIntTrim(), Denom: market.BankDenom}
 
 		// check max fee
-		if maxFee := order.MaxFeeAmount; maxFee != "" {
-			maxFeeInt, ok := sdk.NewIntFromString(maxFee)
-			if !ok {
-				return nil, sdkerrors.ErrInvalidType.Wrapf("could not convert %s to %T", maxFee, sdkmath.Int{})
-			}
-			if maxFeeInt.LT(buyerFee.SdkIntTrim()) {
+		if maxFee := order.MaxFeeAmount; maxFee != nil {
+			buyerFeeCoin := sdk.Coin{Amount: buyerFee.SdkIntTrim(), Denom: market.BankDenom}
+			if maxFee.IsLT(buyerFeeCoin) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 					"%s: max fee: %s, required fee: %s",
-					orderIndex, maxFee, buyerFee,
+					orderIndex, maxFee, buyerFeeCoin,
 				)
 			}
 		}

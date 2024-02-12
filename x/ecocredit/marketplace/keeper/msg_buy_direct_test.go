@@ -40,7 +40,7 @@ type buyDirectSuite struct {
 	bidPrice          sdk.Coin
 	res               *types.MsgBuyDirectResponse
 	err               error
-	maxFee            string
+	maxFee            *sdk.Coin
 }
 
 func TestBuyDirect(t *testing.T) {
@@ -168,7 +168,9 @@ func (s *buyDirectSuite) BobsAddress(a string) {
 	s.bob = addr
 }
 func (s *buyDirectSuite) BobSetsAMaxFeeOf(a string) {
-	s.maxFee = a
+	maxFee, err := sdk.ParseCoinNormalized(a)
+	require.NoError(s.t, err)
+	s.maxFee = &maxFee
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {

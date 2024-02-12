@@ -3,7 +3,6 @@ package v1
 import (
 	"fmt"
 
-	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
@@ -79,10 +78,10 @@ func (m MsgBuyDirect) ValidateBasic() error {
 			}
 		}
 
-		if order.MaxFeeAmount != "" {
-			maxFeeAmount, ok := sdkmath.NewIntFromString(order.MaxFeeAmount)
-			if !ok || maxFeeAmount.IsNegative() {
-				return sdkerrors.ErrInvalidRequest.Wrapf("%s: max fee amount must be a non-negative integer", orderIndex)
+		if order.MaxFeeAmount != nil {
+			err := order.MaxFeeAmount.Validate()
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("%s: max fee amount: %s", orderIndex, err)
 			}
 		}
 	}

@@ -337,37 +337,16 @@ Feature: MsgBuyDirect
           },
           "retirement_jurisdiction": "US-WA",
           "retirement_reason": "offsetting electricity consumption",
-          "max_fee_amount": "100"
+          "max_fee_amount": {
+            "amount": "100",
+            "denom": "regen"
+          }
         }
       ]
     }
     """
     When the message is validated
     Then expect no error
-
-
-  Scenario: an error is returned if max_fee_amount isn't an integer
-    Given the message
-    """
-    {
-      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "orders": [
-        {
-          "sell_order_id": "1",
-          "quantity": "100",
-          "bid_price": {
-            "denom": "regen",
-            "amount": "100"
-          },
-          "retirement_jurisdiction": "US-WA",
-          "retirement_reason": "offsetting electricity consumption",
-          "max_fee_amount": "0.12"
-        }
-      ]
-    }
-    """
-    When the message is validated
-    Then expect the error "orders[0]: max fee amount must be a non-negative integer: invalid request"
 
   Scenario: an error is returned if max_fee_amount is negative
     Given the message
@@ -384,13 +363,16 @@ Feature: MsgBuyDirect
           },
           "retirement_jurisdiction": "US-WA",
           "retirement_reason": "offsetting electricity consumption",
-          "max_fee_amount": "-10"
+          "max_fee_amount": {
+            "amount": "-10",
+            "denom": "regen"
+          }
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: max fee amount must be a non-negative integer: invalid request"
+    Then expect error contains "negative coin"
 
   Scenario: a valid amino message
     Given the message
