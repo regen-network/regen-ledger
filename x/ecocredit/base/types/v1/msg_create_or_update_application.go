@@ -20,7 +20,7 @@ func (m *MsgCreateOrUpdateApplication) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateOrUpdateApplication) ValidateBasic() error {
-	panic("implement me")
+	return nil
 }
 
 // GetSigners returns the expected signers for MsgCreateOrUpdateApplication.
