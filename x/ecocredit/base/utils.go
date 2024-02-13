@@ -53,27 +53,23 @@ func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
 }
 
 // FormatProjectID formats the unique identifier for a new project, based on
-// the credit class id and project sequence number. This format may evolve over
-// time, but will maintain backwards compatibility.
+// the project sequence number. This format may evolve over time.
 //
 // The current version has the format:
-// <class-id>-<project-sequence>
+// P<project-sequence>
 //
-// <class-id> is the unique identifier of the credit class (see FormatClassID)
-// <project-sequence> is the sequence number of the project, padded to at least
-// three digits
-//
-// e.g. C01-001
-func FormatProjectID(classID string, projectSeqNo uint64) string {
-	return fmt.Sprintf("%s-%03d", classID, projectSeqNo)
+// e.g. P001
+func FormatProjectID(projectSeqNo uint64) string {
+	return fmt.Sprintf("P%03d", projectSeqNo)
 }
 
 // FormatBatchDenom formats the unique denomination for a credit batch. This
 // format may evolve over time, but will maintain backwards compatibility.
 //
 // The current version has the format:
-// <project-id>-<start_date>-<end_date>-<batch_sequence>
+// <class-id>-<project-id>-<start_date>-<end_date>-<batch_sequence>
 //
+// <class-id> is the unique identifier of the credit class (see FormatClassID)
 // <project-id> is the unique identifier of the project (see FormatProjectID)
 // <start-date> is the start date of the credit batch with the format YYYYMMDD
 // <end-date> is the end date of the credit batch with the format YYYYMMDD
@@ -81,9 +77,12 @@ func FormatProjectID(classID string, projectSeqNo uint64) string {
 // three digits
 //
 // e.g. C01-001-20190101-20200101-001
-func FormatBatchDenom(projectID string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
+func FormatBatchDenom(classId, projectID string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
 	return fmt.Sprintf(
-		"%s-%s-%s-%03d",
+		"%s-%s-%s-%s-%03d",
+
+		// Class ID string
+		classId,
 
 		// Project ID string
 		projectID,

@@ -92,7 +92,7 @@ message Project {
   uint64 key = 1;
 
   // id is the unique identifier of the project either auto-generated from the
-  // credit class id and project sequence number or provided upon creation.
+  // project key.
   string id = 2;
 
   // admin is the admin of the project.
@@ -186,6 +186,8 @@ message ClassSequence {
 // ProjectSequence stores and increments the sequence number for projects within
 // a credit class.
 message ProjectSequence {
+  option deprecated = true;
+
   option (cosmos.orm.v1.table) = {
     id : 7,
     primary_key : {fields : "class_key"}

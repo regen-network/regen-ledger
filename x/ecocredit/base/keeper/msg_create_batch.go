@@ -58,7 +58,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		return nil, err
 	}
 
-	batchDenom, err := base.FormatBatchDenom(project.Id, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := base.FormatBatchDenom(class.Id, project.Id, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}
