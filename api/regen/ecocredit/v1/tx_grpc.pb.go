@@ -43,6 +43,7 @@ const (
 	Msg_AddClassCreator_FullMethodName           = "/regen.ecocredit.v1.Msg/AddClassCreator"
 	Msg_RemoveClassCreator_FullMethodName        = "/regen.ecocredit.v1.Msg/RemoveClassCreator"
 	Msg_UpdateClassFee_FullMethodName            = "/regen.ecocredit.v1.Msg/UpdateClassFee"
+	Msg_UpdateProjectFee_FullMethodName          = "/regen.ecocredit.v1.Msg/UpdateProjectFee"
 	Msg_AddAllowedBridgeChain_FullMethodName     = "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain"
 	Msg_RemoveAllowedBridgeChain_FullMethodName  = "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain"
 	Msg_BurnRegen_FullMethodName                 = "/regen.ecocredit.v1.Msg/BurnRegen"
@@ -195,6 +196,13 @@ type MsgClient interface {
 	//
 	// Since Revision 2
 	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
+	// UpdateProjectFee is a governance method that allows for updating the
+	// project creation fee. If no fee is specified in the request, the project
+	// creation fee will be removed and no fee will be required to create a
+	// project.
+	//
+	// Since Revision 3
+	UpdateProjectFee(ctx context.Context, in *MsgUpdateProjectFee, opts ...grpc.CallOption) (*MsgUpdateProjectFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
@@ -435,6 +443,15 @@ func (c *msgClient) UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, o
 	return out, nil
 }
 
+func (c *msgClient) UpdateProjectFee(ctx context.Context, in *MsgUpdateProjectFee, opts ...grpc.CallOption) (*MsgUpdateProjectFeeResponse, error) {
+	out := new(MsgUpdateProjectFeeResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateProjectFee_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error) {
 	out := new(MsgAddAllowedBridgeChainResponse)
 	err := c.cc.Invoke(ctx, Msg_AddAllowedBridgeChain_FullMethodName, in, out, opts...)
@@ -609,6 +626,13 @@ type MsgServer interface {
 	//
 	// Since Revision 2
 	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
+	// UpdateProjectFee is a governance method that allows for updating the
+	// project creation fee. If no fee is specified in the request, the project
+	// creation fee will be removed and no fee will be required to create a
+	// project.
+	//
+	// Since Revision 3
+	UpdateProjectFee(context.Context, *MsgUpdateProjectFee) (*MsgUpdateProjectFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
@@ -701,6 +725,9 @@ func (UnimplementedMsgServer) RemoveClassCreator(context.Context, *MsgRemoveClas
 }
 func (UnimplementedMsgServer) UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassFee not implemented")
+}
+func (UnimplementedMsgServer) UpdateProjectFee(context.Context, *MsgUpdateProjectFee) (*MsgUpdateProjectFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectFee not implemented")
 }
 func (UnimplementedMsgServer) AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddAllowedBridgeChain not implemented")
@@ -1156,6 +1183,24 @@ func _Msg_UpdateClassFee_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateProjectFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateProjectFee)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateProjectFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateProjectFee_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateProjectFee(ctx, req.(*MsgUpdateProjectFee))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_AddAllowedBridgeChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgAddAllowedBridgeChain)
 	if err := dec(in); err != nil {
@@ -1312,6 +1357,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateClassFee",
 			Handler:    _Msg_UpdateClassFee_Handler,
+		},
+		{
+			MethodName: "UpdateProjectFee",
+			Handler:    _Msg_UpdateProjectFee_Handler,
 		},
 		{
 			MethodName: "AddAllowedBridgeChain",

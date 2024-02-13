@@ -2203,6 +2203,36 @@ func NewProjectEnrollmentTable(db ormtable.Schema) (ProjectEnrollmentTable, erro
 	return projectEnrollmentTable{table}, nil
 }
 
+// singleton store
+type ProjectFeeTable interface {
+	Get(ctx context.Context) (*ProjectFee, error)
+	Save(ctx context.Context, projectFee *ProjectFee) error
+}
+
+type projectFeeTable struct {
+	table ormtable.Table
+}
+
+var _ ProjectFeeTable = projectFeeTable{}
+
+func (x projectFeeTable) Get(ctx context.Context) (*ProjectFee, error) {
+	projectFee := &ProjectFee{}
+	_, err := x.table.Get(ctx, projectFee)
+	return projectFee, err
+}
+
+func (x projectFeeTable) Save(ctx context.Context, projectFee *ProjectFee) error {
+	return x.table.Save(ctx, projectFee)
+}
+
+func NewProjectFeeTable(db ormtable.Schema) (ProjectFeeTable, error) {
+	table := db.GetTable(&ProjectFee{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectFee{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return &projectFeeTable{table}, nil
+}
+
 type StateStore interface {
 	CreditTypeTable() CreditTypeTable
 	ClassTable() ClassTable
@@ -2221,6 +2251,7 @@ type StateStore interface {
 	ClassFeeTable() ClassFeeTable
 	AllowedBridgeChainTable() AllowedBridgeChainTable
 	ProjectEnrollmentTable() ProjectEnrollmentTable
+	ProjectFeeTable() ProjectFeeTable
 
 	doNotImplement()
 }
@@ -2243,6 +2274,7 @@ type stateStore struct {
 	classFee              ClassFeeTable
 	allowedBridgeChain    AllowedBridgeChainTable
 	projectEnrollment     ProjectEnrollmentTable
+	projectFee            ProjectFeeTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -2311,6 +2343,10 @@ func (x stateStore) AllowedBridgeChainTable() AllowedBridgeChainTable {
 
 func (x stateStore) ProjectEnrollmentTable() ProjectEnrollmentTable {
 	return x.projectEnrollment
+}
+
+func (x stateStore) ProjectFeeTable() ProjectFeeTable {
+	return x.projectFee
 }
 
 func (stateStore) doNotImplement() {}
@@ -2403,6 +2439,11 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	projectFeeTable, err := NewProjectFeeTable(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return stateStore{
 		creditTypeTable,
 		classTable,
@@ -2421,5 +2462,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		classFeeTable,
 		allowedBridgeChainTable,
 		projectEnrollmentTable,
+		projectFeeTable,
 	}, nil
 }
