@@ -27,9 +27,20 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}
 
-	class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
+	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, err
+	}
+
+	// check if project enrollment exists
+	enrollment, err := k.stateStore.ProjectEnrollmentTable().Get(ctx, project.Key, class.Key)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if project enrollment is accepted
+	if enrollment.Status != api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("project enrollment status is not accepted")
 	}
 
 	issuer, err := sdk.AccAddressFromBech32(req.Issuer)

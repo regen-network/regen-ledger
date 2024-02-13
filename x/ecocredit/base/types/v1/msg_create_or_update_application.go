@@ -28,12 +28,12 @@ func (m *MsgCreateOrUpdateApplication) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("project admin: %s", err)
 	}
 
-	if m.ProjectId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("project id cannot be empty")
+	if err := base.ValidateProjectID(m.ProjectId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("project id: %s", err)
 	}
 
-	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
+	if err := base.ValidateClassID(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
 
 	if len(m.Metadata) > base.MaxMetadataLength {
