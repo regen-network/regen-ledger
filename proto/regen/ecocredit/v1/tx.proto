@@ -193,6 +193,14 @@ service Msg {
   // Since Revision 2
   rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
 
+  // UpdateProjectFee is a governance method that allows for updating the
+  // project creation fee. If no fee is specified in the request, the project
+  // creation fee will be removed and no fee will be required to create a
+  // project.
+  //
+  // Since Revision 3
+  rpc UpdateProjectFee(MsgUpdateProjectFee) returns (MsgUpdateProjectFeeResponse);
+
   // AddAllowedBridgeChain is a governance method that allows for the
   // addition of a chain to bridge ecocredits to.
   //
@@ -299,6 +307,13 @@ message MsgCreateProject {
   // reference_id is any arbitrary string used to reference the project with a
   // maximum length of 32 characters.
   string reference_id = 5;
+
+  // fee is the project creation fee. An equal fee is required if the project
+  // creation fee parameter is set. The provided fee can be greater than the
+  // parameter, but only the amount in the parameter will be charged.
+  //
+  // Since Revision 3
+  cosmos.base.v1beta1.Coin fee = 6;
 }
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
@@ -332,6 +347,13 @@ message MsgCreateUnregisteredProject {
   // reference_id is any arbitrary string used to reference the project with a
   // maximum length of 32 characters.
   string reference_id = 4;
+
+  // fee is the project creation fee. An equal fee is required if the project
+  // creation fee parameter is set. The provided fee can be greater than the
+  // parameter, but only the amount in the parameter will be charged.
+  //
+  // Since Revision 3
+  cosmos.base.v1beta1.Coin fee = 5;
 }
 
 // MsgCreateUnregisteredProjectResponse is the Msg/CreateUnregisteredProject response type.
@@ -400,7 +422,7 @@ message MsgCreateBatch {
   option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account issuing the credits and must be an
-  // approved issuer within the credit class of the project.
+  // approved issuer within a credit class of the project.
   string issuer = 1;
 
   // project_id is the unique identifier of the project under which the credit
@@ -435,6 +457,12 @@ message MsgCreateBatch {
   // issuing credits and should only be set when bridging assets from another
   // chain or registry as a result of a bridge operation.
   OriginTx origin_tx = 8;
+
+  // class_id is the unique identifier of the credit class under which the
+  // credit batch will be created.
+  //
+  // Since Revision 3
+  string class_id = 9;
 }
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
@@ -871,6 +899,21 @@ message MsgUpdateClassFee {
 //
 // Since Revision 2
 message MsgUpdateClassFeeResponse {}
+
+// MsgUpdateProjectFee is the Msg/UpdateProjectFee request type.
+message MsgUpdateProjectFee {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // fee is the project creation fee. If not set, the project creation fee will
+  // be removed and no fee will be required to create a project.
+  cosmos.base.v1beta1.Coin fee = 2;
+}
+
+// MsgUpdateProjectFeeResponse is the Msg/UpdateProjectFee response type.
+message MsgUpdateProjectFeeResponse {}
 
 // MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
 //

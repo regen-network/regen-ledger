@@ -444,3 +444,17 @@ enum ProjectEnrollmentStatus {
   // completed.
   PROJECT_ENROLLMENT_STATUS_TERMINATED = 4;
 }
+
+// ProjectFee is the project creation fee. If not set, a project creation fee is
+// not required. This table is controlled via governance.
+//
+// Since Revision 3
+message ProjectFee {
+  option (cosmos.orm.v1.singleton) = {
+    id : 18
+  };
+
+  // fee is the project creation fee. If not set, a project creation fee is not
+  // required.
+  cosmos.base.v1beta1.Coin fee = 1;
+}
