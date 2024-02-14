@@ -20,7 +20,7 @@ require (
 	github.com/tendermint/tendermint v0.34.28
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
-	google.golang.org/grpc v1.61.0
+	google.golang.org/grpc v1.61.1
 	gotest.tools/v3 v3.5.1
 )
 
