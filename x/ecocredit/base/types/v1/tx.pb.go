@@ -3671,7 +3671,8 @@ type MsgClient interface {
 	CreateUnregisteredProject(ctx context.Context, in *MsgCreateUnregisteredProject, opts ...grpc.CallOption) (*MsgCreateUnregisteredProjectResponse, error)
 	// CreateOrUpdateApplicaton creates a new project credit class application, updates
 	// the metadata for an existing one when changes have been requested, or withdraws
-	// the application.
+	// the application. When an application is withdrawn, its data will be deleted from
+	// state and the project may apply again to the same credit class in the future.
 	//
 	// Since Revision 3
 	CreateOrUpdateApplication(ctx context.Context, in *MsgCreateOrUpdateApplication, opts ...grpc.CallOption) (*MsgCreateOrUpdateApplicationResponse, error)
@@ -3690,6 +3691,9 @@ type MsgClient interface {
 	// If a project has not yet been accepted then the issuer may change the
 	// status to either changes requested, accepted or rejected. If the status
 	// is already accepted, the issuer may only change the status to terminated.
+	// Whenever a project is rejected or terminated, the project's enrollment
+	// the enrollment state will be deleted and the project may apply again
+	// to the same credit class in the future.
 	//
 	// Since Revision 3
 	UpdateProjectEnrollment(ctx context.Context, in *MsgUpdateProjectEnrollment, opts ...grpc.CallOption) (*MsgUpdateProjectEnrollmentResponse, error)
@@ -4099,7 +4103,8 @@ type MsgServer interface {
 	CreateUnregisteredProject(context.Context, *MsgCreateUnregisteredProject) (*MsgCreateUnregisteredProjectResponse, error)
 	// CreateOrUpdateApplicaton creates a new project credit class application, updates
 	// the metadata for an existing one when changes have been requested, or withdraws
-	// the application.
+	// the application. When an application is withdrawn, its data will be deleted from
+	// state and the project may apply again to the same credit class in the future.
 	//
 	// Since Revision 3
 	CreateOrUpdateApplication(context.Context, *MsgCreateOrUpdateApplication) (*MsgCreateOrUpdateApplicationResponse, error)
@@ -4118,6 +4123,9 @@ type MsgServer interface {
 	// If a project has not yet been accepted then the issuer may change the
 	// status to either changes requested, accepted or rejected. If the status
 	// is already accepted, the issuer may only change the status to terminated.
+	// Whenever a project is rejected or terminated, the project's enrollment
+	// the enrollment state will be deleted and the project may apply again
+	// to the same credit class in the future.
 	//
 	// Since Revision 3
 	UpdateProjectEnrollment(context.Context, *MsgUpdateProjectEnrollment) (*MsgUpdateProjectEnrollmentResponse, error)
