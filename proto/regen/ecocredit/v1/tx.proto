@@ -37,7 +37,8 @@ service Msg {
 
   // CreateOrUpdateApplicaton creates a new project credit class application, updates
   // the metadata for an existing one when changes have been requested, or withdraws
-  // the application.
+  // the application. When an application is withdrawn, its data will be deleted from
+  // state and the project may apply again to the same credit class in the future.
   //
   // Since Revision 3
   rpc CreateOrUpdateApplication(MsgCreateOrUpdateApplication)
@@ -58,6 +59,9 @@ service Msg {
   // If a project has not yet been accepted then the issuer may change the
   // status to either changes requested, accepted or rejected. If the status
   // is already accepted, the issuer may only change the status to terminated.
+  // Whenever a project is rejected or terminated, the project's enrollment
+  // the enrollment state will be deleted and the project may apply again
+  // to the same credit class in the future.
   //
   // Since Revision 3
   rpc UpdateProjectEnrollment(MsgUpdateProjectEnrollment)
