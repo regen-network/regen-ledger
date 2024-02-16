@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package regen.ecocredit.curation.v1beta1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/curation/types/v1beta1;curationv1beta1";
+
+// TagTarget represents the target of a tag.
+message TagTarget {
+  // sum is the target of the tag.
+  oneof sum {
+    // address indicates that this tag targets the address of an account such as a credit class admin
+    // or a project admin.
+    string address = 1;
+
+    // class_id indicates that this tag targets all the credits within a given class.
+    string class_id = 2;
+
+    // project_id indicates that this tag targets all the credits within a given project.
+    string project_id = 3;
+
+    // batch_id indicates that this tag targets the credits within a batch.
+    string batch_id = 4;
+  }
+}
+
+// AllowedTagTargets represents the targets that a tag can be applied to.
+message AllowedTagTargets {
+  // address indicates that this tag can be applied to the address of an account such as a credit class admin.
+  bool address = 1;
+
+  // class indicates that this tag can be applied to all the credits within a given class.
+  bool class = 2;
+
+  // project indicates that this tag can be applied to all the credits within a given project.
+  bool project = 3;
+
+  // batch indicates that this tag can be applied to the credits within a batch.
+  bool batch = 4;
+}
+
+// TagMeta represents the metadata of a tag.
+message TagMeta {
+  // name is the name of the tag. It is not considered unique among tags and is informational only.
+  string name = 1;
+
+  // description is a description of the tag. It is informational only.
+  string description = 2;
+
+  // allowed_targets is the targets that this tag can be applied to.
+  AllowedTagTargets allowed_targets = 3;
+}
+
+// TagType represents the type of a tag.
+message TagType {
+  // sum is the type of the tag.
+  oneof sum {
+    // tag indicates that this tag is a tag that can either be present or not present.
+    TagTagType tag = 1;
+
+    // numeric indicates that this tag is a tag that can have a numeric value.
+    NumericTagType numeric = 2;
+  }
+}
+
+// TagTagType represents a tag that can either be present or not present.
+message TagTagType {}
+
+// NumericTagType represents a tag that can have a numeric value. Numeric values are represented as
+// uint64s in storage and have a fixed precision. They are not considered floating point values.
+// The range of numeric values must be representable within the range of a uint64 given the provided
+// min, max and precision.
+message NumericTagType {
+  // min is the minimum value of the attribute as a decimal string. It is required.
+  string min = 1;
+
+  // max is the maximum value of the attribute as a decimal string. It is required.
+  string max = 2;
+
+  // precision is the number of significant decimal places after the decimal point if it is a positive value.
+  // For instance 1 indicates that 3.54 would be an invalid value and that 3.5 is the most precise value
+  // that could be submitted.
+  // If it is a negative value, it is the number of non-significant digits after the decimal point.
+  // For instance -1 indicates that 34 would be an invalid value and that 30 is the most precise value
+  // that could be submitted.
+  // A value of 0 indicates an integer value.
+  int32 precision = 3;
+}
