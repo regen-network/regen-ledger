@@ -91,15 +91,13 @@ message Project {
   // efficient lookups. This identifier is auto-incrementing.
   uint64 key = 1;
 
-  // id is the unique identifier of the project either auto-generated from the
-  // project key.
+  // id is the auto-generated unique identifier of the project.
   string id = 2;
 
   // admin is the admin of the project.
   bytes admin = 3;
 
-  // Deprecated: class_key is the table row identifier of the credit class used internally
-  // for efficient lookups. This links a project to a credit class.
+  // Deprecated: use ProjectEnrollment instead.
   uint64 class_key = 4 [deprecated = true];
 
   // jurisdiction is the jurisdiction of the project.
@@ -183,8 +181,7 @@ message ClassSequence {
   uint64 next_sequence = 2;
 }
 
-// ProjectSequence stores and increments the sequence number for projects within
-// a credit class.
+// Deprecated: No longer used.
 message ProjectSequence {
   option deprecated = true;
 
