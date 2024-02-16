@@ -259,6 +259,24 @@ service Query {
       returns (QueryAllowedBridgeChainsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/allowed-bridge-chains";
   }
+
+  // ProjectEnrollment queries information about a project's enrollment in a
+  // credit class.
+  //
+  // Since Revision 3
+  rpc ProjectEnrollment(QueryProjectEnrollmentRequest) returns (QueryProjectEnrollmentResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/project/{project_id}/enrollments/{class_id}"
+    };
+  }
+
+  // ProjectEnrollments queries all credit class enrollments associated with a
+  // project.
+  rpc ProjectEnrollments(QueryProjectEnrollmentsRequest) returns (QueryProjectEnrollmentsResponse) {
+    option (google.api.http) = {
+      get : "/regen/ecocredit/v1/project/{project_id}/enrollments"
+    };
+  }
 }
 
 // QueryClassesRequest is the Query/Classes request type.
@@ -825,4 +843,48 @@ message QueryAllowedBridgeChainsResponse {
   // allowed_bridge_chains is a list of chains that are allowed to be used in
   // bridge operations.
   repeated string allowed_bridge_chains = 1;
+}
+
+// QueryProjectEnrollmentRequest is the Query/ProjectEnrollment request type.
+//
+// Since Revision 3
+message QueryProjectEnrollmentRequest {
+
+  // project_id is the unique identifier of the project to query.
+  string project_id = 1;
+
+  // class_id is the unique identifier of the credit class to query.
+  string class_id = 2;
+}
+
+// QueryProjectEnrollmentResponse is the Query/ProjectEnrollment response type.
+//
+// Since Revision 3
+message QueryProjectEnrollmentResponse {
+
+  // project_class is the fetched project class relationship.
+  ProjectEnrollment project_class = 1;
+}
+
+// QueryProjectEnrollmentsRequest is the Query/ProjectEnrollments request type.
+//
+// Since Revision 3
+message QueryProjectEnrollmentsRequest {
+  // project_id is the unique identifier of the project to query.
+  string project_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectEnrollmentsResponse is the Query/ProjectEnrollments response type.
+//
+// Since Revision 3
+message QueryProjectEnrollmentsResponse {
+
+  // enrollments are the fetched project credit class enrollments.
+  repeated ProjectEnrollment enrollments = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

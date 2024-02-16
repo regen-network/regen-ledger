@@ -45,6 +45,8 @@ const (
 	Query_AllowedClassCreators_FullMethodName  = "/regen.ecocredit.v1.Query/AllowedClassCreators"
 	Query_ClassFee_FullMethodName              = "/regen.ecocredit.v1.Query/ClassFee"
 	Query_AllowedBridgeChains_FullMethodName   = "/regen.ecocredit.v1.Query/AllowedBridgeChains"
+	Query_ProjectEnrollment_FullMethodName     = "/regen.ecocredit.v1.Query/ProjectEnrollment"
+	Query_ProjectEnrollments_FullMethodName    = "/regen.ecocredit.v1.Query/ProjectEnrollments"
 )
 
 // QueryClient is the client API for Query service.
@@ -128,6 +130,14 @@ type QueryClient interface {
 	//
 	// Since Revision 2
 	AllowedBridgeChains(ctx context.Context, in *QueryAllowedBridgeChainsRequest, opts ...grpc.CallOption) (*QueryAllowedBridgeChainsResponse, error)
+	// ProjectEnrollment queries information about a project's enrollment in a
+	// credit class.
+	//
+	// Since Revision 3
+	ProjectEnrollment(ctx context.Context, in *QueryProjectEnrollmentRequest, opts ...grpc.CallOption) (*QueryProjectEnrollmentResponse, error)
+	// ProjectEnrollments queries all credit class enrollments associated with a
+	// project.
+	ProjectEnrollments(ctx context.Context, in *QueryProjectEnrollmentsRequest, opts ...grpc.CallOption) (*QueryProjectEnrollmentsResponse, error)
 }
 
 type queryClient struct {
@@ -373,6 +383,24 @@ func (c *queryClient) AllowedBridgeChains(ctx context.Context, in *QueryAllowedB
 	return out, nil
 }
 
+func (c *queryClient) ProjectEnrollment(ctx context.Context, in *QueryProjectEnrollmentRequest, opts ...grpc.CallOption) (*QueryProjectEnrollmentResponse, error) {
+	out := new(QueryProjectEnrollmentResponse)
+	err := c.cc.Invoke(ctx, Query_ProjectEnrollment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProjectEnrollments(ctx context.Context, in *QueryProjectEnrollmentsRequest, opts ...grpc.CallOption) (*QueryProjectEnrollmentsResponse, error) {
+	out := new(QueryProjectEnrollmentsResponse)
+	err := c.cc.Invoke(ctx, Query_ProjectEnrollments_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -454,6 +482,14 @@ type QueryServer interface {
 	//
 	// Since Revision 2
 	AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error)
+	// ProjectEnrollment queries information about a project's enrollment in a
+	// credit class.
+	//
+	// Since Revision 3
+	ProjectEnrollment(context.Context, *QueryProjectEnrollmentRequest) (*QueryProjectEnrollmentResponse, error)
+	// ProjectEnrollments queries all credit class enrollments associated with a
+	// project.
+	ProjectEnrollments(context.Context, *QueryProjectEnrollmentsRequest) (*QueryProjectEnrollmentsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -538,6 +574,12 @@ func (UnimplementedQueryServer) ClassFee(context.Context, *QueryClassFeeRequest)
 }
 func (UnimplementedQueryServer) AllowedBridgeChains(context.Context, *QueryAllowedBridgeChainsRequest) (*QueryAllowedBridgeChainsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowedBridgeChains not implemented")
+}
+func (UnimplementedQueryServer) ProjectEnrollment(context.Context, *QueryProjectEnrollmentRequest) (*QueryProjectEnrollmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectEnrollment not implemented")
+}
+func (UnimplementedQueryServer) ProjectEnrollments(context.Context, *QueryProjectEnrollmentsRequest) (*QueryProjectEnrollmentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectEnrollments not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -1020,6 +1062,42 @@ func _Query_AllowedBridgeChains_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ProjectEnrollment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectEnrollmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProjectEnrollment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProjectEnrollment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProjectEnrollment(ctx, req.(*QueryProjectEnrollmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProjectEnrollments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectEnrollmentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProjectEnrollments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProjectEnrollments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProjectEnrollments(ctx, req.(*QueryProjectEnrollmentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1130,6 +1208,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AllowedBridgeChains",
 			Handler:    _Query_AllowedBridgeChains_Handler,
+		},
+		{
+			MethodName: "ProjectEnrollment",
+			Handler:    _Query_ProjectEnrollment_Handler,
+		},
+		{
+			MethodName: "ProjectEnrollments",
+			Handler:    _Query_ProjectEnrollments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
