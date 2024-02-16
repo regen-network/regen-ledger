@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.v1;
 
+import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
 import "regen/ecocredit/v1/state.proto";
 
