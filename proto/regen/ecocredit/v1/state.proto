@@ -98,9 +98,9 @@ message Project {
   // admin is the admin of the project.
   bytes admin = 3;
 
-  // Deprecated: class_key is the table row identifier of the credit class used internally
+  // class_key is the table row identifier of the credit class used internally
   // for efficient lookups. This links a project to a credit class.
-  uint64 class_key = 4 [deprecated = true];
+  uint64 class_key = 4;
 
   // jurisdiction is the jurisdiction of the project.
   // Full documentation can be found in MsgCreateProject.jurisdiction.
