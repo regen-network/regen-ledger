@@ -266,7 +266,7 @@ service Query {
   // Since Revision 3
   rpc ProjectEnrollment(QueryProjectEnrollmentRequest) returns (QueryProjectEnrollmentResponse) {
     option (google.api.http) = {
-      get : "/regen/ecocredit/v1/project/{project_id}/enrollment/{class_id}"
+      get : "/regen/ecocredit/v1/project/{project_id}/enrollments/{class_id}"
     };
   }
 
