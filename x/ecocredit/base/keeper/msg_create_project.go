@@ -24,7 +24,10 @@ func (k Keeper) CreateProject(ctx context.Context, req *types.MsgCreateProject) 
 		return nil, err
 	}
 
-	// TODO deduct fee
+	err = k.deductCreateProjectFee(ctx, adminAddress, req.Fee)
+	if err != nil {
+		return nil, err
+	}
 
 	err = k.assertClassIssuer(ctx, classInfo.Key, adminAddress)
 	if err != nil {

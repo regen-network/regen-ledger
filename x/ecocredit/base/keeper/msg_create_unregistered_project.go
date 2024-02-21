@@ -14,7 +14,10 @@ func (k Keeper) CreateUnregisteredProject(ctx context.Context, msg *types.MsgCre
 		return nil, err
 	}
 
-	// TODO deduct fee
+	err = k.deductCreateProjectFee(ctx, admin, msg.Fee)
+	if err != nil {
+		return nil, err
+	}
 
 	project, projectID, err := k.createNewProject(ctx)
 	if err != nil {
