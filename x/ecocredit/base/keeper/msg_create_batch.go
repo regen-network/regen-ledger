@@ -204,7 +204,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 
 	if req.OriginTx != nil {
 		if err = k.stateStore.OriginTxIndexTable().Insert(ctx, &api.OriginTxIndex{
-			ClassKey: project.ClassKey,
+			ClassKey: class.Key,
 			Id:       req.OriginTx.Id,
 			Source:   req.OriginTx.Source,
 		}); err != nil {
@@ -220,7 +220,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		if len(req.OriginTx.Contract) != 0 {
 			err = k.stateStore.BatchContractTable().Insert(ctx, &api.BatchContract{
 				BatchKey: batchKey,
-				ClassKey: project.ClassKey,
+				ClassKey: class.Key,
 				Contract: req.OriginTx.Contract,
 			})
 			if err != nil {
