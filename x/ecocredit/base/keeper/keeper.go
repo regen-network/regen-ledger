@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -18,8 +16,6 @@ var (
 )
 
 type Keeper struct {
-	*types.UnimplementedQueryServer
-
 	stateStore    api.StateStore
 	bankKeeper    ecocredit.BankKeeper
 	moduleAddress sdk.AccAddress
@@ -30,11 +26,6 @@ type Keeper struct {
 	// the address capable of executing ecocredit params messages. Typically, this
 	// should be the x/gov module account.
 	authority sdk.AccAddress
-}
-
-func (k Keeper) UpdateProjectFee(ctx context.Context, fee *types.MsgUpdateProjectFee) (*types.MsgUpdateProjectFeeResponse, error) {
-	//TODO implement me
-	panic("implement me")
 }
 
 func NewKeeper(
