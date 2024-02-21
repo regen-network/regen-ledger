@@ -38,6 +38,7 @@ func (k Keeper) UpdateProjectEnrollment(ctx context.Context, msg *types.MsgUpdat
 
 	existingStatus := enrollment.Status
 	newStatus := ecocreditv1.ProjectEnrollmentStatus(msg.NewStatus)
+	delete := false
 	switch existingStatus {
 	case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED,
 		ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED:
@@ -46,21 +47,16 @@ func (k Keeper) UpdateProjectEnrollment(ctx context.Context, msg *types.MsgUpdat
 			ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED:
 			// Valid case
 			break
+		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_REJECTED:
+			delete = true
+			break
 		default:
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid status transition from %s to %s", existingStatus, newStatus)
 		}
 	case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED:
 		switch newStatus {
 		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_TERMINATED:
-			// Valid case
-			break
-		default:
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid status transition from %s to %s", existingStatus, newStatus)
-		}
-	case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_TERMINATED:
-		switch newStatus {
-		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED:
-			// Valid case
+			delete = true
 			break
 		default:
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid status transition from %s to %s", existingStatus, newStatus)
@@ -72,7 +68,23 @@ func (k Keeper) UpdateProjectEnrollment(ctx context.Context, msg *types.MsgUpdat
 	enrollment.Status = newStatus
 	enrollment.EnrollmentMetadata = msg.Metadata
 
-	if err := k.stateStore.ProjectEnrollmentTable().Save(ctx, enrollment); err != nil {
+	if delete {
+		if err := k.stateStore.ProjectEnrollmentTable().Delete(ctx, enrollment); err != nil {
+			return nil, err
+		}
+
+	} else {
+		if err := k.stateStore.ProjectEnrollmentTable().Save(ctx, enrollment); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&types.EventUpdateProjectEnrollment{
+		ProjectId:             proj.Id,
+		ClassId:               class.Id,
+		NewStatus:             types.ProjectEnrollmentStatus(newStatus),
+		NewEnrollmentMetadata: msg.Metadata,
+	}); err != nil {
 		return nil, err
 	}
 

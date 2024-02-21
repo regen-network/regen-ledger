@@ -32,8 +32,14 @@ func (k Keeper) CreateOrUpdateApplication(ctx context.Context, msg *types.MsgCre
 		return nil, err
 	}
 
+	action := types.EventUpdateApplication_ACTION_UPDATE
 	enrollment, err := k.stateStore.ProjectEnrollmentTable().Get(ctx, proj.Key, class.Key)
 	if ormerrors.IsNotFound(err) {
+		if msg.Withdraw {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot withdraw non-existent application")
+		}
+
+		action = types.EventUpdateApplication_ACTION_CREATE
 		enrollment = &ecocreditv1.ProjectEnrollment{
 			ProjectKey: proj.Key,
 			ClassKey:   class.Key,
@@ -43,9 +49,26 @@ func (k Keeper) CreateOrUpdateApplication(ctx context.Context, msg *types.MsgCre
 		return nil, err
 	}
 
-	enrollment.ApplicationMetadata = msg.Metadata
+	if msg.Withdraw {
+		action = types.EventUpdateApplication_ACTION_WITHDRAW
+		if err := k.stateStore.ProjectEnrollmentTable().Delete(ctx, enrollment); err != nil {
+			return nil, err
+		}
+	} else {
+		enrollment.ApplicationMetadata = msg.Metadata
 
-	if err := k.stateStore.ProjectEnrollmentTable().Save(ctx, enrollment); err != nil {
+		if err := k.stateStore.ProjectEnrollmentTable().Save(ctx, enrollment); err != nil {
+			return nil, err
+		}
+	}
+
+	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&types.EventUpdateApplication{
+		ProjectId:              proj.Id,
+		ClassId:                class.Id,
+		Action:                 action,
+		NewApplicationMetadata: msg.Metadata,
+	})
+	if err != nil {
 		return nil, err
 	}
 
