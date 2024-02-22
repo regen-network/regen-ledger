@@ -418,15 +418,13 @@ func (s *takeSuite) addBasketClassAndBalance(basketID uint64, creditAmount strin
 	classID := base.GetClassIDFromBatchDenom(s.batchDenom)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	_, err = s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
-		ClassKey: classKey,
-	})
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{

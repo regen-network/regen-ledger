@@ -146,28 +146,6 @@ func createProject(ctx context.Context, sStore api.StateStore, project *api.Proj
 		return 0, err
 	}
 
-	seq, err := sStore.ProjectSequenceTable().Get(ctx, project.ClassKey)
-	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			if err := sStore.ProjectSequenceTable().Insert(ctx, &api.ProjectSequence{
-				ClassKey:     project.ClassKey,
-				NextSequence: 2,
-			}); err != nil {
-				return 0, err
-			}
-			return pKey, nil
-		}
-
-		return 0, err
-	}
-
-	if err := sStore.ProjectSequenceTable().Update(ctx, &api.ProjectSequence{
-		ClassKey:     project.ClassKey,
-		NextSequence: seq.NextSequence + 1,
-	}); err != nil {
-		return 0, err
-	}
-
 	return pKey, nil
 }
 

@@ -26,7 +26,9 @@ var (
 	RegexProjectID        = fmt.Sprintf("(%s)|(%s)", RegexProjectIDV1, RegexProjectIDV2)
 	RegexProjectIDV1      = fmt.Sprintf(`%s-[0-9]{3,}`, RegexClassID)
 	RegexProjectIDV2      = `P[0-9]{3,}`
-	RegexBatchDenom       = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectID)
+	RegexBatchDenom       = fmt.Sprintf(`(%s)|(%s)`, RegexBatchDenomV1, RegexBatchDenomV2)
+	RegexBatchDenomV1     = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectIDV1)
+	RegexBatchDenomV2     = fmt.Sprintf(`%s-%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexClassID, RegexProjectIDV2)
 	RegexJurisdiction     = `([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`
 
 	regexCreditTypeAbbrev = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexCreditTypeAbbrev))

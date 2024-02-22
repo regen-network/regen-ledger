@@ -15,7 +15,6 @@ func TestUtils(t *testing.T) {
 	t.Run("TestInvalidProjectID", rapid.MakeCheck(testInvalidProjectID))
 	t.Run("TestFormatBatchDenom", rapid.MakeCheck(testFormatBatchDenom))
 	t.Run("TestInvalidBatchDenom", rapid.MakeCheck(testInvalidBatchDenom))
-	t.Run("TestGetClassIDFromProjectID", rapid.MakeCheck(testGetClassIDFromProjectID))
 	t.Run("TestGetClassIDFromBatchDenom", rapid.MakeCheck(testGetClassIDFromBatchDenom))
 	t.Run("TestGetProjectIDFromBatchDenom", rapid.MakeCheck(testGetProjectIDFromBatchDenom))
 	t.Run("GetCreditTypeAbbrevFromClassID", rapid.MakeCheck(testGetCreditTypeAbbrevFromClassID))
@@ -39,12 +38,9 @@ func testInvalidClassID(t *rapid.T) {
 }
 
 func testFormatProjectID(t *rapid.T) {
-	creditTypeAbbrev := genCreditTypeAbbrev.Draw(t, "creditTypeAbbrev")
-	classSeq := rapid.Uint64().Draw(t, "classSeq")
 	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
 
-	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
+	projectID := FormatProjectID(projectSeq)
 
 	t.Log(projectID)
 
@@ -66,8 +62,8 @@ func testFormatBatchDenom(t *rapid.T) {
 	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-	denom, err := FormatBatchDenom(projectID, batchSeq, startDate, endDate)
+	projectID := FormatProjectID(projectSeq)
+	denom, err := FormatBatchDenom(classID, projectID, batchSeq, startDate, endDate)
 	require.NoError(t, err)
 
 	t.Log(denom)
@@ -81,18 +77,6 @@ func testInvalidBatchDenom(t *rapid.T) {
 	require.Error(t, ValidateBatchDenom(batchDenom))
 }
 
-func testGetClassIDFromProjectID(t *rapid.T) {
-	creditTypeAbbrev := genCreditTypeAbbrev.Draw(t, "creditTypeAbbrev")
-	classSeq := rapid.Uint64().Draw(t, "classSeq")
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
-
-	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-
-	result := GetClassIDFromLegacyProjectID(projectID)
-	require.Equal(t, classID, result)
-}
-
 func testGetClassIDFromBatchDenom(t *rapid.T) {
 	creditTypeAbbrev := genCreditTypeAbbrev.Draw(t, "creditTypeAbbrev")
 	classSeq := rapid.Uint64().Draw(t, "classSeq")
@@ -102,8 +86,8 @@ func testGetClassIDFromBatchDenom(t *rapid.T) {
 	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-	denom, err := FormatBatchDenom(projectID, batchSeq, startDate, endDate)
+	projectID := FormatProjectID(projectSeq)
+	denom, err := FormatBatchDenom(classID, projectID, batchSeq, startDate, endDate)
 	require.NoError(t, err)
 
 	result := GetClassIDFromBatchDenom(denom)
@@ -119,8 +103,8 @@ func testGetProjectIDFromBatchDenom(t *rapid.T) {
 	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-	denom, err := FormatBatchDenom(projectID, batchSeq, startDate, endDate)
+	projectID := FormatProjectID(projectSeq)
+	denom, err := FormatBatchDenom(classID, projectID, batchSeq, startDate, endDate)
 	require.NoError(t, err)
 
 	result := GetProjectIDFromBatchDenom(denom)

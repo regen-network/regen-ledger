@@ -75,8 +75,7 @@ func (s *mintBatchCredits) ACreditClassWithIdAndIssuerAlice(a string) {
 
 func (s *mintBatchCredits) AProjectWithId(a string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       a,
-		ClassKey: s.classKey,
+		Id: a,
 	})
 	require.NoError(s.t, err)
 

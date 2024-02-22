@@ -222,15 +222,13 @@ func (s *putSuite) ACreditBatchWithDenom(a string) {
 	classID := base.GetClassIDFromBatchDenom(a)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
-		ClassKey: classKey,
-	})
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{})
 	require.NoError(s.t, err)
 
 	err = s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
@@ -256,15 +254,13 @@ func (s *putSuite) AliceOwnsCredits() {
 	classID := base.GetClassIDFromBatchDenom(s.batchDenom)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
-		ClassKey: classKey,
-	})
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
@@ -285,15 +281,13 @@ func (s *putSuite) AliceOwnsCreditAmount(a string) {
 	classID := base.GetClassIDFromBatchDenom(s.batchDenom)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
-		ClassKey: classKey,
-	})
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
@@ -314,15 +308,13 @@ func (s *putSuite) AliceOwnsCreditsFromCreditBatch(a string) {
 	classID := base.GetClassIDFromBatchDenom(a)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
-		ClassKey: classKey,
-	})
+	projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
@@ -343,15 +335,13 @@ func (s *putSuite) AliceOwnsCreditsWithStartDate(a string) {
 	startDate, err := regentypes.ParseDate("start-date", a)
 	require.NoError(s.t, err)
 
-	classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	_, err = s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	pKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
-		ClassKey: classKey,
-	})
+	pKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{

@@ -99,8 +99,7 @@ func (s *bridgeReceiveSuite) ACreditClassWithIdAndIssuerAlice(a string) {
 
 func (s *bridgeReceiveSuite) AProjectWithId(a string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       a,
-		ClassKey: s.classKey,
+		Id: a,
 	})
 	require.NoError(s.t, err)
 
@@ -118,7 +117,6 @@ func (s *bridgeReceiveSuite) AProjectWithId(a string) {
 func (s *bridgeReceiveSuite) AProjectWithIdAndReferenceId(a, b string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id:          a,
-		ClassKey:    s.classKey,
 		ReferenceId: b,
 	})
 	require.NoError(s.t, err)

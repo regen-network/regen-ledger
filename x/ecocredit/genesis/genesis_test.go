@@ -55,7 +55,7 @@ func TestValidateGenesis(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr2"),
 			ProjectKey:   1,
-			Denom:        "BIO01-001-00000000-00000000-001",
+			Denom:        "BIO01-P001-00000000-00000000-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
 			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -63,7 +63,7 @@ func TestValidateGenesis(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr3"),
 			ProjectKey:   1,
-			Denom:        "BIO02-001-00000000-00000000-001",
+			Denom:        "BIO02-P001-00000000-00000000-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
 			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -98,22 +98,36 @@ func TestValidateGenesis(t *testing.T) {
 
 	projects := []*baseapi.Project{
 		{
-			Id:           "P01-001",
+			Id:           "P001",
 			Admin:        sdk.AccAddress("addr6"),
-			ClassKey:     1,
 			Jurisdiction: "AQ",
 			Metadata:     "meta",
 		},
 		{
-			Id:           "P02-001",
+			Id:           "P002",
 			Admin:        sdk.AccAddress("addr7"),
-			ClassKey:     2,
 			Jurisdiction: "AQ",
 			Metadata:     "meta",
 		},
 	}
 	for _, p := range projects {
 		require.NoError(t, ss.ProjectTable().Insert(ormCtx, p))
+	}
+
+	enrollments := []*baseapi.ProjectEnrollment{
+		{
+			ProjectKey: 1,
+			ClassKey:   1,
+			Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+		},
+		{
+			ProjectKey: 2,
+			ClassKey:   2,
+			Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+		},
+	}
+	for _, e := range enrollments {
+		require.NoError(t, ss.ProjectEnrollmentTable().Insert(ormCtx, e))
 	}
 
 	target := ormjson.NewRawMessageTarget()
@@ -212,7 +226,7 @@ func TestGenesisValidate(t *testing.T) {
 					Precision:    6,
 				}))
 				denom := "C01-001-00000000-00000000-001"
-				key, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
@@ -222,10 +236,17 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     key,
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
+
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+				})
+				require.NoError(t, err)
+
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
@@ -263,8 +284,14 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     cKey,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 
@@ -311,8 +338,13 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     cKey,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
@@ -377,15 +409,25 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     cKey,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 				pKeyBIO, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P02-001",
 					Admin:        addr1,
-					ClassKey:     cKeyBIO,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKeyBIO,
+					ClassKey:   cKeyBIO,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
@@ -906,7 +948,6 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	project := baseapi.Project{
 		Id:           "P01-001",
 		Admin:        sdk.AccAddress("addr6"),
-		ClassKey:     1,
 		Jurisdiction: "AQ",
 		Metadata:     "meta",
 	}

@@ -120,18 +120,23 @@ func (s *createBatchSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	s.classKey = cKey
 }
 
-func (s *createBatchSuite) AProjectWithProjectId(a string) {
-	classID := base.GetClassIDFromLegacyProjectID(a)
-
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classID)
-	require.NoError(s.t, err)
-
+func (s *createBatchSuite) AProjectWithProjectIdEnrolledIn(a, b string) {
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id: a,
 	})
 	require.NoError(s.t, err)
 
 	s.projectKey = pKey
+
+	cls, err := s.k.stateStore.ClassTable().GetById(s.ctx, b)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.ProjectEnrollmentTable().Insert(s.ctx, &api.ProjectEnrollment{
+		ProjectKey: pKey,
+		ClassKey:   cls.Key,
+		Status:     api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *createBatchSuite) ABatchSequenceWithProjectIdAndNextSequence(a string, b string) {
@@ -179,10 +184,11 @@ func (s *createBatchSuite) OriginTx(a gocuke.DocString) {
 	s.originTx = &ot
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectId(a string) {
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndClassId(a, b string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:      s.bob.String(),
@@ -194,10 +200,11 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectId(a string) {
 	})
 }
 
-func (s *createBatchSuite) BobAttemptsToCreateABatchWithProjectId(a string) {
+func (s *createBatchSuite) BobAttemptsToCreateABatchWithProjectIdAndClassId(a, b string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.bob.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:      s.alice.String(),
@@ -209,35 +216,15 @@ func (s *createBatchSuite) BobAttemptsToCreateABatchWithProjectId(a string) {
 	})
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdStartDateAndEndDate(a, b, c string) {
-	startDate, err := regentypes.ParseDate("start date", b)
-	require.NoError(s.t, err)
-
-	endDate, err := regentypes.ParseDate("end date", c)
-	require.NoError(s.t, err)
-
+func (s *createBatchSuite) AliceAttemptsToCreateABatchForProjectAndClassWithTradableAmount(a, b, c string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:      s.bob.String(),
-				TradableAmount: s.tradableAmount,
-			},
-		},
-		StartDate: &startDate,
-		EndDate:   &endDate,
-	})
-}
-
-func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndTradableAmount(a, b string) {
-	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
-		Issuer:    s.alice.String(),
-		ProjectId: a,
-		Issuance: []*types.BatchIssuance{
-			{
-				Recipient:      s.bob.String(),
-				TradableAmount: b,
+				TradableAmount: c,
 			},
 		},
 		StartDate: s.startDate,
@@ -245,14 +232,15 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndTradableAm
 	})
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndRetiredAmount(a, b string) {
+func (s *createBatchSuite) AliceAttemptsToCreateABatchForProjectAndClassWithRetiredAmount(a, b, c string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:     s.bob.String(),
-				RetiredAmount: b,
+				RetiredAmount: c,
 			},
 		},
 		StartDate: s.startDate,
@@ -260,14 +248,15 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndRetiredAmo
 	})
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndOriginTx(a string, b gocuke.DocString) {
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectClassAndOriginTx(a, b string, c gocuke.DocString) {
 	var originTx types.OriginTx
-	err := jsonpb.UnmarshalString(b.Content, &originTx)
+	err := jsonpb.UnmarshalString(c.Content, &originTx)
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:      s.bob.String(),
@@ -280,15 +269,16 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndOriginTx(a
 	})
 }
 
-func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndIssuance(a string, b gocuke.DocString) {
+func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectClassAndIssuance(a, b string, c gocuke.DocString) {
 	var issuance []*types.BatchIssuance
 	// unmarshal with json because issuance array is not a proto message
-	err := json.Unmarshal([]byte(b.Content), &issuance)
+	err := json.Unmarshal([]byte(c.Content), &issuance)
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance:  issuance,
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
@@ -304,14 +294,15 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProperties(a gocuke.Do
 	s.res, s.err = s.k.CreateBatch(s.ctx, &msg)
 }
 
-func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a string, b string, c string) {
+func (s *createBatchSuite) CreatesABatchFromProjectClassAndIssuesTradableCreditsTo(a, b, c, d string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:      c,
-				TradableAmount: b,
+				Recipient:      d,
+				TradableAmount: c,
 			},
 		},
 		StartDate: s.startDate,
@@ -321,15 +312,16 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a 
 	require.NoError(s.t, s.err)
 }
 
-func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom(a, b, c, d string) {
+func (s *createBatchSuite) CreatesABatchFromProjectClassAndIssuesRetiredCreditsToFrom(a, b, c, d, e string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:              c,
-				RetiredAmount:          b,
-				RetirementJurisdiction: d,
+				Recipient:              d,
+				RetiredAmount:          c,
+				RetirementJurisdiction: e,
 			},
 		},
 		StartDate: s.startDate,
@@ -339,16 +331,17 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 	require.NoError(s.t, s.err)
 }
 
-func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFromWithReason(a, b, c, d, e string) {
+func (s *createBatchSuite) CreatesABatchFromProjectClassAndIssuesRetiredCreditsToFromWithReason(a, b, c, d, e, f string) {
 	s.res, s.err = s.k.CreateBatch(s.ctx, &types.MsgCreateBatch{
 		Issuer:    s.alice.String(),
 		ProjectId: a,
+		ClassId:   b,
 		Issuance: []*types.BatchIssuance{
 			{
-				Recipient:              c,
-				RetiredAmount:          b,
-				RetirementJurisdiction: d,
-				RetirementReason:       e,
+				Recipient:              d,
+				RetiredAmount:          c,
+				RetirementJurisdiction: e,
+				RetirementReason:       f,
 			},
 		},
 		StartDate: s.startDate,

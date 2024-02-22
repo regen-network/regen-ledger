@@ -23,8 +23,8 @@ func (m *Project) Validate() error {
 		return ecocredit.ErrParseFailure.Wrapf("admin: %s", err)
 	}
 
-	if m.ClassKey == 0 {
-		return ecocredit.ErrParseFailure.Wrap("class key cannot be zero")
+	if m.ClassKey != 0 {
+		return ecocredit.ErrParseFailure.Wrap("class key is deprecated and must be zero")
 	}
 
 	if err := base.ValidateJurisdiction(m.Jurisdiction); err != nil {

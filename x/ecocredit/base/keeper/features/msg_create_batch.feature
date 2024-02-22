@@ -18,29 +18,29 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: the project exists
-      When alice attempts to create a batch with project id "C01-001"
+      When alice attempts to create a batch with project id "P001" and class id "C01"
       Then expect no error
 
     Scenario: the project does not exist
-      When alice attempts to create a batch with project id "C01-002"
-      Then expect the error "could not get project with id C01-002: not found: invalid request"
+      When alice attempts to create a batch with project id "P002" and class id "C02"
+      Then expect error contains "could not get project with id P002: not found: invalid request"
 
   Rule: The issuer must be an allowed credit class issuer
 
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: the issuer is an allowed credit class issuer
-      When alice attempts to create a batch with project id "C01-001"
+      When alice attempts to create a batch with project id "P001" and class id "C01"
       Then expect no error
 
     Scenario: the issuer is not an allowed credit class issuer
-      When bob attempts to create a batch with project id "C01-001"
+      When bob attempts to create a batch with project id "P001" and class id "C01"
       Then expect error contains "is not an issuer for the class: unauthorized"
 
   Rule: The decimal places in issuance amount must not exceed credit type precision
@@ -48,10 +48,10 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C" and precision "6"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario Outline: the decimal places in tradable amount is less than or equal to credit type precision
-      When alice attempts to create a batch with project id "C01-001" and tradable amount "<amount>"
+      When alice attempts to create a batch for project "P001" and class "C01" with tradable amount "<amount>"
       Then expect no error
 
       Examples:
@@ -60,11 +60,11 @@ Feature: Msg/CreateBatch
         | equal to    | 9.123456 |
 
     Scenario: the decimal places in tradable amount is greater than credit type precision
-      When alice attempts to create a batch with project id "C01-001" and tradable amount "9.1234567"
+      When alice attempts to create a batch for project "P001" and class "C01" with tradable amount "9.1234567"
       Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
     Scenario Outline: the decimal places in retired amount is less than or equal to credit type precision
-      When alice attempts to create a batch with project id "C01-001" and retired amount "<amount>"
+      When alice attempts to create a batch for project "P001" and class "C01" with retired amount "<amount>"
       Then expect no error
 
       Examples:
@@ -73,7 +73,7 @@ Feature: Msg/CreateBatch
         | equal to    | 9.123456 |
 
     Scenario: the decimal places in retired amount is greater than credit type precision
-      When alice attempts to create a batch with project id "C01-001" and retired amount "9.1234567"
+      When alice attempts to create a batch for project "P001" and class "C01" with retired amount "9.1234567"
       Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
   Rule: The origin tx must be unique within the scope of the credit class
@@ -81,7 +81,7 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: the origin tx is not unique within the credit class
       Given an origin tx index
@@ -92,7 +92,7 @@ Feature: Msg/CreateBatch
         "source": "polygon"
       }
       """
-      When alice attempts to create a batch with project id "C01-001" and origin tx
+      When alice attempts to create a batch with project "P001" class "C01" and origin tx
       """
       {
         "id": "0x64",
@@ -110,7 +110,7 @@ Feature: Msg/CreateBatch
         "source": "polygon"
       }
       """
-      When alice attempts to create a batch with project id "C01-001" and origin tx
+      When alice attempts to create a batch with project "P001" class "C01" and origin tx
       """
       {
         "id": "0x64",
@@ -124,7 +124,7 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: the contract is not unique within credit class
       Given a batch contract
@@ -135,7 +135,7 @@ Feature: Msg/CreateBatch
         "contract": "0x40"
       }
       """
-      When alice attempts to create a batch with project id "C01-001" and origin tx
+      When alice attempts to create a batch with project "P001" class "C01" and origin tx
       """
       {
         "id": "0x64",
@@ -154,7 +154,7 @@ Feature: Msg/CreateBatch
         "contract": "0x40"
       }
       """
-      When alice attempts to create a batch with project id "C01-001" and origin tx
+      When alice attempts to create a batch with project "P001" class "C01" and origin tx
       """
       {
         "id": "0x64",
@@ -169,10 +169,10 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: balance updated from issuance with single item
-      When alice attempts to create a batch with project id "C01-001" and issuance
+      When alice attempts to create a batch with project "P001" class "C01" and issuance
       """
       [
         {
@@ -193,7 +193,7 @@ Feature: Msg/CreateBatch
       """
 
     Scenario: balance updated from issuance with multiple items and same recipient
-      When alice attempts to create a batch with project id "C01-001" and issuance
+      When alice attempts to create a batch with project "P001" class "C01" and issuance
       """
       [
         {
@@ -220,7 +220,7 @@ Feature: Msg/CreateBatch
       """
 
     Scenario: balance updated from issuance with multiple items and different recipients
-      When alice attempts to create a batch with project id "C01-001" and issuance
+      When alice attempts to create a batch with project "P001" class "C01" and issuance
       """
       [
         {
@@ -261,10 +261,10 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: supply updated from issuance with single item
-      When alice attempts to create a batch with project id "C01-001" and issuance
+      When alice attempts to create a batch with project "P001" class "C01" and issuance
       """
       [
         {
@@ -285,7 +285,7 @@ Feature: Msg/CreateBatch
       """
 
     Scenario: supply updated from issuance with multiple items
-      When alice attempts to create a batch with project id "C01-001" and issuance
+      When alice attempts to create a batch with project "P001" class "C01" and issuance
       """
       [
         {
@@ -318,18 +318,18 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
-      And a project with project id "C01-002"
+      And a project with project id "P001" enrolled in "C01"
+      And a project with project id "P002" enrolled in "C01"
 
     Scenario: the batch sequence is updated
-      Given a batch sequence with project id "C01-001" and next sequence "1"
-      When alice attempts to create a batch with project id "C01-001"
-      Then expect batch sequence with project id "C01-001" and next sequence "2"
+      Given a batch sequence with project id "P001" and next sequence "1"
+      When alice attempts to create a batch with project id "P001" and class id "C01"
+      Then expect batch sequence with project id "P001" and next sequence "2"
 
     Scenario: the batch sequence is not updated
-      Given a batch sequence with project id "C01-001" and next sequence "1"
-      When alice attempts to create a batch with project id "C01-002"
-      Then expect batch sequence with project id "C01-001" and next sequence "1"
+      Given a batch sequence with project id "P001" and next sequence "1"
+      When alice attempts to create a batch with project id "P002" and class id "C01"
+      Then expect batch sequence with project id "P001" and next sequence "1"
 
     # no failing scenario - state transitions only occur upon successful message execution
 
@@ -338,13 +338,14 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: the batch properties are added
       When alice attempts to create a batch with properties
       """
       {
-        "project_id": "C01-001",
+        "project_id": "P001",
+        "class_id": "C01",
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -354,7 +355,7 @@ Feature: Msg/CreateBatch
       Then expect batch properties
       """
       {
-        "denom": "C01-001-20200101-20210101-001",
+        "denom": "C01-P001-20200101-20210101-001",
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -369,10 +370,10 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: the batch contract mapping is added
-      When alice attempts to create a batch with project id "C01-001" and origin tx
+      When alice attempts to create a batch with project "P001" class "C01" and origin tx
       """
       {
         "id": "0x64",
@@ -396,14 +397,14 @@ Feature: Msg/CreateBatch
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: the response includes the batch denom
-      When alice attempts to create a batch with project id "C01-001"
+      When alice attempts to create a batch with project id "P001" and class id "C01"
       Then expect the response
       """
       {
-        "batch_denom": "C01-001-20200101-20210101-001"
+        "batch_denom": "C01-P001-20200101-20210101-001"
       }
       """
 
@@ -415,15 +416,15 @@ Feature: Msg/CreateBatch
       Given a credit type with abbreviation "C"
       And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: Event EventRetire is emitted
-      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA" with reason "offsetting electricity consumption"
+      When creates a batch from project "P001" class "C01" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA" with reason "offsetting electricity consumption"
       Then expect event retire with properties
       """
       {
         "owner": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
         "amount": "10",
         "jurisdiction": "US-WA",
         "reason": "offsetting electricity consumption"
@@ -431,68 +432,68 @@ Feature: Msg/CreateBatch
       """
 
     Scenario: Event EventMint is emitted
-      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      When creates a batch from project "P001" class "C01" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
       Then expect event mint with properties
       """
       {
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
         "tradable_amount": "0",
         "retired_amount": "10"
       }
       """
 
     Scenario: Event EventTransfer is emitted
-      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      When creates a batch from project "P001" class "C01" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
       Then expect event transfer with properties
       """
       {
         "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
         "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
         "tradable_amount": "0",
         "retired_amount": "10"
       }
       """
 
     Scenario: Event EventCreateBatch is emitted
-      When creates a batch from project "C01-001" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
+      When creates a batch from project "P001" class "C01" and issues "10" retired credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8" from "US-WA"
       Then expect event create batch with properties
       """
       {
-        "batch_denom": "C01-001-20200101-20210101-001"
+        "batch_denom": "C01-P001-20200101-20210101-001"
       }
       """
 
     Scenario: Event EventMint is emitted
-      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      When creates a batch from project "P001" class "C01" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event mint with properties
       """
       {
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
         "tradable_amount": "10",
         "retired_amount": "0"
       }
       """
 
     Scenario: Event EventTransfer is emitted
-      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      When creates a batch from project "P001" class "C01" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       And expect event transfer with properties
       """
       {
         "sender": "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9",
         "recipient": "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8",
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
         "tradable_amount": "10",
         "retired_amount": "0"
       }
       """
 
     Scenario: Event EventCreateBatch is emitted
-      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      When creates a batch from project "P001" class "C01" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event create batch with properties
       """
       {
-        "batch_denom": "C01-001-20200101-20210101-001"
+        "batch_denom": "C01-P001-20200101-20210101-001"
       }
       """
 
@@ -511,14 +512,14 @@ Feature: Msg/CreateBatch
       """
       And ecocredit module's address "regen15406g34dl5v9780tx2q3vtjdpkdgq4hhegdtm9"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "C01-001"
+      And a project with project id "P001" enrolled in "C01"
 
     Scenario: Event EventCreateBatch is emitted
-      When creates a batch from project "C01-001" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
+      When creates a batch from project "P001" class "C01" and issues "10" tradable credits to "regen1sl2dsfyf2znn48ehwqg28cv3nuglxkx4h7q5l8"
       Then expect event create batch with properties
       """
       {
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
           "origin_tx": {
           "id": "0x123",
           "source": "polygon",

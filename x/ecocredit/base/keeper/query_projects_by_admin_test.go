@@ -21,7 +21,7 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 	_, _, admin2 := testdata.KeyTestPubAddr()
 
 	// insert class
-	classKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+	_, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id: "C01",
 	})
 	assert.NilError(t, err)
@@ -29,7 +29,6 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 	// create two projects
 	project1 := &api.Project{
 		Id:           "C01-001",
-		ClassKey:     classKey,
 		Admin:        s.addr,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
@@ -40,7 +39,6 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 
 	project := &api.Project{
 		Id:           "C01-002",
-		ClassKey:     classKey,
 		Admin:        s.addr,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
@@ -52,7 +50,6 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 	// create project with different admin
 	project = &api.Project{
 		Id:           "C01-003",
-		ClassKey:     classKey,
 		Admin:        admin2,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",

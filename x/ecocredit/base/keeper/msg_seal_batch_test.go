@@ -64,8 +64,7 @@ func (s *sealBatch) ACreditClassWithIdAndIssuerAlice(a string) {
 
 func (s *sealBatch) AProjectWithId(a string) {
 	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       a,
-		ClassKey: s.classKey,
+		Id: a,
 	})
 	require.NoError(s.t, err)
 }

@@ -83,7 +83,6 @@ func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
 
 	err = s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:          a,
-		ClassKey:    class.Key,
 		ReferenceId: b,
 	})
 	require.NoError(s.t, err)

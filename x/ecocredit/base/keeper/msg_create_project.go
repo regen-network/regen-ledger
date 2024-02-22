@@ -85,6 +85,12 @@ func (k Keeper) createNewProject(ctx context.Context) (*api.Project, string, err
 	}
 
 	projectID := base.FormatProjectID(id)
+	newProject.Id = projectID
+	err = k.stateStore.ProjectTable().Update(ctx, newProject)
+	if err != nil {
+		return nil, "", err
+	}
+
 	return newProject, projectID, nil
 }
 

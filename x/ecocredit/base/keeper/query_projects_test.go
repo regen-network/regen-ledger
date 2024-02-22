@@ -16,14 +16,13 @@ func TestQuery_Projects(t *testing.T) {
 	s := setupBase(t)
 
 	// insert credit class
-	classKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+	_, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id: "C01",
 	})
 	assert.NilError(t, err)
 
 	project := &api.Project{
 		Id:           "C01-001",
-		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "metadata",
 	}
@@ -31,8 +30,7 @@ func TestQuery_Projects(t *testing.T) {
 	// insert two projects
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       "C01-002",
-		ClassKey: classKey,
+		Id: "C01-002",
 	}))
 
 	// query projects with pagination

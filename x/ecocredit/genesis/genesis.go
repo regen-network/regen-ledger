@@ -102,25 +102,6 @@ func ValidateGenesis(data json.RawMessage) error {
 		}
 	}
 
-	projectKeyToClassKey := make(map[uint64]uint64) // map of project key to class key
-	pItr, err := ss.ProjectTable().List(ormCtx, baseapi.ProjectPrimaryKey{})
-	if err != nil {
-		return err
-	}
-	defer pItr.Close()
-
-	for pItr.Next() {
-		project, err := pItr.Value()
-		if err != nil {
-			return err
-		}
-
-		if _, exists := projectKeyToClassKey[project.Key]; exists {
-			continue
-		}
-		projectKeyToClassKey[project.Key] = project.ClassKey
-	}
-
 	batchIDToPrecision := make(map[uint64]uint32) // map of batchID to precision
 	batchDenomToIDMap := make(map[string]uint64)  // map of batchDenom to batchID
 	bItr, err := ss.BatchTable().List(ormCtx, baseapi.BatchPrimaryKey{})
@@ -140,15 +121,6 @@ func ValidateGenesis(data json.RawMessage) error {
 
 		if _, exists := batchIDToPrecision[batch.Key]; exists {
 			continue
-		}
-
-		class, err := ss.ClassTable().Get(ormCtx, projectKeyToClassKey[batch.ProjectKey])
-		if err != nil {
-			return err
-		}
-
-		if class.Key == projectKeyToClassKey[batch.ProjectKey] {
-			batchIDToPrecision[batch.Key] = abbrevToPrecision[class.CreditTypeAbbrev]
 		}
 	}
 

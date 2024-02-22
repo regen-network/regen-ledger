@@ -489,15 +489,13 @@ func (s *updateSellOrdersSuite) sellOrderSetup(count int) {
 func (s *updateSellOrdersSuite) aliceBatchBalance() {
 	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	if err == ormerrors.NotFound {
-		classKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+		_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 			Id:               s.classID,
 			CreditTypeAbbrev: s.creditTypeAbbrev,
 		})
 		require.NoError(s.t, err)
 
-		projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{
-			ClassKey: classKey,
-		})
+		projectKey, err := s.baseStore.ProjectTable().InsertReturningID(s.ctx, &baseapi.Project{})
 		require.NoError(s.t, err)
 
 		batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{

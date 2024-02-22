@@ -94,8 +94,7 @@ func (s *send) ACreditBatchFromCreditClassWithCreditType(a string) {
 	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectID,
-		ClassKey: cKey,
+		Id: s.projectID,
 	})
 	require.NoError(s.t, err)
 
@@ -344,8 +343,7 @@ func (s *send) projectSetup() {
 	s.classKey = cKey
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       s.projectID,
-		ClassKey: cKey,
+		Id: s.projectID,
 	})
 	require.NoError(s.t, err)
 
