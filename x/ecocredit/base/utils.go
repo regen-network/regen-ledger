@@ -108,6 +108,9 @@ func ValidateCreditTypeAbbreviation(abbr string) error {
 	if matches == nil {
 		return ecocredit.ErrParseFailure.Wrapf("must be 1-3 uppercase alphabetic characters")
 	}
+	if abbr == "P" {
+		return ecocredit.ErrParseFailure.Wrapf("P is reserved as the prefix for project IDs")
+	}
 	return nil
 }
 
@@ -171,8 +174,8 @@ func ValidateJurisdiction(jurisdiction string) error {
 	return nil
 }
 
-// GetClassIDFromProjectID returns the credit class ID in a project ID.
-func GetClassIDFromProjectID(projectID string) string {
+// GetClassIDFromLegacyProjectID extracts the credit class ID from a legacy project ID.
+func GetClassIDFromLegacyProjectID(projectID string) string {
 	var s strings.Builder
 	for _, r := range projectID {
 		if r != '-' {

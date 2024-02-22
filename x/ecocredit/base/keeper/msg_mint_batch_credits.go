@@ -28,11 +28,6 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *types.MsgMintBatchCre
 		return nil, err
 	}
 
-	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
-	if err != nil {
-		return nil, err
-	}
-
 	if err = k.stateStore.OriginTxIndexTable().Insert(ctx, &api.OriginTxIndex{
 		ClassKey: batch.ClassKey,
 		Id:       req.OriginTx.Id,

@@ -89,7 +89,7 @@ func testGetClassIDFromProjectID(t *rapid.T) {
 	classID := FormatClassID(creditTypeAbbrev, classSeq)
 	projectID := FormatProjectID(classID, projectSeq)
 
-	result := GetClassIDFromProjectID(projectID)
+	result := GetClassIDFromLegacyProjectID(projectID)
 	require.Equal(t, classID, result)
 }
 

@@ -76,7 +76,7 @@ func (s *createProjectSuite) AProjectSequenceWithClassIdAndNextSequence(a, b str
 }
 
 func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
-	classID := base.GetClassIDFromProjectID(a)
+	classID := base.GetClassIDFromLegacyProjectID(a)
 
 	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classID)
 	require.NoError(s.t, err)

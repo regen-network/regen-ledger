@@ -121,23 +121,13 @@ func (s *createBatchSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 }
 
 func (s *createBatchSuite) AProjectWithProjectId(a string) {
-	classID := base.GetClassIDFromProjectID(a)
+	classID := base.GetClassIDFromLegacyProjectID(a)
 
 	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classID)
 	require.NoError(s.t, err)
 
 	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:       a,
-		ClassKey: class.Key,
-	})
-	require.NoError(s.t, err)
-
-	seq := s.getProjectSequence(a)
-
-	// Save because project sequence may already exist
-	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
-		ClassKey:     class.Key,
-		NextSequence: seq + 1,
+		Id: a,
 	})
 	require.NoError(s.t, err)
 

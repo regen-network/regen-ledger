@@ -137,3 +137,20 @@ Feature: MsgAddCreditType
       }
     }
     """
+
+
+  Scenario: an error is returned for the reversed abbreviation P
+    Given the message
+    """
+    {
+      "authority": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "credit_type": {
+        "abbreviation":"P",
+        "name":"PPP",
+        "unit":"ppp",
+        "precision":6
+      }
+    }
+    """
+    When the message is validated
+    Then expect the error "credit type: abbreviation: P is reserved as the prefix for project IDs: parse error: invalid request"
