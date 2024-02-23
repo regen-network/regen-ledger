@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/v5
 go 1.21
 
 require (
-	cosmossdk.io/math v1.2.0
+	cosmossdk.io/math v1.3.0
 	github.com/cosmos/cosmos-sdk v0.46.12
 	github.com/cosmos/ibc-go/v5 v5.3.2
 	github.com/gorilla/mux v1.8.1
@@ -173,7 +173,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
