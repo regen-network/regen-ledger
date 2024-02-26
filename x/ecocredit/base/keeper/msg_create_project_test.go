@@ -93,14 +93,10 @@ func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithProperties(a gocuk
 	var msg types.MsgCreateProject
 	err := jsonpb.UnmarshalString(a.Content, &msg)
 	require.NoError(s.t, err)
+	msg.Admin = s.alice.String()
 
-	s.res, s.err = s.k.CreateProject(s.ctx, &types.MsgCreateProject{
-		Admin:        s.alice.String(),
-		ClassId:      msg.ClassId,
-		Metadata:     msg.Metadata,
-		Jurisdiction: msg.Jurisdiction,
-		ReferenceId:  msg.ReferenceId,
-	})
+	s.res, s.err = s.k.CreateProject(s.ctx, &msg)
+	require.NoError(s.t, s.err)
 }
 
 func (s *createProjectSuite) ExpectNoError() {

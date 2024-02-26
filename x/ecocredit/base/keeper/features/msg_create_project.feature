@@ -75,7 +75,7 @@ Feature: CreateProject
       Then expect project properties
       """
       {
-        "id": "C01-001",
+        "id": "P001",
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "jurisdiction": "US-WA",
         "reference_id": "VCS-001"
