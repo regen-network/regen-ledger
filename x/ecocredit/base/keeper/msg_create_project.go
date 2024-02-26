@@ -39,8 +39,8 @@ func (k Keeper) CreateProject(ctx context.Context, req *types.MsgCreateProject) 
 		return nil, err
 	}
 
-	// check if non-empty reference id is unique within the scope of the credit class
-	err = k.verifyReferenceID(ctx, classInfo.Key, req.ReferenceId)
+	// check if non-empty reference id is unique across all projects
+	err = k.verifyReferenceID(ctx, req.ReferenceId)
 	if err != nil {
 		return nil, err
 	}
@@ -94,17 +94,17 @@ func (k Keeper) createNewProject(ctx context.Context) (*api.Project, string, err
 	return newProject, projectID, nil
 }
 
-// verifyReferenceID prevents multiple projects from having the same reference id within the
-// scope of a credit class. We verify this here at the message server level rather than at the
-// ORM level because reference id is optional and therefore multiple projects within the scope
-// of a credit class can have an empty reference id (see BridgeReceive for more information)
-func (k Keeper) verifyReferenceID(ctx context.Context, classKey uint64, referenceID string) error {
+// verifyReferenceID prevents multiple projects from having the same reference id.
+// We verify this here at the message server level rather than at the
+// ORM level because reference id is optional any project can have an empty reference id.
+// (see BridgeReceive for more information)
+func (k Keeper) verifyReferenceID(ctx context.Context, referenceID string) error {
 	if referenceID == "" {
 		// reference id is optional so an empty reference id is valid
 		return nil
 	}
 
-	key := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(classKey, referenceID)
+	key := api.ProjectReferenceIdIndexKey{}.WithReferenceId(referenceID)
 	it, err := k.stateStore.ProjectTable().List(ctx, key)
 	if err != nil {
 		return err
@@ -112,8 +112,7 @@ func (k Keeper) verifyReferenceID(ctx context.Context, classKey uint64, referenc
 	defer it.Close()
 	if it.Next() {
 		return sdkerrors.ErrInvalidRequest.Wrapf(
-			"a project with reference id %s already exists within this credit class", referenceID,
-		)
+			"a project with reference id %s already exists", referenceID)
 	}
 
 	return nil

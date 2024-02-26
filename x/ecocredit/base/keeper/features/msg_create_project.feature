@@ -4,7 +4,6 @@ Feature: CreateProject
   - when the credit class exists
   - when the admin is an allowed credit class issuer
   - when the non-empty reference id is unique within the scope of the credit class
-  - the project sequence is updated
   - the project properties are added
   - the response includes the project id
 
@@ -55,26 +54,7 @@ Feature: CreateProject
     Scenario: non-empty reference id is not unique within credit class
       Given a project with project id "C01-001" and reference id "VCS-001"
       When alice attempts to create a project with class id "C01" and reference id "VCS-001"
-      Then expect the error "a project with reference id VCS-001 already exists within this credit class: invalid request"
-
-  Rule: the project sequence is updated
-
-    Background:
-      Given a credit type with abbreviation "C"
-      And a credit class with class id "C01" and issuer alice
-      And a credit class with class id "C02" and issuer alice
-
-    Scenario: the project sequence is updated
-      Given a project sequence with class id "C01" and next sequence "1"
-      When alice attempts to create a project with class id "C01"
-      Then expect project sequence with class id "C01" and next sequence "2"
-
-    Scenario: the project sequence is not updated
-      Given a project sequence with class id "C01" and next sequence "1"
-      When alice attempts to create a project with class id "C02"
-      Then expect project sequence with class id "C01" and next sequence "1"
-
-    # no failing scenario - state transitions only occur upon successful message execution
+      Then expect the error "a project with reference id VCS-001 already exists: invalid request"
 
   Rule: the project properties are added
 
@@ -115,7 +95,7 @@ Feature: CreateProject
       Then expect the response
       """
       {
-        "project_id": "C01-001"
+        "project_id": "P001"
       }
       """
 
@@ -132,6 +112,6 @@ Feature: CreateProject
       Then expect event with properties
       """
       {
-        "project_id": "C01-001"
+        "project_id": "P001"
       }
       """

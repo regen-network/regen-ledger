@@ -3,8 +3,6 @@ package keeper
 
 import (
 	"encoding/json"
-	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -61,38 +59,10 @@ func (s *createProjectSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *createProjectSuite) AProjectSequenceWithClassIdAndNextSequence(a, b string) {
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, a)
-	require.NoError(s.t, err)
-
-	nextSequence, err := strconv.ParseUint(b, 10, 32)
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
-		ClassKey:     class.Key,
-		NextSequence: nextSequence,
-	})
-	require.NoError(s.t, err)
-}
-
 func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
-	classID := base.GetClassIDFromLegacyProjectID(a)
-
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, classID)
-	require.NoError(s.t, err)
-
-	err = s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:          a,
 		ReferenceId: b,
-	})
-	require.NoError(s.t, err)
-
-	seq := s.getProjectSequence(a)
-
-	// Save because project sequence may already exist
-	err = s.k.stateStore.ProjectSequenceTable().Save(s.ctx, &api.ProjectSequence{
-		ClassKey:     class.Key,
-		NextSequence: seq + 1,
 	})
 	require.NoError(s.t, err)
 }
@@ -145,19 +115,6 @@ func (s *createProjectSuite) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
 }
 
-func (s *createProjectSuite) ExpectProjectSequenceWithClassIdAndNextSequence(a string, b string) {
-	project, err := s.stateStore.ClassTable().GetById(s.ctx, a)
-	require.NoError(s.t, err)
-
-	nextSequence, err := strconv.ParseUint(b, 10, 64)
-	require.NoError(s.t, err)
-
-	projectSequence, err := s.stateStore.ProjectSequenceTable().Get(s.ctx, project.Key)
-	require.NoError(s.t, err)
-
-	require.Equal(s.t, nextSequence, projectSequence.NextSequence)
-}
-
 func (s *createProjectSuite) ExpectProjectProperties(a gocuke.DocString) {
 	var expected types.Project
 	err := jsonpb.UnmarshalString(a.Content, &expected)
@@ -189,11 +146,4 @@ func (s *createProjectSuite) ExpectEventWithProperties(a gocuke.DocString) {
 
 	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
-}
-
-func (s *createProjectSuite) getProjectSequence(projectID string) uint64 {
-	str := strings.Split(projectID, "-")
-	seq, err := strconv.ParseUint(str[1], 10, 32)
-	require.NoError(s.t, err)
-	return seq
 }
