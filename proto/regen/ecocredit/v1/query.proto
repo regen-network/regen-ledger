@@ -270,8 +270,8 @@ service Query {
     };
   }
 
-  // ProjectEnrollments queries all credit class enrollments associated with a
-  // project.
+  // ProjectEnrollments queries all credit class enrollments and allows for filtering by
+  // project or credit class.
   rpc ProjectEnrollments(QueryProjectEnrollmentsRequest) returns (QueryProjectEnrollmentsResponse) {
     option (google.api.http) = {
       get : "/regen/ecocredit/v1/project/{project_id}/enrollments"
@@ -869,8 +869,13 @@ message QueryProjectEnrollmentResponse {
 //
 // Since Revision 3
 message QueryProjectEnrollmentsRequest {
-  // project_id is the unique identifier of the project to query.
+  // project_id is the unique identifier of the project to filter enrollments
+  // by. If not set, enrollments for all projects will be returned.
   string project_id = 1;
+
+  // class_id is the unique identifier of the credit class to filter enrollments
+  // by. If not set, enrollments for all credit classes will be returned.
+  string class_id = 3;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;

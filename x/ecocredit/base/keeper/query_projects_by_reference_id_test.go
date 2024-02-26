@@ -53,7 +53,6 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 
 	// check project properties
 	assert.Equal(t, project.Id, res.Projects[0].Id)
-	assert.Equal(t, "C01", res.Projects[0].ClassId)
 	assert.Equal(t, "VCS-001", res.Projects[0].ReferenceId)
 	assert.Equal(t, project.Jurisdiction, res.Projects[0].Jurisdiction)
 

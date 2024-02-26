@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"google.golang.org/protobuf/proto"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
@@ -24,7 +25,12 @@ func (k Keeper) ProjectsByClass(ctx context.Context, request *types.QueryProject
 		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
 	}
 
-	it, err := k.stateStore.ProjectEnrollmentTable().List(ctx, api.ProjectEnrollmentClassKeyIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
+	it, err := k.stateStore.ProjectEnrollmentTable().List(ctx, api.ProjectEnrollmentClassKeyIndexKey{}.WithClassKey(cInfo.Key),
+		ormlist.Paginate(pg),
+		ormlist.Filter(func(msg proto.Message) bool {
+			enrollment := msg.(*api.ProjectEnrollment)
+			return enrollment.Status == api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED
+		}))
 	if err != nil {
 		return nil, err
 	}

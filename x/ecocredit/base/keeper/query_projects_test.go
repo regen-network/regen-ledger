@@ -45,7 +45,6 @@ func TestQuery_Projects(t *testing.T) {
 
 	// check project properties
 	assert.Equal(t, project.Id, res.Projects[0].Id)
-	assert.Equal(t, "C01", res.Projects[0].ClassId)
 	assert.Equal(t, project.Jurisdiction, res.Projects[0].Jurisdiction)
 	assert.Equal(t, project.Metadata, res.Projects[0].Metadata)
 }

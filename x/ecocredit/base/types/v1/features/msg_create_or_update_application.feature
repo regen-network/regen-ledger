@@ -4,7 +4,7 @@ Feature: MsgCreateOrUpdateApplication
     Scenario Outline: validate admin
       Given project admin "<admin>"
       * project ID "P1"
-      * class ID "C1"
+      * class ID "C01"
       When the message is validated
       Then expect error contains "<error>"
 
@@ -22,7 +22,7 @@ Feature: MsgCreateOrUpdateApplication
     Scenario Outline: validate project ID
       Given project admin "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       * project ID "<project_id>"
-      * class ID "C1"
+      * class ID "C01"
       When the message is validated
       Then expect error contains "<error>"
 
@@ -42,13 +42,13 @@ Feature: MsgCreateOrUpdateApplication
       Examples:
         | class_id | error    |
         |          | class id |
-        | C1       |          |
+        | C01       |          |
 
   Rule: metadata is optional and at most 256 characters
     Scenario Outline: validate metadata
       Given project admin "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       * project ID "P1"
-      * class ID "C1"
+      * class ID "C01"
       * metadata "<metadata>"
       When the message is validated
       Then expect error contains "<error>"

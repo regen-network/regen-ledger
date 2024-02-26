@@ -72,7 +72,6 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, len(res.Projects), 1)
 	assert.Equal(t, project1.Id, res.Projects[0].Id)
-	assert.Equal(t, "C01", res.Projects[0].ClassId)
 	assert.Equal(t, sdk.AccAddress(project1.Admin).String(), res.Projects[0].Admin)
 	assert.Equal(t, project1.Jurisdiction, res.Projects[0].Jurisdiction)
 	assert.Equal(t, res.Pagination.Total, uint64(2))
