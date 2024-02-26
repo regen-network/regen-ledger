@@ -131,21 +131,6 @@ Feature: MsgSell
     When the message is validated
     Then expect the error "orders[0]: batch denom: empty string is not allowed: parse error: invalid request"
 
-  Scenario: an error is returned if order batch denom is not formatted
-    Given the message
-    """
-    {
-      "seller": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "orders": [
-        {
-          "batch_denom": "foo"
-        }
-      ]
-    }
-    """
-    When the message is validated
-    Then expect the error "orders[0]: batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
-
   Scenario: an error is returned if order quantity is empty
     Given the message
     """

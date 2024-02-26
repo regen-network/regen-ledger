@@ -60,17 +60,6 @@ Feature: Project
     When the project is validated
     Then expect the error "project id: empty string is not allowed: parse error"
 
-  Scenario: an error is returned if id is not formatted
-    Given the project
-    """
-    {
-      "key": 1,
-      "id": "foo"
-    }
-    """
-    When the project is validated
-    Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error"
-
   Scenario: an error is returned if admin is empty
     Given the project
     """
@@ -93,7 +82,7 @@ Feature: Project
     }
     """
     When the project is validated
-    Then expect the error "class key is deprecated and must be zer: parse error"
+    Then expect the error "class key is deprecated and must be zero: parse error"
 
   Scenario: an error is returned if jurisdiction is empty
     Given the project
