@@ -7,7 +7,6 @@ Feature: Project
       "key": 1,
       "id": "C01-001",
       "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "class_key": 1,
       "jurisdiction": "US-WA",
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
     }
@@ -22,7 +21,6 @@ Feature: Project
       "key": 1,
       "id": "C01-001",
       "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "class_key": 1,
       "jurisdiction": "US-WA"
     }
     """
@@ -36,7 +34,6 @@ Feature: Project
       "key": 1,
       "id": "C01-001",
       "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "class_key": 1,
       "jurisdiction": "US-WA",
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "reference_id": "VCS-001"
@@ -85,17 +82,18 @@ Feature: Project
     When the project is validated
     Then expect the error "admin: empty address string is not allowed: parse error"
 
-  Scenario: an error is returned if class key is empty
+  Scenario: an error is returned if class key is not empty
     Given the project
     """
     {
       "key": 1,
       "id": "C01-001",
+      "class_key": 1,
       "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y="
     }
     """
     When the project is validated
-    Then expect the error "class key cannot be zero: parse error"
+    Then expect the error "class key is deprecated and must be zer: parse error"
 
   Scenario: an error is returned if jurisdiction is empty
     Given the project
@@ -103,8 +101,7 @@ Feature: Project
     {
       "key": 1,
       "id": "C01-001",
-      "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "class_key": 1
+      "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y="
     }
     """
     When the project is validated
@@ -117,7 +114,6 @@ Feature: Project
       "key": 1,
       "id": "C01-001",
       "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "class_key": 1,
       "jurisdiction": "foo"
     }
     """
@@ -131,7 +127,6 @@ Feature: Project
       "key": 1,
       "id": "C01-001",
       "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
-      "class_key": 1,
       "jurisdiction": "US-WA"
     }
     """
