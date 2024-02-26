@@ -68,13 +68,13 @@ Feature: Msg/BridgeReceive
       When bob attempts to bridge credits with contract "0x0E65079a29d7793ab5CA500c2d88e60EE99Ba606"
       Then expect the error "only the account that issued the batch can mint additional credits: unauthorized"
 
-  Rule: A new project is created if a project from the same class with the same reference id does not exist
+  Rule: A new project is created if a project with the same reference id does not exist
 
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
       And allowed bridge chain "polygon"
-      And a project with id "C01-001" and reference id "VCS-001"
+      And a project with id "P001" and reference id "VCS-001"
 
     Scenario: a project from the same class with a different reference id
       When alice attempts to bridge credits with class id "C01" and project reference id "VCS-002"

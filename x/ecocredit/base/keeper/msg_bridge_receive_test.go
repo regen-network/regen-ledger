@@ -121,14 +121,6 @@ func (s *bridgeReceiveSuite) AProjectWithIdAndReferenceId(a, b string) {
 	})
 	require.NoError(s.t, err)
 
-	seq := s.getProjectSequence(a)
-
-	err = s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
-		ClassKey:     s.classKey,
-		NextSequence: seq + 1,
-	})
-	require.NoError(s.t, err)
-
 	s.projectKey = pKey
 }
 
