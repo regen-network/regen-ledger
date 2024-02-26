@@ -23,18 +23,10 @@ const (
 var (
 	RegexCreditTypeAbbrev = `[A-Z]{1,3}` //nolint:gosec
 	RegexClassID          = fmt.Sprintf(`%s[0-9]{2,}`, RegexCreditTypeAbbrev)
-	RegexProjectID        = fmt.Sprintf("(%s)|(%s)", RegexProjectIDV1, RegexProjectIDV2)
-	RegexProjectIDV1      = fmt.Sprintf(`%s-[0-9]{3,}`, RegexClassID)
-	RegexProjectIDV2      = `P[0-9]{3,}`
-	RegexBatchDenom       = fmt.Sprintf(`(%s)|(%s)`, RegexBatchDenomV1, RegexBatchDenomV2)
-	RegexBatchDenomV1     = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectIDV1)
-	RegexBatchDenomV2     = fmt.Sprintf(`%s-%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexClassID, RegexProjectIDV2)
 	RegexJurisdiction     = `([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`
 
 	regexCreditTypeAbbrev = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexCreditTypeAbbrev))
 	regexClassID          = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassID))
-	regexProjectID        = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectID))
-	regexBatchDenom       = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexBatchDenom))
 	regexJurisdiction     = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexJurisdiction))
 )
 
@@ -135,10 +127,6 @@ func ValidateProjectID(projectID string) error {
 	if projectID == "" {
 		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
 	}
-	matches := regexProjectID.FindStringSubmatch(projectID)
-	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrap("expected format <class-id>-<project-sequence>")
-	}
 	return nil
 }
 
@@ -147,12 +135,6 @@ func ValidateProjectID(projectID string) error {
 func ValidateBatchDenom(denom string) error {
 	if denom == "" {
 		return ecocredit.ErrParseFailure.Wrap("empty string is not allowed")
-	}
-	matches := regexBatchDenom.FindStringSubmatch(denom)
-	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrap(
-			"expected format <project-id>-<start_date>-<end_date>-<batch_sequence>",
-		)
 	}
 	return nil
 }
