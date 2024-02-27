@@ -71,7 +71,7 @@ Feature: Project
     When the project is validated
     Then expect the error "admin: empty address string is not allowed: parse error"
 
-  Scenario: an error is returned if class key is not empty
+  Scenario: an error is returned if class key is not empty and reference id is empty
     Given the project
     """
     {
@@ -82,7 +82,22 @@ Feature: Project
     }
     """
     When the project is validated
-    Then expect the error "class key is deprecated and must be zero: parse error"
+    Then expect the error "class key must be zero unless reference id is set: parse error"
+
+  Scenario: class key can be non-empty if reference id is set
+    Given the project
+    """
+    {
+      "key": 1,
+      "id": "C01-001",
+      "class_key": 1,
+      "admin": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
+      "reference_id": "VCS-001",
+      "jurisdiction": "US-WA"
+    }
+    """
+    When the project is validated
+    Then expect no error
 
   Scenario: an error is returned if jurisdiction is empty
     Given the project

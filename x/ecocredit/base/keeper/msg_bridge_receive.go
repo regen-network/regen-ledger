@@ -45,8 +45,8 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) 
 
 	// if batch contract entry with matching contract exists, and therefore a
 	// project exists, dynamically mint credits to the existing credit batch,
-	// otherwise search for an existing project based on project reference id and,
-	// if the project exists, create a credit batch
+	// otherwise search for an existing project based on credit class id and
+	// project reference id and, if the project exists, create a credit batch
 	// under the existing project, otherwise, create a new project and then a
 	// new credit batch under the new project
 	if batchContract != nil {
@@ -94,8 +94,8 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) 
 		}
 	} else {
 
-		// attempt to find existing project based on reference id
-		project, err := k.getProjectFromBridgeReq(ctx, req.Project)
+		// attempt to find existing project based on credit class and reference id
+		project, err := k.getProjectFromBridgeReq(ctx, req.Project, req.ClassId)
 		if err != nil {
 			return nil, err
 		}
@@ -161,14 +161,19 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) 
 	return response, nil
 }
 
-// getProjectFromBridgeReq attempts to find a project with a matching reference id.
-// No more than one project will be returned when we list the projects based on
-// reference id because we enforce uniqueness on non-empty reference ids within the scope
-// (and we do this at the message server level and not the ORM level because reference
+// getProjectFromBridgeReq attempts to find a project with a matching reference id within the scope
+// of the credit class. No more than one project will be returned when we list the projects based on
+// class id and reference id because we enforce uniqueness on non-empty reference ids within the scope
+// of a credit class (and we do this at the message server level and not the ORM level because reference
 // id is optional when using Msg/CreateProject). If no project is found, nil is returned for both values.
-func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *types.MsgBridgeReceive_Project) (*api.Project, error) {
+func (k Keeper) getProjectFromBridgeReq(ctx context.Context, req *types.MsgBridgeReceive_Project, classID string) (*api.Project, error) {
+	class, err := k.stateStore.ClassTable().GetById(ctx, classID)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", classID, err.Error())
+	}
+
 	// first we check if there is an existing project
-	idx := api.ProjectReferenceIdIndexKey{}.WithReferenceId(req.ReferenceId)
+	idx := api.ProjectClassKeyReferenceIdIndexKey{}.WithClassKeyReferenceId(class.Key, req.ReferenceId)
 	it, err := k.stateStore.ProjectTable().List(ctx, idx)
 	if err != nil {
 		return nil, err

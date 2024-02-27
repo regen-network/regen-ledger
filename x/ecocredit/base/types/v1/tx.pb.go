@@ -3767,8 +3767,8 @@ type MsgClient interface {
 	// the scope of the provided credit class, the credits will be minted to the
 	// existing credit batch, otherwise the credits will be issued in a new credit
 	// batch. The new credit batch will be created under an existing project if a
-	// project with a matching reference id already exists within the scope of the
-	// credit class, otherwise a new project will be created.
+	// project with a matching reference id already exists, otherwise a new project
+	// will be created.
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
@@ -4199,8 +4199,8 @@ type MsgServer interface {
 	// the scope of the provided credit class, the credits will be minted to the
 	// existing credit batch, otherwise the credits will be issued in a new credit
 	// batch. The new credit batch will be created under an existing project if a
-	// project with a matching reference id already exists within the scope of the
-	// credit class, otherwise a new project will be created.
+	// project with a matching reference id already exists, otherwise a new project
+	// will be created.
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.

@@ -59,10 +59,21 @@ func (s *createProjectSuite) ACreditClassWithClassIdAndIssuerAlice(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
-	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:          a,
-		ReferenceId: b,
+func (s *createProjectSuite) AProjectInClassWithReferenceId(projId, clsId, refId string) {
+	cls, err := s.k.stateStore.ClassTable().GetById(s.ctx, clsId)
+	require.NoError(s.t, err)
+
+	err = s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+		Id:          projId,
+		ReferenceId: refId,
+		ClassKey:    cls.Key,
+	})
+	require.NoError(s.t, err)
+
+	err = s.stateStore.ProjectEnrollmentTable().Insert(s.ctx, &api.ProjectEnrollment{
+		ProjectKey: cls.Key,
+		ClassKey:   cls.Key,
+		Status:     api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 	})
 	require.NoError(s.t, err)
 }
