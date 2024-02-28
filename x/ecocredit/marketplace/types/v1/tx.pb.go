@@ -576,8 +576,6 @@ type MsgBuyDirect_Order struct {
 	RetirementReason string `protobuf:"bytes,7,opt,name=retirement_reason,json=retirementReason,proto3" json:"retirement_reason,omitempty"`
 	// max_fee_amount is the maximum amount of buyer side fees being paid to the marketplace.
 	// If the marketplace fees end up being greater than this amount, the transaction will fail.
-	// If this field is left empty, the marketplace fees will be calculated based on the bid price
-	// and quantity and automatically deducted from the buyer's account.
 	// Fees are always paid in the same denomination as the bid price.
 	//
 	// Since Revision 3

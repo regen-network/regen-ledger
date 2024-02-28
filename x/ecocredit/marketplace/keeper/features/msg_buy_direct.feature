@@ -409,6 +409,7 @@ Feature: Msg/BuyDirect
       * bob has bank balance "110foo"
       * alice has bank balance "0foo"
       * buyer fees are 0.1 and seller fees are 0.05
+      * bob sets a max fee of "10foo"
       When bob attempts to buy credits with quantity "10" and bid price "10foo"
       Then expect no error
       * expect alice bank balance "95foo"
@@ -438,6 +439,7 @@ Feature: Msg/BuyDirect
       * bob has bank balance "240uregen"
       * alice has bank balance "0regen"
       * buyer fees are 0.2 and seller fees are 0.1
+      * bob sets a max fee of "40uregen"
       When bob attempts to buy credits with quantity "10" and bid price "20uregen"
       Then expect no error
       * expect alice bank balance "180uregen"

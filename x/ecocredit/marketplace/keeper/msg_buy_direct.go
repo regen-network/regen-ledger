@@ -110,14 +110,16 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		totalCost := sdk.Coin{Amount: total.SdkIntTrim(), Denom: market.BankDenom}
 
 		// check max fee
-		if maxFee := order.MaxFeeAmount; maxFee != nil {
-			buyerFeeCoin := sdk.Coin{Amount: buyerFee.SdkIntTrim(), Denom: market.BankDenom}
-			if maxFee.IsLT(buyerFeeCoin) {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
-					"%s: max fee: %s, required fee: %s",
-					orderIndex, maxFee, buyerFeeCoin,
-				)
-			}
+		maxFee := order.MaxFeeAmount
+		if maxFee == nil {
+			maxFee = &sdk.Coin{Amount: sdk.NewInt(0), Denom: market.BankDenom}
+		}
+		buyerFeeCoin := sdk.Coin{Amount: buyerFee.SdkIntTrim(), Denom: market.BankDenom}
+		if maxFee.IsLT(buyerFeeCoin) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: max fee: %s, required fee: %s",
+				orderIndex, maxFee, buyerFeeCoin,
+			)
 		}
 
 		// check address has the total cost
