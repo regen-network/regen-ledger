@@ -39,7 +39,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *types.MsgMintBatchCre
 		return nil, err
 	}
 
-	ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
+	ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch)
 	if err != nil {
 		return nil, err
 	}

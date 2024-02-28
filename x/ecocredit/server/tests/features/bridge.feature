@@ -65,8 +65,8 @@ Feature: Bridge Integration
     And expect event bridge receive with values
     """
     {
-      "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-001",
+      "project_id": "P001",
+      "batch_denom": "C01-P001-20200101-20210101-001",
       "amount": "100",
       "origin_tx": {
         "id": "0x0000000000000000000000000000000000000000000000000000000000000001",
@@ -79,7 +79,7 @@ Feature: Bridge Integration
     And expect project with properties
     """
     {
-      "id": "C01-001",
+      "id": "P001",
       "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
       "jurisdiction": "US-WA",
       "reference_id": "VCS-001"
@@ -89,14 +89,14 @@ Feature: Bridge Integration
     And expect credit batch with properties
     """
     {
-      "denom": "C01-001-20200101-20210101-001",
+      "denom": "C01-P001-20200101-20210101-001",
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "start_date": "2020-01-01T00:00:00Z",
       "end_date": "2021-01-01T00:00:00Z",
       "open": true
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect batch supply with batch denom "C01-P001-20200101-20210101-001"
     """
     {
       "tradable_amount": "100",
@@ -104,7 +104,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-P001-20200101-20210101-001"
     """
     {
       "tradable_amount": "100",
@@ -174,8 +174,8 @@ Feature: Bridge Integration
     And expect event bridge receive with values
     """
     {
-      "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-001",
+      "project_id": "P001",
+      "batch_denom": "C01-P001-20200101-20210101-001",
       "amount": "100",
       "origin_tx": {
         "id": "0x0000000000000000000000000000000000000000000000000000000000000002",
@@ -186,7 +186,7 @@ Feature: Bridge Integration
     """
     And expect total projects "1"
     And expect total credit batches "1"
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-P001-20200101-20210101-001"
     """
     {
       "tradable_amount": "200",
@@ -225,8 +225,8 @@ Feature: Bridge Integration
     And expect event bridge receive with values
     """
     {
-      "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-002",
+      "project_id": "P001",
+      "batch_denom": "C01-P001-20200101-20210101-002",
       "amount": "100",
       "origin_tx": {
         "id": "0x0000000000000000000000000000000000000000000000000000000000000003",
@@ -240,14 +240,14 @@ Feature: Bridge Integration
     And expect credit batch with properties
     """
     {
-      "denom": "C01-001-20200101-20210101-002",
+      "denom": "C01-P001-20200101-20210101-002",
       "metadata": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
       "start_date": "2020-01-01T00:00:00Z",
       "end_date": "2021-01-01T00:00:00Z",
       "open": true
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-002"
+    And expect batch supply with batch denom "C01-P001-20200101-20210101-002"
     """
     {
       "tradable_amount": "100",
@@ -255,7 +255,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-002"
+    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-P001-20200101-20210101-002"
     """
     {
       "tradable_amount": "100",
@@ -294,8 +294,8 @@ Feature: Bridge Integration
     And expect event bridge receive with values
     """
     {
-      "project_id": "C01-001",
-      "batch_denom": "C01-001-20200101-20210101-002",
+      "project_id": "P001",
+      "batch_denom": "C01-P001-20200101-20210101-002",
       "amount": "100",
       "origin_tx": {
         "id": "0x0000000000000000000000000000000000000000000000000000000000000004",
@@ -306,7 +306,7 @@ Feature: Bridge Integration
     """
     And expect total projects "1"
     And expect total credit batches "2"
-    And expect batch supply with batch denom "C01-001-20200101-20210101-002"
+    And expect batch supply with batch denom "C01-P001-20200101-20210101-002"
     """
     {
       "tradable_amount": "200",
@@ -314,7 +314,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-002"
+    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-P001-20200101-20210101-002"
     """
     {
       "tradable_amount": "200",
@@ -353,8 +353,8 @@ Feature: Bridge Integration
     And expect event bridge receive with values
     """
     {
-      "project_id": "C01-002",
-      "batch_denom": "C01-002-20200101-20210101-001",
+      "project_id": "P002",
+      "batch_denom": "C01-P002-20200101-20210101-001",
       "amount": "100",
       "origin_tx": {
         "id": "0x0000000000000000000000000000000000000000000000000000000000000005",
@@ -401,7 +401,7 @@ Feature: Bridge Integration
       "recipient": "0x1000000000000000000000000000000000000000",
       "credits": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
+          "batch_denom": "C01-P001-20200101-20210101-001",
           "amount": "200"
         }
       ]
@@ -416,10 +416,10 @@ Feature: Bridge Integration
       "contract": "0x0000000000000000000000000000000000000001",
       "amount": "200",
       "owner": "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42",
-      "batch_denom": "C01-001-20200101-20210101-001"
+      "batch_denom": "C01-P001-20200101-20210101-001"
     }
     """
-    And expect batch supply with batch denom "C01-001-20200101-20210101-001"
+    And expect batch supply with batch denom "C01-P001-20200101-20210101-001"
     """
     {
       "tradable_amount": "0",
@@ -427,7 +427,7 @@ Feature: Bridge Integration
       "cancelled_amount": "200"
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-001-20200101-20210101-001"
+    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-P001-20200101-20210101-001"
     """
     {
       "tradable_amount": "0",
