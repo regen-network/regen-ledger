@@ -384,7 +384,17 @@ Feature: Msg/BuyDirect
       And expect event buy direct with properties
       """
       {
-        "sell_order_id": 1
+        "sell_order_id": 1,
+        "seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "seller_fee_paid":{
+          "amount": "0",
+          "denom": "regen"
+        },
+        "buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "buyer_fee_paid":{
+          "amount": "0",
+          "denom": "regen"
+        }
       }
       """
 
@@ -393,7 +403,9 @@ Feature: Msg/BuyDirect
       Given a credit type
 
     Scenario: fees go to fee pool
-      Given alice created a sell order with quantity "10" and ask price "10foo"
+      Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+      * bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      * alice created a sell order with quantity "10" and ask price "10foo"
       * bob has bank balance "110foo"
       * alice has bank balance "0foo"
       * buyer fees are 0.1 and seller fees are 0.05
@@ -402,9 +414,27 @@ Feature: Msg/BuyDirect
       * expect alice bank balance "95foo"
       * expect bob bank balance "0foo"
       * expect fee pool balance "15foo"
+      And expect event buy direct with properties
+      """
+      {
+        "sell_order_id": 1,
+        "seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "seller_fee_paid":{
+            "amount": "5",
+            "denom": "foo"
+        },
+        "buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "buyer_fee_paid":{
+            "amount": "10",
+            "denom": "foo"
+        }
+      }
+      """
 
     Scenario: fees get burned
-      Given alice created a sell order with quantity "10" and ask price "20uregen"
+      Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
+      * bob's address "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      * alice created a sell order with quantity "10" and ask price "20uregen"
       * bob has bank balance "240uregen"
       * alice has bank balance "0regen"
       * buyer fees are 0.2 and seller fees are 0.1
@@ -413,6 +443,22 @@ Feature: Msg/BuyDirect
       * expect alice bank balance "180uregen"
       * expect bob bank balance "0uregen"
       * expect fee pool balance "0uregen"
+      And expect event buy direct with properties
+      """
+      {
+        "sell_order_id": 1,
+        "seller": "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68",
+        "seller_fee_paid":{
+            "amount": "20",
+            "denom": "uregen"
+        },
+        "buyer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "buyer_fee_paid":{
+            "amount": "40",
+            "denom": "uregen"
+        }
+      }
+      """
 
   Rule: max_fee_amount is enforced
     Scenario Outline: max_fee_amount is enforced

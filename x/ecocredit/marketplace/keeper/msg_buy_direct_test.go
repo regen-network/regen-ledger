@@ -8,9 +8,15 @@ import (
 
 	"github.com/cockroachdb/apd/v3"
 	"github.com/gogo/protobuf/jsonpb"
+	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -549,14 +555,30 @@ func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
 
 func (s *buyDirectSuite) ExpectEventBuyDirectWithProperties(a gocuke.DocString) {
 	var event types.EventBuyDirect
-	err := json.Unmarshal([]byte(a.Content), &event)
+	err := jsonpb.UnmarshalString(a.Content, &event)
 	require.NoError(s.t, err)
 
-	sdkEvent, found := testutil.GetEvent(&event, s.sdkCtx.EventManager().Events())
+	s.expectEvent(&event)
+}
+
+func (s *buyDirectSuite) expectEvent(expected gogoproto.Message) {
+	sdkEvent, found := testutil.GetEvent(expected, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
-	err = testutil.MatchEvent(&event, sdkEvent)
+	foundEvt, err := sdk.ParseTypedEvent(abci.Event(sdkEvent))
 	require.NoError(s.t, err)
+
+	msgType, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(gogoproto.MessageName(expected)))
+	require.NoError(s.t, err)
+	evt := msgType.New().Interface()
+	evt2 := msgType.New().Interface()
+
+	require.NoError(s.t, gogoToProtoReflect(foundEvt, evt))
+	require.NoError(s.t, gogoToProtoReflect(expected, evt2))
+
+	if diff := cmp.Diff(evt, evt2, protocmp.Transform()); diff != "" {
+		s.t.Fatalf("unexpected event diff: %s", diff)
+	}
 }
 
 func (s *buyDirectSuite) ExpectEventTransferWithProperties(a gocuke.DocString) {

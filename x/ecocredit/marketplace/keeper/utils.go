@@ -13,6 +13,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
@@ -243,11 +244,24 @@ func (k Keeper) fillOrder(ctx context.Context, params fillOrderParams) error {
 		return err
 	}
 
+	seller := sdk.AccAddress(params.sellOrder.Seller)
+
 	// send seller payment from buyer account to seller account
-	return k.bankKeeper.SendCoins(sdkCtx, params.buyerAcc, params.sellOrder.Seller, sdk.NewCoins(sdk.NewCoin(
+	err = k.bankKeeper.SendCoins(sdkCtx, params.buyerAcc, seller, sdk.NewCoins(sdk.NewCoin(
 		params.bankDenom,
 		sellerPayment.SdkIntTrim(),
 	)))
+	if err != nil {
+		return err
+	}
+
+	return sdkCtx.EventManager().EmitTypedEvent(&types.EventBuyDirect{
+		SellOrderId:   params.sellOrder.Id,
+		Buyer:         params.buyerAcc.String(),
+		BuyerFeePaid:  &sdk.Coin{Denom: params.bankDenom, Amount: params.buyerFee.SdkIntTrim()},
+		Seller:        seller.String(),
+		SellerFeePaid: &sdk.Coin{Denom: params.bankDenom, Amount: sellerFee.SdkIntTrim()},
+	})
 }
 
 // getSubTotalCost calculates the total cost of the buy order by multiplying the price per credit specified

@@ -148,12 +148,6 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		}); err != nil {
 			return nil, err
 		}
-
-		if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventBuyDirect{
-			SellOrderId: sellOrder.Id,
-		}); err != nil {
-			return nil, err
-		}
 	}
 
 	return &types.MsgBuyDirectResponse{}, nil
