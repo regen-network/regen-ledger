@@ -806,6 +806,19 @@ func (this BatchIssuerIndexKey) WithIssuer(issuer []byte) BatchIssuerIndexKey {
 	return this
 }
 
+type BatchClassKeyIndexKey struct {
+	vs []interface{}
+}
+
+func (x BatchClassKeyIndexKey) id() uint32            { return 5 }
+func (x BatchClassKeyIndexKey) values() []interface{} { return x.vs }
+func (x BatchClassKeyIndexKey) batchIndexKey()        {}
+
+func (this BatchClassKeyIndexKey) WithClassKey(class_key uint64) BatchClassKeyIndexKey {
+	this.vs = []interface{}{class_key}
+	return this
+}
+
 type batchTable struct {
 	table ormtable.AutoIncrementTable
 }
@@ -2058,6 +2071,168 @@ func NewAllowedBridgeChainTable(db ormtable.Schema) (AllowedBridgeChainTable, er
 	return allowedBridgeChainTable{table}, nil
 }
 
+type ProjectEnrollmentTable interface {
+	Insert(ctx context.Context, projectEnrollment *ProjectEnrollment) error
+	Update(ctx context.Context, projectEnrollment *ProjectEnrollment) error
+	Save(ctx context.Context, projectEnrollment *ProjectEnrollment) error
+	Delete(ctx context.Context, projectEnrollment *ProjectEnrollment) error
+	Has(ctx context.Context, project_key uint64, class_key uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	Get(ctx context.Context, project_key uint64, class_key uint64) (*ProjectEnrollment, error)
+	List(ctx context.Context, prefixKey ProjectEnrollmentIndexKey, opts ...ormlist.Option) (ProjectEnrollmentIterator, error)
+	ListRange(ctx context.Context, from, to ProjectEnrollmentIndexKey, opts ...ormlist.Option) (ProjectEnrollmentIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ProjectEnrollmentIndexKey) error
+	DeleteRange(ctx context.Context, from, to ProjectEnrollmentIndexKey) error
+
+	doNotImplement()
+}
+
+type ProjectEnrollmentIterator struct {
+	ormtable.Iterator
+}
+
+func (i ProjectEnrollmentIterator) Value() (*ProjectEnrollment, error) {
+	var projectEnrollment ProjectEnrollment
+	err := i.UnmarshalMessage(&projectEnrollment)
+	return &projectEnrollment, err
+}
+
+type ProjectEnrollmentIndexKey interface {
+	id() uint32
+	values() []interface{}
+	projectEnrollmentIndexKey()
+}
+
+// primary key starting index..
+type ProjectEnrollmentPrimaryKey = ProjectEnrollmentProjectKeyClassKeyIndexKey
+
+type ProjectEnrollmentProjectKeyClassKeyIndexKey struct {
+	vs []interface{}
+}
+
+func (x ProjectEnrollmentProjectKeyClassKeyIndexKey) id() uint32                 { return 0 }
+func (x ProjectEnrollmentProjectKeyClassKeyIndexKey) values() []interface{}      { return x.vs }
+func (x ProjectEnrollmentProjectKeyClassKeyIndexKey) projectEnrollmentIndexKey() {}
+
+func (this ProjectEnrollmentProjectKeyClassKeyIndexKey) WithProjectKey(project_key uint64) ProjectEnrollmentProjectKeyClassKeyIndexKey {
+	this.vs = []interface{}{project_key}
+	return this
+}
+
+func (this ProjectEnrollmentProjectKeyClassKeyIndexKey) WithProjectKeyClassKey(project_key uint64, class_key uint64) ProjectEnrollmentProjectKeyClassKeyIndexKey {
+	this.vs = []interface{}{project_key, class_key}
+	return this
+}
+
+type ProjectEnrollmentClassKeyIndexKey struct {
+	vs []interface{}
+}
+
+func (x ProjectEnrollmentClassKeyIndexKey) id() uint32                 { return 1 }
+func (x ProjectEnrollmentClassKeyIndexKey) values() []interface{}      { return x.vs }
+func (x ProjectEnrollmentClassKeyIndexKey) projectEnrollmentIndexKey() {}
+
+func (this ProjectEnrollmentClassKeyIndexKey) WithClassKey(class_key uint64) ProjectEnrollmentClassKeyIndexKey {
+	this.vs = []interface{}{class_key}
+	return this
+}
+
+type projectEnrollmentTable struct {
+	table ormtable.Table
+}
+
+func (this projectEnrollmentTable) Insert(ctx context.Context, projectEnrollment *ProjectEnrollment) error {
+	return this.table.Insert(ctx, projectEnrollment)
+}
+
+func (this projectEnrollmentTable) Update(ctx context.Context, projectEnrollment *ProjectEnrollment) error {
+	return this.table.Update(ctx, projectEnrollment)
+}
+
+func (this projectEnrollmentTable) Save(ctx context.Context, projectEnrollment *ProjectEnrollment) error {
+	return this.table.Save(ctx, projectEnrollment)
+}
+
+func (this projectEnrollmentTable) Delete(ctx context.Context, projectEnrollment *ProjectEnrollment) error {
+	return this.table.Delete(ctx, projectEnrollment)
+}
+
+func (this projectEnrollmentTable) Has(ctx context.Context, project_key uint64, class_key uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, project_key, class_key)
+}
+
+func (this projectEnrollmentTable) Get(ctx context.Context, project_key uint64, class_key uint64) (*ProjectEnrollment, error) {
+	var projectEnrollment ProjectEnrollment
+	found, err := this.table.PrimaryKey().Get(ctx, &projectEnrollment, project_key, class_key)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &projectEnrollment, nil
+}
+
+func (this projectEnrollmentTable) List(ctx context.Context, prefixKey ProjectEnrollmentIndexKey, opts ...ormlist.Option) (ProjectEnrollmentIterator, error) {
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
+	return ProjectEnrollmentIterator{it}, err
+}
+
+func (this projectEnrollmentTable) ListRange(ctx context.Context, from, to ProjectEnrollmentIndexKey, opts ...ormlist.Option) (ProjectEnrollmentIterator, error) {
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
+	return ProjectEnrollmentIterator{it}, err
+}
+
+func (this projectEnrollmentTable) DeleteBy(ctx context.Context, prefixKey ProjectEnrollmentIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this projectEnrollmentTable) DeleteRange(ctx context.Context, from, to ProjectEnrollmentIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
+}
+
+func (this projectEnrollmentTable) doNotImplement() {}
+
+var _ ProjectEnrollmentTable = projectEnrollmentTable{}
+
+func NewProjectEnrollmentTable(db ormtable.Schema) (ProjectEnrollmentTable, error) {
+	table := db.GetTable(&ProjectEnrollment{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectEnrollment{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return projectEnrollmentTable{table}, nil
+}
+
+// singleton store
+type ProjectFeeTable interface {
+	Get(ctx context.Context) (*ProjectFee, error)
+	Save(ctx context.Context, projectFee *ProjectFee) error
+}
+
+type projectFeeTable struct {
+	table ormtable.Table
+}
+
+var _ ProjectFeeTable = projectFeeTable{}
+
+func (x projectFeeTable) Get(ctx context.Context) (*ProjectFee, error) {
+	projectFee := &ProjectFee{}
+	_, err := x.table.Get(ctx, projectFee)
+	return projectFee, err
+}
+
+func (x projectFeeTable) Save(ctx context.Context, projectFee *ProjectFee) error {
+	return x.table.Save(ctx, projectFee)
+}
+
+func NewProjectFeeTable(db ormtable.Schema) (ProjectFeeTable, error) {
+	table := db.GetTable(&ProjectFee{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectFee{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return &projectFeeTable{table}, nil
+}
+
 type StateStore interface {
 	CreditTypeTable() CreditTypeTable
 	ClassTable() ClassTable
@@ -2075,6 +2250,8 @@ type StateStore interface {
 	AllowedClassCreatorTable() AllowedClassCreatorTable
 	ClassFeeTable() ClassFeeTable
 	AllowedBridgeChainTable() AllowedBridgeChainTable
+	ProjectEnrollmentTable() ProjectEnrollmentTable
+	ProjectFeeTable() ProjectFeeTable
 
 	doNotImplement()
 }
@@ -2096,6 +2273,8 @@ type stateStore struct {
 	allowedClassCreator   AllowedClassCreatorTable
 	classFee              ClassFeeTable
 	allowedBridgeChain    AllowedBridgeChainTable
+	projectEnrollment     ProjectEnrollmentTable
+	projectFee            ProjectFeeTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -2160,6 +2339,14 @@ func (x stateStore) ClassFeeTable() ClassFeeTable {
 
 func (x stateStore) AllowedBridgeChainTable() AllowedBridgeChainTable {
 	return x.allowedBridgeChain
+}
+
+func (x stateStore) ProjectEnrollmentTable() ProjectEnrollmentTable {
+	return x.projectEnrollment
+}
+
+func (x stateStore) ProjectFeeTable() ProjectFeeTable {
+	return x.projectFee
 }
 
 func (stateStore) doNotImplement() {}
@@ -2247,6 +2434,16 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	projectEnrollmentTable, err := NewProjectEnrollmentTable(db)
+	if err != nil {
+		return nil, err
+	}
+
+	projectFeeTable, err := NewProjectFeeTable(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return stateStore{
 		creditTypeTable,
 		classTable,
@@ -2264,5 +2461,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		allowedClassCreatorTable,
 		classFeeTable,
 		allowedBridgeChainTable,
+		projectEnrollmentTable,
+		projectFeeTable,
 	}, nil
 }

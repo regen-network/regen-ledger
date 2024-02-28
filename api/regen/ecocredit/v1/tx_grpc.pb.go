@@ -19,30 +19,34 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_CreateClass_FullMethodName              = "/regen.ecocredit.v1.Msg/CreateClass"
-	Msg_CreateProject_FullMethodName            = "/regen.ecocredit.v1.Msg/CreateProject"
-	Msg_CreateBatch_FullMethodName              = "/regen.ecocredit.v1.Msg/CreateBatch"
-	Msg_MintBatchCredits_FullMethodName         = "/regen.ecocredit.v1.Msg/MintBatchCredits"
-	Msg_SealBatch_FullMethodName                = "/regen.ecocredit.v1.Msg/SealBatch"
-	Msg_Send_FullMethodName                     = "/regen.ecocredit.v1.Msg/Send"
-	Msg_Retire_FullMethodName                   = "/regen.ecocredit.v1.Msg/Retire"
-	Msg_Cancel_FullMethodName                   = "/regen.ecocredit.v1.Msg/Cancel"
-	Msg_UpdateClassAdmin_FullMethodName         = "/regen.ecocredit.v1.Msg/UpdateClassAdmin"
-	Msg_UpdateClassIssuers_FullMethodName       = "/regen.ecocredit.v1.Msg/UpdateClassIssuers"
-	Msg_UpdateClassMetadata_FullMethodName      = "/regen.ecocredit.v1.Msg/UpdateClassMetadata"
-	Msg_UpdateProjectAdmin_FullMethodName       = "/regen.ecocredit.v1.Msg/UpdateProjectAdmin"
-	Msg_UpdateProjectMetadata_FullMethodName    = "/regen.ecocredit.v1.Msg/UpdateProjectMetadata"
-	Msg_UpdateBatchMetadata_FullMethodName      = "/regen.ecocredit.v1.Msg/UpdateBatchMetadata"
-	Msg_Bridge_FullMethodName                   = "/regen.ecocredit.v1.Msg/Bridge"
-	Msg_BridgeReceive_FullMethodName            = "/regen.ecocredit.v1.Msg/BridgeReceive"
-	Msg_AddCreditType_FullMethodName            = "/regen.ecocredit.v1.Msg/AddCreditType"
-	Msg_SetClassCreatorAllowlist_FullMethodName = "/regen.ecocredit.v1.Msg/SetClassCreatorAllowlist"
-	Msg_AddClassCreator_FullMethodName          = "/regen.ecocredit.v1.Msg/AddClassCreator"
-	Msg_RemoveClassCreator_FullMethodName       = "/regen.ecocredit.v1.Msg/RemoveClassCreator"
-	Msg_UpdateClassFee_FullMethodName           = "/regen.ecocredit.v1.Msg/UpdateClassFee"
-	Msg_AddAllowedBridgeChain_FullMethodName    = "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain"
-	Msg_RemoveAllowedBridgeChain_FullMethodName = "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain"
-	Msg_BurnRegen_FullMethodName                = "/regen.ecocredit.v1.Msg/BurnRegen"
+	Msg_CreateClass_FullMethodName               = "/regen.ecocredit.v1.Msg/CreateClass"
+	Msg_CreateProject_FullMethodName             = "/regen.ecocredit.v1.Msg/CreateProject"
+	Msg_CreateUnregisteredProject_FullMethodName = "/regen.ecocredit.v1.Msg/CreateUnregisteredProject"
+	Msg_CreateOrUpdateApplication_FullMethodName = "/regen.ecocredit.v1.Msg/CreateOrUpdateApplication"
+	Msg_UpdateProjectEnrollment_FullMethodName   = "/regen.ecocredit.v1.Msg/UpdateProjectEnrollment"
+	Msg_CreateBatch_FullMethodName               = "/regen.ecocredit.v1.Msg/CreateBatch"
+	Msg_MintBatchCredits_FullMethodName          = "/regen.ecocredit.v1.Msg/MintBatchCredits"
+	Msg_SealBatch_FullMethodName                 = "/regen.ecocredit.v1.Msg/SealBatch"
+	Msg_Send_FullMethodName                      = "/regen.ecocredit.v1.Msg/Send"
+	Msg_Retire_FullMethodName                    = "/regen.ecocredit.v1.Msg/Retire"
+	Msg_Cancel_FullMethodName                    = "/regen.ecocredit.v1.Msg/Cancel"
+	Msg_UpdateClassAdmin_FullMethodName          = "/regen.ecocredit.v1.Msg/UpdateClassAdmin"
+	Msg_UpdateClassIssuers_FullMethodName        = "/regen.ecocredit.v1.Msg/UpdateClassIssuers"
+	Msg_UpdateClassMetadata_FullMethodName       = "/regen.ecocredit.v1.Msg/UpdateClassMetadata"
+	Msg_UpdateProjectAdmin_FullMethodName        = "/regen.ecocredit.v1.Msg/UpdateProjectAdmin"
+	Msg_UpdateProjectMetadata_FullMethodName     = "/regen.ecocredit.v1.Msg/UpdateProjectMetadata"
+	Msg_UpdateBatchMetadata_FullMethodName       = "/regen.ecocredit.v1.Msg/UpdateBatchMetadata"
+	Msg_Bridge_FullMethodName                    = "/regen.ecocredit.v1.Msg/Bridge"
+	Msg_BridgeReceive_FullMethodName             = "/regen.ecocredit.v1.Msg/BridgeReceive"
+	Msg_AddCreditType_FullMethodName             = "/regen.ecocredit.v1.Msg/AddCreditType"
+	Msg_SetClassCreatorAllowlist_FullMethodName  = "/regen.ecocredit.v1.Msg/SetClassCreatorAllowlist"
+	Msg_AddClassCreator_FullMethodName           = "/regen.ecocredit.v1.Msg/AddClassCreator"
+	Msg_RemoveClassCreator_FullMethodName        = "/regen.ecocredit.v1.Msg/RemoveClassCreator"
+	Msg_UpdateClassFee_FullMethodName            = "/regen.ecocredit.v1.Msg/UpdateClassFee"
+	Msg_UpdateProjectFee_FullMethodName          = "/regen.ecocredit.v1.Msg/UpdateProjectFee"
+	Msg_AddAllowedBridgeChain_FullMethodName     = "/regen.ecocredit.v1.Msg/AddAllowedBridgeChain"
+	Msg_RemoveAllowedBridgeChain_FullMethodName  = "/regen.ecocredit.v1.Msg/RemoveAllowedBridgeChain"
+	Msg_BurnRegen_FullMethodName                 = "/regen.ecocredit.v1.Msg/BurnRegen"
 )
 
 // MsgClient is the client API for Msg service.
@@ -61,6 +65,39 @@ type MsgClient interface {
 	// of the project must be an approved credit class issuer for the given credit
 	// class. The creator becomes the admin of the project upon creation.
 	CreateProject(ctx context.Context, in *MsgCreateProject, opts ...grpc.CallOption) (*MsgCreateProjectResponse, error)
+	// CreateUnregisteredProject creates a new project without registering it
+	// under a credit class. This method is intended to be used by project proponents
+	// who are not yet ready to register their project under a credit class, but who
+	// want to create a project and receive a project ID.
+	CreateUnregisteredProject(ctx context.Context, in *MsgCreateUnregisteredProject, opts ...grpc.CallOption) (*MsgCreateUnregisteredProjectResponse, error)
+	// CreateOrUpdateApplicaton creates a new project credit class application, updates
+	// the metadata for an existing one when changes have been requested, or withdraws
+	// the application. When an application is withdrawn, its data will be deleted from
+	// state and the project may apply again to the same credit class in the future.
+	//
+	// Since Revision 3
+	CreateOrUpdateApplication(ctx context.Context, in *MsgCreateOrUpdateApplication, opts ...grpc.CallOption) (*MsgCreateOrUpdateApplicationResponse, error)
+	// UpdateProjectEnrollment allows a credit class issuer to evaluate a project
+	// application - either approving, requesting changes to, or
+	// rejecting it, or to terminate an existing enrollment.
+	// Any issuer in the credit class may update the project credit
+	// class enrollment status using this method. If more sophisticated rules are
+	// required to coordinate between different issuers, the credit class admin
+	// should set up an on or off-chain governance process to coordinate this.
+	// Issuers may not admit projects into credit classes using this method
+	// without the project first creating an application. For an issuer to
+	// admit a project into a credit class without an
+	// application the CreateProject method should be used instead.
+	//
+	// If a project has not yet been accepted then the issuer may change the
+	// status to either changes requested, accepted or rejected. If the status
+	// is already accepted, the issuer may only change the status to terminated.
+	// Whenever a project is rejected or terminated, the project's enrollment
+	// the enrollment state will be deleted and the project may apply again
+	// to the same credit class in the future.
+	//
+	// Since Revision 3
+	UpdateProjectEnrollment(ctx context.Context, in *MsgUpdateProjectEnrollment, opts ...grpc.CallOption) (*MsgUpdateProjectEnrollmentResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
 	// be issued with each issuance specifying a recipient, the amount of tradable
@@ -163,6 +200,13 @@ type MsgClient interface {
 	//
 	// Since Revision 2
 	UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, opts ...grpc.CallOption) (*MsgUpdateClassFeeResponse, error)
+	// UpdateProjectFee is a governance method that allows for updating the
+	// project creation fee. If no fee is specified in the request, the project
+	// creation fee will be removed and no fee will be required to create a
+	// project.
+	//
+	// Since Revision 3
+	UpdateProjectFee(ctx context.Context, in *MsgUpdateProjectFee, opts ...grpc.CallOption) (*MsgUpdateProjectFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
@@ -199,6 +243,33 @@ func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClass, opts ..
 func (c *msgClient) CreateProject(ctx context.Context, in *MsgCreateProject, opts ...grpc.CallOption) (*MsgCreateProjectResponse, error) {
 	out := new(MsgCreateProjectResponse)
 	err := c.cc.Invoke(ctx, Msg_CreateProject_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) CreateUnregisteredProject(ctx context.Context, in *MsgCreateUnregisteredProject, opts ...grpc.CallOption) (*MsgCreateUnregisteredProjectResponse, error) {
+	out := new(MsgCreateUnregisteredProjectResponse)
+	err := c.cc.Invoke(ctx, Msg_CreateUnregisteredProject_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) CreateOrUpdateApplication(ctx context.Context, in *MsgCreateOrUpdateApplication, opts ...grpc.CallOption) (*MsgCreateOrUpdateApplicationResponse, error) {
+	out := new(MsgCreateOrUpdateApplicationResponse)
+	err := c.cc.Invoke(ctx, Msg_CreateOrUpdateApplication_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateProjectEnrollment(ctx context.Context, in *MsgUpdateProjectEnrollment, opts ...grpc.CallOption) (*MsgUpdateProjectEnrollmentResponse, error) {
+	out := new(MsgUpdateProjectEnrollmentResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateProjectEnrollment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -376,6 +447,15 @@ func (c *msgClient) UpdateClassFee(ctx context.Context, in *MsgUpdateClassFee, o
 	return out, nil
 }
 
+func (c *msgClient) UpdateProjectFee(ctx context.Context, in *MsgUpdateProjectFee, opts ...grpc.CallOption) (*MsgUpdateProjectFeeResponse, error) {
+	out := new(MsgUpdateProjectFeeResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateProjectFee_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) AddAllowedBridgeChain(ctx context.Context, in *MsgAddAllowedBridgeChain, opts ...grpc.CallOption) (*MsgAddAllowedBridgeChainResponse, error) {
 	out := new(MsgAddAllowedBridgeChainResponse)
 	err := c.cc.Invoke(ctx, Msg_AddAllowedBridgeChain_FullMethodName, in, out, opts...)
@@ -419,6 +499,39 @@ type MsgServer interface {
 	// of the project must be an approved credit class issuer for the given credit
 	// class. The creator becomes the admin of the project upon creation.
 	CreateProject(context.Context, *MsgCreateProject) (*MsgCreateProjectResponse, error)
+	// CreateUnregisteredProject creates a new project without registering it
+	// under a credit class. This method is intended to be used by project proponents
+	// who are not yet ready to register their project under a credit class, but who
+	// want to create a project and receive a project ID.
+	CreateUnregisteredProject(context.Context, *MsgCreateUnregisteredProject) (*MsgCreateUnregisteredProjectResponse, error)
+	// CreateOrUpdateApplicaton creates a new project credit class application, updates
+	// the metadata for an existing one when changes have been requested, or withdraws
+	// the application. When an application is withdrawn, its data will be deleted from
+	// state and the project may apply again to the same credit class in the future.
+	//
+	// Since Revision 3
+	CreateOrUpdateApplication(context.Context, *MsgCreateOrUpdateApplication) (*MsgCreateOrUpdateApplicationResponse, error)
+	// UpdateProjectEnrollment allows a credit class issuer to evaluate a project
+	// application - either approving, requesting changes to, or
+	// rejecting it, or to terminate an existing enrollment.
+	// Any issuer in the credit class may update the project credit
+	// class enrollment status using this method. If more sophisticated rules are
+	// required to coordinate between different issuers, the credit class admin
+	// should set up an on or off-chain governance process to coordinate this.
+	// Issuers may not admit projects into credit classes using this method
+	// without the project first creating an application. For an issuer to
+	// admit a project into a credit class without an
+	// application the CreateProject method should be used instead.
+	//
+	// If a project has not yet been accepted then the issuer may change the
+	// status to either changes requested, accepted or rejected. If the status
+	// is already accepted, the issuer may only change the status to terminated.
+	// Whenever a project is rejected or terminated, the project's enrollment
+	// the enrollment state will be deleted and the project may apply again
+	// to the same credit class in the future.
+	//
+	// Since Revision 3
+	UpdateProjectEnrollment(context.Context, *MsgUpdateProjectEnrollment) (*MsgUpdateProjectEnrollmentResponse, error)
 	// CreateBatch creates a new batch of credits under the given project with a
 	// start and end date representing the monitoring period, a list of credits to
 	// be issued with each issuance specifying a recipient, the amount of tradable
@@ -521,6 +634,13 @@ type MsgServer interface {
 	//
 	// Since Revision 2
 	UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error)
+	// UpdateProjectFee is a governance method that allows for updating the
+	// project creation fee. If no fee is specified in the request, the project
+	// creation fee will be removed and no fee will be required to create a
+	// project.
+	//
+	// Since Revision 3
+	UpdateProjectFee(context.Context, *MsgUpdateProjectFee) (*MsgUpdateProjectFeeResponse, error)
 	// AddAllowedBridgeChain is a governance method that allows for the
 	// addition of a chain to bridge ecocredits to.
 	//
@@ -547,6 +667,15 @@ func (UnimplementedMsgServer) CreateClass(context.Context, *MsgCreateClass) (*Ms
 }
 func (UnimplementedMsgServer) CreateProject(context.Context, *MsgCreateProject) (*MsgCreateProjectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProject not implemented")
+}
+func (UnimplementedMsgServer) CreateUnregisteredProject(context.Context, *MsgCreateUnregisteredProject) (*MsgCreateUnregisteredProjectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUnregisteredProject not implemented")
+}
+func (UnimplementedMsgServer) CreateOrUpdateApplication(context.Context, *MsgCreateOrUpdateApplication) (*MsgCreateOrUpdateApplicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOrUpdateApplication not implemented")
+}
+func (UnimplementedMsgServer) UpdateProjectEnrollment(context.Context, *MsgUpdateProjectEnrollment) (*MsgUpdateProjectEnrollmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectEnrollment not implemented")
 }
 func (UnimplementedMsgServer) CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
@@ -605,6 +734,9 @@ func (UnimplementedMsgServer) RemoveClassCreator(context.Context, *MsgRemoveClas
 func (UnimplementedMsgServer) UpdateClassFee(context.Context, *MsgUpdateClassFee) (*MsgUpdateClassFeeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassFee not implemented")
 }
+func (UnimplementedMsgServer) UpdateProjectFee(context.Context, *MsgUpdateProjectFee) (*MsgUpdateProjectFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectFee not implemented")
+}
 func (UnimplementedMsgServer) AddAllowedBridgeChain(context.Context, *MsgAddAllowedBridgeChain) (*MsgAddAllowedBridgeChainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddAllowedBridgeChain not implemented")
 }
@@ -659,6 +791,60 @@ func _Msg_CreateProject_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).CreateProject(ctx, req.(*MsgCreateProject))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_CreateUnregisteredProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateUnregisteredProject)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateUnregisteredProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_CreateUnregisteredProject_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateUnregisteredProject(ctx, req.(*MsgCreateUnregisteredProject))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_CreateOrUpdateApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateOrUpdateApplication)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateOrUpdateApplication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_CreateOrUpdateApplication_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateOrUpdateApplication(ctx, req.(*MsgCreateOrUpdateApplication))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateProjectEnrollment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateProjectEnrollment)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateProjectEnrollment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateProjectEnrollment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateProjectEnrollment(ctx, req.(*MsgUpdateProjectEnrollment))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1005,6 +1191,24 @@ func _Msg_UpdateClassFee_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateProjectFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateProjectFee)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateProjectFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateProjectFee_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateProjectFee(ctx, req.(*MsgUpdateProjectFee))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_AddAllowedBridgeChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgAddAllowedBridgeChain)
 	if err := dec(in); err != nil {
@@ -1073,6 +1277,18 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateProject",
 			Handler:    _Msg_CreateProject_Handler,
+		},
+		{
+			MethodName: "CreateUnregisteredProject",
+			Handler:    _Msg_CreateUnregisteredProject_Handler,
+		},
+		{
+			MethodName: "CreateOrUpdateApplication",
+			Handler:    _Msg_CreateOrUpdateApplication_Handler,
+		},
+		{
+			MethodName: "UpdateProjectEnrollment",
+			Handler:    _Msg_UpdateProjectEnrollment_Handler,
 		},
 		{
 			MethodName: "CreateBatch",
@@ -1149,6 +1365,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateClassFee",
 			Handler:    _Msg_UpdateClassFee_Handler,
+		},
+		{
+			MethodName: "UpdateProjectFee",
+			Handler:    _Msg_UpdateProjectFee_Handler,
 		},
 		{
 			MethodName: "AddAllowedBridgeChain",

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.v1;
 
+import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/base/types/v1";
@@ -258,4 +259,62 @@ message EventBurnRegen {
 
   // reason is the reason for the burn.
   string reason = 3;
+}
+
+// EventUpdateApplication is emitted when a project admin creates, updates
+// or withdraws a project's application to a credit class.
+message EventUpdateApplication {
+  // project_id is the unique identifier of the project that was updated.
+  string project_id = 1;
+
+  // class_id is the unique identifier of the class that was updated.
+  string class_id = 2;
+
+  // Action describes an action taken on an application.
+  enum Action {
+    // ACTION_UNSPECIFIED is the default value for the action and is invalid.
+    ACTION_UNSPECIFIED = 0;
+
+    // ACTION_CREATE is the action taken when a project admin creates an
+    // application to a credit class.
+    ACTION_CREATE = 1;
+
+    // ACTION_UPDATE is the action taken when a project admin updates an
+    // application to a credit class.
+    ACTION_UPDATE = 2;
+
+    // ACTION_WITHDRAW is the action taken when a project admin withdraws an
+    // application to a credit class.
+    ACTION_WITHDRAW = 3;
+  }
+
+  // action is the action that was taken on the application.
+  Action action = 3;
+
+  // new_application_metadata is any new application metadata.
+  string new_application_metadata = 4;
+}
+
+// EventUpdateProjectEnrollment is emitted when a credit class issuer updates
+// the enrollment status of a project.
+message EventUpdateProjectEnrollment {
+  // issuer is the address of the credit class issuer which evaluated the
+  // project.
+  string issuer = 1;
+
+  // project_id is the unique identifier of the project that was evaluated.
+  string project_id = 2;
+
+  // class_id is the unique identifier of the class in which the project was
+  // evaluated.
+  string class_id = 3;
+
+  // old_status is the old status of the project class relationship.
+  ProjectEnrollmentStatus old_status = 4;
+
+  // new_status is the new status of the project class relationship.
+  ProjectEnrollmentStatus new_status = 5;
+
+  // new_enrollment_metadata is any new enrollment metadata.
+  string new_enrollment_metadata = 6;
 }
