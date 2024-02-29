@@ -59,7 +59,7 @@ func (s *govSendFromFeePool) Recipient(a string) {
 func (s *govSendFromFeePool) SendAmount(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
-	s.msg.Amount = coins
+	s.msg.Coins = coins
 }
 
 func (s *govSendFromFeePool) FeePoolBalance(a string) {

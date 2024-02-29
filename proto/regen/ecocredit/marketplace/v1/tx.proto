@@ -270,8 +270,8 @@ message MsgGovSendFromFeePool {
   // recipient is the address of the account that will receive the funds.
   string recipient = 2;
 
-  // amount is the amount of coins to send from the fee pool.
-  repeated cosmos.base.v1beta1.Coin amount = 3 [
+  // coins is the amount of coins to send from the fee pool.
+  repeated cosmos.base.v1beta1.Coin coins = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];

@@ -20,11 +20,11 @@ func (m *MsgGovSendFromFeePool) ValidateBasic() error {
 		return err
 	}
 
-	if m.Amount == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("amount cannot be nil")
+	if m.Coins == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("coins cannot be nil")
 	}
 
-	return m.Amount.Validate()
+	return m.Coins.Validate()
 }
 
 // GetSigners implements the LegacyMsg interface.
