@@ -24,8 +24,7 @@ func (m *MsgGovSendFromFeePool) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("amount cannot be nil")
 	}
 
-	amount := ToSDKCoins(m.Amount)
-	return amount.Validate()
+	return m.Amount.Validate()
 }
 
 // GetSigners implements the LegacyMsg interface.
@@ -42,11 +41,4 @@ func (m *MsgGovSendFromFeePool) Type() string { return sdk.MsgTypeURL(m) }
 // GetSignBytes implements the LegacyMsg interface.
 func (m *MsgGovSendFromFeePool) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func ToSDKCoins(collection []*sdk.Coin) (coins sdk.Coins) {
-	for _, coin := range collection {
-		coins = append(coins, *coin)
-	}
-	return
 }

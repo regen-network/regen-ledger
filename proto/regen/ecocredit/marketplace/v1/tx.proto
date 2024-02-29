@@ -271,7 +271,10 @@ message MsgGovSendFromFeePool {
   string recipient = 2;
 
   // amount is the amount of coins to send from the fee pool.
-  repeated cosmos.base.v1beta1.Coin amount = 3;
+  repeated cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
 // MsgSendFromFeePoolResponse is the Msg/SendFromFeePool response type.

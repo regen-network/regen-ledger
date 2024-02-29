@@ -35,11 +35,7 @@ func (s *govSendFromFeePool) Recipient(a string) {
 func (s *govSendFromFeePool) Amount(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s, err)
-	var ptrCoins []*sdk.Coin
-	for _, coin := range coins {
-		ptrCoins = append(ptrCoins, &coin)
-	}
-	s.msg.Amount = ptrCoins
+	s.msg.Amount = coins
 }
 
 func (s *govSendFromFeePool) TheMessageIsValidated() {

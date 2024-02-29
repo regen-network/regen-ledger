@@ -24,9 +24,7 @@ func (k Keeper) GovSendFromFeePool(ctx context.Context, msg *types.MsgGovSendFro
 		return nil, err
 	}
 
-	amount := types.ToSDKCoins(msg.Amount)
-
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(sdk.UnwrapSDKContext(ctx), k.feePoolName, recipient, amount)
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(sdk.UnwrapSDKContext(ctx), k.feePoolName, recipient, msg.Amount)
 	if err != nil {
 		return nil, err
 	}
