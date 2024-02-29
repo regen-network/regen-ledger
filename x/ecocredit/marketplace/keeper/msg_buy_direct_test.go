@@ -25,8 +25,8 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
@@ -609,7 +609,7 @@ func (s *buyDirectSuite) ExpectFeePoolBalance(a string) {
 	expected, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
 
-	actual := s.moduleBalances[ecocredittypes.ModuleName]
+	actual := s.moduleBalances[marketplace.FeePoolName]
 
 	if !actual.IsEqual(expected) {
 		s.t.Fatalf("expected: %s, actual: %s", a, actual.String())

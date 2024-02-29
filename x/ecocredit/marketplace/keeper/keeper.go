@@ -6,6 +6,7 @@ import (
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
@@ -22,13 +23,12 @@ type Keeper struct {
 	feePoolName string
 }
 
-func NewKeeper(ss marketapi.StateStore, cs baseapi.StateStore, bk ecocredit.BankKeeper,
-	authority sdk.AccAddress, feePoolName string) Keeper {
+func NewKeeper(ss marketapi.StateStore, cs baseapi.StateStore, bk ecocredit.BankKeeper, authority sdk.AccAddress) Keeper {
 	return Keeper{
 		baseStore:   cs,
 		stateStore:  ss,
 		bankKeeper:  bk,
 		authority:   authority,
-		feePoolName: feePoolName,
+		feePoolName: marketplace.FeePoolName,
 	}
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
 	basketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/keeper"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace"
 	marketkeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/keeper"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
@@ -55,6 +56,12 @@ func NewServer(storeKey storetypes.StoreKey,
 		panic(fmt.Sprintf("%s module account has not been set", basket.BasketSubModuleName))
 	}
 
+	// ensure marketplace fee pool account is set
+	marketplaceAddr := s.accountKeeper.GetModuleAddress(marketplace.FeePoolName)
+	if marketplaceAddr == nil {
+		panic(fmt.Sprintf("%s module account has not been set", marketplace.FeePoolName))
+	}
+
 	var err error
 	s.db, err = ormstore.NewStoreKeyDB(&ecocredit.ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
@@ -67,7 +74,7 @@ func NewServer(storeKey storetypes.StoreKey,
 	s.marketplaceStore = marketStore
 	s.BaseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
 	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority)
-	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority, ecocredit.ModuleName)
+	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority)
 
 	return s
 }
