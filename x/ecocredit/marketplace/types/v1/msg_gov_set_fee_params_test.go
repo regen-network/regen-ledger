@@ -40,10 +40,10 @@ func (s *govSetFeeParams) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
-func (s *govSetFeeParams) ExpectErrorTrue() {
-	require.Error(s, s.err)
-}
-
-func (s *govSetFeeParams) ExpectErrorFalse() {
-	require.NoError(s, s.err)
+func (s *govSetFeeParams) ExpectErrorContains(a string) {
+	if a != "" {
+		require.ErrorContains(s, s.err, a)
+	} else {
+		require.NoError(s, s.err)
+	}
 }

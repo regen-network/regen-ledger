@@ -43,6 +43,14 @@ service Msg {
   // Since Revision 3
   rpc GovSetFeeParams(MsgGovSetFeeParams)
       returns (MsgGovSetFeeParamsResponse);
+
+  // GovSendFromFeePool is a governance method that allows the sending of the
+  // marketplace fees.
+  //
+  // Since Revision 3
+  rpc GovSendFromFeePool(MsgGovSendFromFeePool)
+      returns (MsgGovSendFromFeePoolResponse);
+
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -251,3 +259,20 @@ message MsgGovSetFeeParams {
 
 // MsgSetFeeParamsResponse is the Msg/SetFeeParams response type.
 message MsgGovSetFeeParamsResponse {}
+
+// MsgSendFromFeePool is the Msg/SendFromFeePool request type.
+message MsgGovSendFromFeePool {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // recipient is the address of the account that will receive the funds.
+  string recipient = 2;
+
+  // amount is the amount of coins to send from the fee pool.
+  repeated cosmos.base.v1beta1.Coin amount = 3;
+}
+
+// MsgSendFromFeePoolResponse is the Msg/SendFromFeePool response type.
+message MsgGovSendFromFeePoolResponse {}
