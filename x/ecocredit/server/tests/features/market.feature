@@ -162,7 +162,11 @@ Feature: Market Integration
     And expect event buy
     """
     {
-      "sell_order_id": "1"
+      "sell_order_id": "1",
+      "seller":"regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+      "seller_fee_paid":{"denom":"uregen","amount":"0"},
+      "buyer":"regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42",
+      "buyer_fee_paid":{"denom":"uregen","amount":"0"}
     }
     """
     And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
@@ -272,7 +276,11 @@ Feature: Market Integration
     And expect event buy
     """
     {
-      "sell_order_id": "1"
+      "sell_order_id": "1",
+      "seller":"regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+      "seller_fee_paid":{"denom":"uregen","amount":"0"},
+      "buyer":"regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42",
+      "buyer_fee_paid":{"denom":"uregen","amount":"0"}
     }
     """
     And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
@@ -699,7 +707,11 @@ Feature: Market Integration
     And expect event buy
     """
     {
-      "sell_order_id": "1"
+      "sell_order_id": "1",
+      "seller":"regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+      "seller_fee_paid":{"denom":"uregen","amount":"0"},
+      "buyer":"regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42",
+      "buyer_fee_paid":{"denom":"uregen","amount":"0"}
     }
     """
     And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
@@ -842,7 +854,11 @@ Feature: Market Integration
     And expect event buy
     """
     {
-      "sell_order_id": "2"
+      "sell_order_id": "2",
+      "seller":"regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv",
+      "seller_fee_paid":{"denom":"uregen","amount":"0"},
+      "buyer":"regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42",
+      "buyer_fee_paid":{"denom":"uregen","amount":"0"}
     }
     """
     And expect query balance with address "regen1q5m97jdcksj24g9enlkjqq75ygt5q6akfm0ycv" and batch denom "C01-001-20200101-20210101-001"
