@@ -28,6 +28,45 @@ service Msg {
   // class. The creator becomes the admin of the project upon creation.
   rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
 
+  // CreateUnregisteredProject creates a new project without registering it
+  // under a credit class. This method is intended to be used by project proponents
+  // who are not yet ready to register their project under a credit class, but who
+  // want to create a project and receive a project ID.
+  rpc CreateUnregisteredProject(MsgCreateUnregisteredProject)
+      returns (MsgCreateUnregisteredProjectResponse);
+
+  // CreateOrUpdateApplicaton creates a new project credit class application, updates
+  // the metadata for an existing one when changes have been requested, or withdraws
+  // the application. When an application is withdrawn, its data will be deleted from
+  // state and the project may apply again to the same credit class in the future.
+  //
+  // Since Revision 3
+  rpc CreateOrUpdateApplication(MsgCreateOrUpdateApplication)
+      returns (MsgCreateOrUpdateApplicationResponse);
+
+  // UpdateProjectEnrollment allows a credit class issuer to evaluate a project
+  // application - either approving, requesting changes to, or
+  // rejecting it, or to terminate an existing enrollment.
+  // Any issuer in the credit class may update the project credit
+  // class enrollment status using this method. If more sophisticated rules are
+  // required to coordinate between different issuers, the credit class admin
+  // should set up an on or off-chain governance process to coordinate this.
+  // Issuers may not admit projects into credit classes using this method
+  // without the project first creating an application. For an issuer to
+  // admit a project into a credit class without an
+  // application the CreateProject method should be used instead.
+  //
+  // If a project has not yet been accepted then the issuer may change the
+  // status to either changes requested, accepted or rejected. If the status
+  // is already accepted, the issuer may only change the status to terminated.
+  // Whenever a project is rejected or terminated, the project's enrollment
+  // the enrollment state will be deleted and the project may apply again
+  // to the same credit class in the future.
+  //
+  // Since Revision 3
+  rpc UpdateProjectEnrollment(MsgUpdateProjectEnrollment)
+      returns (MsgUpdateProjectEnrollmentResponse);
+
   // CreateBatch creates a new batch of credits under the given project with a
   // start and end date representing the monitoring period, a list of credits to
   // be issued with each issuance specifying a recipient, the amount of tradable
@@ -158,6 +197,14 @@ service Msg {
   // Since Revision 2
   rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
 
+  // UpdateProjectFee is a governance method that allows for updating the
+  // project creation fee. If no fee is specified in the request, the project
+  // creation fee will be removed and no fee will be required to create a
+  // project.
+  //
+  // Since Revision 3
+  rpc UpdateProjectFee(MsgUpdateProjectFee) returns (MsgUpdateProjectFeeResponse);
+
   // AddAllowedBridgeChain is a governance method that allows for the
   // addition of a chain to bridge ecocredits to.
   //
@@ -171,6 +218,12 @@ service Msg {
   // Since Revision 2
   rpc RemoveAllowedBridgeChain(MsgRemoveAllowedBridgeChain)
       returns (MsgRemoveAllowedBridgeChainResponse);
+
+
+  // BurnRegen burns REGEN tokens to account for platform fees when creating or transferring credits.
+  //
+  // Since Revision 3
+  rpc BurnRegen(MsgBurnRegen) returns (MsgBurnRegenResponse);
 }
 
 // MsgAddCreditType is the Msg/AddCreditType request type.
@@ -258,6 +311,13 @@ message MsgCreateProject {
   // reference_id is any arbitrary string used to reference the project with a
   // maximum length of 32 characters.
   string reference_id = 5;
+
+  // fee is the project creation fee. An equal fee is required if the project
+  // creation fee parameter is set. The provided fee can be greater than the
+  // parameter, but only the amount in the parameter will be charged.
+  //
+  // Since Revision 3
+  cosmos.base.v1beta1.Coin fee = 6;
 }
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
@@ -267,12 +327,106 @@ message MsgCreateProjectResponse {
   string project_id = 1;
 }
 
+// MsgCreateUnregisteredProject is the Msg/CreateUnregisteredProject request type.
+message MsgCreateUnregisteredProject {
+  option (cosmos.msg.v1.signer) = "admin";
+
+  // admin is the address of the account creating the project that will become
+  // the admin of the project upon creation.
+  string admin = 1;
+
+  // metadata is any arbitrary string with a maximum length of 256 characters
+  // that includes or references metadata to attach to the project.
+  string metadata = 2;
+
+  // jurisdiction is the jurisdiction of the project. A jurisdiction has with
+  // the format: <country-code>[-<sub-national-code>[ <postal-code>]]
+  // The country-code must be 2 alphabetic characters, the sub-national-code
+  // can be 1-3 alphanumeric characters, and the postal-code can be up to 64
+  // alphanumeric characters. Only the country-code is required, while the
+  // sub-national-code and postal-code are optional and can be added for
+  // increased precision.
+  string jurisdiction = 3;
+
+  // reference_id is any arbitrary string used to reference the project with a
+  // maximum length of 32 characters.
+  string reference_id = 4;
+
+  // fee is the project creation fee. An equal fee is required if the project
+  // creation fee parameter is set. The provided fee can be greater than the
+  // parameter, but only the amount in the parameter will be charged.
+  //
+  // Since Revision 3
+  cosmos.base.v1beta1.Coin fee = 5;
+}
+
+// MsgCreateUnregisteredProjectResponse is the Msg/CreateUnregisteredProject response type.
+message MsgCreateUnregisteredProjectResponse {
+  // project_id is the unique identifier of the project.
+  string project_id = 1;
+}
+
+// MsgCreateOrUpdateApplication is the Msg/CreateOrUpdateApplication request type.
+message MsgCreateOrUpdateApplication {
+  option (cosmos.msg.v1.signer) = "project_admin";
+
+  // project_admin is the address of the account that is the admin of the
+  // project which is applying to the credit class.
+  string project_admin = 1;
+
+  // project_id is the identifier of the project which is applying to
+  // the credit class.
+  string project_id = 2;
+
+  // class_id is the identifier of the credit class which the project is
+  // applying to.
+  string class_id = 3;
+
+  // metadata is any optional arbitrary string with a maximum length of 256 characters
+  // that includes or references any metadata relevant to the application.
+  // This could be used as a digital reference to the actual contents of the application.
+  string metadata = 4;
+
+  // withdraw is a boolean that indicates whether the application is being
+  // withdrawn rather than updated.
+  bool withdraw = 5;
+}
+
+// MsgCreateOrUpdateApplicationResponse is the Msg/CreateOrUpdateApplication response type.
+message MsgCreateOrUpdateApplicationResponse {}
+
+// MsgUpdateProjectEnrollment is the Msg/UpdateProjectEnrollment request type.
+message MsgUpdateProjectEnrollment {
+  option (cosmos.msg.v1.signer) = "issuer";
+
+  // issuer is the address of the account that is the issuer of the credit class
+  // which is updating the project enrollment status.
+  string issuer = 1;
+
+  // project_id is the identifier of the project.
+  string project_id = 2;
+
+  // class_id is the identifier of the credit class.
+  string class_id = 3;
+
+  // new_status is the new status of the project enrollment.
+  ProjectEnrollmentStatus new_status = 4;
+
+  // metadata is any optiopnal arbitrary string with a maximum length of 256 characters
+  // that includes or references the reason for the approving, requesting changes
+  // to, or rejecting the application, or terminating the project.
+  string metadata = 5;
+}
+
+// MsgEvaluateProjectEnrollmentResponse is the Msg/EvaluateProjectEnrollment response type.
+message MsgUpdateProjectEnrollmentResponse {}
+
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
   option (cosmos.msg.v1.signer) = "issuer";
 
   // issuer is the address of the account issuing the credits and must be an
-  // approved issuer within the credit class of the project.
+  // approved issuer within a credit class of the project.
   string issuer = 1;
 
   // project_id is the unique identifier of the project under which the credit
@@ -307,6 +461,12 @@ message MsgCreateBatch {
   // issuing credits and should only be set when bridging assets from another
   // chain or registry as a result of a bridge operation.
   OriginTx origin_tx = 8;
+
+  // class_id is the unique identifier of the credit class under which the
+  // credit batch will be created.
+  //
+  // Since Revision 3
+  string class_id = 9;
 }
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
@@ -744,6 +904,21 @@ message MsgUpdateClassFee {
 // Since Revision 2
 message MsgUpdateClassFeeResponse {}
 
+// MsgUpdateProjectFee is the Msg/UpdateProjectFee request type.
+message MsgUpdateProjectFee {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // fee is the project creation fee. If not set, the project creation fee will
+  // be removed and no fee will be required to create a project.
+  cosmos.base.v1beta1.Coin fee = 2;
+}
+
+// MsgUpdateProjectFeeResponse is the Msg/UpdateProjectFee response type.
+message MsgUpdateProjectFeeResponse {}
+
 // MsgAddAllowedBridgeChain is the Msg/AddAllowedBridgeChain request type.
 //
 // Since Revision 2
@@ -783,3 +958,26 @@ message MsgRemoveAllowedBridgeChain {
 //
 // Since Revision 2
 message MsgRemoveAllowedBridgeChainResponse {}
+
+// MsgBurnRegen is the Msg/BurnRegen request type.
+//
+// Since Revision 3
+message MsgBurnRegen {
+  option (cosmos.msg.v1.signer) = "burner";
+
+  // burner is the address of the account burning REGEN tokens.
+  string burner = 1;
+
+  // amount is the integer amount of uregen tokens to burn.
+  string amount = 2;
+
+  // reason is any arbitrary string that specifies the reason for burning
+  // REGEN tokens. It may be at most 256 characters long.
+  string reason = 3;
+}
+
+// MsgBurnResponse is the Msg/Burn response type.
+//
+// Since Revision 3
+message MsgBurnRegenResponse {}
+

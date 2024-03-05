@@ -32,7 +32,7 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 

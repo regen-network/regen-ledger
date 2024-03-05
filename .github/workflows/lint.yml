@@ -72,33 +72,33 @@ jobs:
             x/intertx/go.mod
             x/intertx/go.sum
         if: matrix.module == 'x/intertx'
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
       - uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.52
+          version: v1.55
           working-directory: "."
         if: steps.git-diff-app.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.52
+          version: v1.55
           working-directory: "types"
         if: steps.git-diff-types.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.52
+          version: v1.55
           working-directory: "x/data"
         if: steps.git-diff-data.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.52
+          version: v1.55
           working-directory: "x/ecocredit"
         if: steps.git-diff-ecocredit.outputs.diff
       - uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.52
+          version: v1.55
           working-directory: "x/intertx"
         if: steps.git-diff-intertx.outputs.diff
 
@@ -131,7 +131,7 @@ jobs:
         with:
           PATTERNS: |
             **/**.proto
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
         if: steps.git-diff-proto.outputs.diff

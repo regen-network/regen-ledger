@@ -4,8 +4,10 @@ package regen.ecocredit.marketplace.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/marketplace/v1/state.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/types/v1";
 
@@ -36,6 +38,12 @@ service Msg {
   // Since Revision 1
   rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
       returns (MsgRemoveAllowedDenomResponse);
+
+  // SetFeeParams is a governance method that sets the marketplace fees.
+  //
+  // Since Revision 3
+  rpc GovSetFeeParams(MsgGovSetFeeParams)
+      returns (MsgGovSetFeeParamsResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -174,6 +182,16 @@ message MsgBuyDirect {
     //
     // Since Revision 1
     string retirement_reason = 7;
+
+    // max_fee_amount is the maximum amount of buyer side fees being paid to the marketplace.
+    // If the marketplace fees end up being greater than this amount, the transaction will fail.
+    // If this field is left empty, the marketplace fees will be calculated based on the bid price
+    // and quantity and automatically deducted from the buyer's account.
+    // Fees are always paid in the same denomination as the bid price and max fee amount should
+    // be an integer value of that denom.
+    //
+    // Since Revision 3
+    string max_fee_amount = 8 [(cosmos_proto.scalar) = "cosmos.Int"];
   }
 }
 
@@ -223,3 +241,17 @@ message MsgRemoveAllowedDenom {
 //
 // Since Revision 1
 message MsgRemoveAllowedDenomResponse {}
+
+// MsgSetFeeParams is the Msg/SetFeeParams request type.
+message MsgGovSetFeeParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1;
+
+  // fees are the marketplace fees being set.
+  FeeParams fees = 2;
+}
+
+// MsgSetFeeParamsResponse is the Msg/SetFeeParams response type.
+message MsgGovSetFeeParamsResponse {}

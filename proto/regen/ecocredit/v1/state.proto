@@ -122,6 +122,7 @@ message Batch {
     index : {id : 2 fields : "project_key"}
     index : {id : 3 fields : "start_date"}
     index : {id : 4 fields : "issuer"}
+    index : {id: 5 fields : "class_key"}
   };
 
   // key is the table row identifier of the credit batch used internally for
@@ -137,8 +138,9 @@ message Batch {
   uint64 project_key = 3;
 
   // denom is the unique identifier of the credit batch formed from the
-  // project id, the batch sequence number, and the start and end date of the
-  // credit batch.
+  // credit class ID (or just project ID for old project IDs which included the credit class),
+  // project id, the batch sequence number, and the start and
+  // end date of the credit batch.
   string denom = 4;
 
   // metadata is any arbitrary metadata attached to the credit batch.
@@ -158,6 +160,10 @@ message Batch {
   // open tells if it's possible to mint new credits in the future.
   // Once `open` is set to false, it can't be toggled any more.
   bool open = 9;
+
+  // class_key is the table row identifier of the credit class used internally
+  // for efficient lookups. This links a batch to a credit class.
+  uint64 class_key = 10;
 }
 
 // ClassSequence stores and increments the sequence number for credit classes
@@ -380,4 +386,75 @@ message AllowedBridgeChain {
 
   // chain_name is the name of the chain allowed to bridge ecocredits to.
   string chain_name = 1;
+}
+
+// ProjectEnrollment stores the data a project's enrollment in a credit class.
+message ProjectEnrollment {
+  option (cosmos.orm.v1.table) = {
+    id : 17
+    primary_key : {fields : "project_key,class_key"}
+    index: {id: 1, fields: "class_key"}
+  };
+
+  // project_key is the table row identifier of the project used internally for
+  // efficient lookups.
+  uint64 project_key = 1;
+
+  // class_key is the table row identifier of the credit class used internally
+  // for efficient lookups.
+  uint64 class_key = 3;
+
+  // status is the status of the enrollment.
+  ProjectEnrollmentStatus status = 4;
+
+  // application_metadata is any arbitrary metadata set by the project
+  // admin related to its application to the credit class.
+  string application_metadata = 5;
+
+  // enrollment_metadata is any arbitrary metadata set by the credit class
+  // admin evaluating the project's application to the credit class.
+  string enrollment_metadata = 6;
+}
+
+// Application represents the evaluation status that a credit class issuer
+// assigns to a credit class application.
+enum ProjectEnrollmentStatus {
+  // PROJECT_ENROLLMENT_STATUS_UNSPECIFIED indicates that a credit class application
+  // has been submitted but not evaluated.
+  PROJECT_ENROLLMENT_STATUS_UNSPECIFIED = 0;
+
+  // PROJECT_ENROLLMENT_STATUS_ACCEPTED indicates that the project has been
+  // accepted into the credit class.
+  PROJECT_ENROLLMENT_STATUS_ACCEPTED = 1;
+
+  // PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED indicates that an application to
+  // a credit class has been reviewed and that changes to the application have
+  // been requested. It can also be used to indicate that a project within a credit
+  // class has had its status reassessed and that changes to the project are
+  // requested in order to continue in the credit class.
+  PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED = 2;
+
+  // PROJECT_ENROLLMENT_STATUS_REJECTED indicates that the application has been
+  // rejected and that the project will not be accepted into the credit class.
+  PROJECT_ENROLLMENT_STATUS_REJECTED = 3;
+
+  // PROJECT_ENROLLMENT_STATUS_TERMINATED indicates that the project has been
+  // terminated from the credit class. This status is used when a project the
+  // was previously accepted into the credit class but has been removed or
+  // completed.
+  PROJECT_ENROLLMENT_STATUS_TERMINATED = 4;
+}
+
+// ProjectFee is the project creation fee. If not set, a project creation fee is
+// not required. This table is controlled via governance.
+//
+// Since Revision 3
+message ProjectFee {
+  option (cosmos.orm.v1.singleton) = {
+    id : 18
+  };
+
+  // fee is the project creation fee. If not set, a project creation fee is not
+  // required.
+  cosmos.base.v1beta1.Coin fee = 1;
 }

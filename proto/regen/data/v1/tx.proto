@@ -6,8 +6,6 @@ import "cosmos/msg/v1/msg.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/data";
-
 // Msg is the regen.data.v1 Msg service
 service Msg {
 

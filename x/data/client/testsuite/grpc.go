@@ -8,11 +8,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/regen-network/regen-ledger/x/data/v2"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 const (
-	dataRoute  = "regen/data/v1"
+	dataRoute  = "regen/data/v2"
 	pagination = "pagination.limit=1&pagination.countTotal=true"
 )
 

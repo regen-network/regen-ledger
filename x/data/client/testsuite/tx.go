@@ -16,8 +16,8 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
-	"github.com/regen-network/regen-ledger/x/data/v2"
-	"github.com/regen-network/regen-ledger/x/data/v2/client"
+	"github.com/regen-network/regen-ledger/x/data/v3"
+	"github.com/regen-network/regen-ledger/x/data/v3/client"
 )
 
 type IntegrationTestSuite struct {
