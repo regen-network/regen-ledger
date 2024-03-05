@@ -4196,11 +4196,23 @@ type MsgDefineResolver struct {
 	// Msg/RegisterResolver. To authorize other accounts to register resolvers,
 	// the manager should make use of cosmos.authz.
 	Manager string `protobuf:"bytes,1,opt,name=manager,proto3" json:"manager,omitempty"`
-	// resolver_url is a resolver URL which should refer to an HTTP service
-	// which will respond to a GET request with the IRI of a ContentHash
+	// resolver_url is a resolver URL.
+	//
+	// If it refers to an HTTP URL, that HTTP service should
+	// respond to a GET request with the IRI of a ContentHash as the path parameter
 	// and return the content if it exists or a 404. For graph data, resolvers
 	// should use the HTTP Accept header to negotiate the RDF serialization
 	// format.
+	//
+	// To use IPFS, the resolver_url ipfs: should be defined and used as the
+	// resolver for any data hosted on IPFS. Content hashes must be
+	// adapted to IPFS's CID format. The multicodec raw (0x55) should
+	// be used for all raw content hashes and the multicodec rdfc-1 (0xb403)
+	// should be used for all graph content hashes (unless new canonicalization
+	// or merkle tree algorithms are used which may or may not be supported
+	// by IPFS). Note that IPFS's tools currently do not support creating or
+	// resolving RDFC-1 content hashes so upstream work will be needed for
+	// that integration to be fully supported.
 	ResolverUrl string `protobuf:"bytes,2,opt,name=resolver_url,json=resolverUrl,proto3" json:"resolver_url,omitempty"`
 }
 

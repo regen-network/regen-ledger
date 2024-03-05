@@ -126,7 +126,9 @@ message MsgDefineResolver {
   // be used for all raw content hashes and the multicodec rdfc-1 (0xb403)
   // should be used for all graph content hashes (unless new canonicalization
   // or merkle tree algorithms are used which may or may not be supported
-  // by IPFS).
+  // by IPFS). Note that IPFS's tools currently do not support creating or
+  // resolving RDFC-1 content hashes so upstream work will be needed for
+  // that integration to be fully supported.
   string resolver_url = 2;
 }
 
