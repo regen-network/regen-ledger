@@ -51,6 +51,16 @@ func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
 
 	s.id = res.ResolverId
 }
+func (s *registerResolverSuite) AliceHasDefinedAPublicResolverWithUrl(a string) {
+	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
+		Definer:     s.alice.String(),
+		ResolverUrl: a,
+		Public:      true,
+	})
+	require.NoError(s.t, err)
+
+	s.id = res.ResolverId
+}
 
 func (s *registerResolverSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
