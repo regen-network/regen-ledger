@@ -245,8 +245,8 @@ Feature: Msg/BridgeReceive
       Then expect event with properties
       """
       {
-        "project_id": "C01-001",
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "project_id": "P001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
         "amount": "10",
         "origin_tx": {
           "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",

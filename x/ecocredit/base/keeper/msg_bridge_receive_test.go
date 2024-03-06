@@ -17,7 +17,6 @@ import (
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
@@ -126,13 +125,8 @@ func (s *bridgeReceiveSuite) AProjectWithIdAndReferenceId(a, b string) {
 }
 
 func (s *bridgeReceiveSuite) ACreditBatchWithDenomAndIssuerAlice(a string) {
-	projectID := base.GetProjectIDFromBatchDenom(a)
-
-	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectID)
-	require.NoError(s.t, err)
-
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: project.Key,
+		ProjectKey: s.projectKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       true, // always true unless specified
@@ -142,7 +136,7 @@ func (s *bridgeReceiveSuite) ACreditBatchWithDenomAndIssuerAlice(a string) {
 	seq := s.getBatchSequence(a)
 
 	err = s.k.stateStore.BatchSequenceTable().Insert(s.ctx, &api.BatchSequence{
-		ProjectKey:   project.Key,
+		ProjectKey:   s.projectKey,
 		NextSequence: seq + 1,
 	})
 	require.NoError(s.t, err)

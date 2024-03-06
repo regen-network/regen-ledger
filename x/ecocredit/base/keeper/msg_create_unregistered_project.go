@@ -27,9 +27,6 @@ func (k Keeper) CreateUnregisteredProject(ctx context.Context, msg *types.MsgCre
 	project.Admin = admin
 	project.Jurisdiction = msg.Jurisdiction
 	project.Metadata = msg.Metadata
-	if msg.ReferenceId != "" {
-		panic("reject reference ID")
-	}
 
 	if err = k.stateStore.ProjectTable().Save(ctx, project); err != nil {
 		return nil, err

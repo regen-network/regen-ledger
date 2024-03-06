@@ -16,7 +16,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
@@ -76,13 +75,8 @@ func (s *updateBatchMetadata) AProjectWithId(a string) {
 }
 
 func (s *updateBatchMetadata) ACreditBatchWithBatchDenomAndIssuerAlice(a string) {
-	projectID := base.GetProjectIDFromBatchDenom(a)
-
-	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectID)
-	require.NoError(s.t, err)
-
-	_, err = s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: project.Key,
+	_, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: s.projectKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       true, // true unless specified
@@ -93,16 +87,11 @@ func (s *updateBatchMetadata) ACreditBatchWithBatchDenomAndIssuerAlice(a string)
 }
 
 func (s *updateBatchMetadata) ACreditBatchWithBatchDenomIssuerAliceAndOpen(a, b string) {
-	projectID := base.GetProjectIDFromBatchDenom(a)
-
-	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectID)
-	require.NoError(s.t, err)
-
 	open, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
 	_, err = s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: project.Key,
+		ProjectKey: s.projectKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       open,

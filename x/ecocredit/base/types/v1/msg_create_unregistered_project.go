@@ -36,10 +36,6 @@ func (m *MsgCreateUnregisteredProject) ValidateBasic() error {
 		return ecocredit.ErrMaxLimit.Wrapf("metadata: max length %d", base.MaxMetadataLength)
 	}
 
-	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIDLength {
-		return ecocredit.ErrMaxLimit.Wrapf("reference id: max length %d", MaxReferenceIDLength)
-	}
-
 	return nil
 }
 

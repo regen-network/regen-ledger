@@ -33,10 +33,6 @@ func (s *msgCreateUnregisteredProject) Metadata(a string) {
 	s.msg.Metadata = a
 }
 
-func (s *msgCreateUnregisteredProject) Reference(a string) {
-	s.msg.ReferenceId = a
-}
-
 func (s *msgCreateUnregisteredProject) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }

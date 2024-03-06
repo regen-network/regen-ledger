@@ -348,16 +348,12 @@ message MsgCreateUnregisteredProject {
   // increased precision.
   string jurisdiction = 3;
 
-  // reference_id is any arbitrary string used to reference the project with a
-  // maximum length of 32 characters.
-  string reference_id = 4;
-
   // fee is the project creation fee. An equal fee is required if the project
   // creation fee parameter is set. The provided fee can be greater than the
   // parameter, but only the amount in the parameter will be charged.
   //
   // Since Revision 3
-  cosmos.base.v1beta1.Coin fee = 5;
+  cosmos.base.v1beta1.Coin fee = 4;
 }
 
 // MsgCreateUnregisteredProjectResponse is the Msg/CreateUnregisteredProject response type.
