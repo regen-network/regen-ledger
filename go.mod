@@ -7,7 +7,7 @@ require (
 	cosmossdk.io/math v1.2.0
 	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.9.1
-	github.com/cosmos/cosmos-sdk v0.47.9
+	github.com/cosmos/cosmos-sdk v0.47.10
 	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/gorilla/mux v1.8.1
 	github.com/rakyll/statik v0.1.7
