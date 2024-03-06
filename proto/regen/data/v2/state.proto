@@ -70,8 +70,8 @@ message Resolver {
   // url is the URL of the resolver.
   string url = 2;
 
-  // manager is the bytes address of the resolver manager who is allowed
-  // to make calls to Msg/RegisterResolver for this resolver.
+  // manager is the bytes address of the resolver manager who defined
+  // this resolver. If the resolver is public, then this field is empty.
   bytes manager = 3;
 }
 

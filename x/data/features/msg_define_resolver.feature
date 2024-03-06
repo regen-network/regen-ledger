@@ -4,14 +4,14 @@ Feature: MsgDefineResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "definer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_url": "https://foo.bar"
     }
     """
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if manager is empty
+  Scenario: an error is returned if definer is empty
     Given the message
     """
     {}
@@ -19,11 +19,11 @@ Feature: MsgDefineResolver
     When the message is validated
     Then expect the error "empty address string is not allowed: invalid address"
 
-  Scenario: an error is returned if manager is not a bech32 address
+  Scenario: an error is returned if definer is not a bech32 address
     Given the message
     """
     {
-      "manager": "foo"
+      "definer": "foo"
     }
     """
     When the message is validated
@@ -33,7 +33,7 @@ Feature: MsgDefineResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      "definer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -43,7 +43,7 @@ Feature: MsgDefineResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "definer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_url": "foo.bar"
     }
     """
@@ -54,7 +54,7 @@ Feature: MsgDefineResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "definer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_url": "https://foo.bar"
     }
     """
@@ -64,7 +64,7 @@ Feature: MsgDefineResolver
     {
       "type": "regen-ledger/MsgDefineResolver",
       "value": {
-        "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+        "definer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
         "resolver_url": "https://foo.bar"
       }
     }

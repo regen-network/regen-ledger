@@ -353,5 +353,6 @@ message ResolverInfo {
   string url = 2;
 
   // manager is the address of the account that manages the resolver.
+  // This will be empty if the resolver is public.
   string manager = 3;
 }

@@ -18,13 +18,16 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
 	}
 
-	manager, err := sdk.AccAddressFromBech32(msg.Manager)
+	signer, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
 	}
 
-	if !bytes.Equal(resolver.Manager, manager) {
-		return nil, data.ErrUnauthorizedResolverManager
+	// if resolver isn't public, the signer must be the manager
+	if resolver.Manager != nil {
+		if !bytes.Equal(resolver.Manager, signer) {
+			return nil, data.ErrUnauthorizedResolverManager
+		}
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
