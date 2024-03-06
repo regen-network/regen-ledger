@@ -9,8 +9,7 @@ require (
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.9.1
-	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect; NOTE: v1.0.0-beta.2+ is not compatible with sdk v0.47
-	github.com/cosmos/cosmos-sdk v0.47.8
+	github.com/cosmos/cosmos-sdk v0.47.9
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
@@ -46,6 +45,7 @@ require (
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-beta.4 // indirect
 	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
@@ -84,6 +84,7 @@ require (
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/gtank/ristretto255 v0.1.2 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-uuid v1.0.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.1.0 // indirect
@@ -139,8 +140,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
-
-require github.com/hashicorp/go-uuid v1.0.1 // indirect
 
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0

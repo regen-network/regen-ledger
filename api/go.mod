@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	cosmossdk.io/api v0.3.1
-	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // NOTE: v1.0.0-beta.2+ is not compatible with sdk v0.47
+	github.com/cosmos/cosmos-proto v1.0.0-beta.4
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/gogoproto v1.4.10 // NOTE: v1.4.11+ is not compatible with sdk v0.47
 	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
