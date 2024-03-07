@@ -41,10 +41,26 @@ func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 	require.NoError(s.t, err)
 }
 
+func (s *defineResolverSuite) APublicResolverIsDefinedForTheUrl(a string) {
+	err := s.server.stateStore.ResolverTable().Insert(s.ctx, &api.Resolver{
+		Url:     a,
+		Manager: nil,
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *defineResolverSuite) AliceAttemptsToDefineAResolverWithUrl(a string) {
 	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Definer:     s.alice.String(),
 		ResolverUrl: a,
+	})
+}
+
+func (s *defineResolverSuite) AliceAttemptsToDefineAPublicResolverWithUrl(a string) {
+	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
+		Definer:     s.alice.String(),
+		ResolverUrl: a,
+		Public:      true,
 	})
 }
 
