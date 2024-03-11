@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	prototypes "github.com/gogo/protobuf/types"
+	prototypes "github.com/cosmos/gogoproto/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"

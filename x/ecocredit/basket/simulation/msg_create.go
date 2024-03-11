@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
-	gogotypes "github.com/gogo/protobuf/types"
+	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
