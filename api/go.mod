@@ -3,7 +3,6 @@ module github.com/regen-network/regen-ledger/api/v2
 go 1.21
 
 require (
-	cosmossdk.io/api v0.3.1
 	github.com/cosmos/cosmos-proto v1.0.0-beta.4
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/gogoproto v1.4.10 // NOTE: v1.4.11+ is not compatible with sdk v0.47
@@ -15,7 +14,7 @@ require (
 require (
 	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
-	github.com/cosmos/cosmos-sdk/api v0.1.0 // indirect
+	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/dgraph-io/badger/v2 v2.2007.2 // indirect
@@ -38,3 +37,5 @@ require (
 	google.golang.org/genproto v0.0.0-20240116215550-a9fa1716bcac // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
 )
+
+require github.com/gogo/protobuf v1.3.2 // indirect
