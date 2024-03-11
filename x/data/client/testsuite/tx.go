@@ -11,11 +11,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
-	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
-	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/client"
 )
