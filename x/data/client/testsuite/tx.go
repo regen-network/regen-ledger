@@ -62,12 +62,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	info2, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	}
-
+	commonFlags := s.txFlags(nil)
 	pk, err := info1.GetPubKey()
 	s.Require().NoError(err)
 	s.addr1 = sdk.AccAddress(pk.Address())
@@ -215,13 +210,7 @@ func (s *IntegrationTestSuite) TestTxAnchor() {
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
 	require := s.Require()
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, clientCtx.GetFromAddress().String()),
-	}
+	commonFlags := s.txFlags(clientCtx.GetFromAddress())
 
 	testCases := []struct {
 		name   string
@@ -268,13 +257,8 @@ func (s *IntegrationTestSuite) TestTxAttest() {
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
 	require := s.Require()
+	commonFlags := s.txFlags(clientCtx.GetFromAddress())
 
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, clientCtx.GetFromAddress().String()),
-	}
 	// first we anchor some data
 	iri := "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
 	cmd := client.MsgAnchorCmd()
@@ -335,13 +319,7 @@ func (s *IntegrationTestSuite) TestDefineResolverCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	require := s.Require()
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-	}
+	commonFlags := s.txFlags(val.Address)
 
 	testCases := []struct {
 		name        string
@@ -389,14 +367,7 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	require := s.Require()
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-	}
-
+	commonFlags := s.txFlags(val.Address)
 	_, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
 
 	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{ch}}
@@ -460,4 +431,16 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) txFlags(sender sdk.AccAddress) []string {
+	ss := []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+	if sender != nil {
+		ss = append(ss, fmt.Sprintf("--%s=%s", flags.FlagFrom, sender.String()))
+	}
+	return ss
 }
