@@ -14,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/client"
@@ -66,25 +65,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	pk, err := info1.GetPubKey()
 	s.Require().NoError(err)
 	s.addr1 = sdk.AccAddress(pk.Address())
-	_, err = banktestutil.MsgSendExec(
-		s.val.ClientCtx,
-		s.val.Address,
-		s.addr1,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
-		commonFlags...,
-	)
+	fundCoins := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000)))
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr1, fundCoins, commonFlags...)
 	s.Require().NoError(err)
 
 	pk, err = info2.GetPubKey()
 	s.Require().NoError(err)
 	s.addr2 = sdk.AccAddress(pk.Address())
-	_, err = banktestutil.MsgSendExec(
-		s.val.ClientCtx,
-		s.val.Address,
-		s.addr2,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
-		commonFlags...,
-	)
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr2, fundCoins, commonFlags...)
 	s.Require().NoError(err)
 
 	s.iri1 = "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
