@@ -4,6 +4,8 @@ import (
 	"context"
 
 	sdkmath "cosmossdk.io/math"
+	gogoproto "github.com/gogo/protobuf/proto"
+	protov2 "google.golang.org/protobuf/proto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -11,6 +13,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
 )
 
@@ -24,11 +27,15 @@ type fillOrderParams struct {
 	sellOrder    *api.SellOrder
 	buyerAcc     sdk.AccAddress
 	buyQuantity  math.Dec
-	totalCost    sdk.Coin
+	buyerFee     math.Dec
+	subTotalCost math.Dec
+	totalCost    math.Dec
 	autoRetire   bool
 	batchDenom   string
+	bankDenom    string
 	jurisdiction string
 	reason       string
+	feeParams    *api.FeeParams
 }
 
 // fillOrder updates seller balance, buyer balance, batch supply, and transfers calculated total cost
@@ -192,25 +199,122 @@ func (k Keeper) fillOrder(ctx context.Context, params fillOrderParams) error {
 		}
 	}
 
-	// update buyer balance with new tradable or retired amount
+	// update buyer credit balance with new tradable or retired amount
 	if err = k.baseStore.BatchBalanceTable().Save(ctx, buyerBal); err != nil {
 		return err
 	}
 
-	// send total cost from buyer account to seller account
-	return k.bankKeeper.SendCoins(sdkCtx, params.buyerAcc, params.sellOrder.Seller, sdk.NewCoins(params.totalCost))
+	// calculate seller fee = subtotal * seller percentage fee
+	sellerFee, err := getSellerFee(params.subTotalCost, params.feeParams)
+	if err != nil {
+		return err
+	}
+
+	// calculate total fee = buyer fee + seller fee
+	totalFee, err := params.buyerFee.Add(sellerFee)
+	if err != nil {
+		return err
+	}
+
+	// if total fee > 0, then transfer total fee from buyer account to fee pool
+	if totalFee.IsPositive() {
+		feeCoins := sdk.NewCoins(sdk.NewCoin(params.bankDenom, totalFee.SdkIntTrim()))
+
+		err = k.bankKeeper.SendCoinsFromAccountToModule(
+			sdkCtx,
+			params.buyerAcc,
+			k.feePoolName,
+			feeCoins)
+		if err != nil {
+			return err
+		}
+
+		// if bank denom == uregen, then burn the total fee from the fee pool
+		if params.bankDenom == "uregen" {
+			err = k.bankKeeper.BurnCoins(sdkCtx, k.feePoolName, feeCoins)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// calculate seller payment = subtotal - seller fee
+	sellerPayment, err := params.subTotalCost.Sub(sellerFee)
+	if err != nil {
+		return err
+	}
+
+	seller := sdk.AccAddress(params.sellOrder.Seller)
+
+	// send seller payment from buyer account to seller account
+	err = k.bankKeeper.SendCoins(sdkCtx, params.buyerAcc, seller, sdk.NewCoins(sdk.NewCoin(
+		params.bankDenom,
+		sellerPayment.SdkIntTrim(),
+	)))
+	if err != nil {
+		return err
+	}
+
+	return sdkCtx.EventManager().EmitTypedEvent(&types.EventBuyDirect{
+		SellOrderId:   params.sellOrder.Id,
+		Buyer:         params.buyerAcc.String(),
+		BuyerFeePaid:  &sdk.Coin{Denom: params.bankDenom, Amount: params.buyerFee.SdkIntTrim()},
+		Seller:        seller.String(),
+		SellerFeePaid: &sdk.Coin{Denom: params.bankDenom, Amount: sellerFee.SdkIntTrim()},
+	})
 }
 
-// getTotalCost calculates the total cost of the buy order by multiplying the price per credit specified
+// getSubTotalCost calculates the total cost of the buy order by multiplying the price per credit specified
 // in the sell order (i.e. the ask amount) and the quantity of credits specified in the buy order.
-func getTotalCost(askAmount sdkmath.Int, buyQuantity math.Dec) (sdkmath.Int, error) {
+func getSubTotalCost(askAmount sdkmath.Int, buyQuantity math.Dec) (math.Dec, error) {
 	unitPrice, err := math.NewPositiveFixedDecFromString(askAmount.String(), buyQuantity.NumDecimalPlaces())
 	if err != nil {
-		return sdkmath.Int{}, err
+		return math.Dec{}, err
 	}
-	totalCost, err := buyQuantity.Mul(unitPrice)
+	subtotal, err := buyQuantity.Mul(unitPrice)
 	if err != nil {
-		return sdkmath.Int{}, err
+		return math.Dec{}, err
 	}
-	return totalCost.SdkIntTrim(), nil
+	return subtotal, nil
+}
+
+// getTotalCostAndBuyerFee calculates the total cost of the buy order by multiplying the subtotal by the buyer percentage fee.
+func getTotalCostAndBuyerFee(subtotal math.Dec, feeParams *api.FeeParams) (total math.Dec, buyerFee math.Dec, err error) {
+	buyerPercentageFee := math.NewDecFromInt64(0)
+	if feeParams != nil && feeParams.BuyerPercentageFee != "" {
+		buyerPercentageFee, err = math.NewPositiveDecFromString(feeParams.BuyerPercentageFee)
+		if err != nil {
+			return
+		}
+	}
+
+	buyerFee, err = subtotal.Mul(buyerPercentageFee)
+	if err != nil {
+		return
+	}
+
+	total, err = subtotal.Add(buyerFee)
+	return
+}
+
+func getSellerFee(subtotal math.Dec, feeParams *api.FeeParams) (math.Dec, error) {
+	sellerPercentageFee := math.NewDecFromInt64(0)
+	if feeParams != nil && feeParams.SellerPercentageFee != "" {
+		var err error
+		sellerPercentageFee, err = math.NewPositiveDecFromString(feeParams.SellerPercentageFee)
+		if err != nil {
+			return math.Dec{}, err
+		}
+	}
+
+	return subtotal.Mul(sellerPercentageFee)
+}
+
+func gogoToProtoReflect(from gogoproto.Message, to protov2.Message) error {
+	bz, err := gogoproto.Marshal(from)
+	if err != nil {
+		return err
+	}
+
+	return protov2.Unmarshal(bz, to)
 }

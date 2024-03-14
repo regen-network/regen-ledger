@@ -18,6 +18,7 @@ import (
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
 )
@@ -62,6 +63,7 @@ func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 		minttypes.ModuleName:       {authtypes.Minter},
 		ecocredittypes.ModuleName:  {authtypes.Burner},
 		basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
+		marketplace.FeePoolName:    {authtypes.Burner},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
