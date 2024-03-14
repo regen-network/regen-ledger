@@ -6,11 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	marketplacev1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
 
-func (k Keeper) GovSetFeeParams(ctx context.Context, msg *types.MsgGovSetFeeParams) (*types.MsgGovSetFeeParamsResponse, error) {
+func (k Keeper) GovSendFromFeePool(ctx context.Context, msg *types.MsgGovSendFromFeePool) (*types.MsgGovSendFromFeePoolResponse, error) {
 	authority, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return nil, err
@@ -20,17 +19,15 @@ func (k Keeper) GovSetFeeParams(ctx context.Context, msg *types.MsgGovSetFeePara
 		return nil, sdkerrors.ErrUnauthorized
 	}
 
-	// convert from gogo to protoreflect
-	var feeParams marketplacev1.FeeParams
-	err = gogoToProtoReflect(msg.Fees, &feeParams)
+	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
 	if err != nil {
 		return nil, err
 	}
 
-	err = k.stateStore.FeeParamsTable().Save(ctx, &feeParams)
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(sdk.UnwrapSDKContext(ctx), k.feePoolName, recipient, msg.Coins)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.MsgGovSetFeeParamsResponse{}, nil
+	return &types.MsgGovSendFromFeePoolResponse{}, nil
 }

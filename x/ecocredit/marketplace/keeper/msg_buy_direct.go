@@ -92,13 +92,38 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 			)
 		}
 
-		// check address has the total cost (price per * order quantity)
-		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
-		cost, err := getTotalCost(sellOrderAskAmount, buyQuantity)
+		// calc sub-total (price per * order quantity)
+		subtotal, err := getSubTotalCost(sellOrderAskAmount, buyQuantity)
 		if err != nil {
 			return nil, err
 		}
-		totalCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
+
+		// add buyer fees
+		feeParams, err := k.stateStore.FeeParamsTable().Get(ctx)
+		if err != nil {
+			return nil, err
+		}
+		total, buyerFee, err := getTotalCostAndBuyerFee(subtotal, feeParams)
+		if err != nil {
+			return nil, err
+		}
+		totalCost := sdk.Coin{Amount: total.SdkIntTrim(), Denom: market.BankDenom}
+
+		// check max fee
+		maxFee := order.MaxFeeAmount
+		if maxFee == nil {
+			maxFee = &sdk.Coin{Amount: sdk.NewInt(0), Denom: market.BankDenom}
+		}
+		buyerFeeCoin := sdk.Coin{Amount: buyerFee.SdkIntTrim(), Denom: market.BankDenom}
+		if maxFee.IsLT(buyerFeeCoin) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: max fee: %s, required fee: %s",
+				orderIndex, maxFee, buyerFeeCoin,
+			)
+		}
+
+		// check address has the total cost
+		buyerBalance := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
 		if buyerBalance.IsLT(totalCost) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
 				"%s: quantity: %s, ask price: %s%s, total price: %v, bank balance: %v",
@@ -113,17 +138,15 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 			sellOrder:    sellOrder,
 			buyerAcc:     buyerAcc,
 			buyQuantity:  buyQuantity,
-			totalCost:    totalCost,
+			totalCost:    total,
+			subTotalCost: subtotal,
+			buyerFee:     buyerFee,
 			autoRetire:   !order.DisableAutoRetire,
 			batchDenom:   batch.Denom,
+			bankDenom:    market.BankDenom,
 			jurisdiction: order.RetirementJurisdiction,
 			reason:       order.RetirementReason,
-		}); err != nil {
-			return nil, err
-		}
-
-		if err = sdkCtx.EventManager().EmitTypedEvent(&types.EventBuyDirect{
-			SellOrderId: sellOrder.Id,
+			feeParams:    feeParams,
 		}); err != nil {
 			return nil, err
 		}
