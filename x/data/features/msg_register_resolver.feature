@@ -4,7 +4,7 @@ Feature: MsgRegisterResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "signer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_id": 1,
       "content_hashes": [
         {
@@ -20,7 +20,7 @@ Feature: MsgRegisterResolver
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if manager is empty
+  Scenario: an error is returned if signer is empty
     Given the message
     """
     {}
@@ -28,11 +28,11 @@ Feature: MsgRegisterResolver
     When the message is validated
     Then expect the error "empty address string is not allowed: invalid address"
 
-  Scenario: an error is returned if manager is not a bech32 address
+  Scenario: an error is returned if signer is not a bech32 address
     Given the message
     """
     {
-      "manager": "foo"
+      "signer": "foo"
     }
     """
     When the message is validated
@@ -42,7 +42,7 @@ Feature: MsgRegisterResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
+      "signer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
     }
     """
     When the message is validated
@@ -52,7 +52,7 @@ Feature: MsgRegisterResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "signer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_id": 1
     }
     """
@@ -63,7 +63,7 @@ Feature: MsgRegisterResolver
     Given the message
     """
     {
-      "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "signer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "resolver_id": 1,
       "content_hashes": [
         {
@@ -89,8 +89,8 @@ Feature: MsgRegisterResolver
             }
           }
         ],
-        "manager": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "resolver_id": "1"
+        "resolver_id": "1",
+        "signer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       }
     }
     """

@@ -106,20 +106,39 @@ message MsgAttestResponse {
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 message MsgDefineResolver {
-  option (cosmos.msg.v1.signer) = "manager";
+  option (cosmos.msg.v1.signer) = "definer";
 
-  // manager is the address of the resolver manager. The manager is able
-  // to make future calls using the ID returned by this operation with
-  // Msg/RegisterResolver. To authorize other accounts to register resolvers,
-  // the manager should make use of cosmos.authz.
-  string manager = 1;
+  // definer is the address of the account defining the resolver. If
+  // the boolean public is set to true, then any user can register
+  // data with this resolver. If the boolean public is set to false,
+  // then only the definer can register data with this resolver and
+  // must use a feature such as cosmos.authz to authorize other accounts
+  // to register data with this resolver.
+  string definer = 1;
 
-  // resolver_url is a resolver URL which should refer to an HTTP service
-  // which will respond to a GET request with the IRI of a ContentHash
+  // resolver_url is a resolver URL.
+  //
+  // If it refers to an HTTP URL, that HTTP service should
+  // respond to a GET request with the IRI of a ContentHash as the path parameter
   // and return the content if it exists or a 404. For graph data, resolvers
   // should use the HTTP Accept header to negotiate the RDF serialization
   // format.
+  //
+  // To use IPFS, the resolver_url ipfs: should be defined with public set to true
+  // and used as the resolver for any data hosted on IPFS. Content hashes must be
+  // adapted to IPFS's CID format. The multicodec raw (0x55) should
+  // be used for all raw content hashes and the multicodec rdfc-1 (0xb403)
+  // should be used for all graph content hashes (unless new canonicalization
+  // or merkle tree algorithms are used which may or may not be supported
+  // by IPFS). Note that IPFS's tools currently do not support creating or
+  // resolving RDFC-1 content hashes so upstream work will be needed for
+  // that integration to be fully supported.
   string resolver_url = 2;
+
+  // public is a boolean indicating whether the resolver is public or not.
+  // If public is false then only the definer can register data with this
+  // resolver.
+  bool public = 3;
 }
 
 // MsgDefineResolverResponse is the Msg/DefineResolver response type.
@@ -132,11 +151,12 @@ message MsgDefineResolverResponse {
 
 // MsgRegisterResolver is the Msg/RegisterResolver request type.
 message MsgRegisterResolver {
-  option (cosmos.msg.v1.signer) = "manager";
+  option (cosmos.msg.v1.signer) = "signer";
 
-  // manager is the address of the resolver manager who registered this
-  // resolver with Msg/DefinedResolver.
-  string manager = 1;
+  // signer is the address registering data with the resolver. If
+  // the resolver is not public then the signer must be the definer
+  // of the resolver.
+  string signer = 1;
 
   // resolver_id is the ID of a resolver defined with Msg/DefineResolver.
   uint64 resolver_id = 2;
