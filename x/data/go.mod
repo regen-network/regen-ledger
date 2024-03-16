@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/x/data/v3
 go 1.21
 
 require (
-	cosmossdk.io/errors v1.0.0
+	cosmossdk.io/errors v1.0.1
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cosmos/cosmos-sdk v0.46.12
 	github.com/cosmos/cosmos-sdk/api v0.1.0
