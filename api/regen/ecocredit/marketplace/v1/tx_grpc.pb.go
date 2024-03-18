@@ -26,6 +26,7 @@ const (
 	Msg_AddAllowedDenom_FullMethodName    = "/regen.ecocredit.marketplace.v1.Msg/AddAllowedDenom"
 	Msg_RemoveAllowedDenom_FullMethodName = "/regen.ecocredit.marketplace.v1.Msg/RemoveAllowedDenom"
 	Msg_GovSetFeeParams_FullMethodName    = "/regen.ecocredit.marketplace.v1.Msg/GovSetFeeParams"
+	Msg_GovSendFromFeePool_FullMethodName = "/regen.ecocredit.marketplace.v1.Msg/GovSendFromFeePool"
 )
 
 // MsgClient is the client API for Msg service.
@@ -53,6 +54,11 @@ type MsgClient interface {
 	//
 	// Since Revision 3
 	GovSetFeeParams(ctx context.Context, in *MsgGovSetFeeParams, opts ...grpc.CallOption) (*MsgGovSetFeeParamsResponse, error)
+	// GovSendFromFeePool is a governance method that allows the sending of the
+	// marketplace fees.
+	//
+	// Since Revision 3
+	GovSendFromFeePool(ctx context.Context, in *MsgGovSendFromFeePool, opts ...grpc.CallOption) (*MsgGovSendFromFeePoolResponse, error)
 }
 
 type msgClient struct {
@@ -126,6 +132,15 @@ func (c *msgClient) GovSetFeeParams(ctx context.Context, in *MsgGovSetFeeParams,
 	return out, nil
 }
 
+func (c *msgClient) GovSendFromFeePool(ctx context.Context, in *MsgGovSendFromFeePool, opts ...grpc.CallOption) (*MsgGovSendFromFeePoolResponse, error) {
+	out := new(MsgGovSendFromFeePoolResponse)
+	err := c.cc.Invoke(ctx, Msg_GovSendFromFeePool_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -151,6 +166,11 @@ type MsgServer interface {
 	//
 	// Since Revision 3
 	GovSetFeeParams(context.Context, *MsgGovSetFeeParams) (*MsgGovSetFeeParamsResponse, error)
+	// GovSendFromFeePool is a governance method that allows the sending of the
+	// marketplace fees.
+	//
+	// Since Revision 3
+	GovSendFromFeePool(context.Context, *MsgGovSendFromFeePool) (*MsgGovSendFromFeePoolResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -178,6 +198,9 @@ func (UnimplementedMsgServer) RemoveAllowedDenom(context.Context, *MsgRemoveAllo
 }
 func (UnimplementedMsgServer) GovSetFeeParams(context.Context, *MsgGovSetFeeParams) (*MsgGovSetFeeParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GovSetFeeParams not implemented")
+}
+func (UnimplementedMsgServer) GovSendFromFeePool(context.Context, *MsgGovSendFromFeePool) (*MsgGovSendFromFeePoolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GovSendFromFeePool not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -318,6 +341,24 @@ func _Msg_GovSetFeeParams_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_GovSendFromFeePool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGovSendFromFeePool)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GovSendFromFeePool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GovSendFromFeePool_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GovSendFromFeePool(ctx, req.(*MsgGovSendFromFeePool))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -352,6 +393,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GovSetFeeParams",
 			Handler:    _Msg_GovSetFeeParams_Handler,
+		},
+		{
+			MethodName: "GovSendFromFeePool",
+			Handler:    _Msg_GovSendFromFeePool_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

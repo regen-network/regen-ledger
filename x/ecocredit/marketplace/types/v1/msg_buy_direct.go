@@ -77,6 +77,13 @@ func (m MsgBuyDirect) ValidateBasic() error {
 				return ecocredit.ErrMaxLimit.Wrapf("%s: retirement reason: max length %d", orderIndex, base.MaxNoteLength)
 			}
 		}
+
+		if order.MaxFeeAmount != nil {
+			err := order.MaxFeeAmount.Validate()
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("%s: max fee amount: %s", orderIndex, err)
+			}
+		}
 	}
 
 	return nil

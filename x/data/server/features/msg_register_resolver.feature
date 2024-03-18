@@ -77,3 +77,10 @@ Feature: Msg/RegisterResolver
         "iri": "regen:112wkBET2rRgE8pahuaczxKbmv7ciehqsne57F9gtzf1PVhwuFTX.bin"
       }
       """
+
+  Rule: public resolvers allow anyone to register data
+
+    Scenario: register data to public resolver
+      Given alice has defined a public resolver with url "ipfs:"
+      When bob attempts to register the data to the resolver
+      Then the data resolver entry exists

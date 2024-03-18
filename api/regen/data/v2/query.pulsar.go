@@ -13483,6 +13483,7 @@ type ResolverInfo struct {
 	// url is the URL of the resolver.
 	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	// manager is the address of the account that manages the resolver.
+	// This will be empty if the resolver is public.
 	Manager string `protobuf:"bytes,3,opt,name=manager,proto3" json:"manager,omitempty"`
 }
 
