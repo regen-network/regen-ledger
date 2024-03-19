@@ -110,7 +110,7 @@ func (s *sellSuite) ACreditBatchWithBatchDenom(a string) {
 	classID := base.GetClassIDFromBatchDenom(a)
 	creditTypeAbbrev := base.GetCreditTypeAbbrevFromClassID(classID)
 
-	_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	clsKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
@@ -121,6 +121,7 @@ func (s *sellSuite) ACreditBatchWithBatchDenom(a string) {
 
 	err = s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: projectKey,
+		ClassKey:   clsKey,
 		Denom:      a,
 	})
 	require.NoError(s.t, err)
@@ -419,7 +420,7 @@ func (s *sellSuite) ExpectEventWithProperties(a gocuke.DocString) {
 }
 
 func (s *sellSuite) aliceTradableBatchBalance() {
-	_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+	clsKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
@@ -430,6 +431,7 @@ func (s *sellSuite) aliceTradableBatchBalance() {
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 		ProjectKey: projectKey,
+		ClassKey:   clsKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)

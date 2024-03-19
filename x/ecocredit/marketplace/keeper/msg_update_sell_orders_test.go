@@ -432,14 +432,15 @@ func (s *updateSellOrdersSuite) sellOrderSetup(count int) {
 		totalQuantity = t.String()
 	}
 
-	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+	clsId, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
-		Denom: s.batchDenom,
+		Denom:    s.batchDenom,
+		ClassKey: clsId,
 	})
 	require.NoError(s.t, err)
 
@@ -489,7 +490,7 @@ func (s *updateSellOrdersSuite) sellOrderSetup(count int) {
 func (s *updateSellOrdersSuite) aliceBatchBalance() {
 	batch, err := s.baseStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	if err == ormerrors.NotFound {
-		_, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
+		clsKey, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 			Id:               s.classID,
 			CreditTypeAbbrev: s.creditTypeAbbrev,
 		})
@@ -500,6 +501,7 @@ func (s *updateSellOrdersSuite) aliceBatchBalance() {
 
 		batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
 			ProjectKey: projectKey,
+			ClassKey:   clsKey,
 			Denom:      s.batchDenom,
 		})
 		require.NoError(s.t, err)

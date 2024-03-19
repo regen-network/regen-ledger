@@ -250,6 +250,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        denom,
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -298,6 +299,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        denom,
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -350,6 +352,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        "C01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -433,6 +436,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        "C01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -442,6 +446,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKeyBIO, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKeyBIO,
+					ClassKey:     cKeyBIO,
 					Denom:        "BIO01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -451,6 +456,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey2, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        "C01-001-00000000-00000000-002",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},

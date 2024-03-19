@@ -330,6 +330,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		&api.Batch{
 			Issuer:       accs[0].Address,
 			ProjectKey:   pKey1,
+			ClassKey:     cKey1,
 			Denom:        denom,
 			StartDate:    timestamppb.New(startDate),
 			EndDate:      timestamppb.New(endDate),
@@ -354,6 +355,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		&api.Batch{
 			Issuer:       accs[2].Address,
 			ProjectKey:   pKey2,
+			ClassKey:     cKey2,
 			Denom:        denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),

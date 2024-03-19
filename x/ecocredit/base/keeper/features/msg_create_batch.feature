@@ -359,7 +359,8 @@ Feature: Msg/CreateBatch
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
-        "open": true
+        "open": true,
+        "class_key": 1
       }
       """
 
