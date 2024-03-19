@@ -367,14 +367,14 @@ Feature: Bridge Integration
     And expect project with properties
     """
     {
-      "id": "C01-002",
+      "id": "P002",
       "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
       "jurisdiction": "US-WA",
       "reference_id": "VCS-002"
     }
     """
     And expect total credit batches "3"
-    And expect batch supply with batch denom "C01-002-20200101-20210101-001"
+    And expect batch supply with batch denom "C01-P002-20200101-20210101-001"
     """
     {
       "tradable_amount": "100",
@@ -382,7 +382,7 @@ Feature: Bridge Integration
       "cancelled_amount": "0"
     }
     """
-    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-002-20200101-20210101-001"
+    And expect batch balance with address "regen1s3x2yhc4qf59gf53hwsnhkh7gqa3eryxwj8p42" and batch denom "C01-P002-20200101-20210101-001"
     """
     {
       "tradable_amount": "100",
