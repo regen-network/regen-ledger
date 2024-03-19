@@ -424,7 +424,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
-	s.Require().Equal("C02-001", createProjectRes.ProjectId)
+	s.Require().Equal("P002", createProjectRes.ProjectId)
 	projectID := createProjectRes.ProjectId
 
 	// create batch
@@ -440,6 +440,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &basetypes.MsgCreateBatch{
 		Issuer:    issuer1,
 		ProjectId: projectID,
+		ClassId:   classID,
 		StartDate: &time1,
 		EndDate:   &time2,
 		Issuance: []*basetypes.BatchIssuance{
