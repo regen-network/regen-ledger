@@ -69,6 +69,7 @@ func (s *send) ACreditBatchWithDenom(a string) {
 
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Denom:      a,
 	})
 	require.NoError(s.t, err)
@@ -102,6 +103,7 @@ func (s *send) ACreditBatchFromCreditClassWithCreditType(a string) {
 
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)
@@ -355,6 +357,7 @@ func (s *send) creditBatchSetup() {
 
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)

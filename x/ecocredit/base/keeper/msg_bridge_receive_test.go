@@ -127,6 +127,7 @@ func (s *bridgeReceiveSuite) AProjectWithIdAndReferenceId(a, b string) {
 func (s *bridgeReceiveSuite) ACreditBatchWithDenomAndIssuerAlice(a string) {
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       true, // always true unless specified

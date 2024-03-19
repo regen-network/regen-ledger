@@ -84,6 +84,7 @@ func (s *mintBatchCredits) AProjectWithId(a string) {
 func (s *mintBatchCredits) ACreditBatchWithDenomAndIssuerAlice(a string) {
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       true, // always true unless specified
@@ -109,6 +110,7 @@ func (s *mintBatchCredits) ACreditBatchWithDenomOpenAndIssuerAlice(a, b string) 
 		Issuer:     s.alice,
 		Denom:      a,
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Open:       open,
 	})
 	require.NoError(s.t, err)

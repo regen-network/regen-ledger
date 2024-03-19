@@ -77,6 +77,7 @@ func (s *updateBatchMetadata) AProjectWithId(a string) {
 func (s *updateBatchMetadata) ACreditBatchWithBatchDenomAndIssuerAlice(a string) {
 	_, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       true, // true unless specified
@@ -92,6 +93,7 @@ func (s *updateBatchMetadata) ACreditBatchWithBatchDenomIssuerAliceAndOpen(a, b 
 
 	_, err = s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       open,

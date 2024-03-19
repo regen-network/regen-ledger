@@ -215,6 +215,7 @@ func (s *bridgeSuite) creditBatchSetup() {
 
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: pKey,
+		ClassKey:   s.classKey,
 		Denom:      s.batchDenom,
 	})
 	require.NoError(s.t, err)

@@ -73,6 +73,7 @@ func (s *sealBatch) AProjectWithId(a string) {
 func (s *sealBatch) ACreditBatchWithDenomAndIssuerAlice(a string) {
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       true,

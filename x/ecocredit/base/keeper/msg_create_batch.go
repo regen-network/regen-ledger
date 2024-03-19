@@ -74,6 +74,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		EndDate:      endDate,
 		IssuanceDate: issuanceDate,
 		Open:         req.Open,
+		ClassKey:     class.Key,
 	})
 	if err != nil {
 		return nil, err
