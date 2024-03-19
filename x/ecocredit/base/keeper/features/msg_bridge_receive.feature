@@ -49,8 +49,8 @@ Feature: Msg/BridgeReceive
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
       And allowed bridge chain "polygon"
-      And a project with id "C01-001"
-      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      And a project with id "P001"
+      And a credit batch with denom "C01-P001-20200101-20210101-001" and issuer alice
       And the batch contract
       """
       {
@@ -231,8 +231,8 @@ Feature: Msg/BridgeReceive
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
       And allowed bridge chain "polygon"
-      And a project with id "C01-001"
-      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      And a project with id "P001"
+      And a credit batch with denom "C01-P001-20200101-20210101-001" and issuer alice
       And the batch contract
       """
       {

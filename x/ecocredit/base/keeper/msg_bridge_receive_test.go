@@ -102,14 +102,6 @@ func (s *bridgeReceiveSuite) AProjectWithId(a string) {
 	})
 	require.NoError(s.t, err)
 
-	seq := s.getProjectSequence(a)
-
-	err = s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{
-		ClassKey:     s.classKey,
-		NextSequence: seq + 1,
-	})
-	require.NoError(s.t, err)
-
 	s.projectKey = pKey
 }
 
@@ -486,13 +478,6 @@ func (s *bridgeReceiveSuite) ExpectEventWithProperties(a gocuke.DocString) {
 
 	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
-}
-
-func (s *bridgeReceiveSuite) getProjectSequence(projectID string) uint64 {
-	str := strings.Split(projectID, "-")
-	seq, err := strconv.ParseUint(str[1], 10, 32)
-	require.NoError(s.t, err)
-	return seq
 }
 
 func (s *bridgeReceiveSuite) getBatchSequence(batchDenom string) uint64 {
