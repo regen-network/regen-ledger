@@ -292,7 +292,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	// create few projects
-	pId1 := "P002"
+	pId1 := "P001"
 	pKey1, err := createProject(ctx, ss, &api.Project{
 		Id:           pId1,
 		Admin:        accs[0].Address,
