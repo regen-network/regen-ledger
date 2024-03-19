@@ -363,6 +363,7 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	bRes, err := s.msgClient.CreateBatch(s.ctx, &basetypes.MsgCreateBatch{
 		Issuer:    admin.String(),
 		ProjectId: pRes.ProjectId,
+		ClassId:   classID,
 		Issuance:  []*basetypes.BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
 		Metadata:  "metadata",
 		StartDate: &start,
