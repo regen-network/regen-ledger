@@ -122,6 +122,13 @@ func ValidateGenesis(data json.RawMessage) error {
 		if _, exists := batchIDToPrecision[batch.Key]; exists {
 			continue
 		}
+
+		class, err := ss.ClassTable().Get(ormCtx, batch.ClassKey)
+		if err != nil {
+			return err
+		}
+
+		batchIDToPrecision[batch.Key] = abbrevToPrecision[class.CreditTypeAbbrev]
 	}
 
 	batchIDToCalSupply := make(map[uint64]math.Dec) // map of batchID to calculated supply
