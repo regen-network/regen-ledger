@@ -1,3 +1,2 @@
 Feature: CreateUnregisteredProject
-
-  Rule:
+  TODO
