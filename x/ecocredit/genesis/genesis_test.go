@@ -885,11 +885,56 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &baseapi.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "tons",
+		Precision:    6,
+	}))
+
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &baseapi.CreditType{
 		Abbreviation: "BIO",
 		Name:         "biodiversity",
 		Unit:         "acres",
 		Precision:    6,
 	}))
+
+	carbonClsKey, err := ss.ClassTable().InsertReturningID(ormCtx, &baseapi.Class{
+		Id:               "C001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "C",
+	})
+	require.NoError(t, err)
+
+	bioClsKey, err := ss.ClassTable().InsertReturningID(ormCtx, &baseapi.Class{
+		Id:               "BIO001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "BIO",
+	})
+	require.NoError(t, err)
+
+	batches := []*baseapi.Batch{
+		{
+			Issuer:       sdk.AccAddress("addr2"),
+			ProjectKey:   1,
+			ClassKey:     carbonClsKey,
+			Denom:        "C01-001-20200101-20210101-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+		},
+		{
+			Issuer:       sdk.AccAddress("addr3"),
+			ProjectKey:   1,
+			ClassKey:     bioClsKey,
+			Denom:        "BIO02-001-20200101-20210101-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+		},
+	}
+	for _, b := range batches {
+		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
+	}
 
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
 		&baseapi.BatchBalance{
@@ -908,28 +953,6 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 			RetiredAmount:  "0",
 		}))
 
-	batches := []*baseapi.Batch{
-		{
-			Issuer:       sdk.AccAddress("addr2"),
-			ProjectKey:   1,
-			Denom:        "C01-001-20200101-20210101-001",
-			StartDate:    &timestamppb.Timestamp{Seconds: 100},
-			EndDate:      &timestamppb.Timestamp{Seconds: 101},
-			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
-		},
-		{
-			Issuer:       sdk.AccAddress("addr3"),
-			ProjectKey:   1,
-			Denom:        "BIO02-001-20200101-20210101-001",
-			StartDate:    &timestamppb.Timestamp{Seconds: 100},
-			EndDate:      &timestamppb.Timestamp{Seconds: 101},
-			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
-		},
-	}
-	for _, b := range batches {
-		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
-	}
-
 	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
 		&baseapi.BatchSupply{
 			BatchKey:       1,
@@ -945,13 +968,6 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 			RetiredAmount:  "0",
 		}),
 	)
-
-	class := baseapi.Class{
-		Id:               "BIO001",
-		Admin:            sdk.AccAddress("addr4"),
-		CreditTypeAbbrev: "BIO",
-	}
-	require.NoError(t, ss.ClassTable().Insert(ormCtx, &class))
 
 	project := baseapi.Project{
 		Id:           "P01-001",
