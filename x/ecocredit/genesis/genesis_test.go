@@ -43,6 +43,22 @@ func TestValidateGenesis(t *testing.T) {
 		Precision:    6,
 	}))
 
+	cls1 := &baseapi.Class{
+		Id:               "BIO001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "BIO",
+	}
+	cls2 := &baseapi.Class{
+		Id:               "BIO002",
+		Admin:            sdk.AccAddress("addr5"),
+		CreditTypeAbbrev: "BIO",
+	}
+
+	clsKey1, err := ss.ClassTable().InsertReturningID(ormCtx, cls1)
+	require.NoError(t, err)
+	clsKey2, err := ss.ClassTable().InsertReturningID(ormCtx, cls2)
+	require.NoError(t, err)
+
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
 		&baseapi.BatchBalance{
 			BatchKey:       1,
@@ -55,6 +71,7 @@ func TestValidateGenesis(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr2"),
 			ProjectKey:   1,
+			ClassKey:     clsKey1,
 			Denom:        "BIO01-P001-00000000-00000000-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -63,6 +80,7 @@ func TestValidateGenesis(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr3"),
 			ProjectKey:   1,
+			ClassKey:     clsKey2,
 			Denom:        "BIO02-P001-00000000-00000000-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -79,22 +97,6 @@ func TestValidateGenesis(t *testing.T) {
 			TradableAmount: "90.003",
 			RetiredAmount:  "9.997",
 		}))
-
-	classes := []*baseapi.Class{
-		{
-			Id:               "BIO001",
-			Admin:            sdk.AccAddress("addr4"),
-			CreditTypeAbbrev: "BIO",
-		},
-		{
-			Id:               "BIO002",
-			Admin:            sdk.AccAddress("addr5"),
-			CreditTypeAbbrev: "BIO",
-		},
-	}
-	for _, c := range classes {
-		require.NoError(t, ss.ClassTable().Insert(ormCtx, c))
-	}
 
 	projects := []*baseapi.Project{
 		{
