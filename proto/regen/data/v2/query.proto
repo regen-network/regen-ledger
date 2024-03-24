@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.data.v2;
 
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v2/types.proto";
@@ -327,7 +328,7 @@ message AnchorInfo {
   ContentHash content_hash = 2;
 
   // timestamp is the time at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 3;
+  google.protobuf.Timestamp timestamp = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
 // AttestationInfo is the information for an attestation.
@@ -340,7 +341,7 @@ message AttestationInfo {
   string attestor = 2;
 
   // timestamp is the time at which the data was attested to.
-  google.protobuf.Timestamp timestamp = 3;
+  google.protobuf.Timestamp timestamp = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
 // ResolverInfo is the information for a resolver.

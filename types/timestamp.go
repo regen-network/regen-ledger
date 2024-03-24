@@ -10,6 +10,7 @@ import (
 )
 
 // GogoToProtobufTimestamp converts a gogo timestamp to a protobuf timestamp.
+// TODO: should be removed!
 func GogoToProtobufTimestamp(ts *gogotypes.Timestamp) *timestamppb.Timestamp {
 	if ts == nil {
 		return nil
