@@ -174,14 +174,14 @@ func (s *IntegrationTestSuite) TestResolver() {
 
 	// can define a resolver
 	defineResolver, err := s.msgClient.DefineResolver(s.ctx, &data.MsgDefineResolver{
-		Manager:     s.addr1.String(),
+		Definer:     s.addr1.String(),
 		ResolverUrl: testURL,
 	})
 	require.NoError(err)
 
 	// can register content to a resolver
 	_, err = s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:       s.addr1.String(),
+		Signer:        s.addr1.String(),
 		ResolverId:    defineResolver.ResolverId,
 		ContentHashes: hashes,
 	})
@@ -189,7 +189,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 
 	// registering same data twice is a no-op
 	_, err = s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:       s.addr1.String(),
+		Signer:        s.addr1.String(),
 		ResolverId:    defineResolver.ResolverId,
 		ContentHashes: hashes,
 	})

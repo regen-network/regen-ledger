@@ -322,6 +322,58 @@ Feature: MsgBuyDirect
     When the message is validated
     Then expect the error "orders[0]: retirement reason: max length 512: limit exceeded"
 
+  Scenario: a valid message with max_fee_amount
+    Given the message
+    """
+    {
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "orders": [
+        {
+          "sell_order_id": "1",
+          "quantity": "100",
+          "bid_price": {
+            "denom": "regen",
+            "amount": "100"
+          },
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption",
+          "max_fee_amount": {
+            "amount": "100",
+            "denom": "regen"
+          }
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect no error
+
+  Scenario: an error is returned if max_fee_amount is negative
+    Given the message
+    """
+    {
+      "buyer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+      "orders": [
+        {
+          "sell_order_id": "1",
+          "quantity": "100",
+          "bid_price": {
+            "denom": "regen",
+            "amount": "100"
+          },
+          "retirement_jurisdiction": "US-WA",
+          "retirement_reason": "offsetting electricity consumption",
+          "max_fee_amount": {
+            "amount": "-10",
+            "denom": "regen"
+          }
+        }
+      ]
+    }
+    """
+    When the message is validated
+    Then expect error contains "negative coin"
+
   Scenario: a valid amino message
     Given the message
     """

@@ -230,7 +230,7 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryCli
 		}
 
 		msg := &data.MsgDefineResolver{
-			Manager:     manager.Address.String(),
+			Definer:     manager.Address.String(),
 			ResolverUrl: resolverURL,
 		}
 
@@ -301,7 +301,7 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgRegisterResolver, err.Error()), nil, err
 		}
 		msg := &data.MsgRegisterResolver{
-			Manager:       manager.String(),
+			Signer:        manager.String(),
 			ResolverId:    resolverID,
 			ContentHashes: []*data.ContentHash{contentHash},
 		}

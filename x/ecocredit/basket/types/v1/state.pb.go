@@ -8,7 +8,7 @@ import (
 	fmt "fmt"
 	types1 "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/cosmos/gogoproto/types"
+	types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"

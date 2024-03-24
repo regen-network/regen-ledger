@@ -7,7 +7,7 @@ import (
 	_ "cosmossdk.io/api/cosmos/orm/v1"
 	fmt "fmt"
 	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/cosmos/gogoproto/types"
+	types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -205,8 +205,8 @@ type Resolver struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// url is the URL of the resolver.
 	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	// manager is the bytes address of the resolver manager who is allowed
-	// to make calls to Msg/RegisterResolver for this resolver.
+	// manager is the bytes address of the resolver manager who defined
+	// this resolver. If the resolver is public, then this field is empty.
 	Manager []byte `protobuf:"bytes,3,opt,name=manager,proto3" json:"manager,omitempty"`
 }
 

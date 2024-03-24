@@ -132,6 +132,7 @@ import (
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
 	"github.com/regen-network/regen-ledger/x/intertx"
 	intertxkeeper "github.com/regen-network/regen-ledger/x/intertx/keeper"
@@ -208,6 +209,7 @@ var (
 			ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 			ecocredit.ModuleName:            {authtypes.Burner},
 			baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
+			marketplace.FeePoolName:         {authtypes.Burner},
 		}
 
 		return perms

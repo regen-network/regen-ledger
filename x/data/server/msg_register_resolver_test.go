@@ -44,8 +44,18 @@ func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 
 func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
 	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
-		Manager:     s.alice.String(),
+		Definer:     s.alice.String(),
 		ResolverUrl: a,
+	})
+	require.NoError(s.t, err)
+
+	s.id = res.ResolverId
+}
+func (s *registerResolverSuite) AliceHasDefinedAPublicResolverWithUrl(a string) {
+	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
+		Definer:     s.alice.String(),
+		ResolverUrl: a,
+		Public:      true,
 	})
 	require.NoError(s.t, err)
 
@@ -66,7 +76,7 @@ func (s *registerResolverSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 
 func (s *registerResolverSuite) AliceHasRegisteredTheDataToTheResolver() {
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:       s.alice.String(),
+		Signer:        s.alice.String(),
 		ResolverId:    s.id,
 		ContentHashes: []*data.ContentHash{s.ch},
 	})
@@ -74,7 +84,7 @@ func (s *registerResolverSuite) AliceHasRegisteredTheDataToTheResolver() {
 
 func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolver() {
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:       s.alice.String(),
+		Signer:        s.alice.String(),
 		ResolverId:    s.id,
 		ContentHashes: []*data.ContentHash{s.ch},
 	})
@@ -85,7 +95,7 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToAResolverWithId(
 	require.NoError(s.t, err)
 
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:       s.alice.String(),
+		Signer:        s.alice.String(),
 		ResolverId:    id,
 		ContentHashes: []*data.ContentHash{s.ch},
 	})
@@ -98,7 +108,7 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolverAtBlo
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
 
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:       s.alice.String(),
+		Signer:        s.alice.String(),
 		ResolverId:    s.id,
 		ContentHashes: []*data.ContentHash{s.ch},
 	})
@@ -106,7 +116,7 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolverAtBlo
 
 func (s *registerResolverSuite) BobAttemptsToRegisterTheDataToTheResolver() {
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:       s.bob.String(),
+		Signer:        s.bob.String(),
 		ResolverId:    s.id,
 		ContentHashes: []*data.ContentHash{s.ch},
 	})

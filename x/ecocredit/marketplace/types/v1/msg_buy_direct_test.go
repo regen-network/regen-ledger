@@ -52,6 +52,14 @@ func (s *msgBuyDirectSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
+func (s *msgBuyDirectSuite) ExpectErrorContains(a string) {
+	if a != "" {
+		require.ErrorContains(s.t, s.err, a)
+	} else {
+		require.NoError(s.t, s.err)
+	}
+}
+
 func (s *msgBuyDirectSuite) MessageSignBytesQueried() {
 	s.signBytes = string(s.msg.GetSignBytes())
 }

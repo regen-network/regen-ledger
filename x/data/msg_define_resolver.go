@@ -12,7 +12,7 @@ var _ legacytx.LegacyMsg = &MsgDefineResolver{}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgDefineResolver) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Manager); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Definer); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
@@ -25,7 +25,7 @@ func (m *MsgDefineResolver) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgDefineResolver.
 func (m *MsgDefineResolver) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Manager)
+	addr, _ := sdk.AccAddressFromBech32(m.Definer)
 	return []sdk.AccAddress{addr}
 }
 

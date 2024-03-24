@@ -151,7 +151,7 @@ Flags:
 			}
 
 			msg := data.MsgDefineResolver{
-				Manager:     clientCtx.GetFromAddress().String(),
+				Definer:     clientCtx.GetFromAddress().String(),
 				ResolverUrl: resolverURL,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -210,7 +210,7 @@ Flags:
 			}
 
 			msg := data.MsgRegisterResolver{
-				Manager:       clientCtx.GetFromAddress().String(),
+				Signer:        clientCtx.GetFromAddress().String(),
 				ResolverId:    resolverID,
 				ContentHashes: contentHashes,
 			}

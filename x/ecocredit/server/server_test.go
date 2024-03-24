@@ -22,6 +22,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/testsuite"
 )
@@ -69,6 +70,7 @@ func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.Acc
 		minttypes.ModuleName:       {authtypes.Minter},
 		ecocredit.ModuleName:       {authtypes.Burner},
 		basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
+		marketplace.FeePoolName:    {authtypes.Burner},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(

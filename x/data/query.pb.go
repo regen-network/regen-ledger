@@ -9,7 +9,7 @@ import (
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/cosmos/gogoproto/types"
+	types "github.com/gogo/protobuf/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -1288,6 +1288,7 @@ type ResolverInfo struct {
 	// url is the URL of the resolver.
 	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	// manager is the address of the account that manages the resolver.
+	// This will be empty if the resolver is public.
 	Manager string `protobuf:"bytes,3,opt,name=manager,proto3" json:"manager,omitempty"`
 }
 
