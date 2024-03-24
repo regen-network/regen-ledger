@@ -6,9 +6,9 @@ package v1
 import (
 	_ "cosmossdk.io/api/cosmos/orm/v1"
 	fmt "fmt"
-	types1 "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/gogo/protobuf/types"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -416,12 +416,12 @@ type Batch struct {
 	Metadata string `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// start_date is the beginning of the period during which this credit batch
 	// was quantified and verified.
-	StartDate *types.Timestamp `protobuf:"bytes,6,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	StartDate *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
 	// end_date is the end of the period during which this credit batch was
 	// quantified and verified.
-	EndDate *types.Timestamp `protobuf:"bytes,7,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	EndDate *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
 	// issuance_date is the timestamp when the credit batch was issued.
-	IssuanceDate *types.Timestamp `protobuf:"bytes,8,opt,name=issuance_date,json=issuanceDate,proto3" json:"issuance_date,omitempty"`
+	IssuanceDate *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=issuance_date,json=issuanceDate,proto3" json:"issuance_date,omitempty"`
 	// open tells if it's possible to mint new credits in the future.
 	// Once `open` is set to false, it can't be toggled any more.
 	Open bool `protobuf:"varint,9,opt,name=open,proto3" json:"open,omitempty"`
@@ -498,21 +498,21 @@ func (m *Batch) GetMetadata() string {
 	return ""
 }
 
-func (m *Batch) GetStartDate() *types.Timestamp {
+func (m *Batch) GetStartDate() *timestamppb.Timestamp {
 	if m != nil {
 		return m.StartDate
 	}
 	return nil
 }
 
-func (m *Batch) GetEndDate() *types.Timestamp {
+func (m *Batch) GetEndDate() *timestamppb.Timestamp {
 	if m != nil {
 		return m.EndDate
 	}
 	return nil
 }
 
-func (m *Batch) GetIssuanceDate() *types.Timestamp {
+func (m *Batch) GetIssuanceDate() *timestamppb.Timestamp {
 	if m != nil {
 		return m.IssuanceDate
 	}
@@ -1130,7 +1130,7 @@ func (m *AllowedClassCreator) GetAddress() []byte {
 type ClassFee struct {
 	// fee is the credit class creation fee. If not set, a credit class creation
 	// fee is not required.
-	Fee *types1.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
+	Fee *types.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
 func (m *ClassFee) Reset()         { *m = ClassFee{} }
@@ -1166,7 +1166,7 @@ func (m *ClassFee) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ClassFee proto.InternalMessageInfo
 
-func (m *ClassFee) GetFee() *types1.Coin {
+func (m *ClassFee) GetFee() *types.Coin {
 	if m != nil {
 		return m.Fee
 	}
@@ -1317,7 +1317,7 @@ func (m *ProjectEnrollment) GetEnrollmentMetadata() string {
 type ProjectFee struct {
 	// fee is the project creation fee. If not set, a project creation fee is not
 	// required.
-	Fee *types1.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
+	Fee *types.Coin `protobuf:"bytes,1,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
 func (m *ProjectFee) Reset()         { *m = ProjectFee{} }
@@ -1353,7 +1353,7 @@ func (m *ProjectFee) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ProjectFee proto.InternalMessageInfo
 
-func (m *ProjectFee) GetFee() *types1.Coin {
+func (m *ProjectFee) GetFee() *types.Coin {
 	if m != nil {
 		return m.Fee
 	}
@@ -3597,7 +3597,7 @@ func (m *Batch) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.StartDate == nil {
-				m.StartDate = &types.Timestamp{}
+				m.StartDate = &timestamppb.Timestamp{}
 			}
 			if err := m.StartDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -3633,7 +3633,7 @@ func (m *Batch) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.EndDate == nil {
-				m.EndDate = &types.Timestamp{}
+				m.EndDate = &timestamppb.Timestamp{}
 			}
 			if err := m.EndDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -3669,7 +3669,7 @@ func (m *Batch) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.IssuanceDate == nil {
-				m.IssuanceDate = &types.Timestamp{}
+				m.IssuanceDate = &timestamppb.Timestamp{}
 			}
 			if err := m.IssuanceDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -4842,7 +4842,7 @@ func (m *ClassFee) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Fee == nil {
-				m.Fee = &types1.Coin{}
+				m.Fee = &types.Coin{}
 			}
 			if err := m.Fee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -5181,7 +5181,7 @@ func (m *ProjectFee) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Fee == nil {
-				m.Fee = &types1.Coin{}
+				m.Fee = &types.Coin{}
 			}
 			if err := m.Fee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
