@@ -17,7 +17,7 @@ import (
 
 // ValidateGenesis performs basic validation of genesis state.
 func ValidateGenesis(jsonData json.RawMessage) error {
-	db := dbm.NewMemDB()
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,
