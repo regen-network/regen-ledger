@@ -2,13 +2,12 @@ package server
 
 import (
 	"context"
-
-	gogotypes "github.com/cosmos/gogoproto/types"
+	"time"
 
 	"cosmossdk.io/errors"
-
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
@@ -32,20 +31,20 @@ func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.
 	}, nil
 }
 
-func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
+func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, id []byte, timestamp time.Time, err error) {
 	iri, err = ch.ToIRI()
 	if err != nil {
-		return "", nil, nil, err
+		return "", nil, time.Time{}, err
 	}
 
 	id, err = s.getOrCreateDataID(ctx, iri)
 	if err != nil {
-		return "", nil, nil, err
+		return "", nil, time.Time{}, err
 	}
 
 	timestamp, err = s.anchorAndGetTimestamp(ctx, id, iri)
 	if err != nil {
-		return "", nil, nil, err
+		return "", nil, timestamp, err
 	}
 
 	return iri, id, timestamp, err
@@ -80,30 +79,25 @@ func (s serverImpl) getOrCreateDataID(ctx context.Context, iri string) (id []byt
 	return id, nil
 }
 
-func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
+func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri string) (time.Time, error) {
 	dataAnchor, err := s.stateStore.DataAnchorTable().Get(ctx, id)
 	if err != nil {
 		if !ormerrors.IsNotFound(err) {
-			return nil, err
+			return time.Time{}, err
 		}
 
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-		timestamp, err := gogotypes.TimestampProto(sdkCtx.BlockTime())
-		if err != nil {
-			return nil, errors.Wrap(err, "invalid block time")
-		}
-
+		timestamp := sdkCtx.BlockTime()
 		err = s.stateStore.DataAnchorTable().Insert(ctx, &api.DataAnchor{
 			Id:        id,
-			Timestamp: types.GogoToProtobufTimestamp(timestamp),
+			Timestamp: timestamppb.New(timestamp),
 		})
 		if err != nil {
-			return nil, err
+			return timestamp, err
 		}
 
 		return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchor{Iri: iri})
 	}
 
-	return types.ProtobufToGogoTimestamp(dataAnchor.Timestamp), nil
+	return dataAnchor.Timestamp.AsTime(), nil
 }

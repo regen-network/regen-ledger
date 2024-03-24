@@ -6,8 +6,8 @@ func (m *DataAnchor) Validate() error {
 		return ErrParseFailure.Wrap("id cannot be empty")
 	}
 
-	if m.Timestamp == nil {
-		return ErrParseFailure.Wrapf("timestamp cannot be empty")
+	if m.Timestamp.Unix() <= 0 {
+		return ErrParseFailure.Wrapf("timestamp must be well defined")
 	}
 
 	return nil
