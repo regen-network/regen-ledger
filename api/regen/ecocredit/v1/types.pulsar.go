@@ -4330,7 +4330,7 @@ func (x *CreditTypeProposal) GetCreditType() *CreditType {
 
 // AllowedDenom represents the information for an allowed ask denom.
 //
-// Since Revision 2
+// # Since Revision 2
 //
 // Deprecated(Since Revision 2): This type was added to support historical
 // queries for params but will also be removed in the next version.

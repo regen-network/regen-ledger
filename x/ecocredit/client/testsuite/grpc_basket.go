@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	"github.com/cosmos/cosmos-sdk/testutil"
 
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) TestQueryBasket() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -67,7 +67,7 @@ func (s *IntegrationTestSuite) TestQueryBaskets() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -118,7 +118,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalance() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -168,7 +168,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -190,7 +190,7 @@ func (s *IntegrationTestSuite) TestQueryBasketBalances() {
 func (s *IntegrationTestSuite) TestQueryBasketParams() {
 	require := s.Require()
 
-	bz, err := rest.GetRequest(fmt.Sprintf(
+	bz, err := testutil.GetRequest(fmt.Sprintf(
 		"%s/%s/basket-fee",
 		s.val.APIAddress,
 		basketRoute,

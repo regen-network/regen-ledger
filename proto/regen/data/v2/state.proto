@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.data.v2;
 
 import "cosmos/orm/v1/orm.proto";
+import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
@@ -34,7 +35,7 @@ message DataAnchor {
 
   // timestamp is the anchor timestamp for this object - the time at which
   // it was first known to the blockchain.
-  google.protobuf.Timestamp timestamp = 2;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
 // DataAttestor is a join table for associating data IDs and attestors.
@@ -52,7 +53,7 @@ message DataAttestor {
   bytes attestor = 2;
 
   // timestamp is the time at which the attestor signed this data object.
-  google.protobuf.Timestamp timestamp = 3;
+  google.protobuf.Timestamp timestamp = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
 // Resolver describes a data resolver.

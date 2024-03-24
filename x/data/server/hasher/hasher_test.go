@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/blake2b"
 
 	"github.com/cosmos/cosmos-sdk/store/mem"
-	"github.com/tendermint/tendermint/libs/rand"
+	"github.com/cometbft/cometbft/libs/rand"
 )
 
 func TestHasher(t *testing.T) {

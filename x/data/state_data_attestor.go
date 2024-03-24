@@ -14,8 +14,8 @@ func (m *DataAttestor) Validate() error {
 		return ErrParseFailure.Wrapf("attestor: %s", err)
 	}
 
-	if m.Timestamp == nil {
-		return ErrParseFailure.Wrapf("timestamp cannot be empty")
+	if m.Timestamp.Unix() <= 0 {
+		return ErrParseFailure.Wrapf("timestamp must be well defined")
 	}
 
 	return nil

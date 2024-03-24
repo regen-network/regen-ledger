@@ -1083,7 +1083,8 @@ type BasketCredit struct {
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// amount is the number of credits being put into or taken out of the basket.
 	// Decimal values are acceptable within the precision of the corresponding
-	//  credit type for this batch.
+	//
+	//	credit type for this batch.
 	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 

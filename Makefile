@@ -17,7 +17,7 @@ ifeq (,$(VERSION))
 endif
 
 SDK_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::')
-TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
+TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
 
 LEDGER_ENABLED ?= true
 DB_BACKEND ?= goleveldb
@@ -110,7 +110,7 @@ ifeq ($(DB_BACKEND), badgerdb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
 endif
 
-ldflags += -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+ldflags += -X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
 ifeq ($(NO_STRIP),false)
   ldflags += -w -s

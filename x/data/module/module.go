@@ -9,7 +9,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	tmtypes "github.com/tendermint/tendermint/abci/types"
+	tmtypes "github.com/cometbft/cometbft/abci/types"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -58,18 +58,6 @@ func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.Raw
 }
 
 func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
-
-func (a Module) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-func (a Module) QuerierRoute() string {
-	return data.ModuleName
-}
-
-func (a Module) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
 	impl := server.NewServer(a.sk, a.ak, a.bk)

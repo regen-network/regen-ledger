@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.data.v2;
 
 import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v2/types.proto";
 
@@ -73,7 +74,7 @@ message MsgAnchorResponse {
   string iri = 1;
 
   // timestamp is the time at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 2;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
 // MsgAttest is the Msg/Attest request type.
@@ -101,7 +102,7 @@ message MsgAttestResponse {
   repeated string iris = 1;
 
   // timestamp is the time at which any new attestations were made.
-  google.protobuf.Timestamp timestamp = 2;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
 // MsgDefineResolver is the Msg/DefineResolver request type.

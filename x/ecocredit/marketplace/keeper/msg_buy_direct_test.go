@@ -6,11 +6,19 @@ import (
 	"strconv"
 	"testing"
 
+<<<<<<< HEAD
+	sdkmath "cosmossdk.io/math"
+	"github.com/cosmos/gogoproto/jsonpb"
+||||||| 45044a35
+	sdkmath "cosmossdk.io/math"
+	"github.com/gogo/protobuf/jsonpb"
+=======
 	"github.com/cockroachdb/apd/v3"
 	"github.com/gogo/protobuf/jsonpb"
 	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+>>>>>>> origin/main
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"

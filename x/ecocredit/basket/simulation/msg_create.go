@@ -6,13 +6,13 @@ import (
 	"math/rand"
 	"strings"
 
-	gogotypes "github.com/gogo/protobuf/types"
+	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
@@ -100,8 +100,8 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		account := ak.GetAccount(sdkCtx, curator.Address)
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},

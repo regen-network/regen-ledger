@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -57,7 +57,7 @@ func GenAndDeliverTxWithRandFees(r *rand.Rand, txCtx simulation.OperationInput) 
 // GenAndDeliverTx generates a transactions and delivers it.
 func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
-	tx, err := helpers.GenSignedMockTx(
+	tx, err := simtestutil.GenSignedMockTx(
 		r,
 		txCtx.TxGen,
 		[]sdk.Msg{txCtx.Msg},

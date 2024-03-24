@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	gogotypes "github.com/gogo/protobuf/types"
+	gogotypes "github.com/cosmos/gogoproto/types"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // GogoToProtobufTimestamp converts a gogo timestamp to a protobuf timestamp.
+// TODO: should be removed!
 func GogoToProtobufTimestamp(ts *gogotypes.Timestamp) *timestamppb.Timestamp {
 	if ts == nil {
 		return nil

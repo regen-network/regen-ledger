@@ -5,7 +5,7 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
 	v1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )

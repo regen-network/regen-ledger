@@ -2398,17 +2398,18 @@ type Basket struct {
 	// the format `eco.<prefix><credit_type_abbrev>.<name>` where prefix is the
 	// prefix of the bank denom exponent, a standard SI unit derived from credit
 	// type precision, and mapped as follows:
-	//   0 - no prefix
-	//   1 - d (deci)
-	//   2 - c (centi)
-	//   3 - m (milli)
-	//   6 - u (micro)
-	//   9 - n (nano)
-	//   12 - p (pico)
-	//   15 - f (femto)
-	//   18 - a (atto)
-	//   21 - z (zepto)
-	//   24 - y (yocto)
+	//
+	//	0 - no prefix
+	//	1 - d (deci)
+	//	2 - c (centi)
+	//	3 - m (milli)
+	//	6 - u (micro)
+	//	9 - n (nano)
+	//	12 - p (pico)
+	//	15 - f (femto)
+	//	18 - a (atto)
+	//	21 - z (zepto)
+	//	24 - y (yocto)
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// name is the unique name of the basket specified in MsgCreate. Basket
 	// names must be unique across all credit types and choices of exponent
