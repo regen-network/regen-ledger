@@ -10,10 +10,10 @@ Feature: MsgUpdateProjectEnrollment
       Then expect error contains "<error>"
 
       Examples:
-        | issuer                                       | error                           |
-        |                                              | "issuer is required"            |
-        | 0x0                                          | "issuer is not a valid address" |
-        | regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 |                                 |
+        | issuer                                       | error                         |
+        |                                              | issuer is required            |
+        | 0x0                                          | issuer is not a valid address |
+        | regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6 |                               |
 
     Scenario: issuer is signer
       Given issuer "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
@@ -23,6 +23,6 @@ Feature: MsgUpdateProjectEnrollment
 
   Rule: class_id is non-empty
 
-  Rule: new_status is specified
+  Rule: new_status is specified and valid
 
   Rule: metadata is optional and at most 256 characters
