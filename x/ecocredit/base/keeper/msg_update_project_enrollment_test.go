@@ -6,11 +6,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/v2/testutil"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
@@ -113,6 +115,29 @@ func (s *updateProjectEnrollmentSuite) ExpectErrorContains(a string) {
 	} else {
 		require.ErrorContains(s.t, s.err, a)
 	}
+}
+
+func (s *updateProjectEnrollmentSuite) IfNoErrorExpectEventupdateprojectenrollmentWithProperties(a gocuke.DocString) {
+	if s.err != nil {
+		return
+	}
+
+	s.ExpectEventupdateprojectenrollmentWithProperties(a)
+}
+
+func (s *updateProjectEnrollmentSuite) ExpectEventupdateprojectenrollmentWithProperties(a gocuke.DocString) {
+	var evtExpected v1.EventUpdateProjectEnrollment
+	err := jsonpb.UnmarshalString(a.Content, &evtExpected)
+	require.NoError(s.t, err)
+
+	// update issuer to actual address
+	evtExpected.Issuer = s.addrs[evtExpected.Issuer].String()
+
+	evtActual, found := testutil.GetEvent(&evtExpected, s.sdkCtx.EventManager().Events())
+	require.True(s.t, found)
+
+	err = testutil.MatchEvent(&evtExpected, evtActual)
+	require.NoError(s.t, err)
 }
 
 func (s *updateProjectEnrollmentSuite) getEnrollment(projId, clsId string) (*api.ProjectEnrollment, error) {

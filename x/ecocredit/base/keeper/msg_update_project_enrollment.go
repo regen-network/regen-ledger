@@ -83,8 +83,10 @@ func (k Keeper) UpdateProjectEnrollment(ctx context.Context, msg *types.MsgUpdat
 	}
 
 	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&types.EventUpdateProjectEnrollment{
+		Issuer:                msg.Issuer,
 		ProjectId:             proj.Id,
 		ClassId:               class.Id,
+		OldStatus:             types.ProjectEnrollmentStatus(existingStatus),
 		NewStatus:             types.ProjectEnrollmentStatus(newStatus),
 		NewEnrollmentMetadata: msg.Metadata,
 	}); err != nil {
