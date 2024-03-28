@@ -55,6 +55,9 @@ func (k Keeper) UpdateProjectEnrollment(ctx context.Context, msg *types.MsgUpdat
 		}
 	case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED:
 		switch newStatus {
+		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED:
+			// Valid case for just updating metadata of an accepted project
+			break
 		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_TERMINATED:
 			delete = true
 			break

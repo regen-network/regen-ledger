@@ -1,15 +1,20 @@
 Feature: Msg/UpdateProjectEnrollment
 
   Background:
-    Given class "C01" with issuer "I01"
-    And an application for project "P001" to class "C01" with status "UNSPECIFIED" and metadata "abc"
+    Given project "P001"
+    * class "C01"
+    * class issuer "I01" for "C01"
+    * class issuer "I02" for "C01"
 
-  Rule: an issuer can accept a project application from status unspecified or changes requested
+  Rule: valid state transitions performed by issuers which don't remove enrollment entries are:
+  UNSPECIFIED -> CHANGES_REQUESTED or ACCEPTED
+  CHANGES_REQUESTED -> ACCEPTED
+  ACCEPTED -> ACCEPTED with new metadata
     Scenario Outline:
       Given enrollment for "P001" to "C01" is "<cur_status>" with metadata "<cur_metadata>"
-      When <issuer> updates enrollment for "P001" to "C01" with status "<status>" and metadata "<metadata>"
-      Then expect error contains <err>
-      And expect enrollment for "P001" to "C01" to be "<new_status>" with metadata "<new_metadata>"
+      When "<issuer>" updates enrollment for "P001" to "C01" with status "<new_status>" and metadata "<new_metadata>"
+      Then expect error contains "<err>"
+      And expect enrollment for "P001" to "C01" to be "<expected_status>" with metadata "<expected_metadata>"
       Examples:
         | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | expected_status   | expected_metadata |
         | UNSPECIFIED       | abc          | I01    | ACCEPTED   | foo123       |              | ACCEPTED          | foo123            |
@@ -19,56 +24,30 @@ Feature: Msg/UpdateProjectEnrollment
         | ACCEPTED          | foo123       | I01    | ACCEPTED   | bar357       |              | ACCEPTED          | bar357            |
         | ACCEPTED          | foo123       | Bob    | ACCEPTED   | bar357       | unauthorized | ACCEPTED          | foo123            |
 
+  Rule: valid state transitions performed by issuers which remove enrollment entries are:
+  UNSPECIFIED -> REJECTED
+  CHANGES_REQUESTED -> REJECTED
+  ACCEPTED -> TERMINATED
     Scenario Outline:
       Given enrollment for "P001" to "C01" is "<cur_status>" with metadata "<cur_metadata>"
-      When <issuer> updates enrollment for "P001" to "C01" with status "<status>" and metadata "<metadata>"
-      Then expect error contains <err>
-      And expect enrollment for "P001" to "C01" to be <exists>
-
+      When "<issuer>" updates enrollment for "P001" to "C01" with status "<new_status>" and metadata "<new_metadata>"
+      Then expect error contains "<err>"
+      And expect enrollment exists for "P001" to "C01" to be "<exists>"
       Examples:
-        | cur_status  | cur_metadata | issuer | new_status | new_metadata | err          | exists |
-        | UNSPECIFIED | abc          | I01    | REJECTED   | baz789       |              | false
-        | UNSPECIFIED | abc          | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | CHANGES_REQUESTED | bar456 | I01    | REJECTED   | baz789       |              | false  |
-        | CHANGES_REQUESTED | bar456 | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | ACCEPTED    | foo123       | I01    | REJECTED   | baz789       | invalid      | true   |
-        | ACCEPTED    | foo123       | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | ACCEPTED    | foo123       | I01    | TERMINATED | baz789       |              | false  |
-        | ACCEPTED    | foo123       | Bob    | TERMINATED | baz789       | unauthorized | true   |
-
-    Scenario: an issuer accepts a project application
-      When "I01" updates enrollment for "P001" to "C01" with status "ACCEPTED" and metadata "foo123"
-      Then expect no error
-      And expect enrollment for "P001" to "C01" to be "ACCEPTED" with metadata "foo123"
-
-    Scenario: non issuer attempts to accept a project application
-      When "Bob" updates enrollment for "P001" to "C01" with status "ACCEPTED" and metadata "foo123"
-      Then expect error contains "unauthorized"
-      And expect enrollment for "P001" to "C01" to be "UNSPECIFIED" with metadata "abc"
-
-  Rule: an issuer can request changes to a project application
-    Scenario: an issuer requests changes to a project application
-      When "I01" updates enrollment for "P001" to "C01" with status "CHANGES_REQUESTED" and metadata "bar456"
-      Then expect no error
-      And expect enrollment for "P001" to "C01" to be "CHANGES_REQUESTED" with metadata "bar456"
-
-    Scenario: non issuer attempts to request changes to a project application
-      When "Bob" updates enrollment for "P001" to "C01" with status "CHANGES_REQUESTED" and metadata "bar456"
-      Then expect error contains "unauthorized"
-      And expect enrollment for "P001" to "C01" to be "UNSPECIFIED" with metadata "abc"
-
-  Rule: an issuer can reject a project application and it is removed from state
-    Scenario: an issuer rejects a project application
-      When "I01" updates enrollment for "P001" to "C01" with status "REJECTED" and metadata "baz789"
-      Then expect no error
-
-    Scenario: non issuer attempts to reject a project application
-      When "Bob" updates enrollment for "P001" to "C01" with status "REJECTED" and metadata "baz789"
-      Then expect error contains "unauthorized"
-      And expect enrollment for "P001" to "C01" to be "UNSPECIFIED" with metadata "abc"
-
-  Rule: an issuer can terminate a project enrollment and it is removed from state
-
-    Rule: any issuer can change the status even if a different issuer changed it before
+        | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | exists |
+        | UNSPECIFIED       | abc          | I01    | REJECTED   | baz789       |              | false  |
+        | UNSPECIFIED       | abc          | Bob    | REJECTED   | baz789       | unauthorized | true   |
+        | CHANGES_REQUESTED | bar456       | I01    | REJECTED   | baz789       |              | false  |
+        | CHANGES_REQUESTED | bar456       | Bob    | REJECTED   | baz789       | unauthorized | true   |
+        | ACCEPTED          | foo123       | I01    | REJECTED   | baz789       | invalid      | true   |
+        | ACCEPTED          | foo123       | Bob    | REJECTED   | baz789       | unauthorized | true   |
+        | UNSPECIFIED       | abc          | I01    | TERMINATED | baz789       | invalid      | true   |
+        | UNSPECIFIED       | abc          | Bob    | TERMINATED | baz789       | unauthorized | true   |
+        | CHANGES_REQUESTED | bar456       | I01    | TERMINATED | baz789       | invalid      | true   |
+        | CHANGES_REQUESTED | bar456       | Bob    | TERMINATED | baz789       | unauthorized | true   |
+        | ACCEPTED          | foo123       | I01    | TERMINATED | baz789       |              | false  |
+        | ACCEPTED          | foo123       | Bob    | TERMINATED | baz789       | unauthorized | true   |
 
   Rule: events get emitted
+
+    Rule: any issuer can transition states

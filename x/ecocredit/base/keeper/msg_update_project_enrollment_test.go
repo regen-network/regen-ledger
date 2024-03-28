@@ -30,33 +30,42 @@ func (s *updateProjectEnrollmentSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.addrs = map[string]sdk.AccAddress{
 		"I01": s.addr,
-		"Bob": s.addr2,
+		"I02": s.addr2,
+		"Bob": s.addr3,
 	}
 }
 
-func (s *updateProjectEnrollmentSuite) ClassWithIssuer(clsId, issuer string) {
-	clsKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
-		Id:    clsId,
-		Admin: s.addrs[issuer],
+func (s *updateProjectEnrollmentSuite) Project(projId string) {
+	err := s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+		Id: projId,
 	})
 	require.NoError(s.t, err)
+}
 
+func (s *updateProjectEnrollmentSuite) Class(clsId string) {
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
+		Id: clsId,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *updateProjectEnrollmentSuite) ClassIssuerFor(issuer, clsId string) {
+	cls, err := s.stateStore.ClassTable().GetById(s.ctx, clsId)
+	require.NoError(s.t, err)
 	err = s.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
-		ClassKey: clsKey,
+		ClassKey: cls.Key,
 		Issuer:   s.addrs[issuer],
 	})
 	require.NoError(s.t, err)
 }
 
-func (s *updateProjectEnrollmentSuite) AnApplicationForProjectToClassWithStatusAndMetadata(projId, clsId, status, metadata string) {
-	projKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id: projId,
-	})
+func (s *updateProjectEnrollmentSuite) EnrollmentForToIsWithMetadata(projId, clsId, status, metadata string) {
+	proj, err := s.stateStore.ProjectTable().GetById(s.ctx, projId)
 	require.NoError(s.t, err)
 	cls, err := s.stateStore.ClassTable().GetById(s.ctx, clsId)
 	require.NoError(s.t, err)
 	err = s.stateStore.ProjectEnrollmentTable().Insert(s.ctx, &api.ProjectEnrollment{
-		ProjectKey:         projKey,
+		ProjectKey:         proj.Key,
 		ClassKey:           cls.Key,
 		Status:             statusFromString(status),
 		EnrollmentMetadata: metadata,
@@ -85,16 +94,22 @@ func (s *updateProjectEnrollmentSuite) ExpectEnrollmentForToToBeWithMetadata(pro
 	require.Equal(s.t, metadata, enrollment.EnrollmentMetadata)
 }
 
-func (s *updateProjectEnrollmentSuite) ExpectNoEnrollmentForTo(projId, clsId string) {
+func (s *updateProjectEnrollmentSuite) ExpectEnrollmentExistsForToToBe(projId, clsId, exists string) {
 	enrollment, err := s.getEnrollment(projId, clsId)
-	if !ormerrors.IsNotFound(err) {
-		s.t.Fatalf("expected project enrollment not found,  got %v", enrollment)
+	if exists == "true" {
+		require.NoError(s.t, err)
+	} else if exists == "false" {
+		if !ormerrors.IsNotFound(err) {
+			s.t.Fatalf("expected project enrollment not found,  got %v", enrollment)
+		}
+	} else {
+		s.t.Fatalf("invalid exists value: %s", exists)
 	}
 }
 
 func (s *updateProjectEnrollmentSuite) ExpectErrorContains(a string) {
 	if a == "" {
-		require.Error(s.t, s.err)
+		require.NoError(s.t, s.err)
 	} else {
 		require.ErrorContains(s.t, s.err, a)
 	}
