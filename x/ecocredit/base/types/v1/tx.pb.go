@@ -3661,7 +3661,8 @@ type MsgClient interface {
 	// CreateOrUpdateApplicaton creates a new project credit class application, updates
 	// the metadata for an existing one when changes have been requested, or withdraws
 	// the application. When an application is withdrawn, its data will be deleted from
-	// state and the project may apply again to the same credit class in the future.
+	// state and the project may apply again to the same credit class in the future. Any
+	// new metadata will be passed to EventUpdateApplication including for withdrawals.
 	//
 	// Since Revision 3
 	CreateOrUpdateApplication(ctx context.Context, in *MsgCreateOrUpdateApplication, opts ...grpc.CallOption) (*MsgCreateOrUpdateApplicationResponse, error)
@@ -4093,7 +4094,8 @@ type MsgServer interface {
 	// CreateOrUpdateApplicaton creates a new project credit class application, updates
 	// the metadata for an existing one when changes have been requested, or withdraws
 	// the application. When an application is withdrawn, its data will be deleted from
-	// state and the project may apply again to the same credit class in the future.
+	// state and the project may apply again to the same credit class in the future. Any
+	// new metadata will be passed to EventUpdateApplication including for withdrawals.
 	//
 	// Since Revision 3
 	CreateOrUpdateApplication(context.Context, *MsgCreateOrUpdateApplication) (*MsgCreateOrUpdateApplicationResponse, error)

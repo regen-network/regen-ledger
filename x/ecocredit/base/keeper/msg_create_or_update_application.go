@@ -23,7 +23,7 @@ func (k Keeper) CreateOrUpdateApplication(ctx context.Context, msg *types.MsgCre
 		return nil, err
 	}
 
-	if bytes.Equal(proj.Admin, admin) {
+	if !bytes.Equal(proj.Admin, admin) {
 		return nil, sdkerrors.ErrUnauthorized
 	}
 
