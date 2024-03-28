@@ -34,6 +34,10 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("project id: %s", err)
 	}
 
+	if err := base.ValidateClassID(m.ClassId); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
+	}
+
 	if len(m.Issuance) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("issuance cannot be empty")
 	}

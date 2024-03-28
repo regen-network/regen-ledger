@@ -47,6 +47,7 @@ type baseSuite struct {
 	bankKeeper  *mocks.MockBankKeeper
 	storeKey    *storetypes.KVStoreKey
 	sdkCtx      sdk.Context
+	classId     uint64
 }
 
 func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
@@ -116,14 +117,17 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classID s
 		Precision:    6,
 	}))
 
-	assert.NilError(s.t, s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+	var err error
+	s.classId, err = s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               classID,
 		Admin:            s.addrs[0],
 		Metadata:         "",
 		CreditTypeAbbrev: creditType.Abbreviation,
-	}))
+	})
+	assert.NilError(s.t, err)
 	assert.NilError(s.t, s.baseStore.BatchTable().Insert(s.ctx, &baseapi.Batch{
 		ProjectKey: 1,
+		ClassKey:   s.classId,
 		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  start,

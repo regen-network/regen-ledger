@@ -49,6 +49,7 @@ Feature: Market Integration
           "key": "1",
           "issuer": "BTZfSbi0JKqguZ/tIAPUIhdAa7Y=",
           "project_key": "1",
+          "class_key": "1",
           "denom": "C01-001-20200101-20210101-001",
           "metadata": "metadata",
           "start_date": "2020-01-01T00:00:00Z",

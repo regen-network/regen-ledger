@@ -32,7 +32,7 @@ func (k Keeper) Send(ctx context.Context, req *types.MsgSend) (*types.MsgSendRes
 		}
 
 		// get credit type precision
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch)
 		if err != nil {
 			return nil, err
 		}

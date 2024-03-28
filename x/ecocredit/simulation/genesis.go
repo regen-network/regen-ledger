@@ -146,28 +146,6 @@ func createProject(ctx context.Context, sStore api.StateStore, project *api.Proj
 		return 0, err
 	}
 
-	seq, err := sStore.ProjectSequenceTable().Get(ctx, project.ClassKey)
-	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			if err := sStore.ProjectSequenceTable().Insert(ctx, &api.ProjectSequence{
-				ClassKey:     project.ClassKey,
-				NextSequence: 2,
-			}); err != nil {
-				return 0, err
-			}
-			return pKey, nil
-		}
-
-		return 0, err
-	}
-
-	if err := sStore.ProjectSequenceTable().Update(ctx, &api.ProjectSequence{
-		ClassKey:     project.ClassKey,
-		NextSequence: seq.NextSequence + 1,
-	}); err != nil {
-		return 0, err
-	}
-
 	return pKey, nil
 }
 
@@ -266,8 +244,9 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	// create few classes
+	cId1 := "C01"
 	cKey1, err := createClass(ctx, ss, &api.Class{
-		Id:               "C01",
+		Id:               cId1,
 		Admin:            accs[0].Address,
 		Metadata:         metadata,
 		CreditTypeAbbrev: "C",
@@ -276,8 +255,9 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		return err
 	}
 
+	cId2 := "C02"
 	cKey2, err := createClass(ctx, ss, &api.Class{
-		Id:               "C02",
+		Id:               cId2,
 		Admin:            accs[1].Address,
 		Metadata:         metadata,
 		CreditTypeAbbrev: "C",
@@ -312,9 +292,9 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	// create few projects
+	pId1 := "P001"
 	pKey1, err := createProject(ctx, ss, &api.Project{
-		ClassKey:     cKey1,
-		Id:           "C01-001",
+		Id:           pId1,
 		Admin:        accs[0].Address,
 		Jurisdiction: "AQ",
 		Metadata:     metadata,
@@ -323,9 +303,9 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		return err
 	}
 
+	pId2 := "P002"
 	pKey2, err := createProject(ctx, ss, &api.Project{
-		ClassKey:     cKey2,
-		Id:           "C02-001",
+		Id:           pId2,
 		Admin:        accs[1].Address,
 		Jurisdiction: "AQ",
 		Metadata:     metadata,
@@ -341,7 +321,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	if err != nil {
 		return err
 	}
-	denom, err := base.FormatBatchDenom("C01-001", batchSeq, &startDate, &endDate)
+	denom, err := base.FormatBatchDenom(cId1, pId2, batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -350,6 +330,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		&api.Batch{
 			Issuer:       accs[0].Address,
 			ProjectKey:   pKey1,
+			ClassKey:     cKey1,
 			Denom:        denom,
 			StartDate:    timestamppb.New(startDate),
 			EndDate:      timestamppb.New(endDate),
@@ -365,7 +346,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	if err != nil {
 		return err
 	}
-	denom, err = base.FormatBatchDenom("C02-001", batchSeq, &startDate, &endDate)
+	denom, err = base.FormatBatchDenom(cId2, pId2, batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -374,6 +355,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 		&api.Batch{
 			Issuer:       accs[2].Address,
 			ProjectKey:   pKey2,
+			ClassKey:     cKey2,
 			Denom:        denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),

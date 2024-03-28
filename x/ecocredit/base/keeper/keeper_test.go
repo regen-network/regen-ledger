@@ -44,6 +44,7 @@ type baseSuite struct {
 	ctrl       *gomock.Controller
 	addr       sdk.AccAddress
 	addr2      sdk.AccAddress
+	addr3      sdk.AccAddress
 	bankKeeper *mocks.MockBankKeeper
 	storeKey   *storetypes.KVStoreKey
 	sdkCtx     sdk.Context
@@ -86,6 +87,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.k = NewKeeper(s.stateStore, s.bankKeeper, moduleAddress, basketStore, marketStore, s.authority)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
+	_, _, s.addr3 = testdata.KeyTestPubAddr()
 
 	return s
 }

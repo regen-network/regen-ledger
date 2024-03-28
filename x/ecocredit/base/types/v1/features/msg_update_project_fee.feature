@@ -1,0 +1,2 @@
+Feature: MsgUpdateProjectFee
+  TODO
