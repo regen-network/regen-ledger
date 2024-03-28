@@ -7,10 +7,10 @@ Feature: Msg/UpdateProjectEnrollment
     * class issuer "I02" for "C01"
 
   Rule: valid state transitions performed by issuers which don't remove enrollment entries are:
-          UNSPECIFIED -> CHANGES_REQUESTED or ACCEPTED
-          CHANGES_REQUESTED -> ACCEPTED
-          ACCEPTED -> ACCEPTED with new metadata
-    Scenario Outline:
+  UNSPECIFIED -> CHANGES_REQUESTED or ACCEPTED
+  CHANGES_REQUESTED -> ACCEPTED
+  ACCEPTED -> ACCEPTED with new metadata
+    Scenario Outline: <scenario>
       Given enrollment for "P001" to "C01" is "<cur_status>" with metadata "<cur_metadata>"
       When "<issuer>" updates enrollment for "P001" to "C01" with status "<new_status>" and metadata "<new_metadata>"
       Then expect error contains "<err>"
@@ -25,19 +25,19 @@ Feature: Msg/UpdateProjectEnrollment
         }
       """
       Examples:
-        | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | expected_status   | expected_metadata |
-        | UNSPECIFIED       | abc          | I01    | ACCEPTED   | foo123       |              | ACCEPTED          | foo123            |
-        | UNSPECIFIED       | abc          | Bob    | ACCEPTED   | foo123       | unauthorized | UNSPECIFIED       | abc               |
-        | CHANGES_REQUESTED | bar456       | I01    | ACCEPTED   | foo123       |              | ACCEPTED          | foo123            |
-        | CHANGES_REQUESTED | bar456       | Bob    | ACCEPTED   | foo123       | unauthorized | CHANGES_REQUESTED | bar456            |
-        | ACCEPTED          | foo123       | I01    | ACCEPTED   | bar357       |              | ACCEPTED          | bar357            |
-        | ACCEPTED          | foo123       | Bob    | ACCEPTED   | bar357       | unauthorized | ACCEPTED          | foo123            |
+        | scenario                          | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | expected_status   | expected_metadata |
+        | I01 unspecified to accepted       | UNSPECIFIED       | abc          | I01    | ACCEPTED   | foo123       |              | ACCEPTED          | foo123            |
+        | Bob unspecified to accepted       | UNSPECIFIED       | abc          | Bob    | ACCEPTED   | foo123       | unauthorized | UNSPECIFIED       | abc               |
+        | I01 changes requested to accepted | CHANGES_REQUESTED | bar456       | I01    | ACCEPTED   | foo123       |              | ACCEPTED          | foo123            |
+        | Bob changes requested to accepted | CHANGES_REQUESTED | bar456       | Bob    | ACCEPTED   | foo123       | unauthorized | CHANGES_REQUESTED | bar456            |
+        | I01 update accepted metadata      | ACCEPTED          | foo123       | I01    | ACCEPTED   | bar357       |              | ACCEPTED          | bar357            |
+        | Bob updated accepted metadata     | ACCEPTED          | foo123       | Bob    | ACCEPTED   | bar357       | unauthorized | ACCEPTED          | foo123            |
 
   Rule: valid state transitions performed by issuers which remove enrollment entries are:
-          UNSPECIFIED -> REJECTED
-          CHANGES_REQUESTED -> REJECTED
-          ACCEPTED -> TERMINATED
-    Scenario Outline:
+  UNSPECIFIED -> REJECTED
+  CHANGES_REQUESTED -> REJECTED
+  ACCEPTED -> TERMINATED
+    Scenario Outline: <scenario>
       Given enrollment for "P001" to "C01" is "<cur_status>" with metadata "<cur_metadata>"
       When "<issuer>" updates enrollment for "P001" to "C01" with status "<new_status>" and metadata "<new_metadata>"
       Then expect error contains "<err>"
@@ -52,19 +52,19 @@ Feature: Msg/UpdateProjectEnrollment
         }
       """
       Examples:
-        | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | exists |
-        | UNSPECIFIED       | abc          | I01    | REJECTED   | baz789       |              | false  |
-        | UNSPECIFIED       | abc          | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | CHANGES_REQUESTED | bar456       | I01    | REJECTED   | baz789       |              | false  |
-        | CHANGES_REQUESTED | bar456       | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | ACCEPTED          | foo123       | I01    | REJECTED   | baz789       | invalid      | true   |
-        | ACCEPTED          | foo123       | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | UNSPECIFIED       | abc          | I01    | TERMINATED | baz789       | invalid      | true   |
-        | UNSPECIFIED       | abc          | Bob    | TERMINATED | baz789       | unauthorized | true   |
-        | CHANGES_REQUESTED | bar456       | I01    | TERMINATED | baz789       | invalid      | true   |
-        | CHANGES_REQUESTED | bar456       | Bob    | TERMINATED | baz789       | unauthorized | true   |
-        | ACCEPTED          | foo123       | I01    | TERMINATED | baz789       |              | false  |
-        | ACCEPTED          | foo123       | Bob    | TERMINATED | baz789       | unauthorized | true   |
+        | scenario                            | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | exists |
+        | IO1 unspecified to rejected         | UNSPECIFIED       | abc          | I01    | REJECTED   | baz789       |              | false  |
+        | Bob unspecified to rejected         | UNSPECIFIED       | abc          | Bob    | REJECTED   | baz789       | unauthorized | true   |
+        | I01 changes requested to rejected   | CHANGES_REQUESTED | bar456       | I01    | REJECTED   | baz789       |              | false  |
+        | Bob changes requested to rejected   | CHANGES_REQUESTED | bar456       | Bob    | REJECTED   | baz789       | unauthorized | true   |
+        | I01 accepted to rejected            | ACCEPTED          | foo123       | I01    | REJECTED   | baz789       | invalid      | true   |
+        | Bob accepted to rejected            | ACCEPTED          | foo123       | Bob    | REJECTED   | baz789       | unauthorized | true   |
+        | I01 unspecified to terminated       | UNSPECIFIED       | abc          | I01    | TERMINATED | baz789       | invalid      | true   |
+        | Bob unspecified to terminated       | UNSPECIFIED       | abc          | Bob    | TERMINATED | baz789       | unauthorized | true   |
+        | I01 changes requested to terminated | CHANGES_REQUESTED | bar456       | I01    | TERMINATED | baz789       | invalid      | true   |
+        | Bob changes requested to terminated | CHANGES_REQUESTED | bar456       | Bob    | TERMINATED | baz789       | unauthorized | true   |
+        | I01 accepted to terminated          | ACCEPTED          | foo123       | I01    | TERMINATED | baz789       |              | false  |
+        | Bob accepted to terminated          | ACCEPTED          | foo123       | Bob    | TERMINATED | baz789       | unauthorized | true   |
 
   Rule: any issuer can transition states
     Scenario: Issuer 1 requests changes, issuer 2 accepts
