@@ -45,11 +45,6 @@ func testFormatProjectID(t *rapid.T) {
 	require.NoError(t, err)
 }
 
-func testInvalidProjectID(t *rapid.T) {
-	projectID := genInvalidProjectID.Draw(t, "projectID")
-	require.Error(t, ValidateProjectID(projectID))
-}
-
 func testFormatBatchDenom(t *rapid.T) {
 	creditTypeAbbrev := genCreditTypeAbbrev.Draw(t, "creditTypeAbbrev")
 	classSeq := rapid.Uint64().Draw(t, "classSeq")
@@ -67,11 +62,6 @@ func testFormatBatchDenom(t *rapid.T) {
 
 	err = ValidateBatchDenom(denom)
 	require.NoError(t, err)
-}
-
-func testInvalidBatchDenom(t *rapid.T) {
-	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom")
-	require.Error(t, ValidateBatchDenom(batchDenom))
 }
 
 func testGetClassIDFromBatchDenom(t *rapid.T) {
@@ -108,19 +98,6 @@ var genInvalidClassID = rapid.OneOf(
 	rapid.StringMatching(`[a-zA-Z]*`),
 	rapid.StringMatching(`[0-9]*`),
 	rapid.StringMatching(`[A-Z]{4,}[0-9]*`),
-)
-
-// genInvalidProjectID generates strings that don't conform to the project id format
-var genInvalidProjectID = rapid.OneOf(
-	rapid.StringMatching(`[a-zA-Z]*`),
-	rapid.StringMatching(`[0-9]*`),
-	rapid.StringMatching(`[A-Z]{4,}[0-9]*`),
-)
-
-// genInvalidBatchDenom generates strings that don't conform to the batch denom format
-var genInvalidBatchDenom = rapid.OneOf(
-	genInvalidClassID,
-	rapid.StringMatching(`[A-Z]{1,3}[0-9]*-[a-zA-Z\-]*`),
 )
 
 // genTime generates time values up to the year ~9999 to avoid overflowing the

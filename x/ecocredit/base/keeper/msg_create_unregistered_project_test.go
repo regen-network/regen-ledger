@@ -45,13 +45,12 @@ func (s *createUnregisteredProjectSuite) Before(t gocuke.TestingT) {
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromAccountToModule(gomock.Any(), s.addr, gomock.Any(), gomock.Any()).
-		DoAndReturn(func(_ sdk.Context, fromAddr sdk.AccAddress, toAddr string, coins sdk.Coins) error {
+		DoAndReturn(func(_ sdk.Context, fromAddr sdk.AccAddress, _ string, coins sdk.Coins) error {
 			if fromAddr.Equals(s.addr) {
 				s.balance = s.balance.Sub(coins...)
 				return nil
-			} else {
-				return fmt.Errorf("unexpected from address: %s", fromAddr)
 			}
+			return fmt.Errorf("unexpected from address: %s", fromAddr)
 		}).
 		AnyTimes()
 }

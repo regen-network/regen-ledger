@@ -7,7 +7,7 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
-func (k Keeper) ProjectEnrollment(ctx context.Context, request *types.QueryProjectEnrollmentRequest) (*types.QueryProjectEnrollmentResponse, error) { //TODO implement me
+func (k Keeper) ProjectEnrollment(ctx context.Context, request *types.QueryProjectEnrollmentRequest) (*types.QueryProjectEnrollmentResponse, error) {
 	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
 		return nil, regenerrors.ErrNotFound.Wrapf("could not get project with id %s: %s", request.ProjectId, err.Error())

@@ -76,10 +76,6 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	batchSeqJSON, err := json.Marshal(batchSeq)
 	require.NoError(err)
 
-	projectSeq := []baseapi.ProjectSequence{{ClassKey: 1, NextSequence: 3}}
-	projectSeqJSON, err := json.Marshal(projectSeq)
-	require.NoError(err)
-
 	classAllowlistSettingJSON, err := json.Marshal(baseapi.ClassCreatorAllowlist{
 		Enabled: true,
 	})
@@ -113,7 +109,6 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	wrapper[string(proto.MessageName(&baseapi.BatchSupply{}))] = batchSupplyJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassSequence{}))] = classSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.BatchSequence{}))] = batchSeqJSON
-	wrapper[string(proto.MessageName(&baseapi.ProjectSequence{}))] = projectSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassCreatorAllowlist{}))] = classAllowlistSettingJSON
 	wrapper[string(proto.MessageName(&baseapi.AllowedClassCreator{}))] = allowedClassCreatorsJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassFee{}))] = classFeeJSON

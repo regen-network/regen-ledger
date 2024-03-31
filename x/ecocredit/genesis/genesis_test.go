@@ -417,7 +417,7 @@ func TestGenesisValidate(t *testing.T) {
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
-				ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
 					ProjectKey: pKey,
 					ClassKey:   cKey,
 					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
@@ -429,7 +429,7 @@ func TestGenesisValidate(t *testing.T) {
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
-				ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
 					ProjectKey: pKeyBIO,
 					ClassKey:   cKeyBIO,
 					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,

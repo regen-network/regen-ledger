@@ -4,7 +4,6 @@ package keeper
 import (
 	"encoding/json"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 
@@ -496,11 +495,4 @@ func (s *createBatchSuite) ExpectEventCreateBatchWithProperties(a gocuke.DocStri
 
 	err = testutil.MatchEvent(&event, sdkEvent)
 	require.NoError(s.t, err)
-}
-
-func (s *createBatchSuite) getProjectSequence(projectID string) uint64 {
-	str := strings.Split(projectID, "-")
-	seq, err := strconv.ParseUint(str[1], 10, 32)
-	require.NoError(s.t, err)
-	return seq
 }
