@@ -41,6 +41,9 @@ func (k Keeper) ProjectEnrollments(ctx context.Context, request *types.QueryProj
 		it, err = k.stateStore.ProjectEnrollmentTable().List(ctx,
 			ecocreditv1.ProjectEnrollmentProjectKeyClassKeyIndexKey{}.WithProjectKey(project.Key),
 			ormlist.Paginate(pg))
+		if err != nil {
+			return nil, err
+		}
 	} else if request.ClassId != "" {
 		cls, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 		if err != nil {
@@ -50,6 +53,9 @@ func (k Keeper) ProjectEnrollments(ctx context.Context, request *types.QueryProj
 		it, err = k.stateStore.ProjectEnrollmentTable().List(ctx,
 			ecocreditv1.ProjectEnrollmentClassKeyIndexKey{}.WithClassKey(cls.Key),
 			ormlist.Paginate(pg))
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		it, err = k.stateStore.ProjectEnrollmentTable().List(ctx,
 			ecocreditv1.ProjectEnrollmentPrimaryKey{},

@@ -18,6 +18,7 @@ func TestQuery_ProjectEnrollment(t *testing.T) {
 	projKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id: projId,
 	})
+	require.NoError(t, err)
 
 	// insert class
 	clsId := "C01"

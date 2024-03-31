@@ -32,7 +32,7 @@ func MigrateState(sdkCtx sdk.Context, baseStore ecocreditv1.StateStore) error {
 			return err
 		}
 
-		batchClasses[batch.Key] = proj.ClassKey
+		batchClasses[batch.Key] = proj.ClassKey //nolint:staticcheck
 	}
 	batchIt.Close()
 
@@ -62,11 +62,11 @@ func MigrateState(sdkCtx sdk.Context, baseStore ecocreditv1.StateStore) error {
 			return err
 		}
 
-		if proj.ClassKey == 0 {
-			return fmt.Errorf("unexpected state, expected project class key to be non-zero before migration, got %d", proj.ClassKey)
+		if proj.ClassKey == 0 { //nolint:staticcheck
+			return fmt.Errorf("unexpected state, expected project class key to be non-zero before migration, got %d", proj.ClassKey) //nolint:staticcheck
 		}
 
-		projectClasses[proj.Key] = proj.ClassKey
+		projectClasses[proj.Key] = proj.ClassKey //nolint:staticcheck
 	}
 	projectIt.Close()
 

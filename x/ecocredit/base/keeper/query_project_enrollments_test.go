@@ -31,11 +31,13 @@ func TestQuery_ProjectEnrollments(t *testing.T) {
 	clsKey1, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id: clsId1,
 	})
+	require.NoError(t, err)
 
 	clsId2 := "BIO01"
 	clsKey2, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id: clsId2,
 	})
+	require.NoError(t, err)
 
 	// insert enrollments
 	enrollment1 := &api.ProjectEnrollment{

@@ -50,8 +50,8 @@ func (k Keeper) CreateProject(ctx context.Context, req *types.MsgCreateProject) 
 	project.Metadata = req.Metadata
 	if req.ReferenceId != "" {
 		project.ReferenceId = req.ReferenceId
-		// only set class key if reference id is not empty to support the use case of reference IDs
-		project.ClassKey = classInfo.Key
+		// only set deprecated class key if reference id is not empty to support the use case of reference IDs
+		project.ClassKey = classInfo.Key //nolint:staticcheck
 	}
 
 	if err = k.stateStore.ProjectTable().Save(ctx, project); err != nil {
