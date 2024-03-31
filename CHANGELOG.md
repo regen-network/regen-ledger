@@ -16,6 +16,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 - [#2107](https://github.com/regen-network/regen-ledger/pull/2107) Add `BurnRegen` method.
+- [#2167](https://github.com/regen-network/regen-ledger/pull/2167) Add `CreateUnregisteredProject`, `CreateOrUpdateApplication`, `UpdateProjectEnrollment` and `UpdateProjectFee` methods and `ProjectEnrollment` and `ProjectEnrollments` queries. These additions allow:
+  - projects to be created without being already enrolled in a credit class
+  - projects to apply for one or more credit class and for project-credit class relationships to be dynamically managed on-chain
+
+#### Changed
+- [#2167](https://github.com/regen-network/regen-ledger/pull/2167):
+  - `FormatProjectID` just takes a sequence number and doesn't need a class ID.
+  - `FormatBatchDenom` requires a class ID because the class is no longer implied by the project ID.
+  - the credit type `P` is now reserved because this is the new project prefix
+  - project and batch string validation is now more lenient and just checks for a non-empty string
+  - `GetCreditTypeFromBatchDenom` takes a `*Denom` parameter instead of a string.
+
+#### Deprecated
+- [#2167](https://github.com/regen-network/regen-ledger/pull/2167):
+  - `regen.ecocredit.v1.Project.class_key`
+  - `regen.ecocredit.v1.ProjectSequence`
+  - `regen.ecocredit.v1.ProjectInfo.class_id`
+
+#### Removed
+- [#2167](https://github.com/regen-network/regen-ledger/pull/2167): the `GetClassIDFromProjectID` and `GetProjectIDFromBatchDenom` have been removed and a state lookup must now be used to resolved these references.
+    - 
 
 ## [v5.1.2](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.2) - 2023-06-28
 
