@@ -81,6 +81,8 @@ func (ProjectEnrollmentStatus) EnumDescriptor() ([]byte, []int) {
 type CreditType struct {
 	// abbreviation is a 1-3 character uppercase abbreviation of the CreditType
 	// name, used in batch denominations within the CreditType. It must be unique.
+	// The letter P is reserved as the project prefix and cannot be used as a
+	// credit type to avoid confusion.
 	Abbreviation string `protobuf:"bytes,1,opt,name=abbreviation,proto3" json:"abbreviation,omitempty"`
 	// name is the name of the credit type (e.g. carbon, biodiversity).
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`

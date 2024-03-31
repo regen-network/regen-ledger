@@ -212,6 +212,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 	bz, err := s.val.ClientCtx.Codec.MarshalJSON(&types.MsgCreateBatch{
 		Issuer:    issuer,
 		ProjectId: s.projectID,
+		ClassId:   s.classID,
 		Issuance: []*types.BatchIssuance{
 			{
 				Recipient:              recipient,
