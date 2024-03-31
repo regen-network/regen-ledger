@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
+	"google.golang.org/protobuf/proto"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"google.golang.org/protobuf/proto"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"

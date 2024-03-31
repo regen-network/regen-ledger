@@ -3,9 +3,10 @@ package v1
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgUpdateProjectFee struct {

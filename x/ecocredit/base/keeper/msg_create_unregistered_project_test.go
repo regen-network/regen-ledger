@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"

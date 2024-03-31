@@ -3,11 +3,12 @@ package keeper
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
