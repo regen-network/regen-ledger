@@ -37,8 +37,12 @@ func (m *MsgUpdateProjectEnrollment) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("class id: %s", err)
 	}
 
-	if m.NewStatus == ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED || m.NewStatus.String() == "" {
-		return sdkerrors.ErrInvalidRequest.Wrapf("new status: empty or invalid")
+	if m.NewStatus == ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED {
+		return sdkerrors.ErrInvalidRequest.Wrapf("new status: invalid")
+	}
+
+	if _, ok := ProjectEnrollmentStatus_name[int32(m.NewStatus)]; !ok {
+		return sdkerrors.ErrInvalidRequest.Wrapf("new status: invalid")
 	}
 
 	if len(m.Metadata) > base.MaxMetadataLength {
