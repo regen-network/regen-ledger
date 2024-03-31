@@ -255,12 +255,6 @@ func validateMsg(m proto.Message) error {
 			return err
 		}
 		return msg.Validate()
-	case *baseapi.ProjectSequence:
-		msg := &basetypes.ProjectSequence{}
-		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
-			return err
-		}
-		return msg.Validate()
 	case *baseapi.BatchSequence:
 		msg := &basetypes.BatchSequence{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {

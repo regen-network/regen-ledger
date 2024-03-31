@@ -552,25 +552,6 @@ func TestGenesisValidate(t *testing.T) {
 			"credit type abbrev: empty string is not allowed: parse error",
 		},
 		{
-			"valid: project sequence",
-			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ProjectSequenceTable().Insert(ctx, &baseapi.ProjectSequence{
-					ClassKey:     1,
-					NextSequence: 1,
-				}))
-			},
-			false,
-			"",
-		},
-		{
-			"invalid: project sequence",
-			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ProjectSequenceTable().Insert(ctx, &baseapi.ProjectSequence{}))
-			},
-			true,
-			"class key cannot be zero: parse error",
-		},
-		{
 			"valid: batch sequence",
 			func(ctx context.Context, ss baseapi.StateStore) {
 				require.NoError(t, ss.BatchSequenceTable().Insert(ctx, &baseapi.BatchSequence{
