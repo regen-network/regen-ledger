@@ -400,7 +400,7 @@ func QueryResolversByURLCmd() *cobra.Command {
 	return cmd
 }
 
-// ConvertIRIToHashCmd creates a CLI command for Query/ConvertIRIToHash.
+// ConvertIRIToHashCmd converts an IRI to a ContentHash.
 func ConvertIRIToHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-iri-to-hash [iri]",
@@ -411,25 +411,24 @@ func ConvertIRIToHashCmd() *cobra.Command {
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
+			_, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
 
-			res, err := c.ConvertIRIToHash(cmd.Context(), &data.ConvertIRIToHashRequest{
-				Iri: args[0],
-			})
+			ch, err := data.ParseIRI(args[0])
+			if err != nil {
+				return err
+			}
 
-			return printQueryResponse(ctx, res, err)
+			return ctx.PrintProto(ch)
 		},
 	}
-
-	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
 
-// ConvertHashToIRICmd creates a CLI command for Query/ConvertHashToIRI.
+// ConvertHashToIRICmd converts a ContentHash to an IRI.
 func ConvertHashToIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-hash-to-iri [hash-json]",
@@ -450,7 +449,7 @@ func ConvertHashToIRICmd() *cobra.Command {
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
+			_, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -460,15 +459,14 @@ func ConvertHashToIRICmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.ConvertHashToIRI(cmd.Context(), &data.ConvertHashToIRIRequest{
-				ContentHash: contentHash,
-			})
+			res, err := contentHash.ToIRI()
+			if err != nil {
+				return err
+			}
 
-			return printQueryResponse(ctx, res, err)
+			return ctx.PrintString(res)
 		},
 	}
-
-	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
