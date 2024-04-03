@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### General
 
-#### Changed
+#### Fixed
 
 - [#2192](https://github.com/regen-network/regen-ledger/pull/2192) Update ledger-cosmos-go to fix compatility issue with Ledger Cosmos App
 
