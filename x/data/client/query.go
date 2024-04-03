@@ -426,6 +426,8 @@ func ConvertIRIToHashCmd() *cobra.Command {
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+
 	return cmd
 }
 
@@ -468,6 +470,8 @@ func ConvertHashToIRICmd() *cobra.Command {
 			return ctx.PrintString(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
