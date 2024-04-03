@@ -70,10 +70,13 @@ func FileIRI() *cobra.Command {
 					return err
 				}
 
+				ext = ext[1:] // take the . off the extension
+				mediaType := data.RawMediaTypeFromExt(ext)
+
 				ch.Raw = &data.ContentHash_Raw{
 					Hash:            hash,
 					DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       data.RawMediaTypeFromString(ext),
+					MediaType:       mediaType,
 				}
 			}
 

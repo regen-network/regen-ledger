@@ -111,7 +111,7 @@ func init() {
 	}
 }
 
-func RawMediaTypeFromString(ext string) RawMediaType {
+func RawMediaTypeFromExt(ext string) RawMediaType {
 	mt, ok := stringToMediaExtensionType[ext]
 	if ok {
 		return mt
