@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+// regen.contract.v1alpha1 describes the API for the contract submodule.
+//
+// The following outlines revisions and tagged versions of the compiled code in
+// relation to tagged releases in regen-network/regen-ledger:
+//
+// - Revision 0: (in progress)
+//
+package regen.ecocredit.contract.v1alpha1;
