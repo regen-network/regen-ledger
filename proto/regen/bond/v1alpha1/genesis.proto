@@ -1,0 +1,14 @@
+syntax = "proto3";
+package regen.bond.v1alpha1;
+
+import "regen/bond/v1alpha1/types.proto";
+
+
+option go_package = "github.com/regen-network/regen-ledger/x/bond";
+
+// GenesisState defines the bond module's genesis state.
+message GenesisState {
+
+  // bonds is the list of bonds.
+  repeated Bond bonds = 1;
+}
