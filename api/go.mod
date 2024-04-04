@@ -7,9 +7,9 @@ require (
 	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/gogoproto v1.4.11
-	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
-	google.golang.org/grpc v1.61.0
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20240227224415-6ceb2ff114de
+	google.golang.org/grpc v1.63.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
@@ -22,7 +22,7 @@ require (
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.3-0.20201103224600-674baa8c7fc3 // indirect
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
@@ -32,11 +32,11 @@ require (
 	github.com/tendermint/tm-db v0.6.7 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb // indirect
-	golang.org/x/net v0.20.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto v0.0.0-20240116215550-a9fa1716bcac // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
+	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240227224415-6ceb2ff114de // indirect
 )
 
 // https://github.com/regen-network/regen-ledger/security/dependabot/105
