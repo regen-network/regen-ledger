@@ -6,7 +6,7 @@ require (
 	cosmossdk.io/errors v1.0.0
 	github.com/cosmos/cosmos-sdk v0.46.12
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
-	github.com/cosmos/ibc-go/v5 v5.3.2
+	github.com/cosmos/ibc-go/v5 v5.4.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
@@ -119,7 +119,7 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto v0.0.0-20240116215550-a9fa1716bcac // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
