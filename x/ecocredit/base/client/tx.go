@@ -22,7 +22,8 @@ const (
 	FlagAddIssuers             string = "add-issuers"
 	FlagReason                 string = "reason"
 	FlagRemoveIssuers          string = "remove-issuers"
-	FlagClassID                string = "class-id"
+	FlagClass                  string = "class"
+	FlagProject                string = "project"
 	FlagReferenceID            string = "reference-id"
 	FlagRetirementJurisdiction string = "retirement-jurisdiction"
 	FlagRetirementReason       string = "retirement-reason"
@@ -112,6 +113,8 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 
 // TxCreateProjectCmd returns a transaction command that creates a new project.
 func TxCreateProjectCmd() *cobra.Command {
+	var classID, referenceID, projectFee string
+
 	cmd := &cobra.Command{
 		Use:   "create-project [jurisdiction] [metadata] [flags]",
 		Short: "Create a new project",
@@ -130,7 +133,7 @@ Flags:
 required project creation fee param. If the project creation fee is zero, no fee is required. 
 We explicitly include the project creation fee here so that the project creator acknowledges paying 
 the fee and is not surprised to learn that the they paid a fee without consent.
-- class-id:      the ID of the credit class. If this is provided, the signer must be an issuer of the class.
+- class:      the ID of the credit class. If this is provided, the signer must be an issuer of the class.
 - reference-id: a reference ID for the project. Only valid if class-id is also provided.`,
 		Example: `regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf
 regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf  --class-id C01 --reference-id VCS-001`,
@@ -144,25 +147,11 @@ regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjK
 			jurisdiction := args[0]
 			metadata := args[1]
 
-			classID, err := cmd.Flags().GetString(FlagClassID)
-			if err != nil {
-				return err
-			}
-
-			referenceID, err := cmd.Flags().GetString(FlagReferenceID)
-			if err != nil {
-				return err
-			}
-
 			// parse and normalize project fee
-			feeString, err := cmd.Flags().GetString(FlagProjectFee)
-			if err != nil {
-				return err
-			}
 			var fee sdk.Coin
-			if feeString != "" {
+			if projectFee != "" {
 				var err error
-				fee, err = sdk.ParseCoinNormalized(feeString)
+				fee, err = sdk.ParseCoinNormalized(projectFee)
 				if err != nil {
 					return fmt.Errorf("failed to parse class-fee: %w", err)
 				}
@@ -192,7 +181,9 @@ regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjK
 		},
 	}
 
-	cmd.Flags().String(FlagReferenceID, "", "a reference ID for the project")
+	cmd.Flags().StringVar(&classID, FlagClass, "", "the ID of the credit class into which the project will be enrolled")
+	cmd.Flags().StringVar(&referenceID, FlagReferenceID, "", "a reference ID for the project")
+	cmd.Flags().StringVar(&projectFee, FlagProjectFee, "", "the fee that the project creator will pay to create the project (e.g. \"20regen\")")
 
 	return txFlags(cmd)
 }
@@ -862,6 +853,8 @@ Flags:
 		},
 	}
 
+	cmd.Flags().String(FlagMetadata, "", "optional metadata to attach to the application")
+
 	return txFlags(cmd)
 }
 
@@ -885,6 +878,8 @@ Flags:
 			return runCreateOrUpdateApplication(cmd, args, true)
 		},
 	}
+
+	cmd.Flags().String(FlagMetadata, "", "optional metadata to attach to the withdrawal")
 
 	return txFlags(cmd)
 }
@@ -912,6 +907,8 @@ func runCreateOrUpdateApplication(cmd *cobra.Command, args []string, withdraw bo
 }
 
 func TxUpdateProjectEnrollment() *cobra.Command {
+	var metadata string
+
 	cmd := &cobra.Command{
 		Use:   "update-project-enrollment [project-id] [class-id] [status] [flags]",
 		Short: "Update project enrollment",
@@ -923,17 +920,12 @@ Parameters:
 - status: the new status of the project enrollment, must be one of ACCEPTED, CHANGES_REQUESTED, REJECTED or TERMINATED
 
 Flags:
-- metadata: optional metadata to attach to the enrollment update
+- metadata: optional metadata to attach to the enrollment
 `,
 		Example: `regen tx ecocredit update-project-enrollment P001 C01 ACCEPTED --metadata regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf`,
 		Args:    cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			metadata, err := cmd.Flags().GetString(FlagMetadata)
 			if err != nil {
 				return err
 			}
@@ -964,6 +956,8 @@ Flags:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
+
+	cmd.Flags().StringVar(&metadata, FlagMetadata, "", "optional metadata to attach to the enrollment")
 
 	return txFlags(cmd)
 }
