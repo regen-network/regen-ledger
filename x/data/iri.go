@@ -111,6 +111,15 @@ func init() {
 	}
 }
 
+func RawMediaTypeFromExt(ext string) RawMediaType {
+	mt, ok := stringToMediaExtensionType[ext]
+	if ok {
+		return mt
+	}
+
+	return RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED
+}
+
 // ParseIRI parses an IRI string representation of a ContentHash into a ContentHash struct
 // Currently IRIs must have a "regen:" prefix, and only ContentHash_Graph and ContentHash_Raw
 // are supported.

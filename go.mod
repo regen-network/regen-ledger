@@ -122,8 +122,10 @@ require (
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/petermattis/goid v0.0.0-20230317030725-371a4b8eda08 // indirect
+	github.com/piprate/json-gold v0.5.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
@@ -188,3 +190,5 @@ replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.1
 
 // https://github.com/regen-network/regen-ledger/security/dependabot/105
 replace golang.org/x/net => golang.org/x/net v0.8.0
+
+replace github.com/regen-network/regen-ledger/x/data/v2 => ./x/data
