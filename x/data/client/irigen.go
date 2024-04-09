@@ -13,14 +13,13 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/v2"
 )
 
-func FileIRI() *cobra.Command {
+func GenerateIRI() *cobra.Command {
 	return &cobra.Command{
-		Use:   "file-iri [filename]",
-		Short: "Creates the content IRI for a file",
-		Long:  "Creates the content IRI for a file. If the extension is .jsonld, a graph IRI will be created, otherwise a raw IRI will be created.",
-		Example: formatExample(`
-  regen q data file-iri myfile.ext`),
-		Args: cobra.ExactArgs(1),
+		Use:     "generate-iri [filename]",
+		Short:   "Creates the content IRI for a file",
+		Long:    "Creates the content IRI for a file. If the extension is .jsonld, a graph IRI will be created, otherwise a raw IRI will be created.",
+		Example: formatExample(`regen q data generate-iri myfile.ext`),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_, ctx, err := mkQueryClient(cmd)
 			if err != nil {

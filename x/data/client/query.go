@@ -36,7 +36,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryResolversByURLCmd(),
 		ConvertIRIToHashCmd(),
 		ConvertHashToIRICmd(),
-		FileIRI(),
+		GenerateIRI(),
 	)
 
 	return cmd
