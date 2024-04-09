@@ -36,6 +36,8 @@ func TxCmd(name string) *cobra.Command {
 		baseclient.TxUpdateProjectMetadataCmd(),
 		baseclient.TxUpdateBatchMetadataCmd(),
 		baseclient.TxBridgeCmd(),
+		baseclient.TxCreateOrUpdateApplicationCmd(),
+		baseclient.TxWithdrawApplicationCmd(),
 		basketclient.TxCreateBasketCmd(),
 		basketclient.TxPutInBasketCmd(),
 		basketclient.TxTakeFromBasketCmd(),

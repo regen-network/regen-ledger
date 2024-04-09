@@ -22,10 +22,13 @@ const (
 	FlagAddIssuers             string = "add-issuers"
 	FlagReason                 string = "reason"
 	FlagRemoveIssuers          string = "remove-issuers"
+	FlagClassID                string = "class-id"
 	FlagReferenceID            string = "reference-id"
 	FlagRetirementJurisdiction string = "retirement-jurisdiction"
 	FlagRetirementReason       string = "retirement-reason"
 	FlagClassFee               string = "class-fee"
+	FlagProjectFee             string = "project-fee"
+	FlagMetadata               string = "metadata"
 )
 
 // TxCreateClassCmd returns a transaction command that creates a credit class.
@@ -110,24 +113,38 @@ regen tx ecocredit create-class regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw,reg
 // TxCreateProjectCmd returns a transaction command that creates a new project.
 func TxCreateProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-project [class-id] [jurisdiction] [metadata] [flags]",
-		Short: "Create a new project within a credit class",
-		Long: `Create a new project within a credit class.
+		Use:   "create-project [jurisdiction] [metadata] [flags]",
+		Short: "Create a new project",
+		Long: `Create a new project. By default, this creates an unregistered project that is not enrolled in any credit
+class. If the class-id flag is provided, the signer must be an issuer of the class and the project will be enrolled in
+the class automatically.
 		
 Parameters:
 
-- class-id:      the ID of the credit class
 - jurisdiction:  the jurisdiction of the project
 - metadata:      any arbitrary metadata to attach to the project
 
-Optional Flags:
+Flags:
 
-- reference-id: a reference ID for the project`,
-		Example: `regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf
-regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf  --reference-id VCS-001`,
-		Args: cobra.ExactArgs(3),
+- project-fee: the fee that the project creator will pay to create the project. It must be >= the
+required project creation fee param. If the project creation fee is zero, no fee is required. 
+We explicitly include the project creation fee here so that the project creator acknowledges paying 
+the fee and is not surprised to learn that the they paid a fee without consent.
+- class-id:      the ID of the credit class. If this is provided, the signer must be an issuer of the class.
+- reference-id: a reference ID for the project. Only valid if class-id is also provided.`,
+		Example: `regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf
+regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf  --class-id C01 --reference-id VCS-001`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			jurisdiction := args[0]
+			metadata := args[1]
+
+			classID, err := cmd.Flags().GetString(FlagClassID)
 			if err != nil {
 				return err
 			}
@@ -137,15 +154,40 @@ regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pL
 				return err
 			}
 
-			msg := types.MsgCreateProject{
-				Admin:        clientCtx.GetFromAddress().String(),
-				ClassId:      args[0],
-				Jurisdiction: args[1],
-				Metadata:     args[2],
-				ReferenceId:  referenceID,
+			// parse and normalize project fee
+			feeString, err := cmd.Flags().GetString(FlagProjectFee)
+			if err != nil {
+				return err
+			}
+			var fee sdk.Coin
+			if feeString != "" {
+				var err error
+				fee, err = sdk.ParseCoinNormalized(feeString)
+				if err != nil {
+					return fmt.Errorf("failed to parse class-fee: %w", err)
+				}
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			var msg sdk.Msg
+			if classID != "" {
+				msg = &types.MsgCreateProject{
+					Admin:        clientCtx.GetFromAddress().String(),
+					ClassId:      classID,
+					Jurisdiction: jurisdiction,
+					Metadata:     metadata,
+					ReferenceId:  referenceID,
+					Fee:          &fee,
+				}
+			} else {
+				msg = &types.MsgCreateUnregisteredProject{
+					Admin:        clientCtx.GetFromAddress().String(),
+					Jurisdiction: jurisdiction,
+					Metadata:     metadata,
+					Fee:          &fee,
+				}
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 
 		},
 	}
@@ -159,7 +201,7 @@ regen tx ecocredit create-project C01 "US-WA 98225" regen:13toVgf5UjYBz6J29x28pL
 // represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   `gen-batch-json [issuer] [project-id] [issuance-count] [metadata] [start-date] [end-date]`,
+		Use:   `gen-batch-json [issuer] [project-id] [class-id] [issuance-count] [metadata] [start-date] [end-date]`,
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
@@ -167,6 +209,7 @@ Parameters:
 
 - issuer:          the account address of the credit batch issuer
 - project-id:      the ID of the project
+- class-id:		   the ID of the credit class to which the batch belongs and in which the project is enrolled
 - issuance-count:  the number of issuance items to generate
 - metadata:        any arbitrary metadata to attach to the credit batch
 - start-date:      the beginning of the period during which this credit batch was
@@ -174,9 +217,9 @@ Parameters:
 - end-date:        the end of the period during which this credit batch was
                    quantified and verified (format: yyyy-mm-dd)`,
 		Example: "regen tx ecocredit gen-batch-json regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw C01-001 2 regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf 2020-01-01 2021-01-01",
-		Args:    cobra.ExactArgs(6),
+		Args:    cobra.ExactArgs(7),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			issuanceCount, err := strconv.ParseUint(args[2], 10, 8)
+			issuanceCount, err := strconv.ParseUint(args[3], 10, 8)
 			if err != nil {
 				return err
 			}
@@ -186,12 +229,12 @@ Parameters:
 				issuance[i] = &types.BatchIssuance{}
 			}
 
-			startDate, err := regentypes.ParseDate("start date", args[4])
+			startDate, err := regentypes.ParseDate("start date", args[5])
 			if err != nil {
 				return err
 			}
 
-			endDate, err := regentypes.ParseDate("end date", args[5])
+			endDate, err := regentypes.ParseDate("end date", args[6])
 			if err != nil {
 				return err
 			}
@@ -199,8 +242,9 @@ Parameters:
 			msg := &types.MsgCreateBatch{
 				Issuer:    args[0],
 				ProjectId: args[1],
+				ClassId:   args[2],
 				Issuance:  issuance,
-				Metadata:  args[3],
+				Metadata:  args[4],
 				StartDate: &startDate,
 				EndDate:   &endDate,
 			}
@@ -790,6 +834,134 @@ Example JSON:
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+func TxCreateOrUpdateApplicationCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-or-update-application [project-id] [class-id] [flags]",
+		Short: "Create or update an application",
+		Long: `Create or update an application.
+
+Parameters:
+- project-id: the ID of the project creating or updating the application
+- class-id: the ID of the credit class to which the application is being made
+
+
+Flags:
+
+- metadata: optional metadata to attach to the application
+`,
+		Example: `regen tx ecocredit create-or-update-application P001 C01 --metadata regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf`,
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runCreateOrUpdateApplication(cmd, args, false)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+func TxWithdrawApplicationCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "withdraw-application [project-id] [class-id] [flags]",
+		Short: "Withdraw an application",
+		Long: `Withdraw an application.
+
+Parameters:
+- project-id: the ID of the project withdrawing the application
+- class-id: the ID of the credit class from which the application is being withdrawn
+
+Flags:
+
+- metadata: optional metadata to attach to the withdrawal
+`,
+		Example: `regen tx ecocredit withdraw-application P001 C01`,
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runCreateOrUpdateApplication(cmd, args, true)
+		},
+	}
+
+	return txFlags(cmd)
+}
+
+func runCreateOrUpdateApplication(cmd *cobra.Command, args []string, withdraw bool) error {
+	clientCtx, err := sdkclient.GetClientTxContext(cmd)
+	if err != nil {
+		return err
+	}
+
+	metadata, err := cmd.Flags().GetString(FlagMetadata)
+	if err != nil {
+		return err
+	}
+
+	msg := &types.MsgCreateOrUpdateApplication{
+		ProjectAdmin: clientCtx.GetFromAddress().String(),
+		ProjectId:    args[0],
+		ClassId:      args[1],
+		Metadata:     metadata,
+		Withdraw:     withdraw,
+	}
+
+	return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+}
+
+func TxUpdateProjectEnrollment() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-project-enrollment [project-id] [class-id] [status] [flags]",
+		Short: "Update project enrollment",
+		Long: `Update project enrollment.
+
+Parameters:
+- project-id: the ID of the project to update
+- class-id: the ID of the credit class to update
+- status: the new status of the project enrollment, must be one of ACCEPTED, CHANGES_REQUESTED, REJECTED or TERMINATED
+
+Flags:
+- metadata: optional metadata to attach to the enrollment update
+`,
+		Example: `regen tx ecocredit update-project-enrollment P001 C01 ACCEPTED --metadata regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf`,
+		Args:    cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			metadata, err := cmd.Flags().GetString(FlagMetadata)
+			if err != nil {
+				return err
+			}
+
+			statusArg := args[2]
+			var status types.ProjectEnrollmentStatus
+			switch statusArg {
+			case "ACCEPTED":
+				status = types.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED
+			case "CHANGES_REQUESTED":
+				status = types.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED
+			case "REJECTED":
+				status = types.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_REJECTED
+			case "TERMINATED":
+				status = types.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_TERMINATED
+			default:
+				return fmt.Errorf("invalid status: %s", statusArg)
+			}
+
+			msg := &types.MsgUpdateProjectEnrollment{
+				Issuer:    clientCtx.GetFromAddress().String(),
+				ProjectId: args[0],
+				ClassId:   args[1],
+				NewStatus: status,
+				Metadata:  metadata,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
