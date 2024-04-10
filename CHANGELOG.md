@@ -16,6 +16,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 - [#2107](https://github.com/regen-network/regen-ledger/pull/2107) Add `BurnRegen` method.
+ 
+## [v5.1.4](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.4) - 2024-04-10
+
+### x/data
+
+### Added
+
+[#2190](https://github.com/regen-network/regen-ledger/pull/2190) added `file-iri` query command to generate an IRI from a file.
+
+### Changed
+
+[#2190](https://github.com/regen-network/regen-ledger/pull/2190) the `convert-iri-to-hash` and `convert-hash-to-iri` query commands now work offline and don't need to talk to a node. As a result, their output is no longer wrapped in query responses, so there is a slight breaking change in the command output format.
+
+## [v5.1.3](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.3) - 2024-04-03
+
+### General
+
+#### Fixed
+
+- [#2192](https://github.com/regen-network/regen-ledger/pull/2192) Update ledger-cosmos-go to fix compatility issue with Ledger Cosmos App
 
 ## [v5.1.2](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.2) - 2023-06-28
 

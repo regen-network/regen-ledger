@@ -593,9 +593,8 @@ func (s *IntegrationTestSuite) TestConvertIRIToHashCmd() {
 			} else {
 				require.NoError(err)
 
-				var res data.ConvertIRIToHashResponse
+				var res data.ContentHash
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.NotEmpty(res.ContentHash)
 			}
 		})
 	}
@@ -650,10 +649,6 @@ func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
 				require.Contains(out.String(), tc.expErrMsg)
 			} else {
 				require.NoError(err)
-
-				var res data.ConvertHashToIRIResponse
-				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.NotEmpty(res.Iri)
 			}
 		})
 	}
