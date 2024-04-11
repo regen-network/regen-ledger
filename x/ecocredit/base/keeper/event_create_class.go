@@ -35,6 +35,13 @@ func (er EventReducer) reduceEventCreateClass(ctx context.Context, evt *types.Ev
 		return err
 	}
 
+	// NOTE: in this case the reducer actually mutates the event to set the class ID. This is to keep with
+	// the pattern of the event reducer being the only place where state is mutated. The two alternatives I
+	// see are:
+	// 1. have the handler do the mutation to generate the class ID, or
+	// 2. have a separate event for incrementing the sequence, but this is both superfluous and would also
+	//    require some mutation in that event unless we do some sort of look ahead to get the next
+	//    sequence number and then do the actual writing in the event which might be the cleanest solution.
 	evt.ClassId = base.FormatClassID(creditType.Abbreviation, seq)
 
 	admin, err := sdk.AccAddressFromBech32(evt.Admin)
