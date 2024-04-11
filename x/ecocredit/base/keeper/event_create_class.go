@@ -13,7 +13,7 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
-func (er EcocreditEventReducer) reduceEventCreateClass(ctx context.Context, evt *types.EventCreateClass) error {
+func (er EcocreditEventReducer) ReduceEventCreateClass(ctx context.Context, evt *types.EventCreateClass) error {
 	creditType, err := er.CreditTypeTable().Get(ctx, evt.CreditType)
 	if err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type with abbreviation %s: %s", evt.CreditType, err)

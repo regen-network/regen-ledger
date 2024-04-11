@@ -43,6 +43,7 @@ func NewEventReducer(reducers ...any) EventReducer {
 				continue
 			}
 
+			fmt.Printf("registering reducer for event type %s\n", evtType)
 			reducerMap[evtType] = func(ctx context.Context, evt proto.Message) error {
 				return method.Func.Call([]reflect.Value{reflect.ValueOf(reducer), reflect.ValueOf(ctx), reflect.ValueOf(evt)})[0].Interface().(error)
 			}
@@ -56,6 +57,7 @@ func NewEventReducer(reducers ...any) EventReducer {
 func (er EventReducer) Reduce(ctx context.Context, evt proto.Message) error {
 	reducer, ok := er.reducerMap[reflect.TypeOf(evt)]
 	if !ok {
+		fmt.Printf("no reducer found for event type %T\n", evt)
 		return nil
 	}
 	return reducer(ctx, evt)
