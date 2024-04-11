@@ -10,7 +10,7 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
-func (er EventReducer) reduceEventUpdateClassIssuers(ctx context.Context, evt *types.EventUpdateClassIssuers) error {
+func (er EcocreditEventReducer) reduceEventUpdateClassIssuers(ctx context.Context, evt *types.EventUpdateClassIssuers) error {
 	class, err := er.ClassTable().GetById(ctx, evt.ClassId)
 	if err != nil {
 		return err

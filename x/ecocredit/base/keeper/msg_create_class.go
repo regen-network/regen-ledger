@@ -86,7 +86,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 		Issuers:    req.Issuers,
 	}
 
-	err = k.eventReducer.Emit(goCtx, evt)
+	err = k.eventEmitter.Emit(goCtx, evt)
 	if err != nil {
 		return nil, err
 	}
