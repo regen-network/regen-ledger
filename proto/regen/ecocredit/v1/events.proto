@@ -22,6 +22,10 @@ message EventCreateClass {
 
   // credit_type is the abbreviation of the credit type.
   string credit_type = 4;
+
+  // issuers is the list of addresses of the accounts that have issuer
+  // permissions over the credit class.
+  repeated string issuers = 5;
 }
 
 // EventCreateProject is an event emitted when a project is created.
@@ -163,12 +167,12 @@ message EventUpdateClassIssuers {
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
 
-  // issuer is the address of the account that was added or removed as an issuer.
-  string issuer = 2;
+  // added is the list of addresses of the accounts that were added as issuers.
+  repeated string added = 2;
 
-  // removed is a boolean that is true if the issuer was removed and false if
-  // the issuer was added.
-  bool removed = 3;
+  // removed is the list of addresses of the accounts that were removed as
+  // issuers.
+  repeated string removed = 3;
 }
 
 // EventUpdateClassMetadata is emitted when the credit class metadata is

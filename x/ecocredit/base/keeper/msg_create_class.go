@@ -83,23 +83,12 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 		Admin:      req.Admin,
 		CreditType: req.CreditTypeAbbrev,
 		Metadata:   req.Metadata,
+		Issuers:    req.Issuers,
 	}
 
 	err = k.eventReducer.Emit(goCtx, evt)
 	if err != nil {
 		return nil, err
-	}
-
-	for _, issuer := range req.Issuers {
-		err = k.eventReducer.Emit(goCtx, &types.EventUpdateClassIssuers{
-			ClassId: evt.ClassId,
-			Issuer:  issuer,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCreateClass issuer iteration")
 	}
 
 	return &types.MsgCreateClassResponse{ClassId: evt.ClassId}, nil
