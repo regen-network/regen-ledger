@@ -19,6 +19,7 @@ type Keeper struct {
 	*types.UnimplementedMsgServer
 	*types.UnimplementedQueryServer
 
+	eventReducer  EventReducer
 	stateStore    api.StateStore
 	bankKeeper    ecocredit.BankKeeper
 	moduleAddress sdk.AccAddress
@@ -46,5 +47,6 @@ func NewKeeper(
 		basketStore:   basketStore,
 		authority:     authority,
 		marketStore:   marketStore,
+		eventReducer:  EventReducer{ss},
 	}
 }
