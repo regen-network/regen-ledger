@@ -134,7 +134,7 @@ func RandomFee(r *rand.Rand) sdk.Coin {
 // RandomDeposit returns minimum deposit if account have enough balance
 // else returns deposit amount between (1, balance)
 func RandomDeposit(r *rand.Rand, ctx sdk.Context,
-	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, depositParams govtypes.DepositParams, addr sdk.AccAddress,
+	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, minDeposit sdk.Coins, addr sdk.AccAddress,
 ) (deposit sdk.Coins, skip bool, err error) {
 	account := ak.GetAccount(ctx, addr)
 	spendable := bk.SpendableCoins(ctx, account.GetAddress())
@@ -143,7 +143,6 @@ func RandomDeposit(r *rand.Rand, ctx sdk.Context,
 		return nil, true, nil // skip
 	}
 
-	minDeposit := depositParams.MinDeposit
 	denomIndex := r.Intn(len(minDeposit))
 	denom := minDeposit[denomIndex].Denom
 

@@ -38,8 +38,8 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return op, nil, err
 		}
 
-		params := govk.GetDepositParams(sdkCtx)
-		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		params := govk.GetParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, proposer.Address)
 		switch {
 		case skip:
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, "skip deposit"), nil, nil

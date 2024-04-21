@@ -39,6 +39,5 @@ type BankKeeper interface {
 
 // GovKeeper defines the expected interface needed to query governance params
 type GovKeeper interface {
-	// GetDepositParams queries governance module deposit params
-	GetDepositParams(ctx sdk.Context) govv1.DepositParams
+	GetParams(clientCtx sdk.Context) govv1.Params
 }
