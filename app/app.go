@@ -18,7 +18,6 @@ import (
 	tmos "github.com/cometbft/cometbft/libs/os"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/runtime"
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -27,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
@@ -532,7 +532,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
-
 	// Register the proposal types
 	// Deprecated: Avoid adding new handlers, instead use the new proposal flow
 	// by granting the governance module the right to execute the message.
@@ -546,8 +545,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.AccountKeeper, app.BankKeeper,
 		app.StakingKeeper, app.MsgServiceRouter(), govConfig,
-		govModuleAddr
-	)
+		govModuleAddr)
 	app.GovKeeper.SetLegacyRouter(govRouter)
 
 	/****************
@@ -581,7 +579,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),             //nolint: lll
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),                                           //nolint: lll
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)), //nolint: lll
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),          //nolint: lll
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
@@ -626,7 +624,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		data.ModuleName,
 
 		// ibc modules
-		ibcexported.ModuleName
+		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
@@ -713,37 +711,16 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// add test gRPC service for testing gRPC queries in isolation
 	testdata.RegisterQueryServer(app.GRPCQueryRouter(), testdata.QueryImpl{})
 
-
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	ms := app.ModuleManager.Modules
 	// TODO: remove modules from sim manager we don't need to simulate because they are already
 	// tested in the Cosmos SDK
-	app.sm = module.NewSimulationManager(
-		authtypes.ModuleName: auth.NewAppModule(
-			app.appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts,
-			app.GetSubspace(authtypes.ModuleName),
-		),
-		ms[banktypes.ModuleName],
-		ms[capabilitytypes.ModuleName],
-		ms[govtypes.ModuleName],
-		ms[minttypes.ModuleName],
-		ms[stakingtypes.ModuleName],
-		ms[distrtypes.ModuleName],
-		ms[slashingtypes.ModuleName],
-		ms[paramstypes.ModuleName],
-		ms[evidencetypes.ModuleName],
-		ms[feegrant.ModuleName],
-		ms[authztypes.ModuleName],
-		ms[ibcexported.ModuleName],
-		ms[ibctransfertypes.ModuleName],
-		ms[icatypes.ModuleName],
-		ecocreditMod,
-		dataMod,
-		ms[ibcfeetypes.ModuleName],
-	)
+	overrideModules := map[string]module.AppModuleSimulation{
+		authtypes.ModuleName: auth.NewAppModule(app.appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
+	}
+	app.sm = module.NewSimulationManagerFromAppModules(app.ModuleManager.Modules, overrideModules)
 	app.sm.RegisterStoreDecoders()
 
 	// initialize stores
@@ -793,7 +770,6 @@ func (app *RegenApp) setPostHandler() {
 
 	app.SetPostHandler(postHandler)
 }
-
 
 // Name returns the name of the App
 func (app *RegenApp) Name() string { return app.BaseApp.Name() }
@@ -947,6 +923,10 @@ func (app *RegenApp) setUpgradeHandlers() {
 			u.CreateUpgradeHandler(app.ModuleManager, app.configurator),
 		)
 	}
+}
+
+func (app *RegenApp) RegisterNodeService(clientCtx client.Context) {
+	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server
