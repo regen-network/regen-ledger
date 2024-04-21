@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/stretchr/testify/suite"
 	dbm "github.com/cometbft/cometbft-db"
+	"github.com/stretchr/testify/suite"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -26,6 +26,7 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/math"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
@@ -105,8 +106,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
-	// setup temporary mem db
-	db := dbm.NewMemDB()
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	defer func() {
 		if err := db.Close(); err != nil {
 			panic(err)

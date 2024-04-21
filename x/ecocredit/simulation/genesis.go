@@ -22,6 +22,7 @@ import (
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
@@ -61,7 +62,7 @@ func genClassCreatorAllowlist(r *rand.Rand) bool {
 
 // RandomizedGenState generates a random GenesisState for the ecocredit module.
 func RandomizedGenState(simState *module.SimulationState) {
-	db := dbm.NewMemDB()
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,

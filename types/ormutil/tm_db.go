@@ -22,3 +22,7 @@ func (ta storeAdapter) Iterator(start, end []byte) (kv.Iterator, error) {
 func (ta storeAdapter) ReverseIterator(start, end []byte) (kv.Iterator, error) {
 	return ta.DB.ReverseIterator(start, end)
 }
+
+func (ta storeAdapter) Close() error {
+	return ta.DB.Close()
+}
