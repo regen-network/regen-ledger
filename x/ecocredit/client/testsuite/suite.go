@@ -22,7 +22,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
@@ -325,13 +324,7 @@ func (s *IntegrationTestSuite) commonTxFlags() []string {
 func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sdk.AccAddress, coins sdk.Coins) {
 	require := s.Require()
 
-	out, err := banktestutil.MsgSendExec(
-		clientCtx,
-		from,
-		to,
-		coins,
-		s.commonTxFlags()...,
-	)
+	out, err := cli.MsgSendExec(clientCtx, from, to, coins, s.commonTxFlags()...)
 	require.NoError(err)
 
 	var res sdk.TxResponse
