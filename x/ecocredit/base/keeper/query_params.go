@@ -42,20 +42,9 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 	if err != nil {
 		return nil, regenerrors.ErrInternal.Wrapf("unable to get class fee param: %s", err.Error())
 	}
-
-	classFeeCoin, ok := regentypes.ProtoCoinToCoin(classFee.Fee)
-	if !ok {
-		return nil, regenerrors.ErrInternal.Wrap("failed to convert class fee")
-	}
-
 	basketFee, err := k.basketStore.BasketFeeTable().Get(ctx)
 	if err != nil {
 		return nil, regenerrors.ErrInternal.Wrapf("unable to get basket fee: %s", err.Error())
-	}
-
-	basketFeeCoin, ok := regentypes.ProtoCoinToCoin(basketFee.Fee)
-	if !ok {
-		return nil, regenerrors.ErrInternal.Wrap("failed to convert basket fee")
 	}
 
 	allowedDenomsItr, err := k.marketStore.AllowedDenomTable().List(ctx, marketplacev1.AllowedDenomPrimaryKey{})
@@ -97,8 +86,8 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 		Params: &types.Params{
 			AllowedClassCreators: creators,
 			AllowlistEnabled:     allowlistEnabled.Enabled,
-			CreditClassFee:       sdk.Coins{classFeeCoin},
-			BasketFee:            sdk.Coins{basketFeeCoin},
+			CreditClassFee:       sdk.Coins{regentypes.CoinFromCosmosApiLegacy(classFee.Fee)},
+			BasketFee:            sdk.Coins{regentypes.CoinFromCosmosApiLegacy(basketFee.Fee)},
 			AllowedDenoms:        allowedDenoms,
 			AllowedBridgeChains:  allowedBridgeChains,
 		},

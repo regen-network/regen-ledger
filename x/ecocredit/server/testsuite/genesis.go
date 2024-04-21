@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/protobuf/proto"
 
-	basev1beta1 "cosmossdk.io/api/cosmos/base/v1beta1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
@@ -89,10 +89,7 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	classFeeJSON, err := json.Marshal(baseapi.ClassFee{
-		Fee: &basev1beta1.Coin{
-			Denom:  "stake",
-			Amount: "1000",
-		},
+		Fee: &sdkbase.Coin{Denom: "stake", Amount: "1000"},
 	})
 	require.NoError(err)
 

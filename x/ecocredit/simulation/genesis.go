@@ -9,7 +9,7 @@ import (
 	dbm "github.com/cometbft/cometbft-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -247,7 +247,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 
 	// generate basket params
 	if err := basketStore.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
-		Fee: &basev1beta1.Coin{
+		Fee: &sdkbase.Coin{
 			Denom:  sdk.DefaultBondDenom,
 			Amount: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 100000)),
 		},

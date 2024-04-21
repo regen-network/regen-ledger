@@ -19,14 +19,8 @@ func (k Keeper) ClassFee(ctx context.Context, _ *types.QueryClassFeeRequest) (*t
 
 	var fee sdk.Coin
 	if classFee.Fee != nil {
-		var ok bool
-		fee, ok = regentypes.ProtoCoinToCoin(classFee.Fee)
-		if !ok {
-			return nil, regenerrors.ErrInternal.Wrapf("failed to parse class fee")
-		}
+		fee = regentypes.CoinFromCosmosApiLegacy(classFee.Fee)
 	}
 
-	return &types.QueryClassFeeResponse{
-		Fee: &fee,
-	}, nil
+	return &types.QueryClassFeeResponse{Fee: &fee}, nil
 }

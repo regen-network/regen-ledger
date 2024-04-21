@@ -17,16 +17,9 @@ func (k Keeper) BasketFee(ctx context.Context, _ *types.QueryBasketFeeRequest) (
 	}
 
 	var fee sdk.Coin
-
 	if basketFee.Fee != nil {
-		var ok bool
-		fee, ok = regentypes.ProtoCoinToCoin(basketFee.Fee)
-		if !ok {
-			return nil, regenerrors.ErrInternal.Wrap("failed to parse basket fee")
-		}
+		fee = regentypes.CoinFromCosmosApiLegacy(basketFee.Fee)
 	}
 
-	return &types.QueryBasketFeeResponse{
-		Fee: &fee,
-	}, nil
+	return &types.QueryBasketFeeResponse{Fee: &fee}, nil
 }

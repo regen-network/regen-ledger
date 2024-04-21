@@ -16,15 +16,14 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 	var params basetypes.Params
 	subspace.GetParamSet(sdkCtx, &params)
 
-	// validate credit class fee
 	if err := params.CreditClassFee.Validate(); err != nil {
 		return err
 	}
 
-	// migrate credit class fees
-	classFees := regentypes.CoinsToProtoCoins(params.CreditClassFee)
+	// we assume there is one fee at the time of the upgrade
+	classFees := regentypes.CoinToCosmosApiLegacy(params.CreditClassFee[0])
 	if err := baseStore.ClassFeeTable().Save(sdkCtx, &baseapi.ClassFee{
-		Fee: classFees[0], // we assume there is one fee at the time of the upgrade
+		Fee: classFees,
 	}); err != nil {
 		return err
 	}
@@ -50,15 +49,15 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 		}
 	}
 
-	// verify basket fee is valid
 	if err := params.BasketFee.Validate(); err != nil {
 		return err
 	}
 
 	// migrate basket params
-	basketFees := regentypes.CoinsToProtoCoins(params.BasketFee)
+	// we assume there is one fee at the time of the upgrade
+	basketFees := regentypes.CoinToCosmosApiLegacy(params.BasketFee[0])
 	if err := basketStore.BasketFeeTable().Save(sdkCtx, &basketapi.BasketFee{
-		Fee: basketFees[0], // we assume there is one fee at the time of the upgrade
+		Fee: basketFees,
 	}); err != nil {
 		return err
 	}
@@ -67,7 +66,6 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 	if sdkCtx.ChainID() == "regen-1" {
 		balances = getMainnetState()
 	}
-
 	if sdkCtx.ChainID() == "regen-redwood-1" {
 		balances = getRedwoodState()
 	}

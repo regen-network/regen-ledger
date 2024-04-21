@@ -30,6 +30,11 @@ func CoinToCosmosApiLegacy(coin sdk.Coin) *apilegacy.Coin {
 	return &c
 }
 
+func CoinFromCosmosApiLegacy(coin *apilegacy.Coin) sdk.Coin {
+	amount, _ := sdk.NewIntFromString(coin.Amount)
+	return sdk.Coin{Denom: coin.Denom, Amount: amount}
+}
+
 // CoinsToProtoCoins constructs a new protobuf coin set from gogoproto coin set.
 // This function does not validate the coin.
 func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {
