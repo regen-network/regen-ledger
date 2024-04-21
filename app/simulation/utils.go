@@ -49,7 +49,7 @@ func simulateFromSeed(t *testing.T, app *regen.RegenApp, config simtypes.Config)
 		app.BaseApp,
 		simtestutil.AppStateFn(cdc, app.SimulationManager(), genesis),
 		simtypes.RandomAccounts,
-		regen.SimulationOperations(app, cdc, config),
+		simtestutil.SimulationOperations(app, cdc, config),
 		app.ModuleAccountAddrs(),
 		config,
 		app.AppCodec(),
