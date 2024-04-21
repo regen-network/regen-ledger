@@ -3,7 +3,6 @@ package module
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -160,11 +159,6 @@ func (Module) GenerateGenesisState(simState *module.SimulationState) {
 // ProposalContents returns all the data content functions used to
 // simulate proposals.
 func (Module) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-// RandomizedParams creates randomized data param changes for the simulator.
-func (Module) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
 	return nil
 }
 
