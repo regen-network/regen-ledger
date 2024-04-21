@@ -5,11 +5,11 @@ go 1.21
 require (
 	cosmossdk.io/errors v1.0.1
 	github.com/cometbft/cometbft v0.37.4
-	github.com/cometbft/cometbft-db v0.9.1
+	github.com/cometbft/cometbft-db v0.11.0
 	github.com/cosmos/cosmos-sdk v0.47.10
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/ibc-go/v7 v7.3.1
+	github.com/cosmos/ibc-go/v7 v7.4.0
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -24,7 +24,12 @@ require (
 	gotest.tools/v3 v3.5.1
 )
 
-require github.com/gogo/protobuf v1.3.3 // indirect
+require (
+	github.com/DataDog/zstd v1.5.0 // indirect
+	github.com/cockroachdb/pebble v1.1.0 // indirect
+	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
+	github.com/gogo/protobuf v1.3.3 // indirect
+)
 
 require (
 	cosmossdk.io/api v0.3.1 // indirect
@@ -43,7 +48,7 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cockroachdb/apd/v3 v3.2.1 // indirect
-	github.com/cockroachdb/errors v1.10.0 // indirect
+	github.com/cockroachdb/errors v1.11.1 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
 	github.com/coinbase/rosetta-sdk-go/types v1.0.0 // indirect
@@ -96,7 +101,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
-	github.com/linxGnu/grocksdb v1.8.6 // indirect
+	github.com/linxGnu/grocksdb v1.8.12 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
