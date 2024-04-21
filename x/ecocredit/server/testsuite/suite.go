@@ -107,11 +107,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
-	defer func() {
-		if err := db.Close(); err != nil {
-			panic(err)
-		}
-	}()
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,

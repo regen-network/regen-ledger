@@ -2,11 +2,13 @@ package types
 
 import (
 	basev1beta1 "cosmossdk.io/api/cosmos/base/v1beta1"
+	apilegacy "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // CoinToProtoCoin constructs a new protobuf coin from gogoproto coin.
 // This function does not validate the coin.
+// TODO: remove
 func CoinToProtoCoin(coin sdk.Coin) *basev1beta1.Coin {
 	if coin.Amount.IsNil() {
 		return &basev1beta1.Coin{
@@ -18,6 +20,14 @@ func CoinToProtoCoin(coin sdk.Coin) *basev1beta1.Coin {
 		Denom:  coin.Denom,
 		Amount: coin.Amount.String(),
 	}
+}
+
+func CoinToCosmosApiLegacy(coin sdk.Coin) *apilegacy.Coin {
+	c := apilegacy.Coin{Denom: coin.Denom, Amount: ""}
+	if !coin.Amount.IsNil() {
+		c.Amount = coin.Amount.String()
+	}
+	return &c
 }
 
 // CoinsToProtoCoins constructs a new protobuf coin set from gogoproto coin set.
