@@ -21,12 +21,6 @@ require (
 )
 
 require (
-	github.com/cosmos/rosetta-sdk-go v0.10.0 // indirect
-	github.com/regen-network/regen-ledger/types/v2 v2.0.0 // indirect
-	github.com/tendermint/tm-db v0.6.7 // indirect
-)
-
-require (
 	cloud.google.com/go v0.111.0 // indirect
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
