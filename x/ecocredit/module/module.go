@@ -3,7 +3,6 @@ package module
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -90,16 +89,6 @@ func (Module) ConsensusVersion() uint64 { return ConsensusVersion }
 
 // Name implements AppModule/Name.
 func (m Module) Name() string {
-	return ecocredit.ModuleName
-}
-
-// Route implements AppModule/Route.
-func (m Module) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-// QuerierRoute implements AppModule/QuerierRoute.
-func (m Module) QuerierRoute() string {
 	return ecocredit.ModuleName
 }
 
@@ -267,24 +256,11 @@ func (m Module) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	}
 }
 
-// LegacyQuerierHandler implements AppModule/LegacyQuerierHandler.
-func (m Module) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
-
 /* -------------------- AppModuleSimulation -------------------- */
 
 // GenerateGenesisState creates a randomized GenesisState of the ecocredit module.
 func (Module) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
-}
-
-// ProposalContents implements AppModuleSimulation/ProposalContents.
-func (Module) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-// RandomizedParams implements AppModuleSimulation/RandomizedParams.
-func (Module) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-	return nil
 }
 
 // RegisterStoreDecoder implements AppModuleSimulation/RegisterStoreDecoder.

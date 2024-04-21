@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -141,9 +140,6 @@ func (a Module) GetTxCmd() *cobra.Command {
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (Module) ConsensusVersion() uint64 { return 1 }
 
-/**** DEPRECATED ****/
-func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
-
 // RegisterLegacyAminoCodec registers the data module's types on the given LegacyAmino codec.
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	data.RegisterLegacyAminoCodec(cdc)
@@ -154,12 +150,6 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 // GenerateGenesisState creates a randomized GenesisState of the data module.
 func (Module) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
-}
-
-// ProposalContents returns all the data content functions used to
-// simulate proposals.
-func (Module) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for data module's types
