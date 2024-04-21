@@ -4,21 +4,26 @@ go 1.21
 
 require (
 	cosmossdk.io/api v0.3.1
-	cosmossdk.io/math v1.2.0
+	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.9.1
 	github.com/cosmos/cosmos-sdk v0.47.10
 	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/gorilla/mux v1.8.1
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types/v2 v2.0.0
 	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
 	github.com/regen-network/regen-ledger/x/intertx v1.0.0
-	github.com/rs/zerolog v1.31.0
+	github.com/rs/zerolog v1.32.0
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
+)
+
+require (
+	github.com/cosmos/rosetta-sdk-go v0.10.0 // indirect
+	github.com/regen-network/regen-ledger/types/v2 v2.0.0 // indirect
+	github.com/tendermint/tm-db v0.6.7 // indirect
 )
 
 require (
@@ -30,7 +35,7 @@ require (
 	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
-	cosmossdk.io/log v1.3.0 // indirect
+	cosmossdk.io/log v1.3.1 // indirect
 	cosmossdk.io/tools/rosetta v0.2.1 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
@@ -53,7 +58,7 @@ require (
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect; NOTE: v1.0.0-beta.2+ is not compatible with sdk v0.47
+	github.com/cosmos/cosmos-proto v1.0.0-beta.4 // indirect; NOTE: v1.0.0-beta.2+ is not compatible with sdk v0.47
 	github.com/cosmos/cosmos-sdk/api v0.1.0 // indirect
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12 // indirect
@@ -185,7 +190,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 	pgregory.net/rapid v1.1.0 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
 replace (
