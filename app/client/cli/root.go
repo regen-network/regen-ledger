@@ -1,18 +1,19 @@
 package cli
 
 import (
-	"context"
 	"errors"
 	"io"
 	"os"
 
-	"github.com/rs/zerolog"
+	dbm "github.com/cometbft/cometbft-db"
+	tmcfg "github.com/cometbft/cometbft/config"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
-	dbm "github.com/cometbft/cometbft-db"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -24,6 +25,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
@@ -32,18 +34,21 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	tmcfg "github.com/cometbft/cometbft/config"
-	tmcli "github.com/cometbft/cometbft/libs/cli"
-	"github.com/cometbft/cometbft/libs/log"
-
 	"github.com/regen-network/regen-ledger/v5/app"
 )
 
 // NewRootCmd creates a new root command for regen. It is called once in the
 // main function.
 func NewRootCmd() *cobra.Command {
-	// TODO: port from the cosmos-sdk
-	encodingConfig := app.MakeEncodingConfig()
+	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
+	tempApp := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, nil, 1, simtestutil.NewAppOptionsWithFlagHome(app.DefaultNodeHome))
+	encodingConfig := testutil.TestEncodingConfig{
+		InterfaceRegistry: tempApp.InterfaceRegistry(),
+		Codec:             tempApp.AppCodec(),
+		TxConfig:          tempApp.TxConfig(),
+		Amino:             tempApp.LegacyAmino(),
+	}
+
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -53,9 +58,6 @@ func NewRootCmd() *cobra.Command {
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(app.DefaultNodeHome).
 		WithViper(app.EnvPrefix)
-
-	regenHome := cast.ToString(initClientCtx.Viper.Get(tmcli.HomeFlag))
-	initClientCtx = initClientCtx.WithHomeDir(regenHome)
 
 	rootCmd := &cobra.Command{
 		Use:   "regen",
@@ -133,26 +135,6 @@ func initAppConfig() (string, interface{}) {
 	}
 
 	return "", customAppConfig
-}
-
-// Execute executes the root command.
-func Execute(rootCmd *cobra.Command) error {
-	// Create and set a client.Context on the command's Context. During the pre-run
-	// of the root command, a default initialized client.Context is provided to
-	// seed child command execution with values such as AccountRetriver, Keyring,
-	// and a Tendermint RPC. This requires the use of a pointer reference when
-	// getting and setting the client.Context. Ideally, we utilize
-	// https://github.com/spf13/cobra/pull/1118.
-
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, client.ClientContextKey, &client.Context{})
-	ctx = context.WithValue(ctx, server.ServerContextKey, server.NewDefaultContext())
-
-	rootCmd.PersistentFlags().String(flags.FlagLogLevel, zerolog.InfoLevel.String(), "The logging level (trace|debug|info|warn|error|fatal|panic)")
-	rootCmd.PersistentFlags().String(flags.FlagLogFormat, tmcfg.LogFormatPlain, "The logging format (json|plain)")
-
-	executor := tmcli.PrepareBaseCmd(rootCmd, app.EnvPrefix, app.DefaultNodeHome)
-	return executor.ExecuteContext(ctx)
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig testutil.TestEncodingConfig) {
@@ -257,7 +239,6 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 
 	return app.NewRegenApp(
 		logger, db, traceStore, true, skipUpgradeHeights,
-		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		appOpts,
 		baseappOptions...,
@@ -294,13 +275,13 @@ func appExport(
 	appOpts = viperAppOpts
 
 	if height != -1 {
-		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, homePath, 1, appOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, 1, appOpts)
 
 		if err := regenApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, homePath, 1, appOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, 1, appOpts)
 	}
 
 	return regenApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
