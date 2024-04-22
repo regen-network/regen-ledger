@@ -25,15 +25,14 @@ func NewTestNetworkFixture() network.TestFixture {
 	}
 	defer os.RemoveAll(dir)
 
-	a := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, map[int64]bool{}, 0,
+	a := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, 0,
 		simtestutil.NewAppOptionsWithFlagHome(dir))
 
 	appCtr := func(val network.ValidatorI) servertypes.Application {
 		cfg := val.GetAppConfig()
-		skipUpgrades := map[int64]bool{}
 
 		return app.NewRegenApp(
-			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, skipUpgrades, 0,
+			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, 0,
 			simtestutil.NewAppOptionsWithFlagHome(val.GetCtx().Config.RootDir),
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(cfg.Pruning)),
 			baseapp.SetMinGasPrices(cfg.MinGasPrices),

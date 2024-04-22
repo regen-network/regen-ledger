@@ -49,20 +49,18 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 
 // SetupOptions defines arguments that are passed into `Simapp` constructor.
 type SetupOptions struct {
-	Logger             log.Logger
-	DB                 *dbm.MemDB
-	InvCheckPeriod     uint
-	SkipUpgradeHeights map[int64]bool
-	AppOpts            types.AppOptions
+	Logger         log.Logger
+	DB             *dbm.MemDB
+	InvCheckPeriod uint
+	AppOpts        types.AppOptions
 }
 
 func DefaultOptions() SetupOptions {
 	return SetupOptions{
-		Logger:             log.NewNopLogger(),
-		DB:                 dbm.NewMemDB(),
-		InvCheckPeriod:     5,
-		SkipUpgradeHeights: map[int64]bool{},
-		AppOpts:            EmptyAppOptions{},
+		Logger:         log.NewNopLogger(),
+		DB:             dbm.NewMemDB(),
+		InvCheckPeriod: 5,
+		AppOpts:        EmptyAppOptions{},
 	}
 }
 
@@ -85,7 +83,7 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
 
-	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.SkipUpgradeHeights, options.InvCheckPeriod, options.AppOpts)
+	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.InvCheckPeriod, options.AppOpts)
 	genesisState := app.NewDefaultGenesisState(regenApp.AppCodec())
 	genesisState = genesisStateWithValSet(t, regenApp, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
 

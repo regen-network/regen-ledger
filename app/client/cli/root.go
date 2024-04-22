@@ -41,7 +41,7 @@ import (
 // main function.
 func NewRootCmd() *cobra.Command {
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
-	tempApp := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, nil, 1, simtestutil.NewAppOptionsWithFlagHome(app.DefaultNodeHome))
+	tempApp := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, 1, simtestutil.NewAppOptionsWithFlagHome(app.DefaultNodeHome))
 	encodingConfig := testutil.TestEncodingConfig{
 		InterfaceRegistry: tempApp.InterfaceRegistry(),
 		Codec:             tempApp.AppCodec(),
@@ -231,14 +231,10 @@ func txCommand() *cobra.Command {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
-	skipUpgradeHeights := make(map[int64]bool)
-	for _, h := range cast.ToIntSlice(appOpts.Get(server.FlagUnsafeSkipUpgrades)) {
-		skipUpgradeHeights[int64(h)] = true
-	}
 	baseappOptions := server.DefaultBaseappOptions(appOpts)
 
 	return app.NewRegenApp(
-		logger, db, traceStore, true, skipUpgradeHeights,
+		logger, db, traceStore, true,
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		appOpts,
 		baseappOptions...,
@@ -275,13 +271,13 @@ func appExport(
 	appOpts = viperAppOpts
 
 	if height != -1 {
-		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, 1, appOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, false, 1, appOpts)
 
 		if err := regenApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, 1, appOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, true, 1, appOpts)
 	}
 
 	return regenApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
