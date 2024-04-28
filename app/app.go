@@ -702,9 +702,12 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.ModuleManager.RegisterServices(app.configurator)
 
-	// TODO
+	// TODO: we can remove legacy upgrades
 	app.setUpgradeStoreLoaders()
 	app.setUpgradeHandlers()
+
+	// new way to handle upgrades
+	app.registerUpgrades()
 
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(),
 		runtimeservices.NewAutoCLIQueryService(app.ModuleManager.Modules))
