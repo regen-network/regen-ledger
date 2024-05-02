@@ -3,10 +3,6 @@ package ecocreditv1
 
 import (
 	fmt "fmt"
-	io "io"
-	reflect "reflect"
-	sync "sync"
-
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"
 	v1beta11 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
@@ -15,6 +11,9 @@ import (
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	io "io"
+	reflect "reflect"
+	sync "sync"
 )
 
 var (
@@ -33459,7 +33458,7 @@ type EnrollmentInfo struct {
 	// admin related to its application to the credit class.
 	ApplicationMetadata string `protobuf:"bytes,5,opt,name=application_metadata,json=applicationMetadata,proto3" json:"application_metadata,omitempty"`
 	// enrollment_metadata is any arbitrary metadata set by the credit class
-	// admin evaluating the project's application to the credit class.
+	// issuer evaluating the project's application to the credit class.
 	EnrollmentMetadata string `protobuf:"bytes,6,opt,name=enrollment_metadata,json=enrollmentMetadata,proto3" json:"enrollment_metadata,omitempty"`
 }
 

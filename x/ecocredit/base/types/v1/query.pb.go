@@ -3280,7 +3280,7 @@ type EnrollmentInfo struct {
 	// admin related to its application to the credit class.
 	ApplicationMetadata string `protobuf:"bytes,5,opt,name=application_metadata,json=applicationMetadata,proto3" json:"application_metadata,omitempty"`
 	// enrollment_metadata is any arbitrary metadata set by the credit class
-	// admin evaluating the project's application to the credit class.
+	// issuer evaluating the project's application to the credit class.
 	EnrollmentMetadata string `protobuf:"bytes,6,opt,name=enrollment_metadata,json=enrollmentMetadata,proto3" json:"enrollment_metadata,omitempty"`
 }
 
