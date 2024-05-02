@@ -909,6 +909,6 @@ message EnrollmentInfo {
   string application_metadata = 5;
 
   // enrollment_metadata is any arbitrary metadata set by the credit class
-  // admin evaluating the project's application to the credit class.
+  // issuer evaluating the project's application to the credit class.
   string enrollment_metadata = 6;
 }
