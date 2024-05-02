@@ -139,7 +139,7 @@ Feature: MsgAddCreditType
     """
 
 
-  Scenario: an error is returned for the reversed abbreviation P
+  Scenario: an error is returned for the reserved abbreviation P
     Given the message
     """
     {
