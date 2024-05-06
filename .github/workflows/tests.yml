@@ -61,35 +61,35 @@ jobs:
         if: |
           (env.GIT_DIFF && matrix.module == 'x/intertx') ||
           github.ref == 'refs/heads/main'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage-app
           path: coverage-app.out
         if: |
           (env.GIT_DIFF && matrix.module == 'app') ||
           github.ref == 'refs/heads/main'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage-types
           path: coverage-types.out
         if: |
           (env.GIT_DIFF && matrix.module == 'types') ||
           github.ref == 'refs/heads/main'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage-x-data
           path: coverage-x-data.out
         if: |
           (env.GIT_DIFF && matrix.module == 'x/data') ||
           github.ref == 'refs/heads/main'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage-x-ecocredit
           path: coverage-x-ecocredit.out
         if: |
           (env.GIT_DIFF && matrix.module == 'x/ecocredit') ||
           github.ref == 'refs/heads/main'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage-x-intertx
           path: coverage-x-intertx.out
@@ -115,7 +115,7 @@ jobs:
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
       - run: make test-integration
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: coverage-integration
           path: coverage-integration.out
