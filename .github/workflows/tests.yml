@@ -160,7 +160,7 @@ jobs:
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
       - run: make test-coverage
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           file: coverage.txt
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
