@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package regen.ecocredit.curation.v1beta1;
+
+import "cosmos/orm/v1/orm.proto";
+import "regen/ecocredit/curation/v1beta1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/curation/types/v1beta1;curationv1beta1";
+
+// TagDefinition defines a tag.
+message TagDefinition {
+  option (cosmos.orm.v1.table) = {
+    id: 1,
+    primary_key: {fields: "id", auto_increment: true}
+  };
+
+  // id is the unique internal identifier of the tag.
+  uint64 id = 1;
+
+  // curator_address is the address of the curator that can set this tag.
+  bytes curator_address = 2;
+
+  // metadata is the metadata of the tag.
+  TagMeta metadata = 3;
+
+  // type is the type of the tag.
+  TagType type = 4;
+}
+
+// NOTE: boolean and numeric tags are defined in separate tables so that we don't end up with
+// lots of null index entries for boolean tags. If we stored them in the same table, we would
+// waste a lot of space in the by value index for boolean tags.
+
+// AddressTagEntry defines a boolean tag for an address.
+message AddressTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 2,
+    primary_key: {fields: "address,tag_id"}
+    index: {id: 1, fields: "tag_id,address"}
+  };
+
+  // address is the address of the account that has the tag.
+  bytes address = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+}
+
+// AddressNumericTagEntry defines a numeric tag for an address.
+message AddressNumericTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 3,
+    primary_key: {fields: "address,tag_id"}
+    index: {id: 1, fields: "tag_id,address"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  // address is the address of the account that has the tag.
+  bytes address = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+
+  // value is the value of the numeric tag.
+  uint64 value = 3;
+}
+
+// ClassTagEntry defines a boolean tag for a class.
+message ClassTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 3,
+    primary_key: {fields: "class_id,tag_id"}
+    index: {id: 1, fields: "tag_id,class_id"}
+  };
+
+  // class_id is the id of the class that has the tag.
+  uint64 class_id = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+}
+
+// ClassNumericTagEntry defines a numeric tag for a class.
+message ClassNumericTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 4,
+    primary_key: {fields: "class_id,tag_id"}
+    index: {id: 1, fields: "tag_id,class_id"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  // class_id is the id of the class that has the tag.
+  uint64 class_id = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+
+  // value is the value of the numeric tag.
+  uint64 value = 3;
+}
+
+// ProjectTagEntry defines a boolean tag for a project.
+message ProjectTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 4,
+    primary_key: {fields: "project_id,tag_id"}
+    index: {id: 1, fields: "tag_id,project_id"}
+  };
+
+  // project_id is the id of the project that has the tag.
+  uint64 project_id = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+}
+
+// ProjectNumericTagEntry defines a numeric tag for a project.
+message ProjectNumericTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 5,
+    primary_key: {fields: "project_id,tag_id"}
+    index: {id: 1, fields: "tag_id,project_id"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  // project_id is the id of the project that has the tag.
+  uint64 project_id = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+
+  // value is the value of the numeric tag.
+  uint64 value = 3;
+}
+
+// BatchTagEntry defines a boolean tag for a batch.
+message BatchTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 5,
+    primary_key: {fields: "batch_id,tag_id"}
+    index: {id: 1, fields: "tag_id,batch_id"}
+  };
+
+  // batch_id is the id of the batch that has the tag.
+  uint64 batch_id = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+}
+
+// BatchNumericTagEntry defines a numeric tag for a batch.
+message BatchNumericTagEntry {
+  option (cosmos.orm.v1.table) = {
+    id: 6,
+    primary_key: {fields: "batch_id,tag_id"}
+    index: {id: 1, fields: "tag_id,batch_id"}
+    index: {id: 2, fields: "tag_id,value"}
+  };
+
+  // batch_id is the id of the batch that has the tag.
+  uint64 batch_id = 1;
+
+  // tag_id is the id of the tag.
+  uint64 tag_id = 2;
+
+  // value is the value of the numeric tag.
+  uint64 value = 3;
+}
