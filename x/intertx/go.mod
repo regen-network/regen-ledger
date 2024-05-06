@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger/x/intertx
 go 1.21
 
 require (
-	cosmossdk.io/errors v1.0.0
+	cosmossdk.io/errors v1.0.1
 	github.com/cosmos/cosmos-sdk v0.46.12
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12
 	github.com/cosmos/ibc-go/v5 v5.3.2
