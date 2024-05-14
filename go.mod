@@ -210,4 +210,6 @@ replace (
 	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
 	github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
+	// stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
