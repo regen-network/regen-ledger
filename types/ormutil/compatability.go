@@ -5,7 +5,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
-	queryapi "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"
+	queryapi "cosmossdk.io/api/cosmos/base/query/v1beta1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/types/query"
 )

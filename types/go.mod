@@ -10,7 +10,6 @@ require (
 	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.11.0
 	github.com/cosmos/cosmos-sdk v0.47.10
-	github.com/cosmos/cosmos-sdk/api v0.1.0
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12.0.20240514101554-56648741cbd6
 	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -28,6 +27,7 @@ require (
 	github.com/DataDog/zstd v1.5.0 // indirect
 	github.com/cockroachdb/pebble v1.1.0 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
+	github.com/cosmos/cosmos-sdk/api v0.1.0 // indirect
 	github.com/gogo/protobuf v1.3.3 // indirect
 )
 
@@ -53,10 +53,8 @@ require (
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5 // indirect
-	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.20.1 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.4 // indirect
 	github.com/cucumber/common/messages/go/v19 v19.1.2 // indirect
@@ -127,7 +125,6 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
-	github.com/tendermint/tm-db v0.6.7 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
 	github.com/zondax/hid v0.9.2 // indirect
 	github.com/zondax/ledger-go v0.14.3 // indirect
@@ -152,6 +149,8 @@ replace (
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+	// stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
 
 replace github.com/regen-network/regen-ledger/api/v2 => ../api
