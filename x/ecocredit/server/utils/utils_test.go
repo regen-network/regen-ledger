@@ -115,7 +115,7 @@ func TestUtils_GetCreditTypeFromBatchDenom(t *testing.T) {
 		ClassKey: clsKey,
 	}
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch))
-	ct, err := GetCreditTypeFromBatchDenom(s.ctx, s.stateStore, batch)
+	ct, err := GetCreditTypeFromBatch(s.ctx, s.stateStore, batch)
 	assert.NilError(t, err)
 	assert.DeepEqual(t, ct, creditType, cmpopts.IgnoreUnexported(api.CreditType{}))
 }

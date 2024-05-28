@@ -26,7 +26,7 @@ func (k Keeper) Cancel(ctx context.Context, req *types.MsgCancel) (*types.MsgCan
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", credit.BatchDenom, err.Error())
 		}
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch)
+		creditType, err := utils.GetCreditTypeFromBatch(ctx, k.stateStore, batch)
 		if err != nil {
 			return nil, err
 		}

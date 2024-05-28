@@ -10,8 +10,10 @@ import (
 	"github.com/regen-network/regen-ledger/types/v2/math"
 )
 
-// GetCreditTypeFromBatchDenom extracts the classID from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, batch *api.Batch) (*api.CreditType, error) {
+// GetCreditTypeFromBatch extracts the credit type from a batch by querying the class table for the class key, and then
+// querying the credit type table for the credit type abbreviation. This is a convenience function for use in message
+// handlers, where the credit type is needed to perform further operations on the batch.
+func GetCreditTypeFromBatch(ctx context.Context, store api.StateStore, batch *api.Batch) (*api.CreditType, error) {
 	cls, err := store.ClassTable().Get(ctx, batch.ClassKey)
 	if err != nil {
 		return nil, err

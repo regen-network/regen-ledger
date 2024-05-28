@@ -55,7 +55,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		if err != nil {
 			return nil, err
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.baseStore, batch)
+		ct, err := utils.GetCreditTypeFromBatch(ctx, k.baseStore, batch)
 		if err != nil {
 			return nil, err
 		}
