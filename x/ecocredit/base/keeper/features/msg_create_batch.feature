@@ -13,20 +13,27 @@ Feature: Msg/CreateBatch
   - the batch contract mapping is added
   - the response includes the batch denom
 
-  Rule: The project must exist
+  Rule: The project must exist and have an accepted enrollment to the credit class
 
     Background:
       Given a credit type with abbreviation "C"
       And a credit class with class id "C01" and issuer alice
-      And a project with project id "P001" enrolled in "C01"
 
-    Scenario: the project exists
+    Scenario: the project exists and has an accepted enrollment
+      Given a project with project id "P001"
+      And project "P001" has an "ACCEPTED" enrollment to class "C01"
       When alice attempts to create a batch with project id "P001" and class id "C01"
       Then expect no error
 
     Scenario: the project does not exist
-      When alice attempts to create a batch with project id "P002" and class id "C02"
-      Then expect error contains "could not get project with id P002: not found: invalid request"
+      When alice attempts to create a batch with project id "P001" and class id "C01"
+      Then expect error contains "could not get project with id P001: not found: invalid request"
+
+    Scenario: the project exists but has an unaccepted enrollment
+      Given a project with project id "P001"
+      And project "P001" has an "UNSPECIFIED" enrollment to class "C01"
+      When alice attempts to create a batch with project id "P001" and class id "C01"
+      Then expect error contains "project enrollment status is not accepted: invalid request"
 
   Rule: The issuer must be an allowed credit class issuer
 

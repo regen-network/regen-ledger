@@ -3,6 +3,7 @@ package keeper
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -134,6 +136,34 @@ func (s *createBatchSuite) AProjectWithProjectIdEnrolledIn(a, b string) {
 		ProjectKey: pKey,
 		ClassKey:   cls.Key,
 		Status:     api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) AProjectWithProjectId(id string) {
+	pKey, err := s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id: id,
+	})
+	require.NoError(s.t, err)
+
+	s.projectKey = pKey
+}
+
+func (s *createBatchSuite) ProjectHasAnEnrollmentToClass(projId, statusStr, clsId string) {
+	cls, err := s.k.stateStore.ClassTable().GetById(s.ctx, clsId)
+	require.NoError(s.t, err)
+
+	proj, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projId)
+	require.NoError(s.t, err)
+
+	var status api.ProjectEnrollmentStatus
+	statusDesc := status.Descriptor().Values().ByName(protoreflect.Name(fmt.Sprintf("PROJECT_ENROLLMENT_STATUS_%s", statusStr)))
+	status = api.ProjectEnrollmentStatus(statusDesc.Number())
+
+	err = s.k.stateStore.ProjectEnrollmentTable().Insert(s.ctx, &api.ProjectEnrollment{
+		ProjectKey: proj.Key,
+		ClassKey:   cls.Key,
+		Status:     status,
 	})
 	require.NoError(s.t, err)
 }
