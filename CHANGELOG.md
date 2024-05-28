@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `FormatBatchDenom` requires a class ID because the class is no longer implied by the project ID.
   - the credit type `P` is now reserved because this is the new project prefix
   - project and batch string validation is now more lenient and just checks for a non-empty string
-  - `GetCreditTypeFromBatchDenom` takes a `*Batch` parameter instead of a string.
+  - `GetCreditTypeFromBatchDenom` was renamed to `GetCreditTypeFromBatch` and takes a `*Batch` parameter instead of a string.
 
 #### Deprecated
 - [#2167](https://github.com/regen-network/regen-ledger/pull/2167):
