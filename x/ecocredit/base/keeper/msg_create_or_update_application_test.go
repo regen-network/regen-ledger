@@ -59,6 +59,13 @@ func (s *createOrUpdateApplicationSuite) AnApplicationForToWithMetadata(projId, 
 	}))
 }
 
+func (s *createOrUpdateApplicationSuite) TheApplicationForToIsAccepted(projId, clsId string) {
+	enrollment, err := s.getEnrollment(projId, clsId)
+	require.NoError(s.t, err)
+	enrollment.Status = api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED
+	require.NoError(s.t, s.stateStore.ProjectEnrollmentTable().Save(s.ctx, enrollment))
+}
+
 func (s *createOrUpdateApplicationSuite) AnApplicationForToDoesNotExist(projId, clsId string) {
 	enrollment, err := s.getEnrollment(projId, clsId)
 	if !ormerrors.IsNotFound(err) {

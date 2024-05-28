@@ -51,6 +51,10 @@ func (k Keeper) CreateOrUpdateApplication(ctx context.Context, msg *types.MsgCre
 
 	if msg.Withdraw {
 		action = types.EventUpdateApplication_ACTION_WITHDRAW
+		if enrollment.Status == ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot withdraw accepted enrollment")
+		}
+
 		if err := k.stateStore.ProjectEnrollmentTable().Delete(ctx, enrollment); err != nil {
 			return nil, err
 		}
