@@ -143,7 +143,7 @@ var (
 	// DefaultNodeHome default home directories for regen
 	DefaultNodeHome = os.ExpandEnv("$HOME/.regen")
 
-	// ModuleBasics is in charge of setting up basic, non-dependant module
+	// ModuleBasics is in charge of setting up basic, non-dependent module
 	// elements, such as codec registration and genesis verification.
 	ModuleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
