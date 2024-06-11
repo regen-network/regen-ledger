@@ -61,7 +61,7 @@ Feature: Msg/CreateOrUpdateApplication
       Then expect error contains "unauthorized"
       And expect the application for "P001" to "C01" exists with metadata "abc123"
 
-  Rule: project admins cannot withdraw a project with an accepted enrollment (a credit class issuer must do that)
+  Rule: project admins cannot withdraw a project with an accepted enrollment
     Scenario: project is accepted and admin attempts to withdraw the application
       Given an application for "P001" to "C01" with metadata "abc123"
       And the application for "P001" to "C01" is accepted
