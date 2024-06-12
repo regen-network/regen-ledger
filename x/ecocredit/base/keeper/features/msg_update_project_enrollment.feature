@@ -52,19 +52,26 @@ Feature: Msg/UpdateProjectEnrollment
         }
       """
       Examples:
-        | scenario                            | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | exists |
-        | IO1 unspecified to rejected         | UNSPECIFIED       | abc          | I01    | REJECTED   | baz789       |              | false  |
-        | Bob unspecified to rejected         | UNSPECIFIED       | abc          | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | I01 changes requested to rejected   | CHANGES_REQUESTED | bar456       | I01    | REJECTED   | baz789       |              | false  |
-        | Bob changes requested to rejected   | CHANGES_REQUESTED | bar456       | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | I01 accepted to rejected            | ACCEPTED          | foo123       | I01    | REJECTED   | baz789       | invalid      | true   |
-        | Bob accepted to rejected            | ACCEPTED          | foo123       | Bob    | REJECTED   | baz789       | unauthorized | true   |
-        | I01 unspecified to terminated       | UNSPECIFIED       | abc          | I01    | TERMINATED | baz789       | invalid      | true   |
-        | Bob unspecified to terminated       | UNSPECIFIED       | abc          | Bob    | TERMINATED | baz789       | unauthorized | true   |
-        | I01 changes requested to terminated | CHANGES_REQUESTED | bar456       | I01    | TERMINATED | baz789       | invalid      | true   |
-        | Bob changes requested to terminated | CHANGES_REQUESTED | bar456       | Bob    | TERMINATED | baz789       | unauthorized | true   |
-        | I01 accepted to terminated          | ACCEPTED          | foo123       | I01    | TERMINATED | baz789       |              | false  |
-        | Bob accepted to terminated          | ACCEPTED          | foo123       | Bob    | TERMINATED | baz789       | unauthorized | true   |
+        | scenario                             | cur_status        | cur_metadata | issuer | new_status        | new_metadata | err          | exists |
+        | IO1 unspecified to rejected          | UNSPECIFIED       | abc          | I01    | REJECTED          | baz789       |              | false  |
+        | Bob unspecified to rejected          | UNSPECIFIED       | abc          | Bob    | REJECTED          | baz789       | unauthorized | true   |
+        | I01 changes requested to rejected    | CHANGES_REQUESTED | bar456       | I01    | REJECTED          | baz789       |              | false  |
+        | Bob changes requested to rejected    | CHANGES_REQUESTED | bar456       | Bob    | REJECTED          | baz789       | unauthorized | true   |
+        | I01 accepted to rejected             | ACCEPTED          | foo123       | I01    | REJECTED          | baz789       | invalid      | true   |
+        | Bob accepted to rejected             | ACCEPTED          | foo123       | Bob    | REJECTED          | baz789       | unauthorized | true   |
+        | I01 unspecified to terminated        | UNSPECIFIED       | abc          | I01    | TERMINATED        | baz789       | invalid      | true   |
+        | Bob unspecified to terminated        | UNSPECIFIED       | abc          | Bob    | TERMINATED        | baz789       | unauthorized | true   |
+        | I01 changes requested to terminated  | CHANGES_REQUESTED | bar456       | I01    | TERMINATED        | baz789       | invalid      | true   |
+        | Bob changes requested to terminated  | CHANGES_REQUESTED | bar456       | Bob    | TERMINATED        | baz789       | unauthorized | true   |
+        | I01 accepted to terminated           | ACCEPTED          | foo123       | I01    | TERMINATED        | baz789       |              | false  |
+        | Bob accepted to terminated           | ACCEPTED          | foo123       | Bob    | TERMINATED        | baz789       | unauthorized | true   |
+        | I01 accepted to unspecified          | ACCEPTED          | foo123       | I01    | UNSPECIFIED       | baz789       | invalid      | true   |
+        | Bob accepted to unspecified          | ACCEPTED          | foo123       | Bob    | UNSPECIFIED       | baz789       | unauthorized | true   |
+        | I01 changes requested to unspecified | CHANGES_REQUESTED | bar456       | I01    | UNSPECIFIED       | baz789       | invalid      | true   |
+        | Bob changes requested to unspecified | CHANGES_REQUESTED | bar456       | Bob    | UNSPECIFIED       | baz789       | unauthorized | true   |
+        | I01 accepted to changes requested    | ACCEPTED          | foo123       | I01    | CHANGES_REQUESTED | baz789       | invalid      | true   |
+        | Bob accepted to changes requested    | ACCEPTED          | foo123       | Bob    | CHANGES_REQUESTED | baz789       | unauthorized | true   |
+
 
   Rule: any issuer can transition states
     Scenario: Issuer 1 requests changes, issuer 2 accepts
