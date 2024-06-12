@@ -19,6 +19,8 @@ message CreditType {
 
   // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
   // name, used in batch denominations within the CreditType. It must be unique.
+  // The letter P is reserved as the project prefix and cannot be used as a
+  // credit type to avoid confusion.
   string abbreviation = 1;
 
   // name is the name of the credit type (e.g. carbon, biodiversity).
@@ -91,16 +93,14 @@ message Project {
   // efficient lookups. This identifier is auto-incrementing.
   uint64 key = 1;
 
-  // id is the unique identifier of the project either auto-generated from the
-  // credit class id and project sequence number or provided upon creation.
+  // id is the auto-generated unique identifier of the project.
   string id = 2;
 
   // admin is the admin of the project.
   bytes admin = 3;
 
-  // class_key is the table row identifier of the credit class used internally
-  // for efficient lookups. This links a project to a credit class.
-  uint64 class_key = 4;
+  // Deprecated: use ProjectEnrollment instead.
+  uint64 class_key = 4 [deprecated = true];
 
   // jurisdiction is the jurisdiction of the project.
   // Full documentation can be found in MsgCreateProject.jurisdiction.
@@ -183,9 +183,10 @@ message ClassSequence {
   uint64 next_sequence = 2;
 }
 
-// ProjectSequence stores and increments the sequence number for projects within
-// a credit class.
+// Deprecated: No longer used.
 message ProjectSequence {
+  option deprecated = true;
+
   option (cosmos.orm.v1.table) = {
     id : 7,
     primary_key : {fields : "class_key"}

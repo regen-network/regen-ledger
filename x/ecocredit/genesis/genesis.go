@@ -102,25 +102,6 @@ func ValidateGenesis(data json.RawMessage) error {
 		}
 	}
 
-	projectKeyToClassKey := make(map[uint64]uint64) // map of project key to class key
-	pItr, err := ss.ProjectTable().List(ormCtx, baseapi.ProjectPrimaryKey{})
-	if err != nil {
-		return err
-	}
-	defer pItr.Close()
-
-	for pItr.Next() {
-		project, err := pItr.Value()
-		if err != nil {
-			return err
-		}
-
-		if _, exists := projectKeyToClassKey[project.Key]; exists {
-			continue
-		}
-		projectKeyToClassKey[project.Key] = project.ClassKey
-	}
-
 	batchIDToPrecision := make(map[uint64]uint32) // map of batchID to precision
 	batchDenomToIDMap := make(map[string]uint64)  // map of batchDenom to batchID
 	bItr, err := ss.BatchTable().List(ormCtx, baseapi.BatchPrimaryKey{})
@@ -142,14 +123,12 @@ func ValidateGenesis(data json.RawMessage) error {
 			continue
 		}
 
-		class, err := ss.ClassTable().Get(ormCtx, projectKeyToClassKey[batch.ProjectKey])
+		class, err := ss.ClassTable().Get(ormCtx, batch.ClassKey)
 		if err != nil {
 			return err
 		}
 
-		if class.Key == projectKeyToClassKey[batch.ProjectKey] {
-			batchIDToPrecision[batch.Key] = abbrevToPrecision[class.CreditTypeAbbrev]
-		}
+		batchIDToPrecision[batch.Key] = abbrevToPrecision[class.CreditTypeAbbrev]
 	}
 
 	batchIDToCalSupply := make(map[uint64]math.Dec) // map of batchID to calculated supply
@@ -272,12 +251,6 @@ func validateMsg(m proto.Message) error {
 		return msg.Validate()
 	case *baseapi.ClassSequence:
 		msg := &basetypes.ClassSequence{}
-		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
-			return err
-		}
-		return msg.Validate()
-	case *baseapi.ProjectSequence:
-		msg := &basetypes.ProjectSequence{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}

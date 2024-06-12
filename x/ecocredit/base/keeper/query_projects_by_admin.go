@@ -36,15 +36,9 @@ func (k Keeper) ProjectsByAdmin(ctx context.Context, req *types.QueryProjectsByA
 			return nil, err
 		}
 
-		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
-		if err != nil {
-			return nil, regenerrors.ErrNotFound.Wrapf("unable to get class with key: %d: %s", project.ClassKey, err.Error())
-		}
-
 		projects = append(projects, &types.ProjectInfo{
 			Id:           project.Id,
 			Admin:        req.Admin,
-			ClassId:      class.Id,
 			Jurisdiction: project.Jurisdiction,
 			Metadata:     project.Metadata,
 			ReferenceId:  project.ReferenceId,

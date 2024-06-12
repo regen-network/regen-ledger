@@ -12,12 +12,8 @@ func TestUtils(t *testing.T) {
 	t.Run("TestFormatClassID", rapid.MakeCheck(testFormatClassID))
 	t.Run("TestInvalidClassID", rapid.MakeCheck(testInvalidClassID))
 	t.Run("TestFormatProjectID", rapid.MakeCheck(testFormatProjectID))
-	t.Run("TestInvalidProjectID", rapid.MakeCheck(testInvalidProjectID))
 	t.Run("TestFormatBatchDenom", rapid.MakeCheck(testFormatBatchDenom))
-	t.Run("TestInvalidBatchDenom", rapid.MakeCheck(testInvalidBatchDenom))
-	t.Run("TestGetClassIDFromProjectID", rapid.MakeCheck(testGetClassIDFromProjectID))
 	t.Run("TestGetClassIDFromBatchDenom", rapid.MakeCheck(testGetClassIDFromBatchDenom))
-	t.Run("TestGetProjectIDFromBatchDenom", rapid.MakeCheck(testGetProjectIDFromBatchDenom))
 	t.Run("GetCreditTypeAbbrevFromClassID", rapid.MakeCheck(testGetCreditTypeAbbrevFromClassID))
 }
 
@@ -39,22 +35,14 @@ func testInvalidClassID(t *rapid.T) {
 }
 
 func testFormatProjectID(t *rapid.T) {
-	creditTypeAbbrev := genCreditTypeAbbrev.Draw(t, "creditTypeAbbrev")
-	classSeq := rapid.Uint64().Draw(t, "classSeq")
 	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
 
-	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
+	projectID := FormatProjectID(projectSeq)
 
 	t.Log(projectID)
 
 	err := ValidateProjectID(projectID)
 	require.NoError(t, err)
-}
-
-func testInvalidProjectID(t *rapid.T) {
-	projectID := genInvalidProjectID.Draw(t, "projectID")
-	require.Error(t, ValidateProjectID(projectID))
 }
 
 func testFormatBatchDenom(t *rapid.T) {
@@ -66,31 +54,14 @@ func testFormatBatchDenom(t *rapid.T) {
 	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-	denom, err := FormatBatchDenom(projectID, batchSeq, startDate, endDate)
+	projectID := FormatProjectID(projectSeq)
+	denom, err := FormatBatchDenom(classID, projectID, batchSeq, startDate, endDate)
 	require.NoError(t, err)
 
 	t.Log(denom)
 
 	err = ValidateBatchDenom(denom)
 	require.NoError(t, err)
-}
-
-func testInvalidBatchDenom(t *rapid.T) {
-	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom")
-	require.Error(t, ValidateBatchDenom(batchDenom))
-}
-
-func testGetClassIDFromProjectID(t *rapid.T) {
-	creditTypeAbbrev := genCreditTypeAbbrev.Draw(t, "creditTypeAbbrev")
-	classSeq := rapid.Uint64().Draw(t, "classSeq")
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
-
-	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-
-	result := GetClassIDFromProjectID(projectID)
-	require.Equal(t, classID, result)
 }
 
 func testGetClassIDFromBatchDenom(t *rapid.T) {
@@ -102,29 +73,12 @@ func testGetClassIDFromBatchDenom(t *rapid.T) {
 	endDate := genTime.Draw(t, "endDate")
 
 	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-	denom, err := FormatBatchDenom(projectID, batchSeq, startDate, endDate)
+	projectID := FormatProjectID(projectSeq)
+	denom, err := FormatBatchDenom(classID, projectID, batchSeq, startDate, endDate)
 	require.NoError(t, err)
 
 	result := GetClassIDFromBatchDenom(denom)
 	require.Equal(t, classID, result)
-}
-
-func testGetProjectIDFromBatchDenom(t *rapid.T) {
-	creditTypeAbbrev := genCreditTypeAbbrev.Draw(t, "creditTypeAbbrev")
-	classSeq := rapid.Uint64().Draw(t, "classSeq")
-	projectSeq := rapid.Uint64().Draw(t, "projectSeq")
-	batchSeq := rapid.Uint64().Draw(t, "batchSeq")
-	startDate := genTime.Draw(t, "startDate")
-	endDate := genTime.Draw(t, "endDate")
-
-	classID := FormatClassID(creditTypeAbbrev, classSeq)
-	projectID := FormatProjectID(classID, projectSeq)
-	denom, err := FormatBatchDenom(projectID, batchSeq, startDate, endDate)
-	require.NoError(t, err)
-
-	result := GetProjectIDFromBatchDenom(denom)
-	require.Equal(t, projectID, result)
 }
 
 func testGetCreditTypeAbbrevFromClassID(t *rapid.T) {
@@ -144,19 +98,6 @@ var genInvalidClassID = rapid.OneOf(
 	rapid.StringMatching(`[a-zA-Z]*`),
 	rapid.StringMatching(`[0-9]*`),
 	rapid.StringMatching(`[A-Z]{4,}[0-9]*`),
-)
-
-// genInvalidProjectID generates strings that don't conform to the project id format
-var genInvalidProjectID = rapid.OneOf(
-	rapid.StringMatching(`[a-zA-Z]*`),
-	rapid.StringMatching(`[0-9]*`),
-	rapid.StringMatching(`[A-Z]{4,}[0-9]*`),
-)
-
-// genInvalidBatchDenom generates strings that don't conform to the batch denom format
-var genInvalidBatchDenom = rapid.OneOf(
-	genInvalidClassID,
-	rapid.StringMatching(`[A-Z]{1,3}[0-9]*-[a-zA-Z\-]*`),
 )
 
 // genTime generates time values up to the year ~9999 to avoid overflowing the

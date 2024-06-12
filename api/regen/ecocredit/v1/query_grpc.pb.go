@@ -135,8 +135,8 @@ type QueryClient interface {
 	//
 	// Since Revision 3
 	ProjectEnrollment(ctx context.Context, in *QueryProjectEnrollmentRequest, opts ...grpc.CallOption) (*QueryProjectEnrollmentResponse, error)
-	// ProjectEnrollments queries all credit class enrollments associated with a
-	// project.
+	// ProjectEnrollments queries all credit class enrollments and allows for filtering by
+	// project or credit class.
 	ProjectEnrollments(ctx context.Context, in *QueryProjectEnrollmentsRequest, opts ...grpc.CallOption) (*QueryProjectEnrollmentsResponse, error)
 }
 
@@ -487,8 +487,8 @@ type QueryServer interface {
 	//
 	// Since Revision 3
 	ProjectEnrollment(context.Context, *QueryProjectEnrollmentRequest) (*QueryProjectEnrollmentResponse, error)
-	// ProjectEnrollments queries all credit class enrollments associated with a
-	// project.
+	// ProjectEnrollments queries all credit class enrollments and allows for filtering by
+	// project or credit class.
 	ProjectEnrollments(context.Context, *QueryProjectEnrollmentsRequest) (*QueryProjectEnrollmentsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

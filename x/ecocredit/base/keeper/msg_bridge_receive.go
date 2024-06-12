@@ -122,6 +122,7 @@ func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) 
 		batchRes, err := k.CreateBatch(ctx, &types.MsgCreateBatch{
 			Issuer:    req.Issuer,
 			ProjectId: project.Id,
+			ClassId:   req.ClassId,
 			Issuance: []*types.BatchIssuance{
 				{
 					Recipient:      req.Batch.Recipient,

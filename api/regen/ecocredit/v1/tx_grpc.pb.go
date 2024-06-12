@@ -73,7 +73,8 @@ type MsgClient interface {
 	// CreateOrUpdateApplicaton creates a new project credit class application, updates
 	// the metadata for an existing one when changes have been requested, or withdraws
 	// the application. When an application is withdrawn, its data will be deleted from
-	// state and the project may apply again to the same credit class in the future.
+	// state and the project may apply again to the same credit class in the future. Any
+	// new metadata will be passed to EventUpdateApplication including for withdrawals.
 	//
 	// Since Revision 3
 	CreateOrUpdateApplication(ctx context.Context, in *MsgCreateOrUpdateApplication, opts ...grpc.CallOption) (*MsgCreateOrUpdateApplicationResponse, error)
@@ -168,8 +169,8 @@ type MsgClient interface {
 	// the scope of the provided credit class, the credits will be minted to the
 	// existing credit batch, otherwise the credits will be issued in a new credit
 	// batch. The new credit batch will be created under an existing project if a
-	// project with a matching reference id already exists within the scope of the
-	// credit class, otherwise a new project will be created.
+	// project with a matching reference id already exists, otherwise a new project
+	// will be created.
 	BridgeReceive(ctx context.Context, in *MsgBridgeReceive, opts ...grpc.CallOption) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.
@@ -507,7 +508,8 @@ type MsgServer interface {
 	// CreateOrUpdateApplicaton creates a new project credit class application, updates
 	// the metadata for an existing one when changes have been requested, or withdraws
 	// the application. When an application is withdrawn, its data will be deleted from
-	// state and the project may apply again to the same credit class in the future.
+	// state and the project may apply again to the same credit class in the future. Any
+	// new metadata will be passed to EventUpdateApplication including for withdrawals.
 	//
 	// Since Revision 3
 	CreateOrUpdateApplication(context.Context, *MsgCreateOrUpdateApplication) (*MsgCreateOrUpdateApplicationResponse, error)
@@ -602,8 +604,8 @@ type MsgServer interface {
 	// the scope of the provided credit class, the credits will be minted to the
 	// existing credit batch, otherwise the credits will be issued in a new credit
 	// batch. The new credit batch will be created under an existing project if a
-	// project with a matching reference id already exists within the scope of the
-	// credit class, otherwise a new project will be created.
+	// project with a matching reference id already exists, otherwise a new project
+	// will be created.
 	BridgeReceive(context.Context, *MsgBridgeReceive) (*MsgBridgeReceiveResponse, error)
 	// AddCreditType is a governance method that allows the addition of new
 	// credit types to the network.

@@ -3,11 +3,12 @@ package keeper
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )

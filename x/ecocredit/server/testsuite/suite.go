@@ -363,6 +363,7 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	bRes, err := s.msgClient.CreateBatch(s.ctx, &basetypes.MsgCreateBatch{
 		Issuer:    admin.String(),
 		ProjectId: pRes.ProjectId,
+		ClassId:   classID,
 		Issuance:  []*basetypes.BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
 		Metadata:  "metadata",
 		StartDate: &start,
@@ -423,7 +424,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
-	s.Require().Equal("C02-001", createProjectRes.ProjectId)
+	s.Require().Equal("P002", createProjectRes.ProjectId)
 	projectID := createProjectRes.ProjectId
 
 	// create batch
@@ -439,6 +440,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &basetypes.MsgCreateBatch{
 		Issuer:    issuer1,
 		ProjectId: projectID,
+		ClassId:   classID,
 		StartDate: &time1,
 		EndDate:   &time2,
 		Issuance: []*basetypes.BatchIssuance{

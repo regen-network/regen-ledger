@@ -3,6 +3,8 @@ package keeper
 import (
 	"context"
 
+	"google.golang.org/protobuf/proto"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -24,7 +26,12 @@ func (k Keeper) ProjectsByClass(ctx context.Context, request *types.QueryProject
 		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
 	}
 
-	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
+	it, err := k.stateStore.ProjectEnrollmentTable().List(ctx, api.ProjectEnrollmentClassKeyIndexKey{}.WithClassKey(cInfo.Key),
+		ormlist.Paginate(pg),
+		ormlist.Filter(func(msg proto.Message) bool {
+			enrollment := msg.(*api.ProjectEnrollment)
+			return enrollment.Status == api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED
+		}))
 	if err != nil {
 		return nil, err
 	}
@@ -32,22 +39,21 @@ func (k Keeper) ProjectsByClass(ctx context.Context, request *types.QueryProject
 
 	projects := make([]*types.ProjectInfo, 0)
 	for it.Next() {
-		project, err := it.Value()
+		enrollment, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		admin := sdk.AccAddress(project.Admin)
-
-		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
+		project, err := k.stateStore.ProjectTable().Get(ctx, enrollment.ProjectKey)
 		if err != nil {
-			return nil, regenerrors.ErrNotFound.Wrapf("could not get class with key: %d", project.ClassKey)
+			return nil, regenerrors.ErrNotFound.Wrapf("could not get project with key: %d", enrollment.ProjectKey)
 		}
+
+		admin := sdk.AccAddress(project.Admin)
 
 		info := types.ProjectInfo{
 			Id:           project.Id,
 			Admin:        admin.String(),
-			ClassId:      class.Id,
 			Jurisdiction: project.Jurisdiction,
 			Metadata:     project.Metadata,
 			ReferenceId:  project.ReferenceId,

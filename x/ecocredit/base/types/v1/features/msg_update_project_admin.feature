@@ -40,17 +40,6 @@ Feature: MsgUpdateProjectAdmin
     When the message is validated
     Then expect the error "project id: empty string is not allowed: parse error: invalid request"
 
-  Scenario: an error is returned if project id is not formatted
-    Given the message
-    """
-    {
-      "admin": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "project_id": "foo"
-    }
-    """
-    When the message is validated
-    Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error: invalid request"
-
   Scenario: an error is returned if new admin is empty
     Given the message
     """

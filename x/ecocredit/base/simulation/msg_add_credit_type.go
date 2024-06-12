@@ -49,6 +49,9 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 
 		abbrev := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 1, 3))
 		abbrev = strings.ToUpper(abbrev)
+		if abbrev == "P" { // the abbreviation "P" is reserved for projects
+			abbrev = "PP"
+		}
 		name := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 1, 10))
 
 		_, err = qryClient.CreditType(sdkCtx, &types.QueryCreditTypeRequest{

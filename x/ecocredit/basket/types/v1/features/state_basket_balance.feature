@@ -31,17 +31,6 @@ Feature: BasketBalance
     When the basket balance is validated
     Then expect the error "batch denom: empty string is not allowed: parse error"
 
-  Scenario: an error is returned if batch denom is not formatted
-    Given the basket balance
-    """
-    {
-      "basket_id": 1,
-      "batch_denom": "foo"
-    }
-    """
-    When the basket balance is validated
-    Then expect the error "batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error"
-
   Scenario: an error is returned if balance is a negative decimal
     Given the basket balance
     """

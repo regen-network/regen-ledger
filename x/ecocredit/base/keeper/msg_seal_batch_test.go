@@ -12,7 +12,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
 
@@ -24,6 +23,7 @@ type sealBatch struct {
 	classKey         uint64
 	res              *types.MsgSealBatchResponse
 	err              error
+	projectKey       uint64
 }
 
 func TestSealBatch(t *testing.T) {
@@ -63,21 +63,17 @@ func (s *sealBatch) ACreditClassWithIdAndIssuerAlice(a string) {
 }
 
 func (s *sealBatch) AProjectWithId(a string) {
-	err := s.k.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       a,
-		ClassKey: s.classKey,
+	var err error
+	s.projectKey, err = s.k.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id: a,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *sealBatch) ACreditBatchWithDenomAndIssuerAlice(a string) {
-	projectID := base.GetProjectIDFromBatchDenom(a)
-
-	project, err := s.k.stateStore.ProjectTable().GetById(s.ctx, projectID)
-	require.NoError(s.t, err)
-
 	bKey, err := s.k.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
-		ProjectKey: project.Key,
+		ProjectKey: s.projectKey,
+		ClassKey:   s.classKey,
 		Issuer:     s.alice,
 		Denom:      a,
 		Open:       true,

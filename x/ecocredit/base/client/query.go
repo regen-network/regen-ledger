@@ -667,3 +667,66 @@ func QueryAllowedBridgeChainsCmd() *cobra.Command {
 	flags.AddPaginationFlagsToCmd(cmd, "allowed-bridge-chains")
 	return qflags(cmd)
 }
+
+func QueryProjectEnrollment() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "project-enrollment [project-id] [class-id]",
+		Short:   "Retrieve project enrollment information",
+		Long:    "Retrieve project enrollment information.",
+		Example: "regen q ecocredit project-enrollment P001 C01",
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.ProjectEnrollment(cmd.Context(), &types.QueryProjectEnrollmentRequest{
+				ProjectId: args[0],
+				ClassId:   args[1],
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+	return qflags(cmd)
+}
+
+func QueryProjectEnrollments() *cobra.Command {
+	var projectID, classID string
+
+	cmd := &cobra.Command{
+		Use:   "project-enrollments",
+		Short: "Retrieve project enrollments",
+		Long: `Retrieve project enrollments with optional pagination and filtering by project or credit class.
+
+Flags:
+	  --project string   Filter by project ID
+	  --class   string   Filter by credit class ID
+`,
+		Example: `regen q ecocredit project-enrollments --limit 10 --offset 10
+regen q ecocredit project-enrollments --project P001
+regen q ecocredit project-enrollments --class C01`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ProjectEnrollments(cmd.Context(), &types.QueryProjectEnrollmentsRequest{
+				ProjectId:  projectID,
+				ClassId:    classID,
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	cmd.Flags().StringVar(&projectID, FlagProject, "", "Filter by project ID")
+	cmd.Flags().StringVar(&classID, FlagClass, "", "Filter by credit class ID")
+
+	return qflags(cmd)
+}

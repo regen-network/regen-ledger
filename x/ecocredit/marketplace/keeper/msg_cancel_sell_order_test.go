@@ -151,14 +151,15 @@ func (s *cancelSellOrder) ExpectEventWithProperties(a gocuke.DocString) {
 }
 
 func (s *cancelSellOrder) sellOrderSetup() {
-	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+	clsId, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
-		Denom: s.batchDenom,
+		Denom:    s.batchDenom,
+		ClassKey: clsId,
 	})
 	require.NoError(s.t, err)
 

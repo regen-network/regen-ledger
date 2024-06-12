@@ -118,6 +118,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.batchDenom = s.createBatch(s.val.ClientCtx, &basetypes.MsgCreateBatch{
 		Issuer:    s.addr1.String(),
 		ProjectId: s.projectID,
+		ClassId:   s.classID,
 		Issuance: []*basetypes.BatchIssuance{
 			{
 				Recipient:              s.addr1.String(),
