@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
