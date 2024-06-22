@@ -39,6 +39,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
 	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
+	github.com/DataDog/zstd v1.5.0 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
@@ -51,7 +52,9 @@ require (
 	github.com/cockroachdb/apd/v3 v3.2.1
 	github.com/cockroachdb/errors v1.11.1 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
+	github.com/cockroachdb/pebble v1.1.0 // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
+	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
@@ -144,7 +147,7 @@ require (
 	github.com/zondax/ledger-go v0.14.3 // indirect
 	go.etcd.io/bbolt v1.3.8 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect; must be v0.0.0-20230711153332-06a737ee72cb for gogoproto v1.4.10
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
@@ -158,18 +161,14 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-require (
-	github.com/DataDog/zstd v1.5.0 // indirect
-	github.com/cockroachdb/pebble v1.1.0 // indirect
-	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
-)
-
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+	// stick with compatible version or x/exp in v0.47.x line for must be v0.0.0-20230711153332-06a737ee72cb for gogoproto v1.4.10
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
 
 replace (
