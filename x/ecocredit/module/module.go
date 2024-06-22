@@ -79,6 +79,7 @@ func NewModule(
 		accountKeeper:  accountKeeper,
 		authority:      authority,
 		govKeeper:      govKeeper,
+		Keeper:         server.NewServer(storeKey, accountKeeper, bankKeeper, authority),
 	}
 }
 
@@ -109,17 +110,19 @@ func (m Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 
 // RegisterServices implements AppModule/RegisterServices.
 func (m *Module) RegisterServices(cfg module.Configurator) {
-	svr := server.NewServer(m.key, m.accountKeeper, m.bankKeeper, m.authority)
-	basetypes.RegisterMsgServer(cfg.MsgServer(), svr.BaseKeeper)
-	basetypes.RegisterQueryServer(cfg.QueryServer(), svr.BaseKeeper)
+	baseK := m.Keeper.GetBaseKeeper()
+	basetypes.RegisterMsgServer(cfg.MsgServer(), baseK)
+	basetypes.RegisterQueryServer(cfg.QueryServer(), baseK)
 
-	baskettypes.RegisterMsgServer(cfg.MsgServer(), svr.BasketKeeper)
-	baskettypes.RegisterQueryServer(cfg.QueryServer(), svr.BasketKeeper)
+	basketK := m.Keeper.GetBasketKeeper()
+	baskettypes.RegisterMsgServer(cfg.MsgServer(), basketK)
+	baskettypes.RegisterQueryServer(cfg.QueryServer(), basketK)
 
-	markettypes.RegisterMsgServer(cfg.MsgServer(), svr.MarketplaceKeeper)
-	markettypes.RegisterQueryServer(cfg.QueryServer(), svr.MarketplaceKeeper)
+	marketK := m.Keeper.GetMarketKeeper()
+	markettypes.RegisterMsgServer(cfg.MsgServer(), marketK)
+	markettypes.RegisterQueryServer(cfg.QueryServer(), marketK)
 
-	migrator := server.NewMigrator(svr, m.legacySubspace)
+	migrator := server.NewMigrator(m.Keeper, m.legacySubspace)
 	if err := cfg.RegisterMigration(ecocredit.ModuleName, 2, migrator.Migrate2to3); err != nil {
 		panic(err)
 	}
@@ -127,8 +130,6 @@ func (m *Module) RegisterServices(cfg module.Configurator) {
 	if err := cfg.RegisterMigration(ecocredit.ModuleName, 3, migrator.Migrate3to4); err != nil {
 		panic(err)
 	}
-
-	m.Keeper = svr
 }
 
 // RegisterGRPCGatewayRoutes implements AppModule/RegisterGRPCGatewayRoutes.
