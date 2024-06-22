@@ -201,10 +201,14 @@ require (
 
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	// fix the orm codespace conflict between x/group and orm module: https://github.com/cosmos/cosmos-sdk/pull/20750
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.13-0.20240622202853-546a08a95245
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+	// stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
 
 replace (
@@ -213,6 +217,4 @@ replace (
 	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
 	github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
 	github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
-	// stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
-	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
