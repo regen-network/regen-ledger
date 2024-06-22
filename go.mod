@@ -202,8 +202,8 @@ require (
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	// fix the orm codespace conflict between x/group and orm module: https://github.com/cosmos/cosmos-sdk/pull/20750
-	// github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.13-0.20240622202853-546a08a95245
-	github.com/cosmos/cosmos-sdk => ../cosmos-sdk/
+	// github.com/cosmos/cosmos-sdk => ../cosmos-sdk/
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.13-0.20240622202853-546a08a95245
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
