@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -121,7 +121,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
 			MsgType:         msg.Type(),

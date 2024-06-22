@@ -4,16 +4,16 @@ import (
 	"testing"
 	"time"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/crypto/ed25519"
+	"github.com/cometbft/cometbft/crypto/ed25519"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -30,8 +30,8 @@ import (
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
 // RegenApp testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var DefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
@@ -49,24 +49,18 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 
 // SetupOptions defines arguments that are passed into `Simapp` constructor.
 type SetupOptions struct {
-	Logger             log.Logger
-	DB                 *dbm.MemDB
-	InvCheckPeriod     uint
-	HomePath           string
-	SkipUpgradeHeights map[int64]bool
-	EncConfig          app.EncodingConfig
-	AppOpts            types.AppOptions
+	Logger         log.Logger
+	DB             *dbm.MemDB
+	InvCheckPeriod uint
+	AppOpts        types.AppOptions
 }
 
 func DefaultOptions() SetupOptions {
 	return SetupOptions{
-		Logger:             log.NewNopLogger(),
-		DB:                 dbm.NewMemDB(),
-		InvCheckPeriod:     5,
-		HomePath:           app.DefaultNodeHome,
-		SkipUpgradeHeights: map[int64]bool{},
-		EncConfig:          app.MakeEncodingConfig(),
-		AppOpts:            EmptyAppOptions{},
+		Logger:         log.NewNopLogger(),
+		DB:             dbm.NewMemDB(),
+		InvCheckPeriod: 5,
+		AppOpts:        EmptyAppOptions{},
 	}
 }
 
@@ -89,7 +83,7 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
 
-	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.SkipUpgradeHeights, options.HomePath, options.InvCheckPeriod, options.EncConfig, options.AppOpts)
+	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.InvCheckPeriod, options.AppOpts)
 	genesisState := app.NewDefaultGenesisState(regenApp.AppCodec())
 	genesisState = genesisStateWithValSet(t, regenApp, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
 
@@ -169,7 +163,7 @@ func genesisStateWithValSet(t *testing.T,
 	})
 
 	// update total supply
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	return genesisState

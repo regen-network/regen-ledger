@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"

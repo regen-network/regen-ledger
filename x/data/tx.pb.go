@@ -7,9 +7,9 @@ import (
 	context "context"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/cosmos/gogoproto/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -578,12 +578,12 @@ type MsgClient interface {
 	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
+	//   - on-chain identities can be managed using different cryptographic keys
+	//     that change over time through key rotation practices
+	//   - an on-chain identity may represent an organization and through delegation
+	//     individual members may sign on behalf of the group
+	//   - the blockchain transaction envelope provides built-in replay protection
+	//     and timestamping
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
@@ -662,12 +662,12 @@ type MsgServer interface {
 	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
+	//   - on-chain identities can be managed using different cryptographic keys
+	//     that change over time through key rotation practices
+	//   - an on-chain identity may represent an organization and through delegation
+	//     individual members may sign on behalf of the group
+	//   - the blockchain transaction envelope provides built-in replay protection
+	//     and timestamping
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//

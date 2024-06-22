@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -14,18 +13,14 @@ import (
 )
 
 // BatchesByProject queries for all batches in the given credit class.
-func (k Keeper) BatchesByProject(ctx context.Context, request *types.QueryBatchesByProjectRequest) (*types.QueryBatchesByProjectResponse, error) {
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+func (k Keeper) BatchesByProject(ctx context.Context, req *types.QueryBatchesByProjectRequest) (*types.QueryBatchesByProjectResponse, error) {
+	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}
 
-	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
-	if err != nil {
-		return nil, regenerrors.ErrNotFound.Wrapf("could not get project with id %s: %s", request.ProjectId, err.Error())
-	}
-
-	it, err := k.stateStore.BatchTable().List(ctx, api.BatchProjectKeyIndexKey{}.WithProjectKey(project.Key), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchProjectKeyIndexKey{}.WithProjectKey(project.Key), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +34,6 @@ func (k Keeper) BatchesByProject(ctx context.Context, request *types.QueryBatche
 		}
 
 		issuer := sdk.AccAddress(batch.Issuer)
-
 		info := types.BatchInfo{
 			Issuer:       issuer.String(),
 			ProjectId:    project.Id,
@@ -50,17 +44,11 @@ func (k Keeper) BatchesByProject(ctx context.Context, request *types.QueryBatche
 			IssuanceDate: regentypes.ProtobufToGogoTimestamp(batch.IssuanceDate),
 			Open:         batch.Open,
 		}
-
 		batches = append(batches, &info)
-	}
-
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryBatchesByProjectResponse{
 		Batches:    batches,
-		Pagination: pr,
+		Pagination: ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }

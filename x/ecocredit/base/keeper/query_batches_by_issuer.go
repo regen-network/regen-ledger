@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -20,12 +19,8 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *types.QueryBatchesByIs
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("issuer: %s", err.Error())
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	it, err := k.stateStore.BatchTable().List(ctx, api.BatchIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchIssuerIndexKey{}.WithIssuer(issuer), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +38,6 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *types.QueryBatchesByIs
 		if err != nil {
 			return nil, regenerrors.ErrNotFound.Wrapf("unable to get project by key: %d", batch.ProjectKey)
 		}
-
 		info := types.BatchInfo{
 			Issuer:       req.Issuer,
 			ProjectId:    project.Id,
@@ -54,14 +48,9 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *types.QueryBatchesByIs
 			IssuanceDate: regentypes.ProtobufToGogoTimestamp(batch.IssuanceDate),
 			Open:         batch.Open,
 		}
-
 		batches = append(batches, &info)
 	}
 
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
+	pr := ormutil.PageResToCosmosTypes(it.PageResponse())
 	return &types.QueryBatchesByIssuerResponse{Batches: batches, Pagination: pr}, nil
 }

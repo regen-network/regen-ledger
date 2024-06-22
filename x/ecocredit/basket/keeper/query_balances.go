@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -12,30 +11,26 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
-func (k Keeper) BasketBalances(ctx context.Context, request *types.QueryBasketBalancesRequest) (*types.QueryBasketBalancesResponse, error) {
-	if request == nil {
+func (k Keeper) BasketBalances(ctx context.Context, req *types.QueryBasketBalancesRequest) (*types.QueryBasketBalancesResponse, error) {
+	if req == nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
 	}
 
-	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, req.BasketDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			return nil, regenerrors.ErrNotFound.Wrapf("basket %s not found", request.BasketDenom)
+			return nil, regenerrors.ErrNotFound.Wrapf("basket %s not found", req.BasketDenom)
 		}
-		return nil, regenerrors.ErrInternal.Wrapf("failed to get basket %s", request.BasketDenom)
+		return nil, regenerrors.ErrInternal.Wrapf("failed to get basket %s", req.BasketDenom)
 	}
 
-	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	it, err := k.stateStore.BasketBalanceTable().List(ctx, api.BasketBalancePrimaryKey{}.WithBasketId(basket.Id),
-		ormlist.Paginate(pulsarPageReq),
-	)
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.BasketBalanceTable().List(
+		ctx, api.BasketBalancePrimaryKey{}.WithBasketId(basket.Id), pg)
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	res := &types.QueryBasketBalancesResponse{}
 	for it.Next() {
@@ -49,18 +44,12 @@ func (k Keeper) BasketBalances(ctx context.Context, request *types.QueryBasketBa
 			return nil, err
 		}
 		res.Balances = append(res.Balances, balanceGogo)
-
 		res.BalancesInfo = append(res.BalancesInfo, &types.BasketBalanceInfo{
 			BatchDenom: bal.BatchDenom,
 			Balance:    bal.Balance,
 		})
 	}
-	defer it.Close()
 
-	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
+	res.Pagination = ormutil.PageResToCosmosTypes(it.PageResponse())
 	return res, nil
 }

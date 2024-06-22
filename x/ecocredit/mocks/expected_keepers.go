@@ -7,12 +7,11 @@ package mocks
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.
@@ -262,16 +261,16 @@ func (m *MockGovKeeper) EXPECT() *MockGovKeeperMockRecorder {
 	return m.recorder
 }
 
-// GetDepositParams mocks base method.
-func (m *MockGovKeeper) GetDepositParams(ctx types.Context) v1.DepositParams {
+// GetParams mocks base method.
+func (m *MockGovKeeper) GetParams(clientCtx types.Context) v1.Params {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDepositParams", ctx)
-	ret0, _ := ret[0].(v1.DepositParams)
+	ret := m.ctrl.Call(m, "GetParams", clientCtx)
+	ret0, _ := ret[0].(v1.Params)
 	return ret0
 }
 
-// GetDepositParams indicates an expected call of GetDepositParams.
-func (mr *MockGovKeeperMockRecorder) GetDepositParams(ctx interface{}) *gomock.Call {
+// GetParams indicates an expected call of GetParams.
+func (mr *MockGovKeeperMockRecorder) GetParams(clientCtx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDepositParams", reflect.TypeOf((*MockGovKeeper)(nil).GetDepositParams), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetParams", reflect.TypeOf((*MockGovKeeper)(nil).GetParams), clientCtx)
 }

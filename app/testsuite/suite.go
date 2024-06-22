@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmtypes "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/regen-network/regen-ledger/v5/app"
 )

@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -38,8 +38,8 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return op, nil, err
 		}
 
-		params := govk.GetDepositParams(sdkCtx)
-		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		params := govk.GetParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, proposer.Address)
 		switch {
 		case skip:
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, "skip deposit"), nil, nil
@@ -72,7 +72,7 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
 			MsgType:         msg.Type(),

@@ -11,7 +11,7 @@ import (
 
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/capability/types"
-	types1 "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	types1 "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 )
 
 // MockCapabilityKeeper is a mock of CapabilityKeeper interface.

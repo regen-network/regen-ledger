@@ -6,8 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -47,8 +47,8 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, fmt.Sprintf("denom %s already exists", bankDenom)), nil, nil
 		}
 
-		params := govk.GetDepositParams(sdkCtx)
-		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, authority)
+		params := govk.GetParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, authority)
 		switch {
 		case skip:
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAddAllowedDenom, "skip deposit"), nil, nil
@@ -78,7 +78,7 @@ func SimulateMsgAddAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
 			MsgType:         msg.Type(),

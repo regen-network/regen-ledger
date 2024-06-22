@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/suite"
-	dbm "github.com/tendermint/tm-db"
 
-	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -25,7 +25,9 @@ import (
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
+	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/math"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
@@ -105,13 +107,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
-	// setup temporary mem db
-	db := dbm.NewMemDB()
-	defer func() {
-		if err := db.Close(); err != nil {
-			panic(err)
-		}
-	}()
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,
@@ -151,10 +147,7 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	s.Require().NoError(err)
 
 	err = bs.BasketFeeTable().Save(ormCtx, &basketApi.BasketFee{
-		Fee: &sdkbase.Coin{
-			Denom:  s.basketFee.Denom,
-			Amount: s.basketFee.Amount.String(),
-		},
+		Fee: regentypes.CoinToCosmosApiLegacy(s.basketFee),
 	})
 	s.Require().NoError(err)
 

@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	rootCmd, _ := cli.NewRootCmd()
+	rootCmd := cli.NewRootCmd()
 	if err := cmd.Execute(rootCmd, app.EnvPrefix, app.DefaultNodeHome); err != nil {
 		switch e := err.(type) {
 		case server.ErrorCode:

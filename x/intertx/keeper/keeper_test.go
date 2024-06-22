@@ -6,7 +6,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -16,8 +16,8 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/regen-network/regen-ledger/x/intertx/keeper/mocks"
 )

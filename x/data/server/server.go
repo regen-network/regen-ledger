@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/abci/types"
+	"github.com/cometbft/cometbft/abci/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2/ormstore"

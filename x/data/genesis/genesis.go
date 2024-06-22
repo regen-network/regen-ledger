@@ -3,7 +3,7 @@ package genesis
 import (
 	"encoding/json"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -17,7 +17,7 @@ import (
 
 // ValidateGenesis performs basic validation of genesis state.
 func ValidateGenesis(jsonData json.RawMessage) error {
-	db := dbm.NewMemDB()
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,

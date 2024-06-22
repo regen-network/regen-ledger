@@ -6,15 +6,16 @@ import (
 	"os"
 	"testing"
 
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/simapp"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
 )
 
 func TestApp(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("app", "simulation")
+	config := simcli.NewConfigFromFlags()
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app", "simulation".false, true)
 	if skip {
 		t.Skip("skipping app simulation")
 	}
@@ -32,9 +33,8 @@ func TestApp(t *testing.T) {
 		true,
 		map[int64]bool{},
 		regen.DefaultNodeHome,
-		simapp.FlagPeriodValue,
-		regen.MakeEncodingConfig(),
-		simapp.EmptyAppOptions{},
+		simcli.FlagPeriodValue,
+		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, app.Name())
@@ -43,11 +43,11 @@ func TestApp(t *testing.T) {
 	_, simParams, simErr := simulateFromSeed(t, app, config)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err = simtestutil.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		simtestutil.PrintStats(db)
 	}
 }
