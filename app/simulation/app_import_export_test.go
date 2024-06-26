@@ -28,7 +28,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -53,8 +53,6 @@ func TestAppImportExport(t *testing.T) {
 		db,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
 		simcli.FlagPeriodValue,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
@@ -75,7 +73,7 @@ func TestAppImportExport(t *testing.T) {
 
 	fmt.Printf("exporting genesis...\n")
 
-	exported, err := app.ExportAppStateAndValidators(false, []string{})
+	exported, err := app.ExportAppStateAndValidators(false, []string{}, []string{})
 	require.NoError(t, err)
 
 	fmt.Printf("importing genesis...\n")
@@ -93,8 +91,6 @@ func TestAppImportExport(t *testing.T) {
 		newDB,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
 		simcli.FlagPeriodValue,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
@@ -145,7 +141,7 @@ func TestAppImportExport(t *testing.T) {
 		}},
 
 		// ibc modules
-		{app.GetKey(ibchost.StoreKey), newApp.GetKey(ibchost.StoreKey), [][]byte{}},
+		{app.GetKey(ibcexported.StoreKey), newApp.GetKey(ibcexported.StoreKey), [][]byte{}},
 		{app.GetKey(ibctransfertypes.StoreKey), newApp.GetKey(ibctransfertypes.StoreKey), [][]byte{}},
 
 		// regen modules

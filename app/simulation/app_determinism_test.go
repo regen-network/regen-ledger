@@ -51,8 +51,6 @@ func TestAppDeterminism(t *testing.T) {
 				db,
 				nil,
 				true,
-				map[int64]bool{},
-				regen.DefaultNodeHome,
 				simcli.FlagPeriodValue,
 				simtestutil.EmptyAppOptions{},
 				interBlockCacheOpt(),
