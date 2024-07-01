@@ -10,6 +10,7 @@ import (
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/stretchr/testify/require"
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -46,6 +47,7 @@ func TestAppDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
+
 			app := regen.NewRegenApp(
 				logger,
 				db,
@@ -54,6 +56,7 @@ func TestAppDeterminism(t *testing.T) {
 				simcli.FlagPeriodValue,
 				simtestutil.EmptyAppOptions{},
 				interBlockCacheOpt(),
+				baseapp.SetChainID(SimAppChainID),
 			)
 			require.Equal(t, regen.AppName, app.Name())
 
@@ -61,7 +64,6 @@ func TestAppDeterminism(t *testing.T) {
 				"running app-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
 				config.Seed, i+1, numSeeds, j+1, numTimesToRunPerSeed,
 			)
-
 			_, _, err := simulateFromSeed(t, app, config)
 
 			require.NoError(t, err)
