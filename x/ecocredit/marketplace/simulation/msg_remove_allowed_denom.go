@@ -65,6 +65,8 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		}
 
 		proposalMsg := govtypes.MsgSubmitProposal{
+			Title:          simtypes.RandStringOfLength(r, 10),
+			Summary:        simtypes.RandStringOfLength(r, 10),
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),

@@ -8,12 +8,9 @@ import (
 	"testing"
 
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	"github.com/stretchr/testify/require"
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
@@ -32,17 +29,7 @@ func TestAppAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := regen.NewRegenApp(
-		logger,
-		db,
-		nil,
-		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
-		simcli.FlagPeriodValue,
-		simtestutil.EmptyAppOptions{},
-		fauxMerkleModeOpt,
-	)
+	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, simtestutil.EmptyAppOptions{})
 	require.Equal(t, regen.AppName, app.Name())
 
 	// run randomized simulation
@@ -64,7 +51,7 @@ func TestAppAfterImport(t *testing.T) {
 
 	fmt.Printf("exporting genesis...\n")
 
-	exported, err := app.ExportAppStateAndValidators(true, []string{})
+	exported, err := app.ExportAppStateAndValidators(true, []string{}, []string{})
 	require.NoError(t, err)
 
 	fmt.Printf("importing genesis...\n")
@@ -77,17 +64,7 @@ func TestAppAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := regen.NewRegenApp(
-		log.NewNopLogger(),
-		newDB,
-		nil,
-		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
-		simcli.FlagPeriodValue,
-		simtestutil.EmptyAppOptions{},
-		fauxMerkleModeOpt,
-	)
+	newApp := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, simtestutil.EmptyAppOptions{})
 	require.Equal(t, regen.AppName, newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{

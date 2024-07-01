@@ -15,7 +15,7 @@ import (
 
 func TestApp(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
-	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app", "simulation".false, true)
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app", "simulation", false, true)
 	if skip {
 		t.Skip("skipping app simulation")
 	}
@@ -31,8 +31,6 @@ func TestApp(t *testing.T) {
 		db,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
 		simcli.FlagPeriodValue,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,

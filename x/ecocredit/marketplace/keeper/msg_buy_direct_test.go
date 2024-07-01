@@ -3,6 +3,8 @@ package keeper
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -567,8 +569,14 @@ func (s *buyDirectSuite) expectEvent(expected gogoproto.Message) {
 
 	foundEvt, err := sdk.ParseTypedEvent(abci.Event(sdkEvent))
 	require.NoError(s.t, err)
+	name := gogoproto.MessageName(expected)
+	a := reflect.TypeOf(expected)
+	fmt.Println(a)
 
-	msgType, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(gogoproto.MessageName(expected)))
+	input := protoreflect.FullName(name)
+	msgType, err := protoregistry.GlobalTypes.FindMessageByName(input)
+
+	//msgType, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(gogoproto.MessageName(expected)))
 	require.NoError(s.t, err)
 	evt := msgType.New().Interface()
 	evt2 := msgType.New().Interface()
