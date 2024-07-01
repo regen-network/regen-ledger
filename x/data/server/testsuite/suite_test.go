@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
@@ -33,7 +32,6 @@ func setup(t *testing.T) fixture.Factory {
 	ff := fixture.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
-	amino := codec.NewLegacyAmino()
 
 	authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
 	params.RegisterInterfaces(cdc.InterfaceRegistry())
@@ -52,20 +50,22 @@ func setup(t *testing.T) fixture.Factory {
 	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(tkey, storetypes.StoreTypeTransient)
 
-	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
-	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
-
 	maccPerms := map[string][]string{
 		minttypes.ModuleName: {authtypes.Minter},
 	}
 
+	authority := authtypes.NewModuleAddress("gov")
+
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
+		cdc,
+		authKey,
+		authtypes.ProtoBaseAccount,
+		maccPerms,
+		"regen",
+		authority.String(),
 	)
 
-	bankKeeper := bankkeeper.NewBaseKeeper(
-		cdc, bankKey, accountKeeper, bankSubspace, nil,
-	)
+	bankKeeper := bankkeeper.NewBaseKeeper(cdc, bankKey, accountKeeper, nil, authority.String())
 
 	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper)
 	ff.SetModules([]sdkmodules.AppModule{dataMod})
