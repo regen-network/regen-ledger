@@ -3,15 +3,13 @@ package keeper
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
 	"strconv"
 	"testing"
 
 	"github.com/cockroachdb/apd/v3"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/gogoproto/jsonpb"
-	gogoproto "github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/proto"
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/regen-network/gocuke"
@@ -563,20 +561,14 @@ func (s *buyDirectSuite) ExpectEventBuyDirectWithProperties(a gocuke.DocString) 
 	s.expectEvent(&event)
 }
 
-func (s *buyDirectSuite) expectEvent(expected gogoproto.Message) {
+func (s *buyDirectSuite) expectEvent(expected proto.Message) {
 	sdkEvent, found := testutil.GetEvent(expected, s.sdkCtx.EventManager().Events())
 	require.True(s.t, found)
 
 	foundEvt, err := sdk.ParseTypedEvent(abci.Event(sdkEvent))
 	require.NoError(s.t, err)
-	name := gogoproto.MessageName(expected)
-	a := reflect.TypeOf(expected)
-	fmt.Println(a)
 
-	input := protoreflect.FullName(name)
-	msgType, err := protoregistry.GlobalTypes.FindMessageByName(input)
-
-	//msgType, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(gogoproto.MessageName(expected)))
+	msgType, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(proto.MessageName(expected)))
 	require.NoError(s.t, err)
 	evt := msgType.New().Interface()
 	evt2 := msgType.New().Interface()
