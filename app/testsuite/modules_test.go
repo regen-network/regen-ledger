@@ -5,6 +5,7 @@ package testsuite
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/stretchr/testify/suite"
 
 	data "github.com/regen-network/regen-ledger/x/data/v3/client/testsuite"
@@ -12,11 +13,11 @@ import (
 )
 
 func TestDataIntegration(t *testing.T) {
-	cfg := DefaultConfig()
+	cfg := network.DefaultConfig(NewTestNetworkFixture)
 	suite.Run(t, data.NewIntegrationTestSuite(cfg))
 }
 
 func TestEcocreditIntegration(t *testing.T) {
-	cfg := DefaultConfig()
+	cfg := network.DefaultConfig(NewTestNetworkFixture)
 	suite.Run(t, ecocredit.NewIntegrationTestSuite(cfg))
 }

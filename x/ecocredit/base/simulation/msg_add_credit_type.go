@@ -76,10 +76,12 @@ func SimulateMsgAddCreditType(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		}
 
 		msg := &govtypes.MsgSubmitProposal{
+			Title:          simtypes.RandStringOfLength(r, 10),
 			Messages:       []*codectypes.Any{anyMsg},
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
+			Summary:        simtypes.RandStringOfLength(r, 10),
 		}
 
 		txCtx := simulation.OperationInput{
