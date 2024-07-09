@@ -906,7 +906,7 @@ func runCreateOrUpdateApplication(cmd *cobra.Command, args []string, withdraw bo
 	return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 }
 
-func TxUpdateProjectEnrollment() *cobra.Command {
+func TxUpdateProjectEnrollmentCmd() *cobra.Command {
 	var metadata string
 
 	cmd := &cobra.Command{
