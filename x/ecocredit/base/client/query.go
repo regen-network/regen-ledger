@@ -668,7 +668,7 @@ func QueryAllowedBridgeChainsCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
-func QueryProjectEnrollment() *cobra.Command {
+func QueryProjectEnrollmentCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "project-enrollment [project-id] [class-id]",
 		Short:   "Retrieve project enrollment information",
