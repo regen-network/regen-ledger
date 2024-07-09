@@ -20,7 +20,7 @@ func (k Keeper) CreateOrUpdateApplication(ctx context.Context, msg *types.MsgCre
 
 	proj, err := k.stateStore.ProjectTable().GetById(ctx, msg.ProjectId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to retrieve project with id %s: %v", msg.ProjectId, err)
 	}
 
 	if !bytes.Equal(proj.Admin, admin) {
@@ -29,7 +29,7 @@ func (k Keeper) CreateOrUpdateApplication(ctx context.Context, msg *types.MsgCre
 
 	class, err := k.stateStore.ClassTable().GetById(ctx, msg.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to retrieve class with id %s: %v", msg.ClassId, err)
 	}
 
 	action := types.EventUpdateApplication_ACTION_UPDATE
