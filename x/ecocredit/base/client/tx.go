@@ -136,7 +136,7 @@ the fee and is not surprised to learn that the they paid a fee without consent.
 - class:      the ID of the credit class. If this is provided, the signer must be an issuer of the class.
 - reference-id: a reference ID for the project. Only valid if class is also provided.`,
 		Example: `regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf
-regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf  --class-id C01 --reference-id VCS-001`,
+regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf  --class C01 --reference-id VCS-001`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
