@@ -690,7 +690,7 @@ func QueryProjectEnrollmentCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
-func QueryProjectEnrollments() *cobra.Command {
+func QueryProjectEnrollmentsCmd() *cobra.Command {
 	var projectID, classID string
 
 	cmd := &cobra.Command{
