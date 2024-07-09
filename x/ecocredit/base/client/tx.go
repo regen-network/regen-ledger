@@ -276,7 +276,8 @@ Parameters:
 Example JSON:
 
 {
-  "project_id": "C01-001",
+  "class_id":"C01",
+  "project_id": "P001",
   "issuer": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
   "issuance": [
     {
