@@ -119,7 +119,7 @@ func TxCreateProjectCmd() *cobra.Command {
 		Use:   "create-project [jurisdiction] [metadata] [flags]",
 		Short: "Create a new project",
 		Long: `Create a new project. By default, this creates an unregistered project that is not enrolled in any credit
-class. If the class-id flag is provided, the signer must be an issuer of the class and the project will be enrolled in
+class. If the class flag is provided, the signer must be an issuer of the class and the project will be enrolled in
 the class automatically.
 		
 Parameters:
