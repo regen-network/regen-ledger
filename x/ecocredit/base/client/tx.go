@@ -134,7 +134,7 @@ required project creation fee param. If the project creation fee is zero, no fee
 We explicitly include the project creation fee here so that the project creator acknowledges paying 
 the fee and is not surprised to learn that the they paid a fee without consent.
 - class:      the ID of the credit class. If this is provided, the signer must be an issuer of the class.
-- reference-id: a reference ID for the project. Only valid if class-id is also provided.`,
+- reference-id: a reference ID for the project. Only valid if class is also provided.`,
 		Example: `regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf
 regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf  --class-id C01 --reference-id VCS-001`,
 		Args: cobra.ExactArgs(2),
