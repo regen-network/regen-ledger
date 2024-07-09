@@ -207,7 +207,7 @@ Parameters:
                    quantified and verified (format: yyyy-mm-dd)
 - end-date:        the end of the period during which this credit batch was
                    quantified and verified (format: yyyy-mm-dd)`,
-		Example: "regen tx ecocredit gen-batch-json regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw C01-001 2 regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf 2020-01-01 2021-01-01",
+		Example: "regen tx ecocredit gen-batch-json regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw P001 C01 2 regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf 2020-01-01 2021-01-01",
 		Args:    cobra.ExactArgs(7),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			issuanceCount, err := strconv.ParseUint(args[3], 10, 8)
