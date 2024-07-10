@@ -43,7 +43,8 @@ func (k Keeper) UpdateProjectEnrollment(ctx context.Context, msg *types.MsgUpdat
 	case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED,
 		ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED:
 		switch newStatus {
-		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED,
+		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_UNSPECIFIED,
+			ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_CHANGES_REQUESTED,
 			ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED:
 			// Valid case
 		case ecocreditv1.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_REJECTED:

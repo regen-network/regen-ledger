@@ -34,7 +34,7 @@ Feature: MsgUpdateProjectEnrollment
         | P001       | C01      |                   |
         | P001       |          | class id: empty   |
 
-  Rule: new_status is specified and valid
+  Rule: new_status is valid
     Scenario Outline: validate status
       Given issuer "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
       * project ID "P001"
@@ -45,7 +45,7 @@ Feature: MsgUpdateProjectEnrollment
 
       Examples:
         | status            | error               |
-        | UNSPECIFIED       | new status: invalid |
+        | UNSPECIFIED       |                     |
         | ACCEPTED          |                     |
         | REJECTED          |                     |
         | CHANGES_REQUESTED |                     |

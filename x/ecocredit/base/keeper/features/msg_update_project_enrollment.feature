@@ -25,13 +25,19 @@ Feature: Msg/UpdateProjectEnrollment
         }
       """
       Examples:
-        | scenario                          | cur_status        | cur_metadata | issuer | new_status | new_metadata | err          | expected_status   | expected_metadata |
-        | I01 unspecified to accepted       | UNSPECIFIED       | abc          | I01    | ACCEPTED   | foo123       |              | ACCEPTED          | foo123            |
-        | Bob unspecified to accepted       | UNSPECIFIED       | abc          | Bob    | ACCEPTED   | foo123       | unauthorized | UNSPECIFIED       | abc               |
-        | I01 changes requested to accepted | CHANGES_REQUESTED | bar456       | I01    | ACCEPTED   | foo123       |              | ACCEPTED          | foo123            |
-        | Bob changes requested to accepted | CHANGES_REQUESTED | bar456       | Bob    | ACCEPTED   | foo123       | unauthorized | CHANGES_REQUESTED | bar456            |
-        | I01 update accepted metadata      | ACCEPTED          | foo123       | I01    | ACCEPTED   | bar357       |              | ACCEPTED          | bar357            |
-        | Bob updated accepted metadata     | ACCEPTED          | foo123       | Bob    | ACCEPTED   | bar357       | unauthorized | ACCEPTED          | foo123            |
+        | scenario                             | cur_status        | cur_metadata | issuer | new_status        | new_metadata | err          | expected_status   | expected_metadata |
+        | I01 unspecified to accepted          | UNSPECIFIED       | abc          | I01    | ACCEPTED          | foo123       |              | ACCEPTED          | foo123            |
+        | Bob unspecified to accepted          | UNSPECIFIED       | abc          | Bob    | ACCEPTED          | foo123       | unauthorized | UNSPECIFIED       | abc               |
+        | I01 unspecified to changes requested | UNSPECIFIED       | abc          | I01    | CHANGES_REQUESTED | foo123       |              | CHANGES_REQUESTED | foo123            |
+        | Bob unspecified to changes requested | UNSPECIFIED       | abc          | Bob    | CHANGES_REQUESTED | foo123       | unauthorized | UNSPECIFIED       | abc               |
+        | I01 changes requested to accepted    | CHANGES_REQUESTED | bar456       | I01    | ACCEPTED          | foo123       |              | ACCEPTED          | foo123            |
+        | Bob changes requested to accepted    | CHANGES_REQUESTED | bar456       | Bob    | ACCEPTED          | foo123       | unauthorized | CHANGES_REQUESTED | bar456            |
+        | I01 update accepted metadata         | ACCEPTED          | foo123       | I01    | ACCEPTED          | bar357       |              | ACCEPTED          | bar357            |
+        | Bob updated accepted metadata        | ACCEPTED          | foo123       | Bob    | ACCEPTED          | bar357       | unauthorized | ACCEPTED          | foo123            |
+        | I01 unspecified to unspecified       | UNSPECIFIED       | abc          | I01    | UNSPECIFIED       | foo123       |              | UNSPECIFIED       | foo123            |
+        | Bob unspecified to unspecified       | UNSPECIFIED       | abc          | Bob    | UNSPECIFIED       | foo123       | unauthorized | UNSPECIFIED       | abc               |
+        | I01 changes requested to unspecified | CHANGES_REQUESTED | abc          | I01    | UNSPECIFIED       | foo123       |              | UNSPECIFIED       | foo123            |
+        | Bob changes requested to unspecified | CHANGES_REQUESTED | abc          | Bob    | UNSPECIFIED       | foo123       | unauthorized | CHANGES_REQUESTED | abc               |
 
   Rule: valid state transitions performed by issuers which remove enrollment entries are:
   UNSPECIFIED -> REJECTED
@@ -67,8 +73,6 @@ Feature: Msg/UpdateProjectEnrollment
         | Bob accepted to terminated           | ACCEPTED          | foo123       | Bob    | TERMINATED        | baz789       | unauthorized | true   |
         | I01 accepted to unspecified          | ACCEPTED          | foo123       | I01    | UNSPECIFIED       | baz789       | invalid      | true   |
         | Bob accepted to unspecified          | ACCEPTED          | foo123       | Bob    | UNSPECIFIED       | baz789       | unauthorized | true   |
-        | I01 changes requested to unspecified | CHANGES_REQUESTED | bar456       | I01    | UNSPECIFIED       | baz789       | invalid      | true   |
-        | Bob changes requested to unspecified | CHANGES_REQUESTED | bar456       | Bob    | UNSPECIFIED       | baz789       | unauthorized | true   |
         | I01 accepted to changes requested    | ACCEPTED          | foo123       | I01    | CHANGES_REQUESTED | baz789       | invalid      | true   |
         | Bob accepted to changes requested    | ACCEPTED          | foo123       | Bob    | CHANGES_REQUESTED | baz789       | unauthorized | true   |
 
