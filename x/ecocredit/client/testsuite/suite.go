@@ -380,9 +380,9 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *base
 
 	cmd := baseclient.TxCreateProjectCmd()
 	args := []string{
-		msg.ClassId,
 		msg.Jurisdiction,
 		msg.Metadata,
+		fmt.Sprintf("--class=%s", msg.ClassId),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
 		fmt.Sprintf("--reference-id=%s", msg.ReferenceId),
 	}
