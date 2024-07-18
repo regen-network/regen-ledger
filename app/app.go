@@ -7,7 +7,10 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -19,6 +22,8 @@ import (
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -196,8 +201,6 @@ var (
 		perms := map[string][]string{
 			authtypes.FeeCollectorName:      nil,
 			distrtypes.ModuleName:           nil,
-			icatypes.ModuleName:             nil,
-			ibcfeetypes.ModuleName:          nil,
 			minttypes.ModuleName:            {authtypes.Minter},
 			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
 			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
@@ -206,6 +209,11 @@ var (
 			ecocredit.ModuleName:            {authtypes.Burner},
 			baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 			marketplace.FeePoolName:         {authtypes.Burner},
+
+			//	non sdk
+			icatypes.ModuleName:    nil,
+			ibcfeetypes.ModuleName: nil,
+			wasmtypes.ModuleName:   {authtypes.Burner},
 		}
 
 		return perms
@@ -250,11 +258,6 @@ type RegenApp struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	GovKeeper             *govkeeper.Keeper
 	GroupKeeper           groupkeeper.Keeper
-	IBCFeeKeeper          ibcfeekeeper.Keeper
-	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	IBCTransferKeeper     ibctransferkeeper.Keeper
-	ICAControllerKeeper   icacontrollerkeeper.Keeper
-	ICAHostKeeper         icahostkeeper.Keeper
 	InterTxKeeper         intertxkeeper.Keeper
 	MintKeeper            mintkeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
@@ -262,12 +265,22 @@ type RegenApp struct {
 	StakingKeeper         *stakingkeeper.Keeper
 	UpgradeKeeper         *upgradekeeper.Keeper
 
+	IBCFeeKeeper        ibcfeekeeper.Keeper
+	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	IBCTransferKeeper   ibctransferkeeper.Keeper
+	ICAControllerKeeper icacontrollerkeeper.Keeper
+	ICAHostKeeper       icahostkeeper.Keeper
+
+	WasmKeeper wasmkeeper.Keeper
+
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
 	ScopedIBCTransferKeeper   capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
+
+	ScopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	ModuleManager *module.Manager
@@ -283,6 +296,7 @@ type RegenApp struct {
 func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
 
 	encCfg := MakeEncodingConfig()
@@ -514,6 +528,36 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.ScopedInterTxKeeper,
 	)
 
+	// Wasm Keepr
+	wasmDir := filepath.Join(homePath, "wasm")
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic(fmt.Sprintf("error while reading wasm config: %s", err))
+	}
+	availableCapabilities := strings.Join(AllCapabilities(), ",")
+	// The last arguments can contain custom message handlers, and custom query handlers,
+	// if we want to allow any custom callbacks
+	app.WasmKeeper = wasmkeeper.NewKeeper(
+		appCodec,
+		keys[wasmtypes.StoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.StakingKeeper,
+		distrkeeper.NewQuerier(app.DistrKeeper),
+		app.IBCFeeKeeper, // ISC4 Wrapper: fee IBC middleware
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.ScopedWasmKeeper,
+		app.IBCTransferKeeper,
+		app.MsgServiceRouter(),
+		app.GRPCQueryRouter(),
+		wasmDir,
+		wasmConfig,
+		availableCapabilities,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		wasmOpts...,
+	)
+
 	// Create IBC stacks to add to IBC router
 
 	interTxModule := intertxmodule.NewModule(app.InterTxKeeper)
@@ -528,13 +572,19 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	ibcTransferModule := ibctransfer.NewIBCModule(app.IBCTransferKeeper)
 	ibcTransferStack := ibcfee.NewIBCMiddleware(ibcTransferModule, app.IBCFeeKeeper)
 
+	// Create fee enabled wasm ibc Stack
+	var wasmStack porttypes.IBCModule
+	wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCFeeKeeper)
+	wasmStack = ibcfee.NewIBCMiddleware(wasmStack, app.IBCFeeKeeper)
+
 	// Create static IBC router
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.
 		AddRoute(ibctransfertypes.ModuleName, ibcTransferStack).
 		AddRoute(intertx.ModuleName, icaControllerStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
-		AddRoute(icahosttypes.SubModuleName, icaHostStack)
+		AddRoute(icahosttypes.SubModuleName, icaHostStack).
+		AddRoute(wasmtypes.ModuleName, wasmStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// Register the proposal types
@@ -595,6 +645,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		params.NewAppModule(app.ParamsKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibctransfer.NewAppModule(app.IBCTransferKeeper),
 		ecocreditMod,
 		dataMod,
@@ -635,6 +686,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		intertx.ModuleName,
+
+		// wasm module
+		wasmtypes.ModuleName,
 	)
 	app.ModuleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -663,6 +717,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		intertx.ModuleName,
+
+		// wasm module
+		wasmtypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -696,6 +753,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		intertx.ModuleName,
+
+		// wasm module
+		wasmtypes.ModuleName,
 	)
 
 	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
@@ -754,7 +814,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	return app
 }
 
-func (app *RegenApp) setAnteHandler(txConfig client.TxConfig) {
+func (app *RegenApp) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.WasmConfig, txCounterStoreKey storetypes.StoreKey) {
 	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
