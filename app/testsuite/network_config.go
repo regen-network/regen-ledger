@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -17,6 +18,8 @@ import (
 	"github.com/regen-network/regen-ledger/v5/app"
 )
 
+var emptyWasmOpts = []wasmkeeper.Option{}
+
 // NewTestNetworkFixture returns a new simapp AppConstructor for network simulation tests
 func NewTestNetworkFixture() network.TestFixture {
 	dir, err := os.MkdirTemp("", "regen")
@@ -26,7 +29,7 @@ func NewTestNetworkFixture() network.TestFixture {
 	defer os.RemoveAll(dir)
 
 	a := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, 0,
-		simtestutil.NewAppOptionsWithFlagHome(dir))
+		simtestutil.NewAppOptionsWithFlagHome(dir), emptyWasmOption)
 
 	appCtr := func(val network.ValidatorI) servertypes.Application {
 		cfg := val.GetAppConfig()
@@ -34,6 +37,7 @@ func NewTestNetworkFixture() network.TestFixture {
 		return app.NewRegenApp(
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, 0,
 			simtestutil.NewAppOptionsWithFlagHome(val.GetCtx().Config.RootDir),
+			emptyWasmOpts,
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(cfg.Pruning)),
 			baseapp.SetMinGasPrices(cfg.MinGasPrices),
 			baseapp.SetChainID(val.GetCtx().Viper.GetString(flags.FlagChainID)),
