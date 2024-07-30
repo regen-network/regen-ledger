@@ -37,7 +37,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*
 
 	// only check and charge fee if required fee is set
 	if classFee.Fee != nil {
-		requiredFee := regentypes.CoinFromCosmosApiLegacy(classFee.Fee)
+		requiredFee := regentypes.CoinFromCosmosAPILegacy(classFee.Fee)
 
 		if req.Fee == nil {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(

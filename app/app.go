@@ -848,8 +848,8 @@ func (app *RegenApp) TxConfig() client.TxConfig {
 }
 
 // DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
-func (a *RegenApp) DefaultGenesis() map[string]json.RawMessage {
-	return ModuleBasics.DefaultGenesis(a.appCodec)
+func (app *RegenApp) DefaultGenesis() map[string]json.RawMessage {
+	return ModuleBasics.DefaultGenesis(app.appCodec)
 }
 
 // GetKey returns the KVStoreKey for the provided store key.

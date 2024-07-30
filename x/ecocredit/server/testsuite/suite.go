@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	s.Require().NoError(err)
 
 	err = bs.BasketFeeTable().Save(ormCtx, &basketApi.BasketFee{
-		Fee: regentypes.CoinToCosmosApiLegacy(s.basketFee),
+		Fee: regentypes.CoinToCosmosAPILegacy(s.basketFee),
 	})
 	s.Require().NoError(err)
 

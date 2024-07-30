@@ -18,7 +18,7 @@ func (k Keeper) UpdateClassFee(ctx context.Context, req *types.MsgUpdateClassFee
 
 	var classFee *sdkbase.Coin
 	if req.Fee != nil && req.Fee.IsPositive() {
-		classFee = regentypes.CoinToCosmosApiLegacy(*req.Fee)
+		classFee = regentypes.CoinToCosmosAPILegacy(*req.Fee)
 	}
 
 	if err := k.stateStore.ClassFeeTable().Save(ctx, &api.ClassFee{
