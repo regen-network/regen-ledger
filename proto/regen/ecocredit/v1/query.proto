@@ -895,7 +895,7 @@ message QueryProjectEnrollmentsResponse {
 
 // EnrollmentInfo is the human-readable project enrollment information.
 message EnrollmentInfo {
-  // project_id is the unique identifier of the project to query.
+  // project_id is the unique identifier of the project.
   string project_id = 1;
 
   // class_id is the unique identifier of the credit class to query.
