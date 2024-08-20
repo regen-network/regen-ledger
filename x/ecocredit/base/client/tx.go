@@ -153,7 +153,7 @@ regen tx ecocredit create-project "US-WA 98225" regen:13toVgf5UjYBz6J29x28pLQyjK
 				var err error
 				fee, err = sdk.ParseCoinNormalized(projectFee)
 				if err != nil {
-					return fmt.Errorf("failed to parse class-fee: %w", err)
+					return fmt.Errorf("failed to parse project-fee: %w", err)
 				}
 			}
 
