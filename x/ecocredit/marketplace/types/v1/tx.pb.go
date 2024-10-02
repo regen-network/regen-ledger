@@ -10,10 +10,10 @@ import (
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/gogo/protobuf/types"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
+	_ "github.com/cosmos/gogoproto/types"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1644,7 +1644,7 @@ func (m *MsgSell_Order) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if m.Expiration != nil {
-		n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.Expiration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.Expiration):])
+		n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.Expiration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiration):])
 		if err1 != nil {
 			return 0, err1
 		}
@@ -1798,7 +1798,7 @@ func (m *MsgUpdateSellOrders_Update) MarshalToSizedBuffer(dAtA []byte) (int, err
 	var l int
 	_ = l
 	if m.NewExpiration != nil {
-		n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.NewExpiration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.NewExpiration):])
+		n5, err5 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.NewExpiration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.NewExpiration):])
 		if err5 != nil {
 			return 0, err5
 		}
@@ -2398,7 +2398,7 @@ func (m *MsgSell_Order) Size() (n int) {
 		n += 2
 	}
 	if m.Expiration != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.Expiration)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiration)
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -2460,7 +2460,7 @@ func (m *MsgUpdateSellOrders_Update) Size() (n int) {
 		n += 2
 	}
 	if m.NewExpiration != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.NewExpiration)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.NewExpiration)
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -2983,7 +2983,7 @@ func (m *MsgSell_Order) Unmarshal(dAtA []byte) error {
 			if m.Expiration == nil {
 				m.Expiration = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.Expiration, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.Expiration, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3418,7 +3418,7 @@ func (m *MsgUpdateSellOrders_Update) Unmarshal(dAtA []byte) error {
 			if m.NewExpiration == nil {
 				m.NewExpiration = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.NewExpiration, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.NewExpiration, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

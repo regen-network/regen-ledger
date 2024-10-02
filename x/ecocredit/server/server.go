@@ -26,9 +26,9 @@ type serverImpl struct {
 	bankKeeper    ecocredit.BankKeeper
 	accountKeeper ecocredit.AccountKeeper
 
-	BaseKeeper        basekeeper.Keeper
-	BasketKeeper      basketkeeper.Keeper
-	MarketplaceKeeper marketkeeper.Keeper
+	baseKeeper   basekeeper.Keeper
+	basketKeeper basketkeeper.Keeper
+	marketKeeper marketkeeper.Keeper
 
 	db               ormdb.ModuleDB
 	stateStore       baseapi.StateStore
@@ -72,9 +72,9 @@ func NewServer(storeKey storetypes.StoreKey,
 	s.stateStore = baseStore
 	s.basketStore = basketStore
 	s.marketplaceStore = marketStore
-	s.BaseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
-	s.BasketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority)
-	s.MarketplaceKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority)
+	s.baseKeeper = basekeeper.NewKeeper(baseStore, bankKeeper, baseAddr, basketStore, marketStore, authority)
+	s.basketKeeper = basketkeeper.NewKeeper(basketStore, baseStore, bankKeeper, basketAddr, authority)
+	s.marketKeeper = marketkeeper.NewKeeper(marketStore, baseStore, bankKeeper, authority)
 
 	return s
 }
@@ -96,9 +96,21 @@ func getStateStores(db ormdb.ModuleDB) (baseapi.StateStore, basketapi.StateStore
 }
 
 func (s serverImpl) QueryServers() (basetypes.QueryServer, baskettypes.QueryServer, markettypes.QueryServer) {
-	return s.BaseKeeper, s.BasketKeeper, s.MarketplaceKeeper
+	return s.baseKeeper, s.basketKeeper, s.marketKeeper
 }
 
 func (s serverImpl) GetStateStores() (baseapi.StateStore, basketapi.StateStore, marketapi.StateStore) {
 	return s.stateStore, s.basketStore, s.marketplaceStore
+}
+
+func (s serverImpl) GetBaseKeeper() basekeeper.Keeper {
+	return s.baseKeeper
+}
+
+func (s serverImpl) GetBasketKeeper() basketkeeper.Keeper {
+	return s.basketKeeper
+}
+
+func (s serverImpl) GetMarketKeeper() marketkeeper.Keeper {
+	return s.marketKeeper
 }

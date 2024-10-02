@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -13,18 +12,15 @@ import (
 )
 
 // ProjectsByClass queries all projects from a given credit class.
-func (k Keeper) ProjectsByClass(ctx context.Context, request *types.QueryProjectsByClassRequest) (*types.QueryProjectsByClassResponse, error) {
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+func (k Keeper) ProjectsByClass(ctx context.Context, req *types.QueryProjectsByClassRequest) (*types.QueryProjectsByClassResponse, error) {
+	cInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
-	cInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
-	if err != nil {
-		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
-	}
-
-	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.ProjectTable().List(
+		ctx, api.ProjectClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -38,12 +34,10 @@ func (k Keeper) ProjectsByClass(ctx context.Context, request *types.QueryProject
 		}
 
 		admin := sdk.AccAddress(project.Admin)
-
 		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 		if err != nil {
 			return nil, regenerrors.ErrNotFound.Wrapf("could not get class with key: %d", project.ClassKey)
 		}
-
 		info := types.ProjectInfo{
 			Id:           project.Id,
 			Admin:        admin.String(),
@@ -52,17 +46,11 @@ func (k Keeper) ProjectsByClass(ctx context.Context, request *types.QueryProject
 			Metadata:     project.Metadata,
 			ReferenceId:  project.ReferenceId,
 		}
-
 		projects = append(projects, &info)
-	}
-
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryProjectsByClassResponse{
 		Projects:   projects,
-		Pagination: pr,
+		Pagination: ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }

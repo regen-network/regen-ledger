@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gogo/protobuf/proto"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
-	dbm "github.com/tendermint/tm-db"
 
-	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -19,15 +19,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
-	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
-	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
@@ -179,9 +179,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) setupGenesis() {
 	require := s.Require()
 
-	// set up temporary mem db
-	db := dbm.NewMemDB()
-
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	mdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(err)
 
@@ -318,7 +316,7 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 func (s *IntegrationTestSuite) commonTxFlags() []string {
 	return []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 }
@@ -326,13 +324,7 @@ func (s *IntegrationTestSuite) commonTxFlags() []string {
 func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sdk.AccAddress, coins sdk.Coins) {
 	require := s.Require()
 
-	out, err := banktestutil.MsgSendExec(
-		clientCtx,
-		from,
-		to,
-		coins,
-		s.commonTxFlags()...,
-	)
+	out, err := cli.MsgSendExec(clientCtx, from, to, coins, s.commonTxFlags()...)
 	require.NoError(err)
 
 	var res sdk.TxResponse

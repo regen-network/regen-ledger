@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"math/rand"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -22,6 +22,7 @@ import (
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
+	"github.com/regen-network/regen-ledger/types/v2/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
@@ -61,7 +62,7 @@ func genClassCreatorAllowlist(r *rand.Rand) bool {
 
 // RandomizedGenState generates a random GenesisState for the ecocredit module.
 func RandomizedGenState(simState *module.SimulationState) {
-	db := dbm.NewMemDB()
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,
@@ -220,10 +221,8 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 	}
 
 	classFee := genCreditClassFee(r)
-	classFeeProto := regentypes.CoinToProtoCoin(classFee)
-
 	if err := ss.ClassFeeTable().Save(ctx, &api.ClassFee{
-		Fee: classFeeProto,
+		Fee: regentypes.CoinToCosmosAPILegacy(classFee),
 	}); err != nil {
 		return err
 	}
@@ -248,7 +247,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 
 	// generate basket params
 	if err := basketStore.BasketFeeTable().Save(ctx, &basketapi.BasketFee{
-		Fee: &basev1beta1.Coin{
+		Fee: &sdkbase.Coin{
 			Denom:  sdk.DefaultBondDenom,
 			Amount: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 100000)),
 		},

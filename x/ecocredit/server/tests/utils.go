@@ -10,6 +10,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
@@ -55,8 +56,6 @@ func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(tkey, storetypes.StoreTypeTransient)
 
-	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
-	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
 	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
@@ -66,14 +65,14 @@ func NewEcocreditModule(ff fixture.Factory) *ecocredit.Module {
 		marketplace.FeePoolName:    {authtypes.Burner},
 	}
 
+	govAddr := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
-	)
-
-	bankKeeper := bankkeeper.NewBaseKeeper(
-		cdc, bankKey, accountKeeper, bankSubspace, nil,
-	)
+		cdc, authKey, authtypes.ProtoBaseAccount,
+		maccPerms, "regen", govAddr)
+	bankKeeper := bankkeeper.NewBaseKeeper(cdc, bankKey, accountKeeper, nil, govAddr)
 
 	_, _, addr := testdata.KeyTestPubAddr()
-	return ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace, nil)
+	ecocreditModule := ecocredit.NewModule(ecocreditKey, addr, accountKeeper, bankKeeper, ecocreditSubspace, nil)
+	ecocreditModule.RegisterInterfaces(cdc.InterfaceRegistry())
+	return ecocreditModule
 }

@@ -12,10 +12,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -25,11 +24,11 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	regen "github.com/regen-network/regen-ledger/v5/app"
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -37,7 +36,8 @@ import (
 )
 
 func TestAppImportExport(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("app-import-export", "sim-1")
+	config := simcli.NewConfigFromFlags()
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app-import-export", "sim-1", false, true)
 	if skip {
 		t.Skip("skipping app-import-export simulation")
 	}
@@ -53,11 +53,8 @@ func TestAppImportExport(t *testing.T) {
 		db,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
-		simapp.FlagPeriodValue,
-		regen.MakeEncodingConfig(),
-		simapp.EmptyAppOptions{},
+		simcli.FlagPeriodValue,
+		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, app.Name())
@@ -66,22 +63,22 @@ func TestAppImportExport(t *testing.T) {
 	_, simParams, simErr := simulateFromSeed(t, app, config)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err = simtestutil.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		simtestutil.PrintStats(db)
 	}
 
 	fmt.Printf("exporting genesis...\n")
 
-	exported, err := app.ExportAppStateAndValidators(false, []string{})
+	exported, err := app.ExportAppStateAndValidators(false, []string{}, []string{})
 	require.NoError(t, err)
 
 	fmt.Printf("importing genesis...\n")
 
-	_, newDB, newDir, _, _, err := simapp.SetupSimulation("app-import-export-2", "sim-2")
+	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "app-import-export-2", "sim-2", false, true)
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
@@ -94,11 +91,8 @@ func TestAppImportExport(t *testing.T) {
 		newDB,
 		nil,
 		true,
-		map[int64]bool{},
-		regen.DefaultNodeHome,
-		simapp.FlagPeriodValue,
-		regen.MakeEncodingConfig(),
-		simapp.EmptyAppOptions{},
+		simcli.FlagPeriodValue,
+		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, newApp.Name())
@@ -147,7 +141,7 @@ func TestAppImportExport(t *testing.T) {
 		}},
 
 		// ibc modules
-		{app.GetKey(ibchost.StoreKey), newApp.GetKey(ibchost.StoreKey), [][]byte{}},
+		{app.GetKey(ibcexported.StoreKey), newApp.GetKey(ibcexported.StoreKey), [][]byte{}},
 		{app.GetKey(ibctransfertypes.StoreKey), newApp.GetKey(ibctransfertypes.StoreKey), [][]byte{}},
 
 		// regen modules
@@ -167,7 +161,7 @@ func TestAppImportExport(t *testing.T) {
 			len(failedKVAs), skp.A, skp.B,
 		)
 
-		simLog := simapp.GetSimulationLog(
+		simLog := simtestutil.GetSimulationLog(
 			skp.A.Name(),
 			app.SimulationManager().StoreDecoders,
 			failedKVAs,

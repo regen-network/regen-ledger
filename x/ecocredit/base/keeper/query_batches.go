@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -14,13 +13,9 @@ import (
 )
 
 // Batches queries for all batches in the given credit class.
-func (k Keeper) Batches(ctx context.Context, request *types.QueryBatchesRequest) (*types.QueryBatchesResponse, error) {
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	it, err := k.stateStore.BatchTable().List(ctx, api.BatchPrimaryKey{}, ormlist.Paginate(pg))
+func (k Keeper) Batches(ctx context.Context, req *types.QueryBatchesRequest) (*types.QueryBatchesResponse, error) {
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchPrimaryKey{}, pg)
 	if err != nil {
 		return nil, err
 	}
@@ -34,12 +29,11 @@ func (k Keeper) Batches(ctx context.Context, request *types.QueryBatchesRequest)
 		}
 
 		issuer := sdk.AccAddress(batch.Issuer)
-
 		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
 		if err != nil {
-			return nil, regenerrors.ErrNotFound.Wrapf("failed to get project by key: %d: %s", batch.ProjectKey, err.Error())
+			return nil, regenerrors.ErrNotFound.Wrapf("failed to get project by key: %d: %s",
+				batch.ProjectKey, err.Error())
 		}
-
 		info := types.BatchInfo{
 			Issuer:       issuer.String(),
 			ProjectId:    project.Id,
@@ -50,17 +44,11 @@ func (k Keeper) Batches(ctx context.Context, request *types.QueryBatchesRequest)
 			IssuanceDate: regentypes.ProtobufToGogoTimestamp(batch.IssuanceDate),
 			Open:         batch.Open,
 		}
-
 		batches = append(batches, &info)
-	}
-
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryBatchesResponse{
 		Batches:    batches,
-		Pagination: pr,
+		Pagination: ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }

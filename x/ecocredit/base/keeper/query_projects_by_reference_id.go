@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -18,12 +17,9 @@ func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProje
 		return nil, regenerrors.ErrInvalidArgument.Wrap("reference-id is empty")
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectReferenceIdIndexKey{}.WithReferenceId(req.ReferenceId), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.ProjectTable().List(
+		ctx, api.ProjectReferenceIdIndexKey{}.WithReferenceId(req.ReferenceId), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +36,6 @@ func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProje
 		if err != nil {
 			return nil, regenerrors.ErrNotFound.Wrapf("class with key: %d", project.ClassKey)
 		}
-
 		info := &types.ProjectInfo{
 			Id:           project.Id,
 			Admin:        sdk.AccAddress(project.Admin).String(),
@@ -49,17 +44,11 @@ func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProje
 			Metadata:     project.Metadata,
 			ReferenceId:  project.ReferenceId,
 		}
-
 		projects = append(projects, info)
-	}
-
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
 	}
 
 	return &types.QueryProjectsByReferenceIdResponse{
 		Projects:   projects,
-		Pagination: pr,
+		Pagination: ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }
