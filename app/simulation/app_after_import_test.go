@@ -18,6 +18,8 @@ import (
 
 func TestAppAfterImport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
+	// Its required to have commit true for the block to not fail during simulation due to block height not increasing
+	config.Commit = true
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app-after-import-1", "sim-1", false, true)
 	if skip {
 		t.Skip("skipping app-after-import simulation")
