@@ -275,6 +275,9 @@ service Query {
   rpc ProjectEnrollments(QueryProjectEnrollmentsRequest) returns (QueryProjectEnrollmentsResponse) {
     option (google.api.http) = {
       get : "/regen/ecocredit/v1/project/{project_id}/enrollments"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/project/enrollments"}
+      ]
     };
   }
 }
