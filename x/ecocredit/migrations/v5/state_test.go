@@ -119,6 +119,7 @@ func TestMigrate(t *testing.T) {
 	enrollment3, err := state.ProjectEnrollmentTable().Get(ctx, projKey3, clsKey2)
 	require.NoError(t, err)
 	require.Equal(t, projKey3, enrollment3.ProjectKey)
+	require.Equal(t, clsKey2, enrollment3.ClassKey)
 
 }
 
