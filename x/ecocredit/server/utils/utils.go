@@ -5,21 +5,21 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
 )
 
-// GetCreditTypeFromBatchDenom extracts the classID from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, denom string) (*api.CreditType, error) {
-	classID := base.GetClassIDFromBatchDenom(denom)
-	classInfo, err := store.ClassTable().GetById(ctx, classID)
+// GetCreditTypeFromBatch extracts the credit type from a batch by querying the class table for the class key, and then
+// querying the credit type table for the credit type abbreviation. This is a convenience function for use in message
+// handlers, where the credit type is needed to perform further operations on the batch.
+func GetCreditTypeFromBatch(ctx context.Context, store api.StateStore, batch *api.Batch) (*api.CreditType, error) {
+	cls, err := store.ClassTable().Get(ctx, batch.ClassKey)
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with ID %s: %s", classID, err.Error())
+		return nil, err
 	}
-	return store.CreditTypeTable().Get(ctx, classInfo.CreditTypeAbbrev)
+
+	return store.CreditTypeTable().Get(ctx, cls.CreditTypeAbbrev)
 }
 
 // GetNonNegativeFixedDecs takes an arbitrary amount of decimal strings, and returns their corresponding fixed decimals

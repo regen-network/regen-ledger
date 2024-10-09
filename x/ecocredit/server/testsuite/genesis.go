@@ -36,10 +36,17 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	projects := []baseapi.Project{
-		{Id: "C01-001", Admin: sdk.AccAddress("addr1"), ClassKey: 1, Jurisdiction: "AQ", Metadata: "metadata"},
-		{Id: "C01-002", Admin: sdk.AccAddress("addr2"), ClassKey: 2, Jurisdiction: "AQ", Metadata: "metadata"},
+		{Id: "C01-001", Admin: sdk.AccAddress("addr1"), Jurisdiction: "AQ", Metadata: "metadata"},
+		{Id: "C01-002", Admin: sdk.AccAddress("addr2"), Jurisdiction: "AQ", Metadata: "metadata"},
 	}
 	projectJSON, err := json.Marshal(projects)
+	require.NoError(err)
+
+	enrollments := []baseapi.ProjectEnrollment{
+		{ProjectKey: 1, ClassKey: 1, Status: baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED},
+		{ProjectKey: 2, ClassKey: 2, Status: baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED},
+	}
+	enrollmentJSON, err := json.Marshal(enrollments)
 	require.NoError(err)
 
 	batches := []baseapi.Batch{
@@ -69,10 +76,6 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	batchSeqJSON, err := json.Marshal(batchSeq)
 	require.NoError(err)
 
-	projectSeq := []baseapi.ProjectSequence{{ClassKey: 1, NextSequence: 3}}
-	projectSeqJSON, err := json.Marshal(projectSeq)
-	require.NoError(err)
-
 	classAllowlistSettingJSON, err := json.Marshal(baseapi.ClassCreatorAllowlist{
 		Enabled: true,
 	})
@@ -100,12 +103,12 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	wrapper[string(proto.MessageName(&baseapi.Class{}))] = classJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassIssuer{}))] = classIssuersJSON
 	wrapper[string(proto.MessageName(&baseapi.Project{}))] = projectJSON
+	wrapper[string(proto.MessageName(&baseapi.ProjectEnrollment{}))] = enrollmentJSON
 	wrapper[string(proto.MessageName(&baseapi.Batch{}))] = batchJSON
 	wrapper[string(proto.MessageName(&baseapi.BatchBalance{}))] = batchBalancesJSON
 	wrapper[string(proto.MessageName(&baseapi.BatchSupply{}))] = batchSupplyJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassSequence{}))] = classSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.BatchSequence{}))] = batchSeqJSON
-	wrapper[string(proto.MessageName(&baseapi.ProjectSequence{}))] = projectSeqJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassCreatorAllowlist{}))] = classAllowlistSettingJSON
 	wrapper[string(proto.MessageName(&baseapi.AllowedClassCreator{}))] = allowedClassCreatorsJSON
 	wrapper[string(proto.MessageName(&baseapi.ClassFee{}))] = classFeeJSON

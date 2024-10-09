@@ -38,7 +38,8 @@ service Msg {
   // CreateOrUpdateApplicaton creates a new project credit class application, updates
   // the metadata for an existing one when changes have been requested, or withdraws
   // the application. When an application is withdrawn, its data will be deleted from
-  // state and the project may apply again to the same credit class in the future.
+  // state and the project may apply again to the same credit class in the future. Any
+  // new metadata will be passed to EventUpdateApplication including for withdrawals.
   //
   // Since Revision 3
   rpc CreateOrUpdateApplication(MsgCreateOrUpdateApplication)
@@ -157,8 +158,8 @@ service Msg {
   // the scope of the provided credit class, the credits will be minted to the
   // existing credit batch, otherwise the credits will be issued in a new credit
   // batch. The new credit batch will be created under an existing project if a
-  // project with a matching reference id already exists within the scope of the
-  // credit class, otherwise a new project will be created.
+  // project with a matching reference id already exists, otherwise a new project
+  // will be created.
   rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 
   // AddCreditType is a governance method that allows the addition of new
@@ -348,16 +349,12 @@ message MsgCreateUnregisteredProject {
   // increased precision.
   string jurisdiction = 3;
 
-  // reference_id is any arbitrary string used to reference the project with a
-  // maximum length of 32 characters.
-  string reference_id = 4;
-
   // fee is the project creation fee. An equal fee is required if the project
   // creation fee parameter is set. The provided fee can be greater than the
   // parameter, but only the amount in the parameter will be charged.
   //
   // Since Revision 3
-  cosmos.base.v1beta1.Coin fee = 5;
+  cosmos.base.v1beta1.Coin fee = 4;
 }
 
 // MsgCreateUnregisteredProjectResponse is the Msg/CreateUnregisteredProject response type.

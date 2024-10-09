@@ -118,6 +118,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.batchDenom = s.createBatch(s.val.ClientCtx, &basetypes.MsgCreateBatch{
 		Issuer:    s.addr1.String(),
 		ProjectId: s.projectID,
+		ClassId:   s.classID,
 		Issuance: []*basetypes.BatchIssuance{
 			{
 				Recipient:              s.addr1.String(),
@@ -379,9 +380,9 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *base
 
 	cmd := baseclient.TxCreateProjectCmd()
 	args := []string{
-		msg.ClassId,
 		msg.Jurisdiction,
 		msg.Metadata,
+		fmt.Sprintf("--class=%s", msg.ClassId),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
 		fmt.Sprintf("--reference-id=%s", msg.ReferenceId),
 	}

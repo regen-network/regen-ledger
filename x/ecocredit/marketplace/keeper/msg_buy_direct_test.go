@@ -13,10 +13,11 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -629,14 +630,15 @@ func (s *buyDirectSuite) createSellOrders(count int) {
 		totalQuantity = t.String()
 	}
 
-	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+	clsId, err := s.baseStore.ClassTable().InsertReturningID(s.ctx, &baseapi.Class{
 		Id:               s.classID,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	batchKey, err := s.baseStore.BatchTable().InsertReturningID(s.ctx, &baseapi.Batch{
-		Denom: s.batchDenom,
+		Denom:    s.batchDenom,
+		ClassKey: clsId,
 	})
 	require.NoError(s.t, err)
 

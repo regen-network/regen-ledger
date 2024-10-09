@@ -270,11 +270,14 @@ service Query {
     };
   }
 
-  // ProjectEnrollments queries all credit class enrollments associated with a
-  // project.
+  // ProjectEnrollments queries all credit class enrollments and allows for filtering by
+  // project or credit class.
   rpc ProjectEnrollments(QueryProjectEnrollmentsRequest) returns (QueryProjectEnrollmentsResponse) {
     option (google.api.http) = {
       get : "/regen/ecocredit/v1/project/{project_id}/enrollments"
+      additional_bindings : [
+        {get : "/regen/ecocredit/v1/project/enrollments"}
+      ]
     };
   }
 }
@@ -702,9 +705,8 @@ message ProjectInfo {
   // admin is the admin of the project.
   string admin = 2;
 
-  // class_id is the unique identifier of the credit class within which the
-  // project was created.
-  string class_id = 3;
+  // Deprecated: use ProjectEnrollment instead.
+  string class_id = 3 [deprecated = true];
 
   // jurisdiction is the jurisdiction of the project. Full documentation can be
   // found in MsgCreateProject.jurisdiction.
@@ -863,15 +865,20 @@ message QueryProjectEnrollmentRequest {
 message QueryProjectEnrollmentResponse {
 
   // project_class is the fetched project class relationship.
-  ProjectEnrollment project_class = 1;
+  EnrollmentInfo enrollment = 1;
 }
 
 // QueryProjectEnrollmentsRequest is the Query/ProjectEnrollments request type.
 //
 // Since Revision 3
 message QueryProjectEnrollmentsRequest {
-  // project_id is the unique identifier of the project to query.
+  // project_id is the unique identifier of the project to filter enrollments
+  // by. If not set, enrollments for all projects will be returned.
   string project_id = 1;
+
+  // class_id is the unique identifier of the credit class to filter enrollments
+  // by. If not set, enrollments for all credit classes will be returned.
+  string class_id = 3;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -883,8 +890,28 @@ message QueryProjectEnrollmentsRequest {
 message QueryProjectEnrollmentsResponse {
 
   // enrollments are the fetched project credit class enrollments.
-  repeated ProjectEnrollment enrollments = 1;
+  repeated EnrollmentInfo enrollments = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// EnrollmentInfo is the human-readable project enrollment information.
+message EnrollmentInfo {
+  // project_id is the unique identifier of the project.
+  string project_id = 1;
+
+  // class_id is the unique identifier of the credit class.
+  string class_id = 2;
+
+  // status is the status of the enrollment.
+  ProjectEnrollmentStatus status = 4;
+
+  // application_metadata is any arbitrary metadata set by the project
+  // admin related to its application to the credit class.
+  string application_metadata = 5;
+
+  // enrollment_metadata is any arbitrary metadata set by the credit class
+  // issuer evaluating the project's application to the credit class.
+  string enrollment_metadata = 6;
 }

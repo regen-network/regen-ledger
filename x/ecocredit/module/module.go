@@ -139,6 +139,10 @@ func (m *Module) RegisterServices(cfg module.Configurator) {
 		panic(err)
 	}
 
+	if err := cfg.RegisterMigration(ecocredit.ModuleName, 4, migrator.Migrate4to5); err != nil {
+		panic(err)
+	}
+
 	m.Keeper = svr
 }
 

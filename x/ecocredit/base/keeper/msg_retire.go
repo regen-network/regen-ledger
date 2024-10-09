@@ -24,7 +24,7 @@ func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRet
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", credit.BatchDenom, err.Error())
 		}
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
+		creditType, err := utils.GetCreditTypeFromBatch(ctx, k.stateStore, batch)
 		if err != nil {
 			return nil, err
 		}

@@ -16,14 +16,13 @@ func TestQuery_Project(t *testing.T) {
 	s := setupBase(t)
 
 	// insert class
-	classKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+	_, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id: "C01",
 	})
 	assert.NilError(t, err)
 
 	project := &api.Project{
 		Id:           "C01-001",
-		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
 		ReferenceId:  "R01",
@@ -37,7 +36,6 @@ func TestQuery_Project(t *testing.T) {
 	res, err := s.k.Project(s.ctx, &types.QueryProjectRequest{ProjectId: "C01-001"})
 	assert.NilError(t, err)
 	assert.Equal(t, project.Id, res.Project.Id)
-	assert.Equal(t, "C01", res.Project.ClassId)
 	assert.Equal(t, project.Jurisdiction, res.Project.Jurisdiction)
 	assert.Equal(t, project.Metadata, res.Project.Metadata)
 	assert.Equal(t, project.ReferenceId, res.Project.ReferenceId)

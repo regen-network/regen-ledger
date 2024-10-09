@@ -6,6 +6,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -29,6 +30,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -51,6 +53,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -77,6 +80,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -101,6 +105,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -150,7 +155,7 @@ Feature: MsgCreateBatch
     When the message is validated
     Then expect the error "project id: empty string is not allowed: parse error: invalid request"
 
-  Scenario: an error is returned if project id is not formatted
+  Scenario: an error is returned if class id is empty
     Given the message
     """
     {
@@ -159,13 +164,14 @@ Feature: MsgCreateBatch
     }
     """
     When the message is validated
-    Then expect the error "project id: expected format <class-id>-<project-sequence>: parse error: invalid request"
+    Then expect the error "class id: empty string is not allowed: parse error: invalid request"
 
   Scenario: an error is returned if issuance is empty
    Given the message
     """
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
+      "class_id": "C01",
       "project_id": "C01-001",
       "issuance": []
     }
@@ -179,6 +185,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {}
       ]
@@ -195,6 +202,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -215,6 +223,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -236,6 +245,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -257,6 +267,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -279,6 +290,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -302,6 +314,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -326,6 +339,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -354,6 +368,7 @@ Feature: MsgCreateBatch
     {
       "issuer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
       "project_id": "C01-001",
+      "class_id": "C01",
       "issuance": [
         {
           "recipient": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
@@ -374,6 +389,7 @@ Feature: MsgCreateBatch
     {
       "type":"regen/MsgCreateBatch",
       "value":{
+        "class_id": "C01",
         "end_date":"2021-01-01T00:00:00Z",
         "issuance":[
           {

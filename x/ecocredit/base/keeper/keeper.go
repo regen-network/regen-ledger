@@ -16,9 +16,6 @@ var (
 )
 
 type Keeper struct {
-	*types.UnimplementedMsgServer
-	*types.UnimplementedQueryServer
-
 	stateStore    api.StateStore
 	bankKeeper    ecocredit.BankKeeper
 	moduleAddress sdk.AccAddress

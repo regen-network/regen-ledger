@@ -27,9 +27,20 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}
 
-	class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
+	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
+	}
+
+	// check if project enrollment exists
+	enrollment, err := k.stateStore.ProjectEnrollmentTable().Get(ctx, project.Key, class.Key)
 	if err != nil {
 		return nil, err
+	}
+
+	// check if project enrollment is accepted
+	if enrollment.Status != api.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("project enrollment status is not accepted")
 	}
 
 	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
@@ -47,7 +58,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		return nil, err
 	}
 
-	batchDenom, err := base.FormatBatchDenom(project.Id, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := base.FormatBatchDenom(class.Id, project.Id, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}
@@ -63,6 +74,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		EndDate:      endDate,
 		IssuanceDate: issuanceDate,
 		Open:         req.Open,
+		ClassKey:     class.Key,
 	})
 	if err != nil {
 		return nil, err
@@ -193,7 +205,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 
 	if req.OriginTx != nil {
 		if err = k.stateStore.OriginTxIndexTable().Insert(ctx, &api.OriginTxIndex{
-			ClassKey: project.ClassKey,
+			ClassKey: class.Key,
 			Id:       req.OriginTx.Id,
 			Source:   req.OriginTx.Source,
 		}); err != nil {
@@ -209,7 +221,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*ty
 		if len(req.OriginTx.Contract) != 0 {
 			err = k.stateStore.BatchContractTable().Insert(ctx, &api.BatchContract{
 				BatchKey: batchKey,
-				ClassKey: project.ClassKey,
+				ClassKey: class.Key,
 				Contract: req.OriginTx.Contract,
 			})
 			if err != nil {

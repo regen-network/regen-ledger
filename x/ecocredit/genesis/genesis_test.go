@@ -43,6 +43,22 @@ func TestValidateGenesis(t *testing.T) {
 		Precision:    6,
 	}))
 
+	cls1 := &baseapi.Class{
+		Id:               "BIO001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "BIO",
+	}
+	cls2 := &baseapi.Class{
+		Id:               "BIO002",
+		Admin:            sdk.AccAddress("addr5"),
+		CreditTypeAbbrev: "BIO",
+	}
+
+	clsKey1, err := ss.ClassTable().InsertReturningID(ormCtx, cls1)
+	require.NoError(t, err)
+	clsKey2, err := ss.ClassTable().InsertReturningID(ormCtx, cls2)
+	require.NoError(t, err)
+
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
 		&baseapi.BatchBalance{
 			BatchKey:       1,
@@ -55,7 +71,8 @@ func TestValidateGenesis(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr2"),
 			ProjectKey:   1,
-			Denom:        "BIO01-001-00000000-00000000-001",
+			ClassKey:     clsKey1,
+			Denom:        "BIO01-P001-00000000-00000000-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
 			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -63,7 +80,8 @@ func TestValidateGenesis(t *testing.T) {
 		{
 			Issuer:       sdk.AccAddress("addr3"),
 			ProjectKey:   1,
-			Denom:        "BIO02-001-00000000-00000000-001",
+			ClassKey:     clsKey2,
+			Denom:        "BIO02-P001-00000000-00000000-001",
 			StartDate:    &timestamppb.Timestamp{Seconds: 100},
 			EndDate:      &timestamppb.Timestamp{Seconds: 101},
 			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -80,40 +98,38 @@ func TestValidateGenesis(t *testing.T) {
 			RetiredAmount:  "9.997",
 		}))
 
-	classes := []*baseapi.Class{
-		{
-			Id:               "BIO001",
-			Admin:            sdk.AccAddress("addr4"),
-			CreditTypeAbbrev: "BIO",
-		},
-		{
-			Id:               "BIO002",
-			Admin:            sdk.AccAddress("addr5"),
-			CreditTypeAbbrev: "BIO",
-		},
-	}
-	for _, c := range classes {
-		require.NoError(t, ss.ClassTable().Insert(ormCtx, c))
-	}
-
 	projects := []*baseapi.Project{
 		{
-			Id:           "P01-001",
+			Id:           "P001",
 			Admin:        sdk.AccAddress("addr6"),
-			ClassKey:     1,
 			Jurisdiction: "AQ",
 			Metadata:     "meta",
 		},
 		{
-			Id:           "P02-001",
+			Id:           "P002",
 			Admin:        sdk.AccAddress("addr7"),
-			ClassKey:     2,
 			Jurisdiction: "AQ",
 			Metadata:     "meta",
 		},
 	}
 	for _, p := range projects {
 		require.NoError(t, ss.ProjectTable().Insert(ormCtx, p))
+	}
+
+	enrollments := []*baseapi.ProjectEnrollment{
+		{
+			ProjectKey: 1,
+			ClassKey:   1,
+			Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+		},
+		{
+			ProjectKey: 2,
+			ClassKey:   2,
+			Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+		},
+	}
+	for _, e := range enrollments {
+		require.NoError(t, ss.ProjectEnrollmentTable().Insert(ormCtx, e))
 	}
 
 	target := ormjson.NewRawMessageTarget()
@@ -212,7 +228,7 @@ func TestGenesisValidate(t *testing.T) {
 					Precision:    6,
 				}))
 				denom := "C01-001-00000000-00000000-001"
-				key, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &baseapi.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
@@ -222,13 +238,21 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     key,
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
+
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
+				})
+				require.NoError(t, err)
+
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        denom,
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -263,14 +287,21 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     cKey,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        denom,
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -311,13 +342,19 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     cKey,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        "C01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -377,20 +414,31 @@ func TestGenesisValidate(t *testing.T) {
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P01-001",
 					Admin:        addr1,
-					ClassKey:     cKey,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKey,
+					ClassKey:   cKey,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 				pKeyBIO, err := ss.ProjectTable().InsertReturningID(ctx, &baseapi.Project{
 					Id:           "P02-001",
 					Admin:        addr1,
-					ClassKey:     cKeyBIO,
 					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				err = ss.ProjectEnrollmentTable().Insert(ctx, &baseapi.ProjectEnrollment{
+					ProjectKey: pKeyBIO,
+					ClassKey:   cKeyBIO,
+					Status:     baseapi.ProjectEnrollmentStatus_PROJECT_ENROLLMENT_STATUS_ACCEPTED,
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        "C01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -400,6 +448,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKeyBIO, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKeyBIO,
+					ClassKey:     cKeyBIO,
 					Denom:        "BIO01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -409,6 +458,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey2, err := ss.BatchTable().InsertReturningID(ctx, &baseapi.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
+					ClassKey:     cKey,
 					Denom:        "C01-001-00000000-00000000-002",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
@@ -500,25 +550,6 @@ func TestGenesisValidate(t *testing.T) {
 			},
 			true,
 			"credit type abbrev: empty string is not allowed: parse error",
-		},
-		{
-			"valid: project sequence",
-			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ProjectSequenceTable().Insert(ctx, &baseapi.ProjectSequence{
-					ClassKey:     1,
-					NextSequence: 1,
-				}))
-			},
-			false,
-			"",
-		},
-		{
-			"invalid: project sequence",
-			func(ctx context.Context, ss baseapi.StateStore) {
-				require.NoError(t, ss.ProjectSequenceTable().Insert(ctx, &baseapi.ProjectSequence{}))
-			},
-			true,
-			"class key cannot be zero: parse error",
 		},
 		{
 			"valid: batch sequence",
@@ -835,11 +866,56 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &baseapi.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "tons",
+		Precision:    6,
+	}))
+
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &baseapi.CreditType{
 		Abbreviation: "BIO",
 		Name:         "biodiversity",
 		Unit:         "acres",
 		Precision:    6,
 	}))
+
+	carbonClsKey, err := ss.ClassTable().InsertReturningID(ormCtx, &baseapi.Class{
+		Id:               "C001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "C",
+	})
+	require.NoError(t, err)
+
+	bioClsKey, err := ss.ClassTable().InsertReturningID(ormCtx, &baseapi.Class{
+		Id:               "BIO001",
+		Admin:            sdk.AccAddress("addr4"),
+		CreditTypeAbbrev: "BIO",
+	})
+	require.NoError(t, err)
+
+	batches := []*baseapi.Batch{
+		{
+			Issuer:       sdk.AccAddress("addr2"),
+			ProjectKey:   1,
+			ClassKey:     carbonClsKey,
+			Denom:        "C01-001-20200101-20210101-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+		},
+		{
+			Issuer:       sdk.AccAddress("addr3"),
+			ProjectKey:   1,
+			ClassKey:     bioClsKey,
+			Denom:        "BIO02-001-20200101-20210101-001",
+			StartDate:    &timestamppb.Timestamp{Seconds: 100},
+			EndDate:      &timestamppb.Timestamp{Seconds: 101},
+			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+		},
+	}
+	for _, b := range batches {
+		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
+	}
 
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
 		&baseapi.BatchBalance{
@@ -858,28 +934,6 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 			RetiredAmount:  "0",
 		}))
 
-	batches := []*baseapi.Batch{
-		{
-			Issuer:       sdk.AccAddress("addr2"),
-			ProjectKey:   1,
-			Denom:        "C01-001-20200101-20210101-001",
-			StartDate:    &timestamppb.Timestamp{Seconds: 100},
-			EndDate:      &timestamppb.Timestamp{Seconds: 101},
-			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
-		},
-		{
-			Issuer:       sdk.AccAddress("addr3"),
-			ProjectKey:   1,
-			Denom:        "BIO02-001-20200101-20210101-001",
-			StartDate:    &timestamppb.Timestamp{Seconds: 100},
-			EndDate:      &timestamppb.Timestamp{Seconds: 101},
-			IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
-		},
-	}
-	for _, b := range batches {
-		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
-	}
-
 	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
 		&baseapi.BatchSupply{
 			BatchKey:       1,
@@ -896,17 +950,9 @@ func TestValidateGenesisWithBasketBalance(t *testing.T) {
 		}),
 	)
 
-	class := baseapi.Class{
-		Id:               "BIO001",
-		Admin:            sdk.AccAddress("addr4"),
-		CreditTypeAbbrev: "BIO",
-	}
-	require.NoError(t, ss.ClassTable().Insert(ormCtx, &class))
-
 	project := baseapi.Project{
 		Id:           "P01-001",
 		Admin:        sdk.AccAddress("addr6"),
-		ClassKey:     1,
 		Jurisdiction: "AQ",
 		Metadata:     "meta",
 	}

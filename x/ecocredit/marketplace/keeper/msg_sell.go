@@ -40,7 +40,7 @@ func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellRes
 			)
 		}
 
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.baseStore, batch.Denom)
+		creditType, err := utils.GetCreditTypeFromBatch(ctx, k.baseStore, batch)
 		if err != nil {
 			return nil, err
 		}

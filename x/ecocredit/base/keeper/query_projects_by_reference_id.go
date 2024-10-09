@@ -36,15 +36,9 @@ func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *types.QueryProje
 			return nil, err
 		}
 
-		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
-		if err != nil {
-			return nil, regenerrors.ErrNotFound.Wrapf("class with key: %d", project.ClassKey)
-		}
-
 		info := &types.ProjectInfo{
 			Id:           project.Id,
 			Admin:        sdk.AccAddress(project.Admin).String(),
-			ClassId:      class.Id,
 			Jurisdiction: project.Jurisdiction,
 			Metadata:     project.Metadata,
 			ReferenceId:  project.ReferenceId,

@@ -81,22 +81,6 @@ Feature: MsgPut
     When the message is validated
     Then expect the error "credits[0]: batch denom: empty string is not allowed: parse error: invalid request"
 
-  Scenario: an error is returned if a credit batch denom is not formatted
-    Given the message
-    """
-    {
-      "owner": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "basket_denom": "eco.uC.NCT",
-      "credits": [
-        {
-          "batch_denom": "foo"
-        }
-      ]
-    }
-    """
-    When the message is validated
-    Then expect the error "credits[0]: batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
-
   Scenario: an error is returned if a credit amount is empty
     Given the message
     """

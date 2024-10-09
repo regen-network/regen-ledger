@@ -63,6 +63,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		msg := &types.MsgCreateBatch{
 			Issuer:    issuer.Address.String(),
 			ProjectId: project.Id,
+			ClassId:   class.Id,
 			Issuance:  generateBatchIssuance(r, accs),
 			StartDate: &now,
 			EndDate:   &tenHours,

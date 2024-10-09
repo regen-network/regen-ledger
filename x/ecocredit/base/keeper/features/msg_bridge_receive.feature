@@ -49,8 +49,8 @@ Feature: Msg/BridgeReceive
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
       And allowed bridge chain "polygon"
-      And a project with id "C01-001"
-      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      And a project with id "P001"
+      And a credit batch with denom "C01-P001-20200101-20210101-001" and issuer alice
       And the batch contract
       """
       {
@@ -133,7 +133,7 @@ Feature: Msg/BridgeReceive
       Then expect project properties
       """
       {
-        "id": "C01-001",
+        "id": "P001",
         "reference_id": "VCS-001",
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "jurisdiction": "US-WA"
@@ -161,7 +161,7 @@ Feature: Msg/BridgeReceive
       Then expect batch properties
       """
       {
-        "denom": "C01-001-20200101-20210101-001",
+        "denom": "C01-P001-20200101-20210101-001",
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z"
@@ -231,8 +231,8 @@ Feature: Msg/BridgeReceive
       Given a credit type with abbreviation "C"
       And a credit class with id "C01" and issuer alice
       And allowed bridge chain "polygon"
-      And a project with id "C01-001"
-      And a credit batch with denom "C01-001-20200101-20210101-001" and issuer alice
+      And a project with id "P001"
+      And a credit batch with denom "C01-P001-20200101-20210101-001" and issuer alice
       And the batch contract
       """
       {
@@ -245,8 +245,8 @@ Feature: Msg/BridgeReceive
       Then expect event with properties
       """
       {
-        "project_id": "C01-001",
-        "batch_denom": "C01-001-20200101-20210101-001",
+        "project_id": "P001",
+        "batch_denom": "C01-P001-20200101-20210101-001",
         "amount": "10",
         "origin_tx": {
           "id": "0x7a70692a348e8688f54ab2bdfe87d925d8cc88932520492a11eaa02dc128243e",

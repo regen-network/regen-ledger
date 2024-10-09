@@ -102,18 +102,20 @@ func TestUtils_GetCreditTypeFromBatchDenom(t *testing.T) {
 		Precision:    6,
 	}
 	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, creditType))
-	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
+	clsKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "foo",
 		CreditTypeAbbrev: "C",
-	}))
+	})
+	assert.NilError(t, err)
 	batchDenom := "C01-000000-0000000-001"
-	ct, err := GetCreditTypeFromBatchDenom(s.ctx, s.stateStore, batchDenom)
+	batch := &api.Batch{
+		Denom:    batchDenom,
+		ClassKey: clsKey,
+	}
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch))
+	ct, err := GetCreditTypeFromBatch(s.ctx, s.stateStore, batch)
 	assert.NilError(t, err)
 	assert.DeepEqual(t, ct, creditType, cmpopts.IgnoreUnexported(api.CreditType{}))
-
-	invalidDenom := "C02-0000000-0000000-001"
-	_, err = GetCreditTypeFromBatchDenom(s.ctx, s.stateStore, invalidDenom)
-	assert.ErrorContains(t, err, "could not get class with ID C02")
 }

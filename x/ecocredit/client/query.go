@@ -37,6 +37,8 @@ func QueryCmd(name string) *cobra.Command {
 		baseclient.QueryProjectsByReferenceIDCmd(),
 		baseclient.QueryProjectsByAdminCmd(),
 		baseclient.QueryProjectCmd(),
+		baseclient.QueryProjectEnrollmentCmd(),
+		baseclient.QueryProjectEnrollmentsCmd(),
 		baseclient.QueryParamsCmd(),
 		baseclient.QueryCreditTypeCmd(),
 		baseclient.QueryClassCreatorAllowlistCmd(),

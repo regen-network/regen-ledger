@@ -126,22 +126,6 @@ Feature: MsgSend
     When the message is validated
     Then expect the error "credits[0]: batch denom: empty string is not allowed: parse error: invalid request"
 
-  Scenario: an error is returned if credits batch denom is not formatted
-    Given the message
-    """
-    {
-      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
-      "credits": [
-        {
-          "batch_denom": "foo"
-        }
-      ]
-    }
-    """
-    When the message is validated
-    Then expect the error "credits[0]: batch denom: expected format <project-id>-<start_date>-<end_date>-<batch_sequence>: parse error: invalid request"
-
   Scenario: an error is returned if credits tradable amount and retired amount are empty
     Given the message
     """
