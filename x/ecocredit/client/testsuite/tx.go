@@ -127,20 +127,19 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 	}{
 		{
 			name:      "missing args",
-			args:      []string{"foo", "bar"},
+			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "Error: accepts 3 arg(s), received 2",
+			expErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:      "too many args",
-			args:      []string{"foo", "bar", "baz", "foo"},
+			args:      []string{"foo", "bar", "baz"},
 			expErr:    true,
-			expErrMsg: "Error: accepts 3 arg(s), received 4",
+			expErrMsg: "Error: accepts 2 arg(s), received 3",
 		},
 		{
 			name: "missing from flag",
 			args: []string{
-				s.classID,
 				"US-WA",
 				"metadata",
 			},
@@ -150,7 +149,6 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 		{
 			name: "valid",
 			args: []string{
-				s.classID,
 				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
@@ -159,7 +157,6 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 		{
 			name: "valid from key-name",
 			args: []string{
-				s.classID,
 				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.val.Moniker),
@@ -168,7 +165,6 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 		{
 			name: "valid with amino-json",
 			args: []string{
-				s.classID,
 				"US-WA",
 				"metadata",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, admin),
