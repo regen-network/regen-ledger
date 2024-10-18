@@ -201,3 +201,8 @@ dist/
 .localnet
 
 completions
+
+## Devnet
+# Ignore everything in the nodes/ directory
+scripts/devnet/shared
+/scripts/devnet/.env
