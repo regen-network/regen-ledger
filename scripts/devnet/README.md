@@ -87,3 +87,8 @@ REGEN_NODE2_VALIDATOR_MNEMONIC="mnemonic words ..."
 REGEN_NODE3_VALIDATOR_ADDRESS=regen1...
 REGEN_NODE3_VALIDATOR_MNEMONIC="mnemonic words ..."
 ```
+
+# State Initialization
+For state initialization we recommend using a `state_init.sh` script
+written by the developer. This script should contain a list of txs using
+the regen cli to initialize the desired state before the usage of the tesnet.

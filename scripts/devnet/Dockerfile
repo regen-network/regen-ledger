@@ -18,7 +18,3 @@ RUN git clone https://github.com/regen-network/regen-ledger.git && \
 
 # Build the regen binary using the Makefile
 RUN cd ${BASE_PATH}/regen-ledger && make build && cp build/regen /usr/local/bin
-
-# Copy the setup scripts into the container
-COPY setup-scripts/ ${BASE_PATH}/setup-scripts/
-RUN chmod -R +x ${BASE_PATH}/setup-scripts/

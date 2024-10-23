@@ -1,152 +1,178 @@
 #!/bin/bash
-# Entry script to initialize and start the Regen node with persistent peers
-
 set -e
 
-# Set the base path for the node's home directory
+# Constants
 BASE_PATH=${BASE_PATH:-/mnt/nvme}
 HOME_DIR=${BASE_PATH}/.regen
-
-# Create a directory for shared Node IDs and genesis files
 SHARED_DIR=${BASE_PATH}/shared
-mkdir -p "$SHARED_DIR/gentxs"
+GENTX_DIR="$SHARED_DIR/gentxs"
+INITIAL_GENESIS_READY="$SHARED_DIR/initial_genesis_ready"
+FINAL_GENESIS_READY="$SHARED_DIR/final_genesis_ready"
+CHAIN_ID="regen-devnet"
 
-# List of all node names
-NODE_NAMES=("regen-node1" "regen-node2" "regen-node3")
+# Colors and Emojis
+GREEN='\033[0;32m'
+NC='\033[0m'
+INFO="${GREEN}ℹ️${NC}"
+SUCCESS="${GREEN}✅${NC}"
+WAIT="${GREEN}⏳${NC}"
 
-# Retrieve environment variables for validator address and mnemonic
-NODE_ENV_NAME=$(echo "${NODE_NAME^^}" | tr '-' '_')
+# Helper: Print message with emoji
+log() { echo -e "${1} ${2}"; }
 
-VALIDATOR_MNEMONIC_VAR="${NODE_ENV_NAME}_VALIDATOR_MNEMONIC"
-VALIDATOR_ADDRESS_VAR="${NODE_ENV_NAME}_VALIDATOR_ADDRESS"
+# Ensure shared directories exist
+mkdir -p "$GENTX_DIR"
 
-VALIDATOR_MNEMONIC="${!VALIDATOR_MNEMONIC_VAR}"
-VALIDATOR_ADDRESS="${!VALIDATOR_ADDRESS_VAR}"
+# Determine the number of nodes
+NODE_COUNT="${NODE_COUNT:-3}"
+NODE_NAMES=($(for i in $(seq 1 "$NODE_COUNT"); do echo "regen-node$i"; done))
 
-# Add debugging statements
-echo "[$NODE_NAME] NODE_ENV_NAME: $NODE_ENV_NAME"
-echo "[$NODE_NAME] VALIDATOR_MNEMONIC_VAR: $VALIDATOR_MNEMONIC_VAR"
-echo "[$NODE_NAME] VALIDATOR_ADDRESS_VAR: $VALIDATOR_ADDRESS_VAR"
-echo "[$NODE_NAME] VALIDATOR_MNEMONIC: $VALIDATOR_MNEMONIC"
-echo "[$NODE_NAME] VALIDATOR_ADDRESS: $VALIDATOR_ADDRESS"
+fetch_environment_variables() {
+  NODE_ENV_NAME=$(echo "${NODE_NAME^^}" | tr '-' '_')
+  VALIDATOR_MNEMONIC_VAR="${NODE_ENV_NAME}_VALIDATOR_MNEMONIC"
+  VALIDATOR_ADDRESS_VAR="${NODE_ENV_NAME}_VALIDATOR_ADDRESS"
 
-# Ensure environment variables are set
-if [ -z "$VALIDATOR_MNEMONIC" ] || [ -z "$VALIDATOR_ADDRESS" ]; then
-  echo "[$NODE_NAME] ERROR: Validator mnemonic and address must be set via environment variables."
-  exit 1
-fi
+  VALIDATOR_MNEMONIC="${!VALIDATOR_MNEMONIC_VAR}"
+  VALIDATOR_ADDRESS="${!VALIDATOR_ADDRESS_VAR}"
 
-COMPLETION_FILE="$SHARED_DIR/regen-node1_genesis_init_done"
+  if [ -z "$VALIDATOR_MNEMONIC" ] || [ -z "$VALIDATOR_ADDRESS" ]; then
+    log "$WAIT" "Mnemonic or address not found for ${NODE_NAME}!"
+    exit 1
+  fi
+  log "$SUCCESS" "Fetched mnemonic and address for ${NODE_NAME}."
+}
 
-# **Regen-node1 initializes the genesis.json**
-if [ "$NODE_NAME" == "regen-node1" ]; then
-  echo "[$NODE_NAME] Initializing the Regen node..."
-  regen init "$NODE_NAME" --chain-id regen-devnet --home "$HOME_DIR"
+initialize_node() {
+  if [ ! -f "$HOME_DIR/config/node_key.json" ]; then
+    regen init "$NODE_NAME" --chain-id "$CHAIN_ID" --home "$HOME_DIR"
+    log "$SUCCESS" "Initialized ${NODE_NAME}."
+  fi
+}
 
-  # **Update the staking bond_denom to uregen**
-  sed -i 's/"bond_denom": "stake"/"bond_denom": "uregen"/' "$HOME_DIR/config/genesis.json"
+save_node_id() {
+  NODE_ID=$(regen tendermint show-node-id --home "$HOME_DIR")
+  echo "$NODE_ID" > "$SHARED_DIR/${NODE_NAME}_id"
+  log "$SUCCESS" "Saved Node ID for ${NODE_NAME}: $NODE_ID"
+}
 
-  # **Add all validator accounts to the genesis file**
-  echo "[$NODE_NAME] Adding validator accounts to genesis..."
+add_validator_accounts_to_genesis() {
+  log "$INFO" "Adding validator accounts to genesis..."
   for NODE in "${NODE_NAMES[@]}"; do
-    NODE_LOOP_ENV_NAME=$(echo "${NODE^^}" | tr '-' '_')
-    ADDRESS_VAR="${NODE_LOOP_ENV_NAME}_VALIDATOR_ADDRESS"
-    ADDRESS="${!ADDRESS_VAR}"
-    echo "[$NODE_NAME] Processing $NODE: ADDRESS_VAR=$ADDRESS_VAR, ADDRESS=$ADDRESS"
-
-    if [ -z "$ADDRESS" ]; then
-      echo "[$NODE_NAME] ERROR: Address for $NODE is not set."
-      exit 1
-    fi
-    # Use the address directly
+    NODE_ENV=$(echo "${NODE^^}" | tr '-' '_')
+    ADDR_VAR="${NODE_ENV}_VALIDATOR_ADDRESS"
+    ADDRESS="${!ADDR_VAR}"
+    log "$INFO" "Adding ${NODE}'s address: ${ADDRESS}"
     regen add-genesis-account "$ADDRESS" 100000000uregen --home "$HOME_DIR"
   done
+  log "$SUCCESS" "All validator accounts added to genesis."
+}
 
-  # **Copy the initial genesis.json to the shared directory**
-  cp "$HOME_DIR/config/genesis.json" "$SHARED_DIR/genesis.json"
-  touch "$COMPLETION_FILE"
+generate_gentx() {
+  log "$INFO" "Generating gentx for ${NODE_NAME}..."
+  echo "$VALIDATOR_MNEMONIC" | regen keys add my_validator --recover --keyring-backend test --home "$HOME_DIR"
+  regen gentx my_validator 50000000uregen --keyring-backend test --chain-id "$CHAIN_ID" --home "$HOME_DIR"
+  cp "$HOME_DIR/config/gentx/"*.json "$GENTX_DIR/${NODE_NAME}_gentx.json"
+  log "$SUCCESS" "Generated gentx for ${NODE_NAME}."
+}
 
-else
-  # **Other nodes wait for genesis initialization by regen-node1**
-  while [ ! -f "$COMPLETION_FILE" ]; do
-    echo "[$NODE_NAME] Waiting for regen-node1 to initialize genesis..."
+wait_for_gentx_files() {
+  log "$INFO" "Waiting for all gentx files..."
+  for NODE in "${NODE_NAMES[@]}"; do
+    if [ "$NODE" != "$NODE_NAME" ]; then
+      while [ ! -f "$GENTX_DIR/${NODE}_gentx.json" ]; do
+        log "$WAIT" "Waiting for gentx from ${NODE}..."
+        sleep 2
+      done
+      log "$SUCCESS" "Received gentx from ${NODE}."
+    fi
+  done
+}
+
+wait_for_initial_genesis() {
+  log "$INFO" "${NODE_NAME} waiting for initial genesis.json..."
+  while [ ! -f "$INITIAL_GENESIS_READY" ]; do
     sleep 2
   done
-
-  echo "[$NODE_NAME] Copying genesis.json from regen-node1..."
-  regen init "$NODE_NAME" --chain-id regen-devnet --home "$HOME_DIR"
   cp "$SHARED_DIR/genesis.json" "$HOME_DIR/config/genesis.json"
-fi
+  log "$SUCCESS" "Initial genesis.json received for ${NODE_NAME}."
+}
 
-# **Import the validator key using the mnemonic**
-echo "[$NODE_NAME] Importing validator key..."
-echo "$VALIDATOR_MNEMONIC" | regen keys add my_validator --recover --keyring-backend test --home "$HOME_DIR"
-
-# **Generate the genesis transaction to stake tokens**
-echo "[$NODE_NAME] Generating gentx..."
-regen gentx my_validator 50000000uregen --keyring-backend test --chain-id regen-devnet --home "$HOME_DIR"
-
-# **Copy the gentx to the shared directory**
-echo "[$NODE_NAME] Copying gentx to shared directory..."
-cp "$HOME_DIR/config/gentx/"*.json "$SHARED_DIR/gentxs/${NODE_NAME}_gentx.json"
-
-# **Wait for all gentx files from all nodes**
-for NODE in "${NODE_NAMES[@]}"; do
-  while [ ! -f "$SHARED_DIR/gentxs/${NODE}_gentx.json" ]; do
-    echo "[$NODE_NAME] Waiting for gentx file from $NODE..."
+wait_for_final_genesis() {
+  log "$INFO" "Waiting for finalized genesis.json..."
+  while [ ! -f "$FINAL_GENESIS_READY" ]; do
     sleep 2
   done
-done
+  cp "$SHARED_DIR/genesis.json" "$HOME_DIR/config/genesis.json"
+  log "$SUCCESS" "Finalized genesis.json received for ${NODE_NAME}."
+}
 
-# **Regen-node1 collects all gentx files and creates the final genesis.json**
-COMPLETION_FILE_GENTX="$SHARED_DIR/regen-node1_gentx_collect_done"
+collect_and_finalize_genesis() {
+  log "$INFO" "Collecting and validating gentx files..."
+  regen collect-gentxs --gentx-dir "$GENTX_DIR" --home "$HOME_DIR"
+  regen validate-genesis --home "$HOME_DIR"
+  cp "$HOME_DIR/config/genesis.json" "$SHARED_DIR/genesis.json"
+  touch "$FINAL_GENESIS_READY"
+  log "$SUCCESS" "Finalized genesis.json saved."
+}
+
+configure_peers() {
+  log "$INFO" "Configuring persistent peers..."
+  PERSISTENT_PEERS=""
+  for NODE in "${NODE_NAMES[@]}"; do
+    if [ "$NODE" != "$NODE_NAME" ]; then
+      PEER_ID=$(cat "$SHARED_DIR/${NODE}_id")
+      PERSISTENT_PEERS+="$PEER_ID@$NODE:26656,"
+    fi
+  done
+  PERSISTENT_PEERS=${PERSISTENT_PEERS%,}
+  sed -i "s/^persistent_peers = .*/persistent_peers = \"$PERSISTENT_PEERS\"/" "$HOME_DIR/config/config.toml"
+  log "$SUCCESS" "Peers configured."
+}
+
+# Main Setup Logic
+log "$INFO" "Starting setup for ${NODE_NAME}..."
+
+configure_rpc() {
+  CONFIG_FILE="$HOME_DIR/config/config.toml"
+  log "$INFO" "Configuring RPC endpoint..."
+
+  # Update RPC listener address in config.toml
+  sed -i 's/^laddr *=.*/laddr = "tcp:\/\/0.0.0.0:26657"/' "$CONFIG_FILE"
+
+  # Ensure other RPC parameters are correct
+  sed -i 's/^grpc_laddr *=.*/grpc_laddr = ""/' "$CONFIG_FILE"
+  sed -i 's/^rpc_servers *=.*/rpc_servers = ""/' "$CONFIG_FILE"
+
+  log "$SUCCESS" "RPC endpoint configured."
+}
+
+
+fetch_environment_variables
+initialize_node
+save_node_id
+
 if [ "$NODE_NAME" == "regen-node1" ]; then
-  echo "[$NODE_NAME] Collecting all genesis transactions..."
-  regen collect-gentxs --gentx-dir "$SHARED_DIR/gentxs" --home "$HOME_DIR"
+  jq '.app_state.staking.params.bond_denom = "uregen"' "$HOME_DIR/config/genesis.json" > "$HOME_DIR/config/genesis_tmp.json"
+  mv "$HOME_DIR/config/genesis_tmp.json" "$HOME_DIR/config/genesis.json"
+  log "$SUCCESS" "Modified genesis.json for ${NODE_NAME}."
 
-  echo "[$NODE_NAME] Validating the final genesis file..."
-  regen validate-genesis --home "$HOME_DIR"
+  add_validator_accounts_to_genesis
 
+  # Save initial genesis.json and notify other nodes
   cp "$HOME_DIR/config/genesis.json" "$SHARED_DIR/genesis.json"
-  touch "$COMPLETION_FILE_GENTX"
-else
-  # **Other nodes wait for the final genesis.json**
-  while [ ! -f "$COMPLETION_FILE_GENTX" ]; do
-    echo "[$NODE_NAME] Waiting for regen-node1 to collect and finalize gentx..."
-    sleep 2
-  done
+  touch "$INITIAL_GENESIS_READY"
+  log "$SUCCESS" "Initial genesis.json saved."
 
-  cp "$SHARED_DIR/genesis.json" "$HOME_DIR/config/genesis.json"
-  regen validate-genesis --home "$HOME_DIR"
+  wait_for_gentx_files
+  collect_and_finalize_genesis
+else
+  wait_for_initial_genesis
+  generate_gentx
+  wait_for_final_genesis
 fi
 
-# **Retrieve Node ID and save it to shared directory**
-NODE_ID=$(regen tendermint show-node-id --home "$HOME_DIR")
-echo "[$NODE_NAME] My Node ID: $NODE_ID"
-echo "$NODE_ID" > "$SHARED_DIR/${NODE_NAME}_id"
+configure_peers
+configure_rpc
 
-# **Wait for all Node IDs**
-for NODE in "${NODE_NAMES[@]}"; do
-  while [ ! -f "$SHARED_DIR/${NODE}_id" ]; do
-    echo "[$NODE_NAME] Waiting for Node ID from $NODE..."
-    sleep 2
-  done
-done
-
-# **Configure persistent peers**
-PERSISTENT_PEERS=""
-for NODE in "${NODE_NAMES[@]}"; do
-  if [ "$NODE" != "$NODE_NAME" ]; then
-    PEER_ID=$(cat "$SHARED_DIR/${NODE}_id")
-    PERSISTENT_PEERS+="$PEER_ID@$NODE:26656,"
-  fi
-done
-
-PERSISTENT_PEERS=${PERSISTENT_PEERS%,}
-sed -i "s/^persistent_peers = .*/persistent_peers = \"$PERSISTENT_PEERS\"/" "$HOME_DIR/config/config.toml"
-sed -i 's/^addr_book_strict *=.*/addr_book_strict = false/' "$HOME_DIR/config/config.toml"
-
-
-# **Start the node**
-echo "[$NODE_NAME] Starting the Regen node..."
+log "$INFO" "Starting ${NODE_NAME}..."
 exec regen start --home "$HOME_DIR" --minimum-gas-prices="0.025uregen"
