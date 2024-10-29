@@ -27,6 +27,47 @@ mkdir -p "$GENTX_DIR"
 NODE_COUNT="${NODE_COUNT:-3}"
 NODE_NAMES=($(for i in $(seq 1 "$NODE_COUNT"); do echo "regen-node$i"; done))
 
+# Fetch ports from environment variables
+P2P_PORT=${P2P_PORT:-26656}
+RPC_PORT=${RPC_PORT:-26657}
+
+configure_rpc_and_p2p() {
+  CONFIG_FILE="$HOME_DIR/config/config.toml"
+  APP_FILE="$HOME_DIR/config/app.toml"
+
+  log "$INFO" "🔍 Verifying configuration of RPC, P2P, and gRPC for ${NODE_NAME}..."
+
+  # Configure RPC in the [rpc] section of config.toml
+  if [ -f "$CONFIG_FILE" ]; then
+    log "$INFO" "⚙️ Configuring RPC and P2P in $CONFIG_FILE..."
+
+    # Update RPC address only in the [rpc] section
+    sed -i "/\[rpc\]/,/^\[.*\]/ s|^laddr *=.*|laddr = \"tcp://0.0.0.0:$RPC_PORT\"|" "$CONFIG_FILE"
+
+    # Update P2P address only in the [p2p] section
+    sed -i "/\[p2p\]/,/^\[.*\]/ s|^laddr *=.*|laddr = \"tcp://0.0.0.0:$P2P_PORT\"|" "$CONFIG_FILE"
+    sed -i "/\[p2p\]/,/^\[.*\]/ s|^external_address *=.*|external_address = \"tcp://0.0.0.0:$P2P_PORT\"|" "$CONFIG_FILE"
+
+    log "$SUCCESS" "✅ Configured RPC on $RPC_PORT and P2P on $P2P_PORT in $CONFIG_FILE."
+  else
+    log "$INFO" "⚠️ $CONFIG_FILE not found. Skipping P2P and RPC configuration."
+  fi
+
+  # Configure gRPC and API in app.toml
+  if [ -f "$APP_FILE" ]; then
+    log "$INFO" "⚙️ Configuring gRPC and API in $APP_FILE..."
+
+    # Update gRPC address in the [grpc] section
+    sed -i "/\[grpc\]/,/^\[.*\]/ s|^address *=.*|address = \"localhost:$GRPC_PORT\"|" "$APP_FILE"
+
+
+    log "$SUCCESS" "✅ Configured gRPC on $GRPC_PORT and API enabled in $APP_FILE."
+  else
+    log "$INFO" "⚠️ $APP_FILE not found. Skipping gRPC and API configuration."
+  fi
+}
+
+
 fetch_environment_variables() {
   NODE_ENV_NAME=$(echo "${NODE_NAME^^}" | tr '-' '_')
   VALIDATOR_MNEMONIC_VAR="${NODE_ENV_NAME}_VALIDATOR_MNEMONIC"
@@ -115,41 +156,14 @@ collect_and_finalize_genesis() {
   log "$SUCCESS" "Finalized genesis.json saved."
 }
 
-configure_peers() {
-  log "$INFO" "Configuring persistent peers..."
-  PERSISTENT_PEERS=""
-  for NODE in "${NODE_NAMES[@]}"; do
-    if [ "$NODE" != "$NODE_NAME" ]; then
-      PEER_ID=$(cat "$SHARED_DIR/${NODE}_id")
-      PERSISTENT_PEERS+="$PEER_ID@$NODE:26656,"
-    fi
-  done
-  PERSISTENT_PEERS=${PERSISTENT_PEERS%,}
-  sed -i "s/^persistent_peers = .*/persistent_peers = \"$PERSISTENT_PEERS\"/" "$HOME_DIR/config/config.toml"
-  log "$SUCCESS" "Peers configured."
-}
-
 # Main Setup Logic
 log "$INFO" "Starting setup for ${NODE_NAME}..."
-
-configure_rpc() {
-  CONFIG_FILE="$HOME_DIR/config/config.toml"
-  log "$INFO" "Configuring RPC endpoint..."
-
-  # Update RPC listener address in config.toml
-  sed -i 's/^laddr *=.*/laddr = "tcp:\/\/0.0.0.0:26657"/' "$CONFIG_FILE"
-
-  # Ensure other RPC parameters are correct
-  sed -i 's/^grpc_laddr *=.*/grpc_laddr = ""/' "$CONFIG_FILE"
-  sed -i 's/^rpc_servers *=.*/rpc_servers = ""/' "$CONFIG_FILE"
-
-  log "$SUCCESS" "RPC endpoint configured."
-}
 
 
 fetch_environment_variables
 initialize_node
 save_node_id
+configure_rpc_and_p2p
 
 if [ "$NODE_NAME" == "regen-node1" ]; then
   jq '.app_state.staking.params.bond_denom = "uregen"' "$HOME_DIR/config/genesis.json" > "$HOME_DIR/config/genesis_tmp.json"
@@ -171,8 +185,6 @@ else
   wait_for_final_genesis
 fi
 
-configure_peers
-configure_rpc
 
 log "$INFO" "Starting ${NODE_NAME}..."
 exec regen start --home "$HOME_DIR" --minimum-gas-prices="0.025uregen"
