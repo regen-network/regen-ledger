@@ -29,7 +29,7 @@ jobs:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v4
-      - uses: technote-space/get-diff-action@v6
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.go
@@ -48,7 +48,7 @@ jobs:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v4
-      - uses: technote-space/get-diff-action@v6
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.go
@@ -67,7 +67,7 @@ jobs:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v4
-      - uses: technote-space/get-diff-action@v6
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.go
@@ -86,7 +86,7 @@ jobs:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     steps:
       - uses: actions/checkout@v4
-      - uses: technote-space/get-diff-action@v6
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.go
