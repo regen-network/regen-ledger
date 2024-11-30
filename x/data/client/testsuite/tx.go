@@ -129,7 +129,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(s.network.WaitForNextBlock())
 	_, seq, err := s.val.ClientCtx.AccountRetriever.GetAccountNumberSequence(s.val.ClientCtx, s.addr1)
 	s.Require().NoError(err)
-	seq = seq + 1
+	seq++
 
 	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.network.WaitForNextBlock()
 	_, seq, err = s.val.ClientCtx.AccountRetriever.GetAccountNumberSequence(s.val.ClientCtx, s.addr1)
 	s.Require().NoError(err)
-	seq = seq + 1
+	seq++
 
 	out2, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
