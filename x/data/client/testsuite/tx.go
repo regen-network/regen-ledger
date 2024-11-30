@@ -58,9 +58,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	info1, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc1", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
-	info2, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-
 	commonFlags := s.txFlags(nil)
 	pk, err := info1.GetPubKey()
 	s.Require().NoError(err)
@@ -68,12 +65,18 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	fundCoins := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000)))
 	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr1, fundCoins, commonFlags...)
 	s.Require().NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
+
+	info2, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	s.Require().NoError(err)
 
 	pk, err = info2.GetPubKey()
 	s.Require().NoError(err)
 	s.addr2 = sdk.AccAddress(pk.Address())
 	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr2, fundCoins, commonFlags...)
 	s.Require().NoError(err)
+
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	s.iri1 = "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
 	s.iri2 = "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
@@ -123,11 +126,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.url = "https://foo.bar"
 
+	s.Require().NoError(s.network.WaitForNextBlock())
+	_, seq, err := s.val.ClientCtx.AccountRetriever.GetAccountNumberSequence(s.val.ClientCtx, s.addr1)
+	s.Require().NoError(err)
+	seq = seq + 1
+
 	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				s.url,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
+				fmt.Sprintf("--%s=%s", flags.FlagSequence, strconv.FormatUint(seq, 10)),
 			},
 			commonFlags...,
 		),
@@ -136,8 +145,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var res sdk.TxResponse
 	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	txHash := res.TxHash
+	s.network.WaitForNextBlock()
 
-	id := strings.Trim(res.Logs[0].Events[1].Attributes[0].Value, "\"")
+	// Query the tx to get the events
+	queryRes, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash)
+	s.Require().NoError(err)
+
+	id := strings.Trim(queryRes.Logs[0].Events[1].Attributes[0].Value, "\"")
 	s.resolverID, err = strconv.ParseUint(id, 10, 64)
 	s.Require().NoError(err)
 
@@ -158,11 +173,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	))
 	s.Require().NoError(err)
 
+	s.network.WaitForNextBlock()
+	_, seq, err = s.val.ClientCtx.AccountRetriever.GetAccountNumberSequence(s.val.ClientCtx, s.addr1)
+	s.Require().NoError(err)
+	seq = seq + 1
+
 	out2, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				"https://bar.baz",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
+				fmt.Sprintf("--%s=%s", flags.FlagSequence, strconv.FormatUint(seq, 10)),
 			},
 			commonFlags...,
 		),
@@ -171,8 +192,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var res2 sdk.TxResponse
 	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &res2))
+	txHash2 := res2.TxHash
+	s.network.WaitForNextBlock()
 
-	id2 := strings.Trim(res2.Logs[0].Events[1].Attributes[0].Value, "\"")
+	// Query the tx to get the events
+	queryRes2, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash2)
+	s.Require().NoError(err)
+	id2 := strings.Trim(queryRes2.Logs[0].Events[1].Attributes[0].Value, "\"")
 	resolverID2, err := strconv.ParseUint(id2, 10, 64)
 	s.Require().NoError(err)
 
