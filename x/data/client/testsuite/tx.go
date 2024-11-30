@@ -146,7 +146,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	var res sdk.TxResponse
 	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	txHash := res.TxHash
-	s.network.WaitForNextBlock()
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	// Query the tx to get the events
 	queryRes, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash)
@@ -173,7 +173,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	))
 	s.Require().NoError(err)
 
-	s.network.WaitForNextBlock()
+	s.Require().NoError(s.network.WaitForNextBlock())
 	_, seq, err = s.val.ClientCtx.AccountRetriever.GetAccountNumberSequence(s.val.ClientCtx, s.addr1)
 	s.Require().NoError(err)
 	seq++
@@ -193,7 +193,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	var res2 sdk.TxResponse
 	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &res2))
 	txHash2 := res2.TxHash
-	s.network.WaitForNextBlock()
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	// Query the tx to get the events
 	queryRes2, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash2)
