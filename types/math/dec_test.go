@@ -606,9 +606,9 @@ func TestIsFinite(t *testing.T) {
 	require.True(t, a.IsFinite())
 
 	b, err := NewDecFromString("NaN")
-	require.NoError(t, err)
-
-	require.False(t, b.IsFinite())
+	require.EqualError(t, err, "not a number: invalid decimal string")
+	// empty decimal has finite form by default
+	require.True(t, b.IsFinite())
 }
 
 func TestReduce(t *testing.T) {
