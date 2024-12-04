@@ -2,6 +2,7 @@ package math
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -479,7 +480,11 @@ func testMulQuoExact(t *rapid.T) {
 	b := rapid.Uint32Range(0, 32).Draw(t, "b")
 	decPrec := func(d Dec) bool { return d.NumDecimalPlaces() <= b }
 	a := genDec.Filter(decPrec).Draw(t, "a")
-
+	var err error
+	if b > math.MaxInt32 {
+		err = fmt.Errorf("int32 overflow error")
+	}
+	require.NoError(t, err)
 	c := NewDecFinite(1, int32(b))
 
 	d, err := a.MulExact(c)
@@ -498,6 +503,11 @@ func testQuoMulExact(t *rapid.T) {
 	aDec, err := NewDecFromString(fmt.Sprintf("%d", a))
 	require.NoError(t, err)
 	b := rapid.Uint32Range(0, 32).Draw(t, "b")
+	// Check for overflow
+	if b > math.MaxInt32 {
+		err = fmt.Errorf("int32 overflow error")
+	}
+	require.NoError(t, err)
 	c := NewDecFinite(1, int32(b))
 
 	require.NoError(t, err)
@@ -594,6 +604,10 @@ func floatDecimalPlaces(t *rapid.T, f float64) uint32 {
 	res := basePlaces - exp
 	if res <= 0 {
 		return 0
+	}
+	// Check for overflow
+	if res > math.MaxUint32 {
+		return math.MaxUint32
 	}
 
 	return uint32(res)

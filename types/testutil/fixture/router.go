@@ -24,7 +24,7 @@ type router struct {
 }
 
 func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.Msg) error) (Invoker, error) {
-	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+	return func(ctx context.Context, request interface{}, response interface{}, _ ...interface{}) error {
 		req, ok := request.(proto.Message)
 		if !ok {
 			return fmt.Errorf("expected proto.Message, got %T for service method %s", request, methodName)
