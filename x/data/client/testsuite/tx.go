@@ -46,6 +46,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
 	s.cfg.NumValidators = 2
+
 	nw, err := network.New(s.T(), s.T().TempDir(), s.cfg)
 	s.Require().NoError(err)
 	s.network = nw
