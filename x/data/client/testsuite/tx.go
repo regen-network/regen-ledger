@@ -100,7 +100,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			),
 		)
 		s.Require().NoError(err)
-
+		s.Require().NoError(s.network.WaitForNextBlock())
 		_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			),
 		)
 		s.Require().NoError(err)
-
+		s.Require().NoError(s.network.WaitForNextBlock())
 		_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
@@ -122,6 +122,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			),
 		)
 		s.Require().NoError(err)
+		s.Require().NoError(s.network.WaitForNextBlock())
 	}
 
 	s.url = "https://foo.bar"
@@ -389,7 +390,10 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 	require.NoError(err)
 
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-
+	// Fetch account sequence
+	accountRetriever := clientCtx.AccountRetriever
+	_, seq, err := accountRetriever.GetAccountNumberSequence(clientCtx, val.Address)
+	require.NoError(err)
 	testCases := []struct {
 		name     string
 		args     []string
@@ -413,10 +417,10 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 		},
 		{
 			"invalid resolver id",
-			[]string{fmt.Sprintf("%d", 12345), filePath},
-			false,
+			[]string{fmt.Sprintf("%s", "123a5"), filePath},
 			true,
-			"not found",
+			false,
+			"invalid resolver id",
 		},
 		{
 			"valid test",
@@ -429,9 +433,12 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 
 	cmd := client.MsgRegisterResolverCmd()
 	for _, tc := range testCases {
-		args := tc.args
 		s.Run(tc.name, func() {
-			args := append(args, commonFlags...)
+			// Increment sequence number for each transaction
+			args := tc.args
+			args = append(args, commonFlags...)
+			args = append(args, fmt.Sprintf("--%s=%d", flags.FlagSequence, seq))
+			seq++
 			res, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -443,6 +450,7 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 					require.NoError(err)
 				}
 			}
+			s.Require().NoError(s.network.WaitForNextBlock())
 		})
 	}
 }
