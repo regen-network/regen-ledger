@@ -622,6 +622,7 @@ func TestIsFinite(t *testing.T) {
 	b, err := NewDecFromString("NaN")
 	require.EqualError(t, err, "not a number: invalid decimal string")
 	// empty decimal has finite form by default
+	b, err = NewDecFromString("")
 	require.True(t, b.IsFinite())
 }
 
