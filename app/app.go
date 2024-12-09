@@ -368,7 +368,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
-		app.ModuleAccountAddrs(),
+		app.BlockAddresses(),
 		govModuleAddr,
 	)
 	app.StakingKeeper = stakingkeeper.NewKeeper(
@@ -811,12 +811,14 @@ func (app *RegenApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
-// ModuleAccountAddrs returns all the app's module account addresses.
-func (app *RegenApp) ModuleAccountAddrs() map[string]bool {
+// BlockAddresses returns all the app's module account addresses.
+func (app *RegenApp) BlockAddresses() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
 	}
+	// allow the following addresses to receive funds
+	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	return modAccAddrs
 }

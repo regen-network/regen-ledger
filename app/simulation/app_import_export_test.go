@@ -5,6 +5,7 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/server"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -37,6 +37,7 @@ import (
 
 func TestAppImportExport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
+	//config.Commit = true
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app-import-export", "sim-1", false, true)
 	if skip {
 		t.Skip("skipping app-import-export simulation")
@@ -47,6 +48,8 @@ func TestAppImportExport(t *testing.T) {
 		db.Close()
 		require.NoError(t, os.RemoveAll(dir))
 	}()
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
 	app := regen.NewRegenApp(
 		logger,
@@ -54,7 +57,7 @@ func TestAppImportExport(t *testing.T) {
 		nil,
 		true,
 		simcli.FlagPeriodValue,
-		simtestutil.EmptyAppOptions{},
+		appOptions,
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, app.Name())
@@ -82,17 +85,17 @@ func TestAppImportExport(t *testing.T) {
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
-		newDB.Close()
+		require.NoError(t, newDB.Close())
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
 	newApp := regen.NewRegenApp(
-		log.NewNopLogger(),
-		newDB,
+		logger,
+		db,
 		nil,
 		true,
 		simcli.FlagPeriodValue,
-		simtestutil.EmptyAppOptions{},
+		appOptions,
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, newApp.Name())
@@ -138,6 +141,10 @@ func TestAppImportExport(t *testing.T) {
 			stakingtypes.RedelegationQueueKey,
 			stakingtypes.ValidatorQueueKey,
 			stakingtypes.HistoricalInfoKey,
+			stakingtypes.UnbondingIDKey,
+			stakingtypes.UnbondingIndexKey,
+			stakingtypes.UnbondingTypeKey,
+			stakingtypes.ValidatorUpdatesKey,
 		}},
 
 		// ibc modules
@@ -149,9 +156,10 @@ func TestAppImportExport(t *testing.T) {
 		{app.GetKey(ecocredit.ModuleName), newApp.GetKey(ecocredit.ModuleName), [][]byte{}},
 	}
 
-	for _, skp := range storeKeysPrefixes {
+	for i, skp := range storeKeysPrefixes {
 		storeA := ctxA.KVStore(skp.A)
 		storeB := ctxB.KVStore(skp.B)
+		fmt.Println(i)
 
 		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, skp.Prefixes)
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
