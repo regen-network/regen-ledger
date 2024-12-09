@@ -2,8 +2,9 @@
 package math
 
 import (
-	"cosmossdk.io/errors"
 	"fmt"
+
+	"cosmossdk.io/errors"
 	"github.com/cockroachdb/apd/v2"
 )
 
