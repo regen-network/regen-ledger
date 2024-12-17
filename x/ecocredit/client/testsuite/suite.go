@@ -1,16 +1,14 @@
 package testsuite
 
 import (
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 
-	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cosmos/gogoproto/proto"
-	"github.com/stretchr/testify/suite"
-
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -22,6 +20,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gogoproto/proto"
+	"github.com/stretchr/testify/suite"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
@@ -76,6 +76,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.setupGenesis()
 
 	var err error
+	s.cfg.StakingTokens = math.NewInt(900000000)
+	s.cfg.AccountTokens = math.NewInt(9000000000)
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
 	require.NoError(err)
 
@@ -86,7 +88,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// set test accounts
 	s.setupTestAccounts()
-
+	require.NoError(s.network.WaitForNextBlock())
 	// create test credit class
 	s.classID = s.createClass(s.val.ClientCtx, &basetypes.MsgCreateClass{
 		Admin:            s.addr1.String(),
@@ -307,9 +309,8 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 	s.Require().NoError(err)
 	s.addr2 = sdk.AccAddress(pk.Address())
 
-	// fund secondary account
 	s.fundAccount(s.val.ClientCtx, s.addr1, s.addr2, sdk.Coins{
-		sdk.NewInt64Coin(s.cfg.BondDenom, 100000000),
+		sdk.NewInt64Coin(s.cfg.BondDenom, 1000),
 	})
 }
 
@@ -330,11 +331,13 @@ func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sd
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
+	require.NoError(s.network.WaitForNextBlock())
 }
 
 func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basetypes.MsgCreateClass) (classID string) {
 	require := s.Require()
 
+	// Step 1: Execute the transaction to create a class
 	cmd := baseclient.TxCreateClassCmd()
 	args := []string{
 		strings.Join(msg.Issuers, ","),
@@ -342,16 +345,27 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basety
 		msg.Metadata,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, msg.Admin),
 		fmt.Sprintf("--%s=%s", baseclient.FlagClassFee, msg.Fee.String()),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync), // Use `sync` mode
 	}
+
 	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
 
+	// Parse transaction response
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
 
-	for _, e := range res.Logs[0].Events {
+	// Step 2: Wait for the transaction to be included in a block
+	require.NoError(s.network.WaitForNextBlock())
+
+	// Step 3: Query the transaction by hash to retrieve logs
+	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
+	require.NoError(err)
+
+	// Step 4: Parse logs to extract the class ID
+	for _, e := range queryRes.Logs[0].Events {
 		if e.Type == proto.MessageName(&basetypes.EventCreateClass{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "class_id" {
@@ -361,7 +375,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basety
 		}
 	}
 
-	require.Fail("failed to find class id in response")
+	require.Fail("failed to find class ID in response logs")
 
 	return ""
 }
@@ -385,7 +399,12 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *base
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
 
-	for _, e := range res.Logs[0].Events {
+	require.NoError(s.network.WaitForNextBlock())
+
+	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
+	require.NoError(err)
+
+	for _, e := range queryRes.Logs[0].Events {
 		if e.Type == proto.MessageName(&basetypes.EventCreateProject{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "project_id" {
@@ -420,8 +439,11 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *basety
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
+	require.NoError(s.network.WaitForNextBlock())
 
-	for _, e := range res.Logs[0].Events {
+	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
+	require.NoError(err)
+	for _, e := range queryRes.Logs[0].Events {
 		if e.Type == proto.MessageName(&basetypes.EventCreateBatch{}) {
 			for _, attr := range e.Attributes {
 				if attr.Key == "batch_denom" {
@@ -454,8 +476,11 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
+	require.NoError(s.network.WaitForNextBlock())
 
-	for _, event := range res.Logs[0].Events {
+	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
+	require.NoError(err)
+	for _, event := range queryRes.Logs[0].Events {
 		if event.Type == proto.MessageName(&baskettypes.EventCreate{}) {
 			for _, attr := range event.Attributes {
 				if attr.Key == "basket_denom" {
@@ -488,7 +513,7 @@ func (s *IntegrationTestSuite) putInBasket(clientCtx client.Context, msg *basket
 	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
-
+	require.NoError(s.network.WaitForNextBlock())
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
@@ -511,13 +536,15 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	args = append(args, s.commonTxFlags()...)
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
+	require.NoError(s.network.WaitForNextBlock())
 
 	var res sdk.TxResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 	require.Zero(res.Code, res.RawLog)
-
+	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
+	require.NoError(err)
 	orderIDs := make([]uint64, 0, len(msg.Orders))
-	for _, event := range res.Logs[0].Events {
+	for _, event := range queryRes.Logs[0].Events {
 		if event.Type == proto.MessageName(&markettypes.EventSell{}) {
 			for _, attr := range event.Attributes {
 				if attr.Key == "sell_order_id" {

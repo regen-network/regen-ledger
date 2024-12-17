@@ -3,8 +3,8 @@ package ormstore
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	dbm "github.com/cometbft/cometbft-db"
+	"github.com/stretchr/testify/require"
 
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"

@@ -21,7 +21,7 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 	}
 
 	// we assume there is one fee at the time of the upgrade
-	classFees := regentypes.CoinToCosmosApiLegacy(params.CreditClassFee[0])
+	classFees := regentypes.CoinToCosmosAPILegacy(params.CreditClassFee[0])
 	if err := baseStore.ClassFeeTable().Save(sdkCtx, &baseapi.ClassFee{
 		Fee: classFees,
 	}); err != nil {
@@ -55,7 +55,7 @@ func MigrateState(sdkCtx sdk.Context, baseStore baseapi.StateStore, basketStore 
 
 	// migrate basket params
 	// we assume there is one fee at the time of the upgrade
-	basketFees := regentypes.CoinToCosmosApiLegacy(params.BasketFee[0])
+	basketFees := regentypes.CoinToCosmosAPILegacy(params.BasketFee[0])
 	if err := basketStore.BasketFeeTable().Save(sdkCtx, &basketapi.BasketFee{
 		Fee: basketFees,
 	}); err != nil {

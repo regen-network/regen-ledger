@@ -2,7 +2,6 @@ package types
 
 import (
 	basev1beta1 "cosmossdk.io/api/cosmos/base/v1beta1"
-	apilegacy "cosmossdk.io/api/cosmos/base/v1beta1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -22,15 +21,15 @@ func CoinToProtoCoin(coin sdk.Coin) *basev1beta1.Coin {
 	}
 }
 
-func CoinToCosmosApiLegacy(coin sdk.Coin) *apilegacy.Coin {
-	c := apilegacy.Coin{Denom: coin.Denom, Amount: ""}
+func CoinToCosmosAPILegacy(coin sdk.Coin) *basev1beta1.Coin {
+	c := basev1beta1.Coin{Denom: coin.Denom, Amount: ""}
 	if !coin.Amount.IsNil() {
 		c.Amount = coin.Amount.String()
 	}
 	return &c
 }
 
-func CoinFromCosmosApiLegacy(coin *apilegacy.Coin) sdk.Coin {
+func CoinFromCosmosAPILegacy(coin *basev1beta1.Coin) sdk.Coin {
 	amount, _ := sdk.NewIntFromString(coin.Amount)
 	return sdk.Coin{Denom: coin.Denom, Amount: amount}
 }

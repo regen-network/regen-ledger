@@ -5,25 +5,24 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
-	queryapi "cosmossdk.io/api/cosmos/base/query/v1beta1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
-// PageReqToCosmosApiLegacy is a temporal adapter for ORM v-alpha-*
-func PageReqToCosmosApiLegacy(from *query.PageRequest) *queryapi.PageRequest {
+// PageReqToCosmosAPILegacy is a temporal adapter for ORM v-alpha-*
+func PageReqToCosmosAPILegacy(from *query.PageRequest) *queryv1beta1.PageRequest {
 	if from == nil {
-		return &queryapi.PageRequest{Limit: query.DefaultLimit}
+		return &queryv1beta1.PageRequest{Limit: query.DefaultLimit}
 	}
-	return &queryapi.PageRequest{
+	return &queryv1beta1.PageRequest{
 		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse}
 }
 
 func PageReqToOrmPaginate(pg *query.PageRequest) ormlist.Option {
-	return ormlist.Paginate(PageReqToCosmosApiLegacy(pg))
+	return ormlist.Paginate(PageReqToCosmosAPILegacy(pg))
 }
 
-func PageResToCosmosTypes(from *queryapi.PageResponse) *query.PageResponse {
+func PageResToCosmosTypes(from *queryv1beta1.PageResponse) *query.PageResponse {
 	if from == nil {
 		return nil
 	}

@@ -18,7 +18,7 @@ func (k Keeper) BasketFee(ctx context.Context, _ *types.QueryBasketFeeRequest) (
 
 	var fee sdk.Coin
 	if basketFee.Fee != nil {
-		fee = regentypes.CoinFromCosmosApiLegacy(basketFee.Fee)
+		fee = regentypes.CoinFromCosmosAPILegacy(basketFee.Fee)
 	}
 
 	return &types.QueryBasketFeeResponse{Fee: &fee}, nil

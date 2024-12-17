@@ -32,7 +32,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 	// only check and charge fee if required fee is set
 	if basketFee.Fee != nil {
 
-		requiredFee := regentypes.CoinFromCosmosApiLegacy(basketFee.Fee)
+		requiredFee := regentypes.CoinFromCosmosAPILegacy(basketFee.Fee)
 		if msg.Fee == nil {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 				"fee cannot be empty: must be %s", requiredFee,

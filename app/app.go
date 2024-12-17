@@ -388,7 +388,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		appCodec,
 		keys[banktypes.StoreKey],
 		app.AccountKeeper,
-		app.ModuleAccountAddrs(),
+		app.BlockAddresses(),
 		govModuleAddr,
 	)
 	app.StakingKeeper = stakingkeeper.NewKeeper(
@@ -896,12 +896,14 @@ func (app *RegenApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
-// ModuleAccountAddrs returns all the app's module account addresses.
-func (app *RegenApp) ModuleAccountAddrs() map[string]bool {
+// BlockAddresses returns all the app's module account addresses.
+func (app *RegenApp) BlockAddresses() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
 	}
+	// allow the following addresses to receive funds
+	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	return modAccAddrs
 }
@@ -933,8 +935,8 @@ func (app *RegenApp) TxConfig() client.TxConfig {
 }
 
 // DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
-func (a *RegenApp) DefaultGenesis() map[string]json.RawMessage {
-	return ModuleBasics.DefaultGenesis(a.appCodec)
+func (app *RegenApp) DefaultGenesis() map[string]json.RawMessage {
+	return ModuleBasics.DefaultGenesis(app.appCodec)
 }
 
 // GetKey returns the KVStoreKey for the provided store key.

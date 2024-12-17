@@ -81,6 +81,7 @@ func (s *IntegrationTestSuite) TestTxCreateBasketCmd() {
 			cmd := client.TxCreateBasketCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -200,6 +201,7 @@ func (s *IntegrationTestSuite) TestTxPutInBasketCmd() {
 			cmd := client.TxPutInBasketCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -282,6 +284,7 @@ func (s *IntegrationTestSuite) TestTxTakeFromBasketCmd() {
 			cmd := client.TxTakeFromBasketCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -362,6 +365,7 @@ func (s *IntegrationTestSuite) TestTxUpdateBasketCuratorCmd() {
 			cmd := client.TxUpdateBasketCuratorCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)

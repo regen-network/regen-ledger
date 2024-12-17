@@ -86,8 +86,8 @@ func (k Keeper) Params(ctx context.Context, _ *types.QueryParamsRequest) (*types
 		Params: &types.Params{
 			AllowedClassCreators: creators,
 			AllowlistEnabled:     allowlistEnabled.Enabled,
-			CreditClassFee:       sdk.Coins{regentypes.CoinFromCosmosApiLegacy(classFee.Fee)},
-			BasketFee:            sdk.Coins{regentypes.CoinFromCosmosApiLegacy(basketFee.Fee)},
+			CreditClassFee:       sdk.Coins{regentypes.CoinFromCosmosAPILegacy(classFee.Fee)},
+			BasketFee:            sdk.Coins{regentypes.CoinFromCosmosAPILegacy(basketFee.Fee)},
 			AllowedDenoms:        allowedDenoms,
 			AllowedBridgeChains:  allowedBridgeChains,
 		},

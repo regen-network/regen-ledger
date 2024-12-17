@@ -19,7 +19,7 @@ func (k Keeper) ClassFee(ctx context.Context, _ *types.QueryClassFeeRequest) (*t
 
 	var fee sdk.Coin
 	if classFee.Fee != nil {
-		fee = regentypes.CoinFromCosmosApiLegacy(classFee.Fee)
+		fee = regentypes.CoinFromCosmosAPILegacy(classFee.Fee)
 	}
 
 	return &types.QueryClassFeeResponse{Fee: &fee}, nil

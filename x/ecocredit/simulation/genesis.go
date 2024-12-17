@@ -222,7 +222,7 @@ func genGenesisState(ctx context.Context, simState *module.SimulationState, ss a
 
 	classFee := genCreditClassFee(r)
 	if err := ss.ClassFeeTable().Save(ctx, &api.ClassFee{
-		Fee: regentypes.CoinToCosmosApiLegacy(classFee),
+		Fee: regentypes.CoinToCosmosAPILegacy(classFee),
 	}); err != nil {
 		return err
 	}
