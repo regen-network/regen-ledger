@@ -87,7 +87,7 @@ func TestAppAfterImport(t *testing.T) {
 	}()
 
 	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
-	require.Equal(t, "SimApp", newApp.Name())
+	require.Equal(t, "regen", newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{
 		ChainId:       SimAppChainID,
