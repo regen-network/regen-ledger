@@ -41,10 +41,10 @@ func (m MsgSubmitTx) GetSigners() []sdk.AccAddress {
 }
 
 // LegacyMsg.Type implementations
-func (msg MsgSubmitTx) Route() string { return "" }
-func (msg MsgSubmitTx) Type() string  { return sdk.MsgTypeURL(&msg) }
-func (msg *MsgSubmitTx) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
+func (m MsgSubmitTx) Route() string { return "" }
+func (m MsgSubmitTx) Type() string  { return sdk.MsgTypeURL(&m) }
+func (m *MsgSubmitTx) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(m)
 	return sdk.MustSortJSON(bz)
 }
 

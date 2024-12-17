@@ -30,7 +30,7 @@ func TestFormatBasketDenom(t *testing.T) {
 	}
 	require := require.New(t)
 	for _, tc := range tcs {
-		t.Run(tc.tname, func(t *testing.T) {
+		t.Run(tc.tname, func(_ *testing.T) {
 			d, displayD, err := FormatBasketDenom("foo", tc.abbrev, tc.exponent)
 			if tc.err {
 				require.Error(err, tc.tname)

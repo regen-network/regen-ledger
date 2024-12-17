@@ -2,6 +2,7 @@ package hasher
 
 import (
 	"encoding/binary"
+	"fmt"
 	"hash"
 
 	"golang.org/x/crypto/blake2b"
@@ -95,6 +96,9 @@ func (t hasher) CreateID(value []byte, collisions int) (id []byte) {
 		id = append(id, hashBz[collisions])
 	} else {
 		id = id[:t.bufLen]
+		if collisions < 0 {
+			panic(fmt.Sprintf("collisions must be non-negative, got %d", collisions))
+		}
 		n := binary.PutUvarint(id[t.hashLen:], uint64(collisions))
 		id = id[:t.hashLen+n]
 	}

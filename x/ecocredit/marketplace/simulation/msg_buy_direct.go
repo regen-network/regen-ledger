@@ -26,7 +26,7 @@ var TypeMsgBuyDirect = types.MsgBuyDirect{}.Route()
 func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		buyer, _ := simtypes.RandomAcc(r, accs)
 		buyerAddr := buyer.Address.String()
@@ -42,13 +42,13 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, "no sell orders"), nil, nil
 		}
 
-		max := 1
+		maxVal := 1
 		if len(sellOrders) > 1 {
-			max = simtypes.RandIntBetween(r, 1, len(sellOrders))
+			maxVal = simtypes.RandIntBetween(r, 1, len(sellOrders))
 		}
 
 		var buyOrders []*types.MsgBuyDirect_Order
-		for i := 0; i < max; i++ {
+		for i := 0; i < maxVal; i++ {
 			if sellOrders[i].Seller == buyerAddr {
 				continue
 			}

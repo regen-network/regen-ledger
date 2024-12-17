@@ -17,11 +17,11 @@ import (
 func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	// we set the min to 1 ns because nil expirations are encoded as the 0 value timestamp,
+	// we set the minVal to 1 ns because nil expirations are encoded as the 0 value timestamp,
 	// and we DO NOT want those to be deleted/unescrowed.
 	// https://github.com/cosmos/cosmos-sdk/issues/11980
-	min, blockTime := timestamppb.New(time.Unix(0, 1)), timestamppb.New(sdkCtx.BlockTime())
-	fromKey, toKey := api.SellOrderExpirationIndexKey{}.WithExpiration(min), api.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
+	minVal, blockTime := timestamppb.New(time.Unix(0, 1)), timestamppb.New(sdkCtx.BlockTime())
+	fromKey, toKey := api.SellOrderExpirationIndexKey{}.WithExpiration(minVal), api.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
 
 	it, err := k.stateStore.SellOrderTable().ListRange(ctx, fromKey, toKey)
 	if err != nil {

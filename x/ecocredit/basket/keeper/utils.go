@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"context"
+	"fmt"
+	stdmath "math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -62,6 +64,10 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 // creditAmountToBasketCoin calculates the coins to mint to the credit depositor using the following formula:
 // coinAmount = creditAmt * (1 * 10^exp)
 func creditAmountToBasketCoin(creditAmt math.Dec, exp uint32, denom string) (sdk.Coin, error) {
+	// check exp value
+	if exp > stdmath.MaxInt32 {
+		return sdk.Coin{}, fmt.Errorf("exponent value %d is too large", exp)
+	}
 	multiplier := math.NewDecFinite(1, int32(exp))
 	tokenAmt, err := multiplier.MulExact(creditAmt)
 	if err != nil {

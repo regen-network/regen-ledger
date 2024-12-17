@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/cometbft/cometbft/libs/log"
+
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -72,7 +73,7 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 
 	app.UpgradeKeeper.SetUpgradeHandler(planName,
-		func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			printPlanName(planName, ctx.Logger())
 
 			// Migrate CometBFT consensus parameters from x/params module to a dedicated x/consensus module.

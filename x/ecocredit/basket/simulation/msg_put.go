@@ -48,7 +48,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		rBasket := baskets[r.Intn(len(baskets))]
 		var classInfoList []basetypes.ClassInfo
-		max := 0
+		maxVal := 0
 
 		var ownerAddr string
 		var owner simtypes.Account
@@ -76,14 +76,14 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 						ownerAddr = issuers[0]
 						owner = acc
 						classInfoList = append(classInfoList, *class)
-						max++
+						maxVal++
 					}
 				} else if utils.Contains(issuers, ownerAddr) {
 					classInfoList = append(classInfoList, *class)
-					max++
+					maxVal++
 				}
 
-				if max == 2 {
+				if maxVal == 2 {
 					break
 				}
 			}

@@ -83,12 +83,12 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 				if tc.expectedAmtClasses > 0 {
 					s.Require().Len(res.Classes, tc.expectedAmtClasses)
 				} else {
-					resClassIds := make([]string, len(res.Classes))
+					resClassIDs := make([]string, len(res.Classes))
 					for i, cls := range res.Classes {
-						resClassIds[i] = cls.Id
+						resClassIDs[i] = cls.Id
 					}
 					for _, id := range classIDs {
-						s.Require().Contains(resClassIds, id)
+						s.Require().Contains(resClassIDs, id)
 					}
 				}
 			}
