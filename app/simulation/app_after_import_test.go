@@ -4,6 +4,11 @@ package simulation
 
 import (
 	"fmt"
+	"github.com/cometbft/cometbft/libs/log"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/server"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"os"
 	"testing"
 
@@ -18,24 +23,37 @@ import (
 
 func TestAppAfterImport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
-	// Its required to have commit true for the block to not fail during simulation due to block height not increasing
-	config.Commit = true
-	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app-after-import-1", "sim-1", false, true)
+	config.ChainID = SimAppChainID
+
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
-		t.Skip("skipping app-after-import simulation")
+		t.Skip("skipping application import/export simulation")
 	}
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
-		db.Close()
+		require.NoError(t, db.Close())
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, simtestutil.EmptyAppOptions{})
-	require.Equal(t, regen.AppName, app.Name())
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
-	// run randomized simulation
-	stopEarly, simParams, simErr := simulateFromSeed(t, app, config)
+	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	require.Equal(t, "regen", app.Name())
+
+	// Run randomized simulation
+	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
+		t,
+		os.Stdout,
+		app.BaseApp,
+		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
+		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
+		simtestutil.SimulationOperations(app, app.AppCodec(), config),
+		app.BlockAddresses(),
+		config,
+		app.AppCodec(),
+	)
 
 	// export state and simParams before the simulation error is checked
 	err = simtestutil.CheckExportSimulation(app, config, simParams)
@@ -58,21 +76,32 @@ func TestAppAfterImport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
-	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "app-after-import-2", "sim-2", false, true)
+	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "leveldb-app-sim-2", "Simulation-2", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
-		newDB.Close()
+		require.NoError(t, newDB.Close())
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, simtestutil.EmptyAppOptions{})
-	require.Equal(t, regen.AppName, newApp.Name())
+	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	require.Equal(t, "SimApp", newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{
+		ChainId:       SimAppChainID,
 		AppStateBytes: exported.AppState,
 	})
 
-	_, _, err = simulateFromSeed(t, newApp, config)
+	_, _, err = simulation.SimulateFromSeed(
+		t,
+		os.Stdout,
+		newApp.BaseApp,
+		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.DefaultGenesis()),
+		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
+		simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
+		app.BlockAddresses(),
+		config,
+		app.AppCodec(),
+	)
 	require.NoError(t, err)
 }
