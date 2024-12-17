@@ -5,13 +5,14 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
+	"os"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/server"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/cosmos/ibc-go/v7/testing/simapp"
-	"math/rand"
-	"os"
-	"testing"
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"

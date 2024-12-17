@@ -52,9 +52,6 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.
 	// timeoutTimestamp set to max value with the unsigned bit shifted to satisfy hermes timestamp conversion.
 	// it is the responsibility of the auth module developer to ensure an appropriate timeout timestamp.
 	timeoutTimestamp := ctx.BlockTime().Add(time.Minute).UnixNano()
-	if timeoutTimestamp < 0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("timeout timestamp is negative")
-	}
 	_, err = k.icaControllerKeeper.SendTx(ctx, chanCap, msg.ConnectionId, portID, packetData, uint64(timeoutTimestamp))
 	if err != nil {
 		return nil, err

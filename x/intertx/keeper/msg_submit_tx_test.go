@@ -53,11 +53,8 @@ func TestSubmitTx(t *testing.T) {
 	}
 	blockTime := time.Unix(35235, 30)
 	s.sdkCtx.WithBlockTime(blockTime)
-	timeOut := s.sdkCtx.BlockTime().Add(time.Minute).UnixNano()
-	// check safe cast to uint64 for timeOut
-	if timeOut < 0 {
-		t.Fatalf("timeout timestamp is negative")
-	}
+	timeOutBlock := s.sdkCtx.BlockTime().Add(time.Minute)
+	timeOut := timeOutBlock.UnixNano()
 
 	capability := &capabilitytypes.Capability{
 		Index: 32,
