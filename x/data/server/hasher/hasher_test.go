@@ -9,8 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/cometbft/cometbft/libs/rand"
+
+	"github.com/cosmos/cosmos-sdk/store/mem"
 )
 
 func TestHasher(t *testing.T) {

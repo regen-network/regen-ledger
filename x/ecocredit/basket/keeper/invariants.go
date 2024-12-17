@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	stdmath "math"
 	"sort"
 	"strings"
 
@@ -52,6 +53,9 @@ func SupplyInvariant(ctx sdk.Context, store api.BasketTable, bank bankSupplyStor
 			return fmt.Sprintf("failed to get basket %v: %v", bid, err), true
 		}
 		bal := basketBalances[bid]
+		if b.Exponent > stdmath.MaxInt32 {
+			return fmt.Sprintf("exponent %d is too large", b.Exponent), true
+		}
 		exp := math.NewDecFinite(1, int32(b.Exponent)) //nolint:staticcheck
 		mul, err := bal.Mul(exp)
 		if err != nil {

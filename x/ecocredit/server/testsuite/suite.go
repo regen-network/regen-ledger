@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -24,7 +25,7 @@ import (
 	basketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/v2"
+
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
@@ -342,9 +343,9 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	})
 	require.NoError(err)
 	classID := cRes.ClassId
-	start, err := types.ParseDate("start date", startStr)
+	start, err := regentypes.ParseDate("start date", startStr)
 	require.NoError(err)
-	end, err := types.ParseDate("end date", endStr)
+	end, err := regentypes.ParseDate("end date", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &basetypes.MsgCreateProject{
 		Admin:        admin.String(),
@@ -926,7 +927,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	coinPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000)
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
-	expectedSellOrderIds := []uint64{1, 2}
+	expectedSellOrderIDs := []uint64{1, 2}
 
 	sellerAcc := acc3
 	order1Qty, order2Qty := "10.54321", "15.54321"
@@ -954,7 +955,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 	})
 	s.Require().Nil(err)
-	s.Require().Equal(expectedSellOrderIds, createSellOrder.SellOrderIds)
+	s.Require().Equal(expectedSellOrderIDs, createSellOrder.SellOrderIds)
 	orderID1 := createSellOrder.SellOrderIds[0]
 	orderID2 := createSellOrder.SellOrderIds[1]
 

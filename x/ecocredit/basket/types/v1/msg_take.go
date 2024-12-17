@@ -26,7 +26,7 @@ func (m MsgTake) GetSignBytes() []byte {
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgTake) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if err := basket.ValidateBasketDenom(m.BasketDenom); err != nil {

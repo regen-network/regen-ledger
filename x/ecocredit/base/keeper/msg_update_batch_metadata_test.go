@@ -175,6 +175,6 @@ func (s *updateBatchMetadata) ExpectEventWithProperties(a gocuke.DocString) {
 	require.Equal(s.t, proto.MessageName(&event), lastEvent.Type)
 	require.Len(s.t, lastEvent.Attributes, 1)
 
-	batchDenom := strings.Trim(string(lastEvent.Attributes[0].Value), `"`)
+	batchDenom := strings.Trim(lastEvent.Attributes[0].Value, `"`)
 	require.Equal(s.t, event.BatchDenom, batchDenom)
 }

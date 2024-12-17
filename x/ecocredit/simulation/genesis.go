@@ -10,6 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -34,7 +35,7 @@ func genCreditClassFee(r *rand.Rand) sdk.Coin {
 
 // genAllowedClassCreators generate random set of creators
 func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []sdk.AccAddress {
-	max := 50
+	maxVal := 50
 
 	switch len(accs) {
 	case 0:
@@ -42,11 +43,11 @@ func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []sdk.AccAdd
 	case 1:
 		return []sdk.AccAddress{accs[0].Address}
 	default:
-		if len(accs) < max {
-			max = len(accs)
+		if len(accs) < maxVal {
+			maxVal = len(accs)
 		}
 	}
-	n := simtypes.RandIntBetween(r, 1, max)
+	n := simtypes.RandIntBetween(r, 1, maxVal)
 	creators := make([]sdk.AccAddress, n)
 
 	for i := 0; i < n; i++ {
