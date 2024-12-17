@@ -7,11 +7,12 @@ import (
 	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/gogoproto/proto"
+
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	"github.com/cosmos/gogoproto/proto"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 
@@ -53,7 +54,14 @@ func TestSubmitTx(t *testing.T) {
 	blockTime := time.Unix(35235, 30)
 	s.sdkCtx.WithBlockTime(blockTime)
 	timeOut := s.sdkCtx.BlockTime().Add(time.Minute).UnixNano()
-	capability := &capabilitytypes.Capability{Index: 32}
+	// check safe cast to uint64 for timeOut
+	if timeOut < 0 {
+		t.Fatalf("timeout timestamp is negative")
+	}
+
+	capability := &capabilitytypes.Capability{
+		Index: 32,
+	}
 	gomock.InOrder(
 		s.ica.EXPECT().
 			GetActiveChannelID(s.sdkCtx, msg.ConnectionId, portID).

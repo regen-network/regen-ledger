@@ -418,7 +418,7 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 		},
 		{
 			"invalid resolver id",
-			[]string{fmt.Sprintf("%s", "123a5"), filePath},
+			[]string{"123a5", filePath},
 			true,
 			false,
 			"invalid resolver id",

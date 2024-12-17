@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 

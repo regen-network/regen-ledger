@@ -27,7 +27,7 @@ var TypeMsgUpdateSellOrder = types.MsgUpdateSellOrders{}.Route()
 func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		seller, _ := simtypes.RandomAcc(r, accs)
 		sellerAddr := seller.Address.String()
@@ -43,13 +43,13 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, "no sell orders present"), nil, nil
 		}
 
-		max := 1
+		maxVal := 1
 		if len(orders) > 1 {
-			max = simtypes.RandIntBetween(r, 1, len(orders))
+			maxVal = simtypes.RandIntBetween(r, 1, len(orders))
 		}
 
 		updatedOrders := make([]*types.MsgUpdateSellOrders_Update, len(orders))
-		for i := 0; i < max; i++ {
+		for i := 0; i < maxVal; i++ {
 			askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 1, 50)))
 			exp := simtypes.RandTimestamp(r)
 			if exp.Before(sdkCtx.BlockTime()) {

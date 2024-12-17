@@ -10,8 +10,9 @@ import (
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/baseapp"
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"

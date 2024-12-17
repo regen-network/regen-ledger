@@ -2,12 +2,13 @@ package testsuite
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/ibc-go/v7/testing/simapp"
 	regenapp "github.com/regen-network/regen-ledger/v5/app"
-	"os"
-	"testing"
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"

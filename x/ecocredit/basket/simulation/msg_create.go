@@ -57,7 +57,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "credit type not found"), nil, nil
 		}
 
-		classIDs, op, err := randomClassIds(r, sdkCtx, baseClient, creditType.Abbreviation, TypeMsgPut)
+		classIDs, op, err := randomClassIDs(r, sdkCtx, baseClient, creditType.Abbreviation, TypeMsgPut)
 		if len(classIDs) == 0 {
 			return op, nil, err
 		}
@@ -170,7 +170,7 @@ func randomDateCriteria(r *rand.Rand, ctx sdk.Context) *types.DateCriteria {
 	return nil
 }
 
-func randomClassIds(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServer,
+func randomClassIDs(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServer,
 	creditTypeAbbrev string, msgType string) ([]string, simtypes.OperationMsg, error) {
 	classes, op, err := utils.GetClasses(ctx, r, qryClient, msgType)
 	if len(classes) == 0 {
@@ -181,9 +181,9 @@ func randomClassIds(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServ
 		return []string{classes[0].Id}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 	}
 
-	max := simtypes.RandIntBetween(r, 1, min(5, len(classes)))
+	maxVal := simtypes.RandIntBetween(r, 1, minVal(5, len(classes)))
 	var classIDs []string
-	for i := 0; i < max; i++ {
+	for i := 0; i < maxVal; i++ {
 		class := classes[i]
 		if class.CreditTypeAbbrev == creditTypeAbbrev {
 			classIDs = append(classIDs, class.Id)
@@ -193,7 +193,7 @@ func randomClassIds(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServ
 	return classIDs, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func min(x, y int) int {
+func minVal(x, y int) int {
 	if x > y {
 		return y
 	}

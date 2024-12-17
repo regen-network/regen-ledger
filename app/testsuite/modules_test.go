@@ -5,8 +5,9 @@ package testsuite
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 
 	data "github.com/regen-network/regen-ledger/x/data/v3/client/testsuite"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v3/client/testsuite"

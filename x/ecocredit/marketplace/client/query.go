@@ -55,7 +55,7 @@ func QuerySellOrdersCmd() *cobra.Command {
 		Example: `regen q sell-orders
 regen q sell-orders --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -164,7 +164,7 @@ func QueryAllowedDenomsCmd() *cobra.Command {
 		Example: `regen q ecocredit allowed-denoms
 regen q ecocredit allowed-denoms --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
 			if err != nil {
 				return err

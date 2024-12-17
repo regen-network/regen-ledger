@@ -3,8 +3,8 @@ package v4_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	dbm "github.com/cometbft/cometbft-db"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -321,7 +321,11 @@ func TestMainnetMigrations(t *testing.T) {
 
 	// ensure all other fields are unchanged
 	for i := range batches {
-		b, err := baseStore.BatchTable().Get(sdkCtx, uint64(i+1))
+		idx := i + 1
+		if idx < 0 {
+			t.Fatalf("index out of range")
+		}
+		b, err := baseStore.BatchTable().Get(sdkCtx, uint64(idx))
 		require.NoError(t, err)
 
 		require.Equal(t, b.Issuer, issuer.Bytes())

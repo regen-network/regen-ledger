@@ -4,13 +4,15 @@ package simulation
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/cometbft/cometbft/libs/log"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/server"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"os"
-	"testing"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"

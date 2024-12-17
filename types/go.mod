@@ -14,7 +14,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v1.1.0
-	github.com/regen-network/regen-ledger/api/v2 v2.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/api/v2 v2.0.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
 	google.golang.org/grpc v1.62.1

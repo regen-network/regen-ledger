@@ -30,9 +30,9 @@ func (m *MsgDefineResolver) GetSigners() []sdk.AccAddress {
 }
 
 // LegacyMsg.Type implementations
-func (msg MsgDefineResolver) Route() string { return "" }
-func (msg MsgDefineResolver) Type() string  { return sdk.MsgTypeURL(&msg) }
-func (msg *MsgDefineResolver) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
+func (m MsgDefineResolver) Route() string { return "" }
+func (m MsgDefineResolver) Type() string  { return sdk.MsgTypeURL(&m) }
+func (m *MsgDefineResolver) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(m)
 	return sdk.MustSortJSON(bz)
 }

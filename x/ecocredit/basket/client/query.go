@@ -49,7 +49,7 @@ regen q ecocredit baskets
 regen q ecocredit baskets --limit 10 --offset 10
 		`,
 		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -160,7 +160,7 @@ func QueryBasketFeeCmd() *cobra.Command {
 regen q ecocredit basket-fee
 		`,
 		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
