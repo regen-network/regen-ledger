@@ -4,24 +4,52 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	"log"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
-	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
-func (app *RegenApp) ExportAppStateAndValidators(
-	forZeroHeight bool,
-	jailAllowedAddrs []string,
-	modulesToExport []string,
-) (servertypes.ExportedApp, error) {
+//func (app *RegenApp) ExportAppStateAndValidators(
+//	forZeroHeight bool,
+//	jailAllowedAddrs []string,
+//	modulesToExport []string,
+//) (servertypes.ExportedApp, error) {
+//	// as if they could withdraw from the start of the next block
+//	ctx := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
+//
+//	// We export at last height + 1, because that's the height at which
+//	// Tendermint will start InitChain.
+//	height := app.LastBlockHeight() + 1
+//	if forZeroHeight {
+//		height = 0
+//		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
+//	}
+//
+//	genState := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
+//	appState, err := json.MarshalIndent(genState, "", "  ")
+//	if err != nil {
+//		return servertypes.ExportedApp{}, err
+//	}
+//
+//	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
+//	return servertypes.ExportedApp{
+//		AppState:        appState,
+//		Validators:      validators,
+//		Height:          height,
+//		ConsensusParams: app.BaseApp.GetConsensusParams(ctx),
+//	}, err
+//}
+
+// ExportAppStateAndValidators exports the state of the application for a genesis
+// file.
+func (app *RegenApp) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs []string, modulesToExport []string) (servertypes.ExportedApp, error) {
 	// as if they could withdraw from the start of the next block
 	ctx := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
 
@@ -50,7 +78,8 @@ func (app *RegenApp) ExportAppStateAndValidators(
 
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
-// in favor of export at a block height
+//
+//	in favour of export at a block height
 func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
 	applyAllowedAddrs := false
 
@@ -76,21 +105,21 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 
 	// withdraw all validator commission
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		_, err := app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
-		if err != nil {
-			log.Fatalf("failed to withdraw validator commission: %s", err)
-		}
+		_, _ = app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		return false
 	})
 
 	// withdraw all delegator rewards
 	dels := app.StakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range dels {
-		_, err := app.DistrKeeper.WithdrawDelegationRewards(ctx,
-			delegation.GetDelegatorAddr(), delegation.GetValidatorAddr())
+		valAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
 		if err != nil {
-			panic(fmt.Sprintf("failed to withdraw delegation rewards: %s", err))
+			panic(err)
 		}
+
+		delAddr := sdk.MustAccAddressFromBech32(delegation.DelegatorAddress)
+
+		_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	}
 
 	// clear validator slash events
@@ -110,6 +139,7 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		feePool := app.DistrKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
 		app.DistrKeeper.SetFeePool(ctx, feePool)
+
 		if err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator()); err != nil {
 			panic(err)
 		}
@@ -118,12 +148,17 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 
 	// reinitialize all delegations
 	for _, del := range dels {
-		delAddr := del.GetDelegatorAddr()
-		valAddr := del.GetValidatorAddr()
+		valAddr, err := sdk.ValAddressFromBech32(del.ValidatorAddress)
+		if err != nil {
+			panic(err)
+		}
+		delAddr := sdk.MustAccAddressFromBech32(del.DelegatorAddress)
+
 		if err := app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr); err != nil {
 			// never called as BeforeDelegationCreated always returns nil
 			panic(fmt.Errorf("error while incrementing period: %w", err))
 		}
+
 		if err := app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr); err != nil {
 			// never called as AfterDelegationModified always returns nil
 			panic(fmt.Errorf("error while creating a new delegation period record: %w", err))
@@ -155,7 +190,7 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 
 	// Iterate through validators by power descending, reset bond heights, and
 	// update bond intra-tx counters.
-	store := ctx.KVStore(app.keys[stakingtypes.StoreKey])
+	store := ctx.KVStore(app.GetKey(stakingtypes.StoreKey))
 	iter := sdk.KVStoreReversePrefixIterator(store, stakingtypes.ValidatorsKey)
 	counter := int16(0)
 
@@ -163,7 +198,7 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		addr := sdk.ValAddress(stakingtypes.AddressFromValidatorsKey(iter.Key()))
 		validator, found := app.StakingKeeper.GetValidator(ctx, addr)
 		if !found {
-			panic(fmt.Sprintf("expected validator (%s) not found", addr))
+			panic("expected validator, not found")
 		}
 
 		validator.UnbondingHeight = 0
