@@ -1,3 +1,4 @@
+// #nosec G115: Safe cast after non-negative check
 package keeper
 
 import (
