@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	tmos "github.com/cometbft/cometbft/libs/os"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -829,7 +828,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
 		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
-			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
+			logger.Error("WasmKeeper failed initialize pinned codes %s", "err", err)
+			os.Exit(1)
 		}
 	}
 
