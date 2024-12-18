@@ -1,3 +1,4 @@
+//nolint:staticcheck // SA1019: using deprecated b.Exponent
 package keeper
 
 import (
