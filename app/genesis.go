@@ -3,6 +3,7 @@ package app
 
 import (
 	"encoding/json"
+
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
