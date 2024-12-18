@@ -120,6 +120,6 @@ func (s *updateClassMetadata) ExpectEventWithProperties(a gocuke.DocString) {
 	require.Equal(s.t, proto.MessageName(&event), lastEvent.Type)
 	require.Len(s.t, lastEvent.Attributes, 1) // should only have classID
 
-	classID := strings.Trim(string(lastEvent.Attributes[0].Value), `"`)
+	classID := strings.Trim(lastEvent.Attributes[0].Value, `"`)
 	require.Equal(s.t, event.ClassId, classID)
 }

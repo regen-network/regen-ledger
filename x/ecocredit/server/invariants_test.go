@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/cometbft/cometbft-db"
 	"gotest.tools/v3/assert"
 
 	"github.com/cometbft/cometbft/libs/log"

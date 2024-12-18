@@ -34,9 +34,9 @@ func (m MsgRegisterAccount) GetSigners() []sdk.AccAddress {
 }
 
 // LegacyMsg.Type implementations
-func (msg MsgRegisterAccount) Route() string { return "" }
-func (msg MsgRegisterAccount) Type() string  { return sdk.MsgTypeURL(&msg) }
-func (msg *MsgRegisterAccount) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
+func (m MsgRegisterAccount) Route() string { return "" }
+func (m MsgRegisterAccount) Type() string  { return sdk.MsgTypeURL(&m) }
+func (m *MsgRegisterAccount) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(m)
 	return sdk.MustSortJSON(bz)
 }

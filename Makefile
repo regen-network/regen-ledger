@@ -205,7 +205,11 @@ generate:
 
 lint:
 	@echo "Linting all go modules..."
-	@find . -name 'go.mod' -type f -execdir golangci-lint run --out-format=tab \;
+	@find . -name 'go.mod' -type f | while read modfile; do \
+		moddir=$$(dirname "$$modfile"); \
+		echo "Linting module at $$moddir"; \
+		(cd "$$moddir" && golangci-lint run --out-format=tab); \
+	done
 
 lint-fix: format
 	@echo "Attempting to fix lint errors in all go modules..."

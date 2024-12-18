@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/btcutil/base58"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
