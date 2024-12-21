@@ -1,36 +1,15 @@
 package app
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 )
 
-// EncodingConfig specifies the concrete encoding types to use for the app.
-// This is provided for compatibility between protobuf and amino implementations.
-type EncodingConfig struct {
-	InterfaceRegistry types.InterfaceRegistry
-	Codec             codec.Codec
-	TxConfig          client.TxConfig
-	Amino             *codec.LegacyAmino
-}
-
-// MakeEncodingConfig creates an EncodingConfig
-func MakeEncodingConfig() EncodingConfig {
-	amino := codec.NewLegacyAmino()
-	interfaceRegistry := types.NewInterfaceRegistry()
-	codec := codec.NewProtoCodec(interfaceRegistry)
-	txCfg := tx.NewTxConfig(codec, tx.DefaultSignModes)
-
-	encodingConfig := EncodingConfig{
-		InterfaceRegistry: interfaceRegistry,
-		Codec:             codec,
-		TxConfig:          txCfg,
-		Amino:             amino,
-	}
-	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
+// MakeEncodingConfig returns the application's encoding configuration with all
+// types and interfaces registered.
+func MakeEncodingConfig() testutil.TestEncodingConfig {
+	encodingConfig := testutil.MakeTestEncodingConfig()
+	// std.RegisterLegacyAminoCodec(encodingConfig.Amino) // removed because it gets called on init of codec/legacy
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)

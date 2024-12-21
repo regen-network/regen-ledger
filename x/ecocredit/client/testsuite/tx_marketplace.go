@@ -6,9 +6,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/client"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
@@ -122,6 +122,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			cmd := client.TxSellCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -260,6 +261,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 			cmd := client.TxUpdateSellOrdersCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -350,6 +352,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectCmd() {
 			cmd := client.TxBuyDirectCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -472,6 +475,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatchCmd() {
 			cmd := client.TxBuyDirectBulkCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -532,6 +536,7 @@ func (s *IntegrationTestSuite) TestTxCancelSellOrder() {
 			cmd := client.TxCancelSellOrderCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)

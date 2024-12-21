@@ -8,11 +8,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
-	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
-	ibcfeetypes "github.com/cosmos/ibc-go/v5/modules/apps/29-fee/types"
+	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 
 	"github.com/regen-network/regen-ledger/v5/app/upgrades"
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -24,7 +24,7 @@ const Name = "v5.0"
 var Upgrade = upgrades.Upgrade{
 	UpgradeName: Name,
 	CreateUpgradeHandler: func(mm *module.Manager, cfg module.Configurator) upgradetypes.UpgradeHandler {
-		return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			// set regen module consensus version
 			fromVM[ecocredit.ModuleName] = 2
 			fromVM[data.ModuleName] = 1
@@ -34,7 +34,8 @@ var Upgrade = upgrades.Upgrade{
 
 			// Add Interchain Accounts host module
 			// set the ICS27 consensus version so InitGenesis is not run
-			fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
+			// NOTE: ConsensusVersion no longer exists, keeping commented for historical purposes
+			// fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
 			// create ICS27 Controller submodule params, controller module not enabled.
 			controllerParams := icacontrollertypes.Params{ControllerEnabled: false}

@@ -4,8 +4,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -25,7 +25,7 @@ var TypeMsgCancelSellOrder = types.MsgCancelSellOrder{}.Route()
 func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	_ basetypes.QueryServer, mktQryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		seller, _ := simtypes.RandomAcc(r, accs)
 		sellerAddr := seller.Address.String()
@@ -56,7 +56,7 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
 			MsgType:         msg.Type(),

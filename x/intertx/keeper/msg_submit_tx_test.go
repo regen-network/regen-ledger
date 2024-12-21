@@ -1,3 +1,4 @@
+// #nosec G115: Safe cast after non-negative check
 package keeper
 
 import (
@@ -7,12 +8,14 @@ import (
 	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/gogoproto/proto"
+
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
-	host "github.com/cosmos/ibc-go/v5/modules/core/24-host"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 
 	v1 "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )
@@ -43,7 +46,7 @@ func TestSubmitTx(t *testing.T) {
 	portID, err := icatypes.NewControllerPortID(msg.Owner)
 	assert.NilError(t, err)
 	channelID := "ch-1"
-	serializedTx, err := icatypes.SerializeCosmosTx(s.cdc, []sdk.Msg{&msgSend})
+	serializedTx, err := icatypes.SerializeCosmosTx(s.cdc, []proto.Message{&msgSend})
 	assert.NilError(t, err)
 	packetData := icatypes.InterchainAccountPacketData{
 		Type: icatypes.EXECUTE_TX,
@@ -51,8 +54,12 @@ func TestSubmitTx(t *testing.T) {
 	}
 	blockTime := time.Unix(35235, 30)
 	s.sdkCtx.WithBlockTime(blockTime)
-	timeOut := s.sdkCtx.BlockTime().Add(time.Minute).UnixNano()
-	capability := &capabilitytypes.Capability{Index: 32}
+	timeOutBlock := s.sdkCtx.BlockTime().Add(time.Minute)
+	timeOut := timeOutBlock.UnixNano()
+
+	capability := &capabilitytypes.Capability{
+		Index: 32,
+	}
 	gomock.InOrder(
 		s.ica.EXPECT().
 			GetActiveChannelID(s.sdkCtx, msg.ConnectionId, portID).

@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/genesis"
@@ -83,12 +83,12 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 				if tc.expectedAmtClasses > 0 {
 					s.Require().Len(res.Classes, tc.expectedAmtClasses)
 				} else {
-					resClassIds := make([]string, len(res.Classes))
+					resClassIDs := make([]string, len(res.Classes))
 					for i, cls := range res.Classes {
-						resClassIds[i] = cls.Id
+						resClassIDs[i] = cls.Id
 					}
 					for _, id := range classIDs {
-						s.Require().Contains(resClassIds, id)
+						s.Require().Contains(resClassIDs, id)
 					}
 				}
 			}

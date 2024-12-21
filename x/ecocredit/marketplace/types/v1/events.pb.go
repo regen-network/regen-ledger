@@ -6,7 +6,7 @@ package v1
 import (
 	fmt "fmt"
 	types "github.com/cosmos/cosmos-sdk/types"
-	proto "github.com/gogo/protobuf/proto"
+	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -156,7 +156,7 @@ func (m *EventBuyDirect) GetBuyerFeePaid() *types.Coin {
 
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
 type EventUpdateSellOrder struct {
-	//  sell_order_id is the unique identifier of the sell order that was updated.
+	// sell_order_id is the unique identifier of the sell order that was updated.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 }
 

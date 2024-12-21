@@ -62,8 +62,6 @@ func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.Acc
 	baseApp.MountStore(paramsKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(tkey, storetypes.StoreTypeTransient)
 
-	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
-	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
 	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredit.ModuleName)
 
 	maccPerms := map[string][]string{
@@ -73,16 +71,20 @@ func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.Acc
 		marketplace.FeePoolName:    {authtypes.Burner},
 	}
 
-	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms, "regen",
-	)
-
-	bankKeeper := bankkeeper.NewBaseKeeper(
-		cdc, bankKey, accountKeeper, bankSubspace, nil,
-	)
-
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
+	accountKeeper := authkeeper.NewAccountKeeper(
+		cdc,
+		authKey,
+		authtypes.ProtoBaseAccount,
+		maccPerms,
+		"regen",
+		authority.String(),
+	)
+
+	bankKeeper := bankkeeper.NewBaseKeeper(cdc, bankKey, accountKeeper, nil, authority.String())
+
 	ecocreditModule := module.NewModule(ecoKey, authority, accountKeeper, bankKeeper, ecocreditSubspace, nil)
+	ecocreditModule.RegisterInterfaces(cdc.InterfaceRegistry())
 	ff.SetModules([]sdkmodule.AppModule{ecocreditModule})
 
 	return ff, bankKeeper, accountKeeper

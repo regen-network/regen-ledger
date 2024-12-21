@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -25,7 +25,7 @@ var TypeMsgRemoveAllowedDenom = types.MsgRemoveAllowedDenom{}.Route()
 func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	mktClient types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
 		response, err := mktClient.AllowedDenoms(sdkCtx, &types.QueryAllowedDenomsRequest{})
@@ -45,8 +45,8 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		params := govk.GetDepositParams(sdkCtx)
-		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, authority)
+		params := govk.GetParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, authority)
 		switch {
 		case skip:
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRemoveAllowedDenom, "skip deposit"), nil, nil
@@ -65,6 +65,8 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		}
 
 		proposalMsg := govtypes.MsgSubmitProposal{
+			Title:          simtypes.RandStringOfLength(r, 10),
+			Summary:        simtypes.RandStringOfLength(r, 10),
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
@@ -74,7 +76,7 @@ func SimulateMsgRemoveAllowedDenom(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
 			MsgType:         msg.Type(),

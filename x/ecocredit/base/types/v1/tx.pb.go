@@ -9,10 +9,10 @@ import (
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/gogo/protobuf/types"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
+	_ "github.com/cosmos/gogoproto/types"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -5538,7 +5538,7 @@ func (m *MsgCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x38
 	}
 	if m.EndDate != nil {
-		n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate):])
+		n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.EndDate):])
 		if err6 != nil {
 			return 0, err6
 		}
@@ -5548,7 +5548,7 @@ func (m *MsgCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x32
 	}
 	if m.StartDate != nil {
-		n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate):])
+		n7, err7 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.StartDate):])
 		if err7 != nil {
 			return 0, err7
 		}
@@ -6653,7 +6653,7 @@ func (m *MsgBridgeReceive_Batch) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		dAtA[i] = 0x2a
 	}
 	if m.EndDate != nil {
-		n12, err12 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate):])
+		n12, err12 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.EndDate):])
 		if err12 != nil {
 			return 0, err12
 		}
@@ -6663,7 +6663,7 @@ func (m *MsgBridgeReceive_Batch) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		dAtA[i] = 0x22
 	}
 	if m.StartDate != nil {
-		n13, err13 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate):])
+		n13, err13 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.StartDate):])
 		if err13 != nil {
 			return 0, err13
 		}
@@ -7538,11 +7538,11 @@ func (m *MsgCreateBatch) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.StartDate != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.StartDate)
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.EndDate != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.EndDate)
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.Open {
@@ -8031,11 +8031,11 @@ func (m *MsgBridgeReceive_Batch) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.StartDate != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.StartDate)
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.EndDate != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate)
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.EndDate)
 		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Metadata)
@@ -10074,7 +10074,7 @@ func (m *MsgCreateBatch) Unmarshal(dAtA []byte) error {
 			if m.StartDate == nil {
 				m.StartDate = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -10110,7 +10110,7 @@ func (m *MsgCreateBatch) Unmarshal(dAtA []byte) error {
 			if m.EndDate == nil {
 				m.EndDate = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -13324,7 +13324,7 @@ func (m *MsgBridgeReceive_Batch) Unmarshal(dAtA []byte) error {
 			if m.StartDate == nil {
 				m.StartDate = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -13360,7 +13360,7 @@ func (m *MsgBridgeReceive_Batch) Unmarshal(dAtA []byte) error {
 			if m.EndDate == nil {
 				m.EndDate = new(time.Time)
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

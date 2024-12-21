@@ -6,21 +6,19 @@ import (
 	"fmt"
 	"log"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
-func (app *RegenApp) ExportAppStateAndValidators(
-	forZeroHeight bool, jailAllowedAddrs []string,
-) (servertypes.ExportedApp, error) {
-
+func (app *RegenApp) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs []string, modulesToExport []string) (servertypes.ExportedApp, error) {
 	// as if they could withdraw from the start of the next block
 	ctx := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
 
@@ -32,32 +30,25 @@ func (app *RegenApp) ExportAppStateAndValidators(
 		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := map[string]json.RawMessage{}
-	for name, v := range app.ModuleManager.ExportGenesis(ctx, app.appCodec) {
-		genState[name] = v
-	}
-
+	genState := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
 
 	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
-	if err != nil {
-		return servertypes.ExportedApp{}, err
-	}
-
 	return servertypes.ExportedApp{
 		AppState:        appState,
 		Validators:      validators,
 		Height:          height,
 		ConsensusParams: app.BaseApp.GetConsensusParams(ctx),
-	}, nil
+	}, err
 }
 
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
-// in favor of export at a block height
+//
+//	in favour of export at a block height
 func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
 	applyAllowedAddrs := false
 
@@ -96,6 +87,7 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		}
 
 		delAddr := sdk.MustAccAddressFromBech32(delegation.DelegatorAddress)
+
 		_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	}
 
@@ -120,7 +112,6 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		if err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator()); err != nil {
 			panic(err)
 		}
-
 		return false
 	})
 
@@ -168,7 +159,7 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 
 	// Iterate through validators by power descending, reset bond heights, and
 	// update bond intra-tx counters.
-	store := ctx.KVStore(app.keys[stakingtypes.StoreKey])
+	store := ctx.KVStore(app.GetKey(stakingtypes.StoreKey))
 	iter := sdk.KVStoreReversePrefixIterator(store, stakingtypes.ValidatorsKey)
 	counter := int16(0)
 
@@ -188,11 +179,14 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 		counter++
 	}
 
-	iter.Close()
+	if err := iter.Close(); err != nil {
+		app.Logger().Error("error while closing the key-value store reverse prefix iterator: ", err)
+		return
+	}
 
 	_, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	/* Handle slashing state. */

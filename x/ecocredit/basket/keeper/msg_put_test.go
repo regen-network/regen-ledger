@@ -2,12 +2,14 @@ package keeper
 
 import (
 	"encoding/json"
+	"fmt"
+	stdmath "math"
 	"strconv"
 	"strings"
 	"testing"
 
 	sdkMath "cosmossdk.io/math"
-	"github.com/gogo/protobuf/jsonpb"
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -578,6 +580,11 @@ func (s *putSuite) calculateExpectedCoin(amount string) sdk.Coin {
 	}
 	require.NoError(s.t, err)
 
+	// Check credit type precision safe casting value
+	if creditType.Precision > stdmath.MaxInt32 {
+		err = fmt.Errorf("credit type precision %d is too large", creditType.Precision)
+	}
+	require.NoError(s.t, err)
 	tokenAmt, err := math.NewDecFinite(1, int32(creditType.Precision)).MulExact(dec)
 	require.NoError(s.t, err)
 

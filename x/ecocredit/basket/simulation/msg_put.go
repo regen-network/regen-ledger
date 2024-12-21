@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -48,7 +48,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		rBasket := baskets[r.Intn(len(baskets))]
 		var classInfoList []basetypes.ClassInfo
-		max := 0
+		maxVal := 0
 
 		var ownerAddr string
 		var owner simtypes.Account
@@ -76,14 +76,14 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 						ownerAddr = issuers[0]
 						owner = acc
 						classInfoList = append(classInfoList, *class)
-						max++
+						maxVal++
 					}
 				} else if utils.Contains(issuers, ownerAddr) {
 					classInfoList = append(classInfoList, *class)
-					max++
+					maxVal++
 				}
 
-				if max == 2 {
+				if maxVal == 2 {
 					break
 				}
 			}
@@ -171,8 +171,8 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		account := ak.GetAccount(sdkCtx, owner.Address)
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},

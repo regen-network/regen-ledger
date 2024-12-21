@@ -5,8 +5,8 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -27,7 +27,7 @@ var TypeMsgSell = types.MsgSell{}.Route()
 func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, baseApp *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, baseApp *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		seller, _ := simtypes.RandomAcc(r, accs)
 		sellerAddr := seller.Address.String()
@@ -47,13 +47,13 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		if len(batches) == 0 {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, "no credit batches"), nil, nil
 		}
-		max := 1
+		maxVal := 1
 		if len(batches) > 1 {
-			max = simtypes.RandIntBetween(r, 1, len(batches))
+			maxVal = simtypes.RandIntBetween(r, 1, len(batches))
 		}
 
-		sellOrders := make([]*types.MsgSell_Order, max)
-		for i := 0; i < max; i++ {
+		sellOrders := make([]*types.MsgSell_Order, maxVal)
+		for i := 0; i < maxVal; i++ {
 			bal, err := qryClient.Balance(ctx, &basetypes.QueryBalanceRequest{Address: sellerAddr, BatchDenom: batches[i].Denom})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
@@ -102,7 +102,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             baseApp,
-			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			TxGen:           testutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
 			MsgType:         msg.Type(),

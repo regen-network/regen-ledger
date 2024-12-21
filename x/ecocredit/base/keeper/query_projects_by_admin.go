@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -18,12 +17,8 @@ func (k Keeper) ProjectsByAdmin(ctx context.Context, req *types.QueryProjectsByA
 		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectAdminIndexKey{}.WithAdmin(admin), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectAdminIndexKey{}.WithAdmin(admin), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -35,12 +30,10 @@ func (k Keeper) ProjectsByAdmin(ctx context.Context, req *types.QueryProjectsByA
 		if err != nil {
 			return nil, err
 		}
-
 		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 		if err != nil {
 			return nil, regenerrors.ErrNotFound.Wrapf("unable to get class with key: %d: %s", project.ClassKey, err.Error())
 		}
-
 		projects = append(projects, &types.ProjectInfo{
 			Id:           project.Id,
 			Admin:        req.Admin,
@@ -51,10 +44,6 @@ func (k Keeper) ProjectsByAdmin(ctx context.Context, req *types.QueryProjectsByA
 		})
 	}
 
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
+	pr := ormutil.PageResToCosmosTypes(it.PageResponse())
 	return &types.QueryProjectsByAdminResponse{Projects: projects, Pagination: pr}, nil
 }

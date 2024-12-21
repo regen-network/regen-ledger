@@ -18,7 +18,7 @@ func QueryClassesCmd() *cobra.Command {
 		Example: `regen q ecocredit classes
 regen q ecocredit classes --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -104,7 +104,7 @@ func QueryProjectsCmd() *cobra.Command {
 		Example: `regen q ecocredit projects
 regen q ecocredit projects --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -193,7 +193,7 @@ func QueryBatchesCmd() *cobra.Command {
 		Example: `regen q ecocredit batches
 regen q ecocredit batches --limit 10 --offset 10`,
 		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -397,7 +397,7 @@ func QueryCreditTypesCmd() *cobra.Command {
 		Long:    "List all credit types.",
 		Example: "regen q ecocredit types",
 		Args:    cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -415,7 +415,7 @@ func QueryParamsCmd() *cobra.Command {
 		Short:   "List the current ecocredit module parameters",
 		Long:    "List the current ecocredit module parameters.",
 		Example: "regen q ecocredit params",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -521,7 +521,7 @@ func QueryClassFeeCmd() *cobra.Command {
 		Short:   "Retrieve the credit class creation fee",
 		Long:    "Retrieve the credit class creation fee",
 		Example: "regen q ecocredit class-fee",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -540,7 +540,7 @@ func QueryClassCreatorAllowlistCmd() *cobra.Command {
 		Short:   "Retrieve the class creator allowlist enabled setting",
 		Long:    "Retrieve the class creator allowlist enabled setting",
 		Example: "regen q ecocredit class-creator-allowlist",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -560,7 +560,7 @@ func QueryAllowedClassCreatorsCmd() *cobra.Command {
 		Long:  "Retrieve the list of allowed credit class creators with optional pagination flags.",
 		Example: `regen q ecocredit allowed-class-creators
 regen q ecocredit allowed-class-creators --limit 10`,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -592,7 +592,7 @@ func QueryAllBalancesCmd() *cobra.Command {
 		Long:  "Retrieve all ecocredit balances across all addresses and credit batches with optional pagination flags.",
 		Example: `regen q ecocredit all-balances
 regen q ecocredit all-balances --limit 10`,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
@@ -655,7 +655,7 @@ func QueryAllowedBridgeChainsCmd() *cobra.Command {
 		Short:   "Retrieve the list of allowed bridge chains",
 		Long:    "Retrieve the list of chains that are allowed to be used in bridge operations",
 		Example: "regen q ecocredit allowed-bridge-chains",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err

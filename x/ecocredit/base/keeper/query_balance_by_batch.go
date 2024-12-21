@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -13,15 +12,12 @@ import (
 )
 
 func (k Keeper) BalancesByBatch(ctx context.Context, req *types.QueryBalancesByBatchRequest) (*types.QueryBalancesByBatchResponse, error) {
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
 	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
-	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalanceBatchKeyAddressIndexKey{}.WithBatchKey(batch.Key), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalanceBatchKeyAddressIndexKey{}.WithBatchKey(batch.Key), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -41,12 +37,8 @@ func (k Keeper) BalancesByBatch(ctx context.Context, req *types.QueryBalancesByB
 			EscrowedAmount: bal.EscrowedAmount,
 		})
 	}
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
 	return &types.QueryBalancesByBatchResponse{
 		Balances:   balances,
-		Pagination: pr,
+		Pagination: ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }

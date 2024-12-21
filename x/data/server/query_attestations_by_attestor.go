@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
@@ -24,15 +23,10 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("attestor: %s", err.Error())
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
 	it, err := s.stateStore.DataAttestorTable().List(
 		ctx,
 		api.DataAttestorAttestorIndexKey{}.WithAttestor(addr),
-		ormlist.Paginate(pg),
+		ormutil.PageReqToOrmPaginate(request.Pagination),
 	)
 	if err != nil {
 		return nil, err
@@ -58,13 +52,8 @@ func (s serverImpl) AttestationsByAttestor(ctx context.Context, request *data.Qu
 		})
 	}
 
-	pageRes, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
 	return &data.QueryAttestationsByAttestorResponse{
 		Attestations: attestations,
-		Pagination:   pageRes,
+		Pagination:   ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }

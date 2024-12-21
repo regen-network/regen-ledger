@@ -32,12 +32,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 	// only check and charge fee if required fee is set
 	if basketFee.Fee != nil {
 
-		requiredFee, ok := regentypes.ProtoCoinToCoin(basketFee.Fee)
-		if !ok {
-			return nil, sdkerrors.ErrInvalidType.Wrapf("basket fee")
-		}
-
-		// check if fee is empty
+		requiredFee := regentypes.CoinFromCosmosAPILegacy(basketFee.Fee)
 		if msg.Fee == nil {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 				"fee cannot be empty: must be %s", requiredFee,
@@ -49,14 +44,12 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 		// the message will fail basic validation if more than one Coin is provided.
 		msgFee := msg.Fee[0]
 
-		// check if fee is the correct denom
 		if msgFee.Denom != requiredFee.Denom {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 				"fee must be %s, got %s", requiredFee, msgFee,
 			)
 		}
 
-		// check if fee is greater than or equal to required fee
 		if !msgFee.IsGTE(requiredFee) {
 			return nil, sdkerrors.ErrInsufficientFee.Wrapf(
 				"fee must be %s, got %s", requiredFee, msgFee,
@@ -71,9 +64,7 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 			)
 		}
 
-		// convert required fee to multiple coins for processing
 		requiredFees := sdk.Coins{requiredFee}
-
 		err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, requiredFees)
 		if err != nil {
 			return nil, err

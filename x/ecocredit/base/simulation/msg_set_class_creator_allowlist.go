@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -26,7 +26,7 @@ const WeightSetClassCreatorAllowlist = 33
 func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk ecocredit.GovKeeper,
 	_ types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		proposer, _ := simtypes.RandomAcc(r, accs)
 		proposerAddr := proposer.Address.String()
@@ -36,8 +36,8 @@ func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredi
 			return op, nil, err
 		}
 
-		params := govk.GetDepositParams(sdkCtx)
-		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		params := govk.GetParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, proposer.Address)
 		switch {
 		case skip:
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSetClassCreatorAllowlist, "skip deposit"), nil, nil
@@ -56,16 +56,18 @@ func SimulateMsgSetClassCreatorAllowlist(ak ecocredit.AccountKeeper, bk ecocredi
 		}
 
 		msg := &govtypes.MsgSubmitProposal{
+			Title:          simtypes.RandStringOfLength(r, 10),
 			Messages:       []*codectypes.Any{anyMsg},
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
+			Summary:        simtypes.RandStringOfLength(r, 10),
 		}
 
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
 			MsgType:         msg.Type(),

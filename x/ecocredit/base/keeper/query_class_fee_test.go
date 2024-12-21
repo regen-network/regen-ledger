@@ -6,7 +6,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
-	sdkbase "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"

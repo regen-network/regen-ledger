@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	"github.com/cosmos/cosmos-sdk/testutil"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
@@ -33,7 +33,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryClassesResponse
@@ -67,7 +67,7 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryClassResponse
@@ -99,7 +99,7 @@ func (s *IntegrationTestSuite) TestQueryProject() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -134,7 +134,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -184,7 +184,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByClass() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -239,7 +239,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsByReferenceID() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -278,7 +278,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryBatchesResponse
@@ -320,7 +320,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryBatchesByIssuerResponse
@@ -362,7 +362,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryBatchesByClassResponse
@@ -404,7 +404,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryBatchesResponse
@@ -438,7 +438,7 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryBatchResponse
@@ -454,7 +454,7 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
 
 	url := fmt.Sprintf("%s/%s/credit-types", s.val.APIAddress, baseRoute)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	require.NoError(err)
 
 	var res types.QueryCreditTypesResponse
@@ -486,7 +486,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QueryBalanceResponse
@@ -518,7 +518,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			resp, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 
 			var res types.QuerySupplyResponse
@@ -535,7 +535,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 // func (s *IntegrationTestSuite) TestQueryParams() {
 // 	require := s.Require()
 
-// 	resp, err := rest.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, baseRoute))
+// 	resp, err := testutil.GetRequest(fmt.Sprintf("%s/%s/params", s.val.APIAddress, baseRoute))
 // 	require.NoError(err)
 
 // 	var res types.QueryParamsResponse
@@ -547,7 +547,7 @@ func (s *IntegrationTestSuite) TestCreditType() {
 	require := s.Require()
 
 	url := fmt.Sprintf("%s/%s/credit-types/%s", s.val.APIAddress, baseRoute, "C")
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	require.NoError(err)
 
 	var res types.QueryCreditTypeResponse
@@ -561,7 +561,7 @@ func (s *IntegrationTestSuite) TestClassCreatorAllowlist() {
 	require := s.Require()
 
 	url := fmt.Sprintf("%s/%s/class-creator-allowlist", s.val.APIAddress, baseRoute)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	require.NoError(err)
 
 	var res types.QueryClassCreatorAllowlistResponse
@@ -574,7 +574,7 @@ func (s *IntegrationTestSuite) TestAllBalances() {
 	require := s.Require()
 
 	url := fmt.Sprintf("%s/%s/all-balances?pagination.countTotal=true", s.val.APIAddress, baseRoute)
-	resp, err := rest.GetRequest(url)
+	resp, err := testutil.GetRequest(url)
 	require.NoError(err)
 
 	var res types.QueryAllBalancesResponse
@@ -584,7 +584,7 @@ func (s *IntegrationTestSuite) TestAllBalances() {
 	require.NotZero(res.Pagination.Total)
 
 	url = fmt.Sprintf("%s/%s/balances?pagination.countTotal=true", s.val.APIAddress, baseRoute)
-	resp, err = rest.GetRequest(url)
+	resp, err = testutil.GetRequest(url)
 	require.NoError(err)
 
 	res = types.QueryAllBalancesResponse{}
@@ -598,7 +598,7 @@ func (s *IntegrationTestSuite) TestBalancesByBatch() {
 	require := s.Require()
 
 	checkQuery := func(url string) {
-		resp, err := rest.GetRequest(url)
+		resp, err := testutil.GetRequest(url)
 		require.NoError(err)
 		var res types.QueryBalancesByBatchResponse
 		err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)

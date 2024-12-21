@@ -5,8 +5,8 @@ package v1
 
 import (
 	fmt "fmt"
-	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/cosmos/gogoproto/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"

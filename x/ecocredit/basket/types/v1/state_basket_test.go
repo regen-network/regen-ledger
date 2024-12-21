@@ -3,7 +3,7 @@ package v1
 import (
 	"testing"
 
-	"github.com/gogo/protobuf/jsonpb"
+	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 )

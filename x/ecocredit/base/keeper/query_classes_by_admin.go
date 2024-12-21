@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -19,12 +18,8 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *types.QueryClassesByAdm
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("invalid admin: %s", err.Error())
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	it, err := k.stateStore.ClassTable().List(ctx, api.ClassAdminIndexKey{}.WithAdmin(admin), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.ClassTable().List(ctx, api.ClassAdminIndexKey{}.WithAdmin(admin), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -37,21 +32,15 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *types.QueryClassesByAdm
 		if err != nil {
 			return nil, err
 		}
-
 		info := types.ClassInfo{
 			Id:               class.Id,
 			Admin:            adminString,
 			Metadata:         class.Metadata,
 			CreditTypeAbbrev: class.CreditTypeAbbrev,
 		}
-
 		classes = append(classes, &info)
 	}
 
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
+	pr := ormutil.PageResToCosmosTypes(it.PageResponse())
 	return &types.QueryClassesByAdminResponse{Classes: classes, Pagination: pr}, nil
 }

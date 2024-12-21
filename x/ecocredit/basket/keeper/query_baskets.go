@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -12,22 +11,17 @@ import (
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
 )
 
-func (k Keeper) Baskets(ctx context.Context, request *types.QueryBasketsRequest) (*types.QueryBasketsResponse, error) {
-	if request == nil {
+func (k Keeper) Baskets(ctx context.Context, req *types.QueryBasketsRequest) (*types.QueryBasketsResponse, error) {
+	if req == nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
 	}
 
-	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-	it, err := k.stateStore.BasketTable().List(ctx, api.BasketPrimaryKey{},
-		ormlist.Paginate(pulsarPageReq),
-	)
-
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.BasketTable().List(ctx, api.BasketPrimaryKey{}, pg)
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	res := &types.QueryBasketsResponse{}
 	for it.Next() {
@@ -61,13 +55,7 @@ func (k Keeper) Baskets(ctx context.Context, request *types.QueryBasketsRequest)
 			DateCriteria:      criteria,
 		})
 	}
-
-	it.Close()
-
-	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
+	res.Pagination = ormutil.PageResToCosmosTypes(it.PageResponse())
 
 	return res, nil
 }

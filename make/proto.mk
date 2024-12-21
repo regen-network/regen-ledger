@@ -4,8 +4,8 @@
 ###                                Protobuf                                 ###
 ###############################################################################
 
-containerProtoVer=v0.7
-containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
+containerProtoVer=0.14.0
+containerProtoImage=ghcr.io/cosmos/proto-builder:$(containerProtoVer)
 containerProtoGen=regen-ledger-proto-gen-$(containerProtoVer)
 containerProtoFmt=regen-ledger-proto-fmt-$(containerProtoVer)
 containerProtoGenSwagger=regen-ledger-proto-gen-swagger-$(containerProtoVer)
@@ -37,8 +37,8 @@ proto-check-breaking:
 GOGO_PROTO_URL           = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
 GOOGLE_PROTO_URL         = https://raw.githubusercontent.com/googleapis/googleapis/master
 REGEN_COSMOS_PROTO_URL   = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
-COSMOS_PROTO_URL         = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.45.4/proto/cosmos
-COSMOS_ORM_PROTO_URL     = https://raw.githubusercontent.com/cosmos/cosmos-sdk/orm/v1.0.0-alpha.10/proto/cosmos
+COSMOS_PROTO_URL         = https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.47.10/proto/cosmos
+COSMOS_ORM_PROTO_URL     = https://raw.githubusercontent.com/cosmos/cosmos-sdk/orm/v1.0.0-alpha.12/proto/cosmos
 
 GOGO_PROTO_TYPES         = third_party/proto/gogoproto
 GOOGLE_PROTO_TYPES       = third_party/proto/google

@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/gogo/protobuf/jsonpb"
-	gogoproto "github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/jsonpb"
+	gogoproto "github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	basev1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	basev1beta1 "cosmossdk.io/api/cosmos/base/v1beta1"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"

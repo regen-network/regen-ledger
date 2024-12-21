@@ -7,9 +7,9 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	v1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
+	v1beta11 "cosmossdk.io/api/cosmos/base/v1beta1"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
-	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"
-	v1beta11 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
