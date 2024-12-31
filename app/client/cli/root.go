@@ -192,6 +192,16 @@ func genesisCommand(encodingConfig testutil.TestEncodingConfig, cmds ...*cobra.C
 	return cmd
 }
 
+// genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
+func genesisCommand(encodingConfig testutil.TestEncodingConfig, cmds ...*cobra.Command) *cobra.Command {
+	cmd := genutilcli.GenesisCoreCommand(encodingConfig.TxConfig, app.ModuleBasics, app.DefaultNodeHome)
+
+	for _, subCmd := range cmds {
+		cmd.AddCommand(subCmd)
+	}
+	return cmd
+}
+
 func queryCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        "query",
