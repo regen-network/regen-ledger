@@ -565,7 +565,7 @@ Example Output:
 
 ### resolver
 
-The `resovler` endpoint allows users to query a resolver by its unique identifier.
+The `resolver` endpoint allows users to query a resolver by its unique identifier.
 
 ```bash
 /regen/data/v1/resolver/{id}
@@ -603,7 +603,7 @@ of the data.
 Example:
 
 ```bash
-curl locahost:1317/regen/data/v1/resolvers/iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v1/resolvers/iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
