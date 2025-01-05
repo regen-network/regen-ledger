@@ -1,14 +1,17 @@
+// #nosec G115: Safe cast after non-negative check
 package keeper
 
 import (
 	"context"
 	"time"
 
+	"github.com/cosmos/gogoproto/proto"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
-	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
-	host "github.com/cosmos/ibc-go/v5/modules/core/24-host"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 
 	types "github.com/regen-network/regen-ledger/x/intertx/types/v1"
 )
@@ -37,7 +40,7 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *types.MsgSubmitTx) (*types.
 		return nil, sdkerrors.ErrInvalidType.Wrapf("%T is not a valid sdk.Msg", msg.Msg.GetCachedValue())
 	}
 
-	data, err := icatypes.SerializeCosmosTx(k.cdc, []sdk.Msg{m})
+	data, err := icatypes.SerializeCosmosTx(k.cdc, []proto.Message{m})
 	if err != nil {
 		return nil, err
 	}

@@ -54,7 +54,7 @@ func getRegisterAccountCmd() *cobra.Command {
 		regen tx intertx register --connection-id connection-0
 		regen tx intertx register --connection-id connection-0 --version '{"version":"ics27-1","tx_type":"sdk_multi_msg","encoding":"proto3","host_connection_id":"connection-0","controller_connection_id":"connection-0","address":"regen14zs2x38lmkw4eqvl3lpml5l8crzaxn6mpvh79z"}'
 		`,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err

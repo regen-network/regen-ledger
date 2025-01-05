@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/btcsuite/btcutil/base58"
+	"github.com/cosmos/btcutil/base58"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

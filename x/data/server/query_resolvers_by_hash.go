@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
@@ -28,15 +27,10 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 		return nil, regenerrors.ErrNotFound.Wrap("data record with content hash")
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
 	it, err := s.stateStore.DataResolverTable().List(
 		ctx,
 		api.DataResolverPrimaryKey{}.WithId(dataID.Id),
-		ormlist.Paginate(pg),
+		ormutil.PageReqToOrmPaginate(request.Pagination),
 	)
 	if err != nil {
 		return nil, regenerrors.ErrInternal.Wrap(err.Error())
@@ -63,11 +57,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 			Manager: manager,
 		})
 	}
-
-	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
+	res.Pagination = ormutil.PageResToCosmosTypes(it.PageResponse())
 
 	return res, nil
 }

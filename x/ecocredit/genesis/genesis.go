@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	gogoproto "github.com/gogo/protobuf/proto"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	gogoproto "github.com/cosmos/gogoproto/proto"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -37,7 +37,7 @@ import (
 // - the calculated total amount of each credit batch matches the total supply
 // An error is returned if any of these validation checks fail.
 func ValidateGenesis(data json.RawMessage) error {
-	db := dbm.NewMemDB()
+	db := ormutil.NewStoreAdapter(dbm.NewMemDB())
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,

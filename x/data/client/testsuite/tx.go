@@ -11,11 +11,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 
-	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
-	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/client"
 )
@@ -47,6 +46,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
 	s.cfg.NumValidators = 2
+
 	nw, err := network.New(s.T(), s.T().TempDir(), s.cfg)
 	s.Require().NoError(err)
 	s.network = nw
@@ -59,38 +59,25 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	info1, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc1", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
-	info2, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	}
-
+	commonFlags := s.txFlags(nil)
 	pk, err := info1.GetPubKey()
 	s.Require().NoError(err)
 	s.addr1 = sdk.AccAddress(pk.Address())
-	_, err = banktestutil.MsgSendExec(
-		s.val.ClientCtx,
-		s.val.Address,
-		s.addr1,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
-		commonFlags...,
-	)
+	fundCoins := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000)))
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr1, fundCoins, commonFlags...)
+	s.Require().NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
+
+	info2, _, err := s.val.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
 	pk, err = info2.GetPubKey()
 	s.Require().NoError(err)
 	s.addr2 = sdk.AccAddress(pk.Address())
-	_, err = banktestutil.MsgSendExec(
-		s.val.ClientCtx,
-		s.val.Address,
-		s.addr2,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
-		commonFlags...,
-	)
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr2, fundCoins, commonFlags...)
 	s.Require().NoError(err)
+
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	s.iri1 = "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
 	s.iri2 = "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
@@ -114,7 +101,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			),
 		)
 		s.Require().NoError(err)
-
+		s.Require().NoError(s.network.WaitForNextBlock())
 		_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
@@ -125,7 +112,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			),
 		)
 		s.Require().NoError(err)
-
+		s.Require().NoError(s.network.WaitForNextBlock())
 		_, err = cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
@@ -136,15 +123,22 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			),
 		)
 		s.Require().NoError(err)
+		s.Require().NoError(s.network.WaitForNextBlock())
 	}
 
 	s.url = "https://foo.bar"
+
+	s.Require().NoError(s.network.WaitForNextBlock())
+	_, seq, err := s.val.ClientCtx.AccountRetriever.GetAccountNumberSequence(s.val.ClientCtx, s.addr1)
+	s.Require().NoError(err)
+	seq++
 
 	out, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				s.url,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
+				fmt.Sprintf("--%s=%s", flags.FlagSequence, strconv.FormatUint(seq, 10)),
 			},
 			commonFlags...,
 		),
@@ -153,8 +147,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var res sdk.TxResponse
 	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	txHash := res.TxHash
+	s.Require().NoError(s.network.WaitForNextBlock())
 
-	id := strings.Trim(res.Logs[0].Events[1].Attributes[0].Value, "\"")
+	// Query the tx to get the events
+	queryRes, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash)
+	s.Require().NoError(err)
+
+	id := strings.Trim(queryRes.Logs[0].Events[1].Attributes[0].Value, "\"")
 	s.resolverID, err = strconv.ParseUint(id, 10, 64)
 	s.Require().NoError(err)
 
@@ -175,11 +175,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	))
 	s.Require().NoError(err)
 
+	s.Require().NoError(s.network.WaitForNextBlock())
+	_, seq, err = s.val.ClientCtx.AccountRetriever.GetAccountNumberSequence(s.val.ClientCtx, s.addr1)
+	s.Require().NoError(err)
+	seq++
+
 	out2, err := cli.ExecTestCLICmd(s.val.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				"https://bar.baz",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addr1.String()),
+				fmt.Sprintf("--%s=%s", flags.FlagSequence, strconv.FormatUint(seq, 10)),
 			},
 			commonFlags...,
 		),
@@ -188,8 +194,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var res2 sdk.TxResponse
 	s.Require().NoError(s.val.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &res2))
+	txHash2 := res2.TxHash
+	s.Require().NoError(s.network.WaitForNextBlock())
 
-	id2 := strings.Trim(res2.Logs[0].Events[1].Attributes[0].Value, "\"")
+	// Query the tx to get the events
+	queryRes2, err := cli.GetTxResponse(s.network, s.val.ClientCtx, txHash2)
+	s.Require().NoError(err)
+	id2 := strings.Trim(queryRes2.Logs[0].Events[1].Attributes[0].Value, "\"")
 	resolverID2, err := strconv.ParseUint(id2, 10, 64)
 	s.Require().NoError(err)
 
@@ -215,13 +226,7 @@ func (s *IntegrationTestSuite) TestTxAnchor() {
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
 	require := s.Require()
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, clientCtx.GetFromAddress().String()),
-	}
+	commonFlags := s.txFlags(clientCtx.GetFromAddress())
 
 	testCases := []struct {
 		name   string
@@ -268,13 +273,8 @@ func (s *IntegrationTestSuite) TestTxAttest() {
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
 	require := s.Require()
+	commonFlags := s.txFlags(clientCtx.GetFromAddress())
 
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, clientCtx.GetFromAddress().String()),
-	}
 	// first we anchor some data
 	iri := "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
 	cmd := client.MsgAnchorCmd()
@@ -335,13 +335,7 @@ func (s *IntegrationTestSuite) TestDefineResolverCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	require := s.Require()
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-	}
+	commonFlags := s.txFlags(val.Address)
 
 	testCases := []struct {
 		name        string
@@ -389,14 +383,7 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	require := s.Require()
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-	}
-
+	commonFlags := s.txFlags(val.Address)
 	_, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
 
 	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{ch}}
@@ -404,7 +391,10 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 	require.NoError(err)
 
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-
+	// Fetch account sequence
+	accountRetriever := clientCtx.AccountRetriever
+	_, seq, err := accountRetriever.GetAccountNumberSequence(clientCtx, val.Address)
+	require.NoError(err)
 	testCases := []struct {
 		name     string
 		args     []string
@@ -428,10 +418,10 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 		},
 		{
 			"invalid resolver id",
-			[]string{fmt.Sprintf("%d", 12345), filePath},
-			false,
+			[]string{"123a5", filePath},
 			true,
-			"not found",
+			false,
+			"invalid resolver id",
 		},
 		{
 			"valid test",
@@ -444,9 +434,12 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 
 	cmd := client.MsgRegisterResolverCmd()
 	for _, tc := range testCases {
-		args := tc.args
 		s.Run(tc.name, func() {
-			args := append(args, commonFlags...)
+			// Increment sequence number for each transaction
+			args := tc.args
+			args = append(args, commonFlags...)
+			args = append(args, fmt.Sprintf("--%s=%d", flags.FlagSequence, seq))
+			seq++
 			res, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
@@ -458,6 +451,19 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 					require.NoError(err)
 				}
 			}
+			s.Require().NoError(s.network.WaitForNextBlock())
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) txFlags(sender sdk.AccAddress) []string {
+	ss := []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+	if sender != nil {
+		ss = append(ss, fmt.Sprintf("--%s=%s", flags.FlagFrom, sender.String()))
+	}
+	return ss
 }

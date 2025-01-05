@@ -6,10 +6,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
-	"github.com/regen-network/regen-ledger/types/v2/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
 )
@@ -100,6 +100,7 @@ func (s *IntegrationTestSuite) TestTxCreateClassCmd() {
 			cmd := client.TxCreateClassCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -183,6 +184,7 @@ func (s *IntegrationTestSuite) TestTxCreateProjectCmd() {
 			cmd := client.TxCreateProjectCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -317,6 +319,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatchCmd() {
 			cmd := client.TxCreateBatchCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -394,6 +397,7 @@ func (s *IntegrationTestSuite) TestTxSendCmd() {
 			cmd := client.TxSendCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -525,6 +529,7 @@ func (s *IntegrationTestSuite) TestTxSendBulkCmd() {
 			cmd := client.TxSendBulkCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -648,6 +653,7 @@ func (s *IntegrationTestSuite) TestTxRetireCmd() {
 			cmd := client.TxRetireCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -771,6 +777,7 @@ func (s *IntegrationTestSuite) TestTxCancelCmd() {
 			cmd := client.TxCancelCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -878,6 +885,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdminCmd() {
 			cmd := client.TxUpdateClassAdminCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -972,6 +980,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuersCmd() {
 			cmd := client.TxUpdateClassIssuersCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -1051,6 +1060,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadataCmd() {
 			cmd := client.TxUpdateClassMetadataCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -1158,6 +1168,7 @@ func (s *IntegrationTestSuite) TestTxUpdateProjectAdminCmd() {
 			cmd := client.TxUpdateProjectAdminCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -1237,6 +1248,8 @@ func (s *IntegrationTestSuite) TestTxUpdateProjectMetadataCmd() {
 			cmd := client.TxUpdateProjectMetadataCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
+			fmt.Println(out.String())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -1316,6 +1329,7 @@ func (s *IntegrationTestSuite) TestTxUpdateBatchMetadataCmd() {
 			cmd := client.TxUpdateBatchMetadataCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -1449,6 +1463,8 @@ func (s *IntegrationTestSuite) TestTxBridgeCmd() {
 			cmd := client.TxBridgeCmd()
 			args = append(args, s.commonTxFlags()...)
 			out, err := cli.ExecTestCLICmd(s.val.ClientCtx, cmd, args)
+			fmt.Println(out.String())
+			require.NoError(s.network.WaitForNextBlock())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)

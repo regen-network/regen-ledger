@@ -27,7 +27,7 @@ func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorB
 
 	anchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataID.Id)
 	if err != nil {
-		return nil, regenerrors.ErrNotFound.Wrapf(err.Error())
+		return nil, regenerrors.ErrNotFound.Wrap(err.Error())
 	}
 
 	return &data.QueryAnchorByHashResponse{

@@ -3,13 +3,13 @@ package v4_test
 import (
 	"testing"
 
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -321,7 +321,11 @@ func TestMainnetMigrations(t *testing.T) {
 
 	// ensure all other fields are unchanged
 	for i := range batches {
-		b, err := baseStore.BatchTable().Get(sdkCtx, uint64(i+1))
+		idx := i + 1
+		if idx < 0 {
+			t.Fatalf("index out of range")
+		}
+		b, err := baseStore.BatchTable().Get(sdkCtx, uint64(idx))
 		require.NoError(t, err)
 
 		require.Equal(t, b.Issuer, issuer.Bytes())

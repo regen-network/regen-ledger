@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -13,18 +12,15 @@ import (
 )
 
 // ClassIssuers returns a list of addresses that are allowed to issue batches from the given class.
-func (k Keeper) ClassIssuers(ctx context.Context, request *types.QueryClassIssuersRequest) (*types.QueryClassIssuersResponse, error) {
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+func (k Keeper) ClassIssuers(ctx context.Context, req *types.QueryClassIssuersRequest) (*types.QueryClassIssuersResponse, error) {
+	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
-	classInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
-	if err != nil {
-		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
-	}
-
-	it, err := k.stateStore.ClassIssuerTable().List(ctx, api.ClassIssuerClassKeyIssuerIndexKey{}.WithClassKey(classInfo.Key), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.ClassIssuerTable().List(
+		ctx, api.ClassIssuerClassKeyIssuerIndexKey{}.WithClassKey(classInfo.Key), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -38,12 +34,8 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *types.QueryClassIssue
 		}
 		issuers = append(issuers, sdk.AccAddress(val.Issuer).String())
 	}
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
 	return &types.QueryClassIssuersResponse{
 		Issuers:    issuers,
-		Pagination: pr,
+		Pagination: ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }

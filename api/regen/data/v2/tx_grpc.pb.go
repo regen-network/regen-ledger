@@ -45,12 +45,12 @@ type MsgClient interface {
 	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
+	//   - on-chain identities can be managed using different cryptographic keys
+	//     that change over time through key rotation practices
+	//   - an on-chain identity may represent an organization and through delegation
+	//     individual members may sign on behalf of the group
+	//   - the blockchain transaction envelope provides built-in replay protection
+	//     and timestamping
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
@@ -131,12 +131,12 @@ type MsgServer interface {
 	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
+	//   - on-chain identities can be managed using different cryptographic keys
+	//     that change over time through key rotation practices
+	//   - an on-chain identity may represent an organization and through delegation
+	//     individual members may sign on behalf of the group
+	//   - the blockchain transaction envelope provides built-in replay protection
+	//     and timestamping
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//

@@ -3,7 +3,7 @@ package v1
 import (
 	"fmt"
 
-	proto "github.com/gogo/protobuf/proto"
+	proto "github.com/cosmos/gogoproto/proto"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,19 +40,12 @@ func (m MsgSubmitTx) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgSubmitTx) GetSignBytes() []byte {
-	return ModuleCdc.MustMarshalJSON(&m)
-}
-
-// Route implements the LegacyMsg interface.
-func (m MsgSubmitTx) Route() string {
-	return sdk.MsgTypeURL(&m)
-}
-
-// Type implements the LegacyMsg interface.
-func (m MsgSubmitTx) Type() string {
-	return sdk.MsgTypeURL(&m)
+// LegacyMsg.Type implementations
+func (m MsgSubmitTx) Route() string { return "" }
+func (m MsgSubmitTx) Type() string  { return sdk.MsgTypeURL(&m) }
+func (m *MsgSubmitTx) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(m)
+	return sdk.MustSortJSON(bz)
 }
 
 // NewMsgSubmitTx creates a new MsgSubmitTx instance

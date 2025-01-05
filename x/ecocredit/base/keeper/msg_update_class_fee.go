@@ -3,7 +3,8 @@ package keeper
 import (
 	"context"
 
-	sdkv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
+	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
+
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -16,9 +17,9 @@ func (k Keeper) UpdateClassFee(ctx context.Context, req *types.MsgUpdateClassFee
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}
 
-	var classFee *sdkv1beta1.Coin
+	var classFee *sdkbase.Coin
 	if req.Fee != nil && req.Fee.IsPositive() {
-		classFee = regentypes.CoinToProtoCoin(*req.Fee)
+		classFee = regentypes.CoinToCosmosAPILegacy(*req.Fee)
 	}
 
 	if err := k.stateStore.ClassFeeTable().Save(ctx, &api.ClassFee{

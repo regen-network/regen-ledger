@@ -2,9 +2,9 @@
 package marketplacev1
 
 import (
+	v1beta1 "cosmossdk.io/api/cosmos/base/v1beta1"
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
-	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -2887,7 +2887,7 @@ type EventUpdateSellOrder struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	//  sell_order_id is the unique identifier of the sell order that was updated.
+	// sell_order_id is the unique identifier of the sell order that was updated.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 }
 

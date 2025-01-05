@@ -1,40 +1,51 @@
 package testsuite
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/ibc-go/v7/testing/simapp"
+	regenapp "github.com/regen-network/regen-ledger/v5/app"
+
+	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"
-	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/libs/log"
-
-	"github.com/regen-network/regen-ledger/v5/app"
+	"github.com/cometbft/cometbft/libs/log"
 )
 
 func TestSimAppExportAndBlockedAddrs(t *testing.T) {
-	encCfg := app.MakeEncodingConfig()
 	db := dbm.NewMemDB()
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
-	regenApp := NewAppWithCustomOptions(t, false, SetupOptions{
-		Logger:             logger,
-		DB:                 db,
-		InvCheckPeriod:     0,
-		EncConfig:          encCfg,
-		HomePath:           app.DefaultNodeHome,
-		SkipUpgradeHeights: map[int64]bool{},
-		AppOpts:            EmptyAppOptions{},
+	app := NewAppWithCustomOptions(t, false, SetupOptions{
+		Logger:  logger,
+		DB:      db,
+		AppOpts: simtestutil.NewAppOptionsWithFlagHome(t.TempDir()),
 	})
 
-	for acc := range app.GetMaccPerms() {
-		require.Equal(t, true, regenApp.BankKeeper.BlockedAddr(regenApp.AccountKeeper.GetModuleAddress(acc)),
-			"ensure that all module account addresses are properly blocked in bank keeper")
+	// BlockedAddresses returns a map of addresses in app v1 and a map of modules name in app v2.
+	for acc := range simapp.BlockedAddresses() {
+		var addr sdk.AccAddress
+		if modAddr, err := sdk.AccAddressFromBech32(acc); err == nil {
+			addr = modAddr
+		} else {
+			addr = app.AccountKeeper.GetModuleAddress(acc)
+		}
+
+		require.True(
+			t,
+			app.BankKeeper.BlockedAddr(addr),
+			fmt.Sprintf("ensure that blocked addresses are properly set in bank keeper: %s should be blocked", acc),
+		)
 	}
 
-	regenApp.Commit()
+	app.Commit()
 
+	logger2 := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := app.NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, app.DefaultNodeHome, 0, encCfg, EmptyAppOptions{})
-	_, err := app2.ExportAppStateAndValidators(false, []string{})
+	app2 := regenapp.NewRegenApp(logger2, db, nil, true, 0, EmptyAppOptions{})
+	_, err := app2.ExportAppStateAndValidators(false, []string{}, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }

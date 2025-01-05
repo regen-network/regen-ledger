@@ -3,13 +3,11 @@ package module
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	tmtypes "github.com/tendermint/tendermint/abci/types"
+	tmtypes "github.com/cometbft/cometbft/abci/types"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -58,18 +56,6 @@ func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.Raw
 }
 
 func (a Module) RegisterInvariants(_ sdk.InvariantRegistry) {}
-
-func (a Module) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-func (a Module) QuerierRoute() string {
-	return data.ModuleName
-}
-
-func (a Module) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
 
 func (a *Module) RegisterServices(cfg module.Configurator) {
 	impl := server.NewServer(a.sk, a.ak, a.bk)
@@ -154,9 +140,6 @@ func (a Module) GetTxCmd() *cobra.Command {
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (Module) ConsensusVersion() uint64 { return 1 }
 
-/**** DEPRECATED ****/
-func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
-
 // RegisterLegacyAminoCodec registers the data module's types on the given LegacyAmino codec.
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	data.RegisterLegacyAminoCodec(cdc)
@@ -167,17 +150,6 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 // GenerateGenesisState creates a randomized GenesisState of the data module.
 func (Module) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
-}
-
-// ProposalContents returns all the data content functions used to
-// simulate proposals.
-func (Module) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-// RandomizedParams creates randomized data param changes for the simulator.
-func (Module) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for data module's types

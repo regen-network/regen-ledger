@@ -3,10 +3,11 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/cometbft/cometbft/libs/log"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/regen-network/regen-ledger/x/intertx"
 )
@@ -32,6 +33,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // ClaimCapability claims the channel capability passed via the OnOpenChanInit callback
-func (k *Keeper) ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) error {
-	return k.scopedKeeper.ClaimCapability(ctx, cap, name)
+func (k *Keeper) ClaimCapability(ctx sdk.Context, cpb *capabilitytypes.Capability, name string) error {
+	return k.scopedKeeper.ClaimCapability(ctx, cpb, name)
 }

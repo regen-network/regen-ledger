@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
@@ -16,12 +14,8 @@ func (k Keeper) AllowedDenoms(ctx context.Context, req *types.QueryAllowedDenoms
 		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	it, err := k.stateStore.AllowedDenomTable().List(ctx, &api.AllowedDenomPrimaryKey{}, ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.AllowedDenomTable().List(ctx, &api.AllowedDenomPrimaryKey{}, pg)
 	if err != nil {
 		return nil, err
 	}
@@ -39,9 +33,6 @@ func (k Keeper) AllowedDenoms(ctx context.Context, req *types.QueryAllowedDenoms
 		}
 		allowedDenoms = append(allowedDenoms, &ad)
 	}
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
+	pr := ormutil.PageResToCosmosTypes(it.PageResponse())
 	return &types.QueryAllowedDenomsResponse{AllowedDenoms: allowedDenoms, Pagination: pr}, nil
 }

@@ -3,9 +3,8 @@ package testutil
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
-
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/gogoproto/proto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -23,15 +22,14 @@ func MatchEvent(expected proto.Message, emitted sdk.Event) error {
 	return nil
 }
 
-// GetEvent searches through the sdk.Events and attempts to return the sdk.Event whose type matches
-// the proto.MessageName of the passed msg.
-func GetEvent(msg proto.Message, events []sdk.Event) (e sdk.Event, found bool) {
+// GetEvent serches an event in sdk.Events matching message proto name in the reverse order.
+// Returns event and true if the event was found and false otherwise.
+func GetEvent(msg proto.Message, events []sdk.Event) (sdk.Event, bool) {
 	eventName := proto.MessageName(msg)
 	for i := len(events) - 1; i >= 0; i-- {
-		e = events[i]
-		if eventName == e.Type {
-			return e, true
+		if eventName == events[i].Type {
+			return events[i], true
 		}
 	}
-	return e, false
+	return sdk.Event{}, false
 }

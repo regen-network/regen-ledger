@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -14,19 +13,15 @@ import (
 )
 
 // BatchesByClass queries all batches issued under a given credit class.
-func (k Keeper) BatchesByClass(ctx context.Context, request *types.QueryBatchesByClassRequest) (*types.QueryBatchesByClassResponse, error) {
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+func (k Keeper) BatchesByClass(ctx context.Context, req *types.QueryBatchesByClassRequest) (*types.QueryBatchesByClassResponse, error) {
+	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
-	class, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
-	if err != nil {
-		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", request.ClassId, err.Error())
+		return nil, regenerrors.ErrNotFound.Wrapf("could not get class with id %s: %s", req.ClassId, err.Error())
 	}
 
 	// we put a "-" after the class name to avoid including class names outside of the query (i.e. a query for C01 could technically include C011 otherwise).
-	it, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(class.Id+"-"), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(class.Id+"-"), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -60,13 +55,8 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *types.QueryBatchesB
 		batches = append(batches, &info)
 	}
 
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
 	return &types.QueryBatchesByClassResponse{
 		Batches:    batches,
-		Pagination: pr,
+		Pagination: ormutil.PageResToCosmosTypes(it.PageResponse()),
 	}, nil
 }

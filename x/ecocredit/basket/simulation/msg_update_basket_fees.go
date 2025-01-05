@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -27,7 +27,7 @@ const WeightUpdateBasketFees = 100
 func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, _ basetypes.QueryServer,
 	_ types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
 		proposer, _ := simtypes.RandomAcc(r, accs)
@@ -38,8 +38,8 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return op, nil, err
 		}
 
-		params := govk.GetDepositParams(sdkCtx)
-		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params, proposer.Address)
+		params := govk.GetParams(sdkCtx)
+		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, proposer.Address)
 		switch {
 		case skip:
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, "skip deposit"), nil, nil
@@ -63,6 +63,8 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		}
 
 		proposalMsg := govtypes.MsgSubmitProposal{
+			Title:          simtypes.RandStringOfLength(r, 10),
+			Summary:        simtypes.RandStringOfLength(r, 10),
 			InitialDeposit: deposit,
 			Proposer:       proposerAddr,
 			Metadata:       simtypes.RandStringOfLength(r, 10),
@@ -72,7 +74,7 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
-			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
 			MsgType:         msg.Type(),

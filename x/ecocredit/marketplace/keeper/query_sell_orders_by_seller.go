@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
@@ -19,17 +18,14 @@ func (k Keeper) SellOrdersBySeller(ctx context.Context, req *types.QuerySellOrde
 		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, err
-	}
-
 	seller, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, regenerrors.ErrInvalidArgument.Wrapf("seller: %s", err.Error())
 	}
 
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderSellerIndexKey{}.WithSeller(seller), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.SellOrderTable().List(
+		ctx, api.SellOrderSellerIndexKey{}.WithSeller(seller), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +62,6 @@ func (k Keeper) SellOrdersBySeller(ctx context.Context, req *types.QuerySellOrde
 		orders = append(orders, &info)
 	}
 
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
+	pr := ormutil.PageResToCosmosTypes(it.PageResponse())
 	return &types.QuerySellOrdersBySellerResponse{SellOrders: orders, Pagination: pr}, nil
 }

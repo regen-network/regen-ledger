@@ -5,10 +5,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
@@ -57,7 +56,7 @@ func GenAndDeliverTxWithRandFees(r *rand.Rand, txCtx simulation.OperationInput) 
 // GenAndDeliverTx generates a transactions and delivers it.
 func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
-	tx, err := helpers.GenSignedMockTx(
+	tx, err := simtestutil.GenSignedMockTx(
 		r,
 		txCtx.TxGen,
 		[]sdk.Msg{txCtx.Msg},
@@ -134,7 +133,7 @@ func RandomFee(r *rand.Rand) sdk.Coin {
 // RandomDeposit returns minimum deposit if account have enough balance
 // else returns deposit amount between (1, balance)
 func RandomDeposit(r *rand.Rand, ctx sdk.Context,
-	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, depositParams govtypes.DepositParams, addr sdk.AccAddress,
+	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, minDeposit sdk.Coins, addr sdk.AccAddress,
 ) (deposit sdk.Coins, skip bool, err error) {
 	account := ak.GetAccount(ctx, addr)
 	spendable := bk.SpendableCoins(ctx, account.GetAddress())
@@ -143,7 +142,6 @@ func RandomDeposit(r *rand.Rand, ctx sdk.Context,
 		return nil, true, nil // skip
 	}
 
-	minDeposit := depositParams.MinDeposit
 	denomIndex := r.Intn(len(minDeposit))
 	denom := minDeposit[denomIndex].Denom
 

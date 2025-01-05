@@ -50,17 +50,23 @@ func NewDecFromString(s string) (Dec, error) {
 	if s == "" {
 		s = "0"
 	}
+
 	d, _, err := apd.NewFromString(s)
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
 
-	d1 := Dec{*d}
-	if d1.dec.Form == apd.Infinite {
-		return d1, ErrInfiniteString.Wrapf(s)
+	switch d.Form {
+	case apd.NaN, apd.NaNSignaling:
+		return Dec{}, ErrInvalidDecString.Wrap("not a number")
+	case apd.Infinite:
+		return Dec{}, ErrInfiniteString.Wrap(s)
+	case apd.Finite:
+		result := Dec{*d}
+		return result, nil
+	default:
+		return Dec{}, ErrInvalidDecString.Wrapf("unsupported type: %d", d.Form)
 	}
-
-	return d1, nil
 }
 
 func NewNonNegativeDecFromString(s string) (Dec, error) {
@@ -74,13 +80,13 @@ func NewNonNegativeDecFromString(s string) (Dec, error) {
 	return d, nil
 }
 
-func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
+func NewNonNegativeFixedDecFromString(s string, maxNum uint32) (Dec, error) {
 	d, err := NewNonNegativeDecFromString(s)
 	if err != nil {
 		return Dec{}, err
 	}
-	if d.NumDecimalPlaces() > max {
-		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
+	if d.NumDecimalPlaces() > maxNum {
+		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, maxNum)
 	}
 	return d, nil
 }
@@ -96,13 +102,13 @@ func NewPositiveDecFromString(s string) (Dec, error) {
 	return d, nil
 }
 
-func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
+func NewPositiveFixedDecFromString(s string, maxNum uint32) (Dec, error) {
 	d, err := NewPositiveDecFromString(s)
 	if err != nil {
 		return Dec{}, err
 	}
-	if d.NumDecimalPlaces() > max {
-		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
+	if d.NumDecimalPlaces() > maxNum {
+		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, maxNum)
 	}
 	return d, nil
 }

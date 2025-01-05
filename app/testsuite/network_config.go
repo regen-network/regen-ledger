@@ -2,61 +2,53 @@ package testsuite
 
 import (
 	"fmt"
-	"time"
+	"os"
 
-	dbm "github.com/tendermint/tm-db"
-
-	tmrand "github.com/tendermint/tendermint/libs/rand"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 
-	"github.com/regen-network/regen-ledger/types/v2/testutil/network"
 	"github.com/regen-network/regen-ledger/v5/app"
 )
 
-func NewRegenAppConstructor(encCfg app.EncodingConfig) network.AppConstructor {
-	return func(val network.Validator) servertypes.Application {
+// NewTestNetworkFixture returns a new simapp AppConstructor for network simulation tests
+func NewTestNetworkFixture() network.TestFixture {
+	dir, err := os.MkdirTemp("", "regen")
+	if err != nil {
+		panic(fmt.Sprintf("failed creating temporary directory: %v", err))
+	}
+	defer os.RemoveAll(dir)
+
+	a := app.NewRegenApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, 0,
+		simtestutil.NewAppOptionsWithFlagHome(dir))
+
+	appCtr := func(val network.ValidatorI) servertypes.Application {
+		cfg := val.GetAppConfig()
+
 		return app.NewRegenApp(
-			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
-			encCfg,
-			EmptyAppOptions{},
-			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
-			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
+			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, 0,
+			simtestutil.NewAppOptionsWithFlagHome(val.GetCtx().Config.RootDir),
+			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(cfg.Pruning)),
+			baseapp.SetMinGasPrices(cfg.MinGasPrices),
+			baseapp.SetChainID(val.GetCtx().Viper.GetString(flags.FlagChainID)),
 		)
 	}
-}
 
-// DefaultConfig returns a sane default configuration suitable for nearly all
-// testing requirements.
-func DefaultConfig() network.Config {
-	encCfg := app.MakeEncodingConfig()
-
-	return network.Config{
-		Codec:             encCfg.Codec,
-		TxConfig:          encCfg.TxConfig,
-		LegacyAmino:       encCfg.Amino,
-		InterfaceRegistry: encCfg.InterfaceRegistry,
-		AccountRetriever:  authtypes.AccountRetriever{},
-		AppConstructor:    NewRegenAppConstructor(encCfg),
-		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Codec),
-		TimeoutCommit:     2 * time.Second,
-		ChainID:           "chain-" + tmrand.NewRand().Str(6),
-		NumValidators:     2,
-		BondDenom:         sdk.DefaultBondDenom,
-		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:     sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(1e7, sdk.DefaultPowerReduction),
-		BondedTokens:      sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
-		PruningStrategy:   pruningtypes.PruningOptionNothing,
-		CleanupDir:        true,
-		SigningAlgo:       string(hd.Secp256k1Type),
-		KeyringOptions:    []keyring.Option{},
-		PrintMnemonic:     false,
+	return network.TestFixture{
+		AppConstructor: appCtr,
+		GenesisState:   a.DefaultGenesis(),
+		EncodingConfig: testutil.TestEncodingConfig{
+			InterfaceRegistry: a.InterfaceRegistry(),
+			Codec:             a.AppCodec(),
+			TxConfig:          a.TxConfig(),
+			Amino:             a.LegacyAmino(),
+		},
 	}
 }

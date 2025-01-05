@@ -7,14 +7,14 @@ import (
 
 	"cosmossdk.io/errors"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/proto"
 	"google.golang.org/grpc/encoding"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/cometbft/cometbft/abci/types"
 )
 
 type router struct {
@@ -24,7 +24,7 @@ type router struct {
 }
 
 func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.Msg) error) (Invoker, error) {
-	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+	return func(ctx context.Context, request interface{}, response interface{}, _ ...interface{}) error {
 		req, ok := request.(proto.Message)
 		if !ok {
 			return fmt.Errorf("expected proto.Message, got %T for service method %s", request, methodName)

@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
@@ -19,17 +18,13 @@ func (k Keeper) SellOrdersByBatch(ctx context.Context, req *types.QuerySellOrder
 		return nil, regenerrors.ErrInvalidArgument.Wrap("empty request")
 	}
 
-	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
-	if err != nil {
-		return nil, regenerrors.ErrInvalidArgument.Wrap(err.Error())
-	}
-
 	batch, err := k.baseStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
 		return nil, regenerrors.ErrNotFound.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
-
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderBatchKeyIndexKey{}.WithBatchKey(batch.Key), ormlist.Paginate(pg))
+	pg := ormutil.PageReqToOrmPaginate(req.Pagination)
+	it, err := k.stateStore.SellOrderTable().List(
+		ctx, api.SellOrderBatchKeyIndexKey{}.WithBatchKey(batch.Key), pg)
 	if err != nil {
 		return nil, err
 	}
@@ -63,10 +58,6 @@ func (k Keeper) SellOrdersByBatch(ctx context.Context, req *types.QuerySellOrder
 		orders = append(orders, &info)
 	}
 
-	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
-	if err != nil {
-		return nil, regenerrors.ErrInternal.Wrap(err.Error())
-	}
-
+	pr := ormutil.PageResToCosmosTypes(it.PageResponse())
 	return &types.QuerySellOrdersByBatchResponse{SellOrders: orders, Pagination: pr}, nil
 }

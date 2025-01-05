@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/testutil/rest"
+	"github.com/cosmos/cosmos-sdk/testutil"
 
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
 )
@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -66,7 +66,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatch() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -178,7 +178,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 
@@ -219,7 +219,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			bz, err := rest.GetRequest(tc.url)
+			bz, err := testutil.GetRequest(tc.url)
 			require.NoError(err)
 			require.NotContains(string(bz), "code")
 

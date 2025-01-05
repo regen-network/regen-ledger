@@ -8,7 +8,7 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
+	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -433,7 +433,7 @@ func (m *CreditTypeProposal) GetCreditType() *CreditType {
 
 // AllowedDenom represents the information for an allowed ask denom.
 //
-// Since Revision 2
+// # Since Revision 2
 //
 // Deprecated(Since Revision 2): This type was added to support historical
 // queries for params but will also be removed in the next version.

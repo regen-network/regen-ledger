@@ -1,23 +1,46 @@
 package ormutil
 
 import (
-	gogoproto "github.com/gogo/protobuf/proto"
+	gogoproto "github.com/cosmos/gogoproto/proto"
 	"google.golang.org/protobuf/proto"
 
-	queryv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"
+	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
+// PageReqToCosmosAPILegacy is a temporal adapter for ORM v-alpha-*
+func PageReqToCosmosAPILegacy(from *query.PageRequest) *queryv1beta1.PageRequest {
+	if from == nil {
+		return &queryv1beta1.PageRequest{Limit: query.DefaultLimit}
+	}
+	return &queryv1beta1.PageRequest{
+		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse}
+}
+
+func PageReqToOrmPaginate(pg *query.PageRequest) ormlist.Option {
+	return ormlist.Paginate(PageReqToCosmosAPILegacy(pg))
+}
+
+func PageResToCosmosTypes(from *queryv1beta1.PageResponse) *query.PageResponse {
+	if from == nil {
+		return nil
+	}
+	return &query.PageResponse{NextKey: from.NextKey, Total: from.Total}
+}
+
+// TODO: probably we can remove
 func GogoPageReqToPulsarPageReq(from *query.PageRequest) (*queryv1beta1.PageRequest, error) {
 	if from == nil {
 		return &queryv1beta1.PageRequest{Limit: query.DefaultLimit}, nil
 	}
 
-	to := &queryv1beta1.PageRequest{}
-	err := GogoToPulsarSlow(from, to)
-	return to, err
+	return &queryv1beta1.PageRequest{
+		Key: from.Key, Offset: from.Offset, Limit: from.Limit, CountTotal: from.CountTotal, Reverse: from.Reverse}, nil
 }
 
+// TODO: probably we can remove
 func PulsarPageResToGogoPageRes(from *queryv1beta1.PageResponse) (*query.PageResponse, error) {
 	if from == nil {
 		return nil, nil
