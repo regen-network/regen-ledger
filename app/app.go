@@ -833,8 +833,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			os.Exit(1)
 		}
 	}
-
-	app.SetPostHandler(postHandler)
+	return app
 }
 
 func (app *RegenApp) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.WasmConfig, txCounterStoreKey storetypes.StoreKey) {
