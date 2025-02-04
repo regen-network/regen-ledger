@@ -120,6 +120,8 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
+	evmkeeper "github.com/evmos/evmos/v19/x/evm/keeper"
+
 	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
 	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
 	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_1"
@@ -260,6 +262,7 @@ type RegenApp struct {
 	SlashingKeeper        slashingkeeper.Keeper
 	StakingKeeper         *stakingkeeper.Keeper
 	UpgradeKeeper         *upgradekeeper.Keeper
+	EvmKeeper             *evmkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
