@@ -41,7 +41,7 @@ func TestAppAfterImport(t *testing.T) {
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
-	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", app.Name())
 
 	// Run randomized simulation
@@ -86,7 +86,7 @@ func TestAppAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{
