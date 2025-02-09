@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"
 
@@ -47,6 +48,9 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
+// emptyWasmOption is an empty option for wasmKeeper
+var emptyWasmOption []wasmkeeper.Option
+
 // SetupOptions defines arguments that are passed into `Simapp` constructor.
 type SetupOptions struct {
 	Logger         log.Logger
@@ -83,7 +87,7 @@ func NewAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptions)
 		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
 
-	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.InvCheckPeriod, options.AppOpts)
+	regenApp := app.NewRegenApp(options.Logger, options.DB, nil, true, options.InvCheckPeriod, options.AppOpts, emptyWasmOption)
 	genesisState := app.NewDefaultGenesisState(regenApp.AppCodec())
 	genesisState = genesisStateWithValSet(t, regenApp, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
 

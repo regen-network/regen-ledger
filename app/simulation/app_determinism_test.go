@@ -68,7 +68,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, interBlockCacheOpt(), baseapp.SetChainID(SimAppChainID))
+			app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, interBlockCacheOpt(), baseapp.SetChainID(SimAppChainID))
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
