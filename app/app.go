@@ -120,7 +120,14 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
+	srvflags "github.com/evmos/evmos/v19/server/flags"
+	erc20keeper "github.com/evmos/evmos/v19/x/erc20/keeper"
+	erc20types "github.com/evmos/evmos/v19/x/erc20/types"
 	evmkeeper "github.com/evmos/evmos/v19/x/evm/keeper"
+	evmtypes "github.com/evmos/evmos/v19/x/evm/types"
+	feemarketkeeper "github.com/evmos/evmos/v19/x/feemarket/keeper"
+	feemarkettypes "github.com/evmos/evmos/v19/x/feemarket/types"
+	transferkeeper "github.com/evmos/evmos/v19/x/ibc/transfer/keeper"
 
 	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
 	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
@@ -263,6 +270,9 @@ type RegenApp struct {
 	StakingKeeper         *stakingkeeper.Keeper
 	UpgradeKeeper         *upgradekeeper.Keeper
 	EvmKeeper             *evmkeeper.Keeper
+	Erc20Keeper           erc20keeper.Keeper
+	FeeMarketKeeper       feemarketkeeper.Keeper
+	TransferKeeper        transferkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -557,6 +567,32 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.StakingKeeper, app.MsgServiceRouter(), govConfig,
 		govModuleAddr)
 	app.GovKeeper.SetLegacyRouter(govRouter)
+
+	// EVM Setup
+
+	app.Erc20Keeper = erc20keeper.NewKeeper(
+		keys[erc20types.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper, app.EvmKeeper, app.StakingKeeper,
+		app.AuthzKeeper, &app.TransferKeeper,
+	)
+
+	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
+		appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
+		keys[feemarkettypes.StoreKey],
+		tkeys[feemarkettypes.TransientKey],
+		app.GetSubspace(feemarkettypes.ModuleName),
+	)
+
+	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
+	evmKeeper := evmkeeper.NewKeeper(
+		appCodec, keys[evmtypes.StoreKey], tkeys[evmtypes.TransientKey], authtypes.NewModuleAddress(govtypes.ModuleName),
+		app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.FeeMarketKeeper,
+		// FIX: Temporary solution to solve keeper interdependency while new precompile module
+		// is being developed.
+		&app.Erc20Keeper,
+		tracer, app.GetSubspace(evmtypes.ModuleName),
+	)
+	app.EvmKeeper = evmKeeper
 
 	/****************
 	 Module Initialization
