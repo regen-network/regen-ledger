@@ -37,7 +37,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -120,11 +119,18 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
+	"github.com/evmos/evmos/v19/app/ante"
+	ethante "github.com/evmos/evmos/v19/app/ante/evm"
+	"github.com/evmos/evmos/v19/ethereum/eip712"
 	srvflags "github.com/evmos/evmos/v19/server/flags"
+	evmostypes "github.com/evmos/evmos/v19/types"
+	"github.com/evmos/evmos/v19/x/erc20"
 	erc20keeper "github.com/evmos/evmos/v19/x/erc20/keeper"
 	erc20types "github.com/evmos/evmos/v19/x/erc20/types"
+	"github.com/evmos/evmos/v19/x/evm"
 	evmkeeper "github.com/evmos/evmos/v19/x/evm/keeper"
 	evmtypes "github.com/evmos/evmos/v19/x/evm/types"
+	"github.com/evmos/evmos/v19/x/feemarket"
 	feemarketkeeper "github.com/evmos/evmos/v19/x/feemarket/keeper"
 	feemarkettypes "github.com/evmos/evmos/v19/x/feemarket/types"
 	transferkeeper "github.com/evmos/evmos/v19/x/ibc/transfer/keeper"
@@ -197,6 +203,9 @@ var (
 		ica.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		intertxmodule.AppModule{},
+		evm.AppModuleBasic{},
+		feemarket.AppModuleBasic{},
+		erc20.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -214,6 +223,8 @@ var (
 			ecocredit.ModuleName:            {authtypes.Burner},
 			baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 			marketplace.FeePoolName:         {authtypes.Burner},
+			evmtypes.ModuleName:             {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
+			erc20types.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		}
 
 		return perms
@@ -570,6 +581,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	// EVM Setup
 
+	eip712.SetEncodingConfig(encCfg)
+
+	govRouter.AddRoute(erc20types.RouterKey, erc20.NewErc20ProposalHandler(&app.Erc20Keeper))
+
 	app.Erc20Keeper = erc20keeper.NewKeeper(
 		keys[erc20types.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
 		app.AccountKeeper, app.BankKeeper, app.EvmKeeper, app.StakingKeeper,
@@ -593,6 +608,14 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		tracer, app.GetSubspace(evmtypes.ModuleName),
 	)
 	app.EvmKeeper = evmKeeper
+
+	// TODO EVM IBC transfer setup
+	//// create IBC module from top to bottom of stack
+	//var transferStack porttypes.IBCModule
+	//
+	//transferStack = transfer.NewIBCModule(app.TransferKeeper)
+	//transferStack = ratelimit.NewIBCMiddleware(app.RateLimitKeeper, transferStack)
+	//transferStack = erc20.NewIBCMiddleware(app.Erc20Keeper, transferStack)
 
 	/****************
 	 Module Initialization
@@ -641,6 +664,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		interTxModule,
+		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper, app.GetSubspace(evmtypes.ModuleName)),
+		feemarket.NewAppModule(app.FeeMarketKeeper, app.GetSubspace(feemarkettypes.ModuleName)),
+		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper,
+			app.GetSubspace(erc20types.ModuleName)),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -651,6 +678,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.ModuleManager.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
+		feemarkettypes.ModuleName,
+		evmtypes.ModuleName,
 		minttypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
@@ -675,11 +704,15 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		intertx.ModuleName,
+
+		erc20types.ModuleName,
 	)
 	app.ModuleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
+		evmtypes.ModuleName,
+		feemarkettypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -703,6 +736,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		intertx.ModuleName,
+
+		erc20types.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -719,6 +754,11 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		govtypes.ModuleName,
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
+		// Ethermint modules
+		evmtypes.ModuleName,
+		// NOTE: feemarket module needs to be initialized before genutil module:
+		// gentx transactions use MinGasPriceDecorator.AnteHandle
+		feemarkettypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
@@ -779,10 +819,13 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.MountMemoryStores(memKeys)
 
 	// initialize BaseApp
+
+	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
+
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	app.setAnteHandler(txConfig)
+	app.setAnteHandler(txConfig, maxGasWanted)
 	app.setPostHandler()
 
 	if loadLatest {
@@ -795,20 +838,29 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	return app
 }
 
-func (app *RegenApp) setAnteHandler(txConfig client.TxConfig) {
-	anteHandler, err := ante.NewAnteHandler(
-		ante.HandlerOptions{
-			AccountKeeper:   app.AccountKeeper,
-			BankKeeper:      app.BankKeeper,
-			SignModeHandler: txConfig.SignModeHandler(),
-			FeegrantKeeper:  app.FeeGrantKeeper,
-			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-		},
-	)
-	if err != nil {
+func (app *RegenApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
+	options := ante.HandlerOptions{
+		Cdc:                    app.appCodec,
+		AccountKeeper:          app.AccountKeeper,
+		BankKeeper:             app.BankKeeper,
+		ExtensionOptionChecker: evmostypes.HasDynamicFeeExtensionOption,
+		EvmKeeper:              app.EvmKeeper,
+		StakingKeeper:          app.StakingKeeper,
+		FeegrantKeeper:         app.FeeGrantKeeper,
+		DistributionKeeper:     app.DistrKeeper,
+		IBCKeeper:              app.IBCKeeper,
+		FeeMarketKeeper:        app.FeeMarketKeeper,
+		SignModeHandler:        txConfig.SignModeHandler(),
+		SigGasConsumer:         ante.SigVerificationGasConsumer,
+		MaxTxGasWanted:         maxGasWanted,
+		TxFeeChecker:           ethante.NewDynamicFeeChecker(app.EvmKeeper),
+	}
+
+	if err := options.Validate(); err != nil {
 		panic(err)
 	}
-	app.SetAnteHandler(anteHandler)
+
+	app.SetAnteHandler(ante.NewAnteHandler(options))
 }
 
 func (app *RegenApp) setPostHandler() {
