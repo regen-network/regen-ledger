@@ -35,6 +35,8 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	"github.com/regen-network/regen-ledger/v5/app"
+
+	evmosserver "github.com/evmos/evmos/v19/server"
 )
 
 // NewRootCmd creates a new root command for regen. It is called once in the
@@ -150,7 +152,12 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig testutil.TestEncodingCon
 		snapshot.Cmd(newApp),
 	)
 
-	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, appExport, addModuleInitFlags)
+	evmosserver.AddCommands(
+		rootCmd,
+		evmosserver.NewDefaultStartOptions(newApp, app.DefaultNodeHome),
+		appExport,
+		addModuleInitFlags,
+	)
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
 	rootCmd.AddCommand(

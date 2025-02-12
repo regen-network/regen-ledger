@@ -329,6 +329,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibcexported.StoreKey, ibctransfertypes.StoreKey,
 		icahosttypes.StoreKey, ibcfeetypes.StoreKey, icacontrollertypes.StoreKey,
 		ecocredit.ModuleName, data.ModuleName, intertx.ModuleName,
+		evmtypes.StoreKey, feemarkettypes.StoreKey,
+		erc20types.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
