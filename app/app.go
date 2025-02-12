@@ -532,6 +532,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.ScopedICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
+	app.ICAHostKeeper.WithQueryRouter(bApp.GRPCQueryRouter())
 
 	app.InterTxKeeper = intertxkeeper.NewKeeper(
 		appCodec,
