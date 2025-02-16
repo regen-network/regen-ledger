@@ -6,10 +6,11 @@ toolchain go1.23.4
 
 require (
 	cosmossdk.io/api v0.3.1
-	cosmossdk.io/math v1.3.0
+	cosmossdk.io/math v1.4.0
+	github.com/CosmWasm/wasmd v0.45.0
 	github.com/cometbft/cometbft v0.37.15
 	github.com/cometbft/cometbft-db v0.11.0
-	github.com/cosmos/cosmos-sdk v0.47.12
+	github.com/cosmos/cosmos-sdk v0.47.15
 	github.com/cosmos/ibc-go/v7 v7.4.0
 	github.com/gorilla/mux v1.8.1
 	github.com/rakyll/statik v0.1.7
@@ -23,19 +24,23 @@ require (
 
 require (
 	github.com/ChainSafe/go-schnorrkel v1.1.0 // indirect
+	github.com/CosmWasm/wasmvm v1.5.0 // indirect
 	github.com/DataDog/zstd v1.5.0 // indirect
 	github.com/cockroachdb/pebble v1.1.0 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.12.0.20240514101554-56648741cbd6 // indirect
 	github.com/cosmos/rosetta-sdk-go v0.10.0 // indirect
 	github.com/creachadair/taskgroup v0.13.0 // indirect
+	github.com/docker/distribution v2.8.2+incompatible // indirect
+	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/gtank/ristretto255 v0.1.2 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/mimoo/StrobeGo v0.0.0-20210601165009-122bf33a46e0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0 // indirect
-	github.com/rs/zerolog v1.32.0 // indirect
+	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
@@ -52,8 +57,8 @@ require (
 	cloud.google.com/go/storage v1.38.0 // indirect
 	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
-	cosmossdk.io/errors v1.0.1 // indirect
-	cosmossdk.io/log v1.3.1 // indirect
+	cosmossdk.io/errors v1.0.1
+	cosmossdk.io/log v1.4.1 // indirect
 	cosmossdk.io/tools/rosetta v0.2.1
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
@@ -121,7 +126,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-getter v1.7.1 // indirect
+	github.com/hashicorp/go-getter v1.7.5 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
@@ -151,7 +156,7 @@ require (
 	github.com/petermattis/goid v0.0.0-20240813172612-4fcff4a6cae7 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/prometheus/client_golang v1.20.5 // indirect
+	github.com/prometheus/client_golang v1.20.5
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.60.1 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
@@ -200,9 +205,6 @@ require (
 
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-	// fix the orm codespace conflict between x/group and orm module: https://github.com/cosmos/cosmos-sdk/pull/20750
-	// github.com/cosmos/cosmos-sdk => ../cosmos-sdk/
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.13-0.20240622202853-546a08a95245
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

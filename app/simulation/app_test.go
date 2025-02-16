@@ -34,6 +34,7 @@ func TestApp(t *testing.T) {
 		true,
 		simcli.FlagPeriodValue,
 		simtestutil.EmptyAppOptions{},
+		emptyWasmOption,
 		fauxMerkleModeOpt,
 	)
 	require.Equal(t, regen.AppName, app.Name())
