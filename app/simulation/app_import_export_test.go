@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
@@ -39,6 +41,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
 )
 
+var emptyWasmOption []wasmkeeper.Option
+
 func TestAppImportExport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
@@ -57,7 +61,7 @@ func TestAppImportExport(t *testing.T) {
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
-	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	app := regen.NewRegenApp(logger, db, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", app.Name())
 
 	// Run randomized simulation
@@ -97,7 +101,7 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
+	newApp := regen.NewRegenApp(log.NewNopLogger(), newDB, nil, true, simcli.FlagPeriodValue, appOptions, emptyWasmOption, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 	require.Equal(t, "regen", newApp.Name())
 
 	var genesisState regen.GenesisState

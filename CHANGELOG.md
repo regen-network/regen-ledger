@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## V6.0.x - 2024-12-27
 
+### General
+- [#2162](https://github.com/regen-network/regen-ledger/pull/2162) Upgrade all modules to cosmos-sdk v0.47.13
+
 ### CosmoWasm
 - [#2223](https://github.com/regen-network/regen-ledger/pull/2223) Integrate Wasm to regen ledger.
 
@@ -21,9 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#2107](https://github.com/regen-network/regen-ledger/pull/2107) Add `BurnRegen` method.
 
 ## [v5.1.2](https://github.com/regen-network/regen-ledger/releases/tag/v5.1.2) - 2023-06-28
-
-### General
-- [#2162](https://github.com/regen-network/regen-ledger/pull/2162) Upgrade all modules to cosmos-sdk v0.47.13
 
 #### Changed
 
