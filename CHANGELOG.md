@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## V6.0.x - 2024-12-27
 
+### CosmoWasm
+- [#2223](https://github.com/regen-network/regen-ledger/pull/2223) Integrate Wasm to regen ledger.
 
 ### x/data
 
