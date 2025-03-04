@@ -30,6 +30,7 @@ builds:
       - "{{ .Env.BUILD_VARS }}"
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
+      - "-extldflags '-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -static -lm'"
 
   - id: regen-darwin-arm64
     binary: regen
@@ -74,7 +75,7 @@ builds:
       - "{{ .Env.BUILD_VARS }}"
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
-      - -extldflags "-lc -lrt -lpthread --static"
+      - -extldflags "-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -lc -lrt -lpthread --static"
 
   - id: regen-linux-arm64
     binary: regen
@@ -98,6 +99,7 @@ builds:
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
       - -extldflags "-lc -lrt -lpthread --static"
+      - -extldflags '-L/usr/lib -lwasmvm_muslc.aarch64 -Wl,-z,muldefs -lc -lrt -lpthread -lm --static'
 
 
 archives:
