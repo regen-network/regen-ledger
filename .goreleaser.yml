@@ -3,10 +3,12 @@ project_name: regen-ledger
 before:
   hooks:
     - ./scripts/completions.sh
+    - COSMWASM_VERSION=$(go list -m github.com/CosmWasm/wasmvm | cut -d' ' -f2)
 
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
+  - COSMWASM_VERSION={{ .Env.COSMWASM_VERSION }}
 
 builds:
   - id: regen-darwin-amd64
