@@ -18,7 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
@@ -36,6 +35,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/v5/app"
 
+	evmosclient "github.com/evmos/evmos/v19/client"
 	evmosserver "github.com/evmos/evmos/v19/server"
 )
 
@@ -165,7 +165,8 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig testutil.TestEncodingCon
 		genesisCommand(encodingConfig),
 		queryCommand(),
 		txCommand(),
-		keys.Commands(app.DefaultNodeHome),
+		//keys.Commands(app.DefaultNodeHome),
+		evmosclient.KeyCommands(app.DefaultNodeHome),
 	)
 
 	// add rosetta
