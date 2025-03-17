@@ -3,14 +3,17 @@ project_name: regen-ledger
 before:
   hooks:
     - ./scripts/completions.sh
-
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
+  - COSMWASM_VERSION={{ .Env.COSMWASM_VERSION }}
 
 builds:
   - id: regen-darwin-amd64
     binary: regen
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
     main: ./cmd/regen
     goarch:
       - amd64
@@ -27,9 +30,13 @@ builds:
       - "{{ .Env.BUILD_VARS }}"
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
+      - "-extldflags '-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -static -lm'"
 
   - id: regen-darwin-arm64
     binary: regen
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
     main: ./cmd/regen
     goarch:
       - arm64
@@ -49,6 +56,9 @@ builds:
 
   - id: regen-linux-amd64
     binary: regen
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.x86_64.a -O /usr/lib/libwasmvm_muslc.x86_64.a
     main: ./cmd/regen
     env:
       - CC=x86_64-linux-gnu-gcc
@@ -65,10 +75,13 @@ builds:
       - "{{ .Env.BUILD_VARS }}"
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
-      - -extldflags "-lc -lrt -lpthread --static"
+      - -extldflags "-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -lc -lrt -lpthread --static"
 
   - id: regen-linux-arm64
     binary: regen
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O /usr/lib/libwasmvm_muslc.aarch64.a
     main: ./cmd/regen
     goarch:
       - arm64
@@ -86,26 +99,8 @@ builds:
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
       - -extldflags "-lc -lrt -lpthread --static"
+      - -extldflags '-L/usr/lib -lwasmvm_muslc.aarch64 -Wl,-z,muldefs -lc -lrt -lpthread -lm --static'
 
-  - id: regen-windows-amd64
-    binary: regen
-    main: ./cmd/regen
-    goarch:
-      - amd64
-    goos:
-      - windows
-    env:
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
-    flags:
-      - "-mod={{ .Env.MOD }}"
-      - "-tags={{ .Env.BUILD_TAGS }}"
-      - -trimpath
-      - -buildmode=exe
-    ldflags:
-      - "{{ .Env.BUILD_VARS }}"
-      - "{{ .Env.STRIP_FLAGS }}"
-      - "-linkmode={{ .Env.LINKMODE }}"
 
 archives:
   - id: regen
@@ -113,7 +108,6 @@ archives:
       - regen-darwin-universal
       - regen-linux-amd64
       - regen-linux-arm64
-      - regen-windows-amd64
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
