@@ -8,8 +8,8 @@ require (
 	github.com/CosmWasm/wasmd v0.45.0
 	github.com/cometbft/cometbft v0.37.5
 	github.com/cometbft/cometbft-db v0.11.0
-	github.com/cosmos/cosmos-sdk v0.47.15
-	github.com/cosmos/ibc-go/v7 v7.4.0
+	github.com/cosmos/cosmos-sdk v0.47.17
+	github.com/cosmos/ibc-go/v7 v7.10.0
 	github.com/gorilla/mux v1.8.1
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0
