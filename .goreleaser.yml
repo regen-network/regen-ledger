@@ -81,7 +81,9 @@ builds:
     binary: regen
     hooks:
       pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O /usr/lib/libwasmvm_muslc.aarch64.a
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O lib/libwasmvm_muslc.aarch64.a
+        - ln -sf lib/libwasmvm_muslc.aarch64.a lib/libwasmvm_muslc.aarch64.a
+        - go mod download
     main: ./cmd/regen
     goarch:
       - arm64
