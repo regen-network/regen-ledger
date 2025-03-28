@@ -77,31 +77,31 @@ builds:
       - "-linkmode={{ .Env.LINKMODE }}"
       - -extldflags "-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -lc -lrt -lpthread --static"
 
-  # - id: regen-linux-arm64
-  #   binary: regen
-  #   hooks:
-  #     pre:
-  #       - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O lib/libwasmvm_muslc.aarch64.a
-  #       - ln -sf lib/libwasmvm_muslc.aarch64.a lib/libwasmvm_muslc.aarch64.a
-  #       - go mod download
-  #   main: ./cmd/regen
-  #   goarch:
-  #     - arm64
-  #   goos:
-  #     - linux
-  #   env:
-  #     - CC=aarch64-linux-gnu-gcc
-  #     - CXX=aarch64-linux-gnu-g++
-  #   flags:
-  #     - "-mod={{ .Env.MOD }}"
-  #     - "-tags={{ .Env.BUILD_TAGS }}"
-  #     - -trimpath
-  #   ldflags:
-  #     - "{{ .Env.BUILD_VARS }}"
-  #     - "{{ .Env.STRIP_FLAGS }}"
-  #     - "-linkmode={{ .Env.LINKMODE }}"
-  #     - -extldflags "-lc -lrt -lpthread --static"
-  #     - -extldflags '-L/usr/lib -lwasmvm_muslc.aarch64 -Wl,-z,muldefs -lc -lrt -lpthread -lm --static'
+  - id: regen-linux-arm64
+    binary: regen
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O lib/libwasmvm_muslc.aarch64.a
+        - ln -sf lib/libwasmvm_muslc.aarch64.a lib/libwasmvm_muslc.aarch64.a
+        - go mod download
+    main: ./cmd/regen
+    goarch:
+      - arm64
+    goos:
+      - linux
+    env:
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
+    flags:
+      - "-mod={{ .Env.MOD }}"
+      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -trimpath
+    ldflags:
+      - "{{ .Env.BUILD_VARS }}"
+      - "{{ .Env.STRIP_FLAGS }}"
+      - "-linkmode={{ .Env.LINKMODE }}"
+      - -extldflags "-lc -lrt -lpthread --static"
+      - -extldflags '-L/usr/lib -lwasmvm_muslc.aarch64 -Wl,-z,muldefs -lc -lrt -lpthread -lm --static'
 
 
 archives:
