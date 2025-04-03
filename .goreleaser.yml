@@ -66,7 +66,6 @@ builds:
 archives:
   - id: regen
     builds:
-      - regen-darwin-universal
       - regen-linux-amd64
       - regen-linux-arm64
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
@@ -77,24 +76,6 @@ archives:
       - README.md
       - LICENSE
 
-brews:
-  - name: regen-ledger
-    ids:
-      - regen
-    tap:
-      owner: regen-network
-      name: regen-ledger
-      branch: homebrew-taps
-    folder: ${{ .Tag }}
-    homepage: "https://www.regen.network/"
-    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
-    test: |
-      system "#{bin}/regen --version"
-    install: |
-      bin.install "regen"
-      bash_completion.install "completions/regen.bash" => "regen"
-      zsh_completion.install "completions/regen.zsh" => "_regen"
-      fish_completion.install "completions/regen.fish"
 
 nfpms:
   - maintainer: regen-network
