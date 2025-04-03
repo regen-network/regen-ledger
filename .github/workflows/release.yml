@@ -1,11 +1,11 @@
 name: Release
 
-# **What it does**: Runs the goreleaser release process when a new
-# version of the application is tagged and pushed.
+# **What it does**: Builds the regend binary using the Dockerfile
+# and creates a GitHub Release when a new version tag is pushed.
 #
-# **Why we have it**: Automates the release process.
+# **Why we have it**: Automates the release process for the Linux amd64 binary.
 #
-# **What does it impact**: Application release process.
+# **What does it impact**: Application release process (now Docker-based, Linux amd64 only).
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
       - v*
 
 permissions:
-  contents: read
+  contents: write # Needed to create releases
 
 defaults:
   run:
@@ -21,25 +21,76 @@ defaults:
 
 jobs:
   release:
+    name: Create release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  # for docker/setup-buildx-action to create a GitHub release
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+          fetch-depth: 0 # Required for softprops/action-gh-release to get tag history
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and publish release
+
+      - name: Get the version tag
+        id: get_version
         run: |
-          sudo rm -rf dist
-          make release
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "Extracted version: $VERSION"
+          else
+            echo "::error::Workflow triggered by non-tag ref: $GITHUB_REF. This workflow must run on tags starting with 'v'."
+            exit 1
+          fi
+
+      - name: Build Docker image
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          # Don't push, just load the image into the local Docker daemon
+          load: true
+          tags: regend-release:${{ steps.get_version.outputs.VERSION }}
+          # Set build args if needed by Dockerfile or make build
+          # build-args: |
+          #   some_arg=value
+
+      - name: Create container from image
+        run: docker create --name extractor regend-release:${{ steps.get_version.outputs.VERSION }}
+
+      - name: Define binary name
+        id: binary_info
+        run: echo "BINARY_NAME=regend-${{ steps.get_version.outputs.VERSION }}-linux-amd64" >> $GITHUB_OUTPUT
+
+      - name: Extract binary from container
+        run: docker cp extractor:/code/bin/regend ./${{ steps.binary_info.outputs.BINARY_NAME }}
+
+      - name: Remove temporary container
+        run: docker rm extractor
+
+      - name: Generate checksum
+        run: |
+          cd $(dirname ${{ steps.binary_info.outputs.BINARY_NAME }})
+          sha256sum $(basename ${{ steps.binary_info.outputs.BINARY_NAME }}) > sha256sum.txt
+          cat sha256sum.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          name: Regen Ledger ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            Regen Ledger Release ${{ steps.get_version.outputs.VERSION }}
+
+            ## Assets
+
+            Linux amd64 binary and checksum attached.
+          draft: false # Set to true if you want draft releases
+          prerelease: false # Set to true if it's a pre-release
+          files: |
+            ${{ steps.binary_info.outputs.BINARY_NAME }}
+            sha256sum.txt
         env:
-          GORELEASER_RELEASE: true
-          IS_STABLE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
