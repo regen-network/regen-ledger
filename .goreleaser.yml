@@ -9,56 +9,15 @@ env:
   - COSMWASM_VERSION={{ .Env.COSMWASM_VERSION }}
 
 builds:
-  - id: regen-darwin-amd64
-    binary: regen
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    main: ./cmd/regen
-    goarch:
-      - amd64
-    goos:
-      - darwin
-    env:
-      - CC=o64-clang
-      - CXX=o64-clang++
-    flags:
-      - "-mod={{ .Env.MOD }}"
-      - "-tags={{ .Env.BUILD_TAGS }}"
-      - -trimpath
-    ldflags:
-      - "{{ .Env.BUILD_VARS }}"
-      - "{{ .Env.STRIP_FLAGS }}"
-      - "-linkmode={{ .Env.LINKMODE }}"
-      - "-extldflags '-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -static -lm'"
-
-  - id: regen-darwin-arm64
-    binary: regen
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    main: ./cmd/regen
-    goarch:
-      - arm64
-    goos:
-      - darwin
-    env:
-      - CC=oa64-clang
-      - CXX=oa64-clang++
-    flags:
-      - "-mod={{ .Env.MOD }}"
-      - "-tags={{ .Env.BUILD_TAGS }}"
-      - -trimpath
-    ldflags:
-      - "{{ .Env.BUILD_VARS }}"
-      - "{{ .Env.STRIP_FLAGS }}"
-      - "-linkmode={{ .Env.LINKMODE }}"
 
   - id: regen-linux-amd64
     binary: regen
     hooks:
       pre:
         - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.x86_64.a -O /usr/lib/libwasmvm_muslc.x86_64.a
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/checksums.txt -O /tmp/checksums.txt
+        - sha256sum /usr/lib/libwasmvm_muslc.x86_64.a | grep $(grep libwasmvm_muslc.x86_64.a /tmp/checksums.txt | awk '{print $1}')
+        - ln -sf /usr/lib/libwasmvm_muslc.x86_64.a /usr/lib/libwasmvm.x86_64.a
     main: ./cmd/regen
     env:
       - CC=x86_64-linux-gnu-gcc
@@ -75,14 +34,16 @@ builds:
       - "{{ .Env.BUILD_VARS }}"
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
-      - -extldflags "-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -lc -lrt -lpthread --static"
+      - -extldflags "-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -lm -lc -lrt -lpthread"
 
   - id: regen-linux-arm64
     binary: regen
     hooks:
       pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O lib/libwasmvm_muslc.aarch64.a
-        - ln -sf lib/libwasmvm_muslc.aarch64.a lib/libwasmvm_muslc.aarch64.a
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O /usr/lib/libwasmvm_muslc.aarch64.a
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/checksums.txt -O /tmp/checksums.txt
+        - sha256sum /usr/lib/libwasmvm_muslc.aarch64.a | grep $(grep libwasmvm_muslc.aarch64.a /tmp/checksums.txt | awk '{print $1}')
+        - ln -sf /usr/lib/libwasmvm_muslc.aarch64.a /usr/lib/libwasmvm.aarch64.a
         - go mod download
     main: ./cmd/regen
     goarch:
@@ -100,9 +61,7 @@ builds:
       - "{{ .Env.BUILD_VARS }}"
       - "{{ .Env.STRIP_FLAGS }}"
       - "-linkmode={{ .Env.LINKMODE }}"
-      - -extldflags "-lc -lrt -lpthread --static"
-      - -extldflags '-L/usr/lib -lwasmvm_muslc.aarch64 -Wl,-z,muldefs -lc -lrt -lpthread -lm --static'
-
+      - -extldflags "-L/usr/lib -lwasmvm_muslc.aarch64 -Wl,-z,muldefs -lm -lc -lrt -lpthread"
 
 archives:
   - id: regen
