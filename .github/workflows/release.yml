@@ -8,9 +8,12 @@ name: Release
 # **What does it impact**: Application release process.
 
 on:
-  push:
-    tags:
-      - v*
+  pull_request:
+    types:
+      - synchronize
+#  push:
+#    tags:
+#      - v*
 
 permissions:
   contents: read
