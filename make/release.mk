@@ -44,17 +44,21 @@ release-snapshot:
 		--snapshot \
 		--skip=publish,validate 
 
-# New target for actual publishing
-release-publish:
+ifdef GITHUB_TOKEN
+release:
 	docker run \
 		--rm \
+		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \ # Pass token for publishing
 		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v `pwd`:/go/src/$(GO_MOD_NAME) \
-		-w /go/src/$(GO_MOD_NAME) \
+		-v `pwd`:/go/src/osmosisd \
+		-w /go/src/osmosisd \
 		$(GORELEASER_IMAGE) \
 		release \
-		--clean # Run goreleaser release command without skips
+		--clean
+else
+release:
+	@echo "Error: GITHUB_TOKEN is not defined. Please define it before running 'make release'."
+endif
 
 .PHONY: release-help release-dry-run release-snapshot release-publish
