@@ -70,4 +70,38 @@ release:
 		--debug=$(GORELEASER_DEBUG) \
 		--rm-dist
 
+<<<<<<< HEAD
 .PHONY: release
+=======
+release-snapshot:
+	docker run \
+		--rm \
+		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v `pwd`:/go/src/$(GO_MOD_NAME) \
+		-w /go/src/$(GO_MOD_NAME) \
+		$(GORELEASER_IMAGE) \
+		release \
+		--clean \
+		--snapshot \
+		--skip=publish,validate 
+
+ifdef GITHUB_TOKEN
+release:
+	docker run \
+		--rm \
+		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
+		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v `pwd`:/go/src/$(GO_MOD_NAME) \
+		-w /go/src/$(GO_MOD_NAME) \
+		$(GORELEASER_IMAGE) \
+		release \
+		--clean
+else
+release:
+	@echo "Error: GITHUB_TOKEN is not defined. Please define it before running 'make release'."
+endif
+
+.PHONY: release-help release-dry-run release-snapshot release-publish
+>>>>>>> 9b7b225 (chore: ci for releasing publish clean (#2258))
