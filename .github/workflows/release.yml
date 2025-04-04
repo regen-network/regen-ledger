@@ -9,11 +9,9 @@ name: Release
 
 on:
   pull_request:
-    types:
-      - synchronize
-#  push:
-#    tags:
-#      - v*
+  push:
+   tags:
+     - v*
 
 permissions:
   contents: read
@@ -41,7 +39,7 @@ jobs:
       - name: Build and publish release
         run: |
           sudo rm -rf dist
-          make release-snapshot
+          make release-publish
         env:
           GORELEASER_RELEASE: true
           IS_STABLE: true
