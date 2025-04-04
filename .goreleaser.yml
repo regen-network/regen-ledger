@@ -1,166 +1,213 @@
 project_name: regen-ledger
 
-before:
-  hooks:
-    - ./scripts/completions.sh
 env:
-  - GO111MODULE=on
   - CGO_ENABLED=1
+  # Ensure COSMWASM_VERSION is passed correctly via Makefile/environment
   - COSMWASM_VERSION={{ .Env.COSMWASM_VERSION }}
 
 builds:
   - id: regen-darwin-amd64
-    binary: regen
+    main: ./cmd/regen
+    binary: regend
     hooks:
       pre:
         - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    main: ./cmd/regen
-    goarch:
-      - amd64
-    goos:
-      - darwin
     env:
       - CC=o64-clang
-      - CXX=o64-clang++
+      - CGO_LDFLAGS=-L/lib
+    goos:
+      - darwin
+    goarch:
+      - amd64
     flags:
-      - "-mod={{ .Env.MOD }}"
-      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -mod=readonly
       - -trimpath
     ldflags:
-      - "{{ .Env.BUILD_VARS }}"
-      - "{{ .Env.STRIP_FLAGS }}"
-      - "-linkmode={{ .Env.LINKMODE }}"
-      - "-extldflags '-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -static -lm'"
+      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=regend
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
+      - -w -s
+      - -linkmode=external
+    tags:
+      - netgo
+      - ledger
+      - static_wasm
 
   - id: regen-darwin-arm64
-    binary: regen
+    main: ./cmd/regen
+    binary: regend
     hooks:
       pre:
         - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    main: ./cmd/regen
-    goarch:
-      - arm64
-    goos:
-      - darwin
     env:
       - CC=oa64-clang
-      - CXX=oa64-clang++
-    flags:
-      - "-mod={{ .Env.MOD }}"
-      - "-tags={{ .Env.BUILD_TAGS }}"
-      - -trimpath
-    ldflags:
-      - "{{ .Env.BUILD_VARS }}"
-      - "{{ .Env.STRIP_FLAGS }}"
-      - "-linkmode={{ .Env.LINKMODE }}"
-
-  - id: regen-linux-amd64
-    binary: regen
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.x86_64.a -O /usr/lib/libwasmvm_muslc.x86_64.a
-    main: ./cmd/regen
-    env:
-      - CC=x86_64-linux-gnu-gcc
-      - CXX=x86_64-linux-gnu-g++
-    goarch:
-      - amd64
+      - CGO_LDFLAGS=-L/lib
     goos:
-      - linux
-    flags:
-      - "-mod={{ .Env.MOD }}"
-      - "-tags={{ .Env.BUILD_TAGS }}"
-      - -trimpath
-    ldflags:
-      - "{{ .Env.BUILD_VARS }}"
-      - "{{ .Env.STRIP_FLAGS }}"
-      - "-linkmode={{ .Env.LINKMODE }}"
-      - -extldflags "-L/usr/lib -lwasmvm_muslc.x86_64 -Wl,-z,muldefs -lc -lrt -lpthread --static"
-
-  - id: regen-linux-arm64
-    binary: regen
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O /usr/lib/libwasmvm_muslc.aarch64.a
-    main: ./cmd/regen
+      - darwin
     goarch:
       - arm64
-    goos:
-      - linux
-    env:
-      - CC=aarch64-linux-gnu-gcc
-      - CXX=aarch64-linux-gnu-g++
     flags:
-      - "-mod={{ .Env.MOD }}"
-      - "-tags={{ .Env.BUILD_TAGS }}"
+      - -mod=readonly
       - -trimpath
     ldflags:
-      - "{{ .Env.BUILD_VARS }}"
-      - "{{ .Env.STRIP_FLAGS }}"
-      - "-linkmode={{ .Env.LINKMODE }}"
-      - -extldflags "-lc -lrt -lpthread --static"
-      - -extldflags '-L/usr/lib -lwasmvm_muslc.aarch64 -Wl,-z,muldefs -lc -lrt -lpthread -lm --static'
+      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=regend
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
+      - -w -s
+      - -linkmode=external
+    tags:
+      - netgo
+      - ledger
+      - static_wasm
 
+  - id: regen-linux-amd64
+    main: ./cmd/regen
+    binary: regend
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.x86_64.a -O /usr/lib/x86_64-linux-gnu/libwasmvm_muslc.a
+    goos:
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CC=x86_64-linux-gnu-gcc
+    flags:
+      - -mod=readonly
+      - -trimpath
+    ldflags:
+      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=regend
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc,osusergo
+      - -w -s
+      - -linkmode=external
+      - -extldflags '-Wl,-z,muldefs -static -lm'
+    tags:
+      - netgo
+      - ledger
+      - muslc
+      - osusergo
+
+  - id: regen-linux-arm64
+    main: ./cmd/regen
+    binary: regend
+    hooks:
+      pre:
+        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.aarch64.a -O /usr/lib/aarch64-linux-gnu/libwasmvm_muslc.a
+    goos:
+      - linux
+    goarch:
+      - arm64
+    env:
+      - CC=aarch64-linux-gnu-gcc
+    flags:
+      - -mod=readonly
+      - -trimpath
+    ldflags:
+      - -X github.com/cosmos/cosmos-sdk/version.Name=regen
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=regend
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc,osusergo
+      - -w -s
+      - -linkmode=external
+      - -extldflags '-Wl,-z,muldefs -static -lm'
+    tags:
+      - netgo
+      - ledger
+      - muslc
+      - osusergo
+
+universal_binaries:
+  - id: regen-darwin-universal
+    ids:
+      - regen-darwin-amd64
+      - regen-darwin-arm64
+    replace: false
 
 archives:
-  - id: regen
+  - id: zipped
     builds:
-      - regen-darwin-universal
+      # - regen-darwin-universal # Skipping Darwin based on example
       - regen-linux-amd64
       - regen-linux-arm64
-    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
-    wrap_in_directory: true
-    format: zip
+      # - regen-darwin-amd64 # Skipping Darwin based on example
+      # - regen-darwin-arm64 # Skipping Darwin based on example
+    name_template: "{{.ProjectName}}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format: tar.gz
     files:
-      - completions*
-      - README.md
-      - LICENSE
+      - none*
+  - id: binaries
+    builds:
+      # - regen-darwin-universal # Skipping Darwin based on example
+      - regen-linux-amd64
+      - regen-linux-arm64
+      # - regen-darwin-amd64 # Skipping Darwin based on example
+      # - regen-darwin-arm64 # Skipping Darwin based on example
+    name_template: "{{.ProjectName}}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format: binary
+    files:
+      - none*
 
-brews:
-  - name: regen-ledger
-    ids:
-      - regen
-    tap:
-      owner: regen-network
-      name: regen-ledger
-      branch: homebrew-taps
-    folder: ${{ .Tag }}
-    homepage: "https://www.regen.network/"
-    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
-    test: |
-      system "#{bin}/regen --version"
-    install: |
-      bin.install "regen"
-      bash_completion.install "completions/regen.bash" => "regen"
-      zsh_completion.install "completions/regen.zsh" => "_regen"
-      fish_completion.install "completions/regen.fish"
+checksum:
+  name_template: "sha256sum.txt"
+  algorithm: sha256
 
-nfpms:
-  - maintainer: regen-network
-    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
-    homepage: "https://www.regen.network/"
-    license: Apache 2.0
-    formats:
-      - deb
-      - rpm
-      - apk
-    contents:
-      - src: ./completions/regen.bash
-        dst: /usr/share/bash-completion/completions/regen
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.fish
-        dst: /usr/share/fish/vendor_completions.d/regen.fish
-        file_info:
-          mode: 0644
-      - src: ./completions/regen.zsh
-        dst:  /usr/share/zsh/vendor-completions/_regen
-        file_info:
-          mode: 0644
+# Docs: https://goreleaser.com/customization/changelog/
+changelog:
+  skip: true
 
+# Docs: https://goreleaser.com/customization/release/
 release:
   github:
     owner: regen-network
     name: regen-ledger
-  prerelease: auto
-  draft: false
+  replace_existing_draft: true
+  header: |
+    Regen Ledger Release v{{ .Version }}
+
+    ## Changelog
+
+    See the full changelog [here](https://github.com/regen-network/regen-ledger/blob/v{{ .Version }}/CHANGELOG.md)
+
+    ## ⚡️ Binaries
+
+    Binaries for Linux (amd64 and arm64) are available below.
+
+    #### 🔨 Build from source
+
+    If you prefer to build from source, you can use the following commands:
+
+    ````bash
+    git clone https://github.com/regen-network/regen-ledger
+    cd regen-ledger && git checkout v{{ .Version }}
+    make install
+    ````
+
+    ## 🐳 Run with Docker
+
+    (Add relevant Docker instructions for regen-ledger if applicable)
+
+  name_template: "Regen Ledger v{{.Version}} 🌱"
+  mode: replace
+  draft: true
+
+# Docs: https://goreleaser.com/customization/announce/
+# We could automatically announce the release in
+# - discord
+# - slack
+# - twitter
+# - webhooks
+# - telegram
+# - reddit
+#
+# announce:
+  # discord:
+  #   enabled: true
+  #   message_template: 'New {{.Tag}} is out!'
