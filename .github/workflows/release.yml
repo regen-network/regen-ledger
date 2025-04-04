@@ -38,7 +38,7 @@ jobs:
       - name: Build and publish release
         run: |
           sudo rm -rf dist
-          make release-publish
+          make release-snapshot
         env:
           GORELEASER_RELEASE: true
           IS_STABLE: true
