@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/regen-network/regen-ledger/v5/app/upgrades"
+	"github.com/regen-network/regen-ledger/v6/app/upgrades"
 )
 
 const Name = "v5.1"

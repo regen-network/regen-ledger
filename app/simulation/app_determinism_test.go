@@ -23,7 +23,7 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	regen "github.com/regen-network/regen-ledger/v5/app"
+	regen "github.com/regen-network/regen-ledger/v6/app"
 )
 
 // TODO: Make another test for the fuzzer itself, which just has noOp txs
