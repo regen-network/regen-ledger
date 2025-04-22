@@ -1,14 +1,12 @@
-package v5_1_test
+package v6_0_test
 
 import (
 	"testing"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/suite"
 
-	abci "github.com/cometbft/cometbft/abci/types"
-
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
 	"github.com/regen-network/regen-ledger/v6/app/testsuite"
 )
 
@@ -22,13 +20,14 @@ func TestUpgrade(t *testing.T) {
 
 const upgradeHeight = 5
 
-func (suite *UpgradeTestSuite) TestUpgrade() {
+func (suite *UpgradeTestSuite) TestUpgrade_Upgrade_OK() {
 	suite.Setup()
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(upgradeHeight - 1)
-	suite.Ctx = suite.Ctx.WithChainID("regen-1")
+	suite.Ctx = suite.Ctx.WithChainID("regen-2")
 
-	plan := upgradetypes.Plan{Name: "v5.1", Height: upgradeHeight}
+	plan := upgradetypes.Plan{Name: "v6.0", Height: upgradeHeight}
+
 	err := suite.App.UpgradeKeeper.ScheduleUpgrade(suite.Ctx, plan)
 	suite.Require().NoError(err)
 
@@ -38,7 +37,7 @@ func (suite *UpgradeTestSuite) TestUpgrade() {
 	suite.Ctx = suite.Ctx.WithBlockHeight(upgradeHeight)
 
 	suite.Require().NotPanics(func() {
-		beginBlockRequest := abci.RequestBeginBlock{}
-		suite.App.BeginBlocker(suite.Ctx, beginBlockRequest)
+		beginBockRequest := abci.RequestBeginBlock{}
+		suite.App.BeginBlocker(suite.Ctx, beginBockRequest)
 	})
 }

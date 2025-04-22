@@ -127,9 +127,9 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
-	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
-	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
-	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_1"
+	regenupgrades "github.com/regen-network/regen-ledger/v6/app/upgrades"
+	"github.com/regen-network/regen-ledger/v6/app/upgrades/v5_0"
+	"github.com/regen-network/regen-ledger/v6/app/upgrades/v5_1"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
@@ -141,7 +141,7 @@ import (
 	intertxmodule "github.com/regen-network/regen-ledger/x/intertx/module"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/regen-network/regen-ledger/v5/app/client/docs/statik"
+	_ "github.com/regen-network/regen-ledger/v6/app/client/docs/statik"
 )
 
 const (

@@ -136,7 +136,7 @@ jobs:
             **/go.sum
       - uses: actions/download-artifact@v4
         with:
-          name: coverage-app
+          name: coverage-app-${{ github.run_id }}
         if: env.GIT_DIFF || github.ref == 'refs/heads/main'
       - uses: actions/download-artifact@v4
         with:
