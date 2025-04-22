@@ -181,7 +181,7 @@ func randomClassIDs(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServ
 		return []string{classes[0].Id}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 	}
 
-	maxVal := simtypes.RandIntBetween(r, 1, minVal(5, len(classes)))
+	maxVal := simtypes.RandIntBetween(r, 1, min(5, len(classes)))
 	var classIDs []string
 	for i := 0; i < maxVal; i++ {
 		class := classes[i]
@@ -191,11 +191,4 @@ func randomClassIDs(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServ
 	}
 
 	return classIDs, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
-}
-
-func minVal(x, y int) int {
-	if x > y {
-		return y
-	}
-	return x
 }
