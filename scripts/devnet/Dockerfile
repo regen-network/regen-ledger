@@ -11,7 +11,7 @@ WORKDIR ${BASE_PATH}
 RUN apt-get update && apt-get install -y jq
 
 # Clone the regen repository and checkout the specific version (this can be parameterized)
-ARG REGEN_VERSION=v5.1.4
+ARG REGEN_VERSION=v6.0.0-rc5
 RUN git clone https://github.com/regen-network/regen-ledger.git && \
     cd regen-ledger && \
     git checkout ${REGEN_VERSION}

@@ -3,7 +3,6 @@ set -e
 
 # Constants
 BASE_PATH=${BASE_PATH:-/mnt/nvme}
-HOME_DIR=${BASE_PATH}/.regen
 SHARED_DIR=${BASE_PATH}/shared
 GENTX_DIR="$SHARED_DIR/gentxs"
 INITIAL_GENESIS_READY="$SHARED_DIR/initial_genesis_ready"
@@ -17,19 +16,17 @@ INFO="${GREEN}ℹ️${NC}"
 SUCCESS="${GREEN}✅${NC}"
 WAIT="${GREEN}⏳${NC}"
 
-# Helper: Print message with emoji
 log() { echo -e "${1} ${2}"; }
 
-# Ensure shared directories exist
 mkdir -p "$GENTX_DIR"
 
-# Determine the number of nodes
 NODE_COUNT="${NODE_COUNT:-3}"
 NODE_NAMES=($(for i in $(seq 1 "$NODE_COUNT"); do echo "regen-node$i"; done))
+HOME_DIR="${BASE_PATH}/.regen/${NODE_NAME}"
 
-# Fetch ports from environment variables
 P2P_PORT=${P2P_PORT:-26656}
 RPC_PORT=${RPC_PORT:-26657}
+GRPC_PORT=${GRPC_PORT:-9090}
 
 configure_rpc_and_p2p() {
   CONFIG_FILE="$HOME_DIR/config/config.toml"
@@ -37,36 +34,18 @@ configure_rpc_and_p2p() {
 
   log "$INFO" "🔍 Verifying configuration of RPC, P2P, and gRPC for ${NODE_NAME}..."
 
-  # Configure RPC in the [rpc] section of config.toml
   if [ -f "$CONFIG_FILE" ]; then
-    log "$INFO" "⚙️ Configuring RPC and P2P in $CONFIG_FILE..."
-
-    # Update RPC address only in the [rpc] section
     sed -i "/\[rpc\]/,/^\[.*\]/ s|^laddr *=.*|laddr = \"tcp://0.0.0.0:$RPC_PORT\"|" "$CONFIG_FILE"
-
-    # Update P2P address only in the [p2p] section
     sed -i "/\[p2p\]/,/^\[.*\]/ s|^laddr *=.*|laddr = \"tcp://0.0.0.0:$P2P_PORT\"|" "$CONFIG_FILE"
     sed -i "/\[p2p\]/,/^\[.*\]/ s|^external_address *=.*|external_address = \"tcp://0.0.0.0:$P2P_PORT\"|" "$CONFIG_FILE"
-
     log "$SUCCESS" "✅ Configured RPC on $RPC_PORT and P2P on $P2P_PORT in $CONFIG_FILE."
-  else
-    log "$INFO" "⚠️ $CONFIG_FILE not found. Skipping P2P and RPC configuration."
   fi
 
-  # Configure gRPC and API in app.toml
   if [ -f "$APP_FILE" ]; then
-    log "$INFO" "⚙️ Configuring gRPC and API in $APP_FILE..."
-
-    # Update gRPC address in the [grpc] section
     sed -i "/\[grpc\]/,/^\[.*\]/ s|^address *=.*|address = \"localhost:$GRPC_PORT\"|" "$APP_FILE"
-
-
     log "$SUCCESS" "✅ Configured gRPC on $GRPC_PORT and API enabled in $APP_FILE."
-  else
-    log "$INFO" "⚠️ $APP_FILE not found. Skipping gRPC and API configuration."
   fi
 }
-
 
 fetch_environment_variables() {
   NODE_ENV_NAME=$(echo "${NODE_NAME^^}" | tr '-' '_')
@@ -102,8 +81,7 @@ add_validator_accounts_to_genesis() {
     NODE_ENV=$(echo "${NODE^^}" | tr '-' '_')
     ADDR_VAR="${NODE_ENV}_VALIDATOR_ADDRESS"
     ADDRESS="${!ADDR_VAR}"
-    log "$INFO" "Adding ${NODE}'s address: ${ADDRESS}"
-    regen add-genesis-account "$ADDRESS" 100000000uregen --home "$HOME_DIR"
+    regen genesis add-genesis-account "$ADDRESS" 100000000uregen --home "$HOME_DIR"
   done
   log "$SUCCESS" "All validator accounts added to genesis."
 }
@@ -111,7 +89,7 @@ add_validator_accounts_to_genesis() {
 generate_gentx() {
   log "$INFO" "Generating gentx for ${NODE_NAME}..."
   echo "$VALIDATOR_MNEMONIC" | regen keys add my_validator --recover --keyring-backend test --home "$HOME_DIR"
-  regen gentx my_validator 50000000uregen --keyring-backend test --chain-id "$CHAIN_ID" --home "$HOME_DIR"
+  regen genesis gentx my_validator 50000000uregen --keyring-backend test --chain-id "$CHAIN_ID" --home "$HOME_DIR"
   cp "$HOME_DIR/config/gentx/"*.json "$GENTX_DIR/${NODE_NAME}_gentx.json"
   log "$SUCCESS" "Generated gentx for ${NODE_NAME}."
 }
@@ -148,17 +126,91 @@ wait_for_final_genesis() {
 }
 
 collect_and_finalize_genesis() {
-  log "$INFO" "Collecting and validating gentx files..."
-  regen collect-gentxs --gentx-dir "$GENTX_DIR" --home "$HOME_DIR"
-  regen validate-genesis --home "$HOME_DIR"
+  regen genesis collect-gentxs --gentx-dir "$GENTX_DIR" --home "$HOME_DIR"
+  regen genesis validate-genesis --home "$HOME_DIR"
   cp "$HOME_DIR/config/genesis.json" "$SHARED_DIR/genesis.json"
   touch "$FINAL_GENESIS_READY"
   log "$SUCCESS" "Finalized genesis.json saved."
 }
 
-# Main Setup Logic
-log "$INFO" "Starting setup for ${NODE_NAME}..."
+configure_peers() {
+  CONFIG_FILE="$HOME_DIR/config/config.toml"
+  log "$INFO" "🔗 Configuring persistent peers..."
 
+  PEERS=""
+  for NODE in "${NODE_NAMES[@]}"; do
+    if [ "$NODE" != "$NODE_NAME" ]; then
+      while [ ! -f "$SHARED_DIR/${NODE}_id" ]; do
+        log "$WAIT" "Waiting for ${NODE}'s node ID..."
+        sleep 2
+      done
+      NODE_ID=$(cat "$SHARED_DIR/${NODE}_id")
+
+      PORT_VAR=$(echo "${NODE^^}_P2P_PORT" | tr '-' '_')
+      PORT="${!PORT_VAR:-26000}"
+
+      PEERS+="$NODE_ID@$NODE:$PORT,"
+    fi
+  done
+
+  PEERS="${PEERS%,}"
+  sed -i "s/^persistent_peers =.*/persistent_peers = \"$PEERS\"/" "$CONFIG_FILE"
+  log "$SUCCESS" "✅ Configured persistent peers: $PEERS"
+}
+
+wait_for_chain_ready() {
+  local max_tries=40
+  local try=0
+
+  log "$INFO" "⏳ Waiting for chain to reach first block at RPC port $RPC_PORT..."
+
+  until [ "$(curl -sf http://localhost:${RPC_PORT}/status | jq -r '.result.sync_info.latest_block_height')" -gt 0 ]; do
+    try=$((try+1))
+    if [ $try -ge $max_tries ]; then
+      log "$WAIT" "❌ Chain did not reach block height > 0 in time on port ${RPC_PORT}"
+      exit 1
+    fi
+    sleep 2
+  done
+
+  log "$SUCCESS" "🎯 Chain is live with block height > 0 on RPC port $RPC_PORT"
+}
+
+create_validator_tx() {
+  if [ "$NODE_NAME" != "regen-node1" ]; then
+    log "$INFO" "⛏ Creating validator for ${NODE_NAME}..."
+
+    echo "$VALIDATOR_MNEMONIC" | regen keys add my_validator --recover --keyring-backend test --home "$HOME_DIR" || true
+
+    if regen query staking validator "$VALIDATOR_ADDRESS" --node "tcp://localhost:${RPC_PORT}" --output json | jq -e '.validator' > /dev/null 2>&1; then
+      log "$WAIT" "Validator already exists for ${NODE_NAME}. Skipping creation."
+      return
+    fi
+
+    regen tx staking create-validator \
+      --amount=50000000uregen \
+      --pubkey="$(regen tendermint show-validator --home "$HOME_DIR")" \
+      --moniker="$NODE_NAME" \
+      --chain-id="$CHAIN_ID" \
+      --commission-rate="0.10" \
+      --commission-max-rate="0.20" \
+      --commission-max-change-rate="0.01" \
+      --min-self-delegation="1" \
+      --from=my_validator \
+      --gas=auto \
+      --gas-adjustment=1.5 \
+      --yes \
+      --keyring-backend=test \
+      --home="$HOME_DIR" \
+      --broadcast-mode=block \
+      --node "tcp://localhost:${RPC_PORT}"
+
+    log "$SUCCESS" "Validator created for ${NODE_NAME}."
+  fi
+}
+
+### 🔧 Main Logic
+log "$INFO" "Starting setup for ${NODE_NAME}..."
 
 fetch_environment_variables
 initialize_node
@@ -171,8 +223,6 @@ if [ "$NODE_NAME" == "regen-node1" ]; then
   log "$SUCCESS" "Modified genesis.json for ${NODE_NAME}."
 
   add_validator_accounts_to_genesis
-
-  # Save initial genesis.json and notify other nodes
   cp "$HOME_DIR/config/genesis.json" "$SHARED_DIR/genesis.json"
   touch "$INITIAL_GENESIS_READY"
   log "$SUCCESS" "Initial genesis.json saved."
@@ -185,6 +235,11 @@ else
   wait_for_final_genesis
 fi
 
-
 log "$INFO" "Starting ${NODE_NAME}..."
-exec regen start --home "$HOME_DIR" --minimum-gas-prices="0.025uregen"
+configure_peers
+
+regen start --home "$HOME_DIR" --minimum-gas-prices="0.025uregen" &
+
+wait_for_chain_ready
+create_validator_tx
+wait
