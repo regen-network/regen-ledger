@@ -29,10 +29,14 @@ if [[ "$REGEN_VERSION_MAJOR" == "v6" || "$REGEN_VERSION_MAJOR" == "v7" ]]; then
   use_new_cli=true
 fi
 
-# CLI wrapper functions
 add_genesis_account() {
   local address="$1"
   local amount="1000000000uregen"  # Pre-fund with 1,000,000,000 uregen for devnet purposes
+
+  if jq -e ".app_state.bank.balances[] | select(.address == \"$address\")" "$HOME_DIR/config/genesis.json" > /dev/null 2>&1; then
+    log "$INFO" "Genesis account $address already exists. Skipping."
+    return
+  fi
 
   if [ "$use_new_cli" = true ]; then
     regen genesis add-genesis-account "$address" "$amount" --home "$HOME_DIR"
@@ -42,26 +46,41 @@ add_genesis_account() {
 }
 
 generate_gentx() {
+  if [ -f "$GENTX_DIR/${NODE_NAME}_gentx.json" ]; then
+    log "$INFO" "Gentx already exists for ${NODE_NAME}, skipping."
+    return
+  fi
+
   echo "$VALIDATOR_MNEMONIC" > "$HOME_DIR/mnemonic.txt"
   chmod 600 "$HOME_DIR/mnemonic.txt"
 
-  expect <<EOF
+  if ! regen keys show my_validator --keyring-backend test --home "$HOME_DIR" >/dev/null 2>&1; then
+    expect <<EOF
 spawn regen keys add my_validator --recover --keyring-backend=test --home=$HOME_DIR
 expect "Enter your bip39 mnemonic"
 send "$(cat $HOME_DIR/mnemonic.txt)\r"
 expect eof
 EOF
+  else
+    log "$INFO" "Validator key already exists, skipping key recovery."
+  fi
 
   if [ "$use_new_cli" = true ]; then
     regen genesis gentx my_validator 50000000uregen --keyring-backend test --chain-id "$CHAIN_ID" --home "$HOME_DIR"
   else
     regen gentx my_validator 50000000uregen --keyring-backend test --chain-id "$CHAIN_ID" --home "$HOME_DIR"
   fi
+
   cp "$HOME_DIR/config/gentx/"*.json "$GENTX_DIR/${NODE_NAME}_gentx.json"
   log "$SUCCESS" "Generated gentx for ${NODE_NAME}."
 }
 
 collect_gentxs() {
+  if [ -n "$(ls -A "$HOME_DIR/config/gentx" 2>/dev/null)" ]; then
+    log "$INFO" "Gentxs already collected. Skipping collect-gentxs."
+    return
+  fi
+
   if [ "$use_new_cli" = true ]; then
     regen genesis collect-gentxs --gentx-dir "$GENTX_DIR" --home "$HOME_DIR"
     regen genesis validate-genesis --home "$HOME_DIR"
@@ -69,7 +88,10 @@ collect_gentxs() {
     regen collect-gentxs --gentx-dir "$GENTX_DIR" --home "$HOME_DIR"
     regen validate-genesis --home "$HOME_DIR"
   fi
+
+  log "$SUCCESS" "✅ Collected and validated gentxs."
 }
+
 
 fetch_environment_variables() {
   NODE_ENV_NAME=$(echo "${NODE_NAME^^}" | tr '-' '_')
@@ -95,10 +117,10 @@ initialize_node() {
 
 setup_cosmovisor_layout() {
   mkdir -p "$HOME_DIR/cosmovisor/genesis/bin"
-  mkdir -p "$HOME_DIR/cosmovisor/upgrades/regen-v6-upgrade/bin"
+  mkdir -p "$HOME_DIR/cosmovisor/upgrades/v6.0.0-rc4/bin"
 
   cp /upgrade-binaries/regen-v5 "$HOME_DIR/cosmovisor/genesis/bin/regen"
-  cp /upgrade-binaries/regen-v6 "$HOME_DIR/cosmovisor/upgrades/regen-v6-upgrade/bin/regen"
+  cp /upgrade-binaries/regen-v6 "$HOME_DIR/cosmovisor/upgrades/v6.0.0-rc4/bin/regen"
 
   chmod +x "$HOME_DIR"/cosmovisor/**/bin/regen
 
@@ -163,15 +185,22 @@ wait_for_final_genesis() {
 
 wait_for_chain_ready() {
   local max_tries=40 try=0
-  until [ "$(curl -sf http://localhost:${RPC_PORT}/status | jq -r '.result.sync_info.latest_block_height')" -gt 0 ]; do
-    try=$((try+1))
-    if [ $try -ge $max_tries ]; then
-      log "$WAIT" "❌ Chain failed to start on port ${RPC_PORT}"
-      exit 1
+  local height
+
+  until [ "$try" -ge "$max_tries" ]; do
+    height=$(curl -sf http://localhost:${RPC_PORT}/status | jq -r '.result.sync_info.latest_block_height' || echo "")
+
+    if [[ "$height" =~ ^[0-9]+$ ]] && [ "$height" -gt 0 ]; then
+      log "$SUCCESS" "🌟 Chain is live on $RPC_PORT (height: $height)"
+      return
     fi
+
+    try=$((try + 1))
     sleep 2
   done
-  log "$SUCCESS" "🌟 Chain is live on $RPC_PORT"
+
+  log "$WAIT" "❌ Chain failed to start on port ${RPC_PORT}"
+  exit 1
 }
 
 create_validator_tx() {
@@ -199,16 +228,24 @@ create_validator_tx() {
       --node "tcp://localhost:${RPC_PORT}"
   fi
 }
+
 add_validator_accounts_to_genesis() {
   log "$INFO" "Adding validator accounts to genesis..."
   for NODE in "${NODE_NAMES[@]}"; do
     NODE_ENV=$(echo "${NODE^^}" | tr '-' '_')
     ADDR_VAR="${NODE_ENV}_VALIDATOR_ADDRESS"
     ADDRESS="${!ADDR_VAR}"
-    add_genesis_account "$ADDRESS"
+
+    if grep -q "$ADDRESS" "$HOME_DIR/config/genesis.json"; then
+      log "$INFO" "Account $ADDRESS already exists in genesis. Skipping."
+    else
+      add_genesis_account "$ADDRESS"
+      log "$SUCCESS" "Added $ADDRESS to genesis."
+    fi
   done
-  log "$SUCCESS" "✅ Added validator accounts to genesis."
+  log "$SUCCESS" "✅ Validator accounts processed."
 }
+
 
 # Main
 log "$INFO" "🛠️ Starting setup for ${NODE_NAME}..."
@@ -253,7 +290,13 @@ export DAEMON_ALLOW_DOWNLOAD_BINARIES=false
 export DAEMON_RESTART_AFTER_UPGRADE=true
 export UNSAFE_SKIP_BACKUP=true
 
-cosmovisor run start --home "$HOME_DIR" --minimum-gas-prices="0.025uregen" &
-wait_for_chain_ready
-create_validator_tx
-wait
+
+# Kick off validator creation in the background (non-blocking)
+(
+  # Delay slightly to give chain time to boot and reach block > 0
+  sleep 8
+  wait_for_chain_ready
+  create_validator_tx
+) &
+
+cosmovisor run start --home "$HOME_DIR" --minimum-gas-prices="0.025uregen"

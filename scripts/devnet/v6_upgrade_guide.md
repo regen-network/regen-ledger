@@ -1,5 +1,5 @@
 ## Testing Regen Upgrades
-To test a regen upgrade proposal a with a new binary follow
+To test a regen upgrade to v6 proposal a with a new binary follow
 these steps:
 
 ### 1. Start devnet
@@ -17,7 +17,7 @@ versions `v6.0.0-rc4` and `v5.1.4`. New versions need to be added to the script.
 ```shell
 docker exec -it regen-node1 bash
 ```
-### 3. Recover the current Shell
+### 3. Recover the key
 ```shell
 echo "$REGEN_NODE1_VALIDATOR_MNEMONIC" > /mnt/nvme/mnemonic.txt
 regen keys add my_validator --recover --keyring-backend=test --home=/mnt/nvme/.regen/regen-node1 < /mnt/nvme/mnemonic.txt
@@ -37,7 +37,7 @@ jq -n --arg authority "$AUTHORITY" '
       "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
       "authority": $authority,
       "plan": {
-        "name": "regen-v6-upgrade",
+        "name": "v6.0.0-rc4",
         "height": 50,
         "info": ""
       }
@@ -80,9 +80,11 @@ regen tx gov deposit 1 90000000uregen \
 
 ### 5. Vote “Yes” from all validators
 
-### Node 1
 ```shell
 docker exec -it regen-node1 bash
+```
+### Node 1
+```shell
 regen tx gov vote 1 yes \
   --from=my_validator \
   --chain-id=regen-devnet \
@@ -100,6 +102,8 @@ regen tx gov vote 1 yes \
 ### Node 2
 ```shell
 docker exec -it regen-node2 bash
+```
+```shell
 regen tx gov vote 1 yes \
   --from=my_validator \
   --chain-id=regen-devnet \
@@ -116,6 +120,8 @@ regen tx gov vote 1 yes \
 ### Node 3
 ```shell
 docker exec -it regen-node3 bash
+```
+```shell
 regen tx gov vote 1 yes \
   --from=my_validator \
   --chain-id=regen-devnet \
@@ -143,11 +149,11 @@ you should see:
 ```
 
 ## Restart Nodes
-Wait for block 50 and you should see a chain halt:
+Wait for block 50 and you should see a chain halt, and then a restarts by cosmovisor:
 ```shell
-regen-node2  | 10:58PM ERR UPGRADE "regen-v6-upgrade" NEEDED at height: 50: 
-regen-node1  | 10:58PM ERR UPGRADE "regen-v6-upgrade" NEEDED at height: 50: 
-regen-node2  | 10:58PM ERR CONSENSUS FAILURE!!! err="UPGRADE \"regen-v6-upgrade
+regen-node2  | 10:58PM ERR UPGRADE "v6_0" NEEDED at height: 50: 
+regen-node1  | 10:58PM ERR UPGRADE "v6_0" NEEDED at height: 50: 
+regen-node2  | 10:58PM ERR CONSENSUS FAILURE!!! err="UPGRADE \"v6_0
 ```
 Restart nodes and check the logs:
 ```shell
