@@ -11,7 +11,7 @@ chmod +x setup.sh
 ./setup.sh
 ```
 The current version of the  `download_upgrade_binaries.sh` download only
-versions `v6.0.0-rc4` and `v5.1.4`. New versions need to be added to the script.
+versions `v6.0` and `v5.1.4`. New versions need to be added to the script.
 
 ### 2. Open a shell into regen-node1
 ```shell
@@ -19,15 +19,15 @@ docker exec -it regen-node1 bash
 ```
 ### 3. Recover the key
 ```shell
-echo "$REGEN_NODE1_VALIDATOR_MNEMONIC" > /mnt/nvme/mnemonic.txt
-regen keys add my_validator --recover --keyring-backend=test --home=/mnt/nvme/.regen/regen-node1 < /mnt/nvme/mnemonic.txt
+echo "$REGEN_NODE1_VALIDATOR_MNEMONIC" > /root/mnemonic.txt
+regen keys add my_validator --recover --keyring-backend=test --home=/root/.regen < /root/mnemonic.txt
 
 ````
 ### 4. Create the upgrade proposal JSON
 ```shell
 AUTHORITY=$(regen query auth module-accounts \
   --node tcp://localhost:26001 \
-  --home /mnt/nvme/.regen/regen-node1 \
+  --home /root/.regen \
   --output json | jq -r '.accounts[] | select(.name=="gov") | .base_account.address')
 
 jq -n --arg authority "$AUTHORITY" '
@@ -37,27 +37,27 @@ jq -n --arg authority "$AUTHORITY" '
       "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
       "authority": $authority,
       "plan": {
-        "name": "v6.0.0-rc4",
+        "name": "v6.0",
         "height": 50,
         "info": ""
       }
     }
   ],
   "deposit": "10000000uregen",
-  "title": "Upgrade to v6",
+  "title": "Upgrade to v6.0",
   "summary": "This proposal upgrades the chain to version 6 using Cosmovisor."
 }
-' > upgrade-proposal.json
+' > upgrade-info.json
 
 ```
 
 ### 4. Submit the upgrade proposal
 ```shell
-regen tx gov submit-proposal upgrade-proposal.json \
+regen tx gov submit-proposal upgrade-info.json \
   --from=my_validator \
   --chain-id=regen-devnet \
   --keyring-backend=test \
-  --home=/mnt/nvme/.regen/regen-node1 \
+  --home=/root/.regen \
   --node tcp://localhost:26001 \
   --gas auto \
   --gas-adjustment 1.5 \
@@ -70,7 +70,7 @@ regen tx gov deposit 1 90000000uregen \
   --from=my_validator \
   --chain-id=regen-devnet \
   --keyring-backend=test \
-  --home=/mnt/nvme/.regen/regen-node1 \
+  --home=/root/.regen \
   --node tcp://localhost:26001 \
   --gas auto \
   --gas-adjustment 1.5 \
@@ -89,7 +89,7 @@ regen tx gov vote 1 yes \
   --from=my_validator \
   --chain-id=regen-devnet \
   --keyring-backend=test \
-  --home=/mnt/nvme/.regen/regen-node1 \
+  --home=/root/.regen \
   --node tcp://localhost:26001 \
   --gas auto \
   --gas-adjustment 1.5 \
@@ -108,7 +108,7 @@ regen tx gov vote 1 yes \
   --from=my_validator \
   --chain-id=regen-devnet \
   --keyring-backend=test \
-  --home=/mnt/nvme/.regen/regen-node2 \
+  --home=/root/.regen \
   --node tcp://localhost:26004 \
   --gas auto \
   --gas-adjustment 1.5 \
@@ -126,7 +126,7 @@ regen tx gov vote 1 yes \
   --from=my_validator \
   --chain-id=regen-devnet \
   --keyring-backend=test \
-  --home=/mnt/nvme/.regen/regen-node3 \
+  --home=/root/.regen \
   --node tcp://localhost:26007 \
   --gas auto \
   --gas-adjustment 1.5 \
@@ -137,6 +137,10 @@ regen tx gov vote 1 yes \
 
 ## Check proposal status
 Voting period should end after 60s
+
+```shell
+docker exec -it regen-node1 bash
+```
 ```shell
 regen query gov proposal 1 \
   --node tcp://localhost:26001 \
@@ -150,12 +154,3 @@ you should see:
 
 ## Restart Nodes
 Wait for block 50 and you should see a chain halt, and then a restarts by cosmovisor:
-```shell
-regen-node2  | 10:58PM ERR UPGRADE "v6_0" NEEDED at height: 50: 
-regen-node1  | 10:58PM ERR UPGRADE "v6_0" NEEDED at height: 50: 
-regen-node2  | 10:58PM ERR CONSENSUS FAILURE!!! err="UPGRADE \"v6_0
-```
-Restart nodes and check the logs:
-```shell
-docker restart regen-node1 regen-node2 regen-node3
-```

@@ -2,13 +2,21 @@
 set -e
 
 # Constants
-BASE_PATH=${BASE_PATH:-/mnt/nvme}
+BASE_PATH=${BASE_PATH:-/root}
 SHARED_DIR=${BASE_PATH}/shared
 GENTX_DIR="$SHARED_DIR/gentxs"
 INITIAL_GENESIS_READY="$SHARED_DIR/initial_genesis_ready"
 FINAL_GENESIS_READY="$SHARED_DIR/final_genesis_ready"
 CHAIN_ID="regen-devnet"
-HOME_DIR="${BASE_PATH}/.regen/${NODE_NAME}"
+HOME_DIR="${BASE_PATH}/.regen"
+
+
+export DAEMON_NAME="regen"
+export DAEMON_HOME="${BASE_PATH}/.regen"
+export HOME="$DAEMON_HOME"
+export DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+export DAEMON_RESTART_AFTER_UPGRADE=true
+export UNSAFE_SKIP_BACKUP=true
 
 # Styling
 GREEN='\033[0;32m'
@@ -25,7 +33,7 @@ NODE_NAMES=($(for i in $(seq 1 "$NODE_COUNT"); do echo "regen-node$i"; done))
 
 # Detect CLI version
 use_new_cli=false
-if [[ "$REGEN_VERSION_MAJOR" == "v6" || "$REGEN_VERSION_MAJOR" == "v7" ]]; then
+if [[ "$REGEN_VERSION_MAJOR" == "v6" ]]; then
   use_new_cli=true
 fi
 
@@ -117,10 +125,10 @@ initialize_node() {
 
 setup_cosmovisor_layout() {
   mkdir -p "$HOME_DIR/cosmovisor/genesis/bin"
-  mkdir -p "$HOME_DIR/cosmovisor/upgrades/v6.0.0-rc4/bin"
+  mkdir -p "$HOME_DIR/cosmovisor/upgrades/v6.0/bin"
 
   cp /upgrade-binaries/regen-v5 "$HOME_DIR/cosmovisor/genesis/bin/regen"
-  cp /upgrade-binaries/regen-v6 "$HOME_DIR/cosmovisor/upgrades/v6.0.0-rc4/bin/regen"
+  cp /upgrade-binaries/regen-v6 "$HOME_DIR/cosmovisor/upgrades/v6.0/bin/regen"
 
   chmod +x "$HOME_DIR"/cosmovisor/**/bin/regen
 
@@ -299,4 +307,11 @@ export UNSAFE_SKIP_BACKUP=true
   create_validator_tx
 ) &
 
-cosmovisor run start --home "$HOME_DIR" --minimum-gas-prices="0.025uregen"
+env \
+  DAEMON_HOME="$DAEMON_HOME" \
+  HOME="$HOME" \
+  DAEMON_NAME="$DAEMON_NAME" \
+  DAEMON_ALLOW_DOWNLOAD_BINARIES="$DAEMON_ALLOW_DOWNLOAD_BINARIES" \
+  DAEMON_RESTART_AFTER_UPGRADE="$DAEMON_RESTART_AFTER_UPGRADE" \
+  UNSAFE_SKIP_BACKUP="$UNSAFE_SKIP_BACKUP" \
+  cosmovisor run start --home "$DAEMON_HOME" --minimum-gas-prices="0.025uregen"

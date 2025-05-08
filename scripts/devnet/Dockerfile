@@ -1,6 +1,6 @@
 FROM golang:1.23 as builder
 
-ARG BASE_PATH=/mnt/nvme
+ARG BASE_PATH=/root
 ARG REGEN_VERSION=v5.1.0  # Default: v5
 
 WORKDIR ${BASE_PATH}

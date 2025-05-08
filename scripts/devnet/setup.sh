@@ -93,8 +93,8 @@ $(for j in $(seq 1 "$NODE_COUNT"); do
   echo "      - ${PEER_ENV}_VALIDATOR_MNEMONIC=\${${PEER_ENV}_VALIDATOR_MNEMONIC}"
 done)
     volumes:
-      - ./shared/node:/mnt/nvme/shared
-      - ./shared/node$i-conf:/mnt/nvme/.regen
+      - ./shared/node:/root/shared
+      - ./shared/node$i-conf:/root/.regen
       - ./entrypoint.sh:/entrypoint.sh
       - ./upgrade-binaries:/upgrade-binaries
     networks:
