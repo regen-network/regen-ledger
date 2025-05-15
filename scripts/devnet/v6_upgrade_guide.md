@@ -1,4 +1,8 @@
 ## Testing Regen Upgrades
+
+To use this guide remove the `--upgrade-height 10` flag from the `entrypoint.sh` script.
+
+
 To test a regen upgrade to v6 proposal a with a new binary follow
 these steps:
 

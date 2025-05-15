@@ -124,15 +124,13 @@ initialize_node() {
 }
 
 setup_cosmovisor_layout() {
-  mkdir -p "$HOME_DIR/cosmovisor/genesis/bin"
-  mkdir -p "$HOME_DIR/cosmovisor/upgrades/v6.0/bin"
+  # Initialize Cosmovisor with the genesis binary
+  cosmovisor init /upgrade-binaries/regen-v5
 
-  cp /upgrade-binaries/regen-v5 "$HOME_DIR/cosmovisor/genesis/bin/regen"
-  cp /upgrade-binaries/regen-v6 "$HOME_DIR/cosmovisor/upgrades/v6.0/bin/regen"
+  # Add the upgrade binary using cosmovisor add-upgrade
+  cosmovisor add-upgrade v6.0 /upgrade-binaries/regen-v6 --upgrade-height 10
 
-  chmod +x "$HOME_DIR"/cosmovisor/**/bin/regen
-
-  log "$SUCCESS" "✅ Cosmovisor layout set up for ${NODE_NAME}"
+  log "$SUCCESS" "✅ Cosmovisor layout set up using 'init' and 'add-upgrade' for ${NODE_NAME}"
 }
 
 save_node_id() {
