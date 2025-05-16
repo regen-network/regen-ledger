@@ -1,35 +1,37 @@
 #!/bin/bash
-
 set -e
 
-# 🎨 Colors for better visibility
+# 🎨 Colors
 GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# 🚀 Start the setup
 echo -e "${GREEN}🚀 Starting the Regen network setup...${NC}"
 
-# Check if node count is provided; default to 3
+# 🔧 Default: 3 nodes
 NODE_COUNT=${1:-3}
 echo -e "🔢 Setting up $NODE_COUNT nodes."
 
-# 🧹 Clean up existing directories
-echo -e "🧹 Cleaning up existing directories..."
+# 🌱 Regen version (affects CLI syntax)
+REGEN_VERSION=${REGEN_VERSION:-v5.1.4}
+REGEN_VERSION_MAJOR=$(echo "$REGEN_VERSION" | cut -d. -f1) # → "v5"
+echo -e "📦 Detected Regen version: ${GREEN}$REGEN_VERSION${NC} ($REGEN_VERSION_MAJOR)"
+
+# 🧹 Clean up
+echo -e "🧹 Cleaning up..."
 rm -rf ./shared ./node*_data .env docker-compose.yaml
 
-# Temporary directory for key generation
+# 🔐 Temp dir for keys
 TEMP_DIR=$(mktemp -d)
-echo -e "🔑 Generating validator keys in temporary directory: $TEMP_DIR"
+echo -e "🔑 Generating validator keys in: $TEMP_DIR"
 
 NODE_NAMES=()
 NODE_ADDRESSES=()
 NODE_MNEMONICS=()
 
-# 📦 Generate keys for each node
 for i in $(seq 1 "$NODE_COUNT"); do
   NODE="regen-node$i"
   NODE_NAMES+=("$NODE")
-  echo -e "🔐 Generating keys for ${GREEN}$NODE${NC}..."
+  echo -e "🔐 Creating keys for ${GREEN}$NODE${NC}..."
 
   NODE_HOME="$TEMP_DIR/$NODE"
   mkdir -p "$NODE_HOME"
@@ -41,12 +43,13 @@ for i in $(seq 1 "$NODE_COUNT"); do
   NODE_ADDRESSES+=("$ADDRESS")
   NODE_MNEMONICS+=("$MNEMONIC")
 
-  echo -e "📬 Address for ${GREEN}$NODE${NC}: ${ADDRESS}"
+  echo -e "📬 Address for ${GREEN}$NODE${NC}: $ADDRESS"
 done
 
-# 📝 Write the .env file
+# 📝 Write .env
 echo -e "📝 Writing ${GREEN}.env${NC} file..."
 rm -f .env
+echo "REGEN_VERSION_MAJOR=${REGEN_VERSION_MAJOR}" >> .env
 for i in "${!NODE_NAMES[@]}"; do
   NODE="${NODE_NAMES[$i]}"
   ADDRESS="${NODE_ADDRESSES[$i]}"
@@ -57,20 +60,17 @@ for i in "${!NODE_NAMES[@]}"; do
   echo "${NODE_ENV_NAME}_VALIDATOR_MNEMONIC=\"${MNEMONIC}\"" >> .env
 done
 
-# 📝 Generate `docker-compose.yaml`
-echo -e "📝 Generating ${GREEN}docker-compose.yaml${NC} file..."
+# 🧱 docker-compose.yaml
+echo -e "📝 Generating ${GREEN}docker-compose.yaml${NC}..."
 cat <<EOF > docker-compose.yaml
 services:
 EOF
 
-# ⚙️ Assign non-overlapping ports for each node
-BASE_PORT=26000  # Start from a clean base to avoid collisions
+BASE_PORT=26000
 for i in $(seq 0 $((NODE_COUNT - 1))); do
-  P2P_PORT=$((BASE_PORT + i * 3))      # P2P port
-  RPC_PORT=$((BASE_PORT + i * 3 + 1))  # RPC port
-  GRPC_PORT=$((BASE_PORT + i * 3 + 2)) # gRPC port
-
-
+  P2P_PORT=$((BASE_PORT + i * 3))
+  RPC_PORT=$((BASE_PORT + i * 3 + 1))
+  GRPC_PORT=$((BASE_PORT + i * 3 + 2))
   NODE="regen-node$((i + 1))"
 
   cat <<EOF >> docker-compose.yaml
@@ -85,6 +85,7 @@ for i in $(seq 0 $((NODE_COUNT - 1))); do
       - P2P_PORT=$P2P_PORT
       - RPC_PORT=$RPC_PORT
       - GRPC_PORT=$GRPC_PORT
+      - REGEN_VERSION_MAJOR=${REGEN_VERSION_MAJOR}
 $(for j in $(seq 1 "$NODE_COUNT"); do
   PEER_NODE="regen-node$j"
   PEER_ENV=$(echo "${PEER_NODE^^}" | tr '-' '_')
@@ -92,15 +93,14 @@ $(for j in $(seq 1 "$NODE_COUNT"); do
   echo "      - ${PEER_ENV}_VALIDATOR_MNEMONIC=\${${PEER_ENV}_VALIDATOR_MNEMONIC}"
 done)
     volumes:
-      - ./shared/node:/mnt/nvme/shared
-      - ./shared/node$i-conf:/mnt/nvme/.regen
+      - ./shared/node:/root/shared
+      - ./shared/node$i-conf:/root/.regen
       - ./entrypoint.sh:/entrypoint.sh
+      - ./upgrade-binaries:/upgrade-binaries
     networks:
       - regen-network
     ports:
       - "${RPC_PORT}:${RPC_PORT}"
-      - ":${P2P_PORT}:${P2P_PORT}"
-      - ":${P2P_PORT}:${P2P_PORT}"
     entrypoint: ["/bin/bash", "/entrypoint.sh"]
 
 EOF
@@ -113,11 +113,9 @@ networks:
 EOF
 
 echo -e "${GREEN}✅ docker-compose.yaml${NC} generated."
-
-# 🐳 Start the Docker containers
-echo -e "${GREEN}🐳 Starting the Regen network with Docker Compose...${NC}"
+echo -e "${GREEN}🐳 Launching devnet...${NC}"
 docker compose up --build
 
-# 🧹 Clean up temporary files
+# 🧹 Cleanup
 rm -rf "$TEMP_DIR"
-echo -e "🧹 Cleaned up temporary files."
+echo -e "🧹 Removed temp keys directory."
