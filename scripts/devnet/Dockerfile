@@ -15,5 +15,5 @@ RUN git clone https://github.com/regen-network/regen-ledger.git && \
     cp build/regen /usr/local/bin
 
 # Install Cosmovisor
-RUN go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
+RUN go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
 RUN cp /go/bin/cosmovisor /usr/local/bin/cosmovisor

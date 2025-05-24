@@ -110,7 +110,16 @@ fetch_environment_variables() {
   VALIDATOR_ADDRESS="${!VALIDATOR_ADDRESS_VAR}"
 
   if [ -z "$VALIDATOR_MNEMONIC" ] || [ -z "$VALIDATOR_ADDRESS" ]; then
-    log "$WAIT" "Mnemonic or address not found for ${NODE_NAME}!"
+    log "$WAIT" "Mnemonic or address not found for ${NODE_NAME}!#  DAEMON_HOME="$DAEMON_HOME" \
+#  HOME="$HOME" \
+#  DAEMON_NAME="$DAEMON_NAME" \
+#  COSMOVISOR_LOG_LEVEL="debug" \
+#  COSMOVISOR_HOME="$DAEMON_HOME/cosmovisor" \
+#  COSMOVISOR_POLL_INTERVAL="1s" \
+#  DAEMON_ALLOW_DOWNLOAD_BINARIES="$DAEMON_ALLOW_DOWNLOAD_BINARIES" \
+#  DAEMON_RESTART_AFTER_UPGRADE="$DAEMON_RESTART_AFTER_UPGRADE" \
+#  UNSAFE_SKIP_BACKUP="$UNSAFE_SKIP_BACKUP" \
+#  cosmovisor run start --home "$DAEMON_HOME" --minimum-gas-prices="0.025uregen""
     exit 1
   fi
   log "$SUCCESS" "✅ Fetched mnemonic and address for ${NODE_NAME}."
@@ -126,11 +135,9 @@ initialize_node() {
 setup_cosmovisor_layout() {
   # Initialize Cosmovisor with the genesis binary
   cosmovisor init /upgrade-binaries/regen-v5
+  cosmovisor add-upgrade v6.0 /upgrade-binaries/regen-v6
 
-  # Add the upgrade binary using cosmovisor add-upgrade
-  cosmovisor add-upgrade v6.0 /upgrade-binaries/regen-v6 --upgrade-height 10
-
-  log "$SUCCESS" "✅ Cosmovisor layout set up using 'init' and 'add-upgrade' for ${NODE_NAME}"
+  log "$SUCCESS" "✅ Cosmovisor layout set up using 'init' for ${NODE_NAME}"
 }
 
 save_node_id() {
@@ -253,7 +260,8 @@ add_validator_accounts_to_genesis() {
 }
 
 
-# Main
+# ─── MAIN ─────────────────────────────────────────────────────────────────────
+
 log "$INFO" "🛠️ Starting setup for ${NODE_NAME}..."
 fetch_environment_variables
 initialize_node
@@ -290,26 +298,30 @@ fi
 
 configure_peers
 
+
+# ─── START COSMOVISOR ──────────────────────────────────────────────────────────
 export DAEMON_HOME="$HOME_DIR"
 export DAEMON_NAME="regen"
 export DAEMON_ALLOW_DOWNLOAD_BINARIES=false
 export DAEMON_RESTART_AFTER_UPGRADE=true
 export UNSAFE_SKIP_BACKUP=true
+export COSMOVISOR_LOG_LEVEL=debug
+export COSMOVISOR_POLL_INTERVAL="1s"
 
-
-# Kick off validator creation in the background (non-blocking)
-(
-  # Delay slightly to give chain time to boot and reach block > 0
-  sleep 8
-  wait_for_chain_ready
-  create_validator_tx
-) &
-
-env \
+# 1️⃣  Launch Cosmovisor in background
+exec env \
   DAEMON_HOME="$DAEMON_HOME" \
   HOME="$HOME" \
   DAEMON_NAME="$DAEMON_NAME" \
+  COSMOVISOR_LOG_LEVEL="debug" \
+  COSMOVISOR_HOME="$DAEMON_HOME/cosmovisor" \
+  COSMOVISOR_POLL_INTERVAL="1s" \
   DAEMON_ALLOW_DOWNLOAD_BINARIES="$DAEMON_ALLOW_DOWNLOAD_BINARIES" \
   DAEMON_RESTART_AFTER_UPGRADE="$DAEMON_RESTART_AFTER_UPGRADE" \
   UNSAFE_SKIP_BACKUP="$UNSAFE_SKIP_BACKUP" \
   cosmovisor run start --home "$DAEMON_HOME" --minimum-gas-prices="0.025uregen"
+
+# DEBUG: Uncomment to keep the container alive after cosmovisor exits
+#log "$WAIT" "⛔ Cosmovisor exited. Container will stay alive for debugging."
+#tail -f /dev/null
+
