@@ -31,7 +31,7 @@ func mkQueryClient(cmd *cobra.Command) (data.QueryClient, client.Context, error)
 	if err != nil {
 		return nil, client.Context{}, err
 	}
-	return data.NewQueryClient(ctx), ctx, err
+	return data.NewQueryClient(ctx), ctx, nil
 }
 
 func parseContentHash(clientCtx client.Context, filePath string) (*data.ContentHash, error) {
