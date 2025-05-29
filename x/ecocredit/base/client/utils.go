@@ -38,7 +38,7 @@ func mkQueryClient(cmd *cobra.Command) (types.QueryClient, sdkclient.Context, er
 	if err != nil {
 		return nil, sdkclient.Context{}, err
 	}
-	return types.NewQueryClient(ctx), ctx, err
+	return types.NewQueryClient(ctx), ctx, nil
 }
 
 func parseMsgCreateBatch(clientCtx sdkclient.Context, jsonFile string) (*types.MsgCreateBatch, error) {
