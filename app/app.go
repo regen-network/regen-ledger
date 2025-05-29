@@ -81,6 +81,7 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
@@ -127,9 +128,9 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
-	regenupgrades "github.com/regen-network/regen-ledger/v5/app/upgrades"
-	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_0"
-	"github.com/regen-network/regen-ledger/v5/app/upgrades/v5_1"
+	regenupgrades "github.com/regen-network/regen-ledger/v6/app/upgrades"
+	"github.com/regen-network/regen-ledger/v6/app/upgrades/v5_0"
+	"github.com/regen-network/regen-ledger/v6/app/upgrades/v5_1"
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
@@ -141,7 +142,7 @@ import (
 	intertxmodule "github.com/regen-network/regen-ledger/x/intertx/module"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/regen-network/regen-ledger/v5/app/client/docs/statik"
+	_ "github.com/regen-network/regen-ledger/v6/app/client/docs/statik"
 )
 
 const (
@@ -1071,6 +1072,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
+	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable()) //nolint: staticcheck // deprecated but required for upgrade
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)
