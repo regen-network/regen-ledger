@@ -41,6 +41,8 @@ for FILE in modules/**/features/server/*; do
   sed -i 's/<token-amount>/[token-amount]/g' $FILE
   sed -i 's/<token-balance>/[token-balance]/g' $FILE
   sed -i 's/<tradable-credits>/[tradable-credits]/g' $FILE
+  sed -i 's/<balance-amount>/[balance-amount]/g' $FILE
+  sed -i 's/<error>/[error]/g' $FILE
 done
 
 # TODO: better solution for closing end tag errors
@@ -55,6 +57,12 @@ for FILE in modules/**/features/types/*; do
   sed -i 's/<project-id>/[project-id]/g' $FILE
   sed -i 's/<project-sequence>/[project-sequence]/g' $FILE
   sed -i 's/<region-code>/[region-code]/g' $FILE
+  sed -i 's/<authority>/[authority]/g' $FILE
+  sed -i 's/<error>/[error]/g' $FILE
+  sed -i 's/<recipient>/[recipient]/g' $FILE
+  sed -i 's/<amount>/[amount]/g' $FILE
+  sed -i 's/<buyer-percentage-fee>/[buyer-percentage-fee]/g' $FILE
+  sed -i 's/<seller-percentage-fee>/[seller-percentage-fee]/g' $FILE
 done
 
 # commands directory
