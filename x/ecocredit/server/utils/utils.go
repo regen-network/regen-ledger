@@ -9,7 +9,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
 // GetCreditTypeFromBatchDenom extracts the classID from a batch denom string, then retrieves it from the params.

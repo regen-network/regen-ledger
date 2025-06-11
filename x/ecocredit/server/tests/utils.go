@@ -16,12 +16,12 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v3/module"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
 )
 
 type ecocreditServer struct {

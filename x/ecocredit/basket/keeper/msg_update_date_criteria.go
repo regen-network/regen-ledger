@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 // UpdateDateCriteria is an RPC to handle basket.MsgUpdateDateCriteria

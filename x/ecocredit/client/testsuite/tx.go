@@ -10,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestTxCreateClassCmd() {

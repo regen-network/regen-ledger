@@ -12,8 +12,8 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
 
 type updateClassIssuers struct {

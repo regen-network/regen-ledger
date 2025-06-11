@@ -8,9 +8,9 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/server/utils"
 )
 
 // Cancel credits, removing them from the supply and balance of the owner

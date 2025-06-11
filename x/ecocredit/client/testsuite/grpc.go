@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
 
 const baseRoute = "regen/ecocredit/v1"

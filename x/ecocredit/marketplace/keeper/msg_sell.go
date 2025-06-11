@@ -12,9 +12,9 @@ import (
 
 	marketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/server/utils"
 )
 
 // Sell creates new sell orders for credits

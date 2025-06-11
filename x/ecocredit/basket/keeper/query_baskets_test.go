@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 func TestQueryBaskets(t *testing.T) {

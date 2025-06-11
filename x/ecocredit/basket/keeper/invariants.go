@@ -12,7 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 )
 
 func (k Keeper) RegisterInvariants(ir sdk.InvariantRegistry) {

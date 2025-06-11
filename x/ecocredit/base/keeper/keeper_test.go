@@ -25,8 +25,8 @@ import (
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/mocks"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/mocks"
 )
 
 const (
