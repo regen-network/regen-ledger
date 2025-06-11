@@ -12,7 +12,7 @@ import (
 
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/regen-network/regen-ledger/v7/app/testsuite"
+	"github.com/regen-network/regen-ledger/v6/app/testsuite"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	ecocreditv1 "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )

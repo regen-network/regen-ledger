@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/regen-network/regen-ledger/v7/app/testsuite"
+	"github.com/regen-network/regen-ledger/v6/app/testsuite"
 )
 
 type UpgradeTestSuite struct {

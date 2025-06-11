@@ -20,7 +20,7 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	regen "github.com/regen-network/regen-ledger/v7/app"
+	regen "github.com/regen-network/regen-ledger/v6/app"
 )
 
 func TestAppAfterImport(t *testing.T) {

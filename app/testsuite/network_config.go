@@ -16,7 +16,7 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 
-	"github.com/regen-network/regen-ledger/v7/app"
+	"github.com/regen-network/regen-ledger/v6/app"
 )
 
 var emptyWasmOpts = []wasmkeeper.Option{}

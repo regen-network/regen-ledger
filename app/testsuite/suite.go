@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/v7/app"
+	"github.com/regen-network/regen-ledger/v6/app"
 )
 
 type UpgradeTestSuite struct {
