@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	regen "github.com/regen-network/regen-ledger/v6/app"
+	regen "github.com/regen-network/regen-ledger/v7/app"
 )
 
 // Get flags every time the simulator is run

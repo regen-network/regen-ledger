@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	marketplacev1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 type govSetFeeParams struct {

@@ -9,7 +9,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 // UpdateBasketFee is an RPC to handle basket.UpdateBasketFee

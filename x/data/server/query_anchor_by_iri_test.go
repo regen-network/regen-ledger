@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
-	"github.com/regen-network/regen-ledger/x/data/v3"
+	"github.com/regen-network/regen-ledger/x/data/v4"
 )
 
 func TestQuery_AnchorByIRI(t *testing.T) {

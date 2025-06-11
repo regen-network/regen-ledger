@@ -38,7 +38,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	"github.com/regen-network/regen-ledger/v6/app"
+	"github.com/regen-network/regen-ledger/v7/app"
 )
 
 // NewRootCmd creates a new root command for regen. It is called once in the

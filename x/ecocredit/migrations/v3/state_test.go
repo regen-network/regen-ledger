@@ -20,9 +20,9 @@ import (
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	v3 "github.com/regen-network/regen-ledger/x/ecocredit/v3/migrations/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	v3 "github.com/regen-network/regen-ledger/x/ecocredit/v4/migrations/v3"
 )
 
 func TestParamsMigrations(t *testing.T) {

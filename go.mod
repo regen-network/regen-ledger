@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/v6
+module github.com/regen-network/regen-ledger/v7
 
 go 1.21
 
@@ -12,8 +12,8 @@ require (
 	github.com/cosmos/ibc-go/v7 v7.10.0
 	github.com/gorilla/mux v1.8.1
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0
-	github.com/regen-network/regen-ledger/x/ecocredit/v3 v3.0.0
+	github.com/regen-network/regen-ledger/x/data/v4 v4.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.0.0-00010101000000-000000000000
 	github.com/regen-network/regen-ledger/x/intertx v1.0.0
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
@@ -161,7 +161,7 @@ require (
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-	github.com/regen-network/regen-ledger/api/v2 v2.0.0 // indirect
+	github.com/regen-network/regen-ledger/api/v2 v2.4.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
@@ -217,7 +217,7 @@ replace (
 replace (
 	github.com/regen-network/regen-ledger/api/v2 => ./api
 	github.com/regen-network/regen-ledger/types/v2 => ./types
-	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
-	github.com/regen-network/regen-ledger/x/ecocredit/v3 => ./x/ecocredit
+	github.com/regen-network/regen-ledger/x/data/v4 => ./x/data
+	github.com/regen-network/regen-ledger/x/ecocredit/v4 => ./x/ecocredit
 	github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 )

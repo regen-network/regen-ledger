@@ -8,7 +8,7 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/ibc-go/v7/testing/simapp"
-	regenapp "github.com/regen-network/regen-ledger/v6/app"
+	regenapp "github.com/regen-network/regen-ledger/v7/app"
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/stretchr/testify/require"

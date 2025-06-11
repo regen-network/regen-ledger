@@ -17,8 +17,8 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
-	"github.com/regen-network/regen-ledger/x/data/v3"
-	"github.com/regen-network/regen-ledger/x/data/v3/server/hasher"
+	"github.com/regen-network/regen-ledger/x/data/v4"
+	"github.com/regen-network/regen-ledger/x/data/v4/server/hasher"
 )
 
 // RandomizedGenState generates a random GenesisState for the data module.

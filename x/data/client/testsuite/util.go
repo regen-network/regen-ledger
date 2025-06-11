@@ -3,7 +3,7 @@ package testsuite
 import (
 	"crypto"
 
-	"github.com/regen-network/regen-ledger/x/data/v3"
+	"github.com/regen-network/regen-ledger/x/data/v4"
 )
 
 func (s *IntegrationTestSuite) createIRIAndGraphHash(content []byte) (string, *data.ContentHash) {

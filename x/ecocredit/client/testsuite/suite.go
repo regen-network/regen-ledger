@@ -30,14 +30,14 @@ import (
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/client"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/genesis"
-	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/client"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	baseclient "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/client"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	basketclient "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/client"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/genesis"
+	marketclient "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/client"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 type IntegrationTestSuite struct {

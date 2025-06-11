@@ -12,7 +12,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 type updateBasketCurator struct {

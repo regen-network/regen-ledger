@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 func txFlags(cmd *cobra.Command) *cobra.Command {

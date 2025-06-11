@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/x/data/v3"
+	"github.com/regen-network/regen-ledger/x/data/v4"
 )
 
 func TestQuery_ConvertHashToIRI(t *testing.T) {

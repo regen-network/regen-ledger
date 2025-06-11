@@ -10,7 +10,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 
-	"github.com/regen-network/regen-ledger/x/data/v3"
+	"github.com/regen-network/regen-ledger/x/data/v4"
 )
 
 func formatExample(str string) string {

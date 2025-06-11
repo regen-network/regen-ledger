@@ -286,7 +286,7 @@ docs-build:
 	@cd docs && yarn && yarn build
 
 godocs:
-	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v5/"
+	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v7/"
 	godoc -http=:6060
 
 .PHONY: docs-dev docs-build godocs

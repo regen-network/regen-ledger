@@ -14,7 +14,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
-	"github.com/regen-network/regen-ledger/x/data/v3"
+	"github.com/regen-network/regen-ledger/x/data/v4"
 )
 
 type registerResolverSuite struct {
