@@ -13,9 +13,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/simulation/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/simulation/utils"
 )
 
 const OpWeightMsgAddCreditType = "op_weight_msg_add_credit_type" //nolint:gosec

@@ -9,7 +9,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/server/utils"
 )
 
 // assertClassIssuer makes sure that the issuer is part of issuers of given class key.

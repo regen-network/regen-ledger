@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
 const (

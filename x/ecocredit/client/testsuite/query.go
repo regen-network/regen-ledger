@@ -8,9 +8,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base/client"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/genesis"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/genesis"
 )
 
 const outputFormat = "JSON"

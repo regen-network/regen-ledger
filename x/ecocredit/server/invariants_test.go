@@ -24,10 +24,10 @@ import (
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/keeper"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/mocks"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/mocks"
 )
 
 type baseSuite struct {
