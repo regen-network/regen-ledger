@@ -15,7 +15,7 @@ import (
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 
 	"github.com/regen-network/regen-ledger/v6/app/upgrades"
-	"github.com/regen-network/regen-ledger/x/data/v4"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 )
 

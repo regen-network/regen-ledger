@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/v2"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
-	"github.com/regen-network/regen-ledger/x/data/v4"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 // AttestationsByHash queries data attestations by the ContentHash of the data.

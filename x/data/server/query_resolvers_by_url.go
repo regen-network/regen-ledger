@@ -8,7 +8,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/v2/regen/data/v1"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
-	"github.com/regen-network/regen-ledger/x/data/v4"
+	"github.com/regen-network/regen-ledger/x/data/v3"
 )
 
 // ResolversByURL queries resolvers by URL.

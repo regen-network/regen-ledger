@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 
-	data "github.com/regen-network/regen-ledger/x/data/v4/client/testsuite"
+	data "github.com/regen-network/regen-ledger/x/data/v3/client/testsuite"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/v4/client/testsuite"
 )
 
