@@ -30,7 +30,7 @@ require (
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/regen-network/regen-ledger/types/v2 v2.0.0 // indirect
+	github.com/regen-network/regen-ledger/types/v2 v2.4.0 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
