@@ -3,7 +3,6 @@ package app
 import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cometbft/cometbft/libs/log"
-	"github.com/regen-network/regen-ledger/x/intertx"
 
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
@@ -103,7 +102,6 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 			consensustypes.ModuleName,
 			crisistypes.ModuleName,
 			wasmtypes.ModuleName,
-			intertx.ModuleName,
 		},
 	})
 }
