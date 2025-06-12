@@ -12,9 +12,9 @@ require (
 	github.com/cosmos/ibc-go/v7 v7.10.0
 	github.com/gorilla/mux v1.8.1
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/x/intertx v1.0.0
+	github.com/regen-network/regen-ledger/x/data/v3 v3.0.0
+	github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.0.0
+	github.com/regen-network/regen-ledger/x/intertx v1.4.0
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
@@ -212,12 +212,4 @@ replace (
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 	// stick with compatible version or x/exp in v0.47.x line for gogoproto v1.4.10
 	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
-)
-
-replace (
-	github.com/regen-network/regen-ledger/api/v2 => ./api
-	github.com/regen-network/regen-ledger/types/v2 => ./types
-	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
-	github.com/regen-network/regen-ledger/x/ecocredit/v4 => ./x/ecocredit
-	github.com/regen-network/regen-ledger/x/intertx => ./x/intertx
 )
