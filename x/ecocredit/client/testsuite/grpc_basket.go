@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 const basketRoute = "regen/ecocredit/basket/v1"

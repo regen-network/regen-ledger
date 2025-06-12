@@ -3,9 +3,9 @@ package genesis
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
-	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
+	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 // DefaultCreditTypes returns a default set of credit basetypes.

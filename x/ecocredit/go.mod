@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/x/ecocredit/v3
+module github.com/regen-network/regen-ledger/x/ecocredit/v4
 
 go 1.21
 
@@ -18,7 +18,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/gocuke v1.1.0
-	github.com/regen-network/regen-ledger/api/v2 v2.0.0
+	github.com/regen-network/regen-ledger/api/v2 v2.4.0
 	github.com/regen-network/regen-ledger/types/v2 v2.0.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0

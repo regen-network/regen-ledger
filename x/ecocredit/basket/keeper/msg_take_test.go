@@ -14,10 +14,10 @@ import (
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/v2/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 type takeSuite struct {

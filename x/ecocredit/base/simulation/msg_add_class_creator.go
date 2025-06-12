@@ -11,9 +11,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/simulation/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/simulation/utils"
 )
 
 const OpWeightMsgAddClassCreator = "op_weight_msg_add_class_creator" //nolint:gosec

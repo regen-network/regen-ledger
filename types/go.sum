@@ -615,6 +615,8 @@ github.com/regen-network/gocuke v1.1.0 h1:gxlkRTfpR9gJ0mwqQZIpoXHZGx+KPshKQpKE0j
 github.com/regen-network/gocuke v1.1.0/go.mod h1:nVBO9DEnZNUB/GjmJgAIojKxcEu9a0EZwry0qKW24Mk=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
+github.com/regen-network/regen-ledger/api/v2 v2.4.0 h1:G/1311XEfL7O6hDouKIDwJfg5GmZP1t/tZc/sJU8zV0=
+github.com/regen-network/regen-ledger/api/v2 v2.4.0/go.mod h1:WXfkb7HiB+Zp02+6n76VKikk9dUeXo9cqm/ZilpN7sI=
 github.com/retailnext/hllpp v1.0.1-0.20180308014038-101a6d2f8b52/go.mod h1:RDpi1RftBQPUCDRw6SmxeaREsAaRKnOclghuzp/WRzc=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=

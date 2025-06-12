@@ -9,8 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/client"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/client"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 func (s *IntegrationTestSuite) TestTxSell() {

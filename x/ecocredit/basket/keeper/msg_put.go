@@ -11,11 +11,11 @@ import (
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regenmath "github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
