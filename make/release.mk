@@ -49,7 +49,7 @@ release-publish:
 	docker run \
 		--rm \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \ # Pass token for publishing
+		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/$(GO_MOD_NAME) \
 		-w /go/src/$(GO_MOD_NAME) \
