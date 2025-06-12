@@ -430,6 +430,8 @@ github.com/regen-network/gocuke v1.1.0 h1:gxlkRTfpR9gJ0mwqQZIpoXHZGx+KPshKQpKE0j
 github.com/regen-network/gocuke v1.1.0/go.mod h1:nVBO9DEnZNUB/GjmJgAIojKxcEu9a0EZwry0qKW24Mk=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
+github.com/regen-network/regen-ledger/types/v2 v2.4.0 h1:P3XAR9Udj8wwfuOn+teOYO0N3V3DzEaTnETwI3xD8l0=
+github.com/regen-network/regen-ledger/types/v2 v2.4.0/go.mod h1:g9WxYse3q8wwdUKjWULhIz3iZgK8k6fjo2Ak5pMYlTw=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
 github.com/rogpeppe/go-internal v1.11.0 h1:cWPaGQEPrBb5/AsnsZesgZZ9yb1OQ+GOISoDNXVBh4M=
