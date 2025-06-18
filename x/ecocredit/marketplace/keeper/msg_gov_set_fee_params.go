@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	marketplacev1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 func (k Keeper) GovSetFeeParams(ctx context.Context, msg *types.MsgGovSetFeeParams) (*types.MsgGovSetFeeParamsResponse, error) {

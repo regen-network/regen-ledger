@@ -9,7 +9,7 @@ import (
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 // SellOrdersBySeller queries all sell orders created by the given address with optional pagination

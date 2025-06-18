@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
 )
 
 var _ legacytx.LegacyMsg = &MsgPut{}

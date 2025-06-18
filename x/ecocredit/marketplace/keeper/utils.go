@@ -12,9 +12,9 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/server/utils"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/server/utils"
 )
 
 // isDenomAllowed checks if the denom is allowed to be used in sell orders.

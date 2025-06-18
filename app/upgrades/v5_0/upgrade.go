@@ -16,7 +16,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/v6/app/upgrades"
 	"github.com/regen-network/regen-ledger/x/data/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 )
 
 const Name = "v5.0"

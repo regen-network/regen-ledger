@@ -24,8 +24,8 @@ import (
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
 // genCreditClassFee randomized CreditClassFee

@@ -3,8 +3,8 @@ package v1
 import (
 	"cosmossdk.io/errors"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
 // Validate performs basic validation of the ClassSequence state type

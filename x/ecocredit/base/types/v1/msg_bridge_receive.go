@@ -9,8 +9,8 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/v2/eth"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3/base"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
 var _ legacytx.LegacyMsg = &MsgBridgeReceive{}
