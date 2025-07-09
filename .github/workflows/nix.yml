@@ -52,8 +52,8 @@ jobs:
             system: x86_64-linux
           - platform: macos-13
             system: x86_64-darwin
-          - platform: macos-14
-            system: aarch64-darwin
+        #   - platform: macos-14
+        #     system: aarch64-darwin
 
     runs-on: ${{ matrix.platform }}
     steps:
