@@ -144,12 +144,14 @@
             echo "CosmWasm wasmvm: ${wasmvmVersion}"
             echo ""
             echo "Available commands:"
-            echo "  nix build .#regen-ledger    - Build regen-ledger binary"
-            echo "  nix develop                 - Enter development shell"
-            echo "  nix run .#regen-ledger      - Run regen-ledger"
-            echo "  make build                  - Build using Makefile"
-            echo "  make test                   - Run test suite"
-            echo "  make proto-gen              - Generate protobuf files"
+            echo "  nix build .#regen-ledger --out-link build  - Build to build/ directory"
+            echo "  nix build .#regen-ledger                   - Build to result/ directory"
+            echo "  ./scripts/update-vendor-hash.sh            - Update vendorHash after go mod changes"
+            echo "  nix develop                                 - Enter development shell"
+            echo "  nix run .#regen-ledger                     - Run regen-ledger"
+            echo "  make build                                  - Build using Makefile"
+            echo "  make test                                   - Run test suite"
+            echo "  make proto-gen                              - Generate protobuf files"
             echo ""
             
             # Set up wasmvm library for development
@@ -166,12 +168,12 @@
         apps = {
           default = flake-utils.lib.mkApp {
             drv = regen-ledger;
-            exePath = "/build/regen";
+            exePath = "/bin/regen";
           };
           
           regen-ledger = flake-utils.lib.mkApp {
             drv = regen-ledger;
-            exePath = "/build/regen";
+            exePath = "/bin/regen";
           };
         };
       });
