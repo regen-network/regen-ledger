@@ -206,3 +206,10 @@ completions
 # Ignore everything in the nodes/ directory
 scripts/devnet/shared
 /scripts/devnet/.env
+
+
+# nix
+.direnv
+.envrc
+result/
+
