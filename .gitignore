@@ -211,5 +211,5 @@ scripts/devnet/shared
 # nix
 .direnv
 .envrc
-result/
+result*
 
