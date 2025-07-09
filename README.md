@@ -93,15 +93,9 @@ Contributions are more than welcome and greatly appreciated. All the information
 
 ### Prerequisites
 
-#### Traditional Development
 - [Git](https://git-scm.com) `>=2`
 - [Make](https://www.gnu.org/software/make/) `>=4`
 - [Go](https://golang.org/) `>=1.19`
-
-#### Nix Development (Alternative)
-For reproducible development environments with automatic dependency management:
-- [Nix](https://nixos.org/) with flakes enabled
-- See **[Nix Development Guide](docs/ledger/get-started/nix-development.md)** for complete setup and usage instructions
 
 ### Go Tools
 
@@ -169,22 +163,14 @@ make test
 
 Build the regen binary:
 
-```bash
-# Traditional build
+```
 make build
-
-# Or with Nix (see Nix Development Guide)
-nix build .#regen-ledger --out-link build
 ```
 
 View the available commands:
 
-```bash
-# Traditional build
+```
 ./build/regen help
-
-# Or with Nix
-./build/bin/regen help
 ```
 
 ## Related Repositories
