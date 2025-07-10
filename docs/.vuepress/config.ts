@@ -174,6 +174,7 @@ export default defineUserConfig({
             '/validators/upgrades/v4.1-upgrade',
             '/validators/upgrades/v5.0-upgrade',
             '/validators/upgrades/v5.1-upgrade',
+            '/validators/upgrades/v6.0-upgrade',
           ],
         },
       ],
