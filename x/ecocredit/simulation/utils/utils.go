@@ -10,8 +10,8 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
 
 func RandomExponent(r *rand.Rand, precision uint32) uint32 {

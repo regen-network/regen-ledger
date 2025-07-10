@@ -9,7 +9,7 @@ import (
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
 
 func TestQuery_ClassFee(t *testing.T) {

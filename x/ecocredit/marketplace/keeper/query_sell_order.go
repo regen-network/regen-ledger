@@ -7,7 +7,7 @@ import (
 
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/marketplace/types/v1"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
 func (k Keeper) SellOrder(ctx context.Context, req *types.QuerySellOrderRequest) (*types.QuerySellOrderResponse, error) {

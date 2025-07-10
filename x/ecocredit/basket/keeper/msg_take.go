@@ -13,11 +13,11 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/v2/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v3"
-	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/keeper"
-	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v3/base/types/v1"
-	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket"
-	types "github.com/regen-network/regen-ledger/x/ecocredit/v3/basket/types/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	basekeeper "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/keeper"
+	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
+	basketsub "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
+	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
 )
 
 func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeResponse, error) {
