@@ -160,7 +160,7 @@ var (
 	// DefaultNodeHome is a directory where for the app files
 	DefaultNodeHome = os.ExpandEnv("$HOME/." + AppName)
 
-	// ModuleBasics is in charge of setting up basic, non-dependant module
+	// ModuleBasics is in charge of setting up basic, non-dependent module
 	// elements, such as codec registration and genesis verification.
 	ModuleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
