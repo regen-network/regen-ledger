@@ -30,7 +30,7 @@ A content hash is a hash-based content identifier for a piece of data. A content
 
 #### Raw Content Hash
 
-A raw content hash specifies "raw" data that does not use deterministic, canonical encoding. Users of raw content hashes must maintain a copy of the hashed data that is preserved bit by bit. In addition to defining the hash (the content hash itself) and the digest algorithm, a raw content hash also defines the media type (e.g. TXT, JSON, CSV, XML, PDF, etc.). For a complete list of the supported media types for a raw content hash, see [RawMediaType](https://buf.build/regen/regen-ledger/docs/main:regen.data.v1#regen.data.v1.RawMediaType).
+A raw content hash specifies "raw" data that does not use deterministic, canonical encoding. Users of raw content hashes must maintain a copy of the hashed data that is preserved bit by bit. In addition to defining the hash (the content hash itself) and the digest algorithm, a raw content hash also defines the media type (e.g. TXT, JSON, CSV, XML, PDF, etc.). For a complete list of the supported media types for a raw content hash, see [RawMediaType](https://buf.build/regen/regen-ledger/docs/main:regen.data.v2#regen.data.v2.RawMediaType).
 
 #### Graph Content Hash
 

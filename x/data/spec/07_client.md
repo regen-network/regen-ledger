@@ -25,7 +25,7 @@ A user can query the `data` module using gRPC endpoints.
 The `AnchorByIRI` endpoint allows users to query a data anchor by the IRI of the data.
 
 ```bash
-regen.data.v1.Query/AnchorByIRI
+regen.data.v2.Query/AnchorByIRI
 ```
 
 Example:
@@ -34,7 +34,7 @@ Example:
 grpcurl -plaintext \
     -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
     localhost:9090 \
-    regen.data.v1.Query/AnchorByIRI
+    regen.data.v2.Query/AnchorByIRI
 ```
 
 Example Output:
@@ -61,7 +61,7 @@ Example Output:
 The `AnchorByHash` endpoint allows users to query a data anchor by the ContentHash of the data
 
 ```bash
-regen.data.v1.Query/AnchorByHash
+regen.data.v2.Query/AnchorByHash
 ```
 
 Example:
@@ -77,7 +77,7 @@ grpcurl -plaintext \
       }
     }' \
     localhost:9090 \
-    regen.data.v1.Query/AnchorByHash
+    regen.data.v2.Query/AnchorByHash
 ```
 
 Example Output:
@@ -103,7 +103,7 @@ Example Output:
 The `AttestationsByAttestor` endpoint allows users to query data attestations by an attestor.
 
 ```bash
-regen.data.v1.Query/AttestationsByAttestor
+regen.data.v2.Query/AttestationsByAttestor
 ```
 
 Example:
@@ -112,7 +112,7 @@ Example:
 grpcurl -plaintext \
     -d '{"attestor": "regen1k82wewrfkhdmegw6uxrgwwzrsd7593t8tej2d5"}' \
     localhost:9090 \
-    regen.data.v1.Query/AttestationsByAttestor
+    regen.data.v2.Query/AttestationsByAttestor
 ```
 
 Example Output:
@@ -134,7 +134,7 @@ Example Output:
 The `AttestationsByIRI` endpoint allows users to query data attestations by an iri.
 
 ```bash
-regen.data.v1.Query/AttestationsByIRI
+regen.data.v2.Query/AttestationsByIRI
 ```
 
 Example:
@@ -143,7 +143,7 @@ Example:
 grpcurl -plaintext \ 
     -d '{"iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
     localhost:9090 \
-    regen.data.v1.Query/AttestationsByIRI
+    regen.data.v2.Query/AttestationsByIRI
 ```
 
 Example Output:
@@ -165,7 +165,7 @@ Example Output:
 The `AttestationsByHash` endpoint allows users to query by the ContentHash of the data.
 
 ```bash
-regen.data.v1.Query/AttestationsByHash
+regen.data.v2.Query/AttestationsByHash
 ```
 
 Example:
@@ -182,7 +182,7 @@ grpcurl -plaintext \
         }
     }' \
     localhost:9090 \
-    regen.data.v1.Query/AttestationsByHash
+    regen.data.v2.Query/AttestationsByHash
 ```
 
 Example Output:
@@ -204,7 +204,7 @@ Example Output:
 The `Resolver` allows users to query resolver by its unique identifier.
 
 ```bash
-regen.data.v1.Query/Resolver
+regen.data.v2.Query/Resolver
 ```
 
 Example:
@@ -213,7 +213,7 @@ Example:
 grpcurl -plaintext \
     -d '{"id":1}' \
     localhost:9090 \
-    regen.data.v1.Query/Resolver
+    regen.data.v2.Query/Resolver
 ```
 
 Example Output:
@@ -233,7 +233,7 @@ Example Output:
 The `ResolversByIRI` allows users to query resolvers with registered data by the IRI of the data.
 
 ```bash
-regen.data.v1.Query/ResolversByIRI
+regen.data.v2.Query/ResolversByIRI
 ```
 
 Example:
@@ -242,7 +242,7 @@ Example:
 grpcurl -plaintext \
   -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
   localhost:9090 \
-  regen.data.v1.Query/ResolversByIRI
+  regen.data.v2.Query/ResolversByIRI
 ```
 
 Example Output:
@@ -264,7 +264,7 @@ Example Output:
 The `ResolversByHash` allows users to query resolvers with registered data by the ContentHash of the data.
 
 ```bash
-regen.data.v1.Query/ResolversByHash
+regen.data.v2.Query/ResolversByHash
 ```
 
 Example:
@@ -281,7 +281,7 @@ grpcurl -plaintext \
       }
     }' \
     localhost:9090 \
-    regen.data.v1.Query/ResolversByHash
+    regen.data.v2.Query/ResolversByHash
 ```
 
 Example Output:
@@ -303,7 +303,7 @@ Example Output:
 The `ResolversByURL` allows users to query resolvers by URL.
 
 ```bash
-regen.data.v1.Query/ResolversByURL
+regen.data.v2.Query/ResolversByURL
 ```
 
 Example:
@@ -312,7 +312,7 @@ Example:
 grpcurl -plaintext \
     -d '{"url":"http://foo.bar"}' \
     localhost:9090 \
-    regen.data.v1.Query/ResolversByURL
+    regen.data.v2.Query/ResolversByURL
 ```
 
 Example Output:
@@ -334,7 +334,7 @@ Example Output:
 The `ConvertIRIToHash` allows users to convert IRI to a ContentHash.
 
 ```bash
-regen.data.v1.Query/ConvertIRIToHash
+regen.data.v2.Query/ConvertIRIToHash
 ```
 
 Example:
@@ -343,7 +343,7 @@ Example:
 grpcurl -plaintext \
     -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
     localhost:9090 \
-    regen.data.v1.Query/ConvertIRIToHash
+    regen.data.v2.Query/ConvertIRIToHash
 ```
 
 Example Output:
@@ -365,7 +365,7 @@ Example Output:
 The `ConvertHashToIRI` endpoint allows users to convert ContentHash to an IRI.
 
 ```bash
-regen.data.v1.ConvertHashToIRI
+regen.data.v2.ConvertHashToIRI
 ```
 
 Example:
@@ -382,7 +382,7 @@ grpcurl -plaintext \
       }
     }' \
     localhost:9090 \
-    regen.data.v1.Query/ConvertHashToIRI
+    regen.data.v2.Query/ConvertHashToIRI
 ```
 
 Example Output:
