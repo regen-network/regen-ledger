@@ -402,14 +402,14 @@ A user can query the `data` module using REST endpoints.
 The `anchor-by-iri` endpoint allows users to query a data anchor by the IRI of the data.
 
 ```bash
-/regen/data/v1/anchor-by-iri/{iri}
-/regen/data/v1/anchors/iri/{iri}
+/regen/data/v2/anchor-by-iri/{iri}
+/regen/data/v2/anchors/iri/{iri}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1/anchors/iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v2/anchors/iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
@@ -437,8 +437,8 @@ Example Output:
 The `anchor-by-hash` allows users to query a data anchor by the ContentHash of the data.
 
 ```bash
-/regen/data/v1/anchor-by-hash
-/regen/data/v1/anchors/hash
+/regen/data/v2/anchor-by-hash
+/regen/data/v2/anchors/hash
 ```
 
 Example:
@@ -447,7 +447,7 @@ Example:
 curl \
     -d '{"content_hash": {"graph": {"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="}}}' \
     -H 'Content-Type: application/json' \
-    localhost:1317/regen/data/v1/anchors/hash
+    localhost:1317/regen/data/v2/anchors/hash
 ```
 
 Example Output:
@@ -475,14 +475,14 @@ Example Output:
 The `attestations-by-attestor` endpoint allows users to query data attestations by an attestor.
 
 ```bash
-/regen/data/v1/attestations-by-attestor/{attestor}
-/regen/data/v1/attestations/attestor/{attestor}
+/regen/data/v2/attestations-by-attestor/{attestor}
+/regen/data/v2/attestations/attestor/{attestor}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1/attestations-by-attestor/regen1k82wewrfkhdmegw6uxrgwwzrsd7593t8tej2d5
+curl localhost:1317/regen/data/v2/attestations-by-attestor/regen1k82wewrfkhdmegw6uxrgwwzrsd7593t8tej2d5
 ```
 
 Example Output:
@@ -505,14 +505,14 @@ Example Output:
 The `attestations-by-iri` allows users to query data attestations by IRI.
 
 ```bash
-/regen/data/v1/attestations-by-iri/{iri}
-/regen/data/v1/attestations/iri/{iri}
+/regen/data/v2/attestations-by-iri/{iri}
+/regen/data/v2/attestations/iri/{iri}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1/attestations-by-iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v2/attestations-by-iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
@@ -535,8 +535,8 @@ Example Output:
 The `attestations-by-hash` allows users to query data attestations by the ContentHash of the data.
 
 ```bash
-/regen/data/v1/attestations-by-hash
-/regen/data/v1/attestations/hash
+/regen/data/v2/attestations-by-hash
+/regen/data/v2/attestations/hash
 ```
 
 Example:
@@ -545,7 +545,7 @@ Example:
 curl \
     -d '{"content_hash": {"graph": {"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="}}}' \
     -H 'Content-Type: application/json' \
-    localhost:1317/regen/data/v1/attestations/hash
+    localhost:1317/regen/data/v2/attestations/hash
 ```
 
 Example Output:
@@ -568,14 +568,14 @@ Example Output:
 The `resolver` endpoint allows users to query a resolver by its unique identifier.
 
 ```bash
-/regen/data/v1/resolver/{id}
-/regen/data/v1/resolvers/{id}
+/regen/data/v2/resolver/{id}
+/regen/data/v2/resolvers/{id}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1/resolvers/1 
+curl localhost:1317/regen/data/v2/resolvers/1 
 ```
 
 Example Output:
@@ -596,14 +596,14 @@ The `resolvers-by-iri` endpoint allows users to query resolvers with registered 
 of the data.
 
 ```bash
-/regen/data/v1/resolvers-by-iri/{iri}
-/regen/data/v1/resolvers/iri/{iri}
+/regen/data/v2/resolvers-by-iri/{iri}
+/regen/data/v2/resolvers/iri/{iri}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1/resolvers/iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v2/resolvers/iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
@@ -627,8 +627,8 @@ The `resolvers-by-hash` endpoint allows users to query resolvers with registered
 of the data.
 
 ```bash
-/regen/data/v1/resolvers-by-hash
-/regen/data/v1/resolvers/hash
+/regen/data/v2/resolvers-by-hash
+/regen/data/v2/resolvers/hash
 ```
 
 Example:
@@ -637,7 +637,7 @@ Example:
 curl \
     -d '{"content_hash":{"graph":{"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' \
     -H 'Content-Type: application/json' \
-    localhost:1317/regen/data/v1/resolvers/hash
+    localhost:1317/regen/data/v2/resolvers/hash
 ```
 
 Example Output:
@@ -660,8 +660,8 @@ Example Output:
 The `resolvers-by-url` allows users to query resolvers by URL.
 
 ```bash
-/regen/data/v1/resolvers-by-url
-/regen/data/v1/resolvers/url
+/regen/data/v2/resolvers-by-url
+/regen/data/v2/resolvers/url
 ```
 
 Example:
@@ -670,7 +670,7 @@ Example:
 curl \
     -d '{"url":"http://foo.bar"}' \
     -H 'Content-Type: application/json' \
-    localhost:1317/regen/data/v1/resolvers/url
+    localhost:1317/regen/data/v2/resolvers/url
 ```
 
 Example Output:
@@ -693,13 +693,13 @@ Example Output:
 The `convertIRI-to-hash` allows users to convert IRI to a ContentHash.
 
 ```bash
-/regen/data/v1/convert-iri-to-hash/{iri}
+/regen/data/v2/convert-iri-to-hash/{iri}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1/convert-iri-to-hash/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v2/convert-iri-to-hash/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 
@@ -724,7 +724,7 @@ Example Output:
 The `convert-hash-to-IRI` endpoint allows users to convert ContentHash to an IRI.
 
 ```bash
-/regen/data/v1/convert-hash-to-iri
+/regen/data/v2/convert-hash-to-iri
 ```
 
 Example:
@@ -733,7 +733,7 @@ Example:
 curl \
     -d '{"content_hash": {"raw": null,"graph": {"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=","digest_algorithm":"DIGEST_ALGORITHM_BLAKE2B_256","canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"}}}' \
     -H 'Content-Type: application/json' \
-    localhost:1317/regen/data/v1/convert-hash-to-iri
+    localhost:1317/regen/data/v2/convert-hash-to-iri
 ```
 
 Example Output:
