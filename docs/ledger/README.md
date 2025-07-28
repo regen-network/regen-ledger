@@ -48,38 +48,38 @@ Learn how to interact with Regen Mainnet using the `regen` binary:
 
 - [Regen Mainnet](get-started/regen-mainnet.md)
 
-## Redwood Testnet
+## Regen Testnet
 
-Redwood Testnet (otherwise referred to as "Regen Redwood") is a stable test network with the same configuration as Regen Mainnet. Developers can use Redwood Testnet to test out features. Unofficial REGEN tokens can be redeemed using a token faucet.
+Regen Testnet is a stable test network, replacing Redwood Testnet. It is a fork of the mainnet taken prior to the v6.0.0 upgrade. Developers can use Regen Testnet to test out features. Unofficial REGEN tokens can be redeemed using a token faucet.
 
 #### Wallets
 
-The following wallets currently support Redwood Testnet:
+The following wallets currently support Regen Testnet:
 
 - [Keplr](https://wallet.keplr.app)
 
 #### Block Explorers
 
-The following block explorers currently support Redwood Testnet:
+The following block explorers currently support Regen Testnet:
 
-- [Aneka](https://redwood.regen.aneka.io)
+- [Vitwit](https://explorer-regen-upgrade.vitwit.com/)
 
 #### Token Faucets
 
-The following token faucets currently support Redwood Testnet:
+The following token faucets currently supports Regen Testnet:
 
-- [Chora](https://chora.io/faucet)
+- [Vitwit](https://faucet-regen-upgrade.vitwit.com/)
 - [Regen](https://app.regen.network/faucet)
 
 #### Command-Line
 
-Learn how to interact with Redwood Testnet using the `regen` binary:
+Learn how to interact with Regen Testnet using the `regen` binary:
 
-- [Redwood Testnet](get-started/redwood-testnet.md)
+- [Regen Testnet](get-started/regen-testnet.md)
 
 ## Community
 
-Have any questions, comments, or new ideas? The following community channels are the best place to start for topics related to Regen Ledger, Regen Mainnet, and Redwood Testnet:
+Have any questions, comments, or new ideas? The following community channels are the best place to start for topics related to Regen Ledger, Regen Mainnet and Testnet:
 
 - [Regen Network Forum](https://forum.regen.network)
 - [Regen Network Discord](https://discord.gg/regen-network)

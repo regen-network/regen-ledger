@@ -1,6 +1,6 @@
 # Upgrade Overview
 
-This document provides an overview of the upgrade process for software upgrades on [Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet) and [Redwood Testnet](../../ledger/get-started/live-networks.md#redwood-testnet). Instructions for each upgrade can be found at the following links:
+This document provides an overview of the upgrade process for software upgrades on [Regen Mainnet](../../ledger/get-started/regen-mainnet.md) and [Regen Testnet](../../ledger/get-started/regen-testnet.md). Instructions for each upgrade can be found at the following links:
 
 - [Upgrade Guide v2.0](v2.0-upgrade.md)
 - [Upgrade Guide v3.0](v3.0-upgrade.md)
@@ -26,6 +26,6 @@ We recommend node operators use [Cosmovisor](https://docs.cosmos.network/main/ru
 
 ## Testnet Upgrade
 
-Each upgrade on Regen Mainnet will be preceded by an upgrade on Redwood Testnet. The upgrade on Redwood Testnet provides validators an opportunity to go through the upgrade process on a live network before going through the same process on Regen Mainnet. Each upgrade will be rigorously tested on short-lived test networks prior to performing the upgrade on a live network.
+Each upgrade on Regen Mainnet will be preceded by an upgrade on Regen Testnet. The upgrade on Regen Testnet provides validators an opportunity to go through the upgrade process on a live network before going through the same process on Regen Mainnet. Each upgrade will be rigorously tested on short-lived test networks prior to performing the upgrade on a live network.
 
-The voting period for Redwood Testnet is currently set to `86400s` (1 day) and the voting period for Regen Mainnet is currently set to `604800s` (7 days). After the upgrade proposal for Regen Mainnet has been submitted, an upgrade proposal will be submitted on Redwood Testnet.
+The voting period for Regen Testnet is currently set to `60s` (1 minute) and the voting period for Regen Mainnet is currently set to `604800s` (7 days).

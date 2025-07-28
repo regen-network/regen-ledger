@@ -73,7 +73,7 @@ export default defineUserConfig({
             '/ledger/get-started/manage-keys',
             '/ledger/get-started/local-testnet',
             '/ledger/get-started/regen-mainnet',
-            '/ledger/get-started/redwood-testnet',
+            '/ledger/get-started/regen-testnet',
           ],
         },
         {

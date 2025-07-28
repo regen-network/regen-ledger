@@ -8,7 +8,7 @@ For information about working with, and having your credit class approved by, Re
 
 - [Install Regen](../../ledger/get-started)
 - [Manage Keys](../../ledger/get-started/manage-keys.md)
-- [Redwood Testnet](../../ledger/get-started/redwood-testnet.md)
+- [Regen Testnet](../../ledger/get-started/regen-testnet.md)
 
 ## Recommended
 
@@ -343,7 +343,7 @@ To check the credit class creation fee, run the following command:
 regen q ecocredit class-fee
 ```
 
-If you are connected to Redwood Testnet, you should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the list of available credit types, including the `credit-type-abbrev` for each credit type, and the token amount and denomination for the credit class creation fee, which we add to the next command using the `--class-fee` flag.
+If you are connected to Regen Testnet, you should see that the allowlist is disabled and therefore any account can create a credit class. You should also see the list of available credit types, including the `credit-type-abbrev` for each credit type, and the token amount and denomination for the credit class creation fee, which we add to the next command using the `--class-fee` flag.
 
 The values queried above are all managed through an on-chain governance process, meaning these values can be updated via governance proposals. For more information about submitting governance proposals to update these values, check out [Message-Based Governance Proposals](./message-based-governance-proposals.md).
 
@@ -494,4 +494,4 @@ Everything you've done here can also be done using Regen Mainnet. All you need t
 
 ### Regen Marketplace
 
-You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Redwood Testnet. You also might notice the pages are a bit empty, but you now have the ability to update them when logged in with Keplr. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.
+You can now view your new credit class, project, and batch using a version of [Regen Marketplace](https://dev.app.regen.network/) connected to Regen Testnet. You also might notice the pages are a bit empty, but you now have the ability to update them when logged in with Keplr. Check out [Regen Network Guidebook](https://guides.regen.network/guides/regen-marketplace) to learn about managing credit classes, projects, and batches using the Regen Marketplace application.

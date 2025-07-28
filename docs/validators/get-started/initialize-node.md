@@ -15,10 +15,10 @@ Create the configuration files and data directory by initializing the node. In t
 regen init [moniker] --chain-id regen-1
 ```
 
-*For Redwood Testnet:*
+*For Regen Testnet:*
 
 ```bash
-regen init [moniker] --chain-id regen-redwood-1
+regen init [moniker] --chain-id regen-upgrade
 ```
 
 ## Update Genesis
@@ -31,10 +31,10 @@ Update the genesis file.
 curl http://mainnet.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
-*For Redwood Testnet:*
+*For Regen Testnet:*
 
 ```bash
-curl http://redwood.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+curl https://rpc-regen-upgrade.vitwit.com/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 ## Update Peers
