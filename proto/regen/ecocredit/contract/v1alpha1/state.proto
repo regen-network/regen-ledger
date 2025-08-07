@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package regen.ecocredit.contract.v1alpha1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/orm/v1/orm.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/contract/v1alpha1/types.proto";
+
+// Contract defines a forward contract and the forward contract table.
+message Contract {
+  option (cosmos.orm.v1.table) = {
+    id : 1,
+    primary_key : {fields : "id", auto_increment : true}
+  };
+
+  // id is the table row identifier of the contract.
+  uint64 id = 1;
+
+  // project_id is the unique identifier of the project.
+  string project_id = 2;
+
+  // status is the status of the contract (e.g. "proposed", "approved").
+  Status status = 3;
+
+  // metadata is any arbitrary string that includes or references additional
+  // information about the contract such as calculations made to determine
+  // the volume of credits and the price per credit.
+  string metadata = 4;
+
+  // price is the token denomination and amount the project is asking for
+  // per credit.
+  cosmos.base.v1beta1.Coin price = 5;
+
+  // amount is the amount of future credits issued that are available to
+  // purchase. The amount will decrease with each investment, therefore
+  // representing the remaining amount of credits available.
+  string amount = 6;
+
+  // volume_percentage is the percentage of future credits issued that was
+  // made available to purchase. The volume percentage is used to determine
+  // the percentage of future credits issued in each credit issuance based
+  // on the amount of credits purchased by an investor.
+  string volume_percentage = 7;
+
+  // start_date is the contract start date.
+  google.protobuf.Timestamp start_date = 8;
+
+  // end_date is the contract end date.
+  google.protobuf.Timestamp end_date = 9;
+
+  // buffer_window is the duration after the end date in which credits may
+  // still be issued with a monitoring period that falls within the start
+  // and end date of the contract. The credits held in the reserve pool are
+  // not distributed or returned until end date + buffer window.
+  google.protobuf.Duration buffer_window = 10;
+}
+
+// ContractReserve defines a forward contract reserve (aka "buffer pool")
+// and the table within which forward contract reserves are stored.
+message ContractReserve {
+  option (cosmos.orm.v1.table) = {
+    id : 2,
+    primary_key : {fields : "contract_id"}
+  };
+
+  // contract_id is the table row identifier of the contract.
+  uint64 contract_id = 1;
+
+  // balances is the list of credit batch balances held in the reserve.
+  repeated Balance balances = 2;
+
+  // Balance defines a balance of credits held in the reserve.
+  message Balance {
+
+    // batch_denom is the denom of the credits in the reserve.
+    string batch_denom = 1;
+
+    // tradable_amount is the amount of the credits in the reserve.
+    string tradable_amount = 2;
+  }
+}
