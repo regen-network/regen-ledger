@@ -8,7 +8,7 @@ Community members are encouraged to submit thoughtful governance proposals on al
 
 - [Install Regen](../../ledger/get-started/README.md)
 - [Manage Keys](../../ledger/get-started/manage-keys.md)
-- [Redwood Testnet](../../ledger/get-started/redwood-testnet.md)
+- [Regen Testnet](../../ledger/get-started/regen-testnet.md)
 
 ## Recommended
 
@@ -32,13 +32,13 @@ To look up the `gov` module account, run the following command:
 regen q auth module-account gov
 ```
 
-If you are connected to Redwood Testnet, you should see the following:
+If you are connected to Regen Testnet, you should see the following:
 
 ```sh
 account:
   '@type': /cosmos.auth.v1beta1.ModuleAccount
   base_account:
-    account_number: "7"
+    account_number: "434"
     address: regen10d07y265gmmuvt4z0w9aw880jnsr700j9qceqh
     pub_key: null
     sequence: "0"
@@ -269,6 +269,6 @@ regen q gov proposal [proposal-id]
 
 Congratulations! You have now successfully submitted a message-based governance proposal.
 
-If you submit a proposal on Redwood Testnet that you would like to see succeed, be sure to reach out on Discord, otherwise the proposal may go unnoticed.
+If you submit a proposal on Regen Testnet that you would like to see succeed, be sure to reach out on Discord, otherwise the proposal may go unnoticed.
 
-As mentioned above, proposals submitted to Regen Mainnet should follow [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for best results. We also recommend submitting a proposal on Redwood Testnet before submitting on Regen Mainnet if you are new to message-based governance proposals or proposals in general.
+As mentioned above, proposals submitted to Regen Mainnet should follow [Governance Guidelines](https://github.com/regen-network/governance#guidelines) for best results. We also recommend submitting a proposal on Regen Testnet before submitting on Regen Mainnet if you are new to message-based governance proposals or proposals in general.
