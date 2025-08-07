@@ -13,7 +13,10 @@ Before starting, ensure you have the following installed on your machine:
 
 ## Usage
 ```shell
+
+chmod +x download_upgrade_binaries.sh
 chmod +x setup.sh
+./download_upgrade_binaries.sh
 ./setup.sh
 ```
 **Note:** The script will clean up any existing data to ensure a fresh start.
