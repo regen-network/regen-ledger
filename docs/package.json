@@ -8,7 +8,7 @@
     "email": "cory@regen.network"
   },
   "repository": "https://github.com/regen-network/regen-ledger/docs",
-  "scripts": {
+  "scripts": { 
     "predev": "./scripts/pre.sh",
     "dev": "vuepress dev",
     "postdev": "./scripts/post.sh",

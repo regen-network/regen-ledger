@@ -33,8 +33,50 @@ curl http://mainnet.regen.network:26657/genesis | jq .result.genesis > ~/.regen/
 
 *For Regen Testnet:*
 
+We should use /genesis_chunk endpoint instead of /genesis because the genesis response is too large.
+/genesis_chunked endpoint will return data which is encoded in base64. Combining the outputs of all the chunks and base64 decoding then will produce the genesis file of the network.
+
 ```bash
-curl https://rpc-regen-upgrade.vitwit.com/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+#!/bin/bash
+
+# Output file
+output_file="genesis.json"
+temp_file="genesis_temp.json"
+
+# Start clean
+> "$temp_file"
+
+# Fetch first chunk to get total number of chunks
+initial_response=$(curl -s "https://rpc-regen-upgrade.vitwit.com/genesis_chunked?chunk=0")
+
+# Extract total number of chunks
+total_chunks=$(echo "$initial_response" | jq -r '.result.total')
+if [[ -z "$total_chunks" || "$total_chunks" == "null" ]]; then
+  echo "Failed to retrieve total chunk count."
+  exit 1
+fi
+
+echo "Total chunks to fetch: $total_chunks"
+
+# Loop through all chunks
+for ((i=0; i<total_chunks; i++)); do
+  echo "Fetching chunk $i..."
+  response=$(curl -s "https://rpc-regen-upgrade.vitwit.com/genesis_chunked?chunk=$i")
+  chunk_data=$(echo "$response" | jq -r '.result.data')
+
+  if [[ "$chunk_data" == "null" || -z "$chunk_data" ]]; then
+    echo "Failed to retrieve chunk $i"
+    exit 1
+  fi
+
+  # Decode the chunk and append to temp file
+  echo "$chunk_data" | base64 --decode >> "$temp_file"
+done
+
+# Move the completed file to genesis.json
+mv "$temp_file" "$output_file"
+
+echo "Genesis file assembled successfully into $output_file"
 ```
 
 ## Update Peers
@@ -48,10 +90,10 @@ PERSISTENT_PEERS="c4460b52c34ad4f12168d05807e998bb8e8b4812@mainnet.regen.network
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
-*For Redwood Testnet:*
+*For Regen Testnet:*
 
 ```bash
-PERSISTENT_PEERS="d5ceac343e48c7522c3a5a8c0cf5cb896d1f8a60@redwood.regen.network:26656,61f53f226a4a71968a87583f58902405e289b4b9@redwood-sentry.vitwit.com:26656"
+PERSISTENT_PEERS="fc6cf74d3de04ab0a3836f5adf50968990f2c195@155.138.196.253:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
