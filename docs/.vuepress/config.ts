@@ -83,6 +83,7 @@ export default defineUserConfig({
             '/ledger/migrations/v4.0-migration',
             '/ledger/migrations/v5.0-migration',
             '/ledger/migrations/v5.1-migration',
+            '/ledger/migrations/v6.0-migration',
           ],
         },
       ],
