@@ -3,11 +3,10 @@ package v6_0_test
 import (
 	"testing"
 
-	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/suite"
 
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/regen-network/regen-ledger/v6/app/testsuite"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
+	"github.com/regen-network/regen-ledger/v7/app/testsuite"
 )
 
 type UpgradeTestSuite struct {
@@ -32,12 +31,11 @@ func (suite *UpgradeTestSuite) TestUpgrade_Upgrade_OK() {
 	suite.Require().NoError(err)
 
 	_, exists := suite.App.UpgradeKeeper.GetUpgradePlan(suite.Ctx)
-	suite.Require().True(exists)
+	suite.Require().NoError(exists)
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(upgradeHeight)
 
 	suite.Require().NotPanics(func() {
-		beginBockRequest := abci.RequestBeginBlock{}
-		suite.App.BeginBlocker(suite.Ctx, beginBockRequest)
+		suite.App.BeginBlocker(suite.Ctx)
 	})
 }

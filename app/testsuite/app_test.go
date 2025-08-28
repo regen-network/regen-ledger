@@ -2,25 +2,24 @@ package testsuite
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/ibc-go/v7/testing/simapp"
-	regenapp "github.com/regen-network/regen-ledger/v6/app"
+	"github.com/cosmos/ibc-go/v8/testing/simapp"
+	regenapp "github.com/regen-network/regen-ledger/v7/app"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 )
 
 func TestSimAppExportAndBlockedAddrs(t *testing.T) {
 	db := dbm.NewMemDB()
-	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
+	logger := log.NewTestLogger(t)
 	app := NewAppWithCustomOptions(t, false, SetupOptions{
-		Logger:  logger,
+		Logger:  logger.With("instance", "first"),
 		DB:      db,
 		AppOpts: simtestutil.NewAppOptionsWithFlagHome(t.TempDir()),
 	})
@@ -43,9 +42,8 @@ func TestSimAppExportAndBlockedAddrs(t *testing.T) {
 
 	app.Commit()
 
-	logger2 := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := regenapp.NewRegenApp(logger2, db, nil, true, 0, EmptyAppOptions{}, emptyWasmOption)
+	app2 := regenapp.NewRegenApp(logger.With("instance", "second"), db, nil, true, 0, EmptyAppOptions{}, emptyWasmOption)
 	_, err := app2.ExportAppStateAndValidators(false, []string{}, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }

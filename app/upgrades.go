@@ -1,17 +1,20 @@
 package app
 
 import (
+	"context"
+
+	"cosmossdk.io/log"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/cometbft/cometbft/libs/log"
-	"github.com/regen-network/regen-ledger/x/intertx"
 
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 
 	// wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -25,7 +28,6 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func (app *RegenApp) registerUpgrades() {
@@ -75,25 +77,26 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 
 	app.UpgradeKeeper.SetUpgradeHandler(planName,
-		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-			printPlanName(planName, ctx.Logger())
+		func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			printPlanName(planName, app.Logger())
 
 			// Migrate CometBFT consensus parameters from x/params module to a dedicated x/consensus module.
-			baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
+			baseapp.MigrateParams(sdkCtx, baseAppLegacySS, app.ConsensusParamsKeeper.ParamsStore)
 
 			// explicitly update the IBC 02-client params, adding the localhost client type
-			params := app.IBCKeeper.ClientKeeper.GetParams(ctx)
+			params := app.IBCKeeper.ClientKeeper.GetParams(sdkCtx)
 			params.AllowedClients = append(params.AllowedClients, ibcexported.Localhost)
-			app.IBCKeeper.ClientKeeper.SetParams(ctx, params)
+			app.IBCKeeper.ClientKeeper.SetParams(sdkCtx, params)
 
 			fromVM, err := app.ModuleManager.RunMigrations(ctx, app.configurator, fromVM)
 			if err != nil {
 				return fromVM, err
 			}
 			// Cosmos SDK v0.47 introduced new gov param: MinInitialDepositRatio
-			govParams := app.GovKeeper.GetParams(ctx)
-			govParams.MinInitialDepositRatio = sdk.NewDecWithPrec(1, 1).String()
-			err = app.GovKeeper.SetParams(ctx, govParams)
+			govParams, _ := app.GovKeeper.Params.Get(ctx)
+			govParams.MinInitialDepositRatio = math.LegacyNewDecWithPrec(1, 1).String()
+			err = app.GovKeeper.Params.Set(ctx, govParams)
 			return fromVM, err
 		},
 	)
@@ -103,7 +106,6 @@ func (app *RegenApp) registerUpgrade6_0(upgradeInfo upgradetypes.Plan) {
 			consensustypes.ModuleName,
 			crisistypes.ModuleName,
 			wasmtypes.ModuleName,
-			intertx.ModuleName,
 		},
 	})
 }

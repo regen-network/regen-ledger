@@ -18,7 +18,7 @@ endif
 
 SDK_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::')
 TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
-COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's:.* ::')
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's:.* ::')
 
 LEDGER_ENABLED ?= true
 DB_BACKEND ?= goleveldb
@@ -286,7 +286,7 @@ docs-build:
 	@cd docs && yarn && yarn build
 
 godocs:
-	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v6/"
+	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v7/"
 	godoc -http=:6060
 
 .PHONY: docs-dev docs-build godocs

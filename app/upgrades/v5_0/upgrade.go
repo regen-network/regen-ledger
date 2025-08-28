@@ -1,22 +1,23 @@
 package v5_0 //nolint:revive,stylecheck
 
 import (
+	"context"
 	"fmt"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/group"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
+	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
 
-	"github.com/regen-network/regen-ledger/v6/app/upgrades"
-	"github.com/regen-network/regen-ledger/x/data/v3"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/v7/app/upgrades"
+	// "github.com/regen-network/regen-ledger/x/data/v3"
+	// "github.com/regen-network/regen-ledger/x/ecocredit/v4"
 )
 
 const Name = "v5.0"
@@ -24,10 +25,11 @@ const Name = "v5.0"
 var Upgrade = upgrades.Upgrade{
 	UpgradeName: Name,
 	CreateUpgradeHandler: func(mm *module.Manager, cfg module.Configurator) upgradetypes.UpgradeHandler {
-		return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			sdkCtx := sdk.UnwrapSDKContext(ctx)
 			// set regen module consensus version
-			fromVM[ecocredit.ModuleName] = 2
-			fromVM[data.ModuleName] = 1
+			// fromVM[ecocredit.ModuleName] = 2
+			// fromVM[data.ModuleName] = 1
 
 			// save oldIcaVersion, so we can skip icahost.InitModule in longer term tests.
 			oldIcaVersion := fromVM[icatypes.ModuleName]
@@ -58,7 +60,7 @@ var Upgrade = upgrades.Upgrade{
 
 			// skip InitModule in upgrade tests after the upgrade has gone through.
 			if oldIcaVersion != fromVM[icatypes.ModuleName] {
-				icaMod.InitModule(ctx, controllerParams, hostParams)
+				icaMod.InitModule(sdkCtx, controllerParams, hostParams)
 			}
 
 			// transfer module consensus version has been bumped to 2
