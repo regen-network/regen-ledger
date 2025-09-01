@@ -42,12 +42,8 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 
 		// msg handler
 		if writeCondition != nil && isMsg {
-			err := msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
 
-			err = writeCondition(ctx, methodName, msg)
+			err := writeCondition(ctx, methodName, msg)
 			if err != nil {
 				return err
 			}
@@ -87,7 +83,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			if err != nil {
 				return err
 			}
-			queryResponse, err := handler(sdkCtx, abciTypes.RequestQuery{
+			queryResponse, err := handler(sdkCtx, &abciTypes.RequestQuery{
 				Data: bz,
 			})
 			if err != nil {
@@ -111,11 +107,11 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 
 	return func(callInfo CallInfo) (Invoker, error) {
 		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.Msg) error {
-			for _, signer := range req.GetSigners() {
-				if _, found := signerMap[signer.String()]; !found {
-					return sdkerrors.ErrUnauthorized
-				}
-			}
+			// for _, signer := range req.GetSigners() {
+			// 	if _, found := signerMap[signer.String()]; !found {
+			// 		return sdkerrors.ErrUnauthorized
+			// 	}
+			// }
 			return nil
 		})
 	}

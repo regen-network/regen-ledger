@@ -3,7 +3,7 @@ package ormutil
 import (
 	dbm "github.com/cometbft/cometbft-db"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/kv"
+	"github.com/regen-network/regen-ledger/orm/types/kv"
 	// tdbm "github.com/tendermint/tm-db"
 )
 

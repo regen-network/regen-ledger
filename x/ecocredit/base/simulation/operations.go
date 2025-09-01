@@ -6,10 +6,10 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	regenerrors "github.com/regen-network/regen-ledger/types/v2/errors"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"

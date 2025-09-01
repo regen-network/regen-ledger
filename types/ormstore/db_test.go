@@ -3,17 +3,21 @@ package ormstore
 import (
 	"testing"
 
-	dbm "github.com/cometbft/cometbft-db"
+	"cosmossdk.io/log"
+	dbm "github.com/cosmos/cosmos-db"
+
 	"github.com/stretchr/testify/require"
 
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	ormv1alpha1 "cosmossdk.io/api/cosmos/orm/v1alpha1"
+	ormv1alpha1 "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1alpha1"
+
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
 
 	"cosmossdk.io/store"
+	storemetrics "cosmossdk.io/store/metrics"
+
 	storetypes "cosmossdk.io/store/types"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -21,13 +25,14 @@ import (
 
 func sdkContextForStoreKey(key *storetypes.KVStoreKey) sdk.Context {
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
+	logger := log.NewNopLogger()
+	cms := store.NewCommitMultiStore(db, logger, storemetrics.NewNoOpMetrics())
 	cms.MountStoreWithDB(key, storetypes.StoreTypeIAVL, db)
 	err := cms.LoadLatestVersion()
 	if err != nil {
 		panic(err)
 	}
-	return sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
+	return sdk.NewContext(cms, tmproto.Header{}, false, logger)
 }
 
 func TestStoreKeyDB(t *testing.T) {

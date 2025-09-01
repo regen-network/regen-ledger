@@ -9,15 +9,15 @@ import (
 
 	tmtypes "github.com/cometbft/cometbft/abci/types"
 
+	storetypes "cosmossdk.io/store/types"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
-	storeTypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/orm/model/ormdb"
+	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	"github.com/regen-network/regen-ledger/x/data/v3/client"
@@ -35,7 +35,7 @@ var (
 type Module struct {
 	ak     data.AccountKeeper
 	bk     data.BankKeeper
-	sk     storeTypes.StoreKey
+	sk     storetypes.StoreKey
 	keeper server.Keeper
 }
 
@@ -67,7 +67,7 @@ func (a *Module) RegisterServices(cfg module.Configurator) {
 var _ module.AppModuleBasic = Module{}
 var _ module.AppModuleSimulation = &Module{}
 
-func NewModule(sk storeTypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {
+func NewModule(sk storetypes.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) *Module {
 	return &Module{
 		ak: ak,
 		bk: bk,

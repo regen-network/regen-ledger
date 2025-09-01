@@ -1,0 +1,18 @@
+version: v1
+deps:
+  - buf.build/cosmos/cosmos-sdk
+  - buf.build/cosmos/cosmos-proto
+  - buf.build/cosmos/gogo-proto
+  - buf.build/googleapis/googleapis
+breaking:
+  use:
+    - FILE
+lint:
+  ignore:
+    - cosmos
+  use:
+    - DEFAULT
+    - COMMENTS
+  except:
+    - SERVICE_SUFFIX
+    - RPC_REQUEST_STANDARD_NAME

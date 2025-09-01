@@ -1,7 +1,7 @@
 package ecocredit
 
 import (
-	ormapi "cosmossdk.io/api/cosmos/orm/v1alpha1"
+	ormapi "regen-network/regen-ledger/api/regen/orm/v1alpha1"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"

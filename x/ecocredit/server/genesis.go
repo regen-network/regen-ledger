@@ -6,8 +6,8 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 )
 
 // InitGenesis performs genesis initialization for the ecocredit module. It

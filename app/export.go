@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
@@ -20,9 +22,7 @@ import (
 // file.
 func (app *RegenApp) ExportAppStateAndValidators(forZeroHeight bool, jailAllowedAddrs []string, modulesToExport []string) (servertypes.ExportedApp, error) {
 	// as if they could withdraw from the start of the next block
-	ctx := app.NewContext(true)
-	ctx = ctx.WithBlockHeight(app.LastBlockHeight())
-
+	ctx := app.NewContextLegacy(true, cmtproto.Header{Height: app.LastBlockHeight()})
 	// We export at last height + 1, because that's the height at which
 	// Tendermint will start InitChain.
 	height := app.LastBlockHeight() + 1

@@ -58,7 +58,7 @@ type Fixture interface {
 	Signers() []sdk.AccAddress
 
 	// InitGenesis initializes genesis for all modules with provided genesisData.
-	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error)
+	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (*abci.ResponseInitChain, error)
 
 	// ExportGenesis returns raw encoded JSON genesis state for all modules.
 	ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error)

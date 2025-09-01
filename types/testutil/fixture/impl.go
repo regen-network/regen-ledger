@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	dbm "github.com/cometbft/cometbft-db"
+	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -127,15 +127,15 @@ func (f fixture) Signers() []sdk.AccAddress {
 	return f.signers
 }
 
-func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
+func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (*abci.ResponseInitChain, error) {
 	// we inject the mock module genesis in order to bypass the check for validator updates.
 	// since the testing fixture doesn't require validators/validator updates, the check fails otherwise.
 	genesisData[MockModule{}.Name()] = []byte(`{}`)
-	return f.mm.InitGenesis(ctx, f.cdc, genesisData), nil
+	return f.mm.InitGenesis(ctx, f.cdc, genesisData)
 }
 
 func (f fixture) ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error) {
-	return f.mm.ExportGenesis(ctx, f.cdc), nil
+	return f.mm.ExportGenesis(ctx, f.cdc)
 }
 
 func (f fixture) Codec() *codec.ProtoCodec {

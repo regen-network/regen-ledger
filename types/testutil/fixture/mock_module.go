@@ -25,6 +25,16 @@ var _ module.AppModule = MockModule{}
 
 type MockModule struct{}
 
+// IsAppModule implements module.AppModule.
+func (m MockModule) IsAppModule() {
+	panic("unimplemented")
+}
+
+// IsOnePerModuleType implements module.AppModule.
+func (m MockModule) IsOnePerModuleType() {
+	panic("unimplemented")
+}
+
 func (m MockModule) Name() string {
 	return "mocker"
 }

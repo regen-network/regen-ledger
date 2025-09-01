@@ -5,8 +5,8 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/math"

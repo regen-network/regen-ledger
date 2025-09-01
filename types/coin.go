@@ -3,6 +3,7 @@ package types
 import (
 	basev1beta1 "cosmossdk.io/api/cosmos/base/v1beta1"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -31,7 +32,7 @@ func CoinToCosmosAPILegacy(coin sdk.Coin) *basev1beta1.Coin {
 }
 
 func CoinFromCosmosAPILegacy(coin *basev1beta1.Coin) sdk.Coin {
-	amount, _ := sdk.NewIntFromString(coin.Amount)
+	amount, _ := math.NewIntFromString(coin.Amount)
 	return sdk.Coin{Denom: coin.Denom, Amount: amount}
 }
 
@@ -49,7 +50,7 @@ func CoinsToProtoCoins(coins sdk.Coins) []*basev1beta1.Coin {
 // ProtoCoinToCoin constructs a new gogoproto coin from protobuf coin.
 // This function will panic if the amount is negative or if the denomination is invalid.
 func ProtoCoinToCoin(coin *basev1beta1.Coin) (sdk.Coin, bool) {
-	amount, ok := sdk.NewIntFromString(coin.Amount)
+	amount, ok := math.NewIntFromString(coin.Amount)
 	if !ok {
 		return sdk.Coin{}, ok
 	}

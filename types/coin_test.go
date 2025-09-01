@@ -40,7 +40,7 @@ func TestCoinToProtoCoin(t *testing.T) {
 		{
 			"only amount",
 			sdk.Coin{
-				Amount: sdk.NewInt(10000),
+				Amount: math.NewInt(10000),
 			},
 			&basev1beta1.Coin{
 				Denom:  "",
@@ -50,7 +50,7 @@ func TestCoinToProtoCoin(t *testing.T) {
 		{
 			"negative amount",
 			sdk.Coin{
-				Amount: sdk.NewInt(-10000),
+				Amount: math.NewInt(-10000),
 			},
 			&basev1beta1.Coin{
 				Denom:  "",
@@ -59,7 +59,7 @@ func TestCoinToProtoCoin(t *testing.T) {
 		},
 		{
 			"valid coin",
-			sdk.NewCoin("uregen", sdk.NewInt(10000)),
+			sdk.NewCoin("uregen", math.NewInt(10000)),
 			&basev1beta1.Coin{
 				Denom:  "uregen",
 				Amount: "10000",
@@ -88,7 +88,7 @@ func TestCoinsToProtoCoins(t *testing.T) {
 		},
 		{
 			"single coin",
-			sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(10000))),
+			sdk.NewCoins(sdk.NewCoin("uregen", math.NewInt(10000))),
 			[]*basev1beta1.Coin{
 				{
 					Denom:  "uregen",
@@ -98,7 +98,7 @@ func TestCoinsToProtoCoins(t *testing.T) {
 		},
 		{
 			"multiple coins",
-			sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(10000)), sdk.NewCoin("uatom", math.NewInt(2e7))),
+			sdk.NewCoins(sdk.NewCoin("uregen", math.NewInt(10000)), sdk.NewCoin("uatom", math.NewInt(2e7))),
 			[]*basev1beta1.Coin{
 				{
 					Denom:  "uatom",
@@ -141,7 +141,7 @@ func TestProtoCoinToCoin(t *testing.T) {
 				Denom:  "uregen",
 				Amount: "10000",
 			},
-			sdk.NewCoin("uregen", sdk.NewInt(10000)),
+			sdk.NewCoin("uregen", math.NewInt(10000)),
 			true,
 			false,
 		},
@@ -191,7 +191,7 @@ func TestProtoCoinsToCoins(t *testing.T) {
 					Amount: "10000",
 				},
 			},
-			sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(10000))),
+			sdk.NewCoins(sdk.NewCoin("uregen", math.NewInt(10000))),
 			false,
 		},
 		{
@@ -206,7 +206,7 @@ func TestProtoCoinsToCoins(t *testing.T) {
 					Amount: "10000",
 				},
 			},
-			sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(10000)), sdk.NewCoin("uatom", math.NewInt(2e7))),
+			sdk.NewCoins(sdk.NewCoin("uregen", math.NewInt(10000)), sdk.NewCoin("uatom", math.NewInt(2e7))),
 			false,
 		},
 		{
