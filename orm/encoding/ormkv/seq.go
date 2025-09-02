@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"google.golang.org/protobuf/reflect/protoreflect"
-
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // SeqCodec is the codec for auto-incrementing uint64 primary key sequences.

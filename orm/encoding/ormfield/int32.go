@@ -14,10 +14,8 @@ type Int32Codec struct{}
 
 var int32Codec = Int32Codec{}
 
-const (
-	int32Max    = 2147483647
-	int32Offset = int32Max + 1
-)
+const int32Max = 2147483647
+const int32Offset = int32Max + 1
 
 func (i Int32Codec) Decode(r Reader) (protoreflect.Value, error) {
 	var x uint32
@@ -27,10 +25,7 @@ func (i Int32Codec) Decode(r Reader) (protoreflect.Value, error) {
 }
 
 func (i Int32Codec) Encode(value protoreflect.Value, w io.Writer) error {
-	var x int64
-	if value.IsValid() {
-		x = value.Int()
-	}
+	x := value.Int()
 	x += int32Offset
 	return binary.Write(w, binary.BigEndian, uint32(x))
 }

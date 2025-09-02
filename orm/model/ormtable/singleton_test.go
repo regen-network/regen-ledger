@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/orm/model/ormtable"
+
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/orm/internal/testkv"
 	"github.com/regen-network/regen-ledger/orm/internal/testpb"
-	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 )
 
 func TestSingleton(t *testing.T) {

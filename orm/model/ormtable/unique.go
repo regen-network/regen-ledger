@@ -3,14 +3,18 @@ package ormtable
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/orm/types/kv"
+
+	"github.com/regen-network/regen-ledger/orm/internal/fieldnames"
+
+	"github.com/regen-network/regen-ledger/orm/model/ormlist"
+
+	"github.com/regen-network/regen-ledger/orm/encoding/encodeutil"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/encoding/encodeutil"
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
-	"github.com/regen-network/regen-ledger/orm/internal/fieldnames"
-	"github.com/regen-network/regen-ledger/orm/model/ormlist"
-	"github.com/regen-network/regen-ledger/orm/types/kv"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 )
 
@@ -186,15 +190,13 @@ func (u uniqueKeyIndex) Fields() string {
 	return u.fields.String()
 }
 
-var (
-	_ indexer     = &uniqueKeyIndex{}
-	_ UniqueIndex = &uniqueKeyIndex{}
-)
+var _ indexer = &uniqueKeyIndex{}
+var _ UniqueIndex = &uniqueKeyIndex{}
 
 // isNonTrivialUniqueKey checks if unique key fields are non-trivial, meaning that they
 // don't contain the full primary key. If they contain the full primary key, then
 // we can just use a regular index because there is no new unique constraint.
-func isNonTrivialUniqueKey(fields, primaryKeyFields []protoreflect.Name) bool {
+func isNonTrivialUniqueKey(fields []protoreflect.Name, primaryKeyFields []protoreflect.Name) bool {
 	have := map[protoreflect.Name]bool{}
 	for _, field := range fields {
 		have[field] = true

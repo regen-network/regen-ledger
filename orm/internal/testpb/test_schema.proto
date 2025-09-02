@@ -7,7 +7,6 @@ import "google/protobuf/timestamp.proto";
 import "regen/orm/v1/orm.proto";
 
 message ExampleTable {
-  // clang-format off
   option (regen.orm.v1.table) = {
     id: 1
     primary_key: {fields: "u32,i64,str"}
@@ -25,7 +24,6 @@ message ExampleTable {
       fields: "bz,str"
     }
   };
-  // clang-format on
 
   // Valid key fields:
   uint32 u32 = 1;
@@ -110,24 +108,6 @@ message ExampleTimestamp {
   google.protobuf.Timestamp ts = 3;
 }
 
-message ExampleDuration {
-  option (regen.orm.v1.table) = {
-    id: 4
-    primary_key: {
-      fields: "id"
-      auto_increment: true
-    }
-    index: {
-      id: 1
-      fields: "dur"
-    }
-  };
-
-  uint64 id = 1;
-  string name = 2;
-  google.protobuf.Duration dur = 3;
-}
-
 message SimpleExample {
   option (regen.orm.v1.table) = {
     id: 5
@@ -142,17 +122,4 @@ message SimpleExample {
   string name = 1;
   string unique = 2;
   string not_unique = 3;
-}
-
-// ExampleAutoIncFieldName is a table for testing InsertReturning<FieldName>.
-message ExampleAutoIncFieldName {
-  option (regen.orm.v1.table) = {
-    id: 6
-    primary_key: {
-      fields: "foo"
-      auto_increment: true
-    }
-  };
-  uint64 foo = 1;
-  uint64 bar = 2;
 }

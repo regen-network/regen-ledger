@@ -34,11 +34,7 @@ func (u FixedUint32Codec) Decode(r Reader) (protoreflect.Value, error) {
 }
 
 func (u FixedUint32Codec) Encode(value protoreflect.Value, w io.Writer) error {
-	var x uint64
-	if value.IsValid() {
-		x = value.Uint()
-	}
-	return binary.Write(w, binary.BigEndian, uint32(x))
+	return binary.Write(w, binary.BigEndian, uint32(value.Uint()))
 }
 
 // CompactUint32Codec encodes uint32 values using EncodeCompactUint32.
@@ -50,11 +46,7 @@ func (c CompactUint32Codec) Decode(r Reader) (protoreflect.Value, error) {
 }
 
 func (c CompactUint32Codec) Encode(value protoreflect.Value, w io.Writer) error {
-	var x uint64
-	if value.IsValid() {
-		x = value.Uint()
-	}
-	_, err := w.Write(EncodeCompactUint32(uint32(x)))
+	_, err := w.Write(EncodeCompactUint32(uint32(value.Uint())))
 	return err
 }
 

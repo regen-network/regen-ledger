@@ -3,14 +3,18 @@ package ormtable
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/orm/types/kv"
+
+	"github.com/regen-network/regen-ledger/orm/internal/fieldnames"
+
+	"github.com/regen-network/regen-ledger/orm/model/ormlist"
+
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
-	"github.com/regen-network/regen-ledger/orm/internal/fieldnames"
-	"github.com/regen-network/regen-ledger/orm/model/ormlist"
-	"github.com/regen-network/regen-ledger/orm/types/kv"
-	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 )
 
 // indexKeyIndex implements Index for a regular IndexKey.
@@ -57,10 +61,8 @@ func (i indexKeyIndex) ListRange(ctx context.Context, from, to []interface{}, op
 	return rangeIterator(backend.IndexStoreReader(), backend, i, i.KeyCodec, from, to, options)
 }
 
-var (
-	_ indexer = &indexKeyIndex{}
-	_ Index   = &indexKeyIndex{}
-)
+var _ indexer = &indexKeyIndex{}
+var _ Index = &indexKeyIndex{}
 
 func (i indexKeyIndex) doNotImplement() {}
 
@@ -116,6 +118,6 @@ func (i indexKeyIndex) readValueFromIndexKey(backend ReadBackend, primaryKey []p
 	return nil
 }
 
-func (i indexKeyIndex) Fields() string {
-	return i.fields.String()
+func (p indexKeyIndex) Fields() string {
+	return p.fields.String()
 }

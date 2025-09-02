@@ -42,7 +42,7 @@ func TestAutoIncrementScenario(t *testing.T) {
 	checkEncodeDecodeEntries(t, table, store.IndexStoreReader())
 }
 
-func runAutoIncrementScenario(t *testing.T, table ormtable.AutoIncrementTable, ctx context.Context) { //nolint:revive // ignore linting on testing function signature
+func runAutoIncrementScenario(t *testing.T, table ormtable.AutoIncrementTable, ctx context.Context) {
 	store, err := testpb.NewExampleAutoIncrementTableTable(table)
 	assert.NilError(t, err)
 
@@ -52,18 +52,12 @@ func runAutoIncrementScenario(t *testing.T, table ormtable.AutoIncrementTable, c
 	ex1 := &testpb.ExampleAutoIncrementTable{X: "foo", Y: 5}
 	assert.NilError(t, store.Save(ctx, ex1))
 	assert.Equal(t, uint64(1), ex1.Id)
-	curSeq, err := table.LastInsertedSequence(ctx)
-	assert.NilError(t, err)
-	assert.Equal(t, curSeq, uint64(1))
 
 	ex2 := &testpb.ExampleAutoIncrementTable{X: "bar", Y: 10}
-	newID, err := table.InsertReturningPKey(ctx, ex2)
+	newId, err := table.InsertReturningID(ctx, ex2)
 	assert.NilError(t, err)
 	assert.Equal(t, uint64(2), ex2.Id)
-	assert.Equal(t, newID, ex2.Id)
-	curSeq, err = table.LastInsertedSequence(ctx)
-	assert.NilError(t, err)
-	assert.Equal(t, curSeq, uint64(2))
+	assert.Equal(t, newId, ex2.Id)
 
 	buf := &bytes.Buffer{}
 	assert.NilError(t, table.ExportJSON(ctx, buf))
@@ -84,9 +78,6 @@ func runAutoIncrementScenario(t *testing.T, table ormtable.AutoIncrementTable, c
 	ex1.Id = 0
 	assert.NilError(t, table.Insert(store3, ex1))
 	assert.Equal(t, uint64(3), ex1.Id) // should equal 3 because the sequence number 2 should have been imported from JSON
-	curSeq, err = table.LastInsertedSequence(store3)
-	assert.NilError(t, err)
-	assert.Equal(t, curSeq, uint64(3))
 }
 
 func TestBadJSON(t *testing.T) {
@@ -98,9 +89,9 @@ func TestBadJSON(t *testing.T) {
 	store := ormtable.WrapContextDefault(testkv.NewSplitMemBackend())
 	f, err := os.Open("testdata/bad_auto_inc.json")
 	assert.NilError(t, err)
-	assert.ErrorContains(t, table.ImportJSON(store, f), "invalid auto increment primary key")
+	assert.ErrorContains(t, table.ImportJSON(store, f), "invalid ID")
 
 	f, err = os.Open("testdata/bad_auto_inc2.json")
 	assert.NilError(t, err)
-	assert.ErrorContains(t, table.ImportJSON(store, f), "invalid auto increment primary key")
+	assert.ErrorContains(t, table.ImportJSON(store, f), "invalid ID")
 }

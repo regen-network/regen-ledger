@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"io"
 
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/encoding/encodeutil"
 	"github.com/regen-network/regen-ledger/orm/encoding/ormfield"
-	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 )
 
 type KeyCodec struct {
@@ -103,9 +104,7 @@ func (cdc *KeyCodec) EncodeKey(values []protoreflect.Value) ([]byte, error) {
 func (cdc *KeyCodec) GetKeyValues(message protoreflect.Message) []protoreflect.Value {
 	res := make([]protoreflect.Value, len(cdc.fieldDescriptors))
 	for i, f := range cdc.fieldDescriptors {
-		if message.Has(f) {
-			res[i] = message.Get(f)
-		}
+		res[i] = message.Get(f)
 	}
 	return res
 }
@@ -176,12 +175,11 @@ func (cdc *KeyCodec) CompareKeys(values1, values2 []protoreflect.Value) int {
 	}
 
 	// values are equal but arrays of different length
-	switch {
-	case j == k:
+	if j == k {
 		return 0
-	case j < k:
+	} else if j < k {
 		return -1
-	default:
+	} else {
 		return 1
 	}
 }
@@ -211,10 +209,7 @@ func (cdc KeyCodec) ComputeKeyBufferSize(values []protoreflect.Value) (int, erro
 // supported.
 func (cdc *KeyCodec) SetKeyValues(message protoreflect.Message, values []protoreflect.Value) {
 	for i, f := range cdc.fieldDescriptors {
-		value := values[i]
-		if value.IsValid() {
-			message.Set(f, value)
-		}
+		message.Set(f, values[i])
 	}
 }
 

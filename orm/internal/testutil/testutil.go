@@ -80,12 +80,8 @@ var TestFieldSpecs = []TestFieldSpec{
 	{
 		"ts",
 		rapid.Custom(func(t *rapid.T) protoreflect.Message {
-			isNil := rapid.Float32().Draw(t, "isNil")
-			if isNil >= 0.95 { // draw a nil 5% of the time
-				return nil
-			}
-			seconds := rapid.Int64Range(ormfield.TimestampSecondsMin, ormfield.TimestampSecondsMax).Draw(t, "seconds")
-			nanos := rapid.Int32Range(0, ormfield.TimestampNanosMax).Draw(t, "nanos")
+			seconds := rapid.Int64Range(-9999999999, 9999999999).Draw(t, "seconds")
+			nanos := rapid.Int32Range(0, 999999999).Draw(t, "nanos")
 			return (&timestamppb.Timestamp{
 				Seconds: seconds,
 				Nanos:   nanos,
@@ -95,15 +91,8 @@ var TestFieldSpecs = []TestFieldSpec{
 	{
 		"dur",
 		rapid.Custom(func(t *rapid.T) protoreflect.Message {
-			isNil := rapid.Float32().Draw(t, "isNil")
-			if isNil >= 0.95 { // draw a nil 5% of the time
-				return nil
-			}
-			seconds := rapid.Int64Range(ormfield.DurationNanosMin, ormfield.DurationNanosMax).Draw(t, "seconds")
-			nanos := rapid.Int32Range(0, ormfield.DurationNanosMax).Draw(t, "nanos")
-			if seconds < 0 {
-				nanos = -nanos
-			}
+			seconds := rapid.Int64Range(0, 315576000000).Draw(t, "seconds")
+			nanos := rapid.Int32Range(0, 999999999).Draw(t, "nanos")
 			return (&durationpb.Duration{
 				Seconds: seconds,
 				Nanos:   nanos,
@@ -191,9 +180,7 @@ var GenA = rapid.Custom(func(t *rapid.T) *testpb.ExampleTable {
 	for _, spec := range TestFieldSpecs {
 		field := GetTestField(spec.FieldName)
 		value := spec.Gen.Draw(t, string(spec.FieldName))
-		if value != nil {
-			ref.Set(field, protoreflect.ValueOf(value))
-		}
+		ref.Set(field, protoreflect.ValueOf(value))
 	}
 	return a
 })

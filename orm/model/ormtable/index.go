@@ -3,18 +3,20 @@ package ormtable
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/orm/types/kv"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
 	"github.com/regen-network/regen-ledger/orm/model/ormlist"
-	"github.com/regen-network/regen-ledger/orm/types/kv"
 )
 
 // Index defines an index on a table. Index instances
 // are stateless, with all state existing only in the store passed
 // to index methods.
 type Index interface {
+
 	// List does iteration over the index with the provided prefix key and options.
 	// Prefix key values must correspond in type to the index's fields and the
 	// number of values provided cannot exceed the number of fields in the index,

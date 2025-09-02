@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
+
 	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 
-	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
 	"github.com/regen-network/regen-ledger/orm/internal/testpb"
 )
 

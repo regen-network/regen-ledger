@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"io"
 
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
-
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+
+	"google.golang.org/protobuf/proto"
+
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // PrimaryKeyCodec is the codec for primary keys.
@@ -50,6 +51,7 @@ func (p PrimaryKeyCodec) DecodeIndexKey(k, _ []byte) (indexFields, primaryKey []
 		primaryKey = indexFields
 	}
 	return indexFields, primaryKey, nil
+
 }
 
 func (p PrimaryKeyCodec) DecodeEntry(k, v []byte) (Entry, error) {

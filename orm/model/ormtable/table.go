@@ -143,7 +143,6 @@ type Table interface {
 
 // Schema is an interface for things that contain tables and can encode and
 // decode kv-store pairs.
-
 type Schema interface {
 	ormkv.EntryCodec
 
@@ -154,11 +153,7 @@ type Schema interface {
 type AutoIncrementTable interface {
 	Table
 
-	// InsertReturningPKey inserts the provided entry in the store and returns the newly
-	// generated primary key for the message or an error.
-	InsertReturningPKey(ctx context.Context, message proto.Message) (newPK uint64, err error)
-
-	// LastInsertedSequence retrieves the sequence number of the last entry inserted into the table.
-	// The LastInsertedSequence is 0 if no entries have been inserted into the table.
-	LastInsertedSequence(ctx context.Context) (uint64, error)
+	// InsertReturningID inserts the provided entry in the store and returns the newly
+	// generated ID for the message or an error.
+	InsertReturningID(ctx context.Context, message proto.Message) (newId uint64, err error)
 }

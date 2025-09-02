@@ -14,6 +14,7 @@ import (
 
 // Debugger is an interface that handles debug info from the debug store wrapper.
 type Debugger interface {
+
 	// Log logs a single log message.
 	Log(string)
 
@@ -145,7 +146,7 @@ type debugIterator struct {
 	debugger  Debugger
 }
 
-func (d debugIterator) Domain() (start, end []byte) {
+func (d debugIterator) Domain() (start []byte, end []byte) {
 	start, end = d.iterator.Domain()
 	d.debugger.Log(fmt.Sprintf("  DOMAIN %x -> %x", start, end))
 	return start, end
@@ -235,12 +236,12 @@ func (d debugHooks) ValidateInsert(context context.Context, message proto.Messag
 }
 
 func (d debugHooks) ValidateUpdate(ctx context.Context, existing, new proto.Message) error {
-	existingJSON, err := stablejson.Marshal(existing)
+	existingJson, err := stablejson.Marshal(existing)
 	if err != nil {
 		return err
 	}
 
-	newJSON, err := stablejson.Marshal(new)
+	newJson, err := stablejson.Marshal(new)
 	if err != nil {
 		return err
 	}
@@ -248,8 +249,8 @@ func (d debugHooks) ValidateUpdate(ctx context.Context, existing, new proto.Mess
 	d.debugger.Log(fmt.Sprintf(
 		"ORM BEFORE UPDATE %s %s -> %s",
 		existing.ProtoReflect().Descriptor().FullName(),
-		existingJSON,
-		newJSON,
+		existingJson,
+		newJson,
 	))
 	if d.validateHooks != nil {
 		return d.validateHooks.ValidateUpdate(ctx, existing, new)
@@ -291,12 +292,12 @@ func (d debugHooks) OnInsert(ctx context.Context, message proto.Message) {
 }
 
 func (d debugHooks) OnUpdate(ctx context.Context, existing, new proto.Message) {
-	existingJSON, err := stablejson.Marshal(existing)
+	existingJson, err := stablejson.Marshal(existing)
 	if err != nil {
 		panic(err)
 	}
 
-	newJSON, err := stablejson.Marshal(new)
+	newJson, err := stablejson.Marshal(new)
 	if err != nil {
 		panic(err)
 	}
@@ -304,8 +305,8 @@ func (d debugHooks) OnUpdate(ctx context.Context, existing, new proto.Message) {
 	d.debugger.Log(fmt.Sprintf(
 		"ORM AFTER UPDATE %s %s -> %s",
 		existing.ProtoReflect().Descriptor().FullName(),
-		existingJSON,
-		newJSON,
+		existingJson,
+		newJson,
 	))
 	if d.writeHooks != nil {
 		d.writeHooks.OnUpdate(ctx, existing, new)

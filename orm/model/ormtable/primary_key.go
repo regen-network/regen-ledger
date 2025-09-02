@@ -3,14 +3,18 @@ package ormtable
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+
+	"github.com/regen-network/regen-ledger/orm/internal/fieldnames"
+
+	"github.com/regen-network/regen-ledger/orm/model/ormlist"
+
+	"github.com/regen-network/regen-ledger/orm/encoding/encodeutil"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/encoding/encodeutil"
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
-	"github.com/regen-network/regen-ledger/orm/internal/fieldnames"
-	"github.com/regen-network/regen-ledger/orm/model/ormlist"
-	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 )
 
 // primaryKeyIndex defines an UniqueIndex for the primary key.

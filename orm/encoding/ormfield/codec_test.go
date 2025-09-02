@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/orm/encoding/ormfield"
+
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 
-	"github.com/regen-network/regen-ledger/orm/encoding/ormfield"
-	"github.com/regen-network/regen-ledger/orm/internal/testutil"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
+
+	"github.com/regen-network/regen-ledger/orm/internal/testutil"
 )
 
 func TestCodec(t *testing.T) {
@@ -21,6 +23,7 @@ func TestCodec(t *testing.T) {
 }
 
 func testCodec(t *testing.T, spec testutil.TestFieldSpec) {
+	t.Helper()
 	t.Run(fmt.Sprintf("%s %v", spec.FieldName, false), func(t *testing.T) {
 		testCodecNT(t, spec.FieldName, spec.Gen, false)
 	})
@@ -103,12 +106,11 @@ func TestCompactUInt32(t *testing.T) {
 		by := ormfield.EncodeCompactUint32(y)
 
 		cmp := bytes.Compare(bx, by)
-		switch {
-		case x < y:
+		if x < y {
 			assert.Equal(t, -1, cmp)
-		case x == y:
+		} else if x == y {
 			assert.Equal(t, 0, cmp)
-		default:
+		} else {
 			assert.Equal(t, 1, cmp)
 		}
 
@@ -152,12 +154,11 @@ func TestCompactUInt64(t *testing.T) {
 		by := ormfield.EncodeCompactUint64(y)
 
 		cmp := bytes.Compare(bx, by)
-		switch {
-		case x < y:
+		if x < y {
 			assert.Equal(t, -1, cmp)
-		case x == y:
+		} else if x == y {
 			assert.Equal(t, 0, cmp)
-		default:
+		} else {
 			assert.Equal(t, 1, cmp)
 		}
 

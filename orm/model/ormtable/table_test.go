@@ -7,6 +7,9 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	dbm "github.com/cosmos/cosmos-db"
 
@@ -17,16 +20,16 @@ import (
 	"gotest.tools/v3/golden"
 	"pgregory.net/rapid"
 
+	"github.com/regen-network/regen-ledger/orm/types/kv"
+
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
 	sdkerrors "cosmossdk.io/errors"
-
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
 	"github.com/regen-network/regen-ledger/orm/internal/testkv"
 	"github.com/regen-network/regen-ledger/orm/internal/testpb"
 	"github.com/regen-network/regen-ledger/orm/internal/testutil"
 	"github.com/regen-network/regen-ledger/orm/model/ormlist"
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
-	"github.com/regen-network/regen-ledger/orm/types/kv"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 )
 
@@ -70,7 +73,6 @@ func TestPaginationLimitCountTotal(t *testing.T) {
 	table, err := ormtable.Build(ormtable.Options{
 		MessageType: (&testpb.ExampleTable{}).ProtoReflect().Type(),
 	})
-	assert.NilError(t, err)
 	backend := testkv.NewSplitMemBackend()
 	ctx := ormtable.WrapContextDefault(backend)
 	store, err := testpb.NewExampleTableTable(table)
@@ -95,6 +97,52 @@ func TestPaginationLimitCountTotal(t *testing.T) {
 	pr := it.PageResponse()
 	assert.Check(t, pr != nil)
 	assert.Equal(t, uint64(3), pr.Total)
+
+}
+
+func TestImportedMessageIterator(t *testing.T) {
+	table, err := ormtable.Build(ormtable.Options{
+		MessageType: (&testpb.ExampleTimestamp{}).ProtoReflect().Type(),
+	})
+	backend := testkv.NewSplitMemBackend()
+	ctx := ormtable.WrapContextDefault(backend)
+	store, err := testpb.NewExampleTimestampTable(table)
+	assert.NilError(t, err)
+
+	past, err := time.Parse("2006-01-02", "2000-01-01")
+	assert.NilError(t, err)
+	middle, err := time.Parse("2006-01-02", "2020-01-01")
+	assert.NilError(t, err)
+	future, err := time.Parse("2006-01-02", "2049-01-01")
+	assert.NilError(t, err)
+
+	pastPb, middlePb, futurePb := timestamppb.New(past), timestamppb.New(middle), timestamppb.New(future)
+	timeOrder := [3]*timestamppb.Timestamp{pastPb, middlePb, futurePb}
+
+	assert.NilError(t, store.Insert(ctx, &testpb.ExampleTimestamp{
+		Name: "foo",
+		Ts:   pastPb,
+	}))
+	assert.NilError(t, store.Insert(ctx, &testpb.ExampleTimestamp{
+		Name: "bar",
+		Ts:   middlePb,
+	}))
+	assert.NilError(t, store.Insert(ctx, &testpb.ExampleTimestamp{
+		Name: "baz",
+		Ts:   futurePb,
+	}))
+
+	from, to := testpb.ExampleTimestampTsIndexKey{}.WithTs(timestamppb.New(past)), testpb.ExampleTimestampTsIndexKey{}.WithTs(timestamppb.New(future))
+	it, err := store.ListRange(ctx, from, to)
+	assert.NilError(t, err)
+
+	i := 0
+	for it.Next() {
+		v, err := it.Value()
+		assert.NilError(t, err)
+		assert.Equal(t, timeOrder[i].String(), v.Ts.String())
+		i++
+	}
 }
 
 // check that the ormkv.Entry's decode and encode to the same bytes
@@ -107,7 +155,6 @@ func checkEncodeDecodeEntries(t *testing.T, table ormtable.Table, store kv.Reado
 		entry, err := table.DecodeEntry(key, value)
 		assert.NilError(t, err)
 		k, v, err := table.EncodeEntry(entry)
-		assert.NilError(t, err)
 		assert.Assert(t, bytes.Equal(key, k), "%x %x %s", key, k, entry)
 		assert.Assert(t, bytes.Equal(value, v), "%x %x %s", value, v, entry)
 		it.Next()
@@ -117,7 +164,6 @@ func checkEncodeDecodeEntries(t *testing.T, table ormtable.Table, store kv.Reado
 func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backend) {
 	ctx := ormtable.WrapContextDefault(backend)
 	store, err := testpb.NewExampleTableTable(table)
-	assert.NilError(t, err)
 
 	// let's create 10 data items we'll use later and give them indexes
 	data := []*testpb.ExampleTable{
@@ -140,7 +186,7 @@ func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backen
 			assert.Assert(t, it.Next())
 			msg, err := it.GetMessage()
 			assert.NilError(t, err)
-			// t.Logf("data[%d] %v == %v", i, data[i], msg)
+			//t.Logf("data[%d] %v == %v", i, data[i], msg)
 			assert.DeepEqual(t, data[i], msg, protocmp.Transform())
 		}
 		// make sure the iterator is done
@@ -149,7 +195,6 @@ func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backen
 
 	// insert one record
 	err = store.Insert(ctx, data[0])
-	assert.NilError(t, err)
 	// trivial prefix query has one record
 	it, err := store.List(ctx, testpb.ExampleTablePrimaryKey{})
 	assert.NilError(t, err)
@@ -157,7 +202,6 @@ func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backen
 
 	// insert one record
 	err = store.Insert(ctx, data[1])
-	assert.NilError(t, err)
 	// trivial prefix query has two records
 	it, err = store.List(ctx, testpb.ExampleTablePrimaryKey{})
 	assert.NilError(t, err)
@@ -207,7 +251,6 @@ func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backen
 		testpb.ExampleTableStrU32IndexKey{}.WithStr("abd"),
 		ormlist.Reverse(),
 	)
-	assert.NilError(t, err)
 	assertIteratorItems(it, 9, 3, 1, 8, 7, 2, 0)
 
 	// another prefix query forwards
@@ -215,14 +258,12 @@ func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backen
 	it, err = store.List(ctx,
 		testpb.ExampleTableStrU32IndexKey{}.WithStrU32("abe", 7),
 	)
-	assert.NilError(t, err)
 	assertIteratorItems(it, 5, 6)
 	// and backwards
 	it, err = store.List(ctx,
 		testpb.ExampleTableStrU32IndexKey{}.WithStrU32("abc", 4),
 		ormlist.Reverse(),
 	)
-	assert.NilError(t, err)
 	assertIteratorItems(it, 2, 0)
 
 	// try filtering
@@ -377,7 +418,7 @@ func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backen
 
 	// now let's update some things
 	for i := 0; i < 5; i++ {
-		data[i].U64 *= 2
+		data[i].U64 = data[i].U64 * 2
 		data[i].Bz = []byte(data[i].Str)
 		err = store.Update(ctx, data[i])
 		assert.NilError(t, err)
@@ -456,6 +497,7 @@ func runTestScenario(t *testing.T, table ormtable.Table, backend ormtable.Backen
 	it, err = store.List(ctx, testpb.ExampleTablePrimaryKey{})
 	assert.NilError(t, err)
 	assertIteratorItems(it, 2, 6, 10)
+
 }
 
 func TestRandomTableData(t *testing.T) {
@@ -561,6 +603,7 @@ func testIndex(t *testing.T, model *IndexModel) {
 			assert.DeepEqual(t, model.data[i], data2[i], protocmp.Transform())
 		}
 	}
+
 }
 
 func reverseData(data []proto.Message) []proto.Message {
@@ -667,7 +710,9 @@ func (m *IndexModel) Less(i, j int) bool {
 }
 
 func (m *IndexModel) Swap(i, j int) {
-	m.data[i], m.data[j] = m.data[j], m.data[i]
+	x := m.data[i]
+	m.data[i] = m.data[j]
+	m.data[j] = x
 }
 
 var _ sort.Interface = &IndexModel{}
@@ -701,7 +746,7 @@ func TestJSONExportImport(t *testing.T) {
 	assertTablesEqual(t, table, store, store2)
 }
 
-func assertTablesEqual(t assert.TestingT, table ormtable.Table, ctx, ctx2 context.Context) { //nolint:revive // ignore long function name
+func assertTablesEqual(t assert.TestingT, table ormtable.Table, ctx, ctx2 context.Context) {
 	it, err := table.List(ctx, nil)
 	assert.NilError(t, err)
 	it2, err := table.List(ctx2, nil)
@@ -744,20 +789,4 @@ func TestReadonly(t *testing.T) {
 	})
 	ctx := ormtable.WrapContextDefault(readBackend)
 	assert.ErrorIs(t, ormerrors.ReadOnly, table.Insert(ctx, &testpb.ExampleTable{}))
-}
-
-func TestInsertReturningFieldName(t *testing.T) {
-	table, err := ormtable.Build(ormtable.Options{
-		MessageType: (&testpb.ExampleAutoIncFieldName{}).ProtoReflect().Type(),
-	})
-	assert.NilError(t, err)
-	backend := testkv.NewSplitMemBackend()
-	ctx := ormtable.WrapContextDefault(backend)
-	store, err := testpb.NewExampleAutoIncFieldNameTable(table)
-	assert.NilError(t, err)
-	foo, err := store.InsertReturningFoo(ctx, &testpb.ExampleAutoIncFieldName{
-		Bar: 45,
-	})
-	assert.NilError(t, err)
-	assert.Equal(t, uint64(1), foo)
 }

@@ -7,13 +7,14 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
+	"github.com/regen-network/regen-ledger/orm/internal/testkv"
+	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
+
 	dbm "github.com/cosmos/cosmos-db"
 	"gotest.tools/v3/assert"
 
-	"github.com/regen-network/regen-ledger/orm/internal/testkv"
 	"github.com/regen-network/regen-ledger/orm/internal/testpb"
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
-	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 	"github.com/regen-network/regen-ledger/orm/types/kv"
 )
 
@@ -69,7 +70,7 @@ func bench(b *testing.B, newBackend func(testing.TB) ormtable.Backend) {
 	})
 }
 
-func benchInsert(b *testing.B, ctx context.Context) { //nolint:revive // ignore for benchmark
+func benchInsert(b *testing.B, ctx context.Context) {
 	balanceTable := initBalanceTable(b)
 	for i := 0; i < b.N; i++ {
 		assert.NilError(b, balanceTable.Insert(ctx, &testpb.Balance{
@@ -80,7 +81,7 @@ func benchInsert(b *testing.B, ctx context.Context) { //nolint:revive // ignore 
 	}
 }
 
-func benchUpdate(b *testing.B, ctx context.Context) { //nolint:revive // ignore for benchmark
+func benchUpdate(b *testing.B, ctx context.Context) {
 	balanceTable := initBalanceTable(b)
 	for i := 0; i < b.N; i++ {
 		assert.NilError(b, balanceTable.Update(ctx, &testpb.Balance{
@@ -91,7 +92,7 @@ func benchUpdate(b *testing.B, ctx context.Context) { //nolint:revive // ignore 
 	}
 }
 
-func benchGet(b *testing.B, ctx context.Context) { //nolint:revive // ignore for benchmark
+func benchGet(b *testing.B, ctx context.Context) {
 	balanceTable := initBalanceTable(b)
 	for i := 0; i < b.N; i++ {
 		balance, err := balanceTable.Get(ctx, fmt.Sprintf("acct%d", i), "bar")
@@ -100,7 +101,7 @@ func benchGet(b *testing.B, ctx context.Context) { //nolint:revive // ignore for
 	}
 }
 
-func benchDelete(b *testing.B, ctx context.Context) { //nolint:revive // ignore for benchmark
+func benchDelete(b *testing.B, ctx context.Context) {
 	balanceTable := initBalanceTable(b)
 	for i := 0; i < b.N; i++ {
 		assert.NilError(b, balanceTable.Delete(ctx, &testpb.Balance{
@@ -218,7 +219,7 @@ func getBalance(store kv.Store, address, denom string) (*testpb.Balance, error) 
 		return nil, fmt.Errorf("not found")
 	}
 
-	balance := testpb.Balance{}
+	var balance = testpb.Balance{}
 	err = proto.Unmarshal(bz, &balance)
 	if err != nil {
 		return nil, err

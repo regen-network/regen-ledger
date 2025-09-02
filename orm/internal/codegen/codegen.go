@@ -2,11 +2,9 @@ package codegen
 
 import (
 	"fmt"
-	"os"
 
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/pluginpb"
 
 	"github.com/cosmos/cosmos-proto/generator"
 	ormv1 "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1"
@@ -19,8 +17,7 @@ const (
 	ormTablePkg = protogen.GoImportPath("github.com/regen-network/regen-ledger/orm/model/ormtable")
 )
 
-func ORMPluginRunner(p *protogen.Plugin) error {
-	p.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+func PluginRunner(p *protogen.Plugin) error {
 	for _, f := range p.Files {
 		if !f.Generate {
 			continue
@@ -35,42 +32,12 @@ func ORMPluginRunner(p *protogen.Plugin) error {
 			GeneratedFile: gen,
 			LocalPackages: map[string]bool{},
 		}
-		fgen := fileGen{GeneratedFile: cgen, file: f}
-		err := fgen.gen()
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func QueryProtoPluginRunner(p *protogen.Plugin) error {
-	p.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
-	for _, f := range p.Files {
-		if !f.Generate {
-			continue
-		}
-
-		if !hasTables(f) {
-			continue
-		}
-
-		out, err := os.OpenFile(fmt.Sprintf("%s_query.proto", f.GeneratedFilenamePrefix), os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0o644)
+		f := fileGen{GeneratedFile: cgen, file: f}
+		err := f.gen()
 		if err != nil {
 			return err
 		}
 
-		err = queryProtoGen{
-			File:    f,
-			svc:     newWriter(),
-			msgs:    newWriter(),
-			outFile: out,
-			imports: map[string]bool{},
-		}.gen()
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil

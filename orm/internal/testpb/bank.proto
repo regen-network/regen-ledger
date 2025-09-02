@@ -2,22 +2,9 @@ syntax = "proto3";
 
 package testpb;
 
-import "regen/app/v1alpha1/module.proto";
 import "regen/orm/v1/orm.proto";
-import "regen/orm/v1alpha1/schema.proto";
 
 // This is a simulated bank schema used for testing.
-
-// Module is a test module for demonstrating how to use the ORM with appconfig.
-message Module {
-  option (regen.app.v1alpha1.module) = {go_import: "github.com/regen-network/regen-ledger/orm/model/ormdb"};
-  option (regen.orm.v1alpha1.module_schema) = {
-    schema_file: {
-      id: 1
-      proto_file_name: "testpb/bank.proto"
-    }
-  };
-}
 
 message Balance {
   option (regen.orm.v1.table) = {
