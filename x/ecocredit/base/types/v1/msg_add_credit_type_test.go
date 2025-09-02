@@ -43,10 +43,6 @@ func (s *msgAddCreditType) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *msgAddCreditType) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
 func (s *msgAddCreditType) ExpectTheSignBytes(expected gocuke.DocString) {
 	buffer := new(bytes.Buffer)
 	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))

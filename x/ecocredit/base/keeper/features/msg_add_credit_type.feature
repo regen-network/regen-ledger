@@ -36,7 +36,7 @@ Feature: Msg/AddCreditType
       }
       """
       When alice attempts to add a credit type with name "carbon"
-      Then expect the error "credit type with carbon name already exists: conflict"
+      Then expect the error "credit type abbreviation C already exists: conflict"
 
     Scenario: The credit type abbreviation already exists
       Given a credit type with properties

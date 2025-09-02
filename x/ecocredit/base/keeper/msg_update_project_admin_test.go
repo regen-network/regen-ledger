@@ -74,7 +74,7 @@ func (s *updateProjectAdmin) BobAttemptsToUpdateProjectAdminWithProjectId(a stri
 	s.res, s.err = s.k.UpdateProjectAdmin(s.ctx, &types.MsgUpdateProjectAdmin{
 		Admin:     s.bob.String(),
 		ProjectId: a,
-		NewAdmin:  s.bob.String(),
+		NewAdmin:  s.alice.String(),
 	})
 }
 

@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
@@ -49,7 +50,7 @@ func (s *sellSuite) Before(t gocuke.TestingT) {
 	s.batchDenom = testBatchDenom
 	s.askPrice = &sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}
 	s.quantity = "100"
 

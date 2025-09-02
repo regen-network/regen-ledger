@@ -6,12 +6,13 @@ package orderbook
 import (
 	encoding_binary "encoding/binary"
 	fmt "fmt"
-	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/cosmos/gogoproto/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
 	_ "regen/orm/v1"
+
+	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/cosmos/gogoproto/types"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

@@ -3,7 +3,6 @@ package v1
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
@@ -11,18 +10,13 @@ import (
 
 const MaxReferenceIDLength = 32
 
-var _ legacytx.LegacyMsg = &MsgCreateProject{}
+var _ sdk.Msg = &MsgCreateProject{}
 
 // Route implements the LegacyMsg interface.
 func (m MsgCreateProject) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
 func (m MsgCreateProject) Type() string { return sdk.MsgTypeURL(&m) }
-
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgCreateProject) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateProject) ValidateBasic() error {

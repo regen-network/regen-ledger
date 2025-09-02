@@ -14,6 +14,10 @@ import (
 
 // MintBatchCredits issues additional credits from an open batch.
 func (k Keeper) MintBatchCredits(ctx context.Context, req *types.MsgMintBatchCredits) (*types.MsgMintBatchCreditsResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
 	if err != nil {
 		return nil, err

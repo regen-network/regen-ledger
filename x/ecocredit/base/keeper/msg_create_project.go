@@ -14,6 +14,10 @@ import (
 
 // CreateProject creates a new project for a specific credit class.
 func (k Keeper) CreateProject(ctx context.Context, req *types.MsgCreateProject) (*types.MsgCreateProjectResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {

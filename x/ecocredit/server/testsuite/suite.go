@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/stretchr/testify/suite"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
@@ -26,6 +26,7 @@ import (
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 
+	sdkmath "cosmossdk.io/math"
 	regentypes "github.com/regen-network/regen-ledger/types/v2"
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/types/v2/ormutil"
@@ -279,7 +280,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// basket token balance of user2 should be empty now
 	endBal := s.getUserBalance(user2, basketDenom)
-	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
+	require.True(endBal.Amount.Equal(sdkmath.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
 
 	// create a retire enabled basket
 	resR, err := s.basketServer.Create(s.ctx, &baskettypes.MsgCreate{

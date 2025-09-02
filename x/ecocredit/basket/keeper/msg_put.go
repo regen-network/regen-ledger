@@ -8,6 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
+	sdkmath "cosmossdk.io/math"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	regenmath "github.com/regen-network/regen-ledger/types/v2/math"
@@ -42,7 +43,7 @@ func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutRespon
 	}
 
 	// keep track of the total amount of tokens to give to the depositor
-	amountReceived := sdk.NewInt(0)
+	amountReceived := sdkmath.NewInt(0)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerString := ownerAddr.String()
 	moduleAddrString := k.moduleAddress.String()

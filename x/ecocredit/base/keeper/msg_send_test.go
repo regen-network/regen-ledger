@@ -183,8 +183,9 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithTradableAmount(a string) {
 		Recipient: s.bob.String(),
 		Credits: []*types.MsgSend_SendCredits{
 			{
-				BatchDenom:     s.batchDenom,
-				TradableAmount: a,
+				BatchDenom:             s.batchDenom,
+				TradableAmount:         a,
+				RetirementJurisdiction: "US-OR",
 			},
 		},
 	})
@@ -196,8 +197,9 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithRetiredAmount(a string) {
 		Recipient: s.bob.String(),
 		Credits: []*types.MsgSend_SendCredits{
 			{
-				BatchDenom:    s.batchDenom,
-				RetiredAmount: a,
+				BatchDenom:             s.batchDenom,
+				RetiredAmount:          a,
+				RetirementJurisdiction: "US-OR",
 			},
 		},
 	})
@@ -209,8 +211,9 @@ func (s *send) AliceAttemptsToSendCreditsToBobWithBatchDenom(a string) {
 		Recipient: s.bob.String(),
 		Credits: []*types.MsgSend_SendCredits{
 			{
-				BatchDenom:     a,
-				TradableAmount: s.tradableAmount,
+				BatchDenom:             a,
+				TradableAmount:         s.tradableAmount,
+				RetirementJurisdiction: "US-OR",
 			},
 		},
 	})

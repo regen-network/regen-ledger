@@ -12,6 +12,10 @@ import (
 )
 
 func (k Keeper) RemoveAllowedBridgeChain(ctx context.Context, req *types.MsgRemoveAllowedBridgeChain) (*types.MsgRemoveAllowedBridgeChainResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	if k.authority.String() != req.Authority {
 		return nil, govtypes.ErrInvalidSigner.Wrapf("invalid authority: expected %s, got %s", k.authority, req.Authority)
 	}

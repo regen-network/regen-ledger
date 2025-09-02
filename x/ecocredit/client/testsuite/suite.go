@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"cosmossdk.io/math"
+	sdkmath "cosmossdk.io/math"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
 
@@ -25,6 +25,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -78,8 +79,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.setupGenesis()
 
 	var err error
-	s.cfg.StakingTokens = math.NewInt(900000000)
-	s.cfg.AccountTokens = math.NewInt(9000000000)
+	s.cfg.StakingTokens = sdkmath.NewInt(900000000)
+	s.cfg.AccountTokens = sdkmath.NewInt(9000000000)
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
 	require.NoError(err)
 
@@ -320,14 +321,14 @@ func (s *IntegrationTestSuite) commonTxFlags() []string {
 	return []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdkmath.NewInt(10))).String()),
 	}
 }
 
 func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sdk.AccAddress, coins sdk.Coins) {
 	require := s.Require()
 
-	out, err := cli.MsgSendExec(clientCtx, from, to, coins, s.commonTxFlags()...)
+	out, err := cli.MsgSendExec(clientCtx, from, to, coins, addresscodec.NewBech32Codec("regen"), s.commonTxFlags()...)
 	require.NoError(err)
 
 	var res sdk.TxResponse

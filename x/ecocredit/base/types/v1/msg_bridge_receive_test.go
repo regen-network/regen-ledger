@@ -68,10 +68,6 @@ func (s *msgBridgeReceive) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *msgBridgeReceive) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
 func (s *msgBridgeReceive) ExpectTheSignBytes(expected gocuke.DocString) {
 	buffer := new(bytes.Buffer)
 	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))

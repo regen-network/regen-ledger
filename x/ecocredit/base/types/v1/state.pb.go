@@ -5,13 +5,15 @@ package v1
 
 import (
 	fmt "fmt"
-	types1 "github.com/cosmos/cosmos-sdk/types"
-	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/cosmos/gogoproto/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
-	_ "regen/orm/v1"
+
+	_ "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1"
+
+	types1 "github.com/cosmos/cosmos-sdk/types"
+	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/cosmos/gogoproto/types"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

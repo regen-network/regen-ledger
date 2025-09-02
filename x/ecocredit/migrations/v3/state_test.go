@@ -3,14 +3,15 @@ package v3_test
 import (
 	"testing"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdkmath "cosmossdk.io/math"
+	"cosmossdk.io/store"
+	"cosmossdk.io/store/metrics"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -18,6 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/model/ormtable"
 	"github.com/regen-network/regen-ledger/orm/testing/ormtest"
 
+	"cosmossdk.io/log"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	baseapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
@@ -133,13 +135,13 @@ func TestBatchBalanceMigration(t *testing.T) {
 }
 
 func setup(t *testing.T) (paramtypes.Subspace, sdk.Context) {
-	ecocreditKey := sdk.NewKVStoreKey("ecocredit")
-	tecocreditKey := sdk.NewTransientStoreKey("transient_test")
+	ecocreditKey := storetypes.NewKVStoreKey("ecocredit")
+	tecocreditKey := storetypes.NewTransientStoreKey("transient_test")
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 	paramStore := paramtypes.NewSubspace(encCfg.Codec, encCfg.Amino, ecocreditKey, tecocreditKey, ecocredit.ModuleName)
 
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
+	cms := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
 	cms.MountStoreWithDB(ecocreditKey, storetypes.StoreTypeIAVL, db)
 	cms.MountStoreWithDB(tecocreditKey, storetypes.StoreTypeTransient, db)
 	require.NoError(t, cms.LoadLatestVersion())
@@ -153,8 +155,8 @@ func setup(t *testing.T) (paramtypes.Subspace, sdk.Context) {
 
 	// initialize params
 	paramStore.SetParamSet(sdkCtx, &basetypes.Params{
-		CreditClassFee:       sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)), sdk.NewCoin("uregen", sdk.NewInt(2000000))),
-		BasketFee:            sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)), sdk.NewCoin("uregen", sdk.NewInt(2000000))),
+		CreditClassFee:       sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(10)), sdk.NewCoin("uregen", sdkmath.NewInt(2000000))),
+		BasketFee:            sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(10)), sdk.NewCoin("uregen", sdkmath.NewInt(2000000))),
 		AllowedClassCreators: []string{creator1.String(), creator2.String()},
 		AllowlistEnabled:     true,
 	})

@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	cosmossdk.io/api v0.9.2
-	cosmossdk.io/core v1.0.0
+	cosmossdk.io/core v0.11.1
 	cosmossdk.io/errors v1.0.1
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
@@ -58,7 +58,7 @@ require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
-	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
@@ -68,7 +68,6 @@ require (
 )
 
 replace (
-
-	cosmossdk.io/core => cosmossdk.io/core v0.11.0
+	cosmossdk.io/core => cosmossdk.io/core v0.11.1
 	github.com/regen-network/regen-ledger/api/v2 => ./../api
 )

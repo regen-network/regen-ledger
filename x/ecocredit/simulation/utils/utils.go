@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 )
@@ -43,12 +44,12 @@ func GenAndDeliverTxWithRandFees(r *rand.Rand, txCtx simulation.OperationInput) 
 
 	coins, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg...)
 	if hasNeg {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "message doesn't leave room for fees"), nil, err
 	}
 
 	fees, err = simtypes.RandomFees(txCtx.R, txCtx.Context, coins)
 	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate fees"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to generate fees"), nil, err
 	}
 	return GenAndDeliverTx(r, txCtx, fees)
 }
@@ -69,18 +70,18 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 	)
 
 	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to generate mock tx"), nil, err
 	}
 
 	_, _, err = txCtx.App.SimDeliver(txCtx.TxGen.TxEncoder(), tx)
 	if err != nil {
 		if strings.Contains(err.Error(), "insufficient funds") {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, txCtx.MsgType, "not enough balance"), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "not enough balance"), nil, nil
 		}
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to deliver tx"), nil, err
 	}
 
-	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
+	return simtypes.NewOperationMsg(txCtx.Msg, true, ""), nil, nil
 }
 
 func GetClasses(sdkCtx sdk.Context, _ *rand.Rand, qryClient basetypes.QueryServer, msgType string) ([]*basetypes.ClassInfo, simtypes.OperationMsg, error) {
@@ -125,9 +126,9 @@ func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
 func RandomFee(r *rand.Rand) sdk.Coin {
 	// 30% chance of fee using random denom
 	if r.Int63n(101) <= 30 {
-		return sdk.NewCoin(simtypes.RandStringOfLength(r, 4), simtypes.RandomAmount(r, sdk.NewInt(10000)))
+		return sdk.NewCoin(simtypes.RandStringOfLength(r, 4), simtypes.RandomAmount(r, sdkmath.NewInt(10000)))
 	}
-	return sdk.NewCoin(sdk.DefaultBondDenom, simtypes.RandomAmount(r, sdk.NewInt(10000)))
+	return sdk.NewCoin(sdk.DefaultBondDenom, simtypes.RandomAmount(r, sdkmath.NewInt(10000)))
 }
 
 // RandomDeposit returns minimum deposit if account have enough balance

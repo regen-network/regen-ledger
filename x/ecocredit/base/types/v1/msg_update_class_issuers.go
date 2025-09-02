@@ -5,20 +5,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
-var _ legacytx.LegacyMsg = &MsgUpdateClassIssuers{}
+var _ sdk.Msg = &MsgUpdateClassIssuers{}
 
 func (m MsgUpdateClassIssuers) Route() string { return sdk.MsgTypeURL(&m) }
 
 func (m MsgUpdateClassIssuers) Type() string { return sdk.MsgTypeURL(&m) }
-
-func (m MsgUpdateClassIssuers) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 func (m *MsgUpdateClassIssuers) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {

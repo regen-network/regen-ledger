@@ -161,7 +161,7 @@ func randomDateCriteria(r *rand.Rand, ctx sdk.Context) *types.DateCriteria {
 				MinStartDate: &gogotypes.Timestamp{
 					Seconds: seconds,
 				},
-			}
+			}sdk.NewInt
 		}
 		return &types.DateCriteria{
 			StartDateWindow: &gogotypes.Duration{Seconds: seconds},

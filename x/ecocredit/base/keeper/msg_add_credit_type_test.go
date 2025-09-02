@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -25,10 +26,17 @@ func (s *addCreditTypeSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *addCreditTypeSuite) AliceAttemptsToAddACreditTypeWithName(name string) {
+	fmt.Println("name--------------", name)
+	existing, err := s.k.stateStore.CreditTypeTable().GetByName(s.ctx, name)
+	require.NoError(s.t, err)
+
 	_, s.err = s.k.AddCreditType(s.ctx, &types.MsgAddCreditType{
 		Authority: s.authority.String(),
 		CreditType: &types.CreditType{
-			Name: name,
+			Name:         name,
+			Abbreviation: existing.Abbreviation,
+			Unit:         existing.Unit,
+			Precision:    existing.Precision,
 		},
 	})
 }
@@ -39,12 +47,14 @@ func (s *addCreditTypeSuite) ACreditTypeWithProperties(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &msg)
 	require.NoError(s.t, err)
 
+	fmt.Println("abbrication---------", msg.CreditType.Abbreviation)
 	err = s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: msg.CreditType.Abbreviation,
 		Name:         msg.CreditType.Name,
 		Unit:         msg.CreditType.Unit,
 		Precision:    msg.CreditType.Precision,
 	})
+	fmt.Println("Error ----------", err)
 	require.NoError(s.t, err)
 }
 

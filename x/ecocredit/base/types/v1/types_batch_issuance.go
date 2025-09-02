@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"fmt"
+
 	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,6 +19,7 @@ func (i *BatchIssuance) Validate() error {
 		return sdkerrors.ErrInvalidAddress.Wrapf("recipient: %s", err)
 	}
 
+	fmt.Println("i--------------", i)
 	if i.TradableAmount == "" && i.RetiredAmount == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("tradable amount or retired amount required")
 	}

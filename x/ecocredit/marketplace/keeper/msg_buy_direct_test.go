@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cockroachdb/apd/v3"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -60,11 +61,11 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	s.balances = map[string]sdk.Coins{}
 	s.balances[s.alice.String()] = sdk.Coins{sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}}
 	s.balances[s.bob.String()] = sdk.Coins{sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}}
 	s.moduleBalances = map[string]sdk.Coins{}
 	s.creditTypeAbbrev = "C"
@@ -74,11 +75,11 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	s.quantity = "10"
 	s.askPrice = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(10),
+		Amount: sdkmath.NewInt(10),
 	}
 	s.bidPrice = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(10),
+		Amount: sdkmath.NewInt(10),
 	}
 
 	s.buyOrderExpectCalls()
@@ -201,7 +202,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithAskDenom(a string) {
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
-	askAmount, ok := sdk.NewIntFromString(a)
+	askAmount, ok := sdkmath.NewIntFromString(a)
 	require.True(s.t, ok)
 
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
@@ -219,7 +220,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string, b string) {
-	askAmount, ok := sdk.NewIntFromString(b)
+	askAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.quantity = a
@@ -249,7 +250,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 }
 
 func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a string, b string) {
-	askAmount, ok := sdk.NewIntFromString(b)
+	askAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.quantity = a
@@ -358,7 +359,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a string, b string) {
-	bidAmount, ok := sdk.NewIntFromString(b)
+	bidAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
@@ -413,7 +414,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBidAmount(a string, b string) {
 	s.quantity = a
 
-	bidAmount, ok := sdk.NewIntFromString(b)
+	bidAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
@@ -501,7 +502,7 @@ func (s *buyDirectSuite) expectBalance(address sdk.Address, a string) {
 
 	actual := s.balances[address.String()]
 
-	if !actual.IsEqual(expected) {
+	if !actual.Equal(expected) {
 		s.t.Fatalf("expected: %s, actual: %s", a, actual.String())
 	}
 }
@@ -610,8 +611,7 @@ func (s *buyDirectSuite) ExpectFeePoolBalance(a string) {
 	require.NoError(s.t, err)
 
 	actual := s.moduleBalances[marketplace.FeePoolName]
-
-	if !actual.IsEqual(expected) {
+	if !actual.Equal(expected) {
 		s.t.Fatalf("expected: %s, actual: %s", a, actual.String())
 	}
 }

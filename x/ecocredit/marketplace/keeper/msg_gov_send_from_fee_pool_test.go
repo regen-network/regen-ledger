@@ -94,11 +94,11 @@ func (s *govSendFromFeePool) ExpectNoError() {
 func (s *govSendFromFeePool) ExpectFeePoolBalance(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
-	require.True(s.t, coins.IsEqual(s.moduleBalances[s.k.feePoolName]))
+	require.True(s.t, coins.Equal(s.moduleBalances[s.k.feePoolName]))
 }
 
 func (s *govSendFromFeePool) ExpectRecipientBalance(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
-	require.True(s.t, coins.IsEqual(s.accountBalances[s.msg.Recipient]))
+	require.True(s.t, coins.Equal(s.accountBalances[s.msg.Recipient]))
 }

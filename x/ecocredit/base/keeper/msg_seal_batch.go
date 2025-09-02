@@ -12,6 +12,10 @@ import (
 // SealBatch sets the Open field to false in a batch IFF the requester address matches the batch issuer address.
 // This method is a no-op for batches which already have Open set to false.
 func (k Keeper) SealBatch(ctx context.Context, req *types.MsgSealBatch) (*types.MsgSealBatchResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
 	if err != nil {
 		return nil, err

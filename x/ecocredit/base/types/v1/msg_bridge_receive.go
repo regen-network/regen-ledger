@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/v2/eth"
 	"github.com/regen-network/regen-ledger/types/v2/math"
@@ -13,18 +12,13 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
-var _ legacytx.LegacyMsg = &MsgBridgeReceive{}
+var _ sdk.Msg = &MsgBridgeReceive{}
 
 // Route implements the LegacyMsg interface.
 func (m MsgBridgeReceive) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
 func (m MsgBridgeReceive) Type() string { return sdk.MsgTypeURL(&m) }
-
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgBridgeReceive) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridgeReceive) ValidateBasic() error {

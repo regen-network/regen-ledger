@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"bytes"
-	"encoding/json"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -11,10 +9,9 @@ import (
 )
 
 type msgUpdateClassAdmin struct {
-	t         gocuke.TestingT
-	msg       *MsgUpdateClassAdmin
-	err       error
-	signBytes string
+	t   gocuke.TestingT
+	msg *MsgUpdateClassAdmin
+	err error
 }
 
 func TestMsgUpdateClassAdmin(t *testing.T) {
@@ -41,14 +38,4 @@ func (s *msgUpdateClassAdmin) ExpectTheError(a string) {
 
 func (s *msgUpdateClassAdmin) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgUpdateClassAdmin) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
-func (s *msgUpdateClassAdmin) ExpectTheSignBytes(expected gocuke.DocString) {
-	buffer := new(bytes.Buffer)
-	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
-	require.Equal(s.t, buffer.String(), s.signBytes)
 }

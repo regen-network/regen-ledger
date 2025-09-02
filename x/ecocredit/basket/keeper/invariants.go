@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -67,7 +68,7 @@ func SupplyInvariant(ctx sdk.Context, store api.BasketTable, bank bankSupplyStor
 			return fmt.Sprintf("failed to convert Dec to big.Int, %v", err), true
 		}
 		c := bank.GetSupply(ctx, b.BasketDenom)
-		balSdkInt := sdk.NewIntFromBigInt(balInt)
+		balSdkInt := sdkmath.NewIntFromBigInt(balInt)
 		if !c.Amount.Equal(balSdkInt) {
 			inbalances = append(inbalances, fmt.Sprintf("basket denom %s is imbalanced, expected: %v, got %v",
 				b.BasketDenom, balSdkInt, c.Amount))

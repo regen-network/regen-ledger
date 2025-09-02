@@ -246,43 +246,6 @@ Feature: MsgSend
     When the message is validated
     Then expect the error "credits[0]: retirement reason: max length 512: limit exceeded"
 
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "sender": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "recipient": "regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
-      "credits": [
-        {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "tradable_amount": "100",
-          "retired_amount": "100",
-          "retirement_jurisdiction": "US-WA",
-          "retirement_reason": "offsetting electricity consumption"
-        }
-      ]
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen/MsgSend",
-      "value":{
-        "credits":[
-          {
-            "batch_denom":"C01-001-20200101-20210101-001",
-            "retired_amount":"100",
-            "retirement_jurisdiction":"US-WA",
-            "retirement_reason": "offsetting electricity consumption",
-            "tradable_amount":"100"
-          }
-        ],
-        "recipient":"regen1tnh2q55v8wyygtt9srz5safamzdengsnlm0yy4",
-        "sender":"regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6"
-      }
-    }
-    """
 
   Scenario: an error is returned if sender and recipient are the same
     Given the message

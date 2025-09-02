@@ -20,6 +20,10 @@ import (
 // the global parameter CreditClassFee, which can be updated through the
 // governance process.
 func (k Keeper) CreateClass(goCtx context.Context, req *types.MsgCreateClass) (*types.MsgCreateClassResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(goCtx)
 	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {

@@ -9,10 +9,10 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
+	storetypes "cosmossdk.io/store/types"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -82,6 +82,12 @@ func NewModule(
 		Keeper:         server.NewServer(storeKey, accountKeeper, bankKeeper, authority),
 	}
 }
+
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (am Module) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (am Module) IsAppModule() {}
 
 /* -------------------- AppModule -------------------- */
 
@@ -250,7 +256,7 @@ func (m Module) GetQueryCmd() *cobra.Command {
 }
 
 // BeginBlock checks if there are any expired sell or buy orders and removes them from state.
-func (m Module) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
+func (m Module) BeginBlock(ctx sdk.Context) {
 	err := BeginBlocker(ctx, m.Keeper)
 	if err != nil {
 		panic(err)
@@ -265,14 +271,13 @@ func (Module) GenerateGenesisState(simState *module.SimulationState) {
 }
 
 // RegisterStoreDecoder implements AppModuleSimulation/RegisterStoreDecoder.
-func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+func (Module) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 
 // WeightedOperations implements AppModuleSimulation/WeightedOperations.
 func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	baseServer, basketServer, marketServer := m.Keeper.QueryServers()
 	baseOps := basesims.WeightedOperations(
 		simState.AppParams,
-		simState.Cdc,
 		m.accountKeeper,
 		m.bankKeeper,
 		m.govKeeper,

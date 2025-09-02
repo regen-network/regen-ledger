@@ -177,6 +177,7 @@ func (s *retire) AliceAttemptsToRetireCreditAmount(a string) {
 				Amount:     a,
 			},
 		},
+		Jurisdiction: "US-OR",
 	})
 }
 
@@ -189,6 +190,7 @@ func (s *retire) AliceAttemptsToRetireCreditsWithBatchDenom(a string) {
 				Amount:     s.tradableAmount,
 			},
 		},
+		Jurisdiction: "US-OR",
 	})
 }
 
