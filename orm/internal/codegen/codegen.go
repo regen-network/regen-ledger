@@ -27,7 +27,7 @@ func PluginRunner(p *protogen.Plugin) error {
 			continue
 		}
 
-		gen := p.NewGeneratedFile(fmt.Sprintf("%s.cosmos_orm.go", f.GeneratedFilenamePrefix), f.GoImportPath)
+		gen := p.NewGeneratedFile(fmt.Sprintf("%s.regen_orm.go", f.GeneratedFilenamePrefix), f.GoImportPath)
 		cgen := &generator.GeneratedFile{
 			GeneratedFile: gen,
 			LocalPackages: map[string]bool{},

@@ -2,6 +2,16 @@
 
 set -eo pipefail
 
+
+protoc_install_regen_orm() {
+  cd orm
+  go install ./cmd/protoc-gen-go-regen-orm #2>/dev/null
+}
+
+protoc_install_regen_orm
+
+cd ..
+
 echo "Generating gogo proto code"
 cd proto
 proto_dirs=$(find ./regen -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)

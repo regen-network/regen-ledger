@@ -17,3 +17,6 @@ plugins:
   - name: go-grpc
     out: ../api
     opt: paths=source_relative
+  - name: go-regen-orm
+    out: ../api
+    opt: paths=source_relative
