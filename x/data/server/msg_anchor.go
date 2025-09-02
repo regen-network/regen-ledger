@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 
 	gogotypes "github.com/cosmos/gogoproto/types"
 
@@ -28,7 +27,6 @@ func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.
 
 	iri, _, timestamp, err := s.anchorAndGetIRI(ctx, request.ContentHash)
 	if err != nil {
-		fmt.Println("helloo>>>>>>>>>>>.")
 		return nil, err
 	}
 
