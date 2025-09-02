@@ -12,6 +12,10 @@ import (
 
 // DefineResolver defines a resolver URL and assigns it a new integer ID that can be used in calls to RegisterResolver.
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	definer, err := sdk.AccAddressFromBech32(msg.Definer)
 	if err != nil {
 		return nil, err

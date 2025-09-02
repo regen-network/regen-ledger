@@ -3,7 +3,7 @@ package genesis
 import (
 	"encoding/json"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
