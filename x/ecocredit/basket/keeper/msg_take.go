@@ -21,6 +21,10 @@ import (
 )
 
 func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeResponse, error) {
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, msg.BasketDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {

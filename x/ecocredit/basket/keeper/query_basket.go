@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,26 +18,32 @@ import (
 )
 
 func (k Keeper) Basket(ctx context.Context, request *types.QueryBasketRequest) (*types.QueryBasketResponse, error) {
+	fmt.Println("hello>>>>>>>>>>>>>>>>>>>>>")
 	if request == nil {
+		fmt.Println("11111111111111111111")
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
+			fmt.Println("22222222222222")
 			return nil, errors.Wrapf(err, "basket %s not found", request.BasketDenom)
 		}
+		fmt.Println("33333333333333333333")
 		return nil, errors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
 	}
 
 	basketGogo := &types.Basket{}
 	err = ormutil.PulsarToGogoSlow(basket, basketGogo)
 	if err != nil {
+		fmt.Println("44444444444444444444444")
 		return nil, err
 	}
 
 	it, err := k.stateStore.BasketClassTable().List(ctx, api.BasketClassPrimaryKey{}.WithBasketId(basket.Id))
 	if err != nil {
+		fmt.Println("5555555555555555555")
 		return nil, err
 	}
 
@@ -44,6 +51,7 @@ func (k Keeper) Basket(ctx context.Context, request *types.QueryBasketRequest) (
 	for it.Next() {
 		class, err := it.Value()
 		if err != nil {
+			fmt.Println("6666666666666666666")
 			return nil, err
 		}
 
@@ -64,6 +72,7 @@ func (k Keeper) Basket(ctx context.Context, request *types.QueryBasketRequest) (
 	if basket.DateCriteria != nil {
 		criteria := &types.DateCriteria{}
 		if err := ormutil.PulsarToGogoSlow(basket.DateCriteria, criteria); err != nil {
+			fmt.Println("77777777777777777777")
 			return nil, err
 		}
 

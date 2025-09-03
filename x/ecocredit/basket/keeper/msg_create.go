@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -18,6 +19,10 @@ import (
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
 
 	basketFee, err := k.stateStore.BasketFeeTable().Get(ctx)
 	if err != nil {
@@ -87,6 +92,8 @@ func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCre
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println("denom>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", denom)
 
 	id, err := k.stateStore.BasketTable().InsertReturningID(ctx, &api.Basket{
 		Curator:           curator,

@@ -27,25 +27,25 @@ func WeightedOperations(
 		weightMsgUpdateBasketFees int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreate, &weightMsgCreate, nil,
+	appParams.GetOrGenerate(OpWeightMsgCreate, &weightMsgCreate, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreate = WeightCreate
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgPut, &weightMsgPut, nil,
+	appParams.GetOrGenerate(OpWeightMsgPut, &weightMsgPut, nil,
 		func(_ *rand.Rand) {
 			weightMsgPut = WeightPut
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgTake, &weightMsgCreate, nil,
+	appParams.GetOrGenerate(OpWeightMsgTake, &weightMsgCreate, nil,
 		func(_ *rand.Rand) {
 			weightMsgTake = WeightTake
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateBasketFee, &weightMsgUpdateBasketFees, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateBasketFee, &weightMsgUpdateBasketFees, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateBasketFees = WeightUpdateBasketFees
 		},

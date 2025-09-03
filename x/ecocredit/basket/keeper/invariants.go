@@ -33,7 +33,7 @@ func (k Keeper) basketSupplyInvariant() sdk.Invariant {
 }
 
 type bankSupplyStore interface {
-	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetSupply(ctx context.Context, denom string) sdk.Coin
 }
 
 // SupplyInvariant cross check the balance of baskets and bank

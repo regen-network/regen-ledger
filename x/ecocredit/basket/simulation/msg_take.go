@@ -21,7 +21,7 @@ const OpWeightMsgTake = "op_weight_take_from_basket" //nolint:gosec
 
 const WeightTake = 100
 
-var TypeMsgTake = types.MsgTake{}.Route()
+var TypeMsgTake = sdk.MsgTypeURL(&types.MsgTake{})
 
 // SimulateMsgTake generates a Basket/MsgTake with random values.
 func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
@@ -93,12 +93,12 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
 		txCtx := simulation.OperationInput{
-			R:               r,
-			App:             app,
-			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
-			Cdc:             nil,
-			Msg:             msg,
-			MsgType:         msg.Type(),
+			R:     r,
+			App:   app,
+			TxGen: moduletestutil.MakeTestEncodingConfig().TxConfig,
+			Cdc:   nil,
+			Msg:   msg,
+			// MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      owner,
 			AccountKeeper:   ak,
