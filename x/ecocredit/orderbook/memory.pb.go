@@ -9,10 +9,10 @@ import (
 	io "io"
 	math "math"
 	math_bits "math/bits"
-	_ "regen/orm/v1"
 
 	proto "github.com/cosmos/gogoproto/proto"
 	types "github.com/cosmos/gogoproto/types"
+	_ "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
