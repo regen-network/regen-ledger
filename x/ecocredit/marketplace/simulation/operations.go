@@ -28,37 +28,37 @@ func WeightedOperations(
 		weightMsgRemoveAllowedDenom int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,
+	appParams.GetOrGenerate(OpWeightMsgBuy, &weightMsgBuyDirect, nil,
 		func(_ *rand.Rand) {
 			weightMsgBuyDirect = WeightBuyDirect
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgSell, &weightMsgSell, nil,
+	appParams.GetOrGenerate(OpWeightMsgSell, &weightMsgSell, nil,
 		func(_ *rand.Rand) {
 			weightMsgSell = WeightSell
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateSellOrder, &weightMsgUpdateSellOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateSellOrder, &weightMsgUpdateSellOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateSellOrder = WeightUpdateSellOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCancelSellOrder, &weightMsgCancelSellOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgCancelSellOrder, &weightMsgCancelSellOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgCancelSellOrder = WeightCancelSellOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAddAllowedDenom, &weightMsgAddAllowedDenom, nil,
+	appParams.GetOrGenerate(OpWeightMsgAddAllowedDenom, &weightMsgAddAllowedDenom, nil,
 		func(_ *rand.Rand) {
 			weightMsgAddAllowedDenom = WeightAddAllowedDenom
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRemoveAllowedDenom, &weightMsgRemoveAllowedDenom, nil,
+	appParams.GetOrGenerate(OpWeightMsgRemoveAllowedDenom, &weightMsgRemoveAllowedDenom, nil,
 		func(_ *rand.Rand) {
 			weightMsgRemoveAllowedDenom = WeightRemoveAllowedDenom
 		},

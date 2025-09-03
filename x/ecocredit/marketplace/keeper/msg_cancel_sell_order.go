@@ -11,6 +11,10 @@ import (
 
 // CancelSellOrder cancels a sell order and returns the escrowed credits to the seller.
 func (k Keeper) CancelSellOrder(ctx context.Context, req *types.MsgCancelSellOrder) (*types.MsgCancelSellOrderResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)

@@ -5,24 +5,18 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
-var _ legacytx.LegacyMsg = &MsgSell{}
+var _ sdk.Msg = &MsgSell{}
 
 // Route implements the LegacyMsg interface.
 func (m MsgSell) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
 func (m MsgSell) Type() string { return sdk.MsgTypeURL(&m) }
-
-// GetSignBytes implements the LegacyMsg interface.
-func (m MsgSell) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSell) ValidateBasic() error {
@@ -81,10 +75,4 @@ func (m *MsgSell) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-// GetSigners returns the expected signers for MsgSell.
-func (m *MsgSell) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Seller)
-	return []sdk.AccAddress{addr}
 }

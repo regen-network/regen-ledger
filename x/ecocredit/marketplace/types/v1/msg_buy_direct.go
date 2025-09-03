@@ -5,14 +5,13 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/v2/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 )
 
-var _ legacytx.LegacyMsg = &MsgBuyDirect{}
+var _ sdk.Msg = &MsgBuyDirect{}
 
 func (m MsgBuyDirect) ValidateBasic() error {
 	if len(m.Buyer) == 0 {
@@ -87,15 +86,6 @@ func (m MsgBuyDirect) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m MsgBuyDirect) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Buyer)
-	return []sdk.AccAddress{addr}
-}
-
-func (m MsgBuyDirect) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m MsgBuyDirect) Route() string { return sdk.MsgTypeURL(&m) }

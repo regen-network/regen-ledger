@@ -267,9 +267,11 @@ func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
 		Buyer: s.alice.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId: id,
-				Quantity:    s.quantity,
-				BidPrice:    &s.bidPrice,
+				SellOrderId:            id,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -283,9 +285,11 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId: id,
-				Quantity:    s.quantity,
-				BidPrice:    &s.bidPrice,
+				SellOrderId:            id,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -301,10 +305,11 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementReas
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:      id,
-				Quantity:         s.quantity,
-				BidPrice:         &s.bidPrice,
-				RetirementReason: b,
+				SellOrderId:            id,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				RetirementReason:       b,
+				RetirementJurisdiction: "US-CA", // Add required field
 			},
 		},
 	})
@@ -321,6 +326,8 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
 					Denom:  a,
 					Amount: s.bidPrice.Amount,
 				},
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -334,10 +341,12 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:       s.sellOrderID,
-				Quantity:          s.quantity,
-				BidPrice:          &s.bidPrice,
-				DisableAutoRetire: disableAutoRetire,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				DisableAutoRetire:      disableAutoRetire,
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -350,9 +359,11 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId: s.sellOrderID,
-				Quantity:    a,
-				BidPrice:    &s.bidPrice,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               a,
+				BidPrice:               &s.bidPrice,
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -372,6 +383,8 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a strin
 					Denom:  s.bidPrice.Denom,
 					Amount: bidAmount,
 				},
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -385,10 +398,12 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:  s.sellOrderID,
-				Quantity:     a,
-				BidPrice:     &bidPrice,
-				MaxFeeAmount: s.maxFee,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               a,
+				BidPrice:               &bidPrice,
+				MaxFeeAmount:           s.maxFee,
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -402,10 +417,12 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:       s.sellOrderID,
-				Quantity:          a,
-				BidPrice:          &s.bidPrice,
-				DisableAutoRetire: disableAutoRetire,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               a,
+				BidPrice:               &s.bidPrice,
+				DisableAutoRetire:      disableAutoRetire,
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})
@@ -427,6 +444,8 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBi
 					Denom:  s.bidPrice.Denom,
 					Amount: bidAmount,
 				},
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 			{
 				SellOrderId: 2,
@@ -435,6 +454,8 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBi
 					Denom:  s.bidPrice.Denom,
 					Amount: bidAmount,
 				},
+				RetirementJurisdiction: "US-CA",  // Add required field
+				RetirementReason:       "Reason", // Add required field
 			},
 		},
 	})

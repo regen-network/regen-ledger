@@ -16,6 +16,10 @@ import (
 
 // BuyDirect allows for the purchase of credits directly from sell orders.
 func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.MsgBuyDirectResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)

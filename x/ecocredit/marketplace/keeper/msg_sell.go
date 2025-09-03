@@ -19,6 +19,10 @@ import (
 
 // Sell creates new sell orders for credits
 func (k Keeper) Sell(ctx context.Context, req *types.MsgSell) (*types.MsgSellResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
