@@ -235,11 +235,17 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithName(a string) {
 func (s *createSuite) AliceAttemptsToCreateABasketWithNameAndCreditType(a string, b string) {
 	s.createExpectCalls()
 
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: b,
+	})
+	require.NoError(s.t, err)
+
 	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
 		Curator:          s.alice.String(),
 		Name:             a,
 		CreditTypeAbbrev: b,
-		AllowedClasses:   []string{b},
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
 	})
 }
 
