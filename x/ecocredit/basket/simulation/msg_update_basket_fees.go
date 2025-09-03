@@ -72,12 +72,11 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		}
 
 		txCtx := simulation.OperationInput{
-			R:     r,
-			App:   app,
-			TxGen: moduletestutil.MakeTestEncodingConfig().TxConfig,
-			Cdc:   nil,
-			Msg:   &proposalMsg,
-			// MsgType:         msg.Type(),
+			R:               r,
+			App:             app,
+			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             &proposalMsg,
 			Context:         sdkCtx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,

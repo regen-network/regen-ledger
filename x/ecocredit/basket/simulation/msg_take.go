@@ -93,12 +93,11 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
 		txCtx := simulation.OperationInput{
-			R:     r,
-			App:   app,
-			TxGen: moduletestutil.MakeTestEncodingConfig().TxConfig,
-			Cdc:   nil,
-			Msg:   msg,
-			// MsgType:         msg.Type(),
+			R:               r,
+			App:             app,
+			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
 			Context:         sdkCtx,
 			SimAccount:      owner,
 			AccountKeeper:   ak,
