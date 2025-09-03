@@ -24,11 +24,11 @@ Given a credit type
 
 Scenario: the sell order exists
 Given alice created a sell order with id "1"
-When bob attempts to buy credits with sell order id "1"
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Scenario: the sell order does not exist
-When bob attempts to buy credits with sell order id "1"
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: sell order with id 1: not found: invalid request"
 
 Rule: The buyer must not be the seller
@@ -38,12 +38,12 @@ Given a credit type
 
 Scenario: the buyer is not the seller
 Given alice created a sell order with id "1"
-When bob attempts to buy credits with sell order id "1"
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Scenario: the buyer is the seller
 Given alice created a sell order with id "1"
-When alice attempts to buy credits with sell order id "1"
+When alice attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: buyer account cannot be the same as seller account: unauthorized"
 
 Rule: The bid denom must match the sell denom
@@ -54,11 +54,11 @@ And alice created a sell order with ask denom "regen"
 And bob has bank balance "100regen"
 
 Scenario: bid denom matches sell denom
-When bob attempts to buy credits with bid denom "regen"
+When bob attempts to buy credits with bid denom "regen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Scenario: bid denom does not match sell denom
-When bob attempts to buy credits with bid denom "atom"
+When bob attempts to buy credits with bid denom "atom" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: bid price denom: atom, ask price denom: regen: invalid request"
 
 Rule: The buyer must have a bank balance greater than or equal to the total cost
@@ -69,7 +69,7 @@ Given a credit type
 Scenario Outline: buyer bank balance is greater than or equal to total cost (single buy order)
 Given alice created a sell order with quantity "10" and ask amount "10"
 And bob has bank balance "<balance-amount>"
-When bob attempts to buy credits with quantity "10" and bid amount "10"
+When bob attempts to buy credits with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Examples:
@@ -80,7 +80,7 @@ Examples:
 Scenario Outline: buyer bank balance is greater than or equal to total cost (multiple buy orders)
 Given alice created two sell orders each with quantity "10" and ask amount "10"
 And bob has bank balance "<balance-amount>"
-When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10"
+When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Examples:
@@ -91,13 +91,13 @@ Examples:
 Scenario: buyer bank balance is less than total cost (single buy order)
 Given alice created a sell order with quantity "10" and ask amount "10"
 And bob has bank balance "50regen"
-When bob attempts to buy credits with quantity "10" and bid amount "10"
+When bob attempts to buy credits with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
 
 Scenario: buyer bank balance is less than total cost (multiple buy orders)
 Given alice created two sell orders each with quantity "10" and ask amount "10"
 And bob has bank balance "150regen"
-When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10"
+When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[1]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
 
 Rule: The buyer must provide a bid price greater than or equal to the ask price
@@ -108,7 +108,7 @@ And alice created a sell order with ask amount "10"
 And bob has bank balance "100regen"
 
 Scenario Outline: bid price greater than or equal to ask price
-When bob attempts to buy credits with quantity "10" and bid amount "<bid-amount>"
+When bob attempts to buy credits with quantity "10" and bid amount "<bid-amount>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Examples:
@@ -117,7 +117,7 @@ Examples:
 | equal to | 10 |
 
 Scenario: bid price less than ask price
-When bob attempts to buy credits with quantity "10" and bid amount "5"
+When bob attempts to buy credits with quantity "10" and bid amount "5" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: ask price: 10regen, bid price: 5regen, insufficient bid price: invalid request"
 
 Rule: The buyer must provide a quantity less than or equal to the sell order quantity
@@ -128,7 +128,7 @@ And alice created a sell order with quantity "10"
 And bob has bank balance "150regen"
 
 Scenario Outline: quantity less than or equal to sell order quantity
-When bob attempts to buy credits with quantity "<quantity>"
+When bob attempts to buy credits with quantity "<quantity>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Examples:
@@ -137,7 +137,7 @@ Examples:
 | equal to | 10 |
 
 Scenario: quantity more than sell order quantity
-When bob attempts to buy credits with quantity "15"
+When bob attempts to buy credits with quantity "15" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: requested quantity: 15, sell order quantity 10: invalid request"
 
 Rule: The number of decimal places in quantity must be less than or equal to the credit type precision
@@ -147,7 +147,7 @@ Given a credit type with precision "6"
 
 Scenario Outline: quantity decimal places less than or equal to precision
 Given alice created a sell order with quantity "<quantity>"
-When bob attempts to buy credits with quantity "<quantity>"
+When bob attempts to buy credits with quantity "<quantity>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Examples:
@@ -157,7 +157,7 @@ Examples:
 
 Scenario: quantity decimal places more than precision
 Given alice created a sell order with quantity "9.1234567"
-When bob attempts to buy credits with quantity "9.1234567"
+When bob attempts to buy credits with quantity "9.1234567" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: decimal places exceeds precision: quantity: 9.1234567, credit type precision: 6: invalid request"
 
 Rule: The buyer cannot disable auto-retire if the sell order has auto-retire enabled
@@ -167,7 +167,7 @@ Given a credit type
 
 Scenario Outline: auto retire not required
 Given alice created a sell order with disable auto retire "true"
-When bob attempts to buy credits with disable auto retire "<disable-auto-retire>"
+When bob attempts to buy credits with disable auto retire "<disable-auto-retire>" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Examples:
@@ -177,12 +177,12 @@ Examples:
 
 Scenario: auto retire required and buyer enables
 Given alice created a sell order with disable auto retire "false"
-When bob attempts to buy credits with disable auto retire "false"
+When bob attempts to buy credits with disable auto retire "false" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 
 Scenario: auto retire required and buyer disables
 Given alice created a sell order with disable auto retire "false"
-When bob attempts to buy credits with disable auto retire "true"
+When bob attempts to buy credits with disable auto retire "true" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect the error "orders[0]: cannot disable auto-retire for a sell order with auto-retire enabled: invalid request"
 
 Rule: The sell order is removed when the sell order is filled
@@ -192,11 +192,11 @@ Given a credit type
 And alice created a sell order with quantity "10"
 
 Scenario: the sell order is removed
-When bob attempts to buy credits with quantity "10"
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no sell order with id "1"
 
 Scenario: the sell order is not removed
-When bob attempts to buy credits with quantity "5"
+When bob attempts to buy credits with quantity "5" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect sell order with id "1"
 
 # no failing scenario - state transitions only occur upon successful message execution
@@ -208,7 +208,7 @@ Given a credit type
 
 Scenario:
 Given alice created a sell order with quantity "20"
-When bob attempts to buy credits with quantity "10"
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect sell order with quantity "10"
 
 # no failing scenario - state transitions only occur upon successful message execution
@@ -221,7 +221,7 @@ Given a credit type
 Scenario: buyer bank balance updated
 Given alice created a sell order with quantity "10" and ask price "10regen"
 And bob has bank balance "100regen"
-When bob attempts to buy credits with quantity "10" and bid price "10regen"
+When bob attempts to buy credits with quantity "10" and bid price "10regen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect bob bank balance "0regen"
 
 # no failing scenario - state transitions only occur upon successful message execution
@@ -234,7 +234,7 @@ And alice created a sell order with quantity "100" and ask price "1regen"
 And alice has bank balance "0regen"
 
 Scenario: seller bank balance updated
-When bob attempts to buy credits with quantity "100" and bid price "1regen"
+When bob attempts to buy credits with quantity "100" and bid price "1regen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect alice bank balance "100regen"
 
 # no failing scenario - state transitions only occur upon successful message execution
@@ -254,7 +254,7 @@ And bob has the batch balance
 """
 
 Scenario: buyer batch balance updated with retired credits
-When bob attempts to buy credits with quantity "10" and disable auto retire "false"
+When bob attempts to buy credits with quantity "10" and disable auto retire "false" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect bob batch balance
 """
 {
@@ -265,7 +265,7 @@ Then expect bob batch balance
 """
 
 Scenario: buyer batch balance updated with tradable credits
-When bob attempts to buy credits with quantity "10" and disable auto retire "true"
+When bob attempts to buy credits with quantity "10" and disable auto retire "true" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect bob batch balance
 """
 {
@@ -292,7 +292,7 @@ And alice has the batch balance
 """
 
 Scenario: seller batch balance updated
-When bob attempts to buy credits with quantity "10"
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect alice batch balance
 """
 {
@@ -318,7 +318,7 @@ And the batch supply
 """
 
 Scenario: batch supply updated
-When bob attempts to buy credits with quantity "10" and disable auto retire "false"
+When bob attempts to buy credits with quantity "10" and disable auto retire "false" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect batch supply
 """
 {
@@ -328,7 +328,7 @@ Then expect batch supply
 """
 
 Scenario: batch supply not updated
-When bob attempts to buy credits with quantity "10" and disable auto retire "true"
+When bob attempts to buy credits with quantity "10" and disable auto retire "true" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect batch supply
 """
 {
@@ -350,7 +350,7 @@ And bob has bank balance "100regen"
 
 Scenario: EventTransfer is emitted
 Given alice created a sell order with id "1"
-When bob attempts to buy credits with quantity "10"
+When bob attempts to buy credits with quantity "10" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 And expect event transfer with properties
 """
@@ -365,7 +365,7 @@ And expect event transfer with properties
 
 Scenario: EventRetire is emitted
 Given alice created a sell order with id "1"
-When bob attempts to buy credits with sell order id "1" and retirement reason "offsetting electricity consumption"
+When bob attempts to buy credits with sell order id "1" and retirement reason "offsetting electricity consumption" and retirement jurisdiction "US-CA"
 Then expect no error
 And expect event retire with properties
 """
@@ -380,7 +380,7 @@ And expect event retire with properties
 
 Scenario: EventBuyDirect is emitted
 Given alice created a sell order with id "1"
-When bob attempts to buy credits with sell order id "1"
+When bob attempts to buy credits with sell order id "1" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 And expect event buy direct with properties
 """
@@ -411,7 +411,7 @@ Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
 * alice has bank balance "0foo"
 * buyer fees are 0.1 and seller fees are 0.05
 * bob sets a max fee of "10foo"
-When bob attempts to buy credits with quantity "10" and bid price "10foo"
+When bob attempts to buy credits with quantity "10" and bid price "10foo" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 * expect alice bank balance "95foo"
 * expect bob bank balance "0foo"
@@ -441,7 +441,7 @@ Given alice's address "regen1nzh226hxrsvf4k69sa8v0nfuzx5vgwkczk8j68"
 * alice has bank balance "0regen"
 * buyer fees are 0.2 and seller fees are 0.1
 * bob sets a max fee of "40uregen"
-When bob attempts to buy credits with quantity "10" and bid price "20uregen"
+When bob attempts to buy credits with quantity "10" and bid price "20uregen" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect no error
 * expect alice bank balance "180uregen"
 * expect bob bank balance "0uregen"
@@ -470,7 +470,7 @@ Given a credit type
 * buyer fees are 0.2 and seller fees are 0.1
 * bob has bank balance "200foo"
 * bob sets a max fee of "<max_fee_amount>"
-When bob attempts to buy credits with quantity "10" and bid price "20foo"
+When bob attempts to buy credits with quantity "10" and bid price "20foo" and retirement jurisdiction "US-CA" and retirement reason "Reason"
 Then expect error contains "<error>"
 
 Examples:
