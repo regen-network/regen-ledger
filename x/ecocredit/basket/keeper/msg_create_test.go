@@ -294,8 +294,6 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithYearsInThePast(a string) {
 			YearsInThePast: uint32(yearsInThePast),
 		},
 	})
-
-	panic(s.res.BasketDenom)
 }
 
 func (s *createSuite) ExpectNoError() {
@@ -328,10 +326,41 @@ func (s *createSuite) ExpectMinimumStartDate(a string) {
 	minStartDate, err := gogotypes.TimestampProto(ts)
 	require.NoError(s.t, err)
 
-	// panic(s.res.BasketDenom)
+	basketFee := sdk.NewCoins(sdk.Coin{Denom: "regen", Amount: math.NewInt(1000)})
 
-	// coin, err := sdk.ParseCoinNormalized(a)
-	// require.NoError(s.t, err)
+	s.createExpectCalls()
+
+	err = s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		Fee:              basketFee,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
+		DateCriteria: &types.DateCriteria{
+			MinStartDate: minStartDate,
+		},
+	})
+
+	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
+		BasketDenom: s.res.BasketDenom,
+	})
+
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, minStartDate, dc.BasketInfo.DateCriteria.MinStartDate)
+}
+
+func (s *createSuite) ExpectStartDateWindow(a string) {
+	dur, err := time.ParseDuration(a)
+	require.NoError(s.t, err)
+
+	startDateWindow := gogotypes.DurationProto(dur)
 
 	basketFee := sdk.NewCoins(sdk.Coin{Denom: "regen", Amount: math.NewInt(1000)})
 
@@ -349,22 +378,10 @@ func (s *createSuite) ExpectMinimumStartDate(a string) {
 		Fee:              basketFee,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
+		DateCriteria: &types.DateCriteria{
+			StartDateWindow: startDateWindow,
+		},
 	})
-
-	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
-		BasketDenom: s.res.BasketDenom,
-	})
-	panic(dc.BasketInfo)
-	require.NoError(s.t, err)
-
-	require.Equal(s.t, minStartDate, dc.BasketInfo.DateCriteria.MinStartDate)
-}
-
-func (s *createSuite) ExpectStartDateWindow(a string) {
-	dur, err := time.ParseDuration(a)
-	require.NoError(s.t, err)
-
-	startDateWindow := gogotypes.DurationProto(dur)
 
 	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
 		BasketDenom: s.res.BasketDenom,
@@ -376,6 +393,27 @@ func (s *createSuite) ExpectStartDateWindow(a string) {
 func (s *createSuite) ExpectYearsInThePast(a string) {
 	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
+
+	basketFee := sdk.NewCoins(sdk.Coin{Denom: "regen", Amount: math.NewInt(1000)})
+
+	s.createExpectCalls()
+
+	err = s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		Fee:              basketFee,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
+		DateCriteria: &types.DateCriteria{
+			YearsInThePast: uint32(yearsInThePast),
+		},
+	})
 
 	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
 		BasketDenom: s.res.BasketDenom,
