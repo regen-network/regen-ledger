@@ -9,6 +9,8 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
+
 	storetypes "cosmossdk.io/store/types"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -51,7 +53,7 @@ type Module struct {
 	Keeper        server.Keeper
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
-	govKeeper     ecocredit.GovKeeper
+	govKeeper     *govkeeper.Keeper
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
 	legacySubspace paramtypes.Subspace
@@ -64,7 +66,7 @@ func NewModule(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	legacySubspace paramtypes.Subspace,
-	govKeeper ecocredit.GovKeeper,
+	govKeeper *govkeeper.Keeper,
 ) *Module {
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
@@ -280,7 +282,7 @@ func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 		simState.AppParams,
 		m.accountKeeper,
 		m.bankKeeper,
-		m.govKeeper,
+		*m.govKeeper,
 		baseServer,
 		basketServer,
 		marketServer,
@@ -292,7 +294,7 @@ func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 		simState.Cdc,
 		m.accountKeeper,
 		m.bankKeeper,
-		m.govKeeper,
+		*m.govKeeper,
 		baseServer,
 		basketServer,
 		m.authority,
@@ -304,7 +306,7 @@ func (m Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 		m.bankKeeper,
 		baseServer,
 		marketServer,
-		m.govKeeper,
+		*m.govKeeper,
 		m.authority,
 	)
 

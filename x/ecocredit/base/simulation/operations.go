@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
@@ -17,17 +18,11 @@ import (
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
-// Simulation operation weights constants
-const ()
-
-// ecocredit message types
-var ()
-
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	govk ecocredit.GovKeeper,
+	govk govkeeper.Keeper,
 	qryClient types.QueryServer, _ baskettypes.QueryServer,
 	_ markettypes.QueryServer, authority sdk.AccAddress) simulation.WeightedOperations {
 

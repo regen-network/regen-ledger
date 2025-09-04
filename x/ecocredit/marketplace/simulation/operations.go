@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
@@ -17,7 +18,7 @@ func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, mktQryClient types.QueryServer,
-	govk ecocredit.GovKeeper, authority sdk.AccAddress) simulation.WeightedOperations {
+	govk govkeeper.Keeper, authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
 		weightMsgBuyDirect          int

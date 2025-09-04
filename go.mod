@@ -37,6 +37,8 @@ require (
 	github.com/stretchr/testify v1.10.0
 )
 
+require github.com/regen-network/regen-ledger/x/ecocredit/v4 v4.0.0-00010101000000-000000000000
+
 require (
 	cloud.google.com/go/auth v0.6.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
@@ -239,4 +241,5 @@ replace (
 	github.com/regen-network/regen-ledger/orm => ./orm
 	github.com/regen-network/regen-ledger/types/v2 => ./types
 	github.com/regen-network/regen-ledger/x/data/v3 => ./x/data
+	github.com/regen-network/regen-ledger/x/ecocredit/v4 => ./x/ecocredit
 )

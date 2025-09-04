@@ -136,10 +136,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
 
-	// "github.com/regen-network/regen-ledger/x/ecocredit/v4"
-	// baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
-	// "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
-	// ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
+
 	// "github.com/regen-network/regen-ledger/x/intertx"
 	// intertxkeeper "github.com/regen-network/regen-ledger/x/intertx/keeper"
 	// intertxmodule "github.com/regen-network/regen-ledger/x/intertx/module"
@@ -185,7 +186,7 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
-		// ecocreditmodule.Module{},
+		ecocreditmodule.Module{},
 		datamodule.Module{},
 		gov.NewAppModuleBasic(
 			[]govclient.ProposalHandler{
@@ -201,16 +202,16 @@ var (
 	// module account permissions
 	maccPerms = func() map[string][]string {
 		perms := map[string][]string{
-			authtypes.FeeCollectorName:     nil,
-			distrtypes.ModuleName:          nil,
-			minttypes.ModuleName:           {authtypes.Minter},
-			stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-			stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-			govtypes.ModuleName:            {authtypes.Burner},
-			ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-			// ecocredit.ModuleName:            {authtypes.Burner},
-			// baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
-			// marketplace.FeePoolName:         {authtypes.Burner},
+			authtypes.FeeCollectorName:      nil,
+			distrtypes.ModuleName:           nil,
+			minttypes.ModuleName:            {authtypes.Minter},
+			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
+			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
+			govtypes.ModuleName:             {authtypes.Burner},
+			ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+			ecocredit.ModuleName:            {authtypes.Burner},
+			baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
+			marketplace.FeePoolName:         {authtypes.Burner},
 
 			//	non sdk
 			icatypes.ModuleName:    nil,
@@ -335,7 +336,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 		ibcexported.StoreKey, ibctransfertypes.StoreKey,
 		icahosttypes.StoreKey, ibcfeetypes.StoreKey, icacontrollertypes.StoreKey,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 		wasmtypes.StoreKey,
 	)
@@ -659,14 +660,14 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	dataMod := datamodule.NewModule(app.keys[data.ModuleName], app.AccountKeeper, app.BankKeeper)
 
-	// ecocreditMod := ecocreditmodule.NewModule(
-	// 	app.keys[ecocredit.ModuleName],
-	// 	govModuleAddrBytes,
-	// 	app.AccountKeeper,
-	// 	app.BankKeeper,
-	// 	app.GetSubspace(ecocredit.DefaultParamspace),
-	// 	app.GovKeeper,
-	// )
+	ecocreditMod := ecocreditmodule.NewModule(
+		app.keys[ecocredit.ModuleName],
+		govModuleAddrBytes,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.GetSubspace(ecocredit.DefaultParamspace),
+		app.GovKeeper,
+	)
 
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
@@ -697,7 +698,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		//
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibctransfer.NewAppModule(app.IBCTransferKeeper),
-		// ecocreditMod,
+		ecocreditMod,
 		dataMod,
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
@@ -744,7 +745,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		group.ModuleName,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 
 		// ibc modules
@@ -775,7 +776,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		group.ModuleName,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 
 		// ibc modules
@@ -811,7 +812,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		group.ModuleName,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 
 		// ibc modules

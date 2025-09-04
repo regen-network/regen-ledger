@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 
 //go:generate mockgen -source=expected_keepers.go -package mocks -destination mocks/expected_keepers.go
@@ -39,6 +38,6 @@ type BankKeeper interface {
 }
 
 // GovKeeper defines the expected interface needed to query governance params
-type GovKeeper interface {
-	GetParams(clientCtx context.Context) govv1.Params
-}
+// type GovKeeper interface {
+// 	GetParams(clientCtx context.Context) govv1.Params
+// }
