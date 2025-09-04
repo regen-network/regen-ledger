@@ -45,10 +45,6 @@ func (s *msgDefineResolverSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *msgDefineResolverSuite) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
 func (s *msgDefineResolverSuite) ExpectTheSignBytes(expected gocuke.DocString) {
 	buffer := new(bytes.Buffer)
 	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))

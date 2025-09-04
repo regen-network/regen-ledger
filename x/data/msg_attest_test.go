@@ -1,8 +1,6 @@
 package data
 
 import (
-	"bytes"
-	"encoding/json"
 	"testing"
 
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -43,14 +41,4 @@ func (s *msgAttestSuite) ExpectTheError(a string) {
 
 func (s *msgAttestSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
-}
-
-func (s *msgAttestSuite) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
-func (s *msgAttestSuite) ExpectTheSignBytes(expected gocuke.DocString) {
-	buffer := new(bytes.Buffer)
-	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
-	require.Equal(s.t, buffer.String(), s.signBytes)
 }

@@ -26,10 +26,10 @@ const (
 )
 
 var (
-	TypeMsgAnchor           = data.MsgAnchor{}.Type()
-	TypeMsgAttest           = data.MsgAttest{}.Type()
-	TypeMsgDefineResolver   = data.MsgDefineResolver{}.Type()
-	TypeMsgRegisterResolver = data.MsgRegisterResolver{}.Type()
+	TypeMsgAnchor           = sdk.MsgTypeURL(&data.MsgAnchor{})
+	TypeMsgAttest           = sdk.MsgTypeURL(&data.MsgAttest{})
+	TypeMsgDefineResolver   = sdk.MsgTypeURL(&data.MsgDefineResolver{})
+	TypeMsgRegisterResolver = sdk.MsgTypeURL(&data.MsgRegisterResolver{})
 )
 
 const (
@@ -52,25 +52,25 @@ func WeightedOperations(
 		weightMsgRegisterResolver int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAnchor, &weightMsgAnchor, nil,
+	appParams.GetOrGenerate(OpWeightMsgAnchor, &weightMsgAnchor, nil,
 		func(_ *rand.Rand) {
 			weightMsgAnchor = WeightAnchor
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAttest, &weightMsgAttest, nil,
+	appParams.GetOrGenerate(OpWeightMsgAttest, &weightMsgAttest, nil,
 		func(_ *rand.Rand) {
 			weightMsgAttest = WeightAttest
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgDefineResolver, &weightMsgDefineResolver, nil,
+	appParams.GetOrGenerate(OpWeightMsgDefineResolver, &weightMsgDefineResolver, nil,
 		func(_ *rand.Rand) {
 			weightMsgDefineResolver = WeightDefineResolver
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRegisterResolver, &weightMsgRegisterResolver, nil,
+	appParams.GetOrGenerate(OpWeightMsgRegisterResolver, &weightMsgRegisterResolver, nil,
 		func(_ *rand.Rand) {
 			weightMsgRegisterResolver = WeightRegisterResolver
 		},
@@ -143,7 +143,7 @@ func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgAnchor, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -157,7 +157,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 		spendable := bk.SpendableCoins(sdkCtx, attestor.Address)
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
 		if err != nil {
-			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "fee error"), nil, err
+			return simtypes.NoOpMsg(data.ModuleName, TypeMsgAttest, "fee error"), nil, err
 		}
 
 		content := []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 100)))
@@ -199,7 +199,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgAttest, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -259,7 +259,7 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper, qryCli
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgDefineResolver, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -328,7 +328,7 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(data.ModuleName, TypeMsgRegisterResolver, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 

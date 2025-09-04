@@ -47,6 +47,12 @@ func (a Module) InitGenesis(s sdk.Context, jsonCodec codec.JSONCodec, message js
 	return update
 }
 
+// IsAppModule implements the appmodule.AppModule interface.
+func (a Module) IsAppModule() {}
+
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (a Module) IsOnePerModuleType() {}
+
 func (a Module) ExportGenesis(s sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
 	jsn, err := a.keeper.ExportGenesis(s, jsonCodec)
 	if err != nil {
@@ -153,7 +159,7 @@ func (Module) GenerateGenesisState(simState *module.SimulationState) {
 }
 
 // RegisterStoreDecoder registers a decoder for data module's types
-func (Module) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
+func (Module) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {
 }
 
 // WeightedOperations returns all the data module operations with their respective weights.

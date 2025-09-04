@@ -17,6 +17,10 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	timestamp := timestamppb.New(sdkCtx.BlockTime())
 
+	if err := request.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	iris := make([]string, 0) // only the IRIs for new attestations
 
 	for _, ch := range request.ContentHashes {
