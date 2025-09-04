@@ -12,6 +12,10 @@ import (
 
 // UpdateCurator is an RPC to handle basket.UpdateCurator
 func (k Keeper) UpdateCurator(ctx context.Context, req *types.MsgUpdateCurator) (*types.MsgUpdateCuratorResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, req.Denom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {

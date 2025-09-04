@@ -19,7 +19,7 @@ import (
 
 const OpWeightMsgUpdateBasketFee = "op_weight_msg_update_basket_fee" //nolint:gosec
 
-var TypeMsgUpdateBasketFee = types.MsgUpdateBasketFee{}.Route()
+var TypeMsgUpdateBasketFee = sdk.MsgTypeURL(&types.MsgUpdateBasketFee{})
 
 const WeightUpdateBasketFees = 100
 
@@ -77,7 +77,6 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
-			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,

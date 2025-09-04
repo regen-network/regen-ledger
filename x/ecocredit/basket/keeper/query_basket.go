@@ -26,6 +26,7 @@ func (k Keeper) Basket(ctx context.Context, request *types.QueryBasketRequest) (
 		if ormerrors.IsNotFound(err) {
 			return nil, errors.Wrapf(err, "basket %s not found", request.BasketDenom)
 		}
+
 		return nil, errors.Wrapf(err, "failed to get basket %s", request.BasketDenom)
 	}
 

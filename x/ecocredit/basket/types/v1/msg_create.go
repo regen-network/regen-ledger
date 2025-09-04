@@ -3,26 +3,12 @@ package v1
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/base"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
 )
 
 const descrMaxLen = 256
-
-var _ legacytx.LegacyMsg = &MsgCreate{}
-
-// Route implements LegacyMsg.
-func (m MsgCreate) Route() string { return sdk.MsgTypeURL(&m) }
-
-// Type implements LegacyMsg.
-func (m MsgCreate) Type() string { return sdk.MsgTypeURL(&m) }
-
-// GetSignBytes implements LegacyMsg.
-func (m MsgCreate) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
@@ -64,10 +50,4 @@ func (m MsgCreate) ValidateBasic() error {
 	}
 
 	return m.Fee.Validate()
-}
-
-// GetSigners returns the expected signers for MsgCreate.
-func (m MsgCreate) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Curator)
-	return []sdk.AccAddress{addr}
 }

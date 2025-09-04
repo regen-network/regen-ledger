@@ -22,7 +22,7 @@ const WeightPut = 100
 
 const OpWeightMsgPut = "op_weight_msg_put_into_basket" //nolint:gosec
 
-var TypeMsgPut = types.MsgPut{}.Route()
+var TypeMsgPut = sdk.MsgTypeURL(&types.MsgPut{})
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
 func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
@@ -30,6 +30,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		msgType := sdk.MsgTypeURL(&types.MsgPut{})
 		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := bsktQryClient.Baskets(ctx, &types.QueryBasketsRequest{})
 		if err != nil {
@@ -190,12 +191,12 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "is not allowed in this basket") {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "class is not allowed"), nil, nil
+				return simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "class is not allowed"), nil, nil
 			}
 
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }

@@ -22,6 +22,10 @@ import (
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
 // NOTE: the credits MUST adhere to the following specifications set by the basket: credit type, class, and date criteria.
 func (k Keeper) Put(ctx context.Context, req *types.MsgPut) (*types.MsgPutResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	ownerAddr, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
 		return nil, err
