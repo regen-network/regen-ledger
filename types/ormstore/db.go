@@ -16,7 +16,6 @@ import (
 // It is an interim solution for using the ORM in existing Cosmos SDK modules
 // before fuller integration has been done.
 func NewStoreKeyDB(desc *ormv1alpha1.ModuleSchemaDescriptor, key storetypes.StoreKey, options ormdb.ModuleDBOptions) (ormdb.ModuleDB, error) {
-
 	backEndResolver := func(_ ormv1alpha1.StorageType) (ormtable.BackendResolver, error) {
 		getBackend := func(ctx context.Context) (ormtable.ReadBackend, error) {
 			sdkCtx := sdk.UnwrapSDKContext(ctx)

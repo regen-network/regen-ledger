@@ -49,23 +49,3 @@ Feature: MsgDefineResolver
     """
     When the message is validated
     Then expect the error "invalid resolver url: invalid request"
-
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "definer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-      "resolver_url": "https://foo.bar"
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type": "regen-ledger/MsgDefineResolver",
-      "value": {
-        "definer": "regen1depk54cuajgkzea6zpgkq36tnjwdzv4ak663u6",
-        "resolver_url": "https://foo.bar"
-      }
-    }
-    """

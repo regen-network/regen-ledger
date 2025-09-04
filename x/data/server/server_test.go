@@ -2,13 +2,13 @@ package server
 
 import (
 	"context"
-
-	dbm "github.com/cometbft/cometbft-db"
+	"cosmossdk.io/log"
+	"cosmossdk.io/store/metrics"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"cosmossdk.io/store"
@@ -38,7 +38,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 
 	// set up store
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
+	cms := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
 	sk := storetypes.NewKVStoreKey("test")
 	cms.MountStoreWithDB(sk, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, cms.LoadLatestVersion())

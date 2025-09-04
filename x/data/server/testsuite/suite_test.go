@@ -3,10 +3,10 @@ package testsuite
 import (
 	"testing"
 
-	"github.com/stretchr/testify/suite"
-
+	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdkmodules "github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -16,6 +16,7 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/data/v3"
@@ -36,12 +37,12 @@ func setup(t *testing.T) fixture.Factory {
 	authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
 	params.RegisterInterfaces(cdc.InterfaceRegistry())
 
-	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
-	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
-	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
-	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
-	dataKey := sdk.NewKVStoreKey(data.ModuleName)
-	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	authKey := storetypes.NewKVStoreKey(authtypes.StoreKey)
+	bankKey := storetypes.NewKVStoreKey(banktypes.StoreKey)
+	distKey := storetypes.NewKVStoreKey(disttypes.StoreKey)
+	paramsKey := storetypes.NewKVStoreKey(paramstypes.StoreKey)
+	dataKey := storetypes.NewKVStoreKey(data.ModuleName)
+	tkey := storetypes.NewTransientStoreKey(paramstypes.TStoreKey)
 
 	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(dataKey, storetypes.StoreTypeIAVL)
@@ -58,14 +59,15 @@ func setup(t *testing.T) fixture.Factory {
 
 	accountKeeper := authkeeper.NewAccountKeeper(
 		cdc,
-		authKey,
+		runtime.NewKVStoreService(authKey),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
+		addresscodec.NewBech32Codec("regen"),
 		"regen",
 		authority.String(),
 	)
 
-	bankKeeper := bankkeeper.NewBaseKeeper(cdc, bankKey, accountKeeper, nil, authority.String())
+	bankKeeper := bankkeeper.NewBaseKeeper(cdc, runtime.NewKVStoreService(bankKey), accountKeeper, nil, authority.String(), log.NewNopLogger())
 
 	dataMod := datamodule.NewModule(dataKey, accountKeeper, bankKeeper)
 	dataMod.RegisterInterfaces(cdc.InterfaceRegistry())

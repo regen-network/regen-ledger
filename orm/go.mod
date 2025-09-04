@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.2
 
 require (
-	cosmossdk.io/api v0.9.2
+	cosmossdk.io/api v0.8.0
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/errors v1.0.1
 	github.com/cosmos/cosmos-db v1.1.1
@@ -23,6 +23,8 @@ require (
 )
 
 require (
+	buf.build/gen/go/cometbft/cometbft/protocolbuffers/go v1.36.1-20241120201313-68e42a58b301.1 // indirect
+	buf.build/gen/go/cosmos/gogo-proto/protocolbuffers/go v1.36.1-20240130113600-88ef6483f90f.1 // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/alecthomas/participle/v2 v2.0.0-alpha7 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect

@@ -5,8 +5,10 @@ import (
 	"strconv"
 	"strings"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/stretchr/testify/suite"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -63,8 +65,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	pk, err := info1.GetPubKey()
 	s.Require().NoError(err)
 	s.addr1 = sdk.AccAddress(pk.Address())
-	fundCoins := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000)))
-	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr1, fundCoins, commonFlags...)
+	fundCoins := sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdkmath.NewInt(2000)))
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr1, fundCoins, addresscodec.NewBech32Codec("regen"), commonFlags...)
 	s.Require().NoError(err)
 	s.Require().NoError(s.network.WaitForNextBlock())
 
@@ -74,7 +76,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	pk, err = info2.GetPubKey()
 	s.Require().NoError(err)
 	s.addr2 = sdk.AccAddress(pk.Address())
-	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr2, fundCoins, commonFlags...)
+	_, err = cli.MsgSendExec(s.val.ClientCtx, s.val.Address, s.addr2, fundCoins, addresscodec.NewBech32Codec("regen"), commonFlags...)
 	s.Require().NoError(err)
 
 	s.Require().NoError(s.network.WaitForNextBlock())
@@ -460,7 +462,7 @@ func (s *IntegrationTestSuite) txFlags(sender sdk.AccAddress) []string {
 	ss := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdkmath.NewInt(10))).String()),
 	}
 	if sender != nil {
 		ss = append(ss, fmt.Sprintf("--%s=%s", flags.FlagFrom, sender.String()))

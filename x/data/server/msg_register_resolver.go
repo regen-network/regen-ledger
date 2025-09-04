@@ -13,6 +13,10 @@ import (
 
 // RegisterResolver registers data content hashes to the provided resolver.
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	resolver, err := s.stateStore.ResolverTable().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
