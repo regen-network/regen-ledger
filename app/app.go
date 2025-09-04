@@ -23,6 +23,7 @@ import (
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	abci "github.com/cometbft/cometbft/abci/types"
 	dbm "github.com/cosmos/cosmos-db"
+	"github.com/cosmos/gogoproto/proto"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -34,6 +35,7 @@ import (
 	"cosmossdk.io/x/feegrant"
 	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
 	feegrantmodule "cosmossdk.io/x/feegrant/module"
+	"cosmossdk.io/x/tx/signing"
 	"cosmossdk.io/x/upgrade"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -131,8 +133,9 @@ import (
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v5_0"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v5_1"
 
-	// "github.com/regen-network/regen-ledger/x/data/v3"
-	// datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
+	"github.com/regen-network/regen-ledger/x/data/v3"
+	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
+
 	// "github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	// baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
 	// "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
@@ -183,7 +186,7 @@ var (
 		authzmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
 		// ecocreditmodule.Module{},
-		// datamodule.Module{},
+		datamodule.Module{},
 		gov.NewAppModuleBasic(
 			[]govclient.ProposalHandler{
 				paramsclient.ProposalHandler,
@@ -299,11 +302,24 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
 
-	encCfg := MakeEncodingConfig()
-	interfaceRegistry := encCfg.InterfaceRegistry
-	appCodec := encCfg.Codec
-	legacyAmino := encCfg.Amino
-	txConfig := encCfg.TxConfig
+	legacyAmino := codec.NewLegacyAmino()
+	interfaceRegistry, err := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
+		ProtoFiles: proto.HybridResolver,
+		SigningOptions: signing.Options{
+			AddressCodec: address.Bech32Codec{
+				Bech32Prefix: Bech32PrefixAccAddr,
+			},
+			ValidatorAddressCodec: address.Bech32Codec{
+				Bech32Prefix: Bech32PrefixValAddr,
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	appCodec := codec.NewProtoCodec(interfaceRegistry)
+	txConfig := authtx.NewTxConfig(appCodec, authtx.DefaultSignModes)
 
 	bApp := baseapp.NewBaseApp(AppName, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -319,7 +335,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 		ibcexported.StoreKey, ibctransfertypes.StoreKey,
 		icahosttypes.StoreKey, ibcfeetypes.StoreKey, icacontrollertypes.StoreKey,
-		// ecocredit.ModuleName, data.ModuleName,
+		// ecocredit.ModuleName,
+		data.ModuleName,
 		wasmtypes.StoreKey,
 	)
 
@@ -422,10 +439,15 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		runtime.NewKVStoreService(keys[slashingtypes.StoreKey]),
 		app.StakingKeeper, govModuleAddr,
 	)
-	// app.CrisisKeeper = crisiskeeper.NewKeeper(
-	// 	appCodec, keys[crisistypes.StoreKey], invCheckPeriod, app.BankKeeper,
-	// 	authtypes.FeeCollectorName, govModuleAddr,
-	// )
+
+	app.CrisisKeeper = crisiskeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[crisistypes.StoreKey]),
+		invCheckPeriod, app.BankKeeper,
+		authtypes.FeeCollectorName, govModuleAddr,
+		app.AccountKeeper.AddressCodec(),
+	)
+
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[feegrant.StoreKey]),
@@ -635,7 +657,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	 Module Initialization
 	/****************/
 
-	// dataMod := datamodule.NewModule(app.keys[data.ModuleName], app.AccountKeeper, app.BankKeeper)
+	dataMod := datamodule.NewModule(app.keys[data.ModuleName], app.AccountKeeper, app.BankKeeper)
 
 	// ecocreditMod := ecocreditmodule.NewModule(
 	// 	app.keys[ecocredit.ModuleName],
@@ -676,7 +698,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibctransfer.NewAppModule(app.IBCTransferKeeper),
 		// ecocreditMod,
-		// dataMod,
+		dataMod,
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		// interTxModule,
@@ -696,7 +718,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 				},
 			),
 		})
-	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
+	// app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
 	app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -723,7 +745,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		vestingtypes.ModuleName,
 		group.ModuleName,
 		// ecocredit.ModuleName,
-		// data.ModuleName,
+		data.ModuleName,
 
 		// ibc modules
 		ibcexported.ModuleName,
@@ -754,7 +776,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		vestingtypes.ModuleName,
 		group.ModuleName,
 		// ecocredit.ModuleName,
-		// data.ModuleName,
+		data.ModuleName,
 
 		// ibc modules
 		ibcexported.ModuleName,
@@ -790,7 +812,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		upgradetypes.ModuleName,
 		group.ModuleName,
 		// ecocredit.ModuleName,
-		// data.ModuleName,
+		data.ModuleName,
 
 		// ibc modules
 		ibctransfertypes.ModuleName,
