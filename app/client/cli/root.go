@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"cosmossdk.io/client/v2/autocli"
 	logger "cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
 
@@ -46,7 +47,7 @@ import (
 // main function.
 func NewRootCmd() *cobra.Command {
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
-
+	var autoCliOpts autocli.AppOptions
 	emptyWasmOpts := []wasmkeeper.Option{}
 	tempApp := app.NewRegenApp(logger.NewNopLogger(), dbm.NewMemDB(), nil, true, 1, simtestutil.NewAppOptionsWithFlagHome(app.DefaultNodeHome), emptyWasmOpts)
 	encodingConfig := testutil.TestEncodingConfig{
@@ -96,6 +97,10 @@ func NewRootCmd() *cobra.Command {
 	}
 
 	initRootCmd(rootCmd, encodingConfig.TxConfig, tempApp.BasicModuleManager)
+
+	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
+		panic(err)
+	}
 
 	return rootCmd
 }

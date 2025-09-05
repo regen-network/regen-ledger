@@ -70,9 +70,9 @@ func NewModule(
 ) *Module {
 
 	// legacySubspace is used solely for migration of x/ecocredit managed parameters
-	if !legacySubspace.HasKeyTable() {
-		legacySubspace = legacySubspace.WithKeyTable(basetypes.ParamKeyTable())
-	}
+	// if !legacySubspace.HasKeyTable() {
+	// 	legacySubspace = legacySubspace.WithKeyTable(basetypes.ParamKeyTable())
+	// }
 
 	return &Module{
 		key:            storeKey,
