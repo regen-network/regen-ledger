@@ -69,11 +69,6 @@ func NewModule(
 	govKeeper *govkeeper.Keeper,
 ) *Module {
 
-	// legacySubspace is used solely for migration of x/ecocredit managed parameters
-	if !legacySubspace.HasKeyTable() {
-		legacySubspace = legacySubspace.WithKeyTable(basetypes.ParamKeyTable())
-	}
-
 	return &Module{
 		key:            storeKey,
 		legacySubspace: legacySubspace,

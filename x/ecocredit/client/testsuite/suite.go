@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	sdkmath "cosmossdk.io/math"
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
 	dbm "github.com/cosmos/cosmos-db"
-	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -367,20 +367,24 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *basety
 	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
 	require.NoError(err)
 
-	// Step 4: Parse logs to extract the class ID
-	for _, e := range queryRes.Logs[0].Events {
-		if e.Type == proto.MessageName(&basetypes.EventCreateClass{}) {
-			for _, attr := range e.Attributes {
+	// Step 4: Parse events to extract the class ID
+	classID, err = getClassIDFromEvents(queryRes.Events)
+	require.NoError(err)
+
+	return classID
+}
+
+func getClassIDFromEvents(events []abcitypes.Event) (string, error) {
+	for _, ev := range events {
+		if ev.Type == "regen.ecocredit.v1.EventCreateClass" {
+			for _, attr := range ev.Attributes {
 				if attr.Key == "class_id" {
-					return strings.Trim(attr.Value, "\"")
+					return strings.Trim(attr.Value, "\""), nil
 				}
 			}
 		}
 	}
-
-	require.Fail("failed to find class ID in response logs")
-
-	return ""
+	return "", fmt.Errorf("class_id not found in events")
 }
 
 func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *basetypes.MsgCreateProject) (projectID string) {
@@ -407,19 +411,23 @@ func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *base
 	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
 	require.NoError(err)
 
-	for _, e := range queryRes.Logs[0].Events {
-		if e.Type == proto.MessageName(&basetypes.EventCreateProject{}) {
-			for _, attr := range e.Attributes {
+	projectID, err = getProjectIDFromEvents(queryRes.Events)
+	require.NoError(err)
+
+	return projectID
+}
+
+func getProjectIDFromEvents(events []abcitypes.Event) (string, error) {
+	for _, ev := range events {
+		if ev.Type == "regen.ecocredit.v1.EventCreateProject" {
+			for _, attr := range ev.Attributes {
 				if attr.Key == "project_id" {
-					return strings.Trim(attr.Value, "\"")
+					return strings.Trim(attr.Value, "\""), nil
 				}
 			}
 		}
 	}
-
-	require.Fail("failed to find project id in response")
-
-	return ""
+	return "", fmt.Errorf("project_id not found in events")
 }
 
 func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *basetypes.MsgCreateBatch) (batchDenom string) {
@@ -446,9 +454,10 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *basety
 
 	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
 	require.NoError(err)
-	for _, e := range queryRes.Logs[0].Events {
-		if e.Type == proto.MessageName(&basetypes.EventCreateBatch{}) {
-			for _, attr := range e.Attributes {
+
+	for _, ev := range queryRes.Events {
+		if ev.Type == "regen.ecocredit.v1.EventCreateBatch" {
+			for _, attr := range ev.Attributes {
 				if attr.Key == "batch_denom" {
 					return strings.Trim(attr.Value, "\"")
 				}
@@ -483,9 +492,10 @@ func (s *IntegrationTestSuite) createBasket(clientCtx client.Context, msg *baske
 
 	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
 	require.NoError(err)
-	for _, event := range queryRes.Logs[0].Events {
-		if event.Type == proto.MessageName(&baskettypes.EventCreate{}) {
-			for _, attr := range event.Attributes {
+
+	for _, ev := range queryRes.Events {
+		if ev.Type == "regen.ecocredit.basket.v1.EventCreate" {
+			for _, attr := range ev.Attributes {
 				if attr.Key == "basket_denom" {
 					return strings.Trim(attr.Value, "\"")
 				}
@@ -547,9 +557,10 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	queryRes, err := cli.GetTxResponse(s.network, clientCtx, res.TxHash)
 	require.NoError(err)
 	orderIDs := make([]uint64, 0, len(msg.Orders))
-	for _, event := range queryRes.Logs[0].Events {
-		if event.Type == proto.MessageName(&markettypes.EventSell{}) {
-			for _, attr := range event.Attributes {
+
+	for _, ev := range queryRes.Events {
+		if ev.Type == "regen.ecocredit.marketplace.v1.EventSell" {
+			for _, attr := range ev.Attributes {
 				if attr.Key == "sell_order_id" {
 					orderID, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
 					require.NoError(err)

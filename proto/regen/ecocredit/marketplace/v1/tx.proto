@@ -12,13 +12,11 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketpla
 
 // Msg is the regen.ecocredit.marketplace.v1 Msg service.
 service Msg {
-
   // Sell creates new sell orders.
   rpc Sell(MsgSell) returns (MsgSellResponse);
 
   // UpdateSellOrders updates existing sell orders.
-  rpc UpdateSellOrders(MsgUpdateSellOrders)
-      returns (MsgUpdateSellOrdersResponse);
+  rpc UpdateSellOrders(MsgUpdateSellOrders) returns (MsgUpdateSellOrdersResponse);
 
   // CancelSellOrder cancels a sell order and returns the credits from escrow.
   rpc CancelSellOrder(MsgCancelSellOrder) returns (MsgCancelSellOrderResponse);
@@ -35,22 +33,18 @@ service Msg {
   // RemoveAllowedDenom is a governance method that removes allowed denom.
   //
   // Since Revision 1
-  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom)
-      returns (MsgRemoveAllowedDenomResponse);
+  rpc RemoveAllowedDenom(MsgRemoveAllowedDenom) returns (MsgRemoveAllowedDenomResponse);
 
   // SetFeeParams is a governance method that sets the marketplace fees.
   //
   // Since Revision 3
-  rpc GovSetFeeParams(MsgGovSetFeeParams)
-      returns (MsgGovSetFeeParamsResponse);
+  rpc GovSetFeeParams(MsgGovSetFeeParams) returns (MsgGovSetFeeParamsResponse);
 
   // GovSendFromFeePool is a governance method that allows the sending of the
   // marketplace fees.
   //
   // Since Revision 3
-  rpc GovSendFromFeePool(MsgGovSendFromFeePool)
-      returns (MsgGovSendFromFeePoolResponse);
-
+  rpc GovSendFromFeePool(MsgGovSendFromFeePool) returns (MsgGovSendFromFeePoolResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -65,7 +59,6 @@ message MsgSell {
 
   // Order is the content of a new sell order.
   message Order {
-
     // batch_denom is the credit batch being sold.
     string batch_denom = 1;
 
@@ -88,13 +81,12 @@ message MsgSell {
 
     // expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
-    google.protobuf.Timestamp expiration = 5 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp expiration = 5 [(gogoproto.stdtime) = true];
   }
 }
 
 // MsgSellResponse is the Msg/Sell response type.
 message MsgSellResponse {
-
   // sell_order_ids are the sell order IDs of the newly created sell orders.
   repeated uint64 sell_order_ids = 1;
 }
@@ -111,7 +103,6 @@ message MsgUpdateSellOrders {
 
   // Update is an update to an existing sell order.
   message Update {
-
     // sell_order_id is the ID of an existing sell order.
     uint64 sell_order_id = 1;
 
@@ -127,7 +118,7 @@ message MsgUpdateSellOrders {
 
     // new_expiration is an optional timestamp when the sell order expires. When
     // the expiration time is reached, the sell order is removed from state.
-    google.protobuf.Timestamp new_expiration = 5 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp new_expiration = 5 [(gogoproto.stdtime) = true];
   }
 }
 
@@ -161,7 +152,6 @@ message MsgBuyDirect {
 
   // Order contains the information needed to purchase an ecocredit.
   message Order {
-
     // sell_order_id is the sell order ID against which the buyer is trying
     // to buy.
     uint64 sell_order_id = 2;
@@ -233,6 +223,7 @@ message MsgAddAllowedDenomResponse {}
 //
 // Since Revision 1
 message MsgRemoveAllowedDenom {
+  option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
   string authority = 1;
@@ -272,7 +263,7 @@ message MsgGovSendFromFeePool {
 
   // coins is the amount of coins to send from the fee pool.
   repeated cosmos.base.v1beta1.Coin coins = 3 [
-    (gogoproto.nullable)     = false,
+    (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
