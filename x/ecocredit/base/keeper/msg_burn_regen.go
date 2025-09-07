@@ -13,6 +13,10 @@ import (
 )
 
 func (k Keeper) BurnRegen(ctx context.Context, regen *types.MsgBurnRegen) (*types.MsgBurnRegenResponse, error) {
+	if err := regen.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	from, err := sdk.AccAddressFromBech32(regen.Burner)
 	if err != nil {
 		return nil, err

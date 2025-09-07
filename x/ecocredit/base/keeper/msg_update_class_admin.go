@@ -13,6 +13,10 @@ import (
 // WARNING: this method will forfeit control of the entire class to the provided address.
 // double check your inputs to ensure you do not lose control of the class.
 func (k Keeper) UpdateClassAdmin(ctx context.Context, req *types.MsgUpdateClassAdmin) (*types.MsgUpdateClassAdminResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {

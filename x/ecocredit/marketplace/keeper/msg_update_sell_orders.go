@@ -21,6 +21,10 @@ import (
 // is true, and you do not want to change that, you MUST provide a value of true in the update.
 // Otherwise, the sell order will be changed to false.
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *types.MsgUpdateSellOrders) (*types.MsgUpdateSellOrdersResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	seller, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, err

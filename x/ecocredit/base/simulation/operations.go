@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 
@@ -18,17 +18,11 @@ import (
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
 )
 
-// Simulation operation weights constants
-const ()
-
-// ecocredit message types
-var ()
-
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	govk ecocredit.GovKeeper,
+	govk govkeeper.Keeper,
 	qryClient types.QueryServer, _ baskettypes.QueryServer,
 	_ markettypes.QueryServer, authority sdk.AccAddress) simulation.WeightedOperations {
 
@@ -55,121 +49,121 @@ func WeightedOperations(
 		weightMsgUpdateClassFee           int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
+	appParams.GetOrGenerate(OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateClass = WeightCreateClass
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
+	appParams.GetOrGenerate(OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateProject = WeightCreateProject
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateBatch, &weightMsgCreateBatch, nil,
+	appParams.GetOrGenerate(OpWeightMsgCreateBatch, &weightMsgCreateBatch, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateBatch = WeightCreateBatch
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgSend, &weightMsgSend, nil,
+	appParams.GetOrGenerate(OpWeightMsgSend, &weightMsgSend, nil,
 		func(_ *rand.Rand) {
 			weightMsgSend = WeightSend
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRetire, &weightMsgRetire, nil,
+	appParams.GetOrGenerate(OpWeightMsgRetire, &weightMsgRetire, nil,
 		func(_ *rand.Rand) {
 			weightMsgRetire = WeightRetire
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCancel, &weightMsgCancel, nil,
+	appParams.GetOrGenerate(OpWeightMsgCancel, &weightMsgCancel, nil,
 		func(_ *rand.Rand) {
 			weightMsgCancel = WeightCancel
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassAdmin, &weightMsgUpdateClassAdmin, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateClassAdmin, &weightMsgUpdateClassAdmin, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateClassAdmin = WeightUpdateClass
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassIssuers, &weightMsgUpdateClassIssuers, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateClassIssuers, &weightMsgUpdateClassIssuers, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateClassIssuers = MsgUpdateClassIssuers
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassMetadata, &weightMsgUpdateClassMetadata, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateClassMetadata, &weightMsgUpdateClassMetadata, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateClassMetadata = WeightUpdateClassMetadata
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectAdmin, &weightMsgUpdateProjectAdmin, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateProjectAdmin, &weightMsgUpdateProjectAdmin, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateProjectAdmin = WeightUpdateProjectAdmin
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectMetadata, &weightMsgUpdateProjectMetadata, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateProjectMetadata, &weightMsgUpdateProjectMetadata, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateProjectMetadata = WeightUpdateProjectMetadata
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateBatchMetadata, &weightMsgUpdateBatchMetadata, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateBatchMetadata, &weightMsgUpdateBatchMetadata, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateBatchMetadata = WeightUpdateBatchMetadata
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgMintBatchCredits, &weightMsgMintBatchCredits, nil,
+	appParams.GetOrGenerate(OpWeightMsgMintBatchCredits, &weightMsgMintBatchCredits, nil,
 		func(_ *rand.Rand) {
 			weightMsgMintBatchCredits = WeightMintBatchCredits
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgSealBatch, &weightMsgSealBatch, nil,
+	appParams.GetOrGenerate(OpWeightMsgSealBatch, &weightMsgSealBatch, nil,
 		func(_ *rand.Rand) {
 			weightMsgSealBatch = WeightSealBatch
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgBridge, &weightMsgBridge, nil,
+	appParams.GetOrGenerate(OpWeightMsgBridge, &weightMsgBridge, nil,
 		func(_ *rand.Rand) {
 			weightMsgBridge = WeightBridge
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAddCreditType, &weightMsgAddCreditType, nil,
+	appParams.GetOrGenerate(OpWeightMsgAddCreditType, &weightMsgAddCreditType, nil,
 		func(_ *rand.Rand) {
 			weightMsgAddCreditType = WeightAddCreditType
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAddClassCreator, &weightMsgAddClassCreator, nil,
+	appParams.GetOrGenerate(OpWeightMsgAddClassCreator, &weightMsgAddClassCreator, nil,
 		func(_ *rand.Rand) {
 			weightMsgAddClassCreator = WeightAddClassCreator
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRemoveClassCreator, &weightMsgRemoveClassCreator, nil,
+	appParams.GetOrGenerate(OpWeightMsgRemoveClassCreator, &weightMsgRemoveClassCreator, nil,
 		func(_ *rand.Rand) {
 			weightMsgRemoveClassCreator = WeightRemoveClassCreator
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgSetClassCreatorAllowlist, &weightMsgSetClassCreatorAllowlist, nil,
+	appParams.GetOrGenerate(OpWeightMsgSetClassCreatorAllowlist, &weightMsgSetClassCreatorAllowlist, nil,
 		func(_ *rand.Rand) {
 			weightMsgSetClassCreatorAllowlist = WeightSetClassCreatorAllowlist
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassFee, &weightMsgUpdateClassFee, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateClassFee, &weightMsgUpdateClassFee, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateClassFee = WeightUpdateClassFee
 		},

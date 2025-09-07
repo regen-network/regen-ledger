@@ -11,6 +11,10 @@ import (
 
 // UpdateProjectMetadata updates the project metadata.
 func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *types.MsgUpdateProjectMetadata) (*types.MsgUpdateProjectMetadataResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	admin, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err

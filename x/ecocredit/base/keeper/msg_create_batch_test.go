@@ -201,6 +201,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectId(a string) {
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata1",
 	})
 }
 
@@ -216,6 +217,7 @@ func (s *createBatchSuite) BobAttemptsToCreateABatchWithProjectId(a string) {
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata2",
 	})
 }
 
@@ -237,6 +239,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdStartDateAndE
 		},
 		StartDate: &startDate,
 		EndDate:   &endDate,
+		Metadata:  "metadata3",
 	})
 }
 
@@ -252,6 +255,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndTradableAm
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata4",
 	})
 }
 
@@ -267,6 +271,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndRetiredAmo
 		},
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata5",
 	})
 }
 
@@ -287,6 +292,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndOriginTx(a
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  &originTx,
+		Metadata:  "metadata6",
 	})
 }
 
@@ -302,6 +308,7 @@ func (s *createBatchSuite) AliceAttemptsToCreateABatchWithProjectIdAndIssuance(a
 		Issuance:  issuance,
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
+		Metadata:  "metadata7",
 	})
 }
 
@@ -327,6 +334,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesTradableCreditsTo(a 
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  s.originTx,
+		Metadata:  "metadata8",
 	})
 	require.NoError(s.t, s.err)
 }
@@ -345,6 +353,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  s.originTx,
+		Metadata:  "metadata9",
 	})
 	require.NoError(s.t, s.err)
 }
@@ -364,6 +373,7 @@ func (s *createBatchSuite) CreatesABatchFromProjectAndIssuesRetiredCreditsToFrom
 		StartDate: s.startDate,
 		EndDate:   s.endDate,
 		OriginTx:  s.originTx,
+		Metadata:  "metadata10",
 	})
 	require.NoError(s.t, s.err)
 }

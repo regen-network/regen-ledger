@@ -32,12 +32,14 @@ import (
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+
 	regen "github.com/regen-network/regen-ledger/v7/app"
-	// "github.com/regen-network/regen-ledger/x/data/v3"
-	// "github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	"github.com/regen-network/regen-ledger/x/data/v3"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 )
 
 var emptyWasmOption []wasmkeeper.Option
@@ -149,8 +151,8 @@ func TestAppImportExport(t *testing.T) {
 		{app.GetKey(ibctransfertypes.StoreKey), newApp.GetKey(ibctransfertypes.StoreKey), [][]byte{}},
 
 		// regen modules
-		// {app.GetKey(data.ModuleName), newApp.GetKey(data.ModuleName), [][]byte{}},
-		// {app.GetKey(ecocredit.ModuleName), newApp.GetKey(ecocredit.ModuleName), [][]byte{}},
+		{app.GetKey(data.ModuleName), newApp.GetKey(data.ModuleName), [][]byte{}},
+		{app.GetKey(ecocredit.ModuleName), newApp.GetKey(ecocredit.ModuleName), [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {

@@ -82,15 +82,17 @@ func (s *updateClassIssuers) ACreditClassWithClassIdAdminAliceAndIssuers(a strin
 
 func (s *updateClassIssuers) AliceAttemptsToUpdateClassIssuersWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassIssuers(s.ctx, &types.MsgUpdateClassIssuers{
-		Admin:   s.alice.String(),
-		ClassId: a,
+		Admin:      s.alice.String(),
+		ClassId:    a,
+		AddIssuers: []string{s.bob.String()},
 	})
 }
 
 func (s *updateClassIssuers) BobAttemptsToUpdateClassIssuersWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassIssuers(s.ctx, &types.MsgUpdateClassIssuers{
-		Admin:   s.bob.String(),
-		ClassId: a,
+		Admin:      s.bob.String(),
+		ClassId:    a,
+		AddIssuers: []string{s.alice.String()},
 	})
 }
 

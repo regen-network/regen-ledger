@@ -11,6 +11,10 @@ import (
 
 // UpdateProjectAdmin updates the project admin.
 func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *types.MsgUpdateProjectAdmin) (*types.MsgUpdateProjectAdminResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	admin, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err

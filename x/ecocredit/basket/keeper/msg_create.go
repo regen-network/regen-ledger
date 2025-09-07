@@ -19,6 +19,10 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *types.MsgCreate) (*types.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	basketFee, err := k.stateStore.BasketFeeTable().Get(ctx)
 	if err != nil {
 		return nil, err

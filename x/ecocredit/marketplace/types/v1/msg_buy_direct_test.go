@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"bytes"
-	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -13,10 +11,9 @@ import (
 )
 
 type msgBuyDirectSuite struct {
-	t         gocuke.TestingT
-	msg       *MsgBuyDirect
-	err       error
-	signBytes string
+	t   gocuke.TestingT
+	msg *MsgBuyDirect
+	err error
 }
 
 func TestMsgBuyDirect(t *testing.T) {
@@ -58,14 +55,4 @@ func (s *msgBuyDirectSuite) ExpectErrorContains(a string) {
 	} else {
 		require.NoError(s.t, s.err)
 	}
-}
-
-func (s *msgBuyDirectSuite) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
-func (s *msgBuyDirectSuite) ExpectTheSignBytes(expected gocuke.DocString) {
-	buffer := new(bytes.Buffer)
-	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))
-	require.Equal(s.t, buffer.String(), s.signBytes)
 }

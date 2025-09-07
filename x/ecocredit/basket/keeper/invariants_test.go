@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -18,7 +19,7 @@ type BasketWithSupply struct {
 
 type BankSupplyMock map[string]sdk.Coin
 
-func (bs BankSupplyMock) GetSupply(_ sdk.Context, denom string) sdk.Coin {
+func (bs BankSupplyMock) GetSupply(_ context.Context, denom string) sdk.Coin {
 	if c, ok := bs[denom]; ok {
 		return c
 	}
@@ -66,7 +67,7 @@ func TestBasketSupplyInvarint(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		tc.bank.GetSupply(s.sdkCtx, "abc")
+		tc.bank.GetSupply(s.ctx, "abc")
 
 		msg, _ := SupplyInvariant(s.sdkCtx, store, tc.bank, basketBalances)
 		if tc.msg != "" {

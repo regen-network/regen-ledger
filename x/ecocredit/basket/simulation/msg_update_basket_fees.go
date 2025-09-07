@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -19,13 +20,13 @@ import (
 
 const OpWeightMsgUpdateBasketFee = "op_weight_msg_update_basket_fee" //nolint:gosec
 
-var TypeMsgUpdateBasketFee = types.MsgUpdateBasketFee{}.Route()
+var TypeMsgUpdateBasketFee = sdk.MsgTypeURL(&types.MsgUpdateBasketFee{})
 
 const WeightUpdateBasketFees = 100
 
 // SimulateMsgUpdateBasketFee generates a Basket/MsgUpdateBasketFee with random values.
 func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, _ basetypes.QueryServer,
-	_ types.QueryServer, govk ecocredit.GovKeeper, authority sdk.AccAddress) simtypes.Operation {
+	_ types.QueryServer, govk govkeeper.Keeper, authority sdk.AccAddress) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -38,7 +39,11 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			return op, nil, err
 		}
 
-		params := govk.GetParams(sdkCtx)
+		params, err := govk.Params.Get(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateBasketFee, err.Error()), nil, err
+		}
+
 		deposit, skip, err := utils.RandomDeposit(r, sdkCtx, ak, bk, params.MinDeposit, proposer.Address)
 		switch {
 		case skip:
@@ -77,7 +82,6 @@ func SimulateMsgUpdateBasketFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             &proposalMsg,
-			MsgType:         msg.Type(),
 			Context:         sdkCtx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,

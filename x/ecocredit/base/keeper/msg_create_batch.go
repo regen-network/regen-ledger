@@ -20,8 +20,10 @@ import (
 // CreateBatch creates a new batch of credits.
 // Credits in the batch must not have more decimal places than the credit type's specified precision.
 func (k Keeper) CreateBatch(ctx context.Context, req *types.MsgCreateBatch) (*types.MsgCreateBatchResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
 	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())

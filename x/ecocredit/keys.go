@@ -1,7 +1,7 @@
 package ecocredit
 
 import (
-	ormapi "regen-network/regen-ledger/api/regen/orm/v1alpha1"
+	ormapi "github.com/regen-network/regen-ledger/api/v2/regen/orm/v1alpha1"
 
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketApi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"

@@ -14,6 +14,9 @@ import (
 
 // Bridge cancel credits, removing them from the supply and balance of the holder
 func (k Keeper) Bridge(ctx context.Context, req *types.MsgBridge) (*types.MsgBridgeResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
 
 	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.Target))
 	if err != nil {

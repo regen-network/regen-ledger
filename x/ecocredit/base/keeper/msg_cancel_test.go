@@ -172,6 +172,7 @@ func (s *cancel) AliceAttemptsToCancelCreditAmount(a string) {
 				Amount:     a,
 			},
 		},
+		Reason: "reason",
 	})
 }
 
@@ -184,6 +185,7 @@ func (s *cancel) AliceAttemptsToCancelCreditsWithBatchDenom(a string) {
 				Amount:     s.tradableAmount,
 			},
 		},
+		Reason: "Reason",
 	})
 }
 

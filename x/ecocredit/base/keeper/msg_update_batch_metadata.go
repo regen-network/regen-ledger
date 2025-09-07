@@ -11,6 +11,10 @@ import (
 
 // UpdateBatchMetadata updates the metadata for the batch.
 func (k Keeper) UpdateBatchMetadata(ctx context.Context, req *types.MsgUpdateBatchMetadata) (*types.MsgUpdateBatchMetadataResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	reqAddr, err := sdk.AccAddressFromBech32(req.Issuer)
 	if err != nil {

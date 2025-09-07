@@ -13,6 +13,10 @@ import (
 
 // UpdateClassIssuers updates a class's issuers by either adding more issuers, or removing issuers from the class issuer store.
 func (k Keeper) UpdateClassIssuers(ctx context.Context, req *types.MsgUpdateClassIssuers) (*types.MsgUpdateClassIssuersResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {

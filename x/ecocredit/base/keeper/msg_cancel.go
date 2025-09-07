@@ -15,6 +15,10 @@ import (
 
 // Cancel credits, removing them from the supply and balance of the owner
 func (k Keeper) Cancel(ctx context.Context, req *types.MsgCancel) (*types.MsgCancelResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	owner, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {

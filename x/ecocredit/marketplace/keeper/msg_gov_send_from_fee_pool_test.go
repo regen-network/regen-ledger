@@ -3,6 +3,7 @@ package keeper
 import (
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
@@ -27,9 +28,14 @@ func TestGovSendFromFeePool(t *testing.T) {
 
 func (s *govSendFromFeePool) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t, 2)
-	s.msg = &types.MsgGovSendFromFeePool{}
+	s.msg = &types.MsgGovSendFromFeePool{
+		Coins: sdk.NewCoins(sdk.NewCoin("regen", math.NewInt(10000))),
+	}
+
 	s.moduleBalances = make(map[string]sdk.Coins)
 	s.accountBalances = make(map[string]sdk.Coins)
+	s.moduleBalances[s.k.feePoolName] = sdk.NewCoins(sdk.NewCoin("regen", math.NewInt(20000)))
+
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		AnyTimes().
@@ -94,11 +100,11 @@ func (s *govSendFromFeePool) ExpectNoError() {
 func (s *govSendFromFeePool) ExpectFeePoolBalance(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
-	require.True(s.t, coins.IsEqual(s.moduleBalances[s.k.feePoolName]))
+	require.True(s.t, coins.Equal(s.moduleBalances[s.k.feePoolName]))
 }
 
 func (s *govSendFromFeePool) ExpectRecipientBalance(a string) {
 	coins, err := sdk.ParseCoinsNormalized(a)
 	require.NoError(s.t, err)
-	require.True(s.t, coins.IsEqual(s.accountBalances[s.msg.Recipient]))
+	require.True(s.t, coins.Equal(s.accountBalances[s.msg.Recipient]))
 }

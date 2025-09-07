@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdkbase "cosmossdk.io/api/cosmos/base/v1beta1"
@@ -19,6 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/types/ormerrors"
 	"github.com/regen-network/regen-ledger/orm/types/ormjson"
 
+	sdkmath "cosmossdk.io/math"
 	basketapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/v1"
@@ -30,7 +31,7 @@ import (
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coin {
-	return sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10))))
+	return sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(int64(simtypes.RandIntBetween(r, 1, 10))))
 }
 
 // genAllowedClassCreators generate random set of creators

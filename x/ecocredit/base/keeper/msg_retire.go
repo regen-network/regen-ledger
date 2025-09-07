@@ -16,6 +16,10 @@ import (
 // Retire credits to the specified jurisdiction.
 // WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
 func (k Keeper) Retire(ctx context.Context, req *types.MsgRetire) (*types.MsgRetireResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	owner, _ := sdk.AccAddressFromBech32(req.Owner)
 

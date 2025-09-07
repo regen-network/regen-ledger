@@ -103,29 +103,3 @@ Feature: MsgUpdateDateCriteria
     """
     When the message is validated
     Then expect the error "invalid date criteria: start_date_window must be at least 1 day: invalid request"
-
-  Scenario: a valid amino message
-    Given the message
-    """
-    {
-      "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-      "denom": "eco.uC.NCT",
-      "new_date_criteria": {
-        "years_in_the_past": 10
-      }
-    }
-    """
-    When message sign bytes queried
-    Then expect the sign bytes
-    """
-    {
-      "type":"regen.basket/MsgUpdateDateCriteria",
-      "value":{
-        "authority": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-        "denom": "eco.uC.NCT",
-        "new_date_criteria": {
-          "years_in_the_past": 10
-        }
-      }
-    }
-    """

@@ -16,6 +16,10 @@ import (
 
 // BuyDirect allows for the purchase of credits directly from sell orders.
 func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.MsgBuyDirectResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+	
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
@@ -80,7 +84,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		}
 
 		// check that bid price >= sell price
-		sellOrderAskAmount, ok := sdk.NewIntFromString(sellOrder.AskAmount)
+		sellOrderAskAmount, ok := sdkmath.NewIntFromString(sellOrder.AskAmount)
 		if !ok {
 			return nil, sdkerrors.ErrInvalidType.Wrapf("could not convert %s to %T", sellOrder.AskAmount, sdkmath.Int{})
 		}
@@ -112,7 +116,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 		// check max fee
 		maxFee := order.MaxFeeAmount
 		if maxFee == nil {
-			maxFee = &sdk.Coin{Amount: sdk.NewInt(0), Denom: market.BankDenom}
+			maxFee = &sdk.Coin{Amount: sdkmath.NewInt(0), Denom: market.BankDenom}
 		}
 		buyerFeeCoin := sdk.Coin{Amount: buyerFee.SdkIntTrim(), Denom: market.BankDenom}
 		if maxFee.IsLT(buyerFeeCoin) {

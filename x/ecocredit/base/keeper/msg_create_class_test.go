@@ -116,6 +116,7 @@ func (s *createClassSuite) AliceAttemptsToCreateACreditClass() {
 	s.res, s.err = s.k.CreateClass(s.ctx, &types.MsgCreateClass{
 		Admin:            s.alice.String(),
 		CreditTypeAbbrev: s.creditTypeAbbrev,
+		Issuers:          []string{s.alice.String()},
 	})
 }
 
@@ -125,6 +126,7 @@ func (s *createClassSuite) AliceAttemptsToCreateACreditClassWithCreditType(a str
 	s.res, s.err = s.k.CreateClass(s.ctx, &types.MsgCreateClass{
 		Admin:            s.alice.String(),
 		CreditTypeAbbrev: a,
+		Issuers:          []string{s.alice.String()}, // Add this line
 	})
 }
 
@@ -155,6 +157,7 @@ func (s *createClassSuite) AliceAttemptsToCreateACreditClassWithProperties(a goc
 		Admin:            s.alice.String(),
 		CreditTypeAbbrev: msg.CreditTypeAbbrev,
 		Metadata:         msg.Metadata,
+		Issuers:          []string{s.alice.String()},
 	})
 }
 
@@ -168,6 +171,7 @@ func (s *createClassSuite) AliceAttemptsToCreateACreditClassWithFee(a string) {
 		Admin:            s.alice.String(),
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 		Fee:              &fee,
+		Issuers:          []string{s.alice.String()},
 	})
 }
 

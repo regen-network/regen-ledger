@@ -60,10 +60,6 @@ func (s *msgCreateProject) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *msgCreateProject) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
 func (s *msgCreateProject) ExpectTheSignBytes(expected gocuke.DocString) {
 	buffer := new(bytes.Buffer)
 	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))

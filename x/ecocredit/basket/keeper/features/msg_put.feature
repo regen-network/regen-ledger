@@ -58,8 +58,8 @@ Feature: Msg/Put
       Then expect no error
 
     Scenario: credit class is not allowed
-      Given alice owns credits from credit batch "A01-20200101-20210101-001"
-      When alice attempts to put credits from credit batch "A01-20200101-20210101-001" into the basket
+      Given alice owns credits from credit batch "A01-001-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "A01-001-20200101-20210101-001" into the basket
       Then expect the error "credit class A01 is not allowed in this basket: invalid request"
 
   Rule: The user must have a credit balance for the credits being put into the basket

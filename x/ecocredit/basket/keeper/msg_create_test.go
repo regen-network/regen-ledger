@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/gogoproto/jsonpb"
 	gogotypes "github.com/cosmos/gogoproto/types"
 	"github.com/regen-network/gocuke"
@@ -67,6 +68,7 @@ func (s *createSuite) ACreditType() {
 		Abbreviation: s.creditTypeAbbrev,
 		Precision:    s.creditTypePrecision,
 	})
+
 	require.NoError(s.t, err)
 }
 
@@ -142,31 +144,52 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithFee(a string) {
 
 	s.createExpectCalls()
 
+	err = s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
 	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
 		Curator:          s.alice.String(),
 		Name:             s.basketName,
 		Fee:              basketFee,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
 	})
 }
 
 func (s *createSuite) AliceAttemptsToCreateABasketWithNoFee() {
 	s.createExpectCalls()
 
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
 	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
 		Curator:          s.alice.String(),
 		Name:             s.basketName,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
 	})
 }
 
 func (s *createSuite) AliceAttemptsToCreateABasketWithCreditType(a string) {
 	s.createExpectCalls()
 
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: a,
+	})
+	require.NoError(s.t, err)
+
 	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
 		Curator:          s.alice.String(),
 		Name:             s.basketName,
 		CreditTypeAbbrev: a,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
 	})
 }
 
@@ -195,20 +218,34 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithAllowedClass(a string) {
 func (s *createSuite) AliceAttemptsToCreateABasketWithName(a string) {
 	s.createExpectCalls()
 
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
 	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
 		Curator:          s.alice.String(),
 		Name:             a,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
 	})
 }
 
 func (s *createSuite) AliceAttemptsToCreateABasketWithNameAndCreditType(a string, b string) {
 	s.createExpectCalls()
 
+	err := s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: b,
+	})
+	require.NoError(s.t, err)
+
 	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
 		Curator:          s.alice.String(),
 		Name:             a,
 		CreditTypeAbbrev: b,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
 	})
 }
 
@@ -295,9 +332,31 @@ func (s *createSuite) ExpectMinimumStartDate(a string) {
 	minStartDate, err := gogotypes.TimestampProto(ts)
 	require.NoError(s.t, err)
 
+	basketFee := sdk.NewCoins(sdk.Coin{Denom: "regen", Amount: math.NewInt(1000)})
+
+	s.createExpectCalls()
+
+	err = s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		Fee:              basketFee,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
+		DateCriteria: &types.DateCriteria{
+			MinStartDate: minStartDate,
+		},
+	})
+
 	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
 		BasketDenom: s.res.BasketDenom,
 	})
+
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, minStartDate, dc.BasketInfo.DateCriteria.MinStartDate)
@@ -309,6 +368,27 @@ func (s *createSuite) ExpectStartDateWindow(a string) {
 
 	startDateWindow := gogotypes.DurationProto(dur)
 
+	basketFee := sdk.NewCoins(sdk.Coin{Denom: "regen", Amount: math.NewInt(1000)})
+
+	s.createExpectCalls()
+
+	err = s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		Fee:              basketFee,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
+		DateCriteria: &types.DateCriteria{
+			StartDateWindow: startDateWindow,
+		},
+	})
+
 	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
 		BasketDenom: s.res.BasketDenom,
 	})
@@ -319,6 +399,27 @@ func (s *createSuite) ExpectStartDateWindow(a string) {
 func (s *createSuite) ExpectYearsInThePast(a string) {
 	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
+
+	basketFee := sdk.NewCoins(sdk.Coin{Denom: "regen", Amount: math.NewInt(1000)})
+
+	s.createExpectCalls()
+
+	err = s.baseStore.ClassTable().Insert(s.ctx, &baseapi.Class{
+		Id:               s.creditTypeAbbrev + "01",
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Create(s.ctx, &types.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		Fee:              basketFee,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		AllowedClasses:   []string{s.creditTypeAbbrev + "01"},
+		DateCriteria: &types.DateCriteria{
+			YearsInThePast: uint32(yearsInThePast),
+		},
+	})
 
 	dc, err := s.k.Basket(s.ctx, &types.QueryBasketRequest{
 		BasketDenom: s.res.BasketDenom,

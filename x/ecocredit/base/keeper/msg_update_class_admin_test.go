@@ -66,7 +66,7 @@ func (s *updateClassAdmin) BobAttemptsToUpdateClassAdminWithClassId(a string) {
 	s.res, s.err = s.k.UpdateClassAdmin(s.ctx, &types.MsgUpdateClassAdmin{
 		Admin:    s.bob.String(),
 		ClassId:  a,
-		NewAdmin: s.bob.String(),
+		NewAdmin: s.alice.String(),
 	})
 }
 

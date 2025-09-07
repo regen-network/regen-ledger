@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cockroachdb/apd/v3"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/gogoproto/jsonpb"
@@ -60,11 +61,11 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	s.balances = map[string]sdk.Coins{}
 	s.balances[s.alice.String()] = sdk.Coins{sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}}
 	s.balances[s.bob.String()] = sdk.Coins{sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}}
 	s.moduleBalances = map[string]sdk.Coins{}
 	s.creditTypeAbbrev = "C"
@@ -74,11 +75,11 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 	s.quantity = "10"
 	s.askPrice = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(10),
+		Amount: sdkmath.NewInt(10),
 	}
 	s.bidPrice = sdk.Coin{
 		Denom:  "regen",
-		Amount: sdk.NewInt(10),
+		Amount: sdkmath.NewInt(10),
 	}
 
 	s.buyOrderExpectCalls()
@@ -201,7 +202,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithAskDenom(a string) {
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
-	askAmount, ok := sdk.NewIntFromString(a)
+	askAmount, ok := sdkmath.NewIntFromString(a)
 	require.True(s.t, ok)
 
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
@@ -219,7 +220,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string, b string) {
-	askAmount, ok := sdk.NewIntFromString(b)
+	askAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.quantity = a
@@ -249,7 +250,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 }
 
 func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a string, b string) {
-	askAmount, ok := sdk.NewIntFromString(b)
+	askAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.quantity = a
@@ -258,7 +259,7 @@ func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a
 	s.createSellOrders(2)
 }
 
-func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
+func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderIdAndRetirementJurisdictionAndRetirementReason(a string, b string, c string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
@@ -266,15 +267,17 @@ func (s *buyDirectSuite) AliceAttemptsToBuyCreditsWithSellOrderId(a string) {
 		Buyer: s.alice.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId: id,
-				Quantity:    s.quantity,
-				BidPrice:    &s.bidPrice,
+				SellOrderId:            id,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				RetirementJurisdiction: b, // Add required field
+				RetirementReason:       c, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementJurisdictionAndRetirementReason(a string, b, c string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
@@ -282,15 +285,17 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId: id,
-				Quantity:    s.quantity,
-				BidPrice:    &s.bidPrice,
+				SellOrderId:            id,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				RetirementJurisdiction: b, // Add required field
+				RetirementReason:       c, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementReason(a, b string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementReasonAndRetirementJurisdiction(a, b, c string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
@@ -300,16 +305,17 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderIdAndRetirementReas
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:      id,
-				Quantity:         s.quantity,
-				BidPrice:         &s.bidPrice,
-				RetirementReason: b,
+				SellOrderId:            id,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				RetirementReason:       b,
+				RetirementJurisdiction: c, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenomAndRetirementJurisdictionAndRetirementReason(a string, b, c string) {
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
@@ -320,12 +326,14 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
 					Denom:  a,
 					Amount: s.bidPrice.Amount,
 				},
+				RetirementJurisdiction: b, // Add required field
+				RetirementReason:       c, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetireAndRetirementJurisdictionAndRetirementReason(a string, b, c string) {
 	disableAutoRetire, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
@@ -333,32 +341,36 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:       s.sellOrderID,
-				Quantity:          s.quantity,
-				BidPrice:          &s.bidPrice,
-				DisableAutoRetire: disableAutoRetire,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               s.quantity,
+				BidPrice:               &s.bidPrice,
+				DisableAutoRetire:      disableAutoRetire,
+				RetirementJurisdiction: b, // Add required field
+				RetirementReason:       c, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndRetirementJurisdictionAndRetirementReason(a, b, c string) {
 	s.quantity = a
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId: s.sellOrderID,
-				Quantity:    a,
-				BidPrice:    &s.bidPrice,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               a,
+				BidPrice:               &s.bidPrice,
+				RetirementJurisdiction: b, // Add required field
+				RetirementReason:       c, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a string, b string) {
-	bidAmount, ok := sdk.NewIntFromString(b)
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmountAndRetirementJurisdictionAndRetirementReason(a string, b, c, d string) {
+	bidAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
@@ -371,12 +383,14 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a strin
 					Denom:  s.bidPrice.Denom,
 					Amount: bidAmount,
 				},
+				RetirementJurisdiction: c, // Add required field
+				RetirementReason:       d, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string, b string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPriceAndRetirementJurisdictionAndRetirementReason(a string, b, c, d string) {
 	bidPrice, err := sdk.ParseCoinNormalized(b)
 	require.NoError(s.t, err)
 
@@ -384,16 +398,18 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:  s.sellOrderID,
-				Quantity:     a,
-				BidPrice:     &bidPrice,
-				MaxFeeAmount: s.maxFee,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               a,
+				BidPrice:               &bidPrice,
+				MaxFeeAmount:           s.maxFee,
+				RetirementJurisdiction: c, // Add required field
+				RetirementReason:       d, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire(a string, b string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetireAndRetirementJurisdictionAndRetirementReason(a string, b, c, d string) {
 	disableAutoRetire, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
@@ -401,19 +417,21 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 		Buyer: s.bob.String(),
 		Orders: []*types.MsgBuyDirect_Order{
 			{
-				SellOrderId:       s.sellOrderID,
-				Quantity:          a,
-				BidPrice:          &s.bidPrice,
-				DisableAutoRetire: disableAutoRetire,
+				SellOrderId:            s.sellOrderID,
+				Quantity:               a,
+				BidPrice:               &s.bidPrice,
+				DisableAutoRetire:      disableAutoRetire,
+				RetirementJurisdiction: c, // Add required field
+				RetirementReason:       d, // Add required field
 			},
 		},
 	})
 }
 
-func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBidAmount(a string, b string) {
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBidAmountAndRetirementJurisdictionAndRetirementReason(a string, b, c, d string) {
 	s.quantity = a
 
-	bidAmount, ok := sdk.NewIntFromString(b)
+	bidAmount, ok := sdkmath.NewIntFromString(b)
 	require.True(s.t, ok)
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &types.MsgBuyDirect{
@@ -426,6 +444,8 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBi
 					Denom:  s.bidPrice.Denom,
 					Amount: bidAmount,
 				},
+				RetirementJurisdiction: c, // Add required field
+				RetirementReason:       d, // Add required field
 			},
 			{
 				SellOrderId: 2,
@@ -434,6 +454,8 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBi
 					Denom:  s.bidPrice.Denom,
 					Amount: bidAmount,
 				},
+				RetirementJurisdiction: c, // Add required field
+				RetirementReason:       d, // Add required field
 			},
 		},
 	})
@@ -501,7 +523,7 @@ func (s *buyDirectSuite) expectBalance(address sdk.Address, a string) {
 
 	actual := s.balances[address.String()]
 
-	if !actual.IsEqual(expected) {
+	if !actual.Equal(expected) {
 		s.t.Fatalf("expected: %s, actual: %s", a, actual.String())
 	}
 }
@@ -610,8 +632,7 @@ func (s *buyDirectSuite) ExpectFeePoolBalance(a string) {
 	require.NoError(s.t, err)
 
 	actual := s.moduleBalances[marketplace.FeePoolName]
-
-	if !actual.IsEqual(expected) {
+	if !actual.Equal(expected) {
 		s.t.Fatalf("expected: %s, actual: %s", a, actual.String())
 	}
 }

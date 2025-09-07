@@ -11,6 +11,10 @@ import (
 )
 
 func (k Keeper) GovSetFeeParams(ctx context.Context, msg *types.MsgGovSetFeeParams) (*types.MsgGovSetFeeParamsResponse, error) {
+	if err := msg.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	authority, err := sdk.AccAddressFromBech32(msg.Authority)
 	if err != nil {
 		return nil, err

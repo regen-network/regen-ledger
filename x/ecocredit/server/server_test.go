@@ -5,9 +5,10 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
+	"cosmossdk.io/log"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -19,6 +20,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/regen-network/regen-ledger/types/v2/testutil/fixture"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
@@ -48,12 +50,12 @@ func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.Acc
 	authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
 	params.RegisterInterfaces(cdc.InterfaceRegistry())
 
-	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
-	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
-	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
-	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
-	ecoKey := sdk.NewKVStoreKey(ecocredit.ModuleName)
-	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	authKey := storetypes.NewKVStoreKey(authtypes.StoreKey)
+	bankKey := storetypes.NewKVStoreKey(banktypes.StoreKey)
+	distKey := storetypes.NewKVStoreKey(disttypes.StoreKey)
+	paramsKey := storetypes.NewKVStoreKey(paramstypes.StoreKey)
+	ecoKey := storetypes.NewKVStoreKey(ecocredit.ModuleName)
+	tkey := storetypes.NewTransientStoreKey(paramstypes.TStoreKey)
 
 	baseApp.MountStore(authKey, storetypes.StoreTypeIAVL)
 	baseApp.MountStore(ecoKey, storetypes.StoreTypeIAVL)
@@ -74,14 +76,15 @@ func setup(t *testing.T) (fixture.Factory, bankkeeper.BaseKeeper, authkeeper.Acc
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 	accountKeeper := authkeeper.NewAccountKeeper(
 		cdc,
-		authKey,
+		runtime.NewKVStoreService(authKey),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
+		addresscodec.NewBech32Codec("regen"),
 		"regen",
 		authority.String(),
 	)
 
-	bankKeeper := bankkeeper.NewBaseKeeper(cdc, bankKey, accountKeeper, nil, authority.String())
+	bankKeeper := bankkeeper.NewBaseKeeper(cdc, runtime.NewKVStoreService(bankKey), accountKeeper, nil, authority.String(), log.NewNopLogger())
 
 	ecocreditModule := module.NewModule(ecoKey, authority, accountKeeper, bankKeeper, ecocreditSubspace, nil)
 	ecocreditModule.RegisterInterfaces(cdc.InterfaceRegistry())

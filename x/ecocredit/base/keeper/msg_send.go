@@ -17,6 +17,10 @@ import (
 // Send sends credits to a recipient.
 // Send also retires credits if the amount to retire is specified in the request.
 func (k Keeper) Send(ctx context.Context, req *types.MsgSend) (*types.MsgSendResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sender, _ := sdk.AccAddressFromBech32(req.Sender)
 	recipient, _ := sdk.AccAddressFromBech32(req.Recipient)

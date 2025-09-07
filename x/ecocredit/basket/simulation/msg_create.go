@@ -24,7 +24,7 @@ import (
 
 const WeightCreate = 100
 
-var TypeMsgCreate = types.MsgCreate{}.Route()
+var TypeMsgCreate = sdk.MsgTypeURL(&types.MsgCreate{})
 
 const OpWeightMsgCreate = "op_weight_msg_create_basket" //nolint:gosec
 
@@ -34,6 +34,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		msgType := sdk.MsgTypeURL(&types.MsgCreate{})
 		curator, _ := simtypes.RandomAcc(r, accs)
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
@@ -129,10 +130,10 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			if strings.Contains(err.Error(), "insufficient funds") {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
 			}
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 
 	}
 }

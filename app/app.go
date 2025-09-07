@@ -7,7 +7,6 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	corestoretypes "cosmossdk.io/core/store"
 	math "cosmossdk.io/math"
@@ -53,6 +52,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -136,10 +136,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/v3"
 	datamodule "github.com/regen-network/regen-ledger/x/data/v3/module"
 
-	// "github.com/regen-network/regen-ledger/x/ecocredit/v4"
-	// baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
-	// "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
-	// ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
+
 	// "github.com/regen-network/regen-ledger/x/intertx"
 	// intertxkeeper "github.com/regen-network/regen-ledger/x/intertx/keeper"
 	// intertxmodule "github.com/regen-network/regen-ledger/x/intertx/module"
@@ -185,7 +186,7 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
-		// ecocreditmodule.Module{},
+		ecocreditmodule.Module{},
 		datamodule.Module{},
 		gov.NewAppModuleBasic(
 			[]govclient.ProposalHandler{
@@ -201,16 +202,16 @@ var (
 	// module account permissions
 	maccPerms = func() map[string][]string {
 		perms := map[string][]string{
-			authtypes.FeeCollectorName:     nil,
-			distrtypes.ModuleName:          nil,
-			minttypes.ModuleName:           {authtypes.Minter},
-			stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-			stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-			govtypes.ModuleName:            {authtypes.Burner},
-			ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-			// ecocredit.ModuleName:            {authtypes.Burner},
-			// baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
-			// marketplace.FeePoolName:         {authtypes.Burner},
+			authtypes.FeeCollectorName:      nil,
+			distrtypes.ModuleName:           nil,
+			minttypes.ModuleName:            {authtypes.Minter},
+			stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
+			stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
+			govtypes.ModuleName:             {authtypes.Burner},
+			ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+			ecocredit.ModuleName:            {authtypes.Burner},
+			baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
+			marketplace.FeePoolName:         {authtypes.Burner},
 
 			//	non sdk
 			icatypes.ModuleName:    nil,
@@ -321,10 +322,14 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	appCodec := codec.NewProtoCodec(interfaceRegistry)
 	txConfig := authtx.NewTxConfig(appCodec, authtx.DefaultSignModes)
 
+	std.RegisterLegacyAminoCodec(legacyAmino)
+	std.RegisterInterfaces(interfaceRegistry)
+
 	bApp := baseapp.NewBaseApp(AppName, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
+	bApp.SetTxEncoder(txConfig.TxEncoder())
 
 	keys := storetypes.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey, crisistypes.StoreKey,
@@ -335,7 +340,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 		ibcexported.StoreKey, ibctransfertypes.StoreKey,
 		icahosttypes.StoreKey, ibcfeetypes.StoreKey, icacontrollertypes.StoreKey,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 		wasmtypes.StoreKey,
 	)
@@ -411,6 +416,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		govModuleAddr,
 		logger,
 	)
+
 	app.StakingKeeper = stakingkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[stakingtypes.StoreKey]),
@@ -577,7 +583,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	// )
 
 	// Wasm Keepr
-	wasmDir := filepath.Join(homePath, "wasm")
+	wasmDir := homePath
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
@@ -649,7 +655,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		app.AccountKeeper, app.BankKeeper,
 		app.StakingKeeper,
 		app.DistrKeeper,
-		app.MsgServiceRouter(), govConfig,
+		app.MsgServiceRouter(),
+		govConfig,
 		govModuleAddr)
 	app.GovKeeper.SetLegacyRouter(govRouter)
 
@@ -659,14 +666,14 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	dataMod := datamodule.NewModule(app.keys[data.ModuleName], app.AccountKeeper, app.BankKeeper)
 
-	// ecocreditMod := ecocreditmodule.NewModule(
-	// 	app.keys[ecocredit.ModuleName],
-	// 	govModuleAddrBytes,
-	// 	app.AccountKeeper,
-	// 	app.BankKeeper,
-	// 	app.GetSubspace(ecocredit.DefaultParamspace),
-	// 	app.GovKeeper,
-	// )
+	ecocreditMod := ecocreditmodule.NewModule(
+		app.keys[ecocredit.ModuleName],
+		govModuleAddrBytes,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.GetSubspace(ecocredit.DefaultParamspace),
+		app.GovKeeper,
+	)
 
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
@@ -697,7 +704,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		//
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibctransfer.NewAppModule(app.IBCTransferKeeper),
-		// ecocreditMod,
+		ecocreditMod,
 		dataMod,
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
@@ -718,7 +725,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 				},
 			),
 		})
-	// app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
+	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
 	app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -744,7 +751,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		group.ModuleName,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 
 		// ibc modules
@@ -775,7 +782,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		group.ModuleName,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 
 		// ibc modules
@@ -811,7 +818,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		group.ModuleName,
-		// ecocredit.ModuleName,
+		ecocredit.ModuleName,
 		data.ModuleName,
 
 		// ibc modules

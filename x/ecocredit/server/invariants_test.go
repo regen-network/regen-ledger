@@ -4,16 +4,17 @@ import (
 	"context"
 	"testing"
 
-	dbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"cosmossdk.io/store"
+	"cosmossdk.io/store/metrics"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm/model/ormdb"
@@ -52,8 +53,8 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
-	s.storeKey = sdk.NewKVStoreKey("test")
+	cms := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	s.storeKey = storetypes.NewKVStoreKey("test")
 	cms.MountStoreWithDB(s.storeKey, storetypes.StoreTypeIAVL, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())

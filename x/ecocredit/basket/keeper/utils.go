@@ -5,6 +5,7 @@ import (
 	"fmt"
 	stdmath "math"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/v2/regen/ecocredit/basket/v1"
@@ -79,5 +80,5 @@ func creditAmountToBasketCoin(creditAmt math.Dec, exp uint32, denom string) (sdk
 		return sdk.Coin{}, err
 	}
 
-	return sdk.NewCoin(denom, sdk.NewIntFromBigInt(amtInt)), nil
+	return sdk.NewCoin(denom, sdkmath.NewIntFromBigInt(amtInt)), nil
 }

@@ -43,10 +43,6 @@ func (s *msgUpdateDateCriteriaSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
-func (s *msgUpdateDateCriteriaSuite) MessageSignBytesQueried() {
-	s.signBytes = string(s.msg.GetSignBytes())
-}
-
 func (s *msgUpdateDateCriteriaSuite) ExpectTheSignBytes(expected gocuke.DocString) {
 	buffer := new(bytes.Buffer)
 	require.NoError(s.t, json.Compact(buffer, []byte(expected.Content)))

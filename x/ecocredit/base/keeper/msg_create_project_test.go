@@ -100,23 +100,26 @@ func (s *createProjectSuite) AProjectWithProjectIdAndReferenceId(a, b string) {
 
 func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassId(a string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &types.MsgCreateProject{
-		Admin:   s.alice.String(),
-		ClassId: a,
+		Admin:        s.alice.String(),
+		ClassId:      a,
+		Jurisdiction: "US-WA", // Add default jurisdiction
 	})
 }
 
 func (s *createProjectSuite) BobAttemptsToCreateAProjectWithClassId(a string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &types.MsgCreateProject{
-		Admin:   s.bob.String(),
-		ClassId: a,
+		Admin:        s.bob.String(),
+		ClassId:      a,
+		Jurisdiction: "US-WA", // Add default jurisdiction
 	})
 }
 
 func (s *createProjectSuite) AliceAttemptsToCreateAProjectWithClassIdAndReferenceId(a, b string) {
 	s.res, s.err = s.k.CreateProject(s.ctx, &types.MsgCreateProject{
-		Admin:       s.alice.String(),
-		ClassId:     a,
-		ReferenceId: b,
+		Admin:        s.alice.String(),
+		ClassId:      a,
+		ReferenceId:  b,
+		Jurisdiction: "US-WA", // Add default jurisdiction
 	})
 }
 

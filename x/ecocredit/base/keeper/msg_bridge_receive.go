@@ -14,6 +14,9 @@ import (
 
 // BridgeReceive bridges credits received from another chain.
 func (k Keeper) BridgeReceive(ctx context.Context, req *types.MsgBridgeReceive) (*types.MsgBridgeReceiveResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
 
 	exists, err := k.stateStore.AllowedBridgeChainTable().Has(ctx, strings.ToLower(req.OriginTx.Source))
 	if err != nil {

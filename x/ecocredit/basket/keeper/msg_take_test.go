@@ -18,6 +18,8 @@ import (
 	basetypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/basket"
 	types "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
+
+	sdkmath "cosmossdk.io/math"
 )
 
 type takeSuite struct {
@@ -45,11 +47,11 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addrs[0]
 	s.aliceTokenBalance = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}
 	s.basketTokenSupply = sdk.Coin{
 		Denom:  "eco.uC.NCT",
-		Amount: sdk.NewInt(100),
+		Amount: sdkmath.NewInt(100),
 	}
 	s.classID = testClassID
 	s.creditTypeAbbrev = "C"
@@ -183,21 +185,21 @@ func (s *takeSuite) EcocreditModulesAddress(a string) {
 }
 
 func (s *takeSuite) AliceOwnsBasketTokens() {
-	amount, ok := sdk.NewIntFromString(s.tokenAmount)
+	amount, ok := sdkmath.NewIntFromString(s.tokenAmount)
 	require.True(s.t, ok)
 
 	s.aliceTokenBalance = sdk.NewCoin(s.basketDenom, amount)
 }
 
 func (s *takeSuite) AliceOwnsBasketTokenAmount(a string) {
-	amount, ok := sdk.NewIntFromString(a)
+	amount, ok := sdkmath.NewIntFromString(a)
 	require.True(s.t, ok)
 
 	s.aliceTokenBalance = sdk.NewCoin(s.basketDenom, amount)
 }
 
 func (s *takeSuite) AliceOwnsTokensWithDenom(a string) {
-	amount, ok := sdk.NewIntFromString(s.tokenAmount)
+	amount, ok := sdkmath.NewIntFromString(s.tokenAmount)
 	require.True(s.t, ok)
 
 	s.aliceTokenBalance = sdk.NewCoin(a, amount)
@@ -450,7 +452,7 @@ func (s *takeSuite) addBasketClassAndBalance(basketID uint64, creditAmount strin
 }
 
 func (s *takeSuite) takeExpectCalls() {
-	amount, ok := sdk.NewIntFromString(s.tokenAmount)
+	amount, ok := sdkmath.NewIntFromString(s.tokenAmount)
 	require.True(s.t, ok)
 
 	sendCoin := sdk.NewCoin(s.basketDenom, amount)

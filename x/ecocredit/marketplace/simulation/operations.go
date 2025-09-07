@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4"
@@ -17,7 +18,7 @@ func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, mktQryClient types.QueryServer,
-	govk ecocredit.GovKeeper, authority sdk.AccAddress) simulation.WeightedOperations {
+	govk govkeeper.Keeper, authority sdk.AccAddress) simulation.WeightedOperations {
 
 	var (
 		weightMsgBuyDirect          int
@@ -28,37 +29,37 @@ func WeightedOperations(
 		weightMsgRemoveAllowedDenom int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,
+	appParams.GetOrGenerate(OpWeightMsgBuy, &weightMsgBuyDirect, nil,
 		func(_ *rand.Rand) {
 			weightMsgBuyDirect = WeightBuyDirect
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgSell, &weightMsgSell, nil,
+	appParams.GetOrGenerate(OpWeightMsgSell, &weightMsgSell, nil,
 		func(_ *rand.Rand) {
 			weightMsgSell = WeightSell
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateSellOrder, &weightMsgUpdateSellOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateSellOrder, &weightMsgUpdateSellOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateSellOrder = WeightUpdateSellOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCancelSellOrder, &weightMsgCancelSellOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgCancelSellOrder, &weightMsgCancelSellOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgCancelSellOrder = WeightCancelSellOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgAddAllowedDenom, &weightMsgAddAllowedDenom, nil,
+	appParams.GetOrGenerate(OpWeightMsgAddAllowedDenom, &weightMsgAddAllowedDenom, nil,
 		func(_ *rand.Rand) {
 			weightMsgAddAllowedDenom = WeightAddAllowedDenom
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRemoveAllowedDenom, &weightMsgRemoveAllowedDenom, nil,
+	appParams.GetOrGenerate(OpWeightMsgRemoveAllowedDenom, &weightMsgRemoveAllowedDenom, nil,
 		func(_ *rand.Rand) {
 			weightMsgRemoveAllowedDenom = WeightRemoveAllowedDenom
 		},

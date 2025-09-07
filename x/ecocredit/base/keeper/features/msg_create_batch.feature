@@ -64,7 +64,16 @@ Feature: Msg/CreateBatch
       Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
     Scenario Outline: the decimal places in retired amount is less than or equal to credit type precision
-      When alice attempts to create a batch with project id "C01-001" and retired amount "<amount>"
+      When alice attempts to create a batch with project id "C01-001" and issuance
+      """
+      [
+        {
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+          "retired_amount": "<amount>",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ]
+      """
       Then expect no error
 
       Examples:
@@ -73,7 +82,16 @@ Feature: Msg/CreateBatch
         | equal to    | 9.123456 |
 
     Scenario: the decimal places in retired amount is greater than credit type precision
-      When alice attempts to create a batch with project id "C01-001" and retired amount "9.1234567"
+      When alice attempts to create a batch with project id "C01-001" and issuance
+      """
+      [
+        {
+          "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+          "retired_amount": "9.1234567",
+          "retirement_jurisdiction": "US-WA"
+        }
+      ]
+      """
       Then expect the error "9.1234567 exceeds maximum decimal places: 6: invalid request"
 
   Rule: The origin tx must be unique within the scope of the credit class
@@ -132,7 +150,7 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 2,
         "class_key": 1,
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
@@ -140,10 +158,10 @@ Feature: Msg/CreateBatch
       {
         "id": "0x64",
         "source": "polygon",
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
-      Then expect the error "credit batch with contract already exists: 0x40: invalid request"
+      Then expect the error "credit batch with contract already exists: 0x1234567890123456789012345678901234567890: invalid request"
 
     Scenario: the contract is unique within the credit class
       Given a batch contract
@@ -151,7 +169,7 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 2,
         "class_key": 2,
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       When alice attempts to create a batch with project id "C01-001" and origin tx
@@ -159,7 +177,7 @@ Feature: Msg/CreateBatch
       {
         "id": "0x64",
         "source": "polygon",
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       Then expect no error
@@ -345,6 +363,12 @@ Feature: Msg/CreateBatch
       """
       {
         "project_id": "C01-001",
+        "issuance": [
+          {
+            "recipient": "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+            "tradable_amount": "100"
+          }
+        ],
         "metadata": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf",
         "start_date": "2020-01-01T00:00:00Z",
         "end_date": "2021-01-01T00:00:00Z",
@@ -377,7 +401,7 @@ Feature: Msg/CreateBatch
       {
         "id": "0x64",
         "source": "polygon",
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
       Then expect batch contract
@@ -385,7 +409,7 @@ Feature: Msg/CreateBatch
       {
         "batch_key": 1,
         "class_key": 1,
-        "contract": "0x40"
+        "contract": "0x1234567890123456789012345678901234567890"
       }
       """
 
@@ -505,7 +529,7 @@ Feature: Msg/CreateBatch
       {
         "id": "0x123",
         "source": "polygon",
-        "contract": "0x456",
+        "contract": "0x1234567890123456789012345678901234567890",
         "note": "credits from VCS-001"
       }
       """
@@ -522,7 +546,7 @@ Feature: Msg/CreateBatch
           "origin_tx": {
           "id": "0x123",
           "source": "polygon",
-          "contract": "0x456",
+          "contract": "0x1234567890123456789012345678901234567890",
           "note": "credits from VCS-001"
         }
       }
