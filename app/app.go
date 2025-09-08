@@ -142,10 +142,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
 
-	// "github.com/regen-network/regen-ledger/x/intertx"
-	// intertxkeeper "github.com/regen-network/regen-ledger/x/intertx/keeper"
-	// intertxmodule "github.com/regen-network/regen-ledger/x/intertx/module"
-
 	// unnamed import of statik for swagger UI support
 	_ "github.com/regen-network/regen-ledger/v7/app/client/docs/statik"
 )
@@ -196,7 +192,6 @@ var (
 		),
 		ica.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
-		// intertxmodule.AppModule{},
 		wasm.AppModuleBasic{},
 	)
 
@@ -262,12 +257,11 @@ type RegenApp struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	GovKeeper             *govkeeper.Keeper
 	GroupKeeper           groupkeeper.Keeper
-	// InterTxKeeper         intertxkeeper.Keeper
-	MintKeeper     mintkeeper.Keeper
-	ParamsKeeper   paramskeeper.Keeper
-	SlashingKeeper slashingkeeper.Keeper
-	StakingKeeper  *stakingkeeper.Keeper
-	UpgradeKeeper  *upgradekeeper.Keeper
+	MintKeeper            mintkeeper.Keeper
+	ParamsKeeper          paramskeeper.Keeper
+	SlashingKeeper        slashingkeeper.Keeper
+	StakingKeeper         *stakingkeeper.Keeper
+	UpgradeKeeper         *upgradekeeper.Keeper
 
 	IBCFeeKeeper        ibcfeekeeper.Keeper
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
@@ -282,7 +276,6 @@ type RegenApp struct {
 	ScopedIBCTransferKeeper   capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
-	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
 
 	ScopedWasmKeeper capabilitykeeper.ScopedKeeper
 
@@ -391,7 +384,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	app.ScopedIBCTransferKeeper = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	app.ScopedICAHostKeeper = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
-	// app.ScopedInterTxKeeper = app.CapabilityKeeper.ScopeToModule(intertx.ModuleName)
 
 	// grant capabilities for wasm modules
 	app.ScopedWasmKeeper = app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
@@ -577,12 +569,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
-	// app.InterTxKeeper = intertxkeeper.NewKeeper(
-	// 	appCodec,
-	// 	app.ICAControllerKeeper,
-	// 	app.ScopedInterTxKeeper,
-	// )
-
 	// Wasm Keepr
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -619,12 +605,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 
 	// Create IBC stacks to add to IBC router
 
-	// interTxModule := intertxmodule.NewModule(app.InterTxKeeper)
-	// interTxIBCModule := intertxmodule.NewIBCModule(app.InterTxKeeper)
-
-	// icaControllerIBCModule := icacontroller.NewIBCMiddleware(interTxIBCModule, app.ICAControllerKeeper)
-	// icaControllerStack := ibcfee.NewIBCMiddleware(icaControllerIBCModule, app.IBCFeeKeeper)
-
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 	icaHostStack := ibcfee.NewIBCMiddleware(icaHostIBCModule, app.IBCFeeKeeper)
 
@@ -635,7 +615,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.
 		AddRoute(ibctransfertypes.ModuleName, ibcTransferStack).
-		// AddRoute(intertx.ModuleName, icaControllerStack).
 		// AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
 		AddRoute(wasmtypes.ModuleName, wasmStack)
@@ -709,7 +688,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		dataMod,
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
-		// interTxModule,
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -760,7 +738,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		// intertx.ModuleName,
 
 		// wasm module
 		wasmtypes.ModuleName,
@@ -791,7 +768,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		// intertx.ModuleName,
 
 		// wasm module
 		wasmtypes.ModuleName,
@@ -827,7 +803,6 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		ibcexported.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		// intertx.ModuleName,
 
 		// wasm module
 		wasmtypes.ModuleName,
