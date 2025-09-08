@@ -16,7 +16,7 @@ import (
 
 func TestApp(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
-	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "app", "simulation", false, true)
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
 		t.Skip("skipping app simulation")
 	}
