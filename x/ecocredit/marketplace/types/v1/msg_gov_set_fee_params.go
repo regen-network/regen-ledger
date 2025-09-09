@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -19,12 +18,12 @@ func (m *MsgGovSetFeeParams) ValidateBasic() error {
 		return err
 	}
 
-	_, err = types.AccAddressFromBech32(m.Authority)
+	_, err = sdk.AccAddressFromBech32(m.Authority)
 	return err
 }
 
 // Route implements the LegacyMsg interface.
-func (m *MsgGovSetFeeParams) Route() string { return types.MsgTypeURL(m) }
+func (m *MsgGovSetFeeParams) Route() string { return sdk.MsgTypeURL(m) }
 
 // Type implements the LegacyMsg interface.
-func (m *MsgGovSetFeeParams) Type() string { return types.MsgTypeURL(m) }
+func (m *MsgGovSetFeeParams) Type() string { return sdk.MsgTypeURL(m) }

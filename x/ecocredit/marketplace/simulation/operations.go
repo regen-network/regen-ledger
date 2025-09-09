@@ -3,7 +3,6 @@ package simulation
 import (
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -15,7 +14,7 @@ import (
 )
 
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, mktQryClient types.QueryServer,
 	govk govkeeper.Keeper, authority sdk.AccAddress) simulation.WeightedOperations {

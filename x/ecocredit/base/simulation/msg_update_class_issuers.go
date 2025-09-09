@@ -37,7 +37,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &types.QueryClassIssuersRequest{ClassId: class.Id})
+		issuersRes, err := qryClient.ClassIssuers(sdkCtx, &types.QueryClassIssuersRequest{ClassId: class.Id})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, err.Error()), nil, err
 		}

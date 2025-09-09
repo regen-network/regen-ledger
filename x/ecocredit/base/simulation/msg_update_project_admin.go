@@ -23,14 +23,13 @@ const WeightUpdateProjectAdmin = 30
 // SimulateMsgUpdateProjectAdmin generates a MsgUpdateProjectAdmin with random values.
 func SimulateMsgUpdateProjectAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgUpdateProjectAdmin)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgUpdateProjectAdmin)
 		if err != nil {
 			return op, nil, err
 		}
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
 		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgUpdateProjectAdmin, class.Id)
 		if project == nil {
 			return op, nil, err
@@ -47,7 +46,7 @@ func SimulateMsgUpdateProjectAdmin(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			ProjectId: project.Id,
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, project.Admin, TypeMsgUpdateProjectAdmin)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(ctx, bk, accs, project.Admin, TypeMsgUpdateProjectAdmin)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -58,7 +57,7 @@ func SimulateMsgUpdateProjectAdmin(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,

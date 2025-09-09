@@ -9,10 +9,9 @@ import (
 )
 
 type msgRemoveAllowedDenomSuite struct {
-	t         gocuke.TestingT
-	msg       *MsgRemoveAllowedDenom
-	err       error
-	signBytes string
+	t   gocuke.TestingT
+	msg *MsgRemoveAllowedDenom
+	err error
 }
 
 func TestMsgRemoveAllowedDenomSuite(t *testing.T) {

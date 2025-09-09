@@ -25,12 +25,11 @@ const WeightCreateBatch = 50
 func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient types.QueryServer) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		issuer, _ := simtypes.RandomAcc(r, accs)
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
-		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgCreateBatch)
+		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgCreateBatch)
 		if class == nil {
 			return op, nil, err
 		}
@@ -54,10 +53,10 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "don't have permission to create credit batch"), nil, nil
 		}
 
-		issuerAcc := ak.GetAccount(sdkCtx, issuer.Address)
-		spendable := bk.SpendableCoins(sdkCtx, issuerAcc.GetAddress())
+		issuerAcc := ak.GetAccount(ctx, issuer.Address)
+		spendable := bk.SpendableCoins(ctx, issuerAcc.GetAddress())
 
-		now := sdkCtx.BlockTime()
+		now := ctx.BlockTime()
 		tenHours := now.Add(10 * time.Hour)
 
 		msg := &types.MsgCreateBatch{
@@ -76,7 +75,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			TxGen:           moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:             nil,
 			Msg:             msg,
-			Context:         sdkCtx,
+			Context:         ctx,
 			SimAccount:      issuer,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,

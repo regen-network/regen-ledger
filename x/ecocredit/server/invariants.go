@@ -15,7 +15,7 @@ func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 
 func (s serverImpl) batchSupplyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		goCtx := sdk.WrapSDKContext(ctx)
+		goCtx := ctx
 		basketBalances, err := s.basketKeeper.GetBasketBalanceMap(goCtx)
 		if err != nil {
 			return err.Error(), true

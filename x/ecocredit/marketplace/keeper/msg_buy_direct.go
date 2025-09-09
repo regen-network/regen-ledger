@@ -19,7 +19,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *types.MsgBuyDirect) (*types.
 	if err := req.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)

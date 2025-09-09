@@ -89,8 +89,7 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 	return simtypes.NewOperationMsg(txCtx.Msg, true, ""), nil, nil
 }
 
-func GetClasses(sdkCtx sdk.Context, _ *rand.Rand, qryClient basetypes.QueryServer, msgType string) ([]*basetypes.ClassInfo, simtypes.OperationMsg, error) {
-	ctx := sdk.WrapSDKContext(sdkCtx)
+func GetClasses(ctx sdk.Context, _ *rand.Rand, qryClient basetypes.QueryServer, msgType string) ([]*basetypes.ClassInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Classes(ctx, &basetypes.QueryClassesRequest{})
 	if err != nil {
 		if ormerrors.IsNotFound(err) {

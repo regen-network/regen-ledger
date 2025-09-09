@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -11,12 +10,12 @@ import (
 
 var _ sdk.Msg = &MsgUpdateProjectMetadata{}
 
-func (m MsgUpdateProjectMetadata) Route() string { return types.MsgTypeURL(&m) }
+func (m MsgUpdateProjectMetadata) Route() string { return sdk.MsgTypeURL(&m) }
 
-func (m MsgUpdateProjectMetadata) Type() string { return types.MsgTypeURL(&m) }
+func (m MsgUpdateProjectMetadata) Type() string { return sdk.MsgTypeURL(&m) }
 
 func (m MsgUpdateProjectMetadata) ValidateBasic() error {
-	if _, err := types.AccAddressFromBech32(m.Admin); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrapf("admin: %s", err)
 	}
 
@@ -31,7 +30,7 @@ func (m MsgUpdateProjectMetadata) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpdateProjectMetadata) GetSigners() []types.AccAddress {
-	addr, _ := types.AccAddressFromBech32(m.Admin)
-	return []types.AccAddress{addr}
+func (m MsgUpdateProjectMetadata) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
+	return []sdk.AccAddress{addr}
 }

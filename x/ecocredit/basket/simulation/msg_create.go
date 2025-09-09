@@ -37,7 +37,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		msgType := sdk.MsgTypeURL(&types.MsgCreate{})
 		curator, _ := simtypes.RandomAcc(r, accs)
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := sdkCtx
 		res, err := baseClient.Params(ctx, &basetypes.QueryParamsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err

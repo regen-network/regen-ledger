@@ -266,7 +266,7 @@ func stringInSlice(a string, list []string) bool {
 }
 
 func getClassIssuers(ctx sdk.Context, qryClient types.QueryServer, className string, msgType string) ([]string, simtypes.OperationMsg, error) {
-	classIssuers, err := qryClient.ClassIssuers(sdk.WrapSDKContext(ctx), &types.QueryClassIssuersRequest{ClassId: className})
+	classIssuers, err := qryClient.ClassIssuers(ctx, &types.QueryClassIssuersRequest{ClassId: className})
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			return []string{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no credit classes"), nil

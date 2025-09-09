@@ -92,7 +92,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	sdkCtx := sdk.UnwrapSDKContext(s.fixture.Context()).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s.ctx = s.sdkCtx
 	s.genesisCtx = sdkCtx
 
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
