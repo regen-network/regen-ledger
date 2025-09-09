@@ -5,6 +5,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
+
 	"github.com/regen-network/regen-ledger/orm/encoding/encodeutil"
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
 	"github.com/regen-network/regen-ledger/orm/internal/listinternal"

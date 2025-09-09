@@ -8,8 +8,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	types "github.com/cosmos/cosmos-sdk/types"
 	gomock "github.com/golang/mock/gomock"
+
+	types "github.com/cosmos/cosmos-sdk/types"
 )
 
 // MockAccountKeeper is a mock of AccountKeeper interface.

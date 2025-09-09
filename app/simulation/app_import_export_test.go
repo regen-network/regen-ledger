@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	evidencetypes "cosmossdk.io/x/evidence/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/server"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"

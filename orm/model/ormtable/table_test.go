@@ -24,6 +24,7 @@ import (
 
 	queryv1beta1 "cosmossdk.io/api/cosmos/base/query/v1beta1"
 	sdkerrors "cosmossdk.io/errors"
+
 	"github.com/regen-network/regen-ledger/orm/encoding/ormkv"
 	"github.com/regen-network/regen-ledger/orm/internal/testkv"
 	"github.com/regen-network/regen-ledger/orm/internal/testpb"
