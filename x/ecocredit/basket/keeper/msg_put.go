@@ -129,7 +129,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	if basket.DateCriteria != nil {
 		// check time window match
 		var minStartDate time.Time
-		var criteria = basket.DateCriteria
+		criteria := basket.DateCriteria
 		switch {
 		case criteria.MinStartDate != nil:
 			minStartDate = criteria.MinStartDate.AsTime()

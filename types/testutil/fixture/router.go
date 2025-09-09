@@ -95,7 +95,6 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			cacheMs.Write()
 		}
 		return nil
-
 	}, nil
 }
 

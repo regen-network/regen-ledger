@@ -25,7 +25,8 @@ var TypeMsgTake = sdk.MsgTypeURL(&types.MsgTake{})
 
 // SimulateMsgTake generates a Basket/MsgTake with random values.
 func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	_ basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+	_ basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

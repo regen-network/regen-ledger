@@ -16,8 +16,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/v3/server/hasher"
 )
 
-var _ data.MsgServer = serverImpl{}
-var _ data.QueryServer = serverImpl{}
+var (
+	_ data.MsgServer   = serverImpl{}
+	_ data.QueryServer = serverImpl{}
+)
 
 var _ Keeper = serverImpl{}
 

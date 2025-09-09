@@ -63,7 +63,8 @@ func TestOriginTxValidate(t *testing.T) {
 			"origin_tx.source must be",
 			OriginTx{
 				Id:     "0x12345",
-				Source: randstr.String(33)},
+				Source: randstr.String(33),
+			},
 		},
 		{
 			"invalid contract",

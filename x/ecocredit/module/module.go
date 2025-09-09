@@ -68,7 +68,6 @@ func NewModule(
 	legacySubspace paramtypes.Subspace,
 	govKeeper *govkeeper.Keeper,
 ) *Module {
-
 	return &Module{
 		key:            storeKey,
 		legacySubspace: legacySubspace,

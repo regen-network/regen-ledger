@@ -25,7 +25,8 @@ const WeightUpdateClassFee = 33
 
 // SimulateMsgUpdateClassFee generates a MsgToggleClassAllowlist with random values.
 func SimulateMsgUpdateClassFee(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, govk govkeeper.Keeper,
-	_ types.QueryServer, authority sdk.AccAddress) simtypes.Operation {
+	_ types.QueryServer, authority sdk.AccAddress,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

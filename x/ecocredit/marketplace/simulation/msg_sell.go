@@ -25,7 +25,8 @@ var TypeMsgSell = types.MsgSell{}.Route()
 
 // SimulateMsgSell generates a Marketplace/MsgSell with random values.
 func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient basetypes.QueryServer) simtypes.Operation {
+	qryClient basetypes.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, baseApp *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

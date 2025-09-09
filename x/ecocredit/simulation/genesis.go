@@ -200,7 +200,8 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 }
 
 func genGenesisState(ctx context.Context, simState *module.SimulationState, ss api.StateStore,
-	basketStore basketapi.StateStore, ms marketplaceapi.StateStore) error {
+	basketStore basketapi.StateStore, ms marketplaceapi.StateStore,
+) error {
 	accs := simState.Accounts
 	r := simState.Rand
 

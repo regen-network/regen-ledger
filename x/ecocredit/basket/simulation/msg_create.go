@@ -30,7 +30,8 @@ const OpWeightMsgCreate = "op_weight_msg_create_basket" //nolint:gosec
 
 // SimulateMsgCreate generates a Basket/MsgCreate with random values.
 func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	baseClient basetypes.QueryServer, client types.QueryServer) simtypes.Operation {
+	baseClient basetypes.QueryServer, client types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -134,7 +135,6 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
-
 	}
 }
 
@@ -172,7 +172,8 @@ func randomDateCriteria(r *rand.Rand, ctx sdk.Context) *types.DateCriteria {
 }
 
 func randomClassIDs(r *rand.Rand, ctx sdk.Context, qryClient basetypes.QueryServer,
-	creditTypeAbbrev string, msgType string) ([]string, simtypes.OperationMsg, error) {
+	creditTypeAbbrev string, msgType string,
+) ([]string, simtypes.OperationMsg, error) {
 	classes, op, err := utils.GetClasses(ctx, r, qryClient, msgType)
 	if len(classes) == 0 {
 		return []string{}, op, err

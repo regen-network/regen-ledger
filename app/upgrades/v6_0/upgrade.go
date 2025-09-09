@@ -26,7 +26,6 @@ var Upgrade = upgrades.Upgrade{
 			sdkCtx.Logger().Info(fmt.Sprintf("Migration %s completed", Name))
 
 			return vmManager, nil
-
 		}
 	},
 	StoreUpgrades: storetypes.StoreUpgrades{},

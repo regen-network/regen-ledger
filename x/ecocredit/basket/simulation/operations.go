@@ -18,8 +18,8 @@ func WeightedOperations(
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	govk govkeeper.Keeper,
 	qryClient basetypes.QueryServer, basketQryClient types.QueryServer,
-	authority sdk.AccAddress) simulation.WeightedOperations {
-
+	authority sdk.AccAddress,
+) simulation.WeightedOperations {
 	var (
 		weightMsgCreate           int
 		weightMsgPut              int

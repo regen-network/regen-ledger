@@ -64,7 +64,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 }
 
 func generateGenesisState(ormCtx context.Context, r *rand.Rand, ss api.StateStore,
-	simState *module.SimulationState) error {
+	simState *module.SimulationState,
+) error {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		return err

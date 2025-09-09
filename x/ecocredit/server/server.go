@@ -38,7 +38,8 @@ type serverImpl struct {
 
 //nolint:revive
 func NewServer(storeKey storetypes.StoreKey,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, authority sdk.AccAddress,
+) serverImpl {
 	s := serverImpl{
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,

@@ -81,7 +81,7 @@ func setupBase(t gocuke.TestingT, numAddresses int) *baseSuite {
 
 	// set test accounts
 	for i := 0; i < numAddresses; i++ {
-		var _, _, addr = testdata.KeyTestPubAddr()
+		_, _, addr := testdata.KeyTestPubAddr()
 		s.addrs = append(s.addrs, addr)
 	}
 

@@ -49,7 +49,7 @@ func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.alice.String(),
@@ -61,7 +61,7 @@ func (s *attestSuite) AliceHasAttestedToTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.alice.String(),
@@ -73,7 +73,7 @@ func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.alice.String(),
@@ -85,7 +85,7 @@ func (s *attestSuite) BobAttemptsToAttestToTheDataAtBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.ctx = s.sdkCtx.WithBlockTime(blockTime)
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.bob.String(),

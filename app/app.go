@@ -298,8 +298,8 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
-	baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
-
+	baseAppOptions ...func(*baseapp.BaseApp),
+) *RegenApp {
 	legacyAmino := codec.NewLegacyAmino()
 	interfaceRegistry, err := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
 		ProtoFiles: proto.HybridResolver,
@@ -349,7 +349,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	govModuleAddrBytes := authtypes.NewModuleAddress(govtypes.ModuleName)
 	govModuleAddr := govModuleAddrBytes.String()
 
-	var app = &RegenApp{
+	app := &RegenApp{
 		BaseApp:           bApp,
 		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,

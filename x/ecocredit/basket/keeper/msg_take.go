@@ -78,7 +78,6 @@ func (k Keeper) Take(ctx context.Context, msg *types.MsgTake) (*types.MsgTakeRes
 
 	if creditType.Precision > stdmath.MaxInt32 {
 		return nil, fmt.Errorf("credit type precision %d is too large", creditType.Precision)
-
 	}
 	multiplier := math.NewDecFinite(1, int32(creditType.Precision))
 	amountCreditsNeeded, err := amountBasketCreditsDec.QuoExact(multiplier)

@@ -442,7 +442,6 @@ func (s *createSuite) ExpectEventWithProperties(a gocuke.DocString) {
 }
 
 func (s *createSuite) createExpectCalls() {
-
 	var expectedFee sdk.Coin
 	var expectedFees sdk.Coins
 

@@ -24,11 +24,11 @@ const WeightSend = 100
 
 // SimulateMsgSend generates a MsgSend with random values.
 func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgSend)
 		if class == nil {
 			return op, nil, err

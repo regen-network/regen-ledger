@@ -23,11 +23,11 @@ const WeightCancel = 30
 
 // SimulateMsgCancel generates a MsgCancel with random values.
 func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgCancel)
 		if class == nil {
 			return op, nil, err

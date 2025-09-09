@@ -17,8 +17,8 @@ func WeightedOperations(
 	appParams simtypes.AppParams,
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient basetypes.QueryServer, mktQryClient types.QueryServer,
-	govk govkeeper.Keeper, authority sdk.AccAddress) simulation.WeightedOperations {
-
+	govk govkeeper.Keeper, authority sdk.AccAddress,
+) simulation.WeightedOperations {
 	var (
 		weightMsgBuyDirect          int
 		weightMsgSell               int

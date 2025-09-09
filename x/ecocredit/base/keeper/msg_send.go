@@ -128,7 +128,6 @@ type sendParams struct {
 }
 
 func (k Keeper) sendTradable(ctx context.Context, params sendParams) error {
-
 	// get sender balance and return error if balance does not exist
 	senderBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, params.sender, params.batchKey)
 	if err != nil {
@@ -204,7 +203,6 @@ func (k Keeper) sendTradable(ctx context.Context, params sendParams) error {
 }
 
 func (k Keeper) sendRetired(ctx sdk.Context, params sendParams) error {
-
 	// get sender balance and return error if balance does not exist
 	senderBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, params.sender, params.batchKey)
 	if err != nil {

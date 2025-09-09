@@ -71,9 +71,7 @@ type basketServer struct {
 	baskettypes.MsgClient
 }
 
-var (
-	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
-)
+var createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: basetypes.DefaultClassFee}
 
 func NewIntegrationTestSuite(fixtureFactory fixture.Factory, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
@@ -927,7 +925,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	coinPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000)
-	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+	expiration := time.Date(2030, 0o1, 0o1, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIDs := []uint64{1, 2}
 
 	sellerAcc := acc3
@@ -1021,7 +1019,6 @@ func (s *IntegrationTestSuite) assertSellerBalancesUpdated(accBefore, accAfter a
 }
 
 func (s *IntegrationTestSuite) assertBuyerBalancesUpdated(accBefore, accAfter accountInfo, tradable, retired math.Dec, totalCost sdk.Coin) {
-
 	expectedTradable := accBefore.tradable
 	expectedRetired := accBefore.retired
 

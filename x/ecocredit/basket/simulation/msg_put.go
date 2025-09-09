@@ -26,7 +26,8 @@ var TypeMsgPut = sdk.MsgTypeURL(&types.MsgPut{})
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
 func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer) simtypes.Operation {
+	qryClient basetypes.QueryServer, bsktQryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

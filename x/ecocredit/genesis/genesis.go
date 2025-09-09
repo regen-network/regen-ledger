@@ -520,7 +520,8 @@ func MergeAllowedDenomsIntoTarget(messages []markettypes.AllowedDenom, target or
 func MergeClassFeeIntoTarget(
 	cdc codec.JSONCodec,
 	classFee basetypes.ClassFee,
-	target ormjson.WriteTarget) error {
+	target ormjson.WriteTarget,
+) error {
 	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&classFee)))
 	if err != nil {
 		return err
@@ -543,7 +544,8 @@ func MergeClassFeeIntoTarget(
 func MergeBasketFeeIntoTarget(
 	cdc codec.JSONCodec,
 	basketFee baskettypes.BasketFee,
-	target ormjson.WriteTarget) error {
+	target ormjson.WriteTarget,
+) error {
 	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(&basketFee)))
 	if err != nil {
 		return err

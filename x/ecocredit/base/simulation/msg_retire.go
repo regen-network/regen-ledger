@@ -23,11 +23,11 @@ const WeightRetire = 80
 
 // SimulateMsgRetire generates a MsgRetire with random values.
 func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient types.QueryServer) simtypes.Operation {
+	qryClient types.QueryServer,
+) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, _ string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		class, op, err := utils.GetRandomClass(ctx, r, qryClient, TypeMsgRetire)
 		if class == nil {
 			return op, nil, err
