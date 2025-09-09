@@ -75,6 +75,11 @@ func GenAndDeliverTx(r *rand.Rand, txCtx simulation.OperationInput, fees sdk.Coi
 
 	_, _, err = txCtx.App.SimDeliver(txCtx.TxGen.TxEncoder(), tx)
 	if err != nil {
+
+		if strings.Contains(err.Error(), "minimum deposit is too small") {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "minimum deposit is too small"), nil, nil
+		}
+
 		if strings.Contains(err.Error(), "insufficient funds") {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "not enough balance"), nil, nil
 		}

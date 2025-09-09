@@ -129,6 +129,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
+	tendermint "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	regenupgrades "github.com/regen-network/regen-ledger/v7/app/upgrades"
 	"github.com/regen-network/regen-ledger/v7/app/upgrades/v5_0"
@@ -143,6 +144,8 @@ import (
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/v4/module"
 
 	// unnamed import of statik for swagger UI support
+
+	icacontroller "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller"
 	_ "github.com/regen-network/regen-ledger/v7/app/client/docs/statik"
 )
 
@@ -603,7 +606,10 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCFeeKeeper)
 	wasmStack = ibcfee.NewIBCMiddleware(wasmStack, app.IBCFeeKeeper)
 
-	// Create IBC stacks to add to IBC router
+	var icaControllerStack porttypes.IBCModule
+
+	icaControllerIBCModule := icacontroller.NewIBCMiddleware(icaControllerStack, app.ICAControllerKeeper)
+	icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerIBCModule, app.IBCFeeKeeper)
 
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 	icaHostStack := ibcfee.NewIBCMiddleware(icaHostIBCModule, app.IBCFeeKeeper)
@@ -615,7 +621,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.
 		AddRoute(ibctransfertypes.ModuleName, ibcTransferStack).
-		// AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
+		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
 		AddRoute(wasmtypes.ModuleName, wasmStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -688,6 +694,7 @@ func NewRegenApp(logger logger.Logger, db dbm.DB, traceStore io.Writer, loadLate
 		dataMod,
 		ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
+		tendermint.NewAppModule(),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
