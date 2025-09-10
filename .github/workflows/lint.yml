@@ -29,7 +29,7 @@ jobs:
       pull-requests: read  # for technote-space/get-diff-action to get git reference
     strategy:
       matrix:
-        module: ["app", "types", "x/data", "x/ecocredit", "x/intertx"]
+        module: ["app", "types", "x/data", "x/ecocredit"]
     steps:
       - uses: actions/checkout@v4
       - uses: technote-space/get-diff-action@v6
@@ -64,36 +64,28 @@ jobs:
             x/ecocredit/go.mod
             x/ecocredit/go.sum
         if: matrix.module == 'x/ecocredit'
-      - uses: technote-space/get-diff-action@v6
-        id: git-diff-intertx
-        with:
-          PATTERNS: |
-            x/intertx/**/**.go
-            x/intertx/go.mod
-            x/intertx/go.sum
-        if: matrix.module == 'x/intertx'
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
         if: env.GIT_DIFF
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.55
+          version: v1.57
           working-directory: "."
         if: steps.git-diff-app.outputs.diff
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.55
+          version: v1.57
           working-directory: "types"
         if: steps.git-diff-types.outputs.diff
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.55
+          version: v1.57
           working-directory: "x/data"
         if: steps.git-diff-data.outputs.diff
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.55
+          version: v1.57
           working-directory: "x/ecocredit"
         if: steps.git-diff-ecocredit.outputs.diff
 
