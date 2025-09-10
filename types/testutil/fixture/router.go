@@ -38,7 +38,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		// see https://github.com/cosmos/cosmos-sdk/issues/8030
 		regenCtx := sdk.UnwrapSDKContext(ctx)
 		cacheMs := regenCtx.MultiStore().CacheMultiStore()
-		ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
+		ctx = regenCtx.WithMultiStore(cacheMs)
 
 		// msg handler
 		if writeCondition != nil && isMsg {
@@ -105,7 +105,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 	}
 
 	return func(callInfo CallInfo) (Invoker, error) {
-		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.Msg) error {
+		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, _ sdk.Msg) error {
 			// for _, signer := range req.GetSigners() {
 			// 	if _, found := signerMap[signer.String()]; !found {
 			// 		return sdkerrors.ErrUnauthorized

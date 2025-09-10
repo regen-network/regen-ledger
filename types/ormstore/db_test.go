@@ -50,7 +50,7 @@ func TestStoreKeyDB(t *testing.T) {
 	)
 	require.NoError(t, err)
 	sdkCtx := sdkContextForStoreKey(storeKey)
-	ctx := sdk.WrapSDKContext(sdkCtx)
+	ctx := sdkCtx
 
 	creditTypeTable := db.GetTable(&ecocreditv1.CreditType{})
 	require.NotNil(t, creditTypeTable)
