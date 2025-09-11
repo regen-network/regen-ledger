@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/spf13/cobra"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
@@ -28,7 +27,6 @@ import (
 	basetypesv1alpha1 "github.com/regen-network/regen-ledger/x/ecocredit/v4/base/types/v1alpha1"
 	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/simulation"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/basket/types/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v4/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v4/genesis"
 	marketsims "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/simulation"
 	markettypes "github.com/regen-network/regen-ledger/x/ecocredit/v4/marketplace/types/v1"
@@ -242,15 +240,15 @@ func (m Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig,
 	return genesis.ValidateGenesis(bz)
 }
 
-// GetTxCmd implements AppModule/GetTxCmd.
-func (m Module) GetTxCmd() *cobra.Command {
-	return client.TxCmd(m.Name())
-}
+// // GetTxCmd implements AppModule/GetTxCmd.
+// func (m Module) GetTxCmd() *cobra.Command {
+// 	return client.TxCmd(m.Name())
+// }
 
-// GetQueryCmd implements AppModule/GetQueryCmd.
-func (m Module) GetQueryCmd() *cobra.Command {
-	return client.QueryCmd(m.Name())
-}
+// // GetQueryCmd implements AppModule/GetQueryCmd.
+// func (m Module) GetQueryCmd() *cobra.Command {
+// 	return client.QueryCmd(m.Name())
+// }
 
 // BeginBlock checks if there are any expired sell or buy orders and removes them from state.
 func (m Module) BeginBlock(ctx sdk.Context) {
