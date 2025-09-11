@@ -98,6 +98,13 @@ func NewRootCmd() *cobra.Command {
 	}
 
 	initRootCmd(rootCmd, encodingConfig.TxConfig, tempApp.BasicModuleManager)
+	// add keyring to autocli opts
+	autoCliOpts := tempApp.AutoCliOpts()
+	autoCliOpts.ClientCtx = initClientCtx
+
+	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
+		panic(err)
+	}
 
 	return rootCmd
 }
